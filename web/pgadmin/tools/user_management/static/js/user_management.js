@@ -543,6 +543,12 @@ define([
 
 
         deleteUserCell = Backgrid.Extension.DeleteCell.extend({
+          raiseError: function() {
+            Notify.error(
+              gettext('Error during deleting user.')
+            );
+          },
+
           changeOwnership: function(res, uid) {
             let self = this;
 
@@ -695,11 +701,7 @@ define([
                                 alertify.changeOwnershipDialog().destroy();
                                 alertify.UserManagement().destroy();
                               },
-                              error: function() {
-                                Notify.error(
-                                  gettext('Error during deleting user.')
-                                );
-                              },
+                              error: self.raiseError,
                             });
                             alertify.changeOwnershipDialog().destroy();
                           },
@@ -745,11 +747,7 @@ define([
                   success: function() {
                     Notify.success(gettext('User deleted.'));
                   },
-                  error: function() {
-                    Notify.error(
-                      gettext('Error during deleting user.')
-                    );
-                  },
+                  error: self.raiseError,
                 });
               },
               function() {

@@ -51,6 +51,16 @@ describe('FormComponents', ()=>{
     jasmineEnzyme();
   });
 
+  let onAccessibility = (ctrl)=> {
+    expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
+    expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
+    let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
+    expect(inputProps).toEqual(jasmine.objectContaining({
+      id: 'inpCid',
+      'aria-describedby': 'hinpCid',
+    }));
+  };
+
   describe('FormInputText', ()=>{
     let ThemedFormInputText = withTheme(FormInputText), ctrl;
 
@@ -99,13 +109,7 @@ describe('FormComponents', ()=>{
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-      let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
-      expect(inputProps).toEqual(jasmine.objectContaining({
-        id: 'inpCid',
-        'aria-describedby': 'hinpCid',
-      }));
+      onAccessibility(ctrl);
     });
   });
 
@@ -167,13 +171,7 @@ describe('FormComponents', ()=>{
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-      let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
-      expect(inputProps).toEqual(jasmine.objectContaining({
-        id: 'inpCid',
-        'aria-describedby': 'hinpCid',
-      }));
+      onAccessibility(ctrl);
     });
   });
 

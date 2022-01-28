@@ -7,15 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import FunctionSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -124,79 +120,23 @@ describe('FunctionSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={procedureSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(procedureSchemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('proiswindow visible', ()=>{
@@ -247,22 +187,7 @@ describe('FunctionSchema', ()=>{
       type: 'function',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
 
   });
 
@@ -314,22 +239,7 @@ describe('FunctionSchema', ()=>{
       type: 'function',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
 
   });
 
@@ -380,22 +290,7 @@ describe('FunctionSchema', ()=>{
       type: 'procedure',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
   });
 
   it('proiswindow visible', ()=>{
@@ -445,22 +340,7 @@ describe('FunctionSchema', ()=>{
       type: 'procedure',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
   });
 
 
@@ -514,22 +394,7 @@ describe('FunctionSchema', ()=>{
       type: 'procedure',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
 
   });
 

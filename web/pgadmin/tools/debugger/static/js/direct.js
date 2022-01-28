@@ -306,6 +306,13 @@ define([
           });
       },
 
+      raisePollingError: function() {
+        Notify.alert(
+          gettext('Debugger Error'),
+          gettext('Error while polling result.')
+        );
+      },
+
       // Get the stack information of the functions and update the grid
       GetStackInformation: function(trans_id) {
         var self = this;
@@ -442,12 +449,7 @@ define([
                   );
                 }
               })
-              .fail(function() {
-                Notify.alert(
-                  gettext('Debugger Error'),
-                  gettext('Error while polling result.')
-                );
-              });
+              .fail(self.raisePollingError());
           }, poll_timeout);
 
       },
@@ -621,12 +623,7 @@ define([
                   pgTools.DirectDebug.is_polling_required = false;
                 }
               })
-              .fail(function() {
-                Notify.alert(
-                  gettext('Debugger Error'),
-                  gettext('Error while polling result.')
-                );
-              });
+              .fail(self.raisePollingError());
           }, poll_end_timeout);
 
       },
@@ -685,12 +682,7 @@ define([
                     self.poll_end_execution_result(trans_id);
                   }
                 })
-                .fail(function() {
-                  Notify.alert(
-                    gettext('Debugger Error'),
-                    gettext('Error while polling result.')
-                  );
-                });
+                .fail(self.raisePollingError());
             }
           })
           .fail(function(xhr) {
@@ -1479,6 +1471,20 @@ define([
   */
   var DirectDebug = function() {/*This is intentional (SonarQube)*/};
 
+  var raiseJSONError =  function(xhr) {
+    try {
+      var err = JSON.parse(xhr.responseText);
+      if (err.success == 0) {
+        Notify.alert(gettext('Debugger Error'), err.errormsg);
+      }
+    } catch (e) {
+      Notify.alert(
+        gettext('Debugger Error'),
+        gettext('Error while starting debugging listener.')
+      );
+    }
+  };
+
   _.extend(DirectDebug.prototype, {
     /* We should get the transaction id from the server during initialization here */
     load: function(trans_id, debug_type, function_name_with_arguments, layout) {
@@ -1537,19 +1543,7 @@ define([
               controller.poll_result(trans_id);
             }
           })
-          .fail(function(xhr) {
-            try {
-              var err = JSON.parse(xhr.responseText);
-              if (err.success == 0) {
-                Notify.alert(gettext('Debugger Error'), err.errormsg);
-              }
-            } catch (e) {
-              Notify.alert(
-                gettext('Debugger Error'),
-                gettext('Error while starting debugging listener.')
-              );
-            }
-          });
+          .fail(raiseJSONError);
       } else if (trans_id != undefined) {
         // Make ajax call to execute the and start the target for execution
         baseUrl = url_for('debugger.start_listener', {
@@ -1565,19 +1559,7 @@ define([
               self.messages(trans_id);
             }
           })
-          .fail(function(xhr) {
-            try {
-              var err = JSON.parse(xhr.responseText);
-              if (err.success == 0) {
-                Notify.alert(gettext('Debugger Error'), err.errormsg);
-              }
-            } catch (e) {
-              Notify.alert(
-                gettext('Debugger Error'),
-                gettext('Error while starting debugging listener.')
-              );
-            }
-          });
+          .fail(raiseJSONError);
       } else {
         this.intializePanels();
       }

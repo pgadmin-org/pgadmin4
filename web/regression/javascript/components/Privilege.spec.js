@@ -16,6 +16,23 @@ import { withTheme } from '../fake_theme';
 
 describe('Privilege', ()=>{
   let ctrl, onChange = jasmine.createSpy('onChange');
+  let onClickAction = (done)=> {
+    expect(onChange).toHaveBeenCalledWith([{
+      privilege_type: 'C',
+      privilege: true,
+      with_grant: false,
+    },{
+      privilege_type: 'a',
+      privilege: true,
+      with_grant: true,
+    },{
+      privilege_type: 'r',
+      privilege: true,
+      with_grant: false,
+    }]);
+    done();
+  };
+
   beforeEach(()=>{
     jasmineEnzyme();
     let ThemedPrivilege = withTheme(Privilege);
@@ -111,20 +128,7 @@ describe('Privilege', ()=>{
       simulate('change', {target: {checked: true, name: 'r'}});
 
     setTimeout(()=>{
-      expect(onChange).toHaveBeenCalledWith([{
-        privilege_type: 'C',
-        privilege: true,
-        with_grant: false,
-      },{
-        privilege_type: 'a',
-        privilege: true,
-        with_grant: true,
-      },{
-        privilege_type: 'r',
-        privilege: true,
-        with_grant: false,
-      }]);
-      done();
+      onClickAction(done);
     }, 500);
   });
 
@@ -151,20 +155,7 @@ describe('Privilege', ()=>{
     ctrl.find('InputCheckbox[name="all"]').at(0).find('input').simulate('change', {target: {checked: true}});
 
     setTimeout(()=>{
-      expect(onChange).toHaveBeenCalledWith([{
-        privilege_type: 'C',
-        privilege: true,
-        with_grant: false,
-      },{
-        privilege_type: 'a',
-        privilege: true,
-        with_grant: true,
-      },{
-        privilege_type: 'r',
-        privilege: true,
-        with_grant: false,
-      }]);
-      done();
+      onClickAction(done);
     }, 500);
   });
 

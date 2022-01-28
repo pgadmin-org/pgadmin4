@@ -7,12 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import RestoreSchema, {getRestoreSaveOptSchema, getRestoreQueryOptionSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from '../../../pgadmin/tools/restore/static/js/restore.ui';
+import {getCreateView} from '../genericFunctions';
 
 describe('RestoreSchema', ()=>{
   let mount;
@@ -39,21 +38,7 @@ describe('RestoreSchema', ()=>{
   );
 
   it('restore dialog', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={restoreSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(restoreSchemaObj));
   });
 
   it('restore validate', () => {

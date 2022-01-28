@@ -158,12 +158,16 @@ describe('SchemaView', ()=>{
     });
 
     describe('DataGridView', ()=>{
+      let ctrlUpdate = (done)=> {
+        ctrl.update();
+        expect(ctrl.find('DataGridView').find('DataTableRow').length).toBe(1);
+        done();
+      };
+
       it('add row', (done)=>{
         ctrl.find('DataGridView').find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
         setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('DataGridView').find('DataTableRow').length).toBe(1);
-          done();
+          ctrlUpdate(done);
         }, 0);
       });
 
@@ -184,9 +188,7 @@ describe('SchemaView', ()=>{
         });
         ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
         setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('DataGridView').find('DataTableRow').length).toBe(1);
-          done();
+          ctrlUpdate(done);
         }, 0);
       });
 
@@ -263,6 +265,14 @@ describe('SchemaView', ()=>{
       }, 0);
     });
 
+    let onRestAction = (done)=> {
+      ctrl.update();
+      expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
+      expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
+      expect(onDataChange).toHaveBeenCalledWith(false, {});
+      done();
+    };
+
     describe('onReset', ()=>{
       it('with confirm check and yes click', (done)=>{
         simulateValidData();
@@ -272,11 +282,7 @@ describe('SchemaView', ()=>{
         /* Press OK */
         confirmSpy.calls.argsFor(0)[2]();
         setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
-          expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-          expect(onDataChange).toHaveBeenCalledWith(false, {});
-          done();
+          onRestAction(done);
         }, 0);
       });
 
@@ -418,11 +424,7 @@ describe('SchemaView', ()=>{
           /* Press OK */
           confirmSpy.calls.argsFor(0)[2]();
           setTimeout(()=>{
-            ctrl.update();
-            expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
-            expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-            expect(onDataChange).toHaveBeenCalledWith(false, {});
-            done();
+            onRestAction(done);
           }, 0);
         }, 0);
       });

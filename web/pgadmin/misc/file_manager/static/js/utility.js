@@ -467,6 +467,16 @@ define([
     return `<div class="no_folder_found">${lg.could_not_retrieve_folder}</div>`;
   };
 
+  var getCapClasses = function(item_data, capabilities) {
+    let capClasses = '';
+    capClasses = Object.keys(capabilities).map(function(cap) {
+      if (has_capability(item_data, capabilities[cap])) {
+        return 'cap_' + capabilities[cap];
+      }
+    }).join(' ');
+    return capClasses;
+  };
+
   var getGridView = function(data, capabilities) {
     let ret_ele = '<ul id="contents" class="grid">',
       no_data = _.isEmpty(data);
@@ -481,11 +491,7 @@ define([
           icon_type = '',
           cap_classes = '';
 
-        cap_classes = Object.keys(capabilities).map(function(cap) {
-          if (has_capability(item_data, capabilities[cap])) {
-            return 'cap_' + capabilities[cap];
-          }
-        }).join(' ');
+        cap_classes = getCapClasses(item_data, capabilities);
 
         item_data.Capabilities = capabilities;
         bindToolbar(item_data);
@@ -581,11 +587,7 @@ define([
           class_type = '',
           cap_classes = '';
 
-        cap_classes = Object.keys(capabilities).map(function(cap) {
-          if (has_capability(item_data, capabilities[cap])) {
-            return 'cap_' + capabilities[cap];
-          }
-        }).join(' ');
+        cap_classes = getCapClasses(item_data, capabilities);
 
         item_data.Capabilities = capabilities;
         bindToolbar(item_data);

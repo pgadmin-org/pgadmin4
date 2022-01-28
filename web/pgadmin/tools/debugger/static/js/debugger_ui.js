@@ -167,6 +167,13 @@ define([
     }
   };
 
+  var raiseError = function() {
+    Notify.alert(
+      gettext('Debugger Error'),
+      gettext('Unable to set the arguments on the server')
+    );
+  };
+
   return function(debugInfo, restartDebug, isEdbProc, transId) {
     if (!Alertify.debuggerInputArgsDialog) {
       Alertify.dialog('debuggerInputArgsDialog', function factory() {
@@ -857,12 +864,7 @@ define([
                       },
                     })
                       .done(function() {/*This is intentional (SonarQube)*/})
-                      .fail(function() {
-                        Notify.alert(
-                          gettext('Debugger Error'),
-                          gettext('Unable to set the arguments on the server')
-                        );
-                      });
+                      .fail(raiseError);
                   })
                   .fail(function(er) {
                     Notify.alert(
@@ -907,13 +909,7 @@ define([
                   },
                 })
                   .done(function() {/*This is intentional (SonarQube)*/})
-                  .fail(function() {
-                    Notify.alert(
-                      gettext('Debugger Error'),
-                      gettext('Unable to set the arguments on the server')
-                    );
-                  });
-
+                  .fail(raiseError);
               }
 
               return true;

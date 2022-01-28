@@ -7,17 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView, { SCHEMA_STATE_ACTIONS } from '../../../pgadmin/static/js/SchemaView';
+import { SCHEMA_STATE_ACTIONS } from '../../../pgadmin/static/js/SchemaView';
 import _ from 'lodash';
 import { getNodeTableSchema, LikeSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import Notify from '../../../pgadmin/static/js/helpers/Notifier';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 function getFieldDepChange(schema, id) {
   return _.find(schema.fields, (f)=>f.id==id)?.depChange;
@@ -58,63 +55,19 @@ describe('TableSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('getTableOid', ()=>{
@@ -161,6 +114,20 @@ describe('TableSchema', ()=>{
       ];
     });
 
+    let onDepChangeAction = (depChange, done)=> {
+      expect(depChange()).toEqual({
+        columns: oftypeColumns,
+        primary_key: [],
+        foreign_key: [],
+        exclude_constraint: [],
+        unique_constraint: [],
+        partition_keys: [],
+        partitions: [],
+      });
+      expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
+      done();
+    };
+
     it('initial selection with OK', (done)=>{
       let state = {typname: 'type1'};
       let deferredPromise = deferredDepChange(state, null, null, {
@@ -169,17 +136,7 @@ describe('TableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        expect(depChange()).toEqual({
-          columns: oftypeColumns,
-          primary_key: [],
-          foreign_key: [],
-          exclude_constraint: [],
-          unique_constraint: [],
-          partition_keys: [],
-          partitions: [],
-        });
-        expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
-        done();
+        onDepChangeAction(depChange, done);
       });
       /* Press OK */
       confirmSpy.calls.argsFor(0)[2]();
@@ -210,17 +167,7 @@ describe('TableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        expect(depChange()).toEqual({
-          columns: oftypeColumns,
-          primary_key: [],
-          foreign_key: [],
-          exclude_constraint: [],
-          unique_constraint: [],
-          partition_keys: [],
-          partitions: [],
-        });
-        expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(oftypeColumns);
-        done();
+        onDepChangeAction(depChange, done);
       });
     });
 
@@ -241,6 +188,15 @@ describe('TableSchema', ()=>{
   describe('coll_inherits change', ()=>{
     let deferredDepChange;
     let inheritCol = {name: 'id'};
+    let onRemoveAction = (depChange, state, done)=> {
+      let finalCols = [{name: 'desc'}];
+      expect(depChange(state)).toEqual({
+        adding_inherit_cols: false,
+        columns: finalCols,
+      });
+      expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(finalCols);
+      done();
+    };
 
     beforeEach(()=>{
       spyOn(schemaObj,'changeColumnOptions').and.callThrough();
@@ -297,13 +253,7 @@ describe('TableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        let finalCols = [{name: 'desc'}];
-        expect(depChange(state)).toEqual({
-          adding_inherit_cols: false,
-          columns: finalCols,
-        });
-        expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(finalCols);
-        done();
+        onRemoveAction(depChange, state, done);
       });
     });
 
@@ -317,13 +267,7 @@ describe('TableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        let finalCols = [{name: 'desc'}];
-        expect(depChange(state)).toEqual({
-          adding_inherit_cols: false,
-          columns: finalCols,
-        });
-        expect(schemaObj.changeColumnOptions).toHaveBeenCalledWith(finalCols);
-        done();
+        onRemoveAction(depChange, state, done);
       });
     });
   });

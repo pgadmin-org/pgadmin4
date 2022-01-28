@@ -7,16 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import ColumnSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -74,83 +70,24 @@ describe('ColumnSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('create collection', ()=>{
     let schemaCollObj = new ColumnInColl();
-    let ctrl = mount(<SchemaView
-      formType='dialog'
-      schema={schemaCollObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    let ctrl = mount(getCreateView(schemaCollObj));
     /* Make sure you hit every corner */
     ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
   });

@@ -7,12 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import MaintenanceSchema, {getVacuumSchema} from '../../../pgadmin/tools/maintenance/static/js/maintenance.ui';
-
+import {getCreateView} from '../genericFunctions';
 
 describe('MaintenanceSchema', ()=>{
   let mount;
@@ -31,21 +29,7 @@ describe('MaintenanceSchema', ()=>{
   );
 
   it('start maintenance', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={backupSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(backupSchemaObj));
   });
 
 });

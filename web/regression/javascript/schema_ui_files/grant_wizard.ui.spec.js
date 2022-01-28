@@ -7,16 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import { messages } from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import GrantWizardPrivilegeSchema from '../../../pgadmin/tools/grant_wizard/static/js/privilege_schema.ui';
-
+import {genericBeforeEach} from '../genericFunctions';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -41,11 +38,7 @@ describe('GrantWizard', () => {
   });
 
   beforeEach(() => {
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', () => {
