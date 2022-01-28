@@ -138,7 +138,7 @@
     "path-fx": "^2.0.0",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.9",
-    "pgadmin4-tree": "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#90e62d4371d3d25a957b3ffc7c6cb81a928da06f",
+    "pgadmin4-tree": "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#bf7ac7be65898883e3e05c9733426152a1da6422",
     "postcss": "^8.2.15",
     "raf": "^3.4.1",
     "react": "^17.0.1",
