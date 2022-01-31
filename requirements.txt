@@ -44,4 +44,4 @@ Authlib==0.15.*
 requests==2.25.*
 pyotp==2.*
 qrcode==7.*
-Pillow==9.*
+Pillow==8.3.*
