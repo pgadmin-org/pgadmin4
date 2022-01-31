@@ -243,6 +243,11 @@ describe('FunctionSchema', ()=>{
 
   });
 
+  let initDataProc = ()=>Promise.resolve({
+    sysfunc: true,
+    type: 'procedure',
+  });
+
   it('proiswindow visible', ()=>{
 
 
@@ -285,12 +290,7 @@ describe('FunctionSchema', ()=>{
       }
     );
 
-    let initData = ()=>Promise.resolve({
-      sysfunc: true,
-      type: 'procedure',
-    });
-
-    mount(getEditView(editSchemaObj, initData));
+    mount(getEditView(editSchemaObj, initDataProc));
   });
 
   it('proiswindow visible', ()=>{
@@ -389,13 +389,7 @@ describe('FunctionSchema', ()=>{
       }
     );
 
-    let initData = ()=>Promise.resolve({
-      sysfunc: true,
-      type: 'procedure',
-    });
-
-    mount(getEditView(editSchemaObj, initData));
-
+    mount(getEditView(editSchemaObj, initDataProc));
   });
 
   it('probin visible', ()=>{

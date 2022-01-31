@@ -187,7 +187,7 @@ describe('QueryHistory', () => {
                 jasmine.clock().tick(1499);
               });
 
-              it('should change the button text to \'Copied!\'', () => {
+              it('1.5 seconds should change the button text to \'Copied!\'', () => {
                 expect(copyAllButton().text()).toBe('Copied!');
               });
 
@@ -201,7 +201,7 @@ describe('QueryHistory', () => {
                 jasmine.clock().tick(1501);
               });
 
-              it('should change the button text back to \'Copy\'', () => {
+              it('1.5 seconds should change the button text back to \'Copy\'', () => {
                 expect(copyAllButton().text()).toBe('Copy');
               });
             });

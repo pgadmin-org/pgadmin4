@@ -149,6 +149,35 @@ describe('the keyboard shortcuts', () => {
     ]);
   });
 
+  let doesNothingTestCase = ()=> {
+    it('does nothing', () => {
+      keyboardShortcuts.processEventQueryTool(
+        sqlEditorControllerSpy, queryToolActionsSpy, event
+      );
+
+      expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
+    });
+  };
+
+  let beforeEachWindows = ()=> {
+    windowsKeysSetup();
+    event.which = FWD_SLASH_KEY;
+    event.shiftKey = true;
+    keyboardShortcuts.processEventQueryTool(
+      sqlEditorControllerSpy, queryToolActionsSpy, event
+    );
+  };
+
+  let beforeEachMAC = ()=> {
+    macKeysSetup();
+    event.which = FWD_SLASH_KEY;
+    event.shiftKey = true;
+    keyboardShortcuts.processEventQueryTool(
+      sqlEditorControllerSpy, queryToolActionsSpy, event
+    );
+  };
+
+
   describe('when the key is not handled by the function', function () {
 
     beforeEach(() => {
@@ -395,13 +424,7 @@ describe('the keyboard shortcuts', () => {
           event.which = FWD_SLASH_KEY;
         });
 
-        it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-
-          expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
-        });
+        doesNothingTestCase();
       });
 
       describe('and the system is a Windows', () => {
@@ -410,13 +433,7 @@ describe('the keyboard shortcuts', () => {
           event.which = FWD_SLASH_KEY;
         });
 
-        it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-
-          expect(queryToolActionsSpy.commentLineCode).not.toHaveBeenCalled();
-        });
+        doesNothingTestCase();
       });
     });
   });
@@ -465,12 +482,7 @@ describe('the keyboard shortcuts', () => {
           event.which = PERIOD_KEY;
         });
 
-        it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-          expect(queryToolActionsSpy.uncommentLineCode).not.toHaveBeenCalled();
-        });
+        doesNothingTestCase();
       });
       describe('and the system is a Windows', () => {
         beforeEach(() => {
@@ -478,13 +490,7 @@ describe('the keyboard shortcuts', () => {
           event.which = PERIOD_KEY;
         });
 
-        it('does nothing', () => {
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-
-          expect(queryToolActionsSpy.uncommentLineCode).not.toHaveBeenCalled();
-        });
+        doesNothingTestCase();
       });
     });
   });
@@ -492,14 +498,7 @@ describe('the keyboard shortcuts', () => {
   describe('blockComment', () => {
     describe('when there is not a query already running', () => {
       describe('and the system is a Mac', () => {
-        beforeEach(() => {
-          macKeysSetup();
-          event.which = FWD_SLASH_KEY;
-          event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-        });
+        beforeEach(beforeEachMAC);
 
         it('should comment out the block selection', () => {
           expect(queryToolActionsSpy.commentBlockCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
@@ -511,14 +510,7 @@ describe('the keyboard shortcuts', () => {
 
     describe('when there is not a query already running', () => {
       describe('and the system is a Windows', () => {
-        beforeEach(() => {
-          windowsKeysSetup();
-          event.which = FWD_SLASH_KEY;
-          event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-        });
+        beforeEach(beforeEachWindows);
 
         it('should comment out the block selection', () => {
           expect(queryToolActionsSpy.commentBlockCode).toHaveBeenCalledWith(sqlEditorControllerSpy);
@@ -533,27 +525,13 @@ describe('the keyboard shortcuts', () => {
         sqlEditorControllerSpy.isQueryRunning.and.returnValue(true);
       });
       describe('and the system is a Mac', () => {
-        beforeEach(() => {
-          macKeysSetup();
-          event.which = FWD_SLASH_KEY;
-          event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-        });
+        beforeEach(beforeEachMAC);
         it('does nothing', () => {
           expect(queryToolActionsSpy.commentBlockCode).not.toHaveBeenCalled();
         });
       });
       describe('and the system is a Windows', () => {
-        beforeEach(() => {
-          windowsKeysSetup();
-          event.which = FWD_SLASH_KEY;
-          event.shiftKey = true;
-          keyboardShortcuts.processEventQueryTool(
-            sqlEditorControllerSpy, queryToolActionsSpy, event
-          );
-        });
+        beforeEach(beforeEachWindows);
         it('does nothing', () => {
           expect(queryToolActionsSpy.commentBlockCode).not.toHaveBeenCalled();
         });

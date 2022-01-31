@@ -143,11 +143,15 @@ describe('SearchObjectsDialogWrapper', () => {
       spyOn(soDialogWrapper, 'setResultCount');
     });
 
+    let prepareAction = ()=> {
+      spyOn(soDialogWrapper, 'prepareDialog');
+      soDialogWrapper.prepare();
+      expect(soDialogWrapper.prepareDialog).not.toHaveBeenCalled();
+    };
+
     context('no tree element is selected', () => {
       it('does not prepare dialog', () => {
-        spyOn(soDialogWrapper, 'prepareDialog');
-        soDialogWrapper.prepare();
-        expect(soDialogWrapper.prepareDialog).not.toHaveBeenCalled();
+        prepareAction();
       });
     });
 
@@ -157,9 +161,7 @@ describe('SearchObjectsDialogWrapper', () => {
       });
 
       it('does not prepare the dialog', () => {
-        spyOn(soDialogWrapper, 'prepareDialog');
-        soDialogWrapper.prepare();
-        expect(soDialogWrapper.prepareDialog).not.toHaveBeenCalled();
+        prepareAction();
       });
     });
 

@@ -35,94 +35,98 @@ describe('#callRenderAfterPoll', () => {
     jasmine.clock().uninstall();
   });
 
+  let expectAction = (expectObj, callWithValue=null)=> {
+    callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
+    if (callWithValue !== null) {
+      expect(expectObj).toHaveBeenCalledWith(callWithValue);
+    } else {
+      expect(expectObj).toHaveBeenCalledWith();
+    }
+  };
+
+  let queryResult1 = ()=>{
+    queryResult = {
+      rows_affected: 10,
+      has_more_rows: false,
+      colinfo: {},
+    };
+  };
+
+  let queryResult2 = ()=>{
+    queryResult = {
+      rows_affected: 10,
+      has_more_rows: false,
+      colinfo: undefined,
+      result: 'Some result',
+    };
+  };
+
+  let displayNotificationAction = ()=> {
+    sqlEditorSpy.info_notifier_timeout = 10;
+    callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
+
+    expect(Notify.success).toHaveBeenCalledWith(
+      'Query returned successfully in 0 msec.',
+      10
+    );
+  };
+
+  let saveAction = ()=> {
+    callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
+
+    expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
+      true,
+      'Some result\n\nQuery returned successfully in 0 msec.',
+      false
+    );
+  };
+
   describe('it is not a query tool', () => {
     beforeEach(() => {
       sqlEditorSpy.is_query_tool = false;
     });
 
     describe('query was successful and have results', () => {
-      beforeEach(() => {
-        queryResult = {
-          rows_affected: 10,
-          has_more_rows: false,
-          colinfo: {},
-        };
-      });
+      beforeEach(queryResult1);
 
       it('renders the editor', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy._render).toHaveBeenCalledWith(queryResult);
+        expectAction(sqlEditorSpy._render, queryResult);
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
+        expectAction(sqlEditorSpy.setIsQueryRunning, false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
+        expectAction(sqlEditorSpy.trigger, 'pgadmin-sqleditor:loading-icon:hide');
       });
     });
 
     describe('query was successful but had no result to display', () => {
-      beforeEach(() => {
-        queryResult = {
-          rows_affected: 10,
-          has_more_rows: false,
-          colinfo: undefined,
-          result: 'Some result',
-        };
-      });
+      beforeEach(queryResult2);
 
       it('saves execution information in the history', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
-          true,
-          'Some result\n\nQuery returned successfully in 0 msec.',
-          false
-        );
+        saveAction();
       });
 
       it('resets the changed data store', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.reset_data_store).toHaveBeenCalled();
+        expectAction(sqlEditorSpy.reset_data_store);
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
+        expectAction(sqlEditorSpy.setIsQueryRunning, false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
+        expectAction(sqlEditorSpy.trigger, 'pgadmin-sqleditor:loading-icon:hide');
       });
 
       describe('notifications are enabled', () => {
-        it('display notification', () => {
-          sqlEditorSpy.info_notifier_timeout = 10;
-          callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-          expect(Notify.success).toHaveBeenCalledWith(
-            'Query returned successfully in 0 msec.',
-            10
-          );
-        });
+        it('display notification', displayNotificationAction);
       });
 
       it('disables the save results button', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
-
+        expectAction(sqlEditorSpy.enable_disable_download_btn, true);
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });
     });
@@ -134,99 +138,54 @@ describe('#callRenderAfterPoll', () => {
     });
 
     describe('query was successful and have results', () => {
-      beforeEach(() => {
-        queryResult = {
-          rows_affected: 10,
-          has_more_rows: false,
-          colinfo: {},
-        };
-      });
+      beforeEach(queryResult1);
 
       it('renders the editor', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy._render).toHaveBeenCalledWith(queryResult);
+        expectAction(sqlEditorSpy._render, queryResult);
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
+        expectAction(sqlEditorSpy.setIsQueryRunning, false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
+        expectAction(sqlEditorSpy.trigger, 'pgadmin-sqleditor:loading-icon:hide');
       });
 
       it('enables sqleditor tools buttons', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.disable_tool_buttons).toHaveBeenCalledWith(false);
+        expectAction(sqlEditorSpy.disable_tool_buttons, false);
       });
     });
 
     describe('query was successful but had no result to display', () => {
-      beforeEach(() => {
-        queryResult = {
-          rows_affected: 10,
-          has_more_rows: false,
-          colinfo: undefined,
-          result: 'Some result',
-        };
-      });
+      beforeEach(queryResult2);
 
       it('saves execution information in the history', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.update_msg_history).toHaveBeenCalledWith(
-          true,
-          'Some result\n\nQuery returned successfully in 0 msec.',
-          false
-        );
+        saveAction();
       });
 
       it('resets the changed data store', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.reset_data_store).toHaveBeenCalled();
+        expectAction(sqlEditorSpy.reset_data_store);
       });
 
       it('inform sqleditor that the query stopped running', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.setIsQueryRunning).toHaveBeenCalledWith(false);
+        expectAction(sqlEditorSpy.setIsQueryRunning, false);
       });
 
       it('hides the loading icon', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
+        expectAction(sqlEditorSpy.trigger, 'pgadmin-sqleditor:loading-icon:hide');
       });
 
       it('enables sqleditor tools buttons', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.disable_tool_buttons).toHaveBeenCalledWith(false);
+        expectAction(sqlEditorSpy.disable_tool_buttons, false);
       });
 
       describe('notifications are enabled', () => {
-        it('display notification', () => {
-          sqlEditorSpy.info_notifier_timeout = 10;
-          callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-          expect(Notify.success).toHaveBeenCalledWith(
-            'Query returned successfully in 0 msec.',
-            10
-          );
-        });
+        it('display notification', displayNotificationAction);
       });
 
       it('disables the save results button', () => {
-        callRenderAfterPoll(sqlEditorSpy, Notify, queryResult);
-
-        expect(sqlEditorSpy.enable_disable_download_btn).toHaveBeenCalledWith(true);
+        expectAction(sqlEditorSpy.enable_disable_download_btn, true);
 
         expect(sqlEditorSpy.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
       });

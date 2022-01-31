@@ -16,6 +16,15 @@ import {
 import {TreeFake} from '../tree/tree_fake';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 
+let beforeEachResponseError = (networkMock)=> {
+  networkMock.onPut(/.*/).reply(() => {
+    return [500, {
+      success: 0,
+      errormsg: 'some error message',
+    }];
+  });
+};
+
 describe('#enableTriggers', () => {
   let networkMock;
   let tree;
@@ -120,12 +129,7 @@ describe('#enableTriggers', () => {
 
       describe('backend responds with error', () => {
         beforeEach(() => {
-          networkMock.onPut(/.*/).reply(() => {
-            return [500, {
-              success: 0,
-              errormsg: 'some error message',
-            }];
-          });
+          beforeEachResponseError(networkMock);
         });
 
         it('displays an error alert', (done) => {
@@ -254,12 +258,7 @@ describe('#disableTriggers', () => {
 
       describe('backend responds with error', () => {
         beforeEach(() => {
-          networkMock.onPut(/.*/).reply(() => {
-            return [500, {
-              success: 0,
-              errormsg: 'some error message',
-            }];
-          });
+          beforeEachResponseError(networkMock);
         });
 
         it('displays an error alert', (done) => {

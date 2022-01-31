@@ -54,6 +54,35 @@ describe('#handleQueryOutputKeyboardEvent', function () {
     handleQueryOutputKeyboardEvent = HandleQueryOutputKeyboardEvent.bind(window);
   });
 
+  let selectEntireGridAction = ()=> {
+    handleQueryOutputKeyboardEvent(event, slickEvent);
+
+    expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
+    expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
+  };
+
+  let commandAAction = ()=> {
+    beforeEach(function () {
+      event.metaKey = true;
+      event.keyCode = 65;
+    });
+
+    it('selects the entire grid to ranges', function () {
+      selectEntireGridAction();
+    });
+  };
+
+  let ctrlAAction = ()=> {
+    beforeEach(function () {
+      event.ctrlKey = true;
+      event.keyCode = 65;
+    });
+
+    it('selects the entire grid to ranges', function () {
+      selectEntireGridAction();
+    });
+  };
+
   describe('when a range is selected', function () {
     beforeEach(function () {
       grid.getSelectionModel().setSelectedRanges([
@@ -62,17 +91,18 @@ describe('#handleQueryOutputKeyboardEvent', function () {
       ]);
     });
 
+    let copyCellContentAction = ()=> {
+      handleQueryOutputKeyboardEvent(event, slickEvent);
+      expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith('\'0,0-cell-content\',\'0,1-cell-content\'\n\'2,0-cell-content\',\'2,1-cell-content\'');
+    };
+
     describe('pressing Command + C', function () {
       beforeEach(function () {
         event.metaKey = true;
         event.keyCode = 67;
       });
 
-      it('copies the cell content to the clipboard', function () {
-        handleQueryOutputKeyboardEvent(event, slickEvent);
-
-        expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith('\'0,0-cell-content\',\'0,1-cell-content\'\n\'2,0-cell-content\',\'2,1-cell-content\'');
-      });
+      it('copies the cell content to the clipboard', copyCellContentAction);
     });
 
     describe('pressing Ctrl + C', function () {
@@ -81,69 +111,15 @@ describe('#handleQueryOutputKeyboardEvent', function () {
         event.keyCode = 67;
       });
 
-      it('copies the cell content to the clipboard', function () {
-        handleQueryOutputKeyboardEvent(event, slickEvent);
-
-        expect(clipboard.copyTextToClipboard).toHaveBeenCalledWith('\'0,0-cell-content\',\'0,1-cell-content\'\n\'2,0-cell-content\',\'2,1-cell-content\'');
-      });
+      it('copies the cell content to the clipboard', copyCellContentAction);
     });
 
-    describe('pressing Command + A', function () {
-      beforeEach(function () {
-        event.metaKey = true;
-        event.keyCode = 65;
-      });
-
-      it('selects the entire grid to ranges', function () {
-        handleQueryOutputKeyboardEvent(event, slickEvent);
-
-        expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
-      });
-    });
-
-    describe('pressing Ctrl + A', function () {
-      beforeEach(function () {
-        event.ctrlKey = true;
-        event.keyCode = 65;
-      });
-
-      it('selects the entire grid to ranges', function () {
-        handleQueryOutputKeyboardEvent(event, slickEvent);
-
-        expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
-      });
-    });
+    describe('pressing Command + A', commandAAction);
+    describe('pressing Ctrl + A', ctrlAAction);
   });
 
   describe('when no ranges are selected', function () {
-    describe('pressing Command + A', function () {
-      beforeEach(function () {
-        event.metaKey = true;
-        event.keyCode = 65;
-      });
-
-      it('selects the entire grid to ranges', function () {
-        handleQueryOutputKeyboardEvent(event, slickEvent);
-
-        expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
-      });
-    });
-
-    describe('pressing Ctrl + A', function () {
-      beforeEach(function () {
-        event.ctrlKey = true;
-        event.keyCode = 65;
-      });
-
-      it('selects the entire grid to ranges', function () {
-        handleQueryOutputKeyboardEvent(event, slickEvent);
-
-        expect(RangeSelectionHelper.isEntireGridSelected(grid)).toBeTruthy();
-        expect(grid.getSelectionModel().getSelectedRanges().length).toEqual(1);
-      });
-    });
+    describe('pressing Command + A', commandAAction);
+    describe('pressing Ctrl + A', ctrlAAction);
   });
 });

@@ -56,8 +56,303 @@ describe('ExecuteQuery', () => {
     networkMock.restore();
   });
 
+  let updateHistoryNotCalled = (done)=> {
+    setTimeout(() => {
+      expect(sqlEditorMock.update_msg_history).not.toHaveBeenCalled();
+      done();
+    }, 0);
+  };
+
+  let pgaLoginNotCalled = (done)=> {
+    setTimeout(() => {
+      expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
+      done();
+    }, 0);
+  };
+
+  let disableToolButtonsNotCalled = (done)=> {
+    setTimeout(() => {
+      expect(sqlEditorMock.disable_tool_buttons).not.toHaveBeenCalled();
+      done();
+    }, 0);
+  };
+
+  let cancelButtonNotCalled = (done)=> {
+    let cancelButtonSpy = spyOn($.fn, 'prop');
+    setTimeout(() => {
+      expect(cancelButtonSpy).not.toHaveBeenCalled();
+      done();
+    }, 0);
+  };
+
+  let beforeEachNotConnected = ()=> {
+    let response = {
+      data: {
+        status: 'NotConnected',
+        result: 'Some interesting result',
+      },
+    };
+    networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+
+    executeQuery.poll();
+  };
+
+  let beforeEachPythonServer = ()=> {
+    networkMock.onGet('/sqleditor/query_tool/poll/123').reply(404, undefined);
+    executeQuery.poll();
+  };
+
+  let setFlagQueryIsRunningTestCase = ()=> {
+    it('should set the flag to inform SQLEditor a query is running', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.setIsQueryRunning)
+          .toHaveBeenCalledWith(true);
+        done();
+      }, 0);
+    });
+  };
+
+  let updateHistoryMessageTestCase = ()=> {
+    it('should update history message', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.update_msg_history)
+          .toHaveBeenCalledWith('Busy', 'Some important result', false);
+        done();
+      }, 0);
+    });
+  };
+
+  let callPoolingTestCase = ()=> {
+    it('should recursively call polling', (done) => {
+      setTimeout(() => {
+        expect(executeQuery.delayedPoll)
+          .toHaveBeenCalled();
+        done();
+      }, 0);
+    });
+  };
+
+  let shouldNotUpdateHistoryMessageTestCase = ()=> {
+    it('should does not update history', (done) => {
+      updateHistoryNotCalled(done);
+    });
+  };
+
+  let shouldHideLoadingIconTestCase = ()=> {
+    it('should hide the loading icon', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.trigger)
+          .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
+        done();
+      }, 0);
+    });
+  };
+
+  let shouldUpdateLoadingIconMessageTestCase = ()=>{
+    it('should update the loading icon message', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.trigger)
+          .toHaveBeenCalledWith(
+            'pgadmin-sqleditor:loading-icon:message',
+            'Loading data from the database server and rendering...'
+          );
+        done();
+      }, 0);
+    });
+  };
+
+  let addNewEntryToHistoryTestCase = ()=>{
+    it('should add new entry to history and update the Messages tab and clear the result grid', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.update_msg_history)
+          .toHaveBeenCalledWith(
+            false,
+            'Some interesting result',
+            true
+          );
+        done();
+      }, 0);
+    });
+  };
+
+  let shouldEnableToolsButtonTestCase = ()=>{
+    it('should enable the tool buttons', (done) => {
+      setTimeout(
+        () => {
+          expect(sqlEditorMock.disable_tool_buttons).toHaveBeenCalledWith(false);
+          done();
+        }, 0);
+    });
+  };
+
+  let addNewEntryToHistoryExecutionCancelTestCase = ()=> {
+    it('should add new entry to history, add cancellation message to Messages tab and clear the result grid', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.update_msg_history)
+          .toHaveBeenCalledWith(
+            false,
+            'Execution Cancelled!',
+            true
+          );
+        done();
+      }, 0);
+    });
+  };
+
+  let shouldResetLastQueryInformationTestCase = ()=> {
+    it('should reset last query information', (done) => {
+      setTimeout(
+        () => {
+          expect(sqlEditorMock.resetQueryHistoryObject)
+            .toHaveBeenCalledWith(sqlEditorMock);
+          done();
+        }, 0);
+    });
+  };
+
+  let shouldNotAddNewEntryTestCase = ()=> {
+    it('should not add new entry to history and update the Messages tab', (done) => {
+      updateHistoryNotCalled(done);
+    });
+  };
+
+  let shouldNotHighlightErrorTestCase = ()=>{
+    it('should not highlight the error in the SQL panel', (done) => {
+      setTimeout(
+        () => {
+          expect(sqlEditorMock._highlight_error).not
+            .toHaveBeenCalled();
+          done();
+        }, 0);
+    });
+  };
+
+  let shouldHighlightErrorTestCase = (msg)=>{
+    it('should highlight the error in the SQL panel', (done) => {
+      setTimeout(
+        () => {
+          expect(sqlEditorMock._highlight_error)
+            .toHaveBeenCalledWith(msg);
+          done();
+        }, 0);
+    });
+  };
+
+  let shouldLoginNotDisplayedTestCase = ()=>{
+    it('should login is not displayed', (done) => {
+      pgaLoginNotCalled(done);
+    });
+  };
+
+  let shouldNotDisplayPGALoginTestCase = ()=>{
+    it('should not display pga login', (done) => {
+      pgaLoginNotCalled(done);
+    });
+  };
+
+  let shouldLoginDisplayedTestCase = ()=>{
+    it('should login is displayed', (done) => {
+      setTimeout(
+        () => {
+          expect(userManagementMock.pgaLogin)
+            .toHaveBeenCalled();
+          done();
+        }, 0);
+    });
+  };
+
+  let addNewEntryToHistoryUpdateMsgTestCase = (msg)=> {
+    it('should add new entry to history and update the Messages tab', (done) => {
+      setTimeout(
+        () => {
+          expect(sqlEditorMock.update_msg_history)
+            .toHaveBeenCalledWith(false, msg);
+          done();
+        }, 0);
+    });
+  };
+
+  let shouldNotSaveStateTestCase = ()=>{
+    it('should not save the state', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.saveState).not.toHaveBeenCalled();
+        done();
+      }, 0);
+    });
+  };
+
+  let shouldSaveStateTestCase = ()=> {
+    it('should save the state', (done) => {
+      setTimeout(() => {
+        expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
+          'check_data_changes_to_execute_query',
+          ['']
+        );
+        done();
+      }, 0);
+    });
+  };
+
+  let shouldDisableCancelButtonTestCase = ()=> {
+    it('should disable the cancel button', (done) => {
+      cancelButtonNotCalled(done);
+    });
+  };
+
+  let whenQueryIsStillRunningTestCases = ()=> {
+    describe('when query is still running', () => {
+      context('when no additional information is returned', () => {
+        beforeEach(() => {
+          let response = {
+            data: {status: 'Busy'},
+          };
+
+          networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+          executeQuery.poll();
+        });
+
+        setFlagQueryIsRunningTestCase();
+        shouldNotUpdateHistoryMessageTestCase();
+        callPoolingTestCase();
+      });
+
+      context('when additional information is returned', () => {
+        beforeEach(() => {
+          let response = {
+            data: {
+              status: 'Busy',
+              result: 'Some important result',
+            },
+          };
+
+          networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+          executeQuery.poll();
+        });
+
+        setFlagQueryIsRunningTestCase();
+        updateHistoryMessageTestCase();
+        callPoolingTestCase();
+      });
+    });
+  };
+
+  let whenQueryWasCancelledTestCases = ()=> {
+    describe('when query was cancelled', () => {
+      beforeEach(() => {
+        let response = {
+          data: {status: 'Cancel'},
+        };
+        networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+
+        executeQuery.poll();
+      });
+
+      shouldHideLoadingIconTestCase();
+      addNewEntryToHistoryExecutionCancelTestCase();
+    });
+  };
+
   describe('#poll', () => {
-    let cancelButtonSpy;
     let response;
 
     beforeEach(() => {
@@ -65,7 +360,6 @@ describe('ExecuteQuery', () => {
         return 0;
       };
 
-      cancelButtonSpy = spyOn($.fn, 'prop');
       executeQuery.delayedPoll = jasmine.createSpy('ExecuteQuery.delayedPoll');
     });
 
@@ -85,16 +379,7 @@ describe('ExecuteQuery', () => {
             executeQuery.poll();
           });
 
-          it('should update the loading icon message', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith(
-                  'pgadmin-sqleditor:loading-icon:message',
-                  'Loading data from the database server and rendering...'
-                );
-              done();
-            }, 0);
-          });
+          shouldUpdateLoadingIconMessageTestCase();
 
           it('should render the results', (done) => {
             setTimeout(() => {
@@ -153,154 +438,17 @@ describe('ExecuteQuery', () => {
           });
         });
 
-        describe('when query is still running', () => {
-          context('when no additional information is returned', () => {
-            beforeEach(() => {
-              response = {
-                data: {status: 'Busy'},
-              };
-
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
-              executeQuery.poll();
-            });
-
-            it('should set the flag to inform SQLEditor a query is running', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.setIsQueryRunning)
-                  .toHaveBeenCalledWith(true);
-                done();
-              }, 0);
-            });
-
-            it('should does not update history', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.update_msg_history).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-            });
-
-            it('should recursively call polling', (done) => {
-              setTimeout(() => {
-                expect(executeQuery.delayedPoll)
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-            });
-          });
-
-          context('when additional information is returned', () => {
-            beforeEach(() => {
-              response = {
-                data: {
-                  status: 'Busy',
-                  result: 'Some important result',
-                },
-              };
-
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
-              executeQuery.poll();
-            });
-
-            it('should set the flag to inform SQLEditor a query is running', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.setIsQueryRunning)
-                  .toHaveBeenCalledWith(true);
-                done();
-              }, 0);
-            });
-
-            it('should update history message', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.update_msg_history)
-                  .toHaveBeenCalledWith('Busy', 'Some important result', false);
-                done();
-              }, 0);
-            });
-
-            it('should recursively call polling', (done) => {
-              setTimeout(() => {
-                expect(executeQuery.delayedPoll)
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-            });
-          });
-        });
+        whenQueryIsStillRunningTestCases();
 
         describe('when the application lost connection with the database', () => {
-          beforeEach(() => {
-            response = {
-              data: {
-                status: 'NotConnected',
-                result: 'Some interesting result',
-              },
-            };
-            networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+          beforeEach(beforeEachNotConnected);
 
-            executeQuery.poll();
-          });
-
-          it('should hide the loading icon', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-              done();
-            }, 0);
-          });
-
-          it('should add new entry to history and update the Messages tab and clear the result grid', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.update_msg_history)
-                .toHaveBeenCalledWith(
-                  false,
-                  'Some interesting result',
-                  true
-                );
-              done();
-            }, 0);
-          });
-
-          it('should enable the tool buttons', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.disable_tool_buttons)
-                  .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          addNewEntryToHistoryTestCase();
+          shouldEnableToolsButtonTestCase();
         });
 
-        describe('when query was cancelled', () => {
-          beforeEach(() => {
-            response = {
-              data: {status: 'Cancel'},
-            };
-            networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
-
-            executeQuery.poll();
-          });
-
-          it('should hide the loading icon', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-              done();
-            }, 0);
-          });
-
-          it('should add new entry to history, add cancellation message to Messages tab and clear the result grid', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.update_msg_history)
-                .toHaveBeenCalledWith(
-                  false,
-                  'Execution Cancelled!',
-                  true
-                );
-              done();
-            }, 0);
-          });
-        });
+        whenQueryWasCancelledTestCases();
       });
 
       describe('when an error occur', () => {
@@ -320,59 +468,12 @@ describe('ExecuteQuery', () => {
                 executeQuery.poll();
               });
 
-              it('should hide the loading icon', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.trigger)
-                      .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                    done();
-                  }, 0);
-              });
-
-              it('should reset last query information', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.resetQueryHistoryObject)
-                      .toHaveBeenCalledWith(sqlEditorMock);
-                    done();
-                  }, 0);
-              });
-
-              it('should highlight the error in the SQL panel', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock._highlight_error)
-                      .toHaveBeenCalledWith('Some error in JSON');
-                    done();
-                  }, 0);
-              });
-
-              it('should add new entry to history and update the Messages tab', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.update_msg_history)
-                      .toHaveBeenCalledWith(false, 'Some error in JSON');
-                    done();
-                  }, 0);
-              });
-
-              it('should enable the tool buttons', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.disable_tool_buttons)
-                      .toHaveBeenCalledWith(false);
-                    done();
-                  }, 0);
-              });
-
-              it('should not login is displayed', (done) => {
-                setTimeout(
-                  () => {
-                    expect(userManagementMock.pgaLogin).not
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
+              shouldHideLoadingIconTestCase();
+              shouldResetLastQueryInformationTestCase();
+              shouldHighlightErrorTestCase('Some error in JSON');
+              addNewEntryToHistoryUpdateMsgTestCase('Some error in JSON');
+              shouldEnableToolsButtonTestCase();
+              shouldLoginNotDisplayedTestCase();
             });
 
             describe('when login is required', () => {
@@ -384,59 +485,12 @@ describe('ExecuteQuery', () => {
                 executeQuery.poll();
               });
 
-              it('should hide the loading icon', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.trigger)
-                      .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                    done();
-                  }, 0);
-              });
-
-              it('should reset last query information', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.resetQueryHistoryObject)
-                      .toHaveBeenCalledWith(sqlEditorMock);
-                    done();
-                  }, 0);
-              });
-
-              it('should not highlight the error in the SQL panel', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock._highlight_error).not
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
-
-              it('should not add new entry to history and update the Messages tab', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.update_msg_history).not
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
-
-              it('should enable the tool buttons', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.disable_tool_buttons)
-                      .toHaveBeenCalledWith(false);
-                    done();
-                  }, 0);
-              });
-
-              it('should login is displayed', (done) => {
-                setTimeout(
-                  () => {
-                    expect(userManagementMock.pgaLogin)
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
+              shouldHideLoadingIconTestCase();
+              shouldResetLastQueryInformationTestCase();
+              shouldNotHighlightErrorTestCase();
+              shouldNotAddNewEntryTestCase();
+              shouldEnableToolsButtonTestCase();
+              shouldLoginDisplayedTestCase();
             });
           });
 
@@ -452,59 +506,12 @@ describe('ExecuteQuery', () => {
                 executeQuery.poll();
               });
 
-              it('should hide the loading icon', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.trigger)
-                      .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                    done();
-                  }, 0);
-              });
-
-              it('should reset last query information', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.resetQueryHistoryObject)
-                      .toHaveBeenCalledWith(sqlEditorMock);
-                    done();
-                  }, 0);
-              });
-
-              it('should highlight the error in the SQL panel', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock._highlight_error)
-                      .toHaveBeenCalledWith('Some plain text error');
-                    done();
-                  }, 0);
-              });
-
-              it('should add new entry to history and update the Messages tab', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.update_msg_history)
-                      .toHaveBeenCalledWith(false, 'Some plain text error');
-                    done();
-                  }, 0);
-              });
-
-              it('should enable the tool buttons', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.disable_tool_buttons)
-                      .toHaveBeenCalledWith(false);
-                    done();
-                  }, 0);
-              });
-
-              it('should login is not displayed', (done) => {
-                setTimeout(
-                  () => {
-                    expect(userManagementMock.pgaLogin).not
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
+              shouldHideLoadingIconTestCase();
+              shouldResetLastQueryInformationTestCase();
+              shouldHighlightErrorTestCase('Some plain text error');
+              addNewEntryToHistoryUpdateMsgTestCase('Some plain text error');
+              shouldEnableToolsButtonTestCase();
+              shouldLoginNotDisplayedTestCase();
             });
 
             describe('when login is required', () => {
@@ -518,122 +525,25 @@ describe('ExecuteQuery', () => {
                 executeQuery.poll();
               });
 
-              it('should hide the loading icon', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.trigger)
-                      .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                    done();
-                  }, 0);
-              });
+              shouldHideLoadingIconTestCase();
+              shouldResetLastQueryInformationTestCase();
+              shouldNotHighlightErrorTestCase();
+              shouldNotAddNewEntryTestCase();
+              shouldEnableToolsButtonTestCase();
+              shouldLoginDisplayedTestCase();
 
-              it('should reset last query information', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.resetQueryHistoryObject)
-                      .toHaveBeenCalledWith(sqlEditorMock);
-                    done();
-                  }, 0);
-              });
-
-              it('should not highlight the error in the SQL panel', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock._highlight_error).not
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
-
-              it('should not add new entry to history and update the Messages tab', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.update_msg_history).not
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
-
-              it('should enable the tool buttons', (done) => {
-                setTimeout(
-                  () => {
-                    expect(sqlEditorMock.disable_tool_buttons)
-                      .toHaveBeenCalledWith(false);
-                    done();
-                  }, 0);
-              });
-
-              it('should login is displayed', (done) => {
-                setTimeout(
-                  () => {
-                    expect(userManagementMock.pgaLogin)
-                      .toHaveBeenCalled();
-                    done();
-                  }, 0);
-              });
             });
           });
 
           describe('when cannot reach the Python Server', () => {
-            beforeEach(() => {
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(404, undefined);
+            beforeEach(beforeEachPythonServer);
 
-              executeQuery.poll();
-            });
-
-            it('should hide the loading icon', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.trigger)
-                    .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                  done();
-                }, 0);
-            });
-
-            it('should reset last query information', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.resetQueryHistoryObject)
-                    .toHaveBeenCalledWith(sqlEditorMock);
-                  done();
-                }, 0);
-            });
-
-            it('should not highlight the error in the SQL panel', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock._highlight_error).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
-            });
-
-            it('should add new entry to history and update the Messages tab', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.update_msg_history)
-                    .toHaveBeenCalledWith(false, 'Not connected to the server or the connection to the server has been closed.');
-                  done();
-                }, 0);
-            });
-
-            it('should enable the tool buttons', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.disable_tool_buttons)
-                    .toHaveBeenCalledWith(false);
-                  done();
-                }, 0);
-            });
-
-            it('should login is not displayed', (done) => {
-              setTimeout(
-                () => {
-                  expect(userManagementMock.pgaLogin).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
-            });
+            shouldHideLoadingIconTestCase();
+            shouldResetLastQueryInformationTestCase();
+            shouldNotHighlightErrorTestCase();
+            addNewEntryToHistoryUpdateMsgTestCase('Not connected to the server or the connection to the server has been closed.');
+            shouldEnableToolsButtonTestCase();
+            shouldLoginNotDisplayedTestCase();
           });
         });
       });
@@ -655,16 +565,7 @@ describe('ExecuteQuery', () => {
             executeQuery.poll();
           });
 
-          it('should update the loading icon message', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith(
-                  'pgadmin-sqleditor:loading-icon:message',
-                  'Loading data from the database server and rendering...'
-                );
-              done();
-            }, 0);
-          });
+          shouldUpdateLoadingIconMessageTestCase();
 
           it('should render the results', (done) => {
             setTimeout(() => {
@@ -675,163 +576,24 @@ describe('ExecuteQuery', () => {
           });
         });
 
-        describe('when query is still running', () => {
-          context('when no additional information is returned', () => {
-            beforeEach(() => {
-              response = {
-                data: {status: 'Busy'},
-              };
-
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
-              executeQuery.poll();
-            });
-
-            it('should set the flag to inform SQLEditor a query is running', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.setIsQueryRunning)
-                  .toHaveBeenCalledWith(true);
-                done();
-              }, 0);
-            });
-
-            it('should does not update history', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.update_msg_history).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-            });
-
-            it('should recursively call polling', (done) => {
-              setTimeout(() => {
-                expect(executeQuery.delayedPoll)
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-            });
-          });
-
-          context('when additional information is returned', () => {
-            beforeEach(() => {
-              response = {
-                data: {
-                  status: 'Busy',
-                  result: 'Some important result',
-                },
-              };
-
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
-              executeQuery.poll();
-            });
-
-            it('should set the flag to inform SQLEditor a query is running', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.setIsQueryRunning)
-                  .toHaveBeenCalledWith(true);
-                done();
-              }, 0);
-            });
-
-            it('should update history message', (done) => {
-              setTimeout(() => {
-                expect(sqlEditorMock.update_msg_history)
-                  .toHaveBeenCalledWith('Busy', 'Some important result', false);
-                done();
-              }, 0);
-            });
-
-            it('should recursively call polling', (done) => {
-              setTimeout(() => {
-                expect(executeQuery.delayedPoll)
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-            });
-          });
-        });
+        whenQueryIsStillRunningTestCases();
 
         describe('when the application lost connection with the database', () => {
-          beforeEach(() => {
-            response = {
-              data: {
-                status: 'NotConnected',
-                result: 'Some interesting result',
-              },
-            };
-            networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
+          beforeEach(beforeEachNotConnected);
 
-            executeQuery.poll();
-          });
-
-          it('should hide the loading icon', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-              done();
-            }, 0);
-          });
-
-          it('should add new entry to history and update the Messages tab and clear the result grid', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.update_msg_history)
-                .toHaveBeenCalledWith(
-                  false,
-                  'Some interesting result',
-                  true
-                );
-              done();
-            }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          addNewEntryToHistoryTestCase();
 
           it('should NOT enable the tool buttons', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.disable_tool_buttons).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
+            disableToolButtonsNotCalled(done);
           });
 
           it('should NOT disable the cancel button', (done) => {
-            setTimeout(
-              () => {
-                expect(cancelButtonSpy).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
+            cancelButtonNotCalled(done);
           });
         });
 
-        describe('when query was cancelled', () => {
-          beforeEach(() => {
-            response = {
-              data: {status: 'Cancel'},
-            };
-            networkMock.onGet('/sqleditor/query_tool/poll/123').reply(200, response);
-
-            executeQuery.poll();
-          });
-
-          it('should hide the loading icon', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-              done();
-            }, 0);
-          });
-
-          it('should add new entry to history, add cancellation message to Messages tab and clear the result grid', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.update_msg_history)
-                .toHaveBeenCalledWith(
-                  false,
-                  'Execution Cancelled!',
-                  true
-                );
-              done();
-            }, 0);
-          });
-        });
+        whenQueryWasCancelledTestCases();
       });
 
       describe('when an error occur', () => {
@@ -850,59 +612,16 @@ describe('ExecuteQuery', () => {
               executeQuery.poll();
             });
 
-            it('should hide the loading icon', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.trigger)
-                    .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                  done();
-                }, 0);
-            });
-
-            it('should reset last query information', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.resetQueryHistoryObject)
-                    .toHaveBeenCalledWith(sqlEditorMock);
-                  done();
-                }, 0);
-            });
-
-            it('should highlight the error in the SQL panel', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock._highlight_error)
-                    .toHaveBeenCalledWith('Some error in JSON');
-                  done();
-                }, 0);
-            });
-
-            it('should add new entry to history and update the Messages tab', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.update_msg_history)
-                    .toHaveBeenCalledWith(false, 'Some error in JSON');
-                  done();
-                }, 0);
-            });
+            shouldHideLoadingIconTestCase();
+            shouldResetLastQueryInformationTestCase();
+            shouldHighlightErrorTestCase('Some error in JSON');
+            addNewEntryToHistoryUpdateMsgTestCase('Some error in JSON');
 
             it('should enable the tool buttons', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.disable_tool_buttons).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
+              disableToolButtonsNotCalled(done);
             });
 
-            it('should disable the cancel button', (done) => {
-              setTimeout(
-                () => {
-                  expect(cancelButtonSpy).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
-            });
+            shouldDisableCancelButtonTestCase();
           });
           describe('when no JSON response is available', () => {
             beforeEach(() => {
@@ -912,113 +631,30 @@ describe('ExecuteQuery', () => {
               executeQuery.poll();
             });
 
-            it('should hide the loading icon', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.trigger)
-                    .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                  done();
-                }, 0);
-            });
-
-            it('should reset last query information', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.resetQueryHistoryObject)
-                    .toHaveBeenCalledWith(sqlEditorMock);
-                  done();
-                }, 0);
-            });
-
-            it('should highlight the error in the SQL panel', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock._highlight_error)
-                    .toHaveBeenCalledWith('Some plain text error');
-                  done();
-                }, 0);
-            });
-
-            it('should add new entry to history and update the Messages tab', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.update_msg_history)
-                    .toHaveBeenCalledWith(false, 'Some plain text error');
-                  done();
-                }, 0);
-            });
+            shouldHideLoadingIconTestCase();
+            shouldResetLastQueryInformationTestCase();
+            shouldHighlightErrorTestCase('Some plain text error');
+            addNewEntryToHistoryUpdateMsgTestCase('Some plain text error');
 
             it('should not enable the tool buttons', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.disable_tool_buttons).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
+              disableToolButtonsNotCalled(done);
             });
 
           });
 
           describe('when cannot reach the Python Server', () => {
-            beforeEach(() => {
-              networkMock.onGet('/sqleditor/query_tool/poll/123').reply(404, undefined);
+            beforeEach(beforeEachPythonServer);
 
-              executeQuery.poll();
-            });
-
-            it('should hide the loading icon', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.trigger)
-                    .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                  done();
-                }, 0);
-            });
-
-            it('should reset last query information', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.resetQueryHistoryObject)
-                    .toHaveBeenCalledWith(sqlEditorMock);
-                  done();
-                }, 0);
-            });
-
-            it('should not highlight the error in the SQL panel', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock._highlight_error).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
-            });
-
-            it('should add new entry to history and update the Messages tab', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.update_msg_history)
-                    .toHaveBeenCalledWith(false, 'Not connected to the server or the connection to the server has been closed.');
-                  done();
-                }, 0);
-            });
+            shouldHideLoadingIconTestCase();
+            shouldResetLastQueryInformationTestCase();
+            shouldNotHighlightErrorTestCase();
+            addNewEntryToHistoryUpdateMsgTestCase('Not connected to the server or the connection to the server has been closed.');
 
             it('should enable the tool buttons', (done) => {
-              setTimeout(
-                () => {
-                  expect(sqlEditorMock.disable_tool_buttons).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
+              disableToolButtonsNotCalled(done);
             });
 
-            it('should disable the cancel button', (done) => {
-              setTimeout(
-                () => {
-                  expect(cancelButtonSpy).not
-                    .toHaveBeenCalled();
-                  done();
-                }, 0);
-            });
+            shouldDisableCancelButtonTestCase();
           });
         });
       });
@@ -1223,19 +859,8 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '');
           });
 
-          it('hide the loading screen', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.trigger).toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-              done();
-            }, 0);
-          });
-
-          it('enable the query tool buttons', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.disable_tool_buttons).toHaveBeenCalledWith(false);
-              done();
-            }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          shouldEnableToolsButtonTestCase();
 
           it('update the history tab with the result message', (done) => {
             setTimeout(() => {
@@ -1304,41 +929,10 @@ describe('ExecuteQuery', () => {
           executeQuery.execute('some sql query', '');
         });
 
-        it('should hide the loading icon', (done) => {
-          setTimeout(
-            () => {
-              expect(sqlEditorMock.trigger)
-                .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-              done();
-            }, 0);
-        });
-
-        it('should not highlight the error in the SQL panel', (done) => {
-          setTimeout(
-            () => {
-              expect(sqlEditorMock._highlight_error).not
-                .toHaveBeenCalled();
-              done();
-            }, 0);
-        });
-
-        it('should add new entry to history and update the Messages tab', (done) => {
-          setTimeout(
-            () => {
-              expect(sqlEditorMock.update_msg_history)
-                .toHaveBeenCalledWith(false, 'Not connected to the server or the connection to the server has been closed.');
-              done();
-            }, 0);
-        });
-
-        it('should enable the tool buttons', (done) => {
-          setTimeout(
-            () => {
-              expect(sqlEditorMock.disable_tool_buttons)
-                .toHaveBeenCalledWith(false);
-              done();
-            }, 0);
-        });
+        shouldHideLoadingIconTestCase();
+        shouldNotHighlightErrorTestCase();
+        addNewEntryToHistoryUpdateMsgTestCase('Not connected to the server or the connection to the server has been closed.');
+        shouldEnableToolsButtonTestCase();
       });
 
       describe('when error is returned by the server', () => {
@@ -1352,55 +946,12 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '');
           });
 
-          it('should hide the loading icon', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.trigger)
-                  .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                done();
-              }, 0);
-          });
-
-          it('should not highlight the error in the SQL panel', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock._highlight_error).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-          });
-
-          it('should add new entry to history and update the Messages tab', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.update_msg_history)
-                  .toHaveBeenCalledWith(false, 'some error message');
-                done();
-              }, 0);
-          });
-
-          it('should enable the tool buttons', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.disable_tool_buttons)
-                  .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should not save the state', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.saveState).not.toHaveBeenCalled();
-              done();
-            }, 0);
-          });
-
-          it('should not display pga login', (done) => {
-            setTimeout(() => {
-              expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
-              done();
-            }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          shouldNotHighlightErrorTestCase();
+          addNewEntryToHistoryUpdateMsgTestCase('some error message');
+          shouldEnableToolsButtonTestCase();
+          shouldNotSaveStateTestCase();
+          shouldNotDisplayPGALoginTestCase();
         });
         describe('when login is required', () => {
           beforeEach(() => {
@@ -1412,58 +963,12 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '');
           });
 
-          it('should hide the loading icon', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.trigger)
-                  .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                done();
-              }, 0);
-          });
-
-          it('should not highlight the error in the SQL panel', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock._highlight_error).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-          });
-
-          it('should add new entry to history and update the Messages tab', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.update_msg_history)
-                  .toHaveBeenCalledWith(false, 'some error message');
-                done();
-              }, 0);
-          });
-
-          it('should enable the tool buttons', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.disable_tool_buttons)
-                  .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should save the state', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
-                'check_data_changes_to_execute_query',
-                ['']
-              );
-              done();
-            }, 0);
-          });
-
-          it('should display pga login', (done) => {
-            setTimeout(() => {
-              expect(userManagementMock.pgaLogin).toHaveBeenCalled();
-              done();
-            }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          shouldNotHighlightErrorTestCase();
+          addNewEntryToHistoryUpdateMsgTestCase('some error message');
+          shouldEnableToolsButtonTestCase();
+          shouldSaveStateTestCase();
+          shouldLoginDisplayedTestCase();
         });
         describe('when a new transaction is not required', () => {
           beforeEach(() => {
@@ -1475,55 +980,12 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '');
           });
 
-          it('should hide the loading icon', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.trigger)
-                  .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                done();
-              }, 0);
-          });
-
-          it('should not highlight the error in the SQL panel', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock._highlight_error).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-          });
-
-          it('should add new entry to history and update the Messages tab', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.update_msg_history)
-                  .toHaveBeenCalledWith(false, 'some error message');
-                done();
-              }, 0);
-          });
-
-          it('should enable the tool buttons', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.disable_tool_buttons)
-                  .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should not save the state', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.saveState).not.toHaveBeenCalled();
-              done();
-            }, 0);
-          });
-
-          it('should not display pga login', (done) => {
-            setTimeout(() => {
-              expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
-              done();
-            }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          shouldNotHighlightErrorTestCase();
+          addNewEntryToHistoryUpdateMsgTestCase('some error message');
+          shouldEnableToolsButtonTestCase();
+          shouldNotSaveStateTestCase();
+          shouldNotDisplayPGALoginTestCase();
 
           it('should not initialize a new transaction', (done) => {
             setTimeout(() => {
@@ -1542,58 +1004,12 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '');
           });
 
-          it('should hide the loading icon', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.trigger)
-                  .toHaveBeenCalledWith('pgadmin-sqleditor:loading-icon:hide');
-                done();
-              }, 0);
-          });
-
-          it('should not highlight the error in the SQL panel', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock._highlight_error).not
-                  .toHaveBeenCalled();
-                done();
-              }, 0);
-          });
-
-          it('should add new entry to history and update the Messages tab', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.update_msg_history)
-                  .toHaveBeenCalledWith(false, 'some error message');
-                done();
-              }, 0);
-          });
-
-          it('should enable the tool buttons', (done) => {
-            setTimeout(
-              () => {
-                expect(sqlEditorMock.disable_tool_buttons)
-                  .toHaveBeenCalledWith(false);
-                done();
-              }, 0);
-          });
-
-          it('should save the state', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
-                'check_data_changes_to_execute_query',
-                ['']
-              );
-              done();
-            }, 0);
-          });
-
-          it('should not display pga login', (done) => {
-            setTimeout(() => {
-              expect(userManagementMock.pgaLogin).not.toHaveBeenCalled();
-              done();
-            }, 0);
-          });
+          shouldHideLoadingIconTestCase();
+          shouldNotHighlightErrorTestCase();
+          addNewEntryToHistoryUpdateMsgTestCase('some error message');
+          shouldEnableToolsButtonTestCase();
+          shouldSaveStateTestCase();
+          shouldNotDisplayPGALoginTestCase();
 
           it('should initialize a new transaction', (done) => {
             setTimeout(() => {
@@ -1611,15 +1027,7 @@ describe('ExecuteQuery', () => {
             executeQuery.execute('some sql query', '');
           });
 
-          it('saves state', (done) => {
-            setTimeout(() => {
-              expect(sqlEditorMock.saveState).toHaveBeenCalledWith(
-                'check_data_changes_to_execute_query',
-                ['']
-              );
-              done();
-            }, 0);
-          });
+          shouldSaveStateTestCase();
 
           it('calls handle_connection_lost', (done) => {
             setTimeout(() => {

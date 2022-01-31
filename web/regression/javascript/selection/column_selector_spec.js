@@ -132,11 +132,16 @@ describe('ColumnSelector', function () {
       $('body').find(container).remove();
     });
 
+    let selectColumnAction = ()=> {
+      container.find('.slick-header-column:contains(some-column-name)').click();
+
+      var selectedRanges = cellSelectionModel.getSelectedRanges();
+      expectOnlyTheFirstColumnToBeSelected(selectedRanges);
+    };
+
     describe('when the user clicks a column header', function () {
       it('selects the column', function () {
-        container.find('.slick-header-column:contains(some-column-name)').click();
-        var selectedRanges = cellSelectionModel.getSelectedRanges();
-        expectOnlyTheFirstColumnToBeSelected(selectedRanges);
+        selectColumnAction();
       });
 
       it('toggles a selected class to the header cell', function () {
@@ -287,10 +292,7 @@ describe('ColumnSelector', function () {
       });
 
       it('deselects the non-column range', function () {
-        container.find('.slick-header-column:contains(some-column-name)').click();
-
-        var selectedRanges = cellSelectionModel.getSelectedRanges();
-        expectOnlyTheFirstColumnToBeSelected(selectedRanges);
+        selectColumnAction();
       });
     });
 

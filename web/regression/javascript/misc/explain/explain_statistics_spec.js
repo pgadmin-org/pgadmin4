@@ -41,6 +41,14 @@ describe('ExplainStatistics', () => {
     });
   });
 
+  let mouseClickAction = ()=> {
+    // Trigger mouse over event
+    var clickEvent = new $.Event('click');
+    $('.pg-explain-stats-area').trigger(clickEvent);
+
+    expect(tooltipContainer.hasClass('d-none')).toBe(false);
+  };
+
   describe('JIT Statistics', () => {
     beforeEach(function() {
       $('body').append(statsDiv);
@@ -54,11 +62,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Mouse click event should be trigger', () => {
-      // Trigger mouse over event
-      var clickEvent = new $.Event('click');
-      $('.pg-explain-stats-area').trigger(clickEvent);
-
-      expect(tooltipContainer.hasClass('d-none')).toBe(false);
+      mouseClickAction();
     });
   });
 
@@ -75,11 +79,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Mouse click event should be trigger', () => {
-      // Trigger mouse over event
-      var clickEvent = new $.Event('click');
-      $('.pg-explain-stats-area').trigger(clickEvent);
-
-      expect(tooltipContainer.hasClass('d-none')).toBe(false);
+      mouseClickAction();
     });
   });
 
@@ -100,11 +100,7 @@ describe('ExplainStatistics', () => {
     });
 
     it('Mouse click event should be trigger', () => {
-      // Trigger mouse over event
-      var clickEvent = new $.Event('click');
-      $('.pg-explain-stats-area').trigger(clickEvent);
-
-      expect(tooltipContainer.hasClass('d-none')).toBe(false);
+      mouseClickAction();
     });
   });
 });

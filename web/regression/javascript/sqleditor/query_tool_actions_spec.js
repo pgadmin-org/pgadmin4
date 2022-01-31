@@ -14,6 +14,27 @@ describe('queryToolActions', () => {
     selectedQueryString, entireQueryString,
     replaceSelectionSpy;
 
+  let executeFunctionCall = ()=>{
+    queryToolActions.executeQuery(sqlEditorController);
+    expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalled();
+  };
+
+  let toggleSelectionStringUpperCase = ()=> {
+    it('toggle the selection and string should be in upper case', () => {
+      queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
+      expect(replaceSelectionSpy
+      ).toHaveBeenCalledWith('STRING');
+    });
+  };
+
+  let beforeEachEmptySelection = ()=> {
+    setUpSpies('', 'a string\nddd\nsss');
+
+    sqlEditorController.gridView.query_tool_obj.getCursor = () => {
+      return 3;
+    };
+  };
+
   describe('executeQuery', () => {
     describe('when the command is being run from the query tool', () => {
       beforeEach(() => {
@@ -27,11 +48,7 @@ describe('queryToolActions', () => {
         expect(queryToolActions._clearMessageTab).toHaveBeenCalled();
       });
 
-      it('calls the execute function on the sqlEditorController', () => {
-        queryToolActions.executeQuery(sqlEditorController);
-
-        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalled();
-      });
+      it('calls the execute function on the sqlEditorController', executeFunctionCall);
     });
     describe('when the command is being run from the view data view', () => {
       beforeEach(() => {
@@ -39,11 +56,7 @@ describe('queryToolActions', () => {
         sqlEditorController.is_query_tool = false;
       });
 
-      it('it calls the check_data_changes_to_execute_query function on the sqlEditorController', () => {
-        queryToolActions.executeQuery(sqlEditorController);
-
-        expect(sqlEditorController.check_data_changes_to_execute_query).toHaveBeenCalled();
-      });
+      it('it calls the check_data_changes_to_execute_query function on the sqlEditorController', executeFunctionCall);
     });
   });
 
@@ -279,29 +292,34 @@ describe('queryToolActions', () => {
     });
 
     describe('when the table was opened through the queryTool', () => {
-      describe('when the query tool object has a selection', () => {
-        let time;
+      let time;
+      let spyCall = ()=> {
+        time = 'rightNow';
+        spyOn(window, 'Date').and.callFake(() => ({
+          getTime: () => {
+            return time;
+          },
+        }));
+      };
 
+      let callCSVDownload = ()=> {
+        let filename = 'data-' + time + '.csv';
+
+        queryToolActions.download(sqlEditorController);
+
+        expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(filename);
+      };
+
+      describe('when the query tool object has a selection', () => {
         beforeEach(() => {
           entireQueryString = 'include some more of that yummy string cheese;';
           selectedQueryString = 'some silly string cheese';
           setUpSpies(selectedQueryString, entireQueryString);
 
-          time = 'rightNow';
-          spyOn(window, 'Date').and.callFake(() => ({
-            getTime: () => {
-              return time;
-            },
-          }));
+          spyCall();
         });
 
-        it('calls trigger_csv_download with filename having .csv extension', () => {
-          let filename = 'data-' + time + '.csv';
-
-          queryToolActions.download(sqlEditorController);
-
-          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(filename);
-        });
+        it('calls trigger_csv_download with filename having .csv extension', callCSVDownload);
 
         it('calls trigger_csv_download filename having .txt extension', () => {
           sqlEditorController.preferences.csv_field_separator = ';';
@@ -314,29 +332,14 @@ describe('queryToolActions', () => {
       });
 
       describe('when there is no selection', () => {
-        let time;
-
         beforeEach(() => {
           selectedQueryString = '';
           entireQueryString = 'include some more of that yummy string cheese;';
-
           setUpSpies(selectedQueryString, entireQueryString);
-
-          time = 'rightNow';
-          spyOn(window, 'Date').and.callFake(() => ({
-            getTime: () => {
-              return time;
-            },
-          }));
+          spyCall();
         });
 
-        it('calls trigger_csv_download with filename', () => {
-          let filename = 'data-' + time + '.csv';
-
-          queryToolActions.download(sqlEditorController);
-
-          expect(sqlEditorController.trigger_csv_download).toHaveBeenCalledWith(filename);
-        });
+        it('calls trigger_csv_download with filename', callCSVDownload);
       });
     });
 
@@ -369,13 +372,7 @@ describe('queryToolActions', () => {
     });
 
     describe('when there is empty selection', () => {
-      beforeEach(() => {
-        setUpSpies('', 'a string\nddd\nsss');
-
-        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
-          return 3;
-        };
-      });
+      beforeEach(beforeEachEmptySelection);
 
       it('comments the current line', () => {
         let codeMirrorObj = sqlEditorController.gridView.query_tool_obj;
@@ -416,13 +413,7 @@ describe('queryToolActions', () => {
     });
 
     describe('when there is empty selection', () => {
-      beforeEach(() => {
-        setUpSpies('', 'a string\nddd\nsss');
-
-        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
-          return 3;
-        };
-      });
+      beforeEach(beforeEachEmptySelection);
 
       it('comments the current line', () => {
         let codeMirrorObj = sqlEditorController.gridView.query_tool_obj;
@@ -463,13 +454,7 @@ describe('queryToolActions', () => {
     });
 
     describe('when there is empty selection', () => {
-      beforeEach(() => {
-        setUpSpies('', 'a string\nddd\nsss');
-
-        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
-          return 3;
-        };
-      });
+      beforeEach(beforeEachEmptySelection);
 
       it('uncomments the current line', () => {
         let codeMirrorObj = sqlEditorController.gridView.query_tool_obj;
@@ -496,31 +481,26 @@ describe('queryToolActions', () => {
   });
 
   describe('toggleCaseOfSelectedText', () => {
+
+    let doesNothingTestCase = ()=> {
+      it('does nothing', () => {
+        expect(
+          queryToolActions.toggleCaseOfSelectedText(sqlEditorController)
+        ).not.toBeDefined();
+      });
+    };
+
     describe('when there is no query text', () => {
       beforeEach(() => {
         setUpSpies('', '');
       });
-      it('does nothing', () => {
-        expect(
-          queryToolActions.toggleCaseOfSelectedText(sqlEditorController)
-        ).not.toBeDefined();
-      });
+      doesNothingTestCase();
     });
 
     describe('when there is empty selection', () => {
-      beforeEach(() => {
-        setUpSpies('', 'a string\nddd\nsss');
+      beforeEach(beforeEachEmptySelection);
 
-        sqlEditorController.gridView.query_tool_obj.getCursor = () => {
-          return 3;
-        };
-      });
-
-      it('does nothing', () => {
-        expect(
-          queryToolActions.toggleCaseOfSelectedText(sqlEditorController)
-        ).not.toBeDefined();
-      });
+      doesNothingTestCase();
     });
 
     describe('when selected query is in lower case', () => {
@@ -528,11 +508,7 @@ describe('queryToolActions', () => {
         setUpSpies('string', 'a string\nddd\nsss');
       });
 
-      it('toggle the selection and string should be in upper case', () => {
-        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
-        expect(replaceSelectionSpy
-        ).toHaveBeenCalledWith('STRING');
-      });
+      toggleSelectionStringUpperCase();
 
       it('(negative scenario toggle the selection and string should be in upper case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
@@ -564,11 +540,7 @@ describe('queryToolActions', () => {
         setUpSpies('sTRIng', 'a string\nddd\nsss');
       });
 
-      it('toggle the selection and string should be in upper case', () => {
-        queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
-        expect(replaceSelectionSpy
-        ).toHaveBeenCalledWith('STRING');
-      });
+      toggleSelectionStringUpperCase();
 
       it('(negative scenario toggle the selection and string should be in upper case', () => {
         queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
