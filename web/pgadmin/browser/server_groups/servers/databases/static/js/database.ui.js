@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
+import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../static/js/sec_label.ui';
@@ -203,7 +204,7 @@ export default class DatabaseSchema extends BaseUISchema {
             obj.informText = undefined;
           }
 
-          if(obj.origData.schema_res != state.schema_res) {
+          if(!_.isEqual(obj.origData.schema_res, state.schema_res)) {
             obj.informText = gettext(
               'Please refresh the Schemas node to make changes to the schema restriction take effect.'
             );

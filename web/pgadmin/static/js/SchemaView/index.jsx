@@ -38,6 +38,7 @@ import FieldSetView from './FieldSetView';
 import DataGridView from './DataGridView';
 import { useIsMounted } from '../custom_hooks';
 import Notify from '../helpers/Notifier';
+import ErrorBoundary from '../helpers/ErrorBoundary';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -947,13 +948,17 @@ export default function SchemaView({formType, ...props}) {
   if(formType === 'tab') {
     return (
       <Theme>
-        <SchemaPropertiesView {...props}/>
+        <ErrorBoundary>
+          <SchemaPropertiesView {...props}/>
+        </ErrorBoundary>
       </Theme>
     );
   }
   return (
     <Theme>
-      <SchemaDialogView {...props}/>
+      <ErrorBoundary>
+        <SchemaDialogView {...props}/>
+      </ErrorBoundary>
     </Theme>
   );
 }

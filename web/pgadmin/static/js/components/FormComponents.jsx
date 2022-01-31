@@ -767,7 +767,8 @@ export function InputSelect({
           } else {
             selectedVal = _.find(flatRes, (o)=>o.selected)?.value;
           }
-          if(!_.isUndefined(selectedVal)) {
+
+          if((!_.isUndefined(selectedVal) && !_.isArray(selectedVal)) || (_.isArray(selectedVal) && selectedVal.length != 0)) {
             onChange && onChange(selectedVal);
           }
           setFinalOptions([res || [], false]);
