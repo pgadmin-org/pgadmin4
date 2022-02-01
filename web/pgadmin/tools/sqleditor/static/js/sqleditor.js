@@ -2372,16 +2372,14 @@ define('tools.querytool', [
         pgWindow.default.pgAdmin && pgWindow.default.pgAdmin.Browser
             && pgWindow.default.pgAdmin.Browser.preference_version() <= 0) {
 
-      Notify.alert()
-        .setting({
-          'title': gettext('Connection lost'),
-          'label':gettext('Close'),
-          'message': gettext('The pgAdmin browser window has been closed and the connection to the server is lost. Please close this window and open a new pgAdmin session.'),
-          'onok': function(){
-            //Close the window after connection is lost
-            window.close();
-          },
-        }).show();
+      Notify.alert(gettext('Connection lost'),
+        gettext('The pgAdmin browser window has been closed and the connection to the server is lost. Please close this window and open a new pgAdmin session.'),
+        function(){
+          //Close the window after connection is lost
+          window.close();
+        },
+        gettext('Close')
+      );
     }
   };
 

@@ -556,8 +556,6 @@ define('pgadmin.browser', [
             'the original/corrupt file using a tool such as DB Browser for SQLite if desired.'+
             '<br><br>Original file: ' + res.data + '<br>Replacement file: ' +
             res.data.substring(0, res.data.length - 14),
-            function() { /*This is intentional (SonarQube)*/
-            }
           );
         }
       }).fail(function(xhr, status, error) {

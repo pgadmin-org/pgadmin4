@@ -48,15 +48,13 @@ define(
         text += '</div>';
         Notify.alert(
           _.unescape(title),
-          text
-        )
-          .set({'closable': true,
-            'onok': function() {
-              if(callback) {
-                callback();
-              }
-            },
-          });
+          text,
+          function() {
+            if(callback) {
+              callback();
+            }
+          }
+        );
       },
     });
 

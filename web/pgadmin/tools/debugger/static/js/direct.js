@@ -449,7 +449,7 @@ define([
                   );
                 }
               })
-              .fail(self.raisePollingError());
+              .fail(self.raisePollingError);
           }, poll_timeout);
 
       },
@@ -623,7 +623,7 @@ define([
                   pgTools.DirectDebug.is_polling_required = false;
                 }
               })
-              .fail(self.raisePollingError());
+              .fail(self.raisePollingError);
           }, poll_end_timeout);
 
       },
@@ -682,7 +682,7 @@ define([
                     self.poll_end_execution_result(trans_id);
                   }
                 })
-                .fail(self.raisePollingError());
+                .fail(self.raisePollingError);
             }
           })
           .fail(function(xhr) {

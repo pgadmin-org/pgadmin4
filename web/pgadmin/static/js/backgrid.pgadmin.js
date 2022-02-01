@@ -453,10 +453,7 @@ define([
           );
         }
       } else {
-        Notify.alert(gettext('Edit object'), gettext('This object is not user editable.'),
-          function() {
-            return true;
-          });
+        Notify.alert(gettext('Edit object'), gettext('This object is not user editable.'));
       }
     },
     render: function() {
@@ -548,11 +545,7 @@ define([
           }
         );
       } else {
-        Notify.alert(gettext('Delete object'), gettext('This object cannot be deleted.'),
-          function() {
-            return true;
-          }
-        );
+        Notify.alert(gettext('Delete object'), gettext('This object cannot be deleted.'));
       }
     },
     exitEditMode: function() {

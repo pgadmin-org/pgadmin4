@@ -116,10 +116,14 @@ export default class SchemaDiffUI {
 
   raise_error_on_fail(alert_title, xhr) {
     try {
-      var err = JSON.parse(xhr.responseText);
-      Notify.alert(alert_title, err.errormsg);
+      if (_.isUndefined(xhr.responseText)) {
+        Notify.alert(alert_title, gettext('Unable to get the response text.'));
+      } else {
+        var err = JSON.parse(xhr.responseText);
+        Notify.alert(alert_title, err.errormsg);
+      }
     } catch (e) {
-      Notify.alert(alert_title, e.statusText);
+      Notify.alert(alert_title, gettext(e.message));
     }
   }
 
