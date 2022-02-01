@@ -63,7 +63,7 @@ define([
     callback_storage_manager: function (path) {
 
       var params = {
-        supported_types: ['sql', 'csv', '*'],
+        supported_types: ['sql', 'csv', 'json', '*'],
         dialog_type: 'storage_dialog',
         dialog_title: 'Storage Manager',
         btn_primary: undefined,
