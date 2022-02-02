@@ -559,10 +559,10 @@ InputToggle.propTypes = {
 };
 
 export function FormInputToggle({hasError, required, label,
-  className, helpMessage, testcid, ...props}) {
+  className, helpMessage, testcid, inputRef, ...props}) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputToggle ref={props.inputRef} {...props}/>
+      <InputToggle ref={inputRef} {...props}/>
     </FormInput>
   );
 }

@@ -14,6 +14,7 @@ const CustomPropTypes = {
   ref: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
+    PropTypes.object
   ]),
 
   schemaUI: PropTypes.instanceOf(BaseUISchema),

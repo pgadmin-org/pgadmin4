@@ -150,7 +150,7 @@ export default function FormView({
   let tabsClassname = {};
   const [tabValue, setTabValue] = useState(0);
   const classes = useStyles();
-  const firstEleSet = useRef();
+  const firstEleID = useRef();
   const formRef = useRef();
   const onScreenTracker = useRef(false);
   const depListener = useContext(DepListenerContext);
@@ -201,8 +201,6 @@ export default function FormView({
   }, [stateUtils.formResetKey]);
 
   let fullTabs = [];
-  // To check if the first element ref is set.
-  firstEleSet.current = false;
 
   /* Prepare the array of components based on the types */
   schemaRef.current.fields.forEach((field)=>{
@@ -287,13 +285,15 @@ export default function FormView({
         }
 
         const id = field.id || `control${tabs[group].length}`;
-
+        if(visible && !disabled && !firstEleID.current) {
+          firstEleID.current = field.id;
+        }
+        
         tabs[group].push(
           useMemo(()=><MappedFormControl
             inputRef={(ele)=>{
-              if(!firstEleSet.current && ele) {
+              if(firstEleRef && firstEleID.current === field.id) {
                 firstEleRef.current = ele;
-                firstEleSet.current = true;
               }
             }}
             state={value}
