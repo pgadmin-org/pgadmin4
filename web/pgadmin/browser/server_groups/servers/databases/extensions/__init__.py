@@ -120,6 +120,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         'children': [{'get': 'children'}]
     })
 
+    keys_to_ignore = ['oid', 'oid-2', 'owner']
+
     def check_precondition(f):
         """
         This function will behave as a decorator which will checks

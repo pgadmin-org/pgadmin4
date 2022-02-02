@@ -31,4 +31,5 @@ Bug fixes
 | `Issue #7127 <https://redmine.postgresql.org/issues/7127>`_ -  Added validation for Hostname in the server dialog.
 | `Issue #7135 <https://redmine.postgresql.org/issues/7135>`_ -  Enforce the minimum Windows version that the installer will run on.
 | `Issue #7142 <https://redmine.postgresql.org/issues/7142>`_ -  Fixed an issue where a warning message was shown after database creation/modification.
+| `Issue #7145 <https://redmine.postgresql.org/issues/7145>`_ -  Ensure that owner should be ignored while comparing extensions.
 | `Issue #7146 <https://redmine.postgresql.org/issues/7146>`_ -  Fixed event trigger comparing issue in Schema Diff tool.
