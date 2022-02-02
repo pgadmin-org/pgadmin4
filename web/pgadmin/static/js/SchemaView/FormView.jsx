@@ -150,7 +150,7 @@ export default function FormView({
   let tabsClassname = {};
   const [tabValue, setTabValue] = useState(0);
   const classes = useStyles();
-  const firstElement = useRef();
+  const firstEleSet = useRef();
   const formRef = useRef();
   const onScreenTracker = useRef(false);
   const depListener = useContext(DepListenerContext);
@@ -201,6 +201,8 @@ export default function FormView({
   }, [stateUtils.formResetKey]);
 
   let fullTabs = [];
+  // To check if the first element ref is set.
+  firstEleSet.current = false;
 
   /* Prepare the array of components based on the types */
   schemaRef.current.fields.forEach((field)=>{
@@ -289,8 +291,9 @@ export default function FormView({
         tabs[group].push(
           useMemo(()=><MappedFormControl
             inputRef={(ele)=>{
-              if(firstEleRef && !firstEleRef.current) {
+              if(!firstEleSet.current && ele) {
                 firstEleRef.current = ele;
+                firstEleSet.current = true;
               }
             }}
             state={value}
@@ -342,10 +345,6 @@ export default function FormView({
     tabsClassname[sqlTabName] = classes.fullSpace;
     fullTabs.push(sqlTabName);
   }
-
-  useEffect(()=>{
-    firstElement.current && firstElement.current.focus();
-  }, []);
 
   useEffect(()=>{
     onTabChange && onTabChange(tabValue, Object.keys(tabs)[tabValue], sqlTabActive);

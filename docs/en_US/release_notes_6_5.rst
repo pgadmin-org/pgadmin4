@@ -25,6 +25,7 @@ Bug fixes
 | `Issue #7086 <https://redmine.postgresql.org/issues/7086>`_ -  Correct documentation for 'Add named restore point'.
 | `Issue #7100 <https://redmine.postgresql.org/issues/7100>`_ -  Fixed an issue where the Browser tree gets disappears when scrolling sequences.
 | `Issue #7109 <https://redmine.postgresql.org/issues/7109>`_ -  Make the size blank for all the directories in the file select dialog.
+| `Issue #7110 <https://redmine.postgresql.org/issues/7110>`_ -  Ensure that cursor should be focused on the first options of the Utility dialogs.
 | `Issue #7118 <https://redmine.postgresql.org/issues/7118>`_ -  Ensure that JSON files should be downloaded properly from the storage manager.
 | `Issue #7123 <https://redmine.postgresql.org/issues/7123>`_ -  Fixed an issue where restore generates incorrect options for the schema.
 | `Issue #7126 <https://redmine.postgresql.org/issues/7126>`_ -  Fixed an issue where the F2 Function key removes browser panel contents.

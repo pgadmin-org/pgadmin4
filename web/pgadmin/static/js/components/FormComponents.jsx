@@ -523,7 +523,7 @@ FormInputCheckbox.propTypes = {
 };
 
 
-export function InputToggle({cid, value, onChange, options, disabled, readonly, ...props}) {
+export const InputToggle = forwardRef(({cid, value, onChange, options, disabled, readonly, ...props}, ref) => {
   return (
     <ToggleButtonGroup
       id={cid}
@@ -533,11 +533,11 @@ export function InputToggle({cid, value, onChange, options, disabled, readonly, 
       {...props}
     >
       {
-        (options||[]).map((option)=>{
+        (options||[]).map((option, i)=>{
           const isSelected = option.value === value;
           const isDisabled = disabled || option.disabled || (readonly && !isSelected);
           return (
-            <ToggleButton key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
+            <ToggleButton ref={i==0 ? ref : null} key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
               disabled={isDisabled} aria-label={option.label}>
               <CheckRoundedIcon style={{visibility: isSelected ? 'visible': 'hidden'}}/>&nbsp;{option.label}
             </ToggleButton>
@@ -546,7 +546,8 @@ export function InputToggle({cid, value, onChange, options, disabled, readonly, 
       }
     </ToggleButtonGroup>
   );
-}
+});
+InputToggle.displayName = 'InputToggle';
 InputToggle.propTypes = {
   cid: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
@@ -559,10 +560,9 @@ InputToggle.propTypes = {
 
 export function FormInputToggle({hasError, required, label,
   className, helpMessage, testcid, ...props}) {
-
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputToggle {...props}/>
+      <InputToggle ref={props.inputRef} {...props}/>
     </FormInput>
   );
 }
@@ -573,6 +573,7 @@ FormInputToggle.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  inputRef: CustomPropTypes.ref
 };
 
 /* react-select package is used for select input
@@ -739,8 +740,8 @@ function getRealValue(options, value, creatable, formatter) {
   return realValue;
 }
 
-export function InputSelect({
-  cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}) {
+export const InputSelect = forwardRef(({
+  cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}, ref) => {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 
@@ -831,14 +832,15 @@ export function InputSelect({
   };
   if(!controlProps.creatable) {
     return (
-      <Select {...commonProps}/>
+      <Select ref={ref} {...commonProps}/>
     );
   } else {
     return (
-      <CreatableSelect {...commonProps}/>
+      <CreatableSelect ref={ref} {...commonProps}/>
     );
   }
-}
+});
+InputSelect.displayName = 'InputSelect';
 InputSelect.propTypes = {
   cid: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array, PropTypes.bool]),
@@ -854,10 +856,9 @@ InputSelect.propTypes = {
 
 export function FormInputSelect({
   hasError, required, className, label, helpMessage, testcid, ...props}) {
-
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputSelect {...props}/>
+      <InputSelect ref={props.inputRef} {...props}/>
     </FormInput>
   );
 }
@@ -868,6 +869,7 @@ FormInputSelect.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  inputRef: CustomPropTypes.ref
 };
 
 /* React wrapper on color pickr */

@@ -67,12 +67,12 @@ function MappedFormControlBase({type, value, id, onChange, className, visible, i
       {...props} />;
   case 'toggle':
     return <FormInputToggle name={name} value={value}
-      onChange={onTextChange} className={className}
+      onChange={onTextChange} className={className} inputRef={inputRef}
       {...props} />;
   case 'color':
     return <FormInputColor name={name} value={value} onChange={onTextChange} className={className} {...props} />;
   case 'file':
-    return <FormInputFileSelect name={name} value={value} onChange={onTextChange} className={className} {...props} />;
+    return <FormInputFileSelect name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} />;
   case 'sql':
     return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} {...props} />;
   case 'note':
