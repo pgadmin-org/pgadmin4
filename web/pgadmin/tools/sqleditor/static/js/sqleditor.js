@@ -2707,7 +2707,7 @@ define('tools.querytool', [
           $('#btn-conn-status i').removeClass('obtaining-conn');
 
           var tree_data = pgWindow.default.pgAdmin.Browser.tree.getTreeNodeHierarchy(pgWindow.default.pgAdmin.Browser.tree.selected());
-          let conn_title = panelTitleFunc.getPanelTitle(pgWindow.default.pgAdmin.Browser, null, null, null, true, tree_data.database.label);
+          let conn_title = ` ${_.unescape(url_params.title)}`;
           self.gridView.set_editor_title(_.unescape(conn_title));
           let connection_data = {
             'server_group': self.gridView.handler.url_params.sgid,
