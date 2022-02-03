@@ -77,7 +77,7 @@ export class Tree {
   }
 
   async before(item, data) {
-    await this.tree.create(item.parent, data);
+    return Promise.resolve(await this.tree.create(item.parent, data));
   }
 
   async update(item, data) {
@@ -89,7 +89,7 @@ export class Tree {
   }
 
   async append(item, data) {
-    await this.tree.create(item, data);
+    return Promise.resolve(await this.tree.create(item, data));
   }
 
   async destroy() {

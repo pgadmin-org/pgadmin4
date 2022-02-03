@@ -174,7 +174,8 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         'fopts': [{'get': 'get_event_funcs'}, {'get': 'get_event_funcs'}]
     })
 
-    keys_to_ignore = ['oid', 'xmin', 'oid-2', 'eventfuncoid', 'schemaoid']
+    keys_to_ignore = ['oid', 'xmin', 'oid-2', 'eventfuncoid', 'schemaoid',
+                      'source']
 
     def check_precondition(f):
         """

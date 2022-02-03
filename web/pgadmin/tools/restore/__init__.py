@@ -211,10 +211,10 @@ def _connect_server(sid):
     server = get_server(sid)
 
     if server is None:
-        return make_json_response(
+        return True, make_json_response(
             success=0,
             errormsg=_("Could not find the specified server.")
-        )
+        ), None, None, None, None, None
 
     # To fetch MetaData for the server
     from pgadmin.utils.driver import get_driver
@@ -228,7 +228,7 @@ def _connect_server(sid):
         return True, make_json_response(
             success=0,
             errormsg=_("Please connect to the server first.")
-        ), driver, manager, conn, connected
+        ), driver, manager, conn, connected, server
 
     return False, '', driver, manager, conn, connected, server
 
