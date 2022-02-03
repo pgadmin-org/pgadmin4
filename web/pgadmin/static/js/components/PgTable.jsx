@@ -6,8 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-/* eslint-disable react/display-name */
-/* eslint-disable react/prop-types */
 
 import React from 'react';
 import { useTable, useRowSelect, useSortBy, useResizeColumns, useFlexLayout, useGlobalFilter } from 'react-table';
@@ -17,7 +15,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Checkbox } from '@material-ui/core';
-
+/* eslint-disable react/display-name */
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -31,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100% !important',
   },
   fixedSizeList: {
-    position: 'relative',
+    // position: 'relative',
     direction: 'ltr',
     overflowX: 'hidden !important',
     overflow: 'overlay !important'
@@ -318,6 +316,16 @@ PgTable.propTypes = {
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
   getToggleAllRowsSelectedProps: PropTypes.func,
+  columns: PropTypes.array,
+  data: PropTypes.array,
+  isSelectRow: PropTypes.bool,
+  row: PropTypes.func,
+  setSelectedRows: PropTypes.func,
+  getSelectedRows: PropTypes.func,
+  searchText: PropTypes.string,
+  type: PropTypes.string,
+  sortOptions:  PropTypes.array,
+
 };
 
 

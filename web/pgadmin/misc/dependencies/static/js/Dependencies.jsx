@@ -9,13 +9,13 @@
 
 import _ from 'lodash';
 import React, { useEffect } from 'react';
-import { generateNodeUrl } from '../../../../browser/static/js/node_ajax';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
+import { getURL } from '../../../static/utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -68,7 +68,7 @@ function parseData(data, node) {
   return data;
 }
 
-export default function Dependencies({ nodeData, node, ...props }) {
+export default function Dependencies({ nodeData, item, node, ...props }) {
   const classes = useStyles();
   const [tableData, setTableData] = React.useState([]);
 
@@ -101,13 +101,13 @@ export default function Dependencies({ nodeData, node, ...props }) {
   useEffect(() => {
     let message = gettext('Please select an object in the tree view.');
     if (node) {
-      let url = generateNodeUrl.call(
-        node,
-        props.treeNodeInfo,
-        'dependency',
+      let url = getURL(
         nodeData,
         true,
-        node.url_jump_after_node
+        props.treeNodeInfo,
+        node,
+        item,
+        'dependency'
       );
       message = gettext(
         'No dependency information is available for the selected object.'
@@ -172,4 +172,5 @@ Dependencies.propTypes = {
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,
+  item: PropTypes.object,
 };

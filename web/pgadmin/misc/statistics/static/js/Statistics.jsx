@@ -9,10 +9,6 @@
 
 import _ from 'lodash';
 import React, { useEffect } from 'react';
-import {
-  generateNodeUrl,
-  generateCollectionURL,
-} from '../../../../browser/static/js/node_ajax';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -20,6 +16,7 @@ import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import sizePrettify from 'sources/size_prettify';
+import { getURL } from '../../../static/utils/utils';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -66,6 +63,7 @@ function getColumn(data, singleLineStatistics) {
         columns.push(column);
       });
     }
+    return columns;
   } else {
     columns = [
       {
@@ -104,6 +102,7 @@ function getTableData(res, node) {
   }
   return [nodeStats, colData];
 }
+
 function createSingleLineStatistics(data, prettifyFields) {
   var row = data['rows'][0],
     columns = data['columns'],
@@ -157,19 +156,9 @@ export default function Statistics({ nodeData, item, node, ...props }) {
   useEffect(() => {
     let url,
       message = gettext('Please select an object in the tree view.');
+
     if (node) {
-      if (nodeData.is_collection) {
-        url = generateCollectionURL.call(node, item, 'stats');
-      } else {
-        url = generateNodeUrl.call(
-          node,
-          props.treeNodeInfo,
-          'stats',
-          nodeData,
-          true,
-          node.url_jump_after_node
-        );
-      }
+      url = getURL(nodeData, true, props.treeNodeInfo, node, item, 'stats');
 
       message = gettext('No statistics are available for the selected object.');
 
@@ -182,7 +171,9 @@ export default function Statistics({ nodeData, item, node, ...props }) {
           .then((res) => {
             let [nodeStats, colData] = getTableData(res, node);
             setTableData(nodeStats);
-            setColumns(colData);
+            if (!_.isUndefined(colData)) {
+              setColumns(colData);
+            }
           })
           .catch((e) => {
             Notify.alert(

@@ -168,9 +168,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             try:
                 self.page.click_tab("Dependents")
                 source_code = \
-                    self.page.find_by_xpath("//*[@id='5']/table/tbody/tr/td/"
-                                            "div/div/div[2]/table/tbody/tr/"
-                                            "td[2]").get_attribute('innerHTML')
+                    self.page.find_by_xpath(
+                        "//*[@id='5']/table/tbody/tr/td/div/div[1]/div/"
+                        "div[2]/div/div/div/div[2]").get_attribute(
+                        'innerHTML')
                 retry = 0
             except WebDriverException as e:
                 print("Exception in dependent tab {0}".format(retry),
