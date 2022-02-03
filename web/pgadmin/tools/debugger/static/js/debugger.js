@@ -521,7 +521,8 @@ define([
     */
     get_function_information: function(args, item) {
 
-      var t = pgBrowser.tree,
+      var self = this,
+        t = pgBrowser.tree,
         i = item || t.selected(),
         d = i ? t.itemData(i) : undefined,
         node = d && pgBrowser.Nodes[d._type],
