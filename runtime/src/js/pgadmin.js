@@ -236,7 +236,7 @@ function launchPgAdminWindow() {
           let openDocsInBrowser = misc.ConfigureStore.get('openDocsInBrowser', true);
           let isDocURL = false;
           docsURLSubStrings.forEach(function(key) {
-            if(url.indexOf(key) > 0) {
+            if(url.indexOf(key) >= 0) {
               isDocURL = true;
             }
           });
