@@ -78,22 +78,25 @@ Use the *Runtime Menu* to access the *Configuration* dialog:
     :alt: Runtime Configuration
     :align: center
 
-Following are the details of the *Fixed port number?*, *Port Number*, and *Connection
-Timeout* configuration parameters:
+Following are the details of the *Fixed port number?*, *Port Number*, *Connection
+Timeout*, and 'Open Documentation in Default Browser?' configuration parameters:
 
 .. table::
    :class: longtable
    :widths: 2 1 4
 
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | Key                      | Type               | Purpose                                                       |
-   +==========================+====================+===============================================================+
-   | FixedPort                | Boolean            | Use a fixed network port number rather than a random one.     |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | PortNumber               | Integer            | The port number to use, if using a fixed port.                |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | ConnectionTimeout        | Integer            | The number of seconds to wait for application server startup. |
-   +--------------------------+--------------------+---------------------------------------------------------------+
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | Key                                    | Type               | Purpose                                                       |
+   +========================================+====================+===============================================================+
+   | FixedPort                              | Boolean            | Use a fixed network port number rather than a random one.     |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | PortNumber                             | Integer            | The port number to use, if using a fixed port.                |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | ConnectionTimeout                      | Integer            | The number of seconds to wait for application server startup. |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | Open Documentation in Default Browser  | Boolean            | By checking this option, all documentation links will open in |
+   |                                        |                    | the default browser instead of in a new window.               |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
 
 Log dialog
 ----------

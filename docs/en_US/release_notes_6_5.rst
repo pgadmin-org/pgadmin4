@@ -2,13 +2,14 @@
 Version 6.5
 ************
 
-Release date: 2021-02-10
+Release date: 2021-02-11
 
 This release contains a number of bug fixes and new features since the release of pgAdmin4 6.4.
 
 New features
 ************
 
+| `Issue #7139 <https://redmine.postgresql.org/issues/7139>`_ -  Added support to open SQL help, Dialog help, and online help in an external web browser.
 
 Housekeeping
 ************

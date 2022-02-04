@@ -19,6 +19,8 @@ let serverCheckUrl = null;
 
 let serverPort = 5050;
 
+let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
+
 // Paths to the rest of the app
 let pythonPath = misc.getPythonPath();
 let pgadminFile = '../web/pgAdmin4.py';
@@ -101,7 +103,7 @@ function startDesktopMode() {
       nw.Window.open('src/html/configure.html', {
         'frame': true,
         'width': 600,
-        'height': 420,
+        'height': 585,
         'position': 'center',
         'resizable': false,
         'focus': true,
@@ -231,6 +233,20 @@ function launchPgAdminWindow() {
     // Set the width and height for the new window.
     pgadminWindow.on('new-win-policy', function(frame, url, policy) {
         if(!frame) {
+          let openDocsInBrowser = misc.ConfigureStore.get('openDocsInBrowser', true);
+          let isDocURL = false;
+          docsURLSubStrings.forEach(function(key) {
+            if(url.indexOf(key) > 0) {
+              isDocURL = true;
+            }
+          });
+
+          if (openDocsInBrowser && isDocURL) {
+            // Do not open the window
+            policy.ignore();
+            // Open URL in the external browser.
+            nw.Shell.openExternal(url);
+          } else {
             policy.setNewWindowManifest({
                 'icon': '../../assets/pgAdmin4.png',
                 'frame': true,
@@ -240,6 +256,7 @@ function launchPgAdminWindow() {
                 'width': pgadminWindow.width,
                 'height': pgadminWindow.height,
             });
+          }
         }
     });
 

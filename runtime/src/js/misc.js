@@ -147,7 +147,7 @@ const getAvailablePort = (fixedPort) => {
 const currentTime = (new Date()).getTime();
 const serverLogFile = path.join(getLocalAppDataPath(), 'pgadmin4.' + currentTime.toString() + '.log');
 const configFileName = path.join(getAppDataPath(), 'runtime_config.json');
-const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'zoomLevel': 0};
+const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'zoomLevel': 0, 'openDocsInBrowser': true};
 
 // This function is used to read the file and return the content
 const readServerLog = () => {
