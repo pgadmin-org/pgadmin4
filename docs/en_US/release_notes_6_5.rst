@@ -37,3 +37,4 @@ Bug fixes
 | `Issue #7146 <https://redmine.postgresql.org/issues/7146>`_ -  Fixed event trigger comparing issue in Schema Diff tool.
 | `Issue #7150 <https://redmine.postgresql.org/issues/7150>`_ -  Fixed an issue when uploading a CSV throwing an error in the Desktop mode.
 | `Issue #7151 <https://redmine.postgresql.org/issues/7151>`_ -  Fixed value error in the restore dialog.
+| `Issue #7154 <https://redmine.postgresql.org/issues/7154>`_ -  Ensure that the layout should not be reset if a query tool is opened and pgAdmin is restarted.

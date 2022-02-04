@@ -163,7 +163,7 @@
     "underscore": "^1.13.1",
     "url-loader": "^1.1.2",
     "valid-filename": "^2.0.1",
-    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#5a5a1c96b89e965cb4900520ca7d5740e6a53afa",
+    "webcabin-docker": "git+https://github.com/EnterpriseDB/wcDocker/#bd83d859fd6ca0fc0d5617bb89eaac62abd94cbb",
     "wkx": "^0.5.0",
     "xterm": "^4.11.0",
     "xterm-addon-fit": "^0.5.0",

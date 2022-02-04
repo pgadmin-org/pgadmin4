@@ -9507,9 +9507,9 @@ watchpack@^2.0.0:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
-"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#5a5a1c96b89e965cb4900520ca7d5740e6a53afa":
+"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#bd83d859fd6ca0fc0d5617bb89eaac62abd94cbb":
   version "2.2.5"
-  resolved "git+https://github.com/EnterpriseDB/wcDocker/#5a5a1c96b89e965cb4900520ca7d5740e6a53afa"
+  resolved "git+https://github.com/EnterpriseDB/wcDocker/#bd83d859fd6ca0fc0d5617bb89eaac62abd94cbb"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"
