@@ -35,4 +35,5 @@ Bug fixes
 | `Issue #7142 <https://redmine.postgresql.org/issues/7142>`_ -  Fixed an issue where a warning message was shown after database creation/modification.
 | `Issue #7145 <https://redmine.postgresql.org/issues/7145>`_ -  Ensure that owner should be ignored while comparing extensions.
 | `Issue #7146 <https://redmine.postgresql.org/issues/7146>`_ -  Fixed event trigger comparing issue in Schema Diff tool.
+| `Issue #7150 <https://redmine.postgresql.org/issues/7150>`_ -  Fixed an issue when uploading a CSV throwing an error in the Desktop mode.
 | `Issue #7151 <https://redmine.postgresql.org/issues/7151>`_ -  Fixed value error in the restore dialog.
