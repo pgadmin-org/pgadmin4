@@ -32,6 +32,12 @@ class ReassignRoleTestCase(BaseTestGenerator):
 
         self.data = self.test_data
 
+        if self.data["role_op"] == 'reassign' and \
+            hasattr(self, 'server_min_version') and \
+                self.server_information['server_version'] \
+                < self.server_min_version:
+            self.skipTest(self.skip_msg)
+
         self.role_name = "role_get_%s" % str(uuid.uuid4())[1:8]
         self.role_id = roles_utils.create_role(self.server, self.role_name)
 
@@ -45,12 +51,6 @@ class ReassignRoleTestCase(BaseTestGenerator):
         self.data['did'] = parent_node_dict['database'][-1]['db_id']
 
         if self.data["role_op"] == 'reassign':
-
-            if hasattr(self, 'server_min_version') and \
-                self.server_information['server_version'] \
-                    < self.server_min_version:
-                self.skipTest(self.skip_msg)
-
             self.role_name_1 = "role_get_%s" % str(uuid.uuid4())[1:8]
             self.role_id_1 = roles_utils.create_role(self.server,
                                                      self.role_name_1)

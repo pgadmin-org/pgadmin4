@@ -32,8 +32,9 @@ and modify the values for the following parameters:
     "WEBSERVER_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Webserver user.
     Please note that password is not stored in the pgAdmin database."
-    "WEBSERVER_REMOTE_USER", "The default value is REMOTE_USER, set this variable to any header
-    or environemnt variable to get the webserver remote user details. Possible values: REMOTE_USER,
+    "WEBSERVER_REMOTE_USER", "To get the web server remote user details, set this variable to any header or
+    environment variable name which comes from the web server after webserver authentication.
+    The default value is REMOTE_USER and the possible values are REMOTE_USER,
     HTTP_X_FORWARDED_USER, X-Forwarded-User."
 
 

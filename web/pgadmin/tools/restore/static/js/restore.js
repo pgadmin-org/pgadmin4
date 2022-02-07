@@ -93,7 +93,7 @@ define('tools.restore', [
     saveCallBack: function(data, dialog) {
       if(data.errormsg) {
         Notify.alert(
-          gettext('Utility not found'),
+          gettext('Error'),
           gettext(data.errormsg)
         );
       } else {
