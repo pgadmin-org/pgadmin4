@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-04 16:30+0530\n"
-"PO-Revision-Date: 2022-01-08 21:48+0900\n"
+"PO-Revision-Date: 2022-02-05 03:37+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -9208,7 +9208,7 @@ msgstr "ホストアドレスは有効な IPv4 か IPv6 アドレスを指定し
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
 msgid "Host name must be valid hostname or IPv4 or IPv6 address."
-msgstr ""
+msgstr "有効なホスト名、または IPv4/v6 アドレスを指定してください。"
 
 #: pgadmin/browser/server_groups/servers/static/js/variable.js:201
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:156
@@ -10747,11 +10747,11 @@ msgstr "選択されたオブジェクトに表示できる依存性情報はあ
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:166
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:167
 msgid "panel"
-msgstr ""
+msgstr "パネル"
 
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:122
 msgid "No dependant information is available for the selected object."
-msgstr ""
+msgstr "選択されたオブジェクトに表示できる依存情報はありません。"
 
 #: pgadmin/misc/file_manager/__init__.py:160
 msgid "Maximum file upload size (MB)"
@@ -13103,15 +13103,15 @@ msgstr "データをインポート/エクスポート - テーブル '%s'"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:56
 msgid "binary"
-msgstr ""
+msgstr "バイナリ"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:60
 msgid "csv"
-msgstr ""
+msgstr "CSV"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:64
 msgid "text"
-msgstr ""
+msgstr "テキスト"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:131
 msgid ""
@@ -13612,7 +13612,7 @@ msgstr "DDL の比較"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:120
 msgid "Unable to get the response text."
-msgstr ""
+msgstr "応答テキストを取得できませんでした。"
 
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:161
 #: pgadmin/tools/schema_diff/static/js/schema_diff_ui.js:175
