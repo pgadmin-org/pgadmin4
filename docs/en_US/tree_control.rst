@@ -53,7 +53,7 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Disconnect Database...*  | Click to terminate a database connection.                                                                                 |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Disconnect Server...*    | Click to refresh the currently selected object.                                                                           |
+| *Disconnect from server*  | Click to disconnect from the currently selected server.                                                                   |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Drop Cascade*            | Click to delete the currently selected object and all dependent objects from the server.                                  |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+

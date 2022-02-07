@@ -92,14 +92,14 @@ define('pgadmin.node.server', [
           applies: ['object', 'context'], callback: 'connect_server',
           category: 'connect', priority: 4, label: gettext('Connect Server'),
           icon: 'fa fa-link', enable : 'is_not_connected',data: {
-            data_disabled: gettext('Database is already connected.'),
+            data_disabled: gettext('Database server is already connected.'),
           },
         },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
-          category: 'drop', priority: 5, label: gettext('Disconnect Server'),
+          category: 'drop', priority: 5, label: gettext('Disconnect from server'),
           icon: 'fa fa-unlink', enable : 'is_connected',data: {
-            data_disabled: gettext('Database is already disconnected.'),
+            data_disabled: gettext('Database server is already disconnected.'),
           },
         },
         {
@@ -285,8 +285,8 @@ define('pgadmin.node.server', [
 
             if (notify) {
               Notify.confirm(
-                gettext('Disconnect server'),
-                gettext('Are you sure you want to disconnect the server %s?', d.label),
+                gettext('Disconnect from server'),
+                gettext('Are you sure you want to disconnect from the server %s?', d.label),
                 function() { disconnect(); },
                 function() { return true;},
               );

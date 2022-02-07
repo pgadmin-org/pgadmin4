@@ -16,6 +16,7 @@ Housekeeping
 
 | `Issue #7016 <https://redmine.postgresql.org/issues/7016>`_ -  Port Dependent, dependencies, statistics panel to React.
 | `Issue #7017 <https://redmine.postgresql.org/issues/7017>`_ -  Port Import/Export dialog to React.
+| `Issue #7163 <https://redmine.postgresql.org/issues/7163>`_ -  Rename the menu 'Disconnect Server' to 'Disconnect from server'.
 
 Bug fixes
 *********

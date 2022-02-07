@@ -53,20 +53,20 @@ following options (in alphabetical order):
 | *Clear SSH Tunnel Password* | If you have saved the ssh tunnel password, click to clear the saved password.                                            |
 |                             | Enable only when password is already saved.                                                                              |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Connect Server...*         | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
+| *Connect Server*            | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
 |                             | Your selection opens a *Create* dialog for creating a new object.                                                        |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Delete/Drop*               | Click to delete the currently selected object from the server.                                                           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Disconnect Server...*      | Click to disconnect the currently selected server.                                                                       |
+| *Disconnect from server*    | Click to disconnect from the currently selected server.                                                                  |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Drop Cascade*              | Click to delete the currently selected object and all dependent objects from the server.                                 |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Properties...*             | Click to review or modify the currently selected object's properties.                                                    |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Refresh...*                | Click to refresh the currently selected object.                                                                          |
+| *Refresh*                   | Click to refresh the currently selected object.                                                                          |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Remove Server*             | Click to remove the currently selected server.                                                                           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
