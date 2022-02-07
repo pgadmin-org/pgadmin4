@@ -25,6 +25,7 @@ from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
 from pgadmin.browser.server_groups.servers.utils import does_server_exists
 from pgadmin.utils.constants import KERBEROS
+from pgadmin.utils.locker import ConnectionLocker
 
 import pytz
 from dateutil import parser
@@ -274,14 +275,18 @@ class BatchProcess(object):
             str(cmd)
         )
 
-        # Make a copy of environment, and add new variables to support
-        env = os.environ.copy()
+        # Acquiring lock while copying the environment from the parent process
+        # for the child process
+        with ConnectionLocker(_is_kerberos_conn=False):
+            # Make a copy of environment, and add new variables to support
+            env = os.environ.copy()
+
         env['PROCID'] = self.id
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
         if config.SERVER_MODE and session and \
                 session['auth_source_manager']['current_source'] == \
-                KERBEROS:
+                KERBEROS and 'KRB5CCNAME' in session:
             env['KRB5CCNAME'] = session['KRB5CCNAME']
 
         if self.env:
