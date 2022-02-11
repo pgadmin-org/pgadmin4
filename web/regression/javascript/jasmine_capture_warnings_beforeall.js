@@ -10,15 +10,15 @@
 /* eslint-disable no-console */
 
 beforeAll(function () {
-  // spyOn(console, 'warn').and.callThrough();
-  // spyOn(console, 'error').and.callThrough();
+  spyOn(console, 'warn').and.callThrough();
+  spyOn(console, 'error').and.callThrough();
   jasmine.getEnv().allowRespy(true);
 });
 
 afterEach(function (done) {
   setTimeout(function () {
-    // expect(console.warn).not.toHaveBeenCalled();
-    // expect(console.error).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.error).not.toHaveBeenCalled();
     done();
   }, 0);
 });
