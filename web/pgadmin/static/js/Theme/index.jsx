@@ -72,12 +72,12 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiButton: {
       root: {
-        textTransform: 'none,',
+        textTransform: 'none',
         padding: basicSettings.spacing(0.5, 1.5),
         '&.Mui-disabled': {
-          opacity: 0.65,
+          opacity: 0.60,
         },
-        '&.MuiButton-outlinedSizeSmall': {
+        '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
           height: '28px',
           fontSize: '0.875rem',
           '& .MuiSvgIcon-root': {
@@ -111,7 +111,7 @@ basicSettings = createMuiTheme(basicSettings, {
         resize: 'vertical',
       },
       adornedEnd: {
-        paddingRight: basicSettings.spacing(1.5),
+        paddingRight: basicSettings.spacing(0.75),
       }
     },
     MuiAccordion: {
@@ -184,6 +184,16 @@ basicSettings = createMuiTheme(basicSettings, {
       root: {
         fontSize: 14,
       }
+    },
+    MuiSelect: {
+      selectMenu: {
+        minHeight: 'unset',
+      },
+      select:{
+        '&:focus':{
+          backgroundColor: 'unset',
+        }
+      }
     }
   },
   transitions: {
@@ -220,7 +230,7 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiListItem: {
       disableGutters: true,
-    }
+    },
   },
 });
 
@@ -321,7 +331,10 @@ function getFinalTheme(baseTheme) {
             color: baseTheme.palette.text.muted,
             backgroundColor: baseTheme.otherVars.inputDisabledBg,
           },
-        }
+          '&:focus': {
+            outline: '0 !important',
+          }
+        },
       },
       MuiIconButton: {
         root: {

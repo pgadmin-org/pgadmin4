@@ -186,6 +186,9 @@ export default function FormView({
           if(field.depChange) {
             depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
           }
+          if(field.depChange || field.deferredDepChange) {
+            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+          }
         });
       });
       return ()=>{
@@ -288,7 +291,7 @@ export default function FormView({
         if(visible && !disabled && !firstEleID.current) {
           firstEleID.current = field.id;
         }
-        
+
         tabs[group].push(
           useMemo(()=><MappedFormControl
             inputRef={(ele)=>{

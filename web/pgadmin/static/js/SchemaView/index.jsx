@@ -487,42 +487,34 @@ function SchemaDialogView({
   }, [sessData.__deferred__?.length]);
 
   useEffect(()=>{
+    let unmounted = false;
     /* Docker on load focusses itself, so our focus should execute later */
     let focusTimeout = setTimeout(()=>{
       firstEleRef.current && firstEleRef.current.focus();
     }, 250);
 
-    /* Re-triggering focus on already focussed loses the focus */
-    if(viewHelperProps.mode === 'edit') {
-      setLoaderText('Loading...');
-      /* If its an edit mode, get the initial data using getInitData
-      getInitData should be a promise */
-      if(!getInitData) {
-        throw new Error('getInitData must be passed for edit');
+    setLoaderText('Loading...');
+    /* Get the initial data using getInitData */
+    /* If its an edit mode, getInitData should be present and a promise */
+    if(!getInitData && viewHelperProps.mode === 'edit') {
+      throw new Error('getInitData must be passed for edit');
+    }
+    let initDataPromise = (getInitData && getInitData()) || Promise.resolve({});
+    initDataPromise.then((data)=>{
+      if(unmounted) {
+        return;
       }
-      getInitData && getInitData().then((data)=>{
-        data = data || {};
+      data = data || {};
+      if(viewHelperProps.mode === 'edit') {
         /* Set the origData to incoming data, useful for comparing and reset */
         schema.origData = prepareData(data || {});
-        schema.initialise(schema.origData);
-        sessDispatch({
-          type: SCHEMA_STATE_ACTIONS.INIT,
-          payload: schema.origData,
-        });
-        setFormReady(true);
-        setLoaderText('');
-      }).catch((err)=>{
-        setLoaderText('');
-        if (err.response && err.response.data && err.response.data.errormsg) {
-          Notify.alert(
-            gettext(err.response.statusText),
-            gettext(err.response.data.errormsg)
-          );
-        }
-      });
-    } else {
-      /* Use the defaults as the initital data */
-      schema.origData = prepareData(schema.defaults, true);
+      } else {
+        /* In create mode, merge with defaults */
+        schema.origData = prepareData({
+          ...schema.defaults,
+          ...data,
+        }, true);
+      }
       schema.initialise(schema.origData);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,
@@ -530,10 +522,23 @@ function SchemaDialogView({
       });
       setFormReady(true);
       setLoaderText('');
-    }
-
+    }).catch((err)=>{
+      if(unmounted) {
+        return;
+      }
+      setLoaderText('');
+      if (err.response && err.response.data && err.response.data.errormsg) {
+        Notify.alert(
+          gettext(err.response.statusText),
+          gettext(err.response.data.errormsg)
+        );
+      }
+    });
     /* Clear the focus timeout if unmounted */
-    return ()=>clearTimeout(focusTimeout);
+    return ()=>{
+      unmounted = true;
+      clearTimeout(focusTimeout);
+    };
   }, []);
 
   useEffect(()=>{
@@ -700,7 +705,7 @@ function SchemaDialogView({
             <Loader message={loaderText}/>
             <FormView value={sessData} viewHelperProps={viewHelperProps}
               schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
-              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} />
+              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} className={props.formClassName} />
             <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
               onClose={onErrClose} />
           </Box>
@@ -754,6 +759,7 @@ SchemaDialogView.propTypes = {
   resetKey: PropTypes.any,
   customSaveBtnName: PropTypes.string,
   customSaveBtnIconType: PropTypes.string,
+  formClassName: CustomPropTypes.className,
 };
 
 const usePropsStyles = makeStyles((theme)=>({

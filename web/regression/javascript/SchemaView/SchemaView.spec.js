@@ -112,7 +112,9 @@ describe('SchemaView', ()=>{
         ctrl.find('MappedCellControl[id="field5"]').at(1).find('input').simulate('change', {target: {value: 'rval52'}});
       };
     beforeEach(()=>{
-      ctrlMount();
+      ctrlMount({
+        getInitData: ()=>Promise.resolve({}),
+      });
     });
 
     it('init', (done)=>{
@@ -140,20 +142,26 @@ describe('SchemaView', ()=>{
     });
 
     it('close error on click', (done)=>{
-      ctrl.find('FormFooterMessage').find('button').simulate('click');
       setTimeout(()=>{
         ctrl.update();
-        expect(ctrl.find('FormFooterMessage').prop('message')).toBe('');
-        done();
+        ctrl.find('FormFooterMessage').find('button').simulate('click');
+        setTimeout(()=>{
+          ctrl.update();
+          expect(ctrl.find('FormFooterMessage').prop('message')).toBe('');
+          done();
+        }, 0);
       }, 0);
     });
 
     it('valid form data', (done)=>{
-      simulateValidData();
       setTimeout(()=>{
         ctrl.update();
-        expect(ctrl.find('FormFooterMessage').prop('message')).toBeFalsy();
-        done();
+        simulateValidData();
+        setTimeout(()=>{
+          ctrl.update();
+          expect(ctrl.find('FormFooterMessage').prop('message')).toBeFalsy();
+          done();
+        }, 0);
       }, 0);
     });
 
@@ -165,50 +173,62 @@ describe('SchemaView', ()=>{
       };
 
       it('add row', (done)=>{
-        ctrl.find('DataGridView').find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
         setTimeout(()=>{
-          ctrlUpdate(done);
+          ctrl.update();
+          ctrl.find('DataGridView').find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+          setTimeout(()=>{
+            ctrlUpdate(done);
+          }, 0);
         }, 0);
       });
 
       it('remove row', (done)=>{
-        simulateValidData();
-
-        /* Press OK */
-        let confirmSpy = spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn)=>{
-          yesFn();
-        });
-        ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
-        expect(confirmSpy.calls.argsFor(0)[2]).toBe('Custom delete title');
-        expect(confirmSpy.calls.argsFor(0)[3]).toBe('Custom delete message');
-
-        /* Press Cancel */
-        spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn, cancelFn)=>{
-          cancelFn();
-        });
-        ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
         setTimeout(()=>{
-          ctrlUpdate(done);
+          ctrl.update();
+          simulateValidData();
+
+          /* Press OK */
+          let confirmSpy = spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn)=>{
+            yesFn();
+          });
+          ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+          expect(confirmSpy.calls.argsFor(0)[2]).toBe('Custom delete title');
+          expect(confirmSpy.calls.argsFor(0)[3]).toBe('Custom delete message');
+
+          /* Press Cancel */
+          spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn, cancelFn)=>{
+            cancelFn();
+          });
+          ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+          setTimeout(()=>{
+            ctrlUpdate(done);
+          }, 0);
         }, 0);
       });
 
       it('expand row', (done)=>{
-        simulateValidData();
-        ctrl.find('DataGridView').find('PgIconButton[data-test="expand-row"]').at(0).find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DataGridView').find('FormView').length).toBe(1);
-          done();
+          simulateValidData();
+          ctrl.find('DataGridView').find('PgIconButton[data-test="expand-row"]').at(0).find('button').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('DataGridView').find('FormView').length).toBe(1);
+            done();
+          }, 0);
         }, 0);
       });
 
       it('unique col test', (done)=>{
-        simulateValidData();
-        ctrl.find('MappedCellControl[id="field5"]').at(1).find('input').simulate('change', {target: {value: 'rval51'}});
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('FormFooterMessage').prop('message')).toBe('Field5 in FieldColl must be unique.');
-          done();
+          simulateValidData();
+          ctrl.find('MappedCellControl[id="field5"]').at(1).find('input').simulate('change', {target: {value: 'rval51'}});
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('FormFooterMessage').prop('message')).toBe('Field5 in FieldColl must be unique.');
+            done();
+          }, 0);
         }, 0);
       });
     });
@@ -224,44 +244,53 @@ describe('SchemaView', ()=>{
       });
 
       it('data invalid', (done)=>{
-        ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
-        ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('CodeMirror').prop('value')).toBe('-- Definition incomplete.');
-          done();
+          ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
+          ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('CodeMirror').prop('value')).toBe('-- Definition incomplete.');
+            done();
+          }, 0);
         }, 0);
       });
 
       it('valid data', (done)=>{
-        simulateValidData();
-        ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('CodeMirror').prop('value')).toBe('select 1;');
-          done();
+          simulateValidData();
+          ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('CodeMirror').prop('value')).toBe('select 1;');
+            done();
+          }, 0);
         }, 0);
       });
     });
 
     it('onSave click', (done)=>{
-      simulateValidData();
-      onSave.calls.reset();
-      ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
       setTimeout(()=>{
-        expect(onSave.calls.argsFor(0)[0]).toBe(true);
-        expect(onSave.calls.argsFor(0)[1]).toEqual({
-          id: undefined,
-          field1: 'val1',
-          field2: '2',
-          field5: 'val5',
-          fieldcoll: [
-            {field3: null, field4: null, field5:  'rval51'},
-            {field3: null, field4: null, field5:  'rval52'},
-          ]
-        });
-        expect(Notify.alert).toHaveBeenCalledWith('Warning', 'some inform text');
-        done();
+        ctrl.update();
+        simulateValidData();
+        onSave.calls.reset();
+        ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
+        setTimeout(()=>{
+          expect(onSave.calls.argsFor(0)[0]).toBe(true);
+          expect(onSave.calls.argsFor(0)[1]).toEqual({
+            id: undefined,
+            field1: 'val1',
+            field2: '2',
+            field5: 'val5',
+            fieldcoll: [
+              {field3: null, field4: null, field5:  'rval51'},
+              {field3: null, field4: null, field5:  'rval52'},
+            ]
+          });
+          expect(Notify.alert).toHaveBeenCalledWith('Warning', 'some inform text');
+          done();
+        }, 0);
       }, 0);
     });
 
@@ -275,28 +304,34 @@ describe('SchemaView', ()=>{
 
     describe('onReset', ()=>{
       it('with confirm check and yes click', (done)=>{
-        simulateValidData();
-        onDataChange.calls.reset();
-        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
-        ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
-        /* Press OK */
-        confirmSpy.calls.argsFor(0)[2]();
         setTimeout(()=>{
-          onRestAction(done);
+          ctrl.update();
+          simulateValidData();
+          onDataChange.calls.reset();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
+          /* Press OK */
+          confirmSpy.calls.argsFor(0)[2]();
+          setTimeout(()=>{
+            onRestAction(done);
+          }, 0);
         }, 0);
       });
 
       it('with confirm check and cancel click', (done)=>{
-        simulateValidData();
-        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
-        ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
-        /* Press cancel */
-        confirmSpy.calls.argsFor(0)[3]();
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeFalse();
-          expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeFalse();
-          done();
+          simulateValidData();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
+          /* Press cancel */
+          confirmSpy.calls.argsFor(0)[3]();
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeFalse();
+            expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeFalse();
+            done();
+          }, 0);
         }, 0);
       });
 

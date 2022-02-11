@@ -28,7 +28,7 @@ export function parseApiError(error) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     if(error.response.headers['content-type'] == 'application/json') {
-      return error.response.data.errormsg;
+      return `INTERNAL SERVER ERROR: ${error.response.data.errormsg}`;
     } else {
       return error.response.statusText;
     }
@@ -37,8 +37,10 @@ export function parseApiError(error) {
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
     return gettext('Connection to pgAdmin server has been lost');
-  } else {
+  } else if(error.message) {
     // Something happened in setting up the request that triggered an Error
     return error.message;
+  } else {
+    return error;
   }
 }

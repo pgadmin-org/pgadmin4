@@ -92,13 +92,16 @@ export default function(basicSettings) {
       inputBorderColor: '#dde0e6',
       inputDisabledBg: '#f3f5f9',
       headerBg: '#fff',
+      activeBorder: '#326690',
       activeColor: '#326690',
       tableBg: '#fff',
       activeStepBg: '#326690',
       activeStepFg: '#FFFFFF',
       stepBg: '#ddd',
       stepFg: '#000',
-      toggleBtnBg: '#000'
+      toggleBtnBg: '#000',
+      editorToolbarBg: '#ebeef3',
+      datagridBg: '#fff',
     }
   });
 }

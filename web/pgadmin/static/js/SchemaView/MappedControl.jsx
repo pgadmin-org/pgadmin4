@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import _ from 'lodash';
 
 import { FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
-  FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote, FormInputDateTimePicker, PlainString,
+  FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, FormNote, FormInputDateTimePicker, PlainString, InputSQL,
   InputSelect, InputText, InputCheckbox, InputDateTimePicker } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -111,6 +111,10 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     onCellChange && onCellChange(val);
   }, []);
 
+  const onSqlChange = useCallback((val) => {
+    onCellChange && onCellChange(val);
+  }, []);
+
   /* Some grid cells are based on options selected in other cells.
    * lets trigger a re-render for the row if optionsLoaded
    */
@@ -146,6 +150,8 @@ function MappedCellControlBase({cell, value, id, optionsLoaded, onCellChange, vi
     return <Privilege name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'datetimepicker':
     return <InputDateTimePicker name={name} value={value} onChange={onTextChange} {...props}/>;
+  case 'sql':
+    return <InputSQL name={name} value={value} onChange={onSqlChange} {...props} />;
   default:
     return <PlainString value={value} {...props} />;
   }

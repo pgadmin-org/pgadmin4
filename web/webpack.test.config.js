@@ -30,7 +30,7 @@ module.exports = {
       Buffer: ['buffer', 'Buffer'],
     }),
     new ImageMinimizerPlugin({
-      test: /\.(jpe?g|png|gif|svg)$/i,
+      test: /\.(jpe?g|png|gif)$/i,
       minimizerOptions: {
         // Lossless optimization with custom option
         // Feel free to experiment with options for better result for you
@@ -71,7 +71,24 @@ module.exports = {
       type: 'asset/source',
       use: ['style-loader'],
     }, {
-      test: /\.(jpe?g|png|gif|svg)$/i,
+      test: /\.svg$/,
+      oneOf: [
+        {
+          issuer: /\.[jt]sx?$/,
+          resourceQuery: /svgr/,
+          use: ['@svgr/webpack'],
+        },
+        {
+          type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 4 * 1024, // 4kb
+            }
+          }
+        },
+      ],
+    }, {
+      test: /\.(jpe?g|png|gif)$/i,
       type: 'asset',
       parser: {
         dataUrlCondition: {

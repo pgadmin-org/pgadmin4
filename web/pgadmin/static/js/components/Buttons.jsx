@@ -7,20 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { Button, makeStyles, Tooltip } from '@material-ui/core';
+import { Button, ButtonGroup, makeStyles, Tooltip } from '@material-ui/core';
 import React, { forwardRef } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
+import ShortcutTitle from './ShortcutTitle';
 
 const useStyles = makeStyles((theme)=>({
   primaryButton: {
-    '&.MuiButton-outlinedSizeSmall': {
-      height: '28px',
-      '& .MuiSvgIcon-root': {
-        height: '0.8em',
-      }
-    },
+    border: '1px solid '+theme.palette.primary.main,
     '&.Mui-disabled': {
       color: theme.palette.primary.contrastText,
       backgroundColor: theme.palette.primary.disabledMain,
@@ -35,12 +31,6 @@ const useStyles = makeStyles((theme)=>({
     color: theme.palette.default.contrastText,
     border: '1px solid '+theme.palette.default.borderColor,
     whiteSpace: 'nowrap',
-    '&.MuiButton-outlinedSizeSmall': {
-      height: '28px',
-      '& .MuiSvgIcon-root': {
-        height: '0.8em',
-      }
-    },
     '&.Mui-disabled': {
       color: theme.palette.default.disabledContrastText,
       borderColor: theme.palette.default.disabledBorderColor
@@ -53,6 +43,11 @@ const useStyles = makeStyles((theme)=>({
   },
   iconButton: {
     padding: '3px 6px',
+    '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
+      padding: '1px 4px',
+    },
+  },
+  iconButtonDefault: {
     borderColor: theme.custom.icon.borderColor,
     color: theme.custom.icon.contrastText,
     backgroundColor: theme.custom.icon.main,
@@ -64,7 +59,15 @@ const useStyles = makeStyles((theme)=>({
     '&:hover': {
       backgroundColor: theme.custom.icon.hoverMain,
       color: theme.custom.icon.hoverContrastText,
-    }
+    },
+  },
+  splitButton: {
+    '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
+      width: '20px',
+      '& svg': {
+        height: '0.8em',
+      }
+    },
   },
   xsButton: {
     padding: '2px 1px',
@@ -89,7 +92,7 @@ export const PrimaryButton = forwardRef((props, ref)=>{
   }
   noBorder && allClassName.push(classes.noBorder);
   return (
-    <Button ref={ref} variant="contained" color="primary" size={size} className={clsx(allClassName)} {...otherProps}>{children}</Button>
+    <Button ref={ref} size={size} className={clsx(allClassName)} {...otherProps} variant="contained" color="primary" >{children}</Button>
   );
 });
 PrimaryButton.displayName = 'PrimaryButton';
@@ -111,7 +114,7 @@ export const DefaultButton = forwardRef((props, ref)=>{
   }
   noBorder && allClassName.push(classes.noBorder);
   return (
-    <Button ref={ref} variant="outlined" color="default" size={size} className={clsx(allClassName)} {...otherProps}>{children}</Button>
+    <Button variant="outlined" color="default" ref={ref} size={size} className={clsx(allClassName)} {...otherProps} >{children}</Button>
   );
 });
 DefaultButton.displayName = 'DefaultButton';
@@ -122,24 +125,77 @@ DefaultButton.propTypes = {
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 };
 
+
 /* pgAdmin Icon button, takes Icon component as input */
-export const PgIconButton = forwardRef(({icon, title, className, ...props}, ref)=>{
+export const PgIconButton = forwardRef(({icon, title, shortcut, accessKey, className, splitButton, style, color, ...props}, ref)=>{
   const classes = useStyles();
 
+  let shortcutTitle = null;
+  if(accessKey || shortcut) {
+    shortcutTitle = <ShortcutTitle title={title} accessKey={accessKey} shortcut={shortcut}/>;
+  }
+
   /* Tooltip does not work for disabled items */
-  return (
-    <Tooltip title={title || ''} aria-label={title || ''}>
-      <span>
-        <DefaultButton ref={ref} style={{minWidth: 0}} className={clsx(classes.iconButton, className)} {...props}>
+  if(props.disabled) {
+    if(color == 'primary') {
+      return (
+        <PrimaryButton ref={ref} style={{minWidth: 0, ...style}}
+          className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)} {...props}>
+          {icon}
+        </PrimaryButton>
+      );
+    } else {
+      return (
+        <DefaultButton ref={ref} style={{minWidth: 0, ...style}}
+          className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)} {...props}>
           {icon}
         </DefaultButton>
-      </span>
-    </Tooltip>
-  );
+      );
+    }
+  } else {
+    if(color == 'primary') {
+      return (
+        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
+          <PrimaryButton ref={ref} style={{minWidth: 0, ...style}}
+            className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)} {...props}>
+            {icon}
+          </PrimaryButton>
+        </Tooltip>
+      );
+    } else {
+      return (
+        <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
+          <DefaultButton ref={ref} style={{minWidth: 0, ...style}}
+            className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)} {...props}>
+            {icon}
+          </DefaultButton>
+        </Tooltip>
+      );
+    }
+  }
 });
 PgIconButton.displayName = 'PgIconButton';
 PgIconButton.propTypes = {
   icon: CustomPropTypes.children,
   title: PropTypes.string.isRequired,
+  shortcut: CustomPropTypes.shortcut,
+  accessKey: PropTypes.string,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  style: PropTypes.object,
+  color: PropTypes.oneOf(['primary', 'default', undefined]),
+  disabled: PropTypes.bool,
+  splitButton: PropTypes.bool,
+};
+
+export const PgButtonGroup = forwardRef(({children, ...props}, ref)=>{
+  /* Tooltip does not work for disabled items */
+  return (
+    <ButtonGroup disableElevation innerRef={ref} {...props}>
+      {children}
+    </ButtonGroup>
+  );
+});
+PgButtonGroup.displayName = 'PgButtonGroup';
+PgButtonGroup.propTypes = {
+  children: CustomPropTypes.children,
 };

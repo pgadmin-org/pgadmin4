@@ -47,14 +47,24 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
 
   /* Called when dialog is opened in edit mode, promise required */
   let initData = ()=>new Promise((resolve, reject)=>{
-    api.get(url(false))
-      .then((res)=>{
-        resolve(res.data);
-      })
-      .catch((err)=>{
-        onError(err);
-        reject(err);
-      });
+    if(actionType === 'create') {
+      resolve({});
+    } else {
+      api.get(url(false))
+        .then((res)=>{
+          resolve(res.data);
+        })
+        .catch((err)=>{
+          if(err.response){
+            console.error('error resp', err.response);
+          } else if(err.request){
+            console.error('error req', err.request);
+          } else if(err.message){
+            console.error('error msg', err.message);
+          }
+          reject(err);
+        });
+    }
   });
 
   /* on save button callback, promise required */

@@ -35,3 +35,5 @@ $theme-colors: (
 @import 'jsoneditor.overrides';
 @import 'pgadmin4-tree.overrides';
 @import 'pgadmin4-tree/src/css/styles';
+@import 'rc-dock/dist/rc-dock.css';
+@import '@szhsin/react-menu/dist/index.css';

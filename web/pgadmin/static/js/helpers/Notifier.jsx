@@ -98,7 +98,7 @@ function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext
   const classes = useAlertStyles();
   return (
     <Box display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2}>{HTMLReactParse(text)}</Box>
+      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParse(text) : text}</Box>
       <Box className={classes.footer}>
         {confirm &&
           <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>

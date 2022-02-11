@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-export default function Loader({message}) {
+export default function Loader({message, style}) {
   const classes = useStyles();
   if(!message) {
     return <></>;
   }
   return (
-    <Box className={classes.root}>
+    <Box className={classes.root} style={style}>
       <Box className={classes.loaderRoot}>
         <CircularProgress className={classes.loader} />
         <Typography className={classes.message}>{message}</Typography>
@@ -57,4 +57,5 @@ export default function Loader({message}) {
 
 Loader.propTypes = {
   message: PropTypes.string,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };

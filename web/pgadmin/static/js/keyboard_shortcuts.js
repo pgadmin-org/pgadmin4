@@ -21,7 +21,8 @@ const PERIOD_KEY = 190,
   K_KEY = 75;
 
 function isMac() {
-  return window.navigator.platform.search('Mac') != -1;
+  return window.navigator.userAgentData?.platform === 'macOS'
+   ||  window.navigator.platform.search('Mac') != -1;
 }
 
 function isKeyCtrlAlt(event) {
@@ -55,7 +56,7 @@ function isCtrlAltBoth(event) {
 /* Returns the key of shortcut */
 function shortcut_key(shortcut) {
   let key = '';
-  if(shortcut['key'] && shortcut['key']['char']) {
+  if(shortcut && shortcut['key'] && shortcut['key']['char']) {
     key = shortcut['key']['char'].toUpperCase();
   }
   return key;

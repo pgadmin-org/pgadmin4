@@ -11,7 +11,7 @@
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, FormControl, OutlinedInput, FormHelperText,
-  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper } from '@material-ui/core';
+  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
@@ -148,7 +148,7 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({value, options, onChange, className, ...props}) {
+export function InputSQL({value, onChange, className, controlProps, ...props}) {
   const classes = useStyles();
   const editor = useRef();
 
@@ -156,17 +156,13 @@ export function InputSQL({value, options, onChange, className, ...props}) {
     <CodeMirror
       currEditor={(obj)=>editor.current=obj}
       value={value||''}
-      options={{
-        lineNumbers: true,
-        mode: 'text/x-pgsql',
-        ...options,
-      }}
       className={clsx(classes.sql, className)}
       events={{
         change: (cm)=>{
           onChange && onChange(cm.getValue());
         },
       }}
+      {...controlProps}
       {...props}
     />
   );
@@ -177,15 +173,16 @@ InputSQL.propTypes = {
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
   className: CustomPropTypes.className,
+  controlProps: PropTypes.object,
 };
 
-export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props}) {
+export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, noLabel, ...props}) {
   if(noLabel) {
-    return <InputSQL value={value} options={controlProps} {...props}/>;
+    return <InputSQL value={value} {...props}/>;
   } else {
     return (
       <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} >
-        <InputSQL value={value} options={controlProps} {...props}/>
+        <InputSQL value={value} {...props}/>
       </FormInput>
     );
   }
@@ -198,7 +195,6 @@ FormInputSQL.propTypes = {
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
   value: PropTypes.string,
-  controlProps: PropTypes.object,
   noLabel: PropTypes.bool,
   change: PropTypes.func,
 };
@@ -739,6 +735,17 @@ function getRealValue(options, value, creatable, formatter) {
   }
   return realValue;
 }
+export function InputSelectNonSearch({options, ...props}) {
+  return <MuiSelect native {...props} variant="outlined">
+    {(options||[]).map((o)=><option key={o.value} value={o.value}>{o.label}</option>)}
+  </MuiSelect>;
+}
+InputSelectNonSearch.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.shape,
+    value: PropTypes.any,
+  })),
+};
 
 export const InputSelect = forwardRef(({
   cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}, ref) => {

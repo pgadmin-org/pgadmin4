@@ -9,6 +9,7 @@
   font-family: monospace, monospace;
   background-color: $color-editor-bg !important;
   color: $color-editor-fg;
+  border-radius: inherit;
 }
 
 /* Ensure the codemirror editor displays full height gutters when resized */

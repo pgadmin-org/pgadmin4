@@ -16,7 +16,7 @@ export default class BaseUISchema {
   constructor(defaults) {
     /* Pass the initial data to constructor so that
     they will set to defaults */
-    this._defaults = defaults;
+    this._defaults = defaults || {};
 
     this.keys = null; // If set, other fields except keys will be filtered
     this.filterGroups = []; // If set, these groups will be filtered out

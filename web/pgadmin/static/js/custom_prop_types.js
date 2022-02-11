@@ -21,13 +21,23 @@ const CustomPropTypes = {
 
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node
+    PropTypes.node,
   ]),
 
   className: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object,
-  ])
+    PropTypes.array,
+  ]),
+
+  shortcut: PropTypes.shape({
+    alt: PropTypes.bool,
+    control: PropTypes.bool,
+    shift: PropTypes.bool,
+    key: PropTypes.shape({
+      char: PropTypes.string,
+    }),
+  }),
 };
 
 export default CustomPropTypes;

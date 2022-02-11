@@ -196,9 +196,7 @@ describe('FormComponents', ()=>{
     it('init', ()=>{
       expect(ctrl.find(InputLabel).text()).toBe('First');
       expect(ctrl.find(CodeMirror).prop('value')).toEqual('thevalue');
-      expect(ctrl.find(CodeMirror).prop('options')).toEqual(jasmine.objectContaining({
-        op1: 'test'
-      }));
+      expect(ctrl.find(CodeMirror).prop('op1')).toEqual('test');
       expect(ctrl.find(FormHelperText).text()).toBe('some help message');
     });
   });

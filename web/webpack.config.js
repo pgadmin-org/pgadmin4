@@ -77,7 +77,7 @@ const copyFiles = new CopyPlugin({
 });
 
 const imageMinimizer = new ImageMinimizerPlugin({
-  test: /\.(jpe?g|png|gif|svg)$/i,
+  test: /\.(jpe?g|png|gif)$/i,
   minimizerOptions: {
     // Lossless optimization with custom option
     // Feel free to experiment with options for better result for you
@@ -179,7 +179,24 @@ fs.writeFileSync(pgadminThemesJson, JSON.stringify(pgadminThemes, null, 4));
 
 var themeCssRules = function(theme_name) {
   return [{
-    test: /\.(jpe?g|png|gif|svg)$/i,
+    test: /\.svg$/,
+    oneOf: [
+      {
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: /svgr/,
+        use: ['@svgr/webpack'],
+      },
+      {
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 4 * 1024, // 4kb
+          }
+        }
+      },
+    ],
+  },{
+    test: /\.(jpe?g|png|gif)$/i,
     type: 'asset',
     parser: {
       dataUrlCondition: {
@@ -191,7 +208,7 @@ var themeCssRules = function(theme_name) {
     },
     exclude: /vendor/,
   },{
-    test: /\.(eot|svg|ttf|woff|woff2)$/,
+    test: /\.(eot|ttf|woff|woff2)$/,
     type: 'asset/resource',
     generator: {
       filename: 'fonts/[name].[ext]',
