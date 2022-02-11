@@ -5,8 +5,10 @@ Redhat distributions.
 
 ## Supported platforms
 
-* Fedora 30, 31 & 32
-* RHEL/CentOS 7 & 8
+* Fedora 34 & 35
+* RHEL 7 & 8
+* CentOS 7
+* Rocky Linux 8 (x86_64)
 
 ## Build configuration
 
