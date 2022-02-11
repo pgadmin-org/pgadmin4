@@ -24,7 +24,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                             'rows_cnt', 'hastoasttable', 'relhassubclass',
                             'relacl_str', 'setting']
 
-    column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid']
+    column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
+                             'indkey']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
@@ -167,6 +168,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
             if item['name'] == source['name']:
                 tmp = copy.deepcopy(item)
+                source['attnum'] = tmp['attnum']
 
         if tmp and source != tmp:
             updated.append(source)
