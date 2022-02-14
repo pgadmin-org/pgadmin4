@@ -202,7 +202,8 @@ define([
     // Callback to draw User Management Dialog.
     show_users: function() {
       if (!userInfo['is_admin']) return;
-      var Roles = [],
+      var self = this,
+        Roles = [],
         Sources = [];
 
       var UserModel = pgBrowser.Node.Model.extend({
