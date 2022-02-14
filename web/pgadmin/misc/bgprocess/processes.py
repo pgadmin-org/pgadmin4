@@ -528,7 +528,7 @@ class BatchProcess(object):
             cloud_instance['instance']['sid'] = _process.server_id
             cloud_instance['instance']['status'] = False
             return update_server(cloud_instance)
-        return False, None
+        return True, {}
 
     def status(self, out=0, err=0):
         ctime = get_current_time(format='%y%m%d%H%M%S%f')

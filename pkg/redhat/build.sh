@@ -13,6 +13,9 @@ OS_ARCH=$(arch)
 # Make sure we get the right libpq
 export PATH=/usr/pgsql-14/bin:$PATH
 
+# Stop creating pyc files.
+export PYTHONDONTWRITEBYTECODE=1
+
 # Common Linux build functions
 source pkg/linux/build-functions.sh
 
