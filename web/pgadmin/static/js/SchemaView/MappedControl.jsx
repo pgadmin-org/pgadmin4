@@ -173,7 +173,8 @@ MappedCellControlBase.propTypes = {
 const ALLOWED_PROPS_FIELD_COMMON = [
   'mode', 'value', 'readonly', 'disabled', 'hasError', 'id',
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
-  'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis'
+  'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
+  'orientation'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [

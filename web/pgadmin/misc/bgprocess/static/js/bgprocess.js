@@ -96,8 +96,10 @@ define('misc.bgprocess', [
           pgBrowser.Events && pgBrowser.Events.on(
             'pgadmin-bgprocess:finished:' + this.id,
             function(process) {
-              if (!process.notifier)
+              if (!process.notifier) {
+                if (process.cloud_process == 1) process.update_cloud_server.apply(process);
                 process.show.apply(process);
+              }
             }
           );
         }
@@ -173,6 +175,12 @@ define('misc.bgprocess', [
           if (data.out && data.out.lines) {
             out = data.out.lines;
           }
+        }
+
+        if ('cloud_process' in data && data.cloud_process == 1) {
+          self.cloud_process = data.cloud_process;
+          self.cloud_instance = data.cloud_instance;
+          self.cloud_server_id = data.cloud_server_id;
         }
 
         if ('err' in data) {
@@ -306,6 +314,46 @@ define('misc.bgprocess', [
               setTimeout(function() {
                 self.update(res);
               }, 10000);
+          });
+      },
+
+      update_cloud_server: function() {
+        var self = this,
+          _url = url_for('cloud.update_cloud_server'),
+          _data = {},
+          cloud_instance = self.cloud_instance;
+        if (cloud_instance != '') {
+          _data = JSON.parse(cloud_instance);
+        }
+
+        _data['instance']['sid'] = self.cloud_server_id;
+
+        $.ajax({
+          type: 'POST',
+          url: _url,
+          async: true,
+          data: JSON.stringify(_data),
+          contentType: 'application/json',
+        })
+          .done(function(res) {
+            setTimeout(function() {
+              let _server = res.data.node,
+                _server_path = '/browser/server_group_' + _server.gid + '/' + _server.id,
+                _tree = pgBrowser.tree,
+                _item = _tree.findNode(_server_path);
+
+              if (_item) {
+                _tree.addIcon(_item.domNode, {icon: _server.icon});
+                let d = _tree.itemData(_item);
+                d.cloud_status = 1;
+                _tree.update(_item, d);
+              }
+            }, 10);
+          })
+          .fail(function(res) {
+          // Try after some time only if job id present
+            if (res.status != 410)
+              console.warn('Failed Cloud Deployment.');
           });
       },
 
@@ -523,8 +571,30 @@ define('misc.bgprocess', [
           async: true,
           contentType: 'application/json',
         })
-          .done(function() {
-            return;
+          .done(function(res) {
+            if (res.data && res.data.node) {
+              setTimeout(function() {
+                let _server = res.data.node,
+                  _server_path = '/browser/server_group_' + _server.gid + '/' + _server.id,
+                  _tree = pgBrowser.tree,
+                  _item = _tree.findNode(_server_path);
+
+                if (_item) {
+                  if(_server.status == true) {
+                    let _dom = _item.domNode;
+                    _tree.addIcon(_dom, {icon: _server.icon});
+                    let d = _tree.itemData(_dom);
+                    d.cloud_status = _server.cloud_status;
+                    _tree.update(_dom, d);
+                  }
+                  else {
+                    _tree.remove(_item.domNode);
+                    _tree.refresh(_item.domNode.parent);
+                  }
+                }
+
+              }, 10);
+            } else return;
           })
           .fail(function() {
             console.warn(arguments);
@@ -595,7 +665,7 @@ define('misc.bgprocess', [
         var observer = this;
 
         $.ajax({
-          typs: 'GET',
+          type: 'GET',
           timeout: 30000,
           url: url_for('bgprocess.list'),
           cache: false,

@@ -221,6 +221,7 @@ var webpackShimConfig = {
     'pgadmin.file_utility': path.join(__dirname, './pgadmin/misc/file_manager/static/js/utility'),
     'pgadmin.help': path.join(__dirname, './pgadmin/help/static/js/help'),
     'pgadmin.misc.explain': path.join(__dirname, './pgadmin/misc/static/explain/js/explain'),
+    'pgadmin.misc.cloud': path.join(__dirname, './pgadmin/misc/cloud/static/js/cloud'),
     'pgadmin.node.cast': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/casts/static/js/cast'),
     'pgadmin.node.publication': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/publications/static/js/publication'),
     'pgadmin.node.subscription': path.join(__dirname, './pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription'),

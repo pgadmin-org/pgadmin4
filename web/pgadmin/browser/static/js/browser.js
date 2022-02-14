@@ -326,9 +326,18 @@ define('pgadmin.browser', [
     },
     menu_categories: {
       /* name, label (pair) */
+      'register': {
+        label: gettext('Register'),
+        priority: 1,
+        /* separator above this menu */
+        above: false,
+        below: true,
+        /* icon: 'fa fa-magic', */
+        single: true,
+      },
       'create': {
         label: gettext('Create'),
-        priority: 1,
+        priority: 2,
         /* separator above this menu */
         above: false,
         below: true,

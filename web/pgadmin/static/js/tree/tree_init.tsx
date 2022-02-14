@@ -44,7 +44,7 @@ var initBrowserTree = async (pgBrowser) => {
         retval = 1;
       }
       return retval;
-	},
+	  },
   }
 
   // Create Node

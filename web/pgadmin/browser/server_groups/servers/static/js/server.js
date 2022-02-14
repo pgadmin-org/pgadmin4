@@ -80,13 +80,15 @@ define('pgadmin.node.server', [
         pgBrowser.add_menus([{
           name: 'create_server_on_sg', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, label: gettext('Server...'),
-          data: {action: 'create'}, icon: 'wcTabIcon icon-server', enable: 'canCreate',
+          category: 'register', priority: 1, label: gettext('Server...'),
+          data: {action: 'create'}, icon: 'wcTabIcon icon-server',
+          enable: 'canCreate',
         },{
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 3, label: gettext('Server...'),
-          data: {action: 'create'}, icon: 'wcTabIcon icon-server', enable: 'canCreate',
+          category: 'register', priority: 3, label: gettext('Server...'),
+          data: {action: 'create'}, icon: 'wcTabIcon icon-server',
+          enable: 'canCreate',
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
@@ -808,8 +810,8 @@ define('pgadmin.node.server', [
       // Fetch the updated data
       $.get(server_url)
         .done(function(res) {
-          if (res.shared && _.isNull(res.username) && data.user_id != current_user.id){
-            if (!res.service){
+          if (res.shared && _.isNull(res.username) && data.user_id != current_user.id) {
+            if (!res.service) {
               pgAdmin.Browser.Node.callbacks.show_obj_properties.call(
                 pgAdmin.Browser.Nodes[tree.itemData(item)._type], {action: 'edit'}
               );
@@ -818,13 +820,30 @@ define('pgadmin.node.server', [
               tree.setInode(item);
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
               Notify.info('Please enter the server details to connect to the server. This server is a shared server.');
-            }else{
+            } else {
               data.is_connecting = false;
               tree.unload(item);
               tree.setInode(item);
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
             }
           }
+          else if (res.cloud_status == -1) {
+            $.ajax({
+              type: 'GET',
+              timeout: 30000,
+              url: url_for('cloud.update_cloud_process', {'sid': res.id}),
+              cache: false,
+              async: true,
+              contentType: 'application/json',
+            })
+              .done(function() {
+                pgAdmin.Browser.BackgroundProcessObsorver.update_process_list();
+              })
+              .fail(function() {
+                console.warn(arguments);
+              });
+          }
+          return;
         }).always(function(){
           data.is_connecting = false;
         });
@@ -1033,7 +1052,7 @@ define('pgadmin.node.server', [
       };
 
       /* Wait till the existing request completes */
-      if(data.is_connecting) {
+      if(data.is_connecting || data.cloud_status == -1) {
         return;
       }
       data.is_connecting = true;

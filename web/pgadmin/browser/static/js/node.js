@@ -118,8 +118,8 @@ define('pgadmin.browser.node', [
         module: self,
         applies: ['object', 'context'],
         callback: 'refresh',
-        priority: 1,
-        label: gettext('Refresh'),
+        priority: 2,
+        label: gettext('Refresh...'),
         icon: 'fa fa-sync-alt',
       }]);
 
@@ -792,6 +792,9 @@ define('pgadmin.browser.node', [
           }
 
           l = gettext('Create - %s', this.label);
+          if (this.type == 'server') {
+            l = gettext('Register - %s', this.label);
+          }
           p = addPanel();
 
           setTimeout(function() {

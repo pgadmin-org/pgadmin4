@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+| `Issue #7177 <https://redmine.postgresql.org/issues/7177>`_ -  Added capability to deploy PostgreSQL servers on Amazon RDS.
 
 Housekeeping
 ************

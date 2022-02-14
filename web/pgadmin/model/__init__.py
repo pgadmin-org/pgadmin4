@@ -30,7 +30,7 @@ import uuid
 #
 ##########################################################################
 
-SCHEMA_VERSION = 32
+SCHEMA_VERSION = 33
 
 ##########################################################################
 #
@@ -192,6 +192,7 @@ class Server(db.Model):
     tunnel_password = db.Column(db.String(64), nullable=True)
     shared = db.Column(db.Boolean(), nullable=False)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
+    cloud_status = db.Column(db.Integer(), nullable=False, default=0)
 
     @property
     def serialize(self):
@@ -325,6 +326,11 @@ class Process(db.Model):
     acknowledge = db.Column(db.String(), nullable=True)
     utility_pid = db.Column(db.Integer, nullable=False)
     process_state = db.Column(db.Integer, nullable=False)
+    server_id = db.Column(
+        db.Integer,
+        db.ForeignKey('server.id'),
+        nullable=True
+    )
 
 
 class Keys(db.Model):

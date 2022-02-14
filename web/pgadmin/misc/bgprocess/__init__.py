@@ -14,7 +14,8 @@ the long running background-processes.
 from flask import url_for
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_response, gone, success_return
+from pgadmin.utils.ajax import make_response, gone, success_return,\
+    make_json_response
 
 from .processes import BatchProcess
 
@@ -101,8 +102,26 @@ def acknowledge(pid):
         Positive status
     """
     try:
-        BatchProcess.acknowledge(pid)
-        return success_return()
+        process = BatchProcess(id=pid)
+        status, server = process.acknowledge(pid)
+        if status and len(server) > 0:
+            return make_json_response(
+                success=1,
+                data={'node': {
+                    'sid': server['id'],
+                    'gid': server['servergroup_id'],
+                    '_type': 'server',
+                    'icon': 'icon-server-not-connected',
+                    'id': 'server_{}'.format(server['id']),
+                    'label': server['name'],
+                    'status': server['status'],
+                    'cloud_status': server['cloud_status']
+                }}
+            )
+        elif status and len(server) == 0:
+            return success_return()
+        else:
+            return gone(errormsg=str(server))
     except LookupError as lerr:
         return gone(errormsg=str(lerr))
 

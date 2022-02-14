@@ -112,6 +112,10 @@ def server_icon_and_background(is_connected, manager, server):
         return 'icon-shared-server-not-connected{0}'.format(
             server_background_color
         )
+    elif server.cloud_status == -1:
+        return 'icon-server-cloud-deploy{0}'.format(
+            server_background_color
+        )
     else:
         return 'icon-server-not-connected{0}'.format(
             server_background_color
@@ -256,7 +260,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 user_name=server.username,
                 shared=server.shared,
                 is_kerberos_conn=bool(server.kerberos_conn),
-                gss_authenticated=manager.gss_authenticated
+                gss_authenticated=manager.gss_authenticated,
+                cloud_status=server.cloud_status
             )
 
     @property
@@ -998,7 +1003,8 @@ class ServerNode(PGChildNodeView):
             'tunnel_authentication': tunnel_authentication,
             'kerberos_conn': bool(server.kerberos_conn),
             'gss_authenticated': manager.gss_authenticated,
-            'gss_encrypted': manager.gss_encrypted
+            'gss_encrypted': manager.gss_encrypted,
+            'cloud_status': server.cloud_status
         }
 
         return ajax_response(response)

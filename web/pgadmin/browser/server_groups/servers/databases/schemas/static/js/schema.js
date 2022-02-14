@@ -342,17 +342,17 @@ define('pgadmin.node.schema', [
         pgBrowser.add_menus([{
           name: 'create_schema_on_coll', node: 'coll-schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Schema...'),
+          category: 'create', priority: 1, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'},
         },{
           name: 'create_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Schema...'),
+          category: 'create', priority: 1, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'},
         },{
           name: 'create_schema', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 4, label: gettext('Schema...'),
+          category: 'create', priority: 1, label: gettext('Schema...'),
           icon: 'wcTabIcon icon-schema', data: {action: 'create'},
           enable: 'can_create_schema',
         },

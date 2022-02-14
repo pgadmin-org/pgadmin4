@@ -763,7 +763,7 @@ def index():
         mfa_enabled=is_mfa_enabled(),
         login_url=login_url,
         _=gettext,
-        auth_only_internal=auth_only_internal
+        auth_only_internal=auth_only_internal,
     ))
 
     # Set the language cookie after login, so next time the user will have that

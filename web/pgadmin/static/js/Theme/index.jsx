@@ -430,6 +430,10 @@ function getFinalTheme(baseTheme) {
               backgroundColor: 'abc',
             }
           }
+        },
+
+        label: {
+          textTransform: 'initial',
         }
       },
       MuiFormHelperText: {

@@ -20,6 +20,7 @@ from datetime import datetime
 from pickle import dumps, loads
 from subprocess import Popen, PIPE
 import logging
+import json
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
@@ -487,6 +488,48 @@ class BatchProcess(object):
 
         return pos, completed
 
+    def _get_cloud_instance_details(self, _process):
+        """
+        Parse the output to get the cloud instance details
+        """
+        ctime = get_current_time(format='%y%m%d%H%M%S%f')
+        stdout = []
+        stderr = []
+        out = 0
+        err = 0
+        cloud_server_id = 0
+        cloud_instance = ''
+
+        enc = sys.getdefaultencoding()
+        if enc == 'ascii':
+            enc = 'utf-8'
+
+        out, out_completed = self.read_log(
+            self.stdout, stdout, out, ctime, _process.exit_code, enc
+        )
+        err, err_completed = self.read_log(
+            self.stderr, stderr, err, ctime, _process.exit_code, enc
+        )
+
+        from pgadmin.misc.cloud import update_server
+        if out_completed and not _process.exit_code:
+            for value in stdout:
+                if 'instance' in value[1] and value[1] != '':
+                    cloud_instance = json.loads(value[1])
+                    cloud_server_id = _process.server_id
+
+                if type(cloud_instance) is dict and\
+                        'instance' in cloud_instance:
+                    cloud_instance['instance']['sid'] = cloud_server_id
+                    cloud_instance['instance']['status'] = True
+                    return update_server(cloud_instance)
+        elif err_completed and _process.exit_code > 0:
+            cloud_instance = {'instance': {}}
+            cloud_instance['instance']['sid'] = _process.server_id
+            cloud_instance['instance']['status'] = False
+            return update_server(cloud_instance)
+        return False, None
+
     def status(self, out=0, err=0):
         ctime = get_current_time(format='%y%m%d%H%M%S%f')
 
@@ -549,8 +592,7 @@ class BatchProcess(object):
             },
             'start_time': self.stime,
             'exit_code': self.ecode,
-            'execution_time': execution_time,
-            'process_state': self.process_state
+            'execution_time': execution_time
         }
 
     @staticmethod
@@ -697,7 +739,8 @@ class BatchProcess(object):
                       "'{1}'").format(desc.sid, p.pid)
                 )
                 try:
-                    BatchProcess.acknowledge(p.pid)
+                    process = BatchProcess(id=p.pid)
+                    process.acknowledge(p.pid)
                 except LookupError as lerr:
                     current_app.logger.warning(
                         _("Status for the background process '{0}' could "
@@ -712,8 +755,7 @@ class BatchProcess(object):
     def total_seconds(dt):
         return round(dt.total_seconds(), 2)
 
-    @staticmethod
-    def acknowledge(_pid):
+    def acknowledge(self, _pid):
         """
         Acknowledge from the user, he/she has alredy watched the status.
 
@@ -721,6 +763,9 @@ class BatchProcess(object):
         And, delete the process information from the configuration, and the log
         files related to the process, if it has already been completed.
         """
+        status = True
+        _server = {}
+
         p = Process.query.filter_by(
             user_id=current_user.id, pid=_pid
         ).first()
@@ -729,14 +774,16 @@ class BatchProcess(object):
             raise LookupError(PROCESS_NOT_FOUND)
 
         if p.end_time is not None:
+            status, _server = self._get_cloud_instance_details(p)
             logdir = p.logdir
             db.session.delete(p)
             import shutil
             shutil.rmtree(logdir, True)
         else:
             p.acknowledge = get_current_time()
-
         db.session.commit()
+
+        return status, _server
 
     def set_env_variables(self, server, **kwargs):
         """Set environment variables"""
@@ -781,3 +828,16 @@ class BatchProcess(object):
                     p.utility_pid)
             )
             current_app.logger.exception(e)
+
+    @staticmethod
+    def update_server_id(_pid, _sid):
+        p = Process.query.filter_by(
+            user_id=current_user.id, pid=_pid
+        ).first()
+
+        if p is None:
+            raise LookupError(PROCESS_NOT_FOUND)
+
+        # Update the cloud server id
+        p.server_id = _sid
+        db.session.commit()

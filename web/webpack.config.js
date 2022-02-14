@@ -566,6 +566,7 @@ module.exports = [{
             'pure|pgadmin.tools.search_objects',
             'pure|pgadmin.tools.erd_module',
             'pure|pgadmin.tools.psql_module',
+            'pure|pgadmin.misc.cloud',
           ],
         },
       },

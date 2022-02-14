@@ -17,3 +17,4 @@ will provide detailed information about creating a custom deployment.
    desktop_deployment
    server_deployment
    container_deployment
+   cloud_deployment

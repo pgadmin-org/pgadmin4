@@ -18,7 +18,7 @@ control, and select *Server Group* from the *Create* menu.
 Use the fields on the *Server* dialog to define the connection properties for
 each new server that you wish to manage with pgAdmin.  To open the *Server*
 dialog, right-click on the *Servers* node of the tree control, and select
-*Server* from the *Create* menu.
+*Server* from the *Register* menu.
 
 .. toctree::
 
