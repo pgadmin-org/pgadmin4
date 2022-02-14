@@ -65,6 +65,9 @@ _create_python_virtualenv() {
     sed -i 's/setenv VIRTUAL_ENV .*/setenv VIRTUAL_ENV "\/usr\/pgadmin4\/venv"/g' venv/bin/activate.csh
     sed -i 's/set -gx VIRTUAL_ENV .*/set -gx VIRTUAL_ENV "\/usr\/pgadmin4\/venv"/g' venv/bin/activate.fish
 
+    # Remove __pycache__
+    find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf
+
     # Fixup hash bangs
     sed -i 's/#!.*\/python3/#\!\/usr\/pgadmin4\/venv\/bin\/python3/g' venv/bin/*
 
