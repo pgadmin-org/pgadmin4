@@ -158,8 +158,8 @@ REM Main build sequence Ends
     REM Note that we must use virtualenv.exe here, as the venv module doesn't allow python.exe to relocate.
     "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
 
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
 
     ECHO Activating virtual environment -  %TMPDIR%\venv...
     CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
@@ -183,7 +183,7 @@ REM Main build sequence Ends
     %PGADMIN_PYTHON_DIR%\python -c "import zipfile; z = zipfile.ZipFile('python-embedded.zip', 'r'); z.extractall('../win-build/python/')" || EXIT /B 1
 
     ECHO Copying site-packages...
-    XCOPY /S /I /E /H /Y "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1
 
     REM NOTE: There is intentionally no space after "site" in the line below, to prevent Python barfing if there's one in the file
     ECHO import site>> "%BUILDROOT%\python\python%PYTHON_MAJOR%%PYTHON_MINOR%._pth"
@@ -211,7 +211,7 @@ REM Main build sequence Ends
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    XCOPY /S /I /E /H /Y "%WD%\web" "%BUILDROOT%\web" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%WD%\web" "%BUILDROOT%\web" > nul || EXIT /B 1
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
@@ -256,8 +256,8 @@ REM Main build sequence Ends
     RD /Q /S "%BUILDROOT%\docs\en_US\html\_sources" 1> nul 2>&1
 
     ECHO Staging runtime components...
-    XCOPY /S /I /E /H /Y "%WD%\runtime\assets" "%BUILDROOT%\runtime\assets" > nul || EXIT /B 1
-    XCOPY /S /I /E /H /Y "%WD%\runtime\src" "%BUILDROOT%\runtime\src" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%WD%\runtime\assets" "%BUILDROOT%\runtime\assets" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%WD%\runtime\src" "%BUILDROOT%\runtime\src" > nul || EXIT /B 1
 
     COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\" > nul || EXIT /B 1
     CD "%BUILDROOT%\runtime\"
@@ -281,11 +281,11 @@ REM Main build sequence Ends
     REM WGET END
 
     REM YARN
-    REM XCOPY /S /I /E /H /Y "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    REM ROBOCOPY /MIR "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     REM YARN END
 
     REM WGET
-    XCOPY /S /I /E /H /Y "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    ROBOCOPY /MIR "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
     REM WGET END
 
     MOVE "%BUILDROOT%\runtime\nw.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
