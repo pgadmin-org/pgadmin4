@@ -84,14 +84,14 @@ define('pgadmin.node.database', [
         },{
           name: 'connect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'connect_database',
-          category: 'connect', priority: 4, label: gettext('Connect Database...'),
+          category: 'connect', priority: 4, label: gettext('Connect Database'),
           icon: 'fa fa-link', enable : 'is_not_connected', data: {
             data_disabled: gettext('Selected database is already connected.'),
           },
         },{
           name: 'disconnect_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'disconnect_database',
-          category: 'drop', priority: 5, label: gettext('Disconnect Database...'),
+          category: 'drop', priority: 5, label: gettext('Disconnect from database'),
           icon: 'fa fa-unlink', enable : 'is_connected',data: {
             data_disabled: gettext('Selected database is already disconnected.'),
           },
@@ -219,8 +219,8 @@ define('pgadmin.node.database', [
 
           if (d) {
             Notify.confirm(
-              gettext('Disconnect the database'),
-              gettext('Are you sure you want to disconnect the database - %s?', d.label),
+              gettext('Disconnect from database'),
+              gettext('Are you sure you want to disconnect from database - %s?', d.label),
               function() {
                 var data = d;
                 $.ajax({

@@ -14,6 +14,7 @@ New features
 Housekeeping
 ************
 
+| `Issue #7180 <https://redmine.postgresql.org/issues/7180>`_ -  Rename the menu 'Disconnect Database' to 'Disconnect from database'.
 
 
 Bug fixes
