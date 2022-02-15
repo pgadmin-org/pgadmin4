@@ -158,8 +158,10 @@ REM Main build sequence Ends
     REM Note that we must use virtualenv.exe here, as the venv module doesn't allow python.exe to relocate.
     "%PGADMIN_PYTHON_DIR%\Scripts\virtualenv.exe" venv
 
-    ROBOCOPY /MIR "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul || EXIT /B 1
-    ROBOCOPY /MIR "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul || EXIT /B 1
+    ROBOCOPY /S "%PGADMIN_PYTHON_DIR%\DLLs" "%TMPDIR%\venv\DLLs" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
+    ROBOCOPY /S "%PGADMIN_PYTHON_DIR%\Lib" "%TMPDIR%\venv\Lib" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
 
     ECHO Activating virtual environment -  %TMPDIR%\venv...
     CALL "%TMPDIR%\venv\Scripts\activate" || EXIT /B 1
@@ -183,7 +185,8 @@ REM Main build sequence Ends
     %PGADMIN_PYTHON_DIR%\python -c "import zipfile; z = zipfile.ZipFile('python-embedded.zip', 'r'); z.extractall('../win-build/python/')" || EXIT /B 1
 
     ECHO Copying site-packages...
-    ROBOCOPY /MIR "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul || EXIT /B 1
+    ROBOCOPY /S "%TMPDIR%\venv\Lib\site-packages" "%BUILDROOT%\python\Lib\site-packages" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
 
     REM NOTE: There is intentionally no space after "site" in the line below, to prevent Python barfing if there's one in the file
     ECHO import site>> "%BUILDROOT%\python\python%PYTHON_MAJOR%%PYTHON_MINOR%._pth"
@@ -211,7 +214,8 @@ REM Main build sequence Ends
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    ROBOCOPY /MIR "%WD%\web" "%BUILDROOT%\web" > nul || EXIT /B 1
+    ROBOCOPY /S "%WD%\web" "%BUILDROOT%\web" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
@@ -256,8 +260,10 @@ REM Main build sequence Ends
     RD /Q /S "%BUILDROOT%\docs\en_US\html\_sources" 1> nul 2>&1
 
     ECHO Staging runtime components...
-    ROBOCOPY /MIR "%WD%\runtime\assets" "%BUILDROOT%\runtime\assets" > nul || EXIT /B 1
-    ROBOCOPY /MIR "%WD%\runtime\src" "%BUILDROOT%\runtime\src" > nul || EXIT /B 1
+    ROBOCOPY /S "%WD%\runtime\assets" "%BUILDROOT%\runtime\assets" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
+    ROBOCOPY /S "%WD%\runtime\src" "%BUILDROOT%\runtime\src" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
 
     COPY "%WD%\runtime\package.json" "%BUILDROOT%\runtime\" > nul || EXIT /B 1
     CD "%BUILDROOT%\runtime\"
@@ -281,11 +287,12 @@ REM Main build sequence Ends
     REM WGET END
 
     REM YARN
-    REM ROBOCOPY /MIR "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    REM ROBOCOPY /S "%TMPDIR%\node_modules\nw\nwjs\*" "%BUILDROOT%\runtime" > nul
     REM YARN END
 
     REM WGET
-    ROBOCOPY /MIR "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64\*" "%BUILDROOT%\runtime" > nul || EXIT /B 1
+    ROBOCOPY /S "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64\*" "%BUILDROOT%\runtime" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
     REM WGET END
 
     MOVE "%BUILDROOT%\runtime\nw.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
@@ -365,3 +372,6 @@ REM Main build sequence Ends
 
     EXIT /B 1
 
+:CHECK_ROBOCOPY_ERROR
+    IF %ERRORLEVEL% GEQ 8 EXIT /B %ERRORLEVEL%
+    EXIT /B 0
