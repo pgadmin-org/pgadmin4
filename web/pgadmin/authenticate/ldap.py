@@ -12,7 +12,7 @@
 import ssl
 import config
 from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES, ANONYMOUS,\
-    SIMPLE
+    SIMPLE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
     LDAPStartTLSError, LDAPSSLConfigurationError
@@ -108,18 +108,21 @@ class LDAPAuthentication(BaseAuthentication):
         if not status:
             return status, server
 
+        auto_bind = AUTO_BIND_TLS_BEFORE_BIND if self.start_tls \
+            else AUTO_BIND_NO_TLS
+
         # Create the connection
         try:
             if self.anonymous_bind:
                 self.conn = Connection(server,
-                                       auto_bind=True,
+                                       auto_bind=auto_bind,
                                        authentication=ANONYMOUS
                                        )
             else:
                 self.conn = Connection(server,
                                        user=self.bind_user,
                                        password=self.bind_pass,
-                                       auto_bind=True,
+                                       auto_bind=auto_bind,
                                        authentication=SIMPLE
                                        )
 
@@ -131,20 +134,15 @@ class LDAPAuthentication(BaseAuthentication):
             current_app.logger.exception(
                 "Error binding to the LDAP server.")
             return False, gettext("Error binding to the LDAP server.")
+        except LDAPStartTLSError as e:
+            current_app.logger.exception(
+                "Error starting TLS: {}\n".format(e))
+            return False, gettext("Error starting TLS: {}\n"
+                                  ).format(e.args[0])
         except Exception as e:
             current_app.logger.exception(
                 ERROR_CONNECTING_LDAP_SERVER.format(e))
             return False, ERROR_CONNECTING_LDAP_SERVER.format(e.args[0])
-
-        # Enable TLS if STARTTLS is configured
-        if self.start_tls:
-            try:
-                self.conn.start_tls()
-            except LDAPStartTLSError as e:
-                current_app.logger.exception(
-                    "Error starting TLS: {}\n".format(e))
-                return False, gettext("Error starting TLS: {}\n"
-                                      ).format(e.args[0])
 
         return True, None
 

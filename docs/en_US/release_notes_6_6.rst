@@ -20,6 +20,7 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #6991 <https://redmine.postgresql.org/issues/6991>`_ -  Fixed an issue where pgadmin cannot connect to LDAP when STARTTLS is required before bind.
 | `Issue #6999 <https://redmine.postgresql.org/issues/6999>`_ -  Fixed an issue where a warning is flashed every time for an email address when authentication sources are internal and ldap.
 | `Issue #7124 <https://redmine.postgresql.org/issues/7124>`_ -  Fixed the schema diff issue where tables have different column positions and a column has a default value.
 | `Issue #7152 <https://redmine.postgresql.org/issues/7152>`_ -  Added comments column for the functions collection node.
