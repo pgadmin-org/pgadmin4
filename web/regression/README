@@ -250,7 +250,13 @@ Python Tests:
          run 'python runtests.py --exclude resql'
 
 - Execute ui selenium tests in parallel using selenoid(selenium grid + docker)
-     Example : --pkg feature_tests --parallel
+    Example 1) Execute only all feature tests in parallel mode
+     run 'python runtests.py --pkg feature_tests --parallel'
+
+     Example 1) Execute particular module feature tests in parallel mode
+     run 'python runtests.py --pkg feature_tests --modules browser_tool_bar_test
+                --parallel'
+
 
 
 Code Coverage:

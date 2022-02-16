@@ -262,7 +262,7 @@ class ConnectToServerDiv:
 
 class PropertyDialogueLocators:
     # This will contain xpaths for elements in properties dialogue
-    server_dialogue_title = "//div[text()='Create - Server']"
+    server_dialogue_title = "//div[text()='Register - Server']"
 
     server_connection_tab = "//button/span[text()='Connection']"
 
