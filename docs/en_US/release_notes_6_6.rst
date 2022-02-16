@@ -21,4 +21,5 @@ Bug fixes
 *********
 
 | `Issue #7124 <https://redmine.postgresql.org/issues/7124>`_ -  Fixed the schema diff issue where tables have different column positions and a column has a default value.
+| `Issue #7152 <https://redmine.postgresql.org/issues/7152>`_ -  Added comments column for the functions collection node.
 | `Issue #7173 <https://redmine.postgresql.org/issues/7173>`_ -  Fixed an issue where the User Management dialog is not opening.

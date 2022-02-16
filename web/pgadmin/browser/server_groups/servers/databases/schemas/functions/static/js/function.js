@@ -139,8 +139,10 @@ define('pgadmin.node.function', [
           id: 'pronamespace', label: gettext('Schema'), cell: 'string',
           control: 'node-list-by-id', type: 'text', cache_level: 'database',
           node: 'schema', disabled: 'isDisabled', mode: ['create', 'edit'],
-        },
-        ],
+        },{
+          id: 'description', label: gettext('Comment'), cell: 'string',
+          type: 'multiline', disabled: 'isDisabled',
+        }],
       }),
     });
 
