@@ -163,7 +163,7 @@ class KerberosAuthentication(BaseAuthentication):
         return gettext("kerberos")
 
     def validate(self, form):
-        return True
+        return True, None
 
     def authenticate(self, frm):
 

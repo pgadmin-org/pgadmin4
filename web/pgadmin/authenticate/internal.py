@@ -54,14 +54,14 @@ class BaseAuthentication(object):
             form.email.errors = list(form.email.errors)
             form.email.errors.append(gettext(
                 self.messages('EMAIL_NOT_PROVIDED')))
-            return False
+            return False, None
         if password is None or password == '':
             form.password.errors = list(form.password.errors)
             form.password.errors.append(
                 self.messages('PASSWORD_NOT_PROVIDED'))
-            return False
+            return False, None
 
-        return True
+        return True, None
 
     def login(self, form):
         username = form.data['email']
@@ -99,10 +99,10 @@ class InternalAuthentication(BaseAuthentication):
         """User validation"""
         # validate the email id first
         if not validate_email(form.data['email']):
-            flash(self.messages('INVALID_EMAIL'), 'warning')
-            return False
+            return False, self.messages('INVALID_EMAIL')
         # Flask security validation
-        return form.validate_on_submit()
+        submit = form.validate_on_submit()
+        return submit, None
 
     def authenticate(self, form):
         username = form.data['email']

@@ -74,7 +74,7 @@ class WebserverAuthentication(BaseAuthentication):
         return gettext("webserver")
 
     def validate(self, form):
-        return True
+        return True, None
 
     def get_user(self):
         username = request.environ.get(config.WEBSERVER_REMOTE_USER)

@@ -115,7 +115,7 @@ class OAuth2Authentication(BaseAuthentication):
         return self.oauth2_config[self.oauth2_current_client]['OAUTH2_NAME']
 
     def validate(self, form):
-        return True
+        return True, None
 
     def login(self, form):
         profile = self.get_user_profile()

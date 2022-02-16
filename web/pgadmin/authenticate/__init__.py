@@ -211,10 +211,14 @@ class AuthSourceManager:
 
     def validate(self):
         """Validate through all the sources."""
+        err_msg = None
         for src in self.auth_sources:
             source = get_auth_sources(src)
-            if source.validate(self.form):
+            status, err_msg = source.validate(self.form)
+            if status:
                 return True
+        if err_msg:
+            flash(err_msg, 'warning')
         return False
 
     def authenticate(self):
