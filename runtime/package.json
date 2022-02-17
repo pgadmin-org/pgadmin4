@@ -8,8 +8,8 @@
   "chromium-args": "--disable-popup-blocking --disable-gpu",
   "user-agent": "Nwjs:%nwver-%osinfo-%chromium_ver",
   "window": {
-    "width": 440,
-    "height": 170,
+    "width": 750,
+    "height": 600,
     "toolbar": false,
     "fullscreen": false,
     "frame": false,
