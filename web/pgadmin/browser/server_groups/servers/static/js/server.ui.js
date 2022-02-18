@@ -85,14 +85,6 @@ export default class ServerSchema extends BaseUISchema {
     return pgAdmin.Browser.utils.pg_libpq_version < 100000;
   }
 
-  validateHost(str) {
-    // added above condition for unix socket where directory starts with /
-    if (str.startsWith('/')) {
-      return true;
-    }
-    return /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/.test(str);
-  }
-
   get baseFields() {
     let obj = this;
     return [
@@ -481,7 +473,8 @@ export default class ServerSchema extends BaseUISchema {
 
       /* Hostname, IP address validate */
       if (state.host) {
-        if (!this.validateHost(state.host)){
+        // Check for leading and trailing spaces.
+        if (/^\s|\s$/.test(state.host)){
           errmsg = gettext('Host name must be valid hostname or IPv4 or IPv6 address.');
           setError('host', errmsg);
           return true;
