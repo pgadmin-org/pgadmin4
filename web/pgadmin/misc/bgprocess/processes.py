@@ -120,8 +120,13 @@ class BatchProcess(object):
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
         else:
+            _cmd = kwargs['cmd']
+            # Get system's interpreter
+            if kwargs['cmd'] == 'python':
+                _cmd = self._get_python_interpreter()
+
             self._create_process(
-                kwargs['desc'], kwargs['cmd'], kwargs['args']
+                kwargs['desc'], _cmd, kwargs['args']
             )
 
     def _retrieve_process(self, _id):
@@ -246,13 +251,8 @@ class BatchProcess(object):
                 _('The process has already finished and cannot be restarted.')
             )
 
-    def start(self, cb=None):
-        self.check_start_end_time()
-
-        executor = file_quote(os.path.join(
-            os.path.dirname(u_encode(__file__)), 'process_executor.py'
-        ))
-
+    def _get_python_interpreter(self):
+        """Get Python Interpreter"""
         if os.name == 'nt':
             paths = os.environ['PATH'].split(os.pathsep)
 
@@ -261,14 +261,22 @@ class BatchProcess(object):
                 str(paths)
             )
 
-            interpreter = self.get_interpreter(paths)
+            interpreter = self.get_windows_interpreter(paths)
         else:
             interpreter = sys.executable
 
-        cmd = [
-            interpreter if interpreter is not None else 'python',
-            executor, self.cmd
-        ]
+        return interpreter if interpreter else 'python'
+
+    def start(self, cb=None):
+        self.check_start_end_time()
+
+        executor = file_quote(os.path.join(
+            os.path.dirname(u_encode(__file__)), 'process_executor.py'
+        ))
+
+        interpreter = self._get_python_interpreter()
+
+        cmd = [interpreter, executor, self.cmd]
         cmd.extend(self.args)
 
         current_app.logger.info(
@@ -383,7 +391,7 @@ class BatchProcess(object):
         # Explicitly ignoring signals in the child process
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    def get_interpreter(self, paths):
+    def get_windows_interpreter(self, paths):
         """
         Get interpreter.
         :param paths:

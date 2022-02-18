@@ -9,7 +9,6 @@
 
 """ Amazon RDS PostgreSQL provider """
 
-import configparser
 import os
 import time
 import boto3
@@ -126,7 +125,8 @@ class RdsProvider(AbsProvider):
 
         session = boto3.Session(
             aws_access_key_id=self._access_key,
-            aws_secret_access_key=self._secret_key
+            aws_secret_access_key=self._secret_key,
+            aws_session_token=self._session_token
         )
 
         self._clients['type'] = session.client(type, region_name=args.region)

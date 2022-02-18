@@ -87,7 +87,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
             var _url = url_for('cloud.get_aws_db_instances') ;
 
             if (engine) _url += '?eng_version=' + engine;
-            if (reload) {
+            if (reload || options === undefined || options.length == 0) {
               api.get(_url)
                 .then(res=>{
                   let data = res.data.data;

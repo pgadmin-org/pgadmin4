@@ -13,6 +13,7 @@ import boto3
 import pickle
 from flask import session
 from boto3.session import Session
+from .aws_regions import AWS_REGIONS
 
 
 class RDS():
@@ -163,9 +164,11 @@ def get_aws_regions():
     _session = Session()
     res = _session.get_available_regions('rds')
     regions = []
+
     for value in res:
-        regions.append({
-            'label': value,
-            'value': value
-        })
+        if value in AWS_REGIONS:
+            regions.append({
+                'label': AWS_REGIONS[value] + ' | ' + value,
+                'value': value
+            })
     return True, regions

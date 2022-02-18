@@ -200,9 +200,9 @@ export class InstanceSchema extends BaseUISchema {
       deps: ['aws_db_version', 'aws_db_instance_class'],
       depChange: (state, source)=> {
         if (source[0] == 'aws_db_instance_class') {
-          state.reload_instances = false;
+          return {reload_instances: false};
         } else {
-          state.reload_instances = true;
+          return {reload_instances: true};
         }
       },
       type: (state) => {
@@ -215,6 +215,7 @@ export class InstanceSchema extends BaseUISchema {
           controlProps: {
             allowClear: false,
             filter: (options) => {
+              if (options.length == 0) return;
               let pattern = 'db.m';
               let pattern_1 = 'db.m';
 
@@ -260,26 +261,31 @@ export class StorageSchema extends BaseUISchema {
       },{
         id: 'aws_storage_size', label: gettext('Allocated storage'), type: 'text',
         mode: ['create'], noEmpty: true, deps: ['aws_storage_type'],
-        depChange: (state)=> {
-          if(state.aws_storage_type === 'io1') {
-            state.aws_storage_size = 100;
-          } else if(state.aws_storage_type === 'gp2') {
-            state.aws_storage_size = 20;
-          } else {
-            state.aws_storage_size = 5;
-          }
+        depChange: (state, source)=> {
+          if (source[0] !== 'aws_storage_size')
+            if(state.aws_storage_type === 'io1') {
+              return {aws_storage_size: 100};
+            } else if(state.aws_storage_type === 'gp2') {
+              return {aws_storage_size: 20};
+            } else {
+              return {aws_storage_size: 5};
+            }
         },
         helpMessage: gettext('Size in GiB.')
       }, {
         id: 'aws_storage_IOPS', label: gettext('Provisioned IOPS'), type: 'text',
         mode: ['create'],
         visible: (state) => {
-          if(state.aws_storage_type === 'io1') {
-            state.aws_storage_IOPS = 3000;
-            return true;
-          }
+          if(state.aws_storage_type === 'io1') return true;
           return false;
-        } , deps: ['aws_storage_type']
+        } , deps: ['aws_storage_type'],
+        depChange: (state, source) => {
+          if (source[0] !== 'aws_storage_IOPS') {
+            if(state.aws_storage_type === 'io1') {
+              return {aws_storage_IOPS: 3000};
+            }
+          }
+        },
       },
     ];
   }
