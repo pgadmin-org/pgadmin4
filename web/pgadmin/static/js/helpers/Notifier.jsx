@@ -17,13 +17,6 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import pgWindow from 'sources/window';
 import ModalProvider, { useModal } from './ModalProvider';
-import { DefaultButton, PrimaryButton } from '../components/Buttons';
-import { Box } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-import HTMLReactParse from 'html-react-parser';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
-import PropTypes from 'prop-types';
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
@@ -81,40 +74,6 @@ const FinalNotifyContent = React.forwardRef(({children}, ref) => {
 FinalNotifyContent.displayName = 'FinalNotifyContent';
 FinalNotifyContent.propTypes = {
   children: CustomPropTypes.children,
-};
-
-const useAlertStyles = makeStyles((theme)=>({
-  footer: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    padding: '0.5rem',
-    ...theme.mixins.panelBorder.top,
-  },
-  margin: {
-    marginLeft: '0.25rem',
-  }
-}));
-function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
-  const classes = useAlertStyles();
-  return (
-    <Box display="flex" flexDirection="column" height="100%">
-      <Box flexGrow="1" p={2}>{typeof(text) == 'string' ? HTMLReactParse(text) : text}</Box>
-      <Box className={classes.footer}>
-        {confirm &&
-          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
-        }
-        <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
-      </Box>
-    </Box>
-  );
-}
-AlertContent.propTypes = {
-  text: PropTypes.string,
-  confirm: PropTypes.bool,
-  onOkClick: PropTypes.func,
-  onCancelClick: PropTypes.func,
-  okLabel: PropTypes.string,
-  cancelLabel: PropTypes.string,
 };
 
 var Notifier = {
@@ -221,37 +180,27 @@ var Notifier = {
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
   },
   alert: (title, text, onOkClick, okLabel=gettext('OK'))=>{
+    /* Use this if you want to use pgAdmin global notifier.
+    Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
     if(!modalInitialized) {
       initializeModalProvider();
     }
-    modalRef.showModal(title, (closeModal)=>{
-      const onOkClickClose = ()=>{
-        onOkClick && onOkClick();
-        closeModal();
-      };
-      return (
-        <AlertContent text={text} onOkClick={onOkClickClose} okLabel={okLabel} />
-      );
-    });
+    modalRef.alert(title, text, onOkClick, okLabel);
   },
   confirm: (title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'))=>{
+    /* Use this if you want to use pgAdmin global notifier.
+    Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
     if(!modalInitialized) {
       initializeModalProvider();
     }
-    modalRef.showModal(title, (closeModal)=>{
-      const onCancelClickClose = ()=>{
-        onCancelClick && onCancelClick();
-        closeModal();
-      };
-      const onOkClickClose = ()=>{
-        onOkClick && onOkClick();
-        closeModal();
-      };
-      return (
-        <AlertContent text={text} confirm onOkClick={onOkClickClose} onCancelClick={onCancelClickClose} okLabel={okLabel} cancelLabel={cancelLabel}/>
-      );
-    });
+    modalRef.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel);
   },
+  showModal(title, content) {
+    if(!modalInitialized) {
+      initializeModalProvider();
+    }
+    modalRef.showModal(title, content);
+  }
 };
 
 if(window.frameElement) {
