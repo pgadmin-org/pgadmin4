@@ -17,7 +17,7 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
     super({
       oid: undefined,
       aws_name: '',
-      aws_public_ip: '127.0.0.1/32',
+      aws_public_ip: initValues.hostIP,
       ...initValues
     });
 
@@ -39,7 +39,7 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
       }, {
         id: 'aws_public_ip', label: gettext('Public IP range'), type: 'text',
         mode: ['create'],
-        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32'),
+        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated.'),
       }, {
         type: 'nested-fieldset', label: gettext('Version & Instance'),
         mode: ['create'],
@@ -127,9 +127,18 @@ class DatabaseSchema extends BaseUISchema {
     && data.aws_db_password != data.aws_db_confirm_password) {
       setErrMsg('aws_db_confirm_password', gettext('Passwords do not match.'));
       return true;
-    } else {
-      return false;
     }
+    if (!isEmptyString(data.aws_db_confirm_password) && data.aws_db_confirm_password.length < 8) {
+      setErrMsg('aws_db_confirm_password', gettext('Password must be 8 characters or more.'));
+      return true;
+    }
+    if (data.aws_db_confirm_password.includes('\'') || data.aws_db_confirm_password.includes('"') ||
+    data.aws_db_confirm_password.includes('@') || data.aws_db_confirm_password.includes('/')) {
+      setErrMsg('aws_db_confirm_password', gettext('Invalid passowrd.'));
+      return true;
+    }
+
+    return false;
   }
 
   get idAttribute() {
@@ -152,6 +161,7 @@ class DatabaseSchema extends BaseUISchema {
     }, {
       id: 'aws_db_password', label: gettext('Password'), type: 'password',
       mode: ['create'], noEmpty: true,
+      helpMessage: gettext('At least 8 printable ASCII characters. Can not contain any of the following: / \(slash\), \'\(single quote\), "\(double quote\) and @ \(at sign\).')
     }, {
       id: 'aws_db_confirm_password', label: gettext('Confirm password'),
       type: 'password',
@@ -202,6 +212,7 @@ export class InstanceSchema extends BaseUISchema {
         if (source[0] == 'aws_db_instance_class') {
           return {reload_instances: false};
         } else {
+          state.instanceData = [];
           return {reload_instances: true};
         }
       },

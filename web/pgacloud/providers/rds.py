@@ -137,17 +137,18 @@ class RdsProvider(AbsProvider):
         """ Create a new security group for the instance """
         ec2 = self._get_aws_client('ec2', args)
         ip = args.public_ip if args.public_ip else get_my_ip()
+        ip = ip.split(',')
 
         # Deploy the security group
         try:
             name = 'pgacloud_{}_{}_{}'.format(args.name,
-                                              ip.replace('.', '-'),
+                                              ip[0].replace('.', '-'),
                                               get_random_id())
             debug(args, 'Creating security group: {}...'.format(name))
             output({'Creating': 'Creating security group: {}...'.format(name)})
             response = ec2.create_security_group(
                 Description='Inbound access for {} to RDS instance {}'.format(
-                    ip, args.name),
+                    ip[0], args.name),
                 GroupName=name
             )
         except Exception as e:
@@ -158,9 +159,17 @@ class RdsProvider(AbsProvider):
     def _add_ingress_rule(self, args, security_group):
         """ Add a local -> PostgreSQL ingress rule to a security group """
         ec2 = self._get_aws_client('ec2', args)
-        ip = args.public_ip if args.public_ip else '{}/32'.format(get_my_ip())
+        ip = args.public_ip if args.public_ip else\
+            '{}/32'.format(get_my_ip())
         port = args.db_port or 5432
+        IpRanges = []
 
+        ip = ip.split(',')
+        for i in ip:
+            IpRanges.append({
+                'CidrIp': i,
+                'Description': 'pgcloud client {}'.format(i)
+            })
         try:
             output({'Adding': 'Adding ingress rule for: {}...'.format(ip)})
             debug(args,
@@ -172,12 +181,7 @@ class RdsProvider(AbsProvider):
                         'FromPort': port,
                         'ToPort': port,
                         'IpProtocol': 'tcp',
-                        'IpRanges': [
-                            {
-                                'CidrIp': ip,
-                                'Description': 'pgcloud client {}'.format(ip)
-                            },
-                        ]
+                        'IpRanges': IpRanges
                     },
                 ]
             )

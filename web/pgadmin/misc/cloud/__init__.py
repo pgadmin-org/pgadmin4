@@ -25,6 +25,7 @@ from pgadmin.model import db, Server, Process
 from pgadmin.misc.cloud.utils.rds import RDS, verify_aws_credentials,\
     get_aws_db_instances, get_aws_db_versions, clear_aws_session,\
     get_aws_regions
+from pgadmin.misc.cloud.utils import get_my_ip
 
 from config import root
 
@@ -81,7 +82,8 @@ class CloudModule(PgAdminModule):
                 'cloud.get_aws_db_instances',
                 'cloud.update_cloud_server',
                 'cloud.update_cloud_process',
-                'cloud.get_aws_regions']
+                'cloud.get_aws_regions',
+                'cloud.get_host_ip']
 
 
 # Create blueprint for CloudModule class
@@ -106,6 +108,13 @@ def script():
         status=200,
         mimetype=MIMETYPE_APP_JS)
     return res
+
+
+@blueprint.route('/get_host_ip/',
+                 methods=['GET'], endpoint='get_host_ip')
+@login_required
+def get_host_ip():
+    return make_json_response(data=get_my_ip())
 
 
 @blueprint.route('/verify_credentials/',
@@ -285,7 +294,8 @@ def _create_server(data):
         maintenance_db=data.get('db'),
         username=data.get('username'),
         ssl_mode='prefer',
-        cloud_status=data.get('cloud_status')
+        cloud_status=data.get('cloud_status'),
+        connect_timeout=30,
     )
 
     db.session.add(server)

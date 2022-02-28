@@ -68,7 +68,21 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
   const [cloudDBCred, setCloudDBCred] = React.useState({});
   const [cloudDBDetails, setCloudDBDetails] = React.useState({});
   const [callRDSAPI, setCallRDSAPI] = React.useState({});
+  const [hostIP, setHostIP] = React.useState('127.0.0.1/32');
   const axiosApi = getApiInstance();
+
+  React.useEffect(() => {
+    let _url = url_for('cloud.get_host_ip') ;
+    axiosApi.get(_url)
+      .then((res) => {
+        if (res.data.data) {
+          setHostIP(res.data.data);
+        }
+      })
+      .catch((error) => {
+        Alertify.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
+      });
+  }, []);
 
   React.useEffect(() => {
     if (callRDSAPI == 2) {
@@ -111,6 +125,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
         server_groups: ()=>getNodeListById(pgAdmin.Browser.Nodes['server_group'], nodeInfo, nodeData),
       }, {
         gid: nodeInfo['server_group']._id,
+        hostIP: hostIP,
       });
       setCloudInstanceDetailsInstance(cloudDBInstanceSchema);
     }
@@ -151,7 +166,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
     return isError;
   };
 
-  const validateCloudStep2 = (cloudInstanceDetails) => {
+  const validateCloudStep2 = (cloudInstanceDetails, host_ip) => {
     let isError = false;
     if (isEmptyString(cloudInstanceDetails.aws_name) ||
     isEmptyString(cloudInstanceDetails.aws_db_version) || isEmptyString(cloudInstanceDetails.aws_instance_type) ||
@@ -162,7 +177,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
     if(cloudInstanceDetails.aws_storage_type == 'io1' && isEmptyString(cloudInstanceDetails.aws_storage_IOPS)) {
       isError = true;
     }
-    if (isEmptyString(cloudInstanceDetails.aws_public_ip)) cloudInstanceDetails.aws_public_ip = '127.0.0.1/32';
+    if (isEmptyString(cloudInstanceDetails.aws_public_ip)) cloudInstanceDetails.aws_public_ip = host_ip;
     return isError;
   };
 
@@ -222,7 +237,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
       isError = validateCloudStep1(cloudDBCred);
       break;
     case 2:
-      isError = validateCloudStep2(cloudInstanceDetails);
+      isError = validateCloudStep2(cloudInstanceDetails, hostIP);
       break;
     case 3:
       isError = validateCloudStep3(cloudDBDetails);
