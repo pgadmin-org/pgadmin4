@@ -46,6 +46,10 @@ cat << EOF > "${BUILDROOT}/server.spec"
 %global __provides_exclude_from ^/.*$
 %global _build_id_links none
 
+# Disable RPATH checking, as it will fail with some of the paths in the Python
+# virtualenv, in particular Pillow.libs.
+%global __brp_check_rpaths %{nil}
+
 # Bytecompiling Python 3 doesn't work on RHEL/CentOS 7, so make it a no-op
 %if 0%{?rhel} && 0%{?rhel} == 7
 %define __python /bin/true
