@@ -18,7 +18,7 @@ Flask-WTF==1.*
 Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==2.*
-Flask-Security-Too==4.*
+Flask-Security-Too==4.1.*
 Flask-SocketIO>=5.0.1
 WTForms==3.*
 passlib==1.*

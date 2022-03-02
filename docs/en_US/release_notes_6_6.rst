@@ -26,3 +26,4 @@ Bug fixes
 | `Issue #7152 <https://redmine.postgresql.org/issues/7152>`_ -  Added comments column for the functions collection node.
 | `Issue #7173 <https://redmine.postgresql.org/issues/7173>`_ -  Fixed an issue where the User Management dialog is not opening.
 | `Issue #7181 <https://redmine.postgresql.org/issues/7181>`_ -  Ensure that the user should be able to add new server with unix socket connection.
+| `Issue #7202 <https://redmine.postgresql.org/issues/7202>`_ -  Ensure that Flask-Security-Too is using the latest version.
