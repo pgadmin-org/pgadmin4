@@ -114,7 +114,9 @@ def script():
                  methods=['GET'], endpoint='get_host_ip')
 @login_required
 def get_host_ip():
-    return make_json_response(data=get_my_ip())
+    """test"""
+    ip = get_my_ip()
+    return make_json_response(data=ip)
 
 
 @blueprint.route('/verify_credentials/',

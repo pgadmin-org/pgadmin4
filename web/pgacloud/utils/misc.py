@@ -16,16 +16,14 @@ def get_my_ip():
     """ Return the public IP of this host """
     http = urllib3.PoolManager()
     try:
-        external_ip = http.request.urlopen(
-            'https://ident.me').read().decode('utf8')
+        external_ip = http.request('GET', 'https://ident.me').data
     except Exception:
         try:
-            external_ip = http.request.urlopen(
-                'https://ifconfig.me/ip').read().decode('utf8')
+            external_ip = http.request('GET', 'https://ifconfig.me/ip').data
         except Exception:
             external_ip = '127.0.0.1'
 
-    return external_ip
+    return '{}/{}'.format(external_ip, 32)
 
 
 def get_random_id():

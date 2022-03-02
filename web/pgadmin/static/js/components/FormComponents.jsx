@@ -762,6 +762,7 @@ export const InputSelect = forwardRef(({
     if(typeof options === 'function') {
       optPromise = options();
     }
+    setFinalOptions([[], true]);
     Promise.resolve(optPromise)
       .then((res)=>{
         /* If component unmounted, dont update state */

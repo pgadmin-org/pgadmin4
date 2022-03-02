@@ -128,7 +128,7 @@ define('pgadmin.misc.cloud', [
                 return setTimeout((function () {
                   ReactDOM.unmountComponentAtNode(document.getElementById('cloudWizardDlg'));
                   return Alertify.cloudWizardDialog().destroy();
-                }), 500);
+                }), 10);
               },
             }
           };

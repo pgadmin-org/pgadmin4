@@ -88,10 +88,10 @@ class CloudDBCredSchema extends BaseUISchema {
         noEmpty: true,
         helpMessage: gettext('The cloud instance will be deployed in the selected region.')
       },{
-        id: 'aws_access_key', label: gettext('AWS access key'), type: 'text',
+        id: 'aws_access_key', label: gettext('AWS access key'), type: 'password',
         mode: ['create'], noEmpty: true,
       }, {
-        id: 'aws_secret_access_key', label: gettext('AWS secret access key'), type: 'text',
+        id: 'aws_secret_access_key', label: gettext('AWS secret access key'), type: 'password',
         mode: ['create'], noEmpty: true,
       }, {
         id: 'aws_session_token', label: gettext('AWS session token'), type: 'multiline',
@@ -205,8 +205,7 @@ export class InstanceSchema extends BaseUISchema {
       ],  noEmpty: true, orientation: 'vertical',
     },{
       id: 'aws_instance_type', label: gettext('Instance type'),
-      options: this.instanceOpts,  noEmpty: true,
-      controlProps: { allowClear: false },
+      options: this.instanceOpts,
       deps: ['aws_db_version', 'aws_db_instance_class'],
       depChange: (state, source)=> {
         if (source[0] == 'aws_db_instance_class') {
