@@ -38,6 +38,7 @@ Package: ${APP_NAME}-server
 Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
 Section: database
+Priority: optional
 Depends: python3, libpq5 (>= 11.0), libgssapi-krb5-2
 Recommends: postgresql-client | postgresql-client-14 | postgresql-client-13 | postgresql-client-12 | postgresql-client-11 | postgresql-client-10
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
@@ -60,6 +61,7 @@ Package: ${APP_NAME}-desktop
 Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
 Section: database
+Priority: optional
 Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), libatomic1, xdg-utils
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -85,6 +87,7 @@ Package: ${APP_NAME}-web
 Version: ${APP_LONG_VERSION}
 Architecture: all
 Section: database
+Priority: optional
 Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), apache2, libapache2-mod-wsgi-py3
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The web interface for pgAdmin, hosted under Apache HTTPD. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -109,6 +112,7 @@ Package: ${APP_NAME}
 Version: ${APP_LONG_VERSION}
 Architecture: all
 Section: database
+Priority: optional
 Depends: ${APP_NAME}-server (= ${APP_LONG_VERSION}), ${APP_NAME}-desktop (= ${APP_LONG_VERSION}), ${APP_NAME}-web (= ${APP_LONG_VERSION})
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: Installs all required components to run pgAdmin in desktop and web modes. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
