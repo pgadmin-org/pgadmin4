@@ -122,7 +122,7 @@ def get_aws_db_instances(eng_version):
         return False, 'Session has not created yet.'
 
     if not eng_version or eng_version == '' or eng_version == 'undefined':
-        eng_version = '9.6.1'
+        eng_version = '10.17'
 
     rds_obj = pickle.loads(session['aws']['aws_rds_obj'])
     res = rds_obj.get_available_db_instance_class(
@@ -148,7 +148,8 @@ def get_aws_db_versions():
 
     rds_obj = pickle.loads(session['aws']['aws_rds_obj'])
     db_versions = rds_obj.get_available_db_version()
-    res = db_versions['DBEngineVersions']
+    res = list(filter(lambda val: not val['EngineVersion'].startswith('9.6'),
+                      db_versions['DBEngineVersions']))
     versions = []
     for value in res:
         versions.append({

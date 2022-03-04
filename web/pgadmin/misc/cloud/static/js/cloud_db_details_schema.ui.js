@@ -88,7 +88,7 @@ class CloudDBCredSchema extends BaseUISchema {
         noEmpty: true,
         helpMessage: gettext('The cloud instance will be deployed in the selected region.')
       },{
-        id: 'aws_access_key', label: gettext('AWS access key'), type: 'password',
+        id: 'aws_access_key', label: gettext('AWS access key'), type: 'text',
         mode: ['create'], noEmpty: true,
       }, {
         id: 'aws_secret_access_key', label: gettext('AWS secret access key'), type: 'password',
