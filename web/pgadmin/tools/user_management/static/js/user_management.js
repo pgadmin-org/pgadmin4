@@ -90,7 +90,7 @@ define([
     // Callback to draw change password Dialog.
     change_password: function(url) {
       pgDialog.url_dialog(
-        gettext('Chagne Password'), url, 'change_user_password.html',
+        gettext('Change Password'), url, 'change_user_password.html',
       );
     },
 
