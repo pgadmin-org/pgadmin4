@@ -14,12 +14,26 @@ import string
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from flask import current_app
 from pgadmin.utils.preferences import Preferences
+from pgadmin.utils.constants import PGADMIN_STRING_SEPARATOR
 
 count = 1
 
 list_keys_array = ['name', 'colname', 'argid', 'token', 'option', 'conname',
                    'member_name', 'label', 'attname', 'fdwoption',
                    'fsrvoption', 'umoption']
+
+
+def _get_user_mapping_name(user_mapping_name):
+    """
+    This function is used to check the pgadmin string separator in the
+    specific string and split that.
+    """
+    mapping_name = user_mapping_name
+
+    if mapping_name.find(PGADMIN_STRING_SEPARATOR):
+        mapping_name = mapping_name.split(PGADMIN_STRING_SEPARATOR)[0]
+
+    return mapping_name
 
 
 def _get_source_list(**kwargs):
@@ -74,11 +88,15 @@ def _get_source_list(**kwargs):
                 view_object.conn, source_object_id, where=None,
                 show_system_objects=None, is_schema_diff=True)
 
+        title = item
+        if node == 'user_mapping':
+            title = _get_user_mapping_name(item)
+
         source_only.append({
             'id': count,
             'type': node,
             'label': node_label,
-            'title': item,
+            'title': title,
             'oid': source_object_id,
             'status': SchemaDiffModel.COMPARISON_STATUS['source_only'],
             'source_ddl': source_ddl,
@@ -151,11 +169,15 @@ def _get_target_list(removed, target_dict, node, target_params, view_object,
                 {'drop_sql': True})
             diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
 
+        title = item
+        if node == 'user_mapping':
+            title = _get_user_mapping_name(item)
+
         target_only.append({
             'id': count,
             'type': node,
             'label': node_label,
-            'title': item,
+            'title': title,
             'oid': target_object_id,
             'status': SchemaDiffModel.COMPARISON_STATUS['target_only'],
             'source_ddl': '',
@@ -315,11 +337,15 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     {'data': diff_dict, 'target_schema': target_schema})
                 diff_ddl = view_object.get_sql_from_diff(**temp_tgt_params)
 
+            title = key
+            if node == 'user_mapping':
+                title = _get_user_mapping_name(key)
+
             different.append({
                 'id': count,
                 'type': node,
                 'label': node_label,
-                'title': key,
+                'title': title,
                 'oid': source_object_id,
                 'source_oid': source_object_id,
                 'target_oid': target_object_id,
@@ -699,7 +725,7 @@ def parse_acl(source, target, diff_dict):
     :param target: Target Dict
     :param diff_dict: Difference Dict
     """
-    acl_keys = ['datacl', 'relacl', 'typacl', 'pkgacl']
+    acl_keys = ['datacl', 'relacl', 'typacl', 'pkgacl', 'fsrvacl']
     key = is_key_exists(acl_keys, source)
 
     # If key is not found in source then check the key is available

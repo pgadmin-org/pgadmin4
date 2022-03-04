@@ -26,6 +26,7 @@ PREF_LABEL_RESULTS_GRID = gettext('Results grid')
 PREF_LABEL_SQL_FORMATTING = gettext('SQL formatting')
 PREF_LABEL_TABS_SETTINGS = gettext('Tab settings')
 
+PGADMIN_STRING_SEPARATOR = '_$PGADMIN$_'
 PGADMIN_NODE = 'pgadmin.node.%s'
 UNAUTH_REQ = "Unauthorized request."
 SERVER_CONNECTION_CLOSED = gettext(

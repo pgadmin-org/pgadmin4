@@ -25,6 +25,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.utils.constants import PGADMIN_STRING_SEPARATOR
 
 
 class UserMappingModule(CollectionNodeModule):
@@ -916,7 +917,14 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                 # the empty list.
                 if 'umoptions' in data and data['umoptions'] is None:
                     data['umoptions'] = []
-                res[row['name']] = data
+
+                mapping_name = row['name']
+                if 'srvname' in data:
+                    mapping_name = \
+                        row['name'] + PGADMIN_STRING_SEPARATOR + \
+                        data['srvname']
+
+                res[mapping_name] = data
 
         return res
 
