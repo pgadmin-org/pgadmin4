@@ -39,6 +39,10 @@ const useStyles = makeStyles((theme)=>({
   nestedControl: {
     height: 'unset',
   },
+  errorMargin: {
+    /* Error footer margin */
+    marginBottom: '36px',
+  },
   sqlTabInput: {
     border: 0,
   }
@@ -368,7 +372,6 @@ export default function FormView({
               onChange={(event, selTabValue) => {
                 setTabValue(selTabValue);
               }}
-              // indicatorColor="primary"
               variant="scrollable"
               scrollButtons="auto"
               action={(ref)=>ref && ref.updateIndicator()}
@@ -379,9 +382,13 @@ export default function FormView({
             </Tabs>
           </Box>
           {Object.keys(finalTabs).map((tabName, i)=>{
+            let contentClassName = null;
+            if(fullTabs.indexOf(tabName) == -1) {
+              contentClassName = clsx(classes.nestedControl, stateUtils.formErr.message ? classes.errorMargin : null);
+            }
             return (
               <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-                className={fullTabs.indexOf(tabName) == -1 ? classes.nestedControl : null}>
+                className={contentClassName}>
                 {finalTabs[tabName]}
               </TabPanel>
             );
