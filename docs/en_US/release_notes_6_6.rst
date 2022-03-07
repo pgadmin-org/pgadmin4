@@ -23,6 +23,7 @@ Bug fixes
 | `Issue #6956 <https://redmine.postgresql.org/issues/6956>`_ -  Fixed a schema diff issue in which user mappings were not compared correctly.
 | `Issue #6991 <https://redmine.postgresql.org/issues/6991>`_ -  Fixed an issue where pgadmin cannot connect to LDAP when STARTTLS is required before bind.
 | `Issue #6999 <https://redmine.postgresql.org/issues/6999>`_ -  Fixed an issue where a warning is flashed every time for an email address when authentication sources are internal and ldap.
+| `Issue #7105 <https://redmine.postgresql.org/issues/7105>`_ -  Fixed an issue where the parent partition table was not displayed during autocomplete.
 | `Issue #7124 <https://redmine.postgresql.org/issues/7124>`_ -  Fixed the schema diff issue where tables have different column positions and a column has a default value.
 | `Issue #7152 <https://redmine.postgresql.org/issues/7152>`_ -  Added comments column for the functions collection node.
 | `Issue #7172 <https://redmine.postgresql.org/issues/7172>`_ -  Allow users to scroll and enter input when there is a validation error.
