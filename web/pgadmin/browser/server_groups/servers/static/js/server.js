@@ -930,6 +930,11 @@ define('pgadmin.node.server', [
 
             // Load dashboard
             pgBrowser.Events.trigger('pgadmin-browser:tree:selected', _item, _data, node);
+
+            /* Call enable/disable menu function after database is connected.
+             To make sure all the menus for database is in the right state */
+            pgBrowser.enable_disable_menus.apply(pgBrowser, [_item]);
+
             // We're not reconnecting
             if (!_wasConnected) {
               _tree.setInode(_item);

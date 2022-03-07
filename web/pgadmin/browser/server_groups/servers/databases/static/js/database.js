@@ -477,6 +477,9 @@ define('pgadmin.node.database', [
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', _item, _data
               );
+              /* Call enable/disable menu function after database is connected.
+               To make sure all the menus for database is in the right state */
+              pgBrowser.enable_disable_menus.apply(pgBrowser, [_item]);
 
               if (!_connected) {
                 setTimeout(function() {
