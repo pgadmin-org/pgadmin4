@@ -82,7 +82,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         self.page.click_modal('OK', True)
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element(
-                By.XPATH, NavMenuLocators.maintenance_operation))
+                By.XPATH, NavMenuLocators.maintenance_operation), 10)
 
         # Wait for the backup status alertfier
         self.wait.until(EC.visibility_of_element_located(

@@ -78,7 +78,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         try:
             wait = WebDriverWait(self.page.driver, 2)
             is_error = wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//div[@class ='MuiDialogTitle-root']"
+                (By.XPATH, "//div[contains(@class,'MuiDialogTitle-root')]"
                            "//div[text()='Debugger Error']")
             ))
 

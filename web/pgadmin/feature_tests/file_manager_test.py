@@ -76,7 +76,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.page.find_by_css_selector(QueryToolLocators.btn_save_file) \
             .click()
         # Set the XSS value in input
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+        WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, ".change_file_types")))
         self.page.find_by_css_selector('.change_file_types')
         self.page.fill_input_by_css_selector(
