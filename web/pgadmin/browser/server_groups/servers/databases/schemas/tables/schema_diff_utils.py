@@ -199,7 +199,10 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                              'exclude_constraint': ['amname',
                                                     'indconstraint',
                                                     'columns'],
-                             'foreign_key': []
+                             'foreign_key': ['condeferrable', 'condeferred',
+                                             'confupdtype', 'confdeltype',
+                                             'confmatchtype', 'convalidated',
+                                             'conislocal']
                              }
 
         for constraint in ['primary_key', 'unique_constraint',

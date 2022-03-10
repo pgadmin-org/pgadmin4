@@ -18,4 +18,5 @@ Housekeeping
 Bug fixes
 *********
 
+| `Issue #7220 <https://redmine.postgresql.org/issues/7220>`_ -  Fixed a schema diff issue where difference SQL isn't generated when foreign key values for a table differ.
 | `Issue #7228 <https://redmine.postgresql.org/issues/7228>`_ -  Fixed a schema diff issue where string separator '_$PGADMIN$_' is visible for identical user mappings.
