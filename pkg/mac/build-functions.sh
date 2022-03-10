@@ -33,7 +33,10 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    # Comment out the below line as the latest version (0.62.0) having some
+    # problem, so for the time being hardcoded the version to 0.61.0
+    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    NW_VERSION="0.61.0"
 
     pushd "${BUILD_ROOT}" > /dev/null
         while true;do
