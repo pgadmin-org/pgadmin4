@@ -264,11 +264,15 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
             "Schema Diff: Target Dict: {0}".format(dict2[key]))
 
         if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys):
+            title = key
+            if node == 'user_mapping':
+                title = _get_user_mapping_name(key)
+
             identical.append({
                 'id': count,
                 'type': node,
                 'label': node_label,
-                'title': key,
+                'title': title,
                 'oid': source_object_id,
                 'source_oid': source_object_id,
                 'target_oid': target_object_id,
