@@ -985,7 +985,11 @@ class Filemanager(object):
             try:
                 # Check if the new file is inside the users directory
                 if config.SERVER_MODE:
-                    pathlib.Path(new_name).relative_to(the_dir)
+                    pathlib.Path(
+                        os.path.abspath(
+                            os.path.join(the_dir, new_name)
+                        )
+                    ).relative_to(the_dir)
             except ValueError:
                 return self.ERROR_NOT_ALLOWED
 
