@@ -8,6 +8,7 @@
 # ##########################################################################
 
 import urllib3
+import ipaddress
 
 
 def get_my_ip():
@@ -20,5 +21,14 @@ def get_my_ip():
             external_ip = http.request('GET', 'https://ifconfig.me/ip').data
         except Exception:
             external_ip = '127.0.0.1'
+
+    if type(external_ip) == bytes:
+        external_ip = external_ip.decode('utf-8')
+
+    ip = ipaddress.ip_address(external_ip)
+    if isinstance(ip, ipaddress.IPv4Address):
+        return '{}/{}'.format(external_ip, 32)
+    elif isinstance(ip, ipaddress.IPv6Address):
+        return '{}/{}'.format(external_ip, 128)
 
     return '{}/{}'.format(external_ip, 32)
