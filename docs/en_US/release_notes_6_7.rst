@@ -23,4 +23,4 @@ Bug fixes
   | `Issue #7220 <https://redmine.postgresql.org/issues/7220>`_ -  Fixed a schema diff issue where difference SQL isn't generated when foreign key values for a table differ.
   | `Issue #7228 <https://redmine.postgresql.org/issues/7228>`_ -  Fixed a schema diff issue where string separator '_$PGADMIN$_' is visible for identical user mappings.
   | `Issue #7230 <https://redmine.postgresql.org/issues/7230>`_ -  Fixed an issue where pgAdmin 4 took ~75 seconds to display the 'Starting pgAdmin' text on the splash screen.
-  | `Issue #7233 <https://redmine.postgresql.org/issues/7233>`_ -  Ensure that upload paths are children of the storage directory.
+  | `Issue #7233 <https://redmine.postgresql.org/issues/7233>`_ -  Ensure that upload paths are children of the storage directory (CVE-2022-0959).
