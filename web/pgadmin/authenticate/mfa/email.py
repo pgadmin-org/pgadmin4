@@ -234,8 +234,9 @@ class EmailAuthentication(BaseMFAuth):
             email_address=email,
             note_label=_("Note"),
             note=_(
-                "This email address will only be used by the authentication "
-                "purpose. It will not update the user's email address."
+                "This email address will only be used for two factor "
+                "authentication purposes. The email address for the user "
+                "account will not be changed."
             ),
         )
 
