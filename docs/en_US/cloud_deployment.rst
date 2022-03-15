@@ -38,7 +38,8 @@ Use the fields from the Instance Specification tab to specify the Instance
 details.
 
 * Use the *Instance name* field to add an instance name for the PostgreSQL
-server; the name specified will be displayed in the *Browser* tree control too.
+  server; the name specified will be displayed in the *Browser* tree control
+  too.
 
 * Use the *Public IP* field to specify the IP Address range for permitting the
   inbound traffic.
