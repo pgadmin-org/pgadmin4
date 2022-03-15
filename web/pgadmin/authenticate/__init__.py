@@ -43,6 +43,11 @@ def get_logout_url() -> str:
             KERBEROS:
         return _URL_WITH_NEXT_PARAM.format(url_for(
             'kerberos.logout'), url_for(BROWSER_INDEX))
+    elif config.SERVER_MODE and\
+            session['auth_source_manager']['current_source'] == \
+            OAUTH2:
+        return _URL_WITH_NEXT_PARAM.format(url_for(
+            'oauth2.logout'), url_for(BROWSER_INDEX))
 
     return _URL_WITH_NEXT_PARAM.format(
         url_for('security.logout'), url_for(BROWSER_INDEX))
