@@ -347,14 +347,20 @@ export default class BodyWidget extends React.Component {
     let dialog = this.getDialog('table_dialog');
     if(node) {
       let [schema, table] = node.getSchemaTableName();
-      dialog(gettext('Table: %s (%s)', _.escape(table),_.escape(schema)), node.getData(), false, (newData)=>{
-        let oldData = node.getData();
+      let oldData = node.getData();
+      dialog(gettext('Table: %s (%s)', _.escape(table),_.escape(schema)), oldData, false, (newData)=>{
+        if(this.diagram.anyDuplicateNodeName(newData, oldData)) {
+          return gettext('Table name already exists');
+        }
         node.setData(newData);
         this.diagram.syncTableLinks(node, oldData);
         this.diagram.repaint();
       });
     } else {
       dialog(gettext('New table'), {}, true, (newData)=>{
+        if(this.diagram.anyDuplicateNodeName(newData)) {
+          return gettext('Table name already exists');
+        }
         let newNode = this.diagram.addNode(newData);
         this.diagram.syncTableLinks(newNode);
         newNode.setSelected(true);
@@ -424,8 +430,7 @@ export default class BodyWidget extends React.Component {
         + '<br />' + gettext('Are you sure you want to delete ?'),
       () => {
         this.diagram.getSelectedNodes().forEach((node)=>{
-          node.setSelected(false);
-          node.remove();
+          this.diagram.removeNode(node);
         });
         this.diagram.getSelectedLinks().forEach((link)=>{
           this.diagram.removeOneToManyLink(link);

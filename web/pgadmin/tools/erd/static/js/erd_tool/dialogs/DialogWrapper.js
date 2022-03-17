@@ -69,11 +69,15 @@ export default class DialogWrapper {
     };
   }
 
-  onSaveClick(isNew, data) {
-    return new Promise((resolve)=>{
-      this.okCallback(data);
-      this.close();
-      resolve();
+  onSaveClick(_isNew, data) {
+    return new Promise((resolve, reject)=>{
+      let errorMsg = this.okCallback(data);
+      if(errorMsg) {
+        reject(errorMsg);
+      } else {
+        this.close();
+        resolve();
+      }
     });
   }
 

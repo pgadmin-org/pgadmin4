@@ -210,6 +210,26 @@ export default class ERDCore {
     return newNode;
   }
 
+  removeNode(node) {
+    let self = this;
+    node.setSelected(false);
+    Object.values(node.getPorts()).forEach((port)=>{
+      Object.values(port.getLinks()).forEach((link)=>{
+        self.removeOneToManyLink(link);
+      });
+    });
+    node.remove();
+  }
+
+  anyDuplicateNodeName(newNodeData, oldNodeData) {
+    if(newNodeData.name == oldNodeData?.name && newNodeData.schema == oldNodeData?.schema) {
+      return false;
+    }
+    return _.filter(this.getNodesData(), (n)=>{
+      return n.name==newNodeData.name && n.schema==newNodeData.schema;
+    }).length > 0;
+  }
+
   addLink(data, type) {
     let tableNodesDict = this.getModel().getNodesDict();
     let sourceNode = tableNodesDict[data.referenced_table_uid];

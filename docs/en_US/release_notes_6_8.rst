@@ -20,3 +20,4 @@ Bug fixes
 *********
 
   | `Issue #7059 <https://redmine.postgresql.org/issues/7059>`_ -  Fixed an issue where the error is shown on logout when the authentication source is oauth2.
+  | `Issue #7238 <https://redmine.postgresql.org/issues/7238>`_ -  Fixed an issue where foreign key is not removed even if the referred table is removed in ERD.

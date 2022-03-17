@@ -547,8 +547,10 @@ def translate_foreign_keys(tab_fks, tab_data, all_nodes):
     for tab_fk in tab_fks:
         if 'columns' not in tab_fk:
             continue
-        print(tab_data)
-        remote_table = all_nodes[tab_fk['columns'][0]['references']]
+        try:
+            remote_table = all_nodes[tab_fk['columns'][0]['references']]
+        except KeyError:
+            continue
         tab_fk['schema'] = tab_data['schema']
         tab_fk['table'] = tab_data['name']
         tab_fk['remote_schema'] = remote_table['schema']
