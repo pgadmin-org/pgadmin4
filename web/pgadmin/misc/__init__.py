@@ -67,7 +67,10 @@ class MiscModule(PgAdminModule):
             'user_language', 'user_language',
             gettext("User language"), 'options', 'en',
             category_label=gettext('User language'),
-            options=lang_options
+            options=lang_options,
+            control_props={
+                'allowClear': False,
+            }
         )
 
         theme_options = []
@@ -90,8 +93,11 @@ class MiscModule(PgAdminModule):
             gettext("Theme"), 'options', 'standard',
             category_label=gettext('Themes'),
             options=theme_options,
+            control_props={
+                'allowClear': False,
+            },
             help_str=gettext(
-                'A refresh is required to apply the theme. Below is the '
+                'A refresh is required to apply the theme. Above is the '
                 'preview of the theme'
             )
         )

@@ -359,7 +359,7 @@ export default function DataGridView({
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
 
-              let {editable} = getFieldMetaData(field, schemaRef.current, row.original || {}, viewHelperProps);
+              let {editable, disabled} = getFieldMetaData(field, schemaRef.current, row.original || {}, viewHelperProps);
 
               if(_.isUndefined(field.cell)) {
                 console.error('cell is required ', field);
@@ -368,9 +368,17 @@ export default function DataGridView({
               return <MappedCellControl rowIndex={row.index} value={value}
                 row={row.original} {...field}
                 readonly={!editable}
-                disabled={false}
+                disabled={disabled}
                 visible={true}
                 onCellChange={(changeValue)=>{
+                  if(field.radioType) {
+                    dataDispatch({
+                      type: SCHEMA_STATE_ACTIONS.BULK_UPDATE,
+                      path: accessPath,
+                      value: changeValue,
+                      id: field.id
+                    });
+                  }
                   dataDispatch({
                     type: SCHEMA_STATE_ACTIONS.SET_VALUE,
                     path: accessPath.concat([row.index, field.id]),

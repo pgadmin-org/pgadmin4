@@ -108,7 +108,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
 
     /* The comparator and setter */
     const attrChanged = (id, change, force=false)=>{
-      if(isValueEqual(_.get(origVal, id), _.get(sessVal, id)) && !force) {
+      if(isValueEqual(_.get(origVal, id), _.get(sessVal, id)) && !force && (_.isObject(_.get(origVal, id)) && _.isEqual(_.get(origVal, id), _.get(sessData, id)))) {
         return;
       } else {
         change = change || _.get(sessVal, id);
@@ -302,6 +302,7 @@ export const SCHEMA_STATE_ACTIONS = {
   RERENDER: 'rerender',
   CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
   DEFERRED_DEPCHANGE: 'deferred_depchange',
+  BULK_UPDATE: 'bulk_update'
 };
 
 const getDepChange = (currPath, newState, oldState, action)=>{
@@ -353,6 +354,13 @@ const sessDataReducer = (state, action)=>{
   switch(action.type) {
   case SCHEMA_STATE_ACTIONS.INIT:
     data = action.payload;
+    break;
+  case SCHEMA_STATE_ACTIONS.BULK_UPDATE:
+    rows = (_.get(data, action.path)||[]);
+    rows.forEach((row)=> {
+      row[action.id] = false;
+    });
+    _.set(data, action.path, rows);
     break;
   case SCHEMA_STATE_ACTIONS.SET_VALUE:
     _.set(data, action.path, action.value);

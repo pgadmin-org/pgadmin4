@@ -8,6 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 import { useSnackbar, SnackbarProvider, SnackbarContent } from 'notistack';
+import { makeStyles } from '@material-ui/core/styles';
+import {Box} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/CloseRounded';
+import { DefaultButton, PrimaryButton } from '../components/Buttons';
+import HTMLReactParser from 'html-react-parser';
+import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Theme from 'sources/Theme';
@@ -75,6 +82,41 @@ FinalNotifyContent.displayName = 'FinalNotifyContent';
 FinalNotifyContent.propTypes = {
   children: CustomPropTypes.children,
 };
+
+const useModalStyles = makeStyles((theme)=>({
+  footer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '0.5rem',
+    ...theme.mixins.panelBorder.top,
+  },
+  margin: {
+    marginLeft: '0.25rem',
+  }
+}));
+function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
+  const classes = useModalStyles();
+  return (
+    <Box display="flex" flexDirection="column" height="100%">
+      <Box flexGrow="1" p={2}>{HTMLReactParser(text)}</Box>
+      <Box className={classes.footer}>
+        {confirm &&
+          <DefaultButton startIcon={<CloseIcon />} onClick={onCancelClick} >{cancelLabel}</DefaultButton>
+        }
+        <PrimaryButton className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={onOkClick} autoFocus={true} >{okLabel}</PrimaryButton>
+      </Box>
+    </Box>
+  );
+}
+AlertContent.propTypes = {
+  text: PropTypes.string,
+  confirm: PropTypes.bool,
+  onOkClick: PropTypes.func,
+  onCancelClick: PropTypes.func,
+  okLabel: PropTypes.string,
+  cancelLabel: PropTypes.string,
+};
+
 
 var Notifier = {
   success(msg, autoHideDuration = AUTO_HIDE_DURATION) {
@@ -195,11 +237,11 @@ var Notifier = {
     }
     modalRef.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel);
   },
-  showModal(title, content) {
+  showModal: (title, content, modalOptions) => {
     if(!modalInitialized) {
       initializeModalProvider();
     }
-    modalRef.showModal(title, content);
+    modalRef.showModal(title, content, modalOptions);
   }
 };
 

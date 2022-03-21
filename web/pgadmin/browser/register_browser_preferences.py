@@ -519,7 +519,7 @@ def register_browser_preferences(self):
 
     self.open_in_new_tab = self.preference.register(
         'tab_settings', 'new_browser_tab_open',
-        gettext("Open in new browser tab"), 'select2', None,
+        gettext("Open in new browser tab"), 'select', None,
         category_label=PREF_LABEL_OPTIONS,
         options=ope_new_tab_options,
         help_str=gettext(
@@ -527,7 +527,7 @@ def register_browser_preferences(self):
             'or PSQL Tool from the drop-down to set '
             'open in new browser tab for that particular module.'
         ),
-        select2={
+        control_props={
             'multiple': True, 'allowClear': False,
             'tags': True, 'first_empty': False,
             'selectOnClose': False, 'emptyOptions': True,

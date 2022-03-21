@@ -14,7 +14,7 @@ New features
 Housekeeping
 ************
 
-
+  | `Issue #7149 <https://redmine.postgresql.org/issues/7149>`_ -  Port preferences dialog to React.
 
 Bug fixes
 *********

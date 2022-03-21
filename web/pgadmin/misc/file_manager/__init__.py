@@ -167,10 +167,14 @@ class FileManagerModule(PgAdminModule):
         )
         self.file_dialog_view = self.preference.register(
             'options', 'file_dialog_view',
-            gettext("File dialog view"), 'options', 'list',
+            gettext("File dialog view"), 'select', 'list',
             category_label=PREF_LABEL_OPTIONS,
             options=[{'label': gettext('List'), 'value': 'list'},
-                     {'label': gettext('Grid'), 'value': 'grid'}]
+                     {'label': gettext('Grid'), 'value': 'grid'}],
+            control_props={
+                'allowClear': False,
+                'tags': False
+            },
         )
         self.show_hidden_files = self.preference.register(
             'options', 'show_hidden_files',
@@ -236,7 +240,7 @@ def file_manager_config(trans_id):
     """render the required json"""
     data = Filemanager.get_trasaction_selection(trans_id)
     pref = Preferences.module('file_manager')
-    file_dialog_view = pref.preference('file_dialog_view').get()
+    file_dialog_view = pref.preference('file_dialog_view').get()[0]
     show_hidden_files = pref.preference('show_hidden_files').get()
 
     return Response(response=render_template(

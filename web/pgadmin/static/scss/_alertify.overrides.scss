@@ -1,5 +1,8 @@
 /* Overrides alertify js headers */
 .alertify {
+  z-index: 3000;
+  position: fixed;
+
   .ajs-header {
     padding: 6px 10px !important;
     //margin is calculated with -$alertify-borderremove-margin, adjust the header

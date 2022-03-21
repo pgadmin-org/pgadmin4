@@ -197,7 +197,7 @@ def register_query_tool_preferences(self):
         options=[{'label': gettext('None'), 'value': 'none'},
                  {'label': gettext('All'), 'value': 'all'},
                  {'label': gettext('Strings'), 'value': 'strings'}],
-        select2={
+        control_props={
             'allowClear': False,
             'tags': False
         }
@@ -209,9 +209,9 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_CSV_TXT,
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False
         }
     )
 
@@ -223,9 +223,9 @@ def register_query_tool_preferences(self):
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
                  {'label': gettext('Tab'), 'value': '\t'}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False
         }
     )
 
@@ -247,7 +247,7 @@ def register_query_tool_preferences(self):
         options=[{'label': gettext('None'), 'value': 'none'},
                  {'label': gettext('All'), 'value': 'all'},
                  {'label': gettext('Strings'), 'value': 'strings'}],
-        select2={
+        control_props={
             'allowClear': False,
             'tags': False
         }
@@ -259,9 +259,9 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_RESULTS_GRID,
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False
         }
     )
 
@@ -273,9 +273,9 @@ def register_query_tool_preferences(self):
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
                  {'label': gettext('Tab'), 'value': '\t'}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False
         }
     )
 

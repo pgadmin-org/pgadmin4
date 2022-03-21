@@ -1,0 +1,27 @@
+{
+  "get_preferences": [
+    {
+      "name": "Get the all Preferences",
+      "url": "/preferences/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {
+      },
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+    "update_preferences": [
+    {
+      "name": "Update the Preferences",
+      "url": "/preferences/",
+      "is_positive_test": true,
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ]
+}

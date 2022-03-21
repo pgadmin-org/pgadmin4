@@ -182,6 +182,18 @@ debugger window navigation:
     :alt: Preferences dialog debugger keyboard shortcuts section
     :align: center
 
+The ERD Tool Node
+*****************
+
+Expand the *ERD Tool* node to specify your ERD Tool display preferences.
+
+Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
+ERD Tool window navigation:
+
+.. image:: images/preferences_erd_keyboard_shortcuts.png
+    :alt: Preferences dialog erd keyboard shortcuts section
+    :align: center
+
 The Miscellaneous Node
 **********************
 
