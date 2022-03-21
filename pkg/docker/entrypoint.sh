@@ -1,5 +1,14 @@
 #!/bin/sh
 
+# Fixup the passwd file, in case we're on OpenShift
+if ! whoami &> /dev/null; then
+  if [ $(id -u) -ne 5050 ]; then
+    if [ -w /etc/passwd ]; then
+      echo "${USER_NAME:-pgadminr}:x:$(id -u):0:${USER_NAME:-pgadminr} user:${HOME}:/sbin/nologin" >> /etc/passwd
+    fi
+  fi
+fi
+
 # Populate config_distro.py. This has some default config, as well as anything
 # provided by the user through the PGADMIN_CONFIG_* environment variables.
 # Only update the file on first launch. The empty file is created during the

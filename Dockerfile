@@ -188,14 +188,17 @@ RUN apk add \
         libcap && \
     /venv/bin/python3 -m pip install --no-cache-dir gunicorn && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
-    groupadd -g 5050 pgadmin && \
-    useradd -r -u 5050 -g pgadmin pgadmin && \
+    useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /var/lib/pgadmin && \
-    chown pgadmin:pgadmin /var/lib/pgadmin && \
+    chown pgadmin:root /var/lib/pgadmin && \
+    chmod g=u /var/lib/pgadmin && \
     touch /pgadmin4/config_distro.py && \
-    chown pgadmin:pgadmin /pgadmin4/config_distro.py && \
+    chown pgadmin:root /pgadmin4/config_distro.py && \
+    chmod g=u /pgadmin4/config_distro.py && \
+    chmod g=u /etc/passwd && \
     setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.9 && \
-    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
+    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
+    echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
 USER pgadmin
 
