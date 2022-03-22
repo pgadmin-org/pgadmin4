@@ -97,7 +97,7 @@ function getTableData(res, node) {
           node.statsPrettifyFields.forEach((field) => {
             row[field] = sizePrettify(row[field]);
           });
-        };
+        }
         nodeStats.push({ ...row, icon: '' });
       });
       colData = getColumn(data.columns, false);
