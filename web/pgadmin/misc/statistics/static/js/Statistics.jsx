@@ -92,6 +92,12 @@ function getTableData(res, node) {
     let data = res.data.data;
     if (node.hasCollectiveStatistics || data['rows'].length > 1) {
       data.rows.forEach((row) => {
+        // Prettify the field values
+        if (!_.isEmpty(node.statsPrettifyFields)) {
+          node.statsPrettifyFields.forEach((field) => {
+            row[field] = sizePrettify(row[field]);
+          });
+        };
         nodeStats.push({ ...row, icon: '' });
       });
       colData = getColumn(data.columns, false);
