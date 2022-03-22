@@ -16,6 +16,7 @@ fi
 
 IS_REDHAT=0
 IS_DEBIAN=0
+IS_SUSE=0
 UNAME=$(uname -a)
 
 # Get the distro from the environment
@@ -24,6 +25,11 @@ if [ "x${PGADMIN_PLATFORM_TYPE}" == "x" ]; then
         PLATFORM_TYPE=redhat
     elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "Debian" ]] || [ -f /etc/apt/sources.list ]; then
         PLATFORM_TYPE=debian
+    elif [ -f /etc/os-release ]; then
+        if grep suse /etc/os-release > /dev/null
+        then
+            PLATFORM_TYPE=suse
+        fi
     else
         echo "Failed to detect the platform. This may mean you're running on a Linux distribution that isn't supported by pgAdmin."
         echo "Please set the PGADMIN_PLATFORM_TYPE environment variable to one of 'redhat' or 'debian' and try again."
@@ -43,6 +49,11 @@ case ${PLATFORM_TYPE} in
     debian)
         echo "Setting up pgAdmin 4 in web mode on a Debian based platform..."
         IS_DEBIAN=1
+        APACHE=apache2
+        ;;
+    suse)
+        echo "Setting up pgAdmin 4 in web mode on a SUSE based platform..."
+        IS_SUSE=1
         APACHE=apache2
         ;;
 
@@ -75,6 +86,8 @@ mkdir -p /var/log/pgadmin /var/lib/pgadmin
 
 if [ ${IS_REDHAT} == 1 ]; then
     chown apache: /var/log/pgadmin /var/lib/pgadmin -R
+elif [ ${IS_SUSE} == 1 ]; then
+    chown wwwrun: /var/log/pgadmin /var/lib/pgadmin -R
 else
     chown www-data: /var/log/pgadmin /var/lib/pgadmin -R
 fi
