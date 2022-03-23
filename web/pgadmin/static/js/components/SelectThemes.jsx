@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function Themes({onChange, ...props}) {
+export default function SelectThemes({onChange, ...props}) {
   const classes = useStyles();
   const [previewSrc, setPreviewSrc] = useState(null);
 
@@ -48,7 +48,7 @@ export default function Themes({onChange, ...props}) {
   );
 }
 
-Themes.propTypes = {
+SelectThemes.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
   controlProps: PropTypes.object,

@@ -12,7 +12,7 @@ import _ from 'lodash';
 import {
   FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
   FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, InputSQL, FormNote, FormInputDateTimePicker, PlainString,
-  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputThemes, InputRadio
+  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio
 } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -85,7 +85,7 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   case 'threshold':
     return <FormInputQueryThreshold name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'theme':
-    return <FormInputThemes name={name} value={value} onChange={onTextChange} {...props}/>;
+    return <FormInputSelectThemes name={name} value={value} onChange={onTextChange} {...props}/>;
   default:
     return <PlainString value={value} {...props} />;
   }
@@ -197,7 +197,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
   'mode', 'value', 'readonly', 'disabled', 'hasError', 'id',
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
   'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
-  'orientation', 'isvalidate', 'fields', 'radioType'
+  'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
@@ -205,7 +205,7 @@ const ALLOWED_PROPS_FIELD_FORM = [
 ];
 
 const ALLOWED_PROPS_FIELD_CELL = [
-  'cell', 'onCellChange', 'row', 'reRenderRow', 'validate', 'disabled', 'readonly', 'radioType'
+  'cell', 'onCellChange', 'row', 'reRenderRow', 'validate', 'disabled', 'readonly', 'radioType', 'hideBrowseButton'
 ];
 
 

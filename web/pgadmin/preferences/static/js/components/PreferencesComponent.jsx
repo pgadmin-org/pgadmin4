@@ -8,8 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
+import _ from 'lodash';
 import url_for from 'sources/url_for';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { FileType } from 'react-aspen';
 import { Box } from '@material-ui/core';
 import PropTypes from 'prop-types';
@@ -209,100 +210,8 @@ export default function PreferencesComponent({ ...props }) {
             'expanded': false,
           };
 
-          if (subNode.label == 'Nodes' && node.label == 'Browser') {
-            //Add Note for Nodes 
-            preferencesData.push(
-              {
-                id: 'note_' + subNode.id,
-                type: 'note', text: [gettext('This settings is to Show/Hide nodes in the browser tree.')].join(''),
-                visible: false,
-                'parentId': nodeData['id']
-              },
-            );
-          }
-          subNode.preferences.forEach((element) => {
-            let addNote = false;
-            let note = '';
-            let type = getControlMappedForType(element.type);
-
-            if (type === 'file') {
-              addNote = true;
-              note = gettext('Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore utilities can be found for the corresponding database server version.  The default path will be used for server versions that do not have a  path specified.');
-              element.type = 'collection';
-              element.schema = getBinaryPathSchema();
-              element.canAdd = false;
-              element.canDelete = false;
-              element.canEdit = false;
-              element.editable = false;
-              element.disabled = true;
-              preferencesValues[element.id] = JSON.parse(element.value);
-            }
-            else if (type == 'select') {
-              if (element.control_props !== undefined) {
-                element.controlProps = element.control_props;
-              } else {
-                element.controlProps = {};
-              }
-
-              element.type = type;
-              preferencesValues[element.id] = element.value;
-
-              if (element.name == 'theme') {
-                element.type = 'theme';
-
-                element.options.forEach((opt) => {
-                  if (opt.value == element.value) {
-                    opt.selected = true;
-                  } else {
-                    opt.selected = false;
-                  }
-                });
-              }
-            }
-            else if (type === 'keyboardShortcut') {
-              element.type = 'keyboardShortcut';
-              element.canAdd = false;
-              element.canDelete = false;
-              element.canEdit = false;
-              element.editable = false;
-              if (pgAdmin.Browser.get_preference(node.label.toLowerCase(), element.name)?.value) {
-                let temp = pgAdmin.Browser.get_preference(node.label.toLowerCase(), element.name).value;
-                preferencesValues[element.id] = temp;
-              } else {
-                preferencesValues[element.id] = element.value;
-              }
-              delete element.value;
-            } else if (type === 'threshold') {
-              element.type = 'threshold';
-
-              let _val = element.value.split('|');
-              preferencesValues[element.id] = { 'warning': _val[0], 'alert': _val[1] };
-            } else {
-              element.type = type;
-              preferencesValues[element.id] = element.value;
-            }
-
-            delete element.value;
-            element.visible = false;
-            element.helpMessage = element?.help_str ? element.help_str : null;
-            preferencesData.push(element);
-
-            if (addNote) {
-              preferencesData.push(
-                {
-                  id: 'note_' + element.id,
-                  type: 'note', text: [
-                    '<ul><li>',
-                    gettext(note),
-                    '</li></ul>',
-                  ].join(''),
-                  visible: false,
-                  'parentId': nodeData['id']
-                },
-              );
-            }
-            element.parentId = nodeData['id'];
-          });
+          addNote(node, subNode, nodeData, preferencesData);
+          setPreferences(node, subNode, nodeData, preferencesValues, preferencesData);
           tdata['childrenNodes'].push(nodeData);
         });
 
@@ -318,11 +227,128 @@ export default function PreferencesComponent({ ...props }) {
       Notify.alert(err);
     });
   }, []);
+  function setPreferences(node, subNode, nodeData, preferencesValues, preferencesData) {
+    subNode.preferences.forEach((element) => {
+      let note = '';
+      let type = getControlMappedForType(element.type);
+
+      if (type === 'file') {
+        note = gettext('Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore utilities can be found for the corresponding database server version.  The default path will be used for server versions that do not have a  path specified.');
+        element.type = 'collection';
+        element.schema = getBinaryPathSchema();
+        element.canAdd = false;
+        element.canDelete = false;
+        element.canEdit = false;
+        element.editable = false;
+        element.disabled = true;
+        preferencesValues[element.id] = JSON.parse(element.value);
+        addNote(node, subNode, nodeData, preferencesData, note);
+      }
+      else if (type == 'select') {
+        setControlProps(element);
+        element.type = type;
+        preferencesValues[element.id] = element.value;
+
+        setThemesOptions(element);
+      }
+      else if (type === 'keyboardShortcut') {
+        getKeyboardShortcuts(element, preferencesValues, node);
+      } else if (type === 'threshold') {
+        element.type = 'threshold';
+
+        let _val = element.value.split('|');
+        preferencesValues[element.id] = { 'warning': _val[0], 'alert': _val[1] };
+      } else if (subNode.label == 'Results grid' && node.label == 'Query Tool') {
+        setResultsOptions(element, subNode, preferencesValues, type);
+      } else {
+        element.type = type;
+        preferencesValues[element.id] = element.value;
+      }
+
+      delete element.value;
+      element.visible = false;
+      element.helpMessage = element?.help_str ? element.help_str : null;
+      preferencesData.push(element);
+      element.parentId = nodeData['id'];
+    });
+  }
+
+  function setResultsOptions(element, subNode, preferencesValues, type) {
+    if (element.name== 'column_data_max_width') {
+      let size_control_id = null;
+      subNode.preferences.forEach((_el) => {
+        if(_el.name == 'column_data_auto_resize') {
+          size_control_id = _el.id;
+        }
+        
+      });
+      element.disabled = (state) => {
+        return state[size_control_id] != 'by_data';
+      };
+    }
+    element.type = type;
+    preferencesValues[element.id] = element.value;
+  }
+
+  function setThemesOptions(element) {
+    if (element.name == 'theme') {
+      element.type = 'theme';
+
+      element.options.forEach((opt) => {
+        if (opt.value == element.value) {
+          opt.selected = true;
+        } else {
+          opt.selected = false;
+        }
+      });
+    }
+  }
+  function setControlProps(element) {
+    if (element.control_props !== undefined) {
+      element.controlProps = element.control_props;
+    } else {
+      element.controlProps = {};
+    }
+
+  }
+
+  function getKeyboardShortcuts(element, preferencesValues, node) {
+    element.type = 'keyboardShortcut';
+    element.canAdd = false;
+    element.canDelete = false;
+    element.canEdit = false;
+    element.editable = false;
+    if (pgAdmin.Browser.get_preference(node.label.toLowerCase(), element.name)?.value) {
+      let temp = pgAdmin.Browser.get_preference(node.label.toLowerCase(), element.name).value;
+      preferencesValues[element.id] = temp;
+    } else {
+      preferencesValues[element.id] = element.value;
+    }
+  }
+  function addNote(node, subNode, nodeData, preferencesData, note = '') {
+    // Check and add the note for the element.
+    if (subNode.label == 'Nodes' && node.label == 'Browser') {
+      note = [gettext('This settings is to Show/Hide nodes in the browser tree.')].join('');
+    } else {
+      note = [gettext(note)].join('');
+    }
+
+    if (note && note.length > 0) {
+      //Add Note for Nodes 
+      preferencesData.push(
+        {
+          id: _.uniqueId('note') + subNode.id,
+          type: 'note', text: note,
+          visible: false,
+          'parentId': nodeData['id']
+        },
+      );
+    }
+
+  }
 
   useEffect(() => {
-    props.renderTree(prefTreeData);
     let initTreeTimeout = null;
-
     // Listen selected preferences tree node event and show the appropriate components in right panel.
     pgAdmin.Browser.Events.on('preferences:tree:selected', (item) => {
       if (item.type == FileType.File) {
@@ -330,12 +356,12 @@ export default function PreferencesComponent({ ...props }) {
           field.visible = field.parentId === item._metadata.data.id;
         });
         setLoadTree(Math.floor(Math.random() * 1000));
-        initTreeTimeout = setTimeout(()=> {
+        initTreeTimeout = setTimeout(() => {
           prefTreeInit.current = true;
         }, 10);
       }
       else {
-        if(item.isExpanded && item._children && item._children.length > 0 && prefTreeInit.current) {
+        if (item.isExpanded && item._children && item._children.length > 0 && prefTreeInit.current) {
           pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
         }
       }
@@ -343,29 +369,24 @@ export default function PreferencesComponent({ ...props }) {
 
     // Listen open preferences tree node event to default select first child node on parent node selection.
     pgAdmin.Browser.Events.on('preferences:tree:opened', (item) => {
-      if (item._fileName == 'Browser' && item.type == 2 && item.isExpanded && item._children && item._children.length > 0 && !prefTreeInit.current) {
-        pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], false);
-      } 
-      else if(prefTreeInit.current) {
-        pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
-      }
+      pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
     });
 
     // Listen added preferences tree node event to expand the newly added node on tree load.
     pgAdmin.Browser.Events.on('preferences:tree:added', (item) => {
-      // Check the if newely added node is Directoy call toggle to expand the node.
-      if (item.type == FileType.Directory) {
+      if (item._parent._fileName == 'Browser' && item._parent.isExpanded && !prefTreeInit.current) {
+        pgAdmin.Browser.ptree.tree.setActiveFile(item._parent._children[0], false);
+      }
+      else if (item.type == FileType.Directory) {
+        // Check the if newely added node is Directoy and call toggle to expand the node.
         pgAdmin.Browser.ptree.tree.toggleDirectory(item);
       }
     });
-
     /* Clear the initTreeTimeout timeout if unmounted */
-    return ()=>{
+    return () => {
       clearTimeout(initTreeTimeout);
     };
-  }, [prefTreeData]);
-
-
+  }, []);
 
   function getControlMappedForType(type) {
     switch (type) {
@@ -414,7 +435,7 @@ export default function PreferencesComponent({ ...props }) {
     }
   }
 
-  function getCollectionValue(_metadata, value, initValues) {
+  function getCollectionValue(_metadata, value, initVals) {
     let val = value;
     if (typeof (value) == 'object') {
       if (_metadata[0].type == 'collection' && _metadata[0].schema) {
@@ -424,14 +445,7 @@ export default function PreferencesComponent({ ...props }) {
           value.changed.forEach((chValue) => {
             pathVersions.push(chValue.version);
           });
-          initValues[_metadata[0].id].forEach((initVal) => {
-            if (pathVersions.includes(initVal.version)) {
-              pathData.push(value.changed[pathVersions.indexOf(initVal.version)]);
-            }
-            else {
-              pathData.push(initVal);
-            }
-          });
+          getPathData(initVals, pathData, _metadata, value, pathVersions);
           val = JSON.stringify(pathData);
         } else {
           let key_val = {
@@ -450,12 +464,23 @@ export default function PreferencesComponent({ ...props }) {
     return val;
   }
 
-  function savePreferences(data, initValues) {
+  function getPathData(initVals, pathData, _metadata, value, pathVersions) {
+    initVals[_metadata[0].id].forEach((initVal) => {
+      if (pathVersions.includes(initVal.version)) {
+        pathData.push(value.changed[pathVersions.indexOf(initVal.version)]);
+      }
+      else {
+        pathData.push(initVal);
+      }
+    });
+  }
+
+  function savePreferences(data, initVal) {
     let _data = [];
     for (const [key, value] of Object.entries(data.current)) {
       let _metadata = prefSchema.current.schemaFields.filter((el) => { return el.id == key; });
       if (_metadata.length > 0) {
-        let val = getCollectionValue(_metadata, value, initValues);
+        let val = getCollectionValue(_metadata, value, initVal);
         _data.push({
           'category_id': _metadata[0]['cid'],
           'id': parseInt(key),
@@ -536,14 +561,14 @@ export default function PreferencesComponent({ ...props }) {
             location.reload();
             return true;
           },
-          function () { props.closeModal(); /*props.panel.close()*/ },
+          function () { props.closeModal();},
           gettext('Refresh'),
           gettext('Later')
         );
       }
       // Refresh preferences cache
       pgAdmin.Browser.cache_preferences(modulesChanged);
-      props.closeModal(); /*props.panel.close()*/
+      props.closeModal();
     }).catch((err) => {
       Notify.alert(err.response.data);
     });
@@ -558,7 +583,12 @@ export default function PreferencesComponent({ ...props }) {
       <Box className={classes.root}>
         <Box className={clsx(classes.preferences)}>
           <Box className={clsx(classes.treeContainer)} >
-            <Box className={clsx('aciTree', classes.tree)} id={'treeContainer'}></Box>
+
+            <Box className={clsx('aciTree', classes.tree)} id={'treeContainer'}>
+              {
+                useMemo(() => (prefTreeData && props.renderTree(prefTreeData)), [prefTreeData])
+              }
+            </Box>
           </Box>
           <Box className={clsx(classes.preferencesContainer)}>
             {
@@ -576,7 +606,7 @@ export default function PreferencesComponent({ ...props }) {
             <PgIconButton data-test="dialog-help" onClick={onDialogHelp} icon={<HelpIcon />} title={gettext('Help for this dialog.')} />
           </Box>
           <Box className={classes.actionBtn} marginLeft="auto">
-            <DefaultButton className={classes.buttonMargin} onClick={() => { props.closeModal(); /*props.panel.close()*/ }} startIcon={<CloseSharpIcon onClick={() => { props.closeModal(); /*props.panel.close()*/ }} />}>
+            <DefaultButton className={classes.buttonMargin} onClick={() => { props.closeModal();}} startIcon={<CloseSharpIcon onClick={() => { props.closeModal();}} />}>
               {gettext('Cancel')}
             </DefaultButton>
             <PrimaryButton className={classes.buttonMargin} startIcon={<SaveSharpIcon />} disabled={disableSave} onClick={() => { savePreferences(prefChangedData, initValues); }}>
@@ -584,8 +614,6 @@ export default function PreferencesComponent({ ...props }) {
             </PrimaryButton>
           </Box>
         </Box>
-        {/* </Box> */}
-
       </Box >
     </Box>
   );

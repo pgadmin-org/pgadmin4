@@ -421,7 +421,7 @@ Query Tool window navigation:
 Use the fields on the *SQL formatting* panel to specify your preferences for
 reformatting of SQL.
 
-* Use the *Command-first notation* option to specify whether to place commas
+* Use the *Comma-first notation* option to specify whether to place commas
   before or after column names.
 * Use the *Identifier case* option to specify whether to change identifiers
   (object names) into upper, lower, or capitalized case.

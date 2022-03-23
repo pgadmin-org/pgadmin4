@@ -12,11 +12,11 @@ import React from 'react';
 import '../helper/enzyme.helper';
 import { withTheme } from '../fake_theme';
 import { createMount } from '@material-ui/core/test-utils';
-import Themes from '../../../pgadmin/static/js/components/Themes';
+import SelectThemes from '../../../pgadmin/static/js/components/SelectThemes';
 import { InputSelect } from '../../../pgadmin/static/js/components/FormComponents';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
-describe('Themes', () => {
+describe('SelectThemes', () => {
   let mount;
   let options = [{
     value: 'standard',
@@ -51,13 +51,13 @@ describe('Themes', () => {
     jasmineEnzyme();
   });
 
-  describe('Themes', () => {
-    let ThemedFormInputThemes = withTheme(Themes), ctrl, onChange = jasmine.createSpy('onChange');
+  describe('Select Themes', () => {
+    let ThemedFormInputThemes = withTheme(SelectThemes), ctrl, onChange = jasmine.createSpy('onChange');
 
     beforeEach(() => {
       ctrl = mount(
         <ThemedFormInputThemes
-          testcid="inpCid"
+          testcid="SelectThemeCid"
           helpMessage="some help message"
           options={options}
           onChange={onChange}

@@ -26,7 +26,7 @@ click on a result row to select the object in the
 :ref:`browser <tree_control>`. If the object is greyed out, this means that you
 have not enabled those object types in the :ref:`preferences <preferences>`,
 so you can't double click on it. You can click on the ellipsis appended to
-the function and procedure names to see there arguments.
+the function and procedure names to see their arguments.
 
 
 You can filter based on a particular object type by selecting one from the

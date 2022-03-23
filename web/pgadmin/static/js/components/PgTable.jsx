@@ -298,7 +298,7 @@ export default function PgTable({ columns, data, isSelectRow, ...props }) {
               className={classes.fixedSizeList}
               height={height - 75}
               itemCount={rows.length}
-              itemSize={35}
+              itemSize={35} 
               sorted={props?.sortOptions}
             >
               {RenderRow}

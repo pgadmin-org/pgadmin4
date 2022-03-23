@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   inputCheckboxClass: {
     border: '1px solid',
     borderRadius: theme.shape.borderRadius,
+    borderColor: theme.otherVars.inputBorderColor,
     padding: 3
   }
 }));
@@ -36,6 +37,7 @@ export default function KeyboardShortcuts({ value, onChange, fields }) {
   const ctrlhelpid = `h${ctrlCid}`;
   const altCid = _.uniqueId('c');
   const althelpid = `h${altCid}`;
+  const keyLabel = _.uniqueId('c');
 
   const onKeyDown = (e) => {
     let newVal = { ...value };
@@ -72,19 +74,20 @@ export default function KeyboardShortcuts({ value, onChange, fields }) {
     <Grid
       container
       direction="row"
-      justifyContent="center"
-      alignItems="center">
+      alignItems="center"
+      key={_.uniqueId('c')}
+    >
       {fields.map(element => {
         let ctrlProps = {
           label: element.label
         };
         if (element.type == 'keyCode') {
-          return <Grid item container lg={4} md={4} sm={4} xs={12}>
+          return <Grid item container lg={4} md={4} sm={4} xs={12} key={_.uniqueId('c')}>
             <Grid item lg={4} md={4} sm={4} xs={12} className={classes.inputLabel}>
-              <Typography>{element.label}</Typography>
+              <Typography id={keyLabel}>{element.label}</Typography>
             </Grid>
             <Grid item lg={8} md={8} sm={8} xs={12}>
-              <InputText cid={keyCid} helpid={keyhelpid} type='text' value={value?.key?.char} controlProps={
+              <InputText id={keyCid} helpid={keyhelpid} type='text' value={value?.key?.char} controlProps={
                 {
                   onKeyDown: onKeyDown,
                 }
@@ -92,27 +95,27 @@ export default function KeyboardShortcuts({ value, onChange, fields }) {
             </Grid>
           </Grid>;
         } else if (element.name == 'shift') {
-          return <Grid item lg={2} md={2} sm={2} xs={12} className={classes.inputLabel}>
+          return <Grid item lg={2} md={2} sm={2} xs={12} className={classes.inputLabel} key={_.uniqueId('c')}>
             <Box className={classes.inputCheckboxClass}>
-              <InputCheckbox cid={shiftCid} helpid={shifthelpid} value={value?.shift}
+              <InputCheckbox id={shiftCid} helpid={shifthelpid} value={value?.shift}
                 controlProps={ctrlProps}
-                onChange={onShiftChange} labelPlacement="end" ></InputCheckbox>
+                onChange={onShiftChange}></InputCheckbox>
             </Box>
           </Grid>;
         } else if (element.name == 'control') {
-          return <Grid item lg={2} md={2} sm={2} xs={12} className={classes.inputLabel}>
+          return <Grid item lg={2} md={2} sm={2} xs={12} className={classes.inputLabel} key={_.uniqueId('c')}>
             <Box className={classes.inputCheckboxClass}>
-              <InputCheckbox cid={ctrlCid} helpid={ctrlhelpid} value={value?.ctrl}
+              <InputCheckbox id={ctrlCid} helpid={ctrlhelpid} value={value?.ctrl}
                 controlProps={ctrlProps}
-                onChange={onCtrlChange} labelPlacement="end" ></InputCheckbox>
+                onChange={onCtrlChange}></InputCheckbox>
             </Box>
           </Grid>;
         } else if (element.name == 'alt') {
-          return <Grid item lg={3} md={3} sm={3} xs={12} className={classes.inputLabel}>
+          return <Grid item lg={3} md={3} sm={3} xs={12} className={classes.inputLabel} key={_.uniqueId('c')}>
             <Box className={classes.inputCheckboxClass}>
-              <InputCheckbox cid={altCid} helpid={althelpid} value={value?.alt}
+              <InputCheckbox id={altCid} helpid={althelpid} value={value?.alt}
                 controlProps={ctrlProps}
-                onChange={onAltChange} labelPlacement="end" ></InputCheckbox>
+                onChange={onAltChange}></InputCheckbox>
             </Box>
           </Grid>;
         }

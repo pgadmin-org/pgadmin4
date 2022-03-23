@@ -41,7 +41,7 @@ import { DefaultButton, PrimaryButton, PgIconButton } from './Buttons';
 import CustomPropTypes from '../custom_prop_types';
 import KeyboardShortcuts from './KeyboardShortcuts';
 import QueryThresholds from './QueryThresholds';
-import Themes from './Themes';
+import SelectThemes from './SelectThemes';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -405,7 +405,7 @@ FormInputText.propTypes = {
 };
 
 /* Using the existing file dialog functions using showFileDialog */
-export function InputFileSelect({ controlProps, onChange, disabled, readonly, isvalidate = false, validate, ...props }) {
+export function InputFileSelect({ controlProps, onChange, disabled, readonly, isvalidate = false, hideBrowseButton=false,validate, ...props }) {
   const inpRef = useRef();
   const onFileSelect = (value) => {
     onChange && onChange(decodeURI(value));
@@ -414,8 +414,10 @@ export function InputFileSelect({ controlProps, onChange, disabled, readonly, is
   return (
     <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} {...props} endAdornment={
       <>
+        {!hideBrowseButton &&
         <IconButton onClick={() => showFileDialog(controlProps, onFileSelect)}
           disabled={disabled || readonly} aria-label={gettext('Select a file')}><FolderOpenRoundedIcon /></IconButton>
+        }
         {isvalidate &&
           <PgIconButton title={gettext('Validate')} style={{ border: 'none' }} disabled={!props.value} onClick={() => { validate(props.value); }} icon={<AssignmentTurnedIn />}></PgIconButton>
         }
@@ -430,7 +432,8 @@ InputFileSelect.propTypes = {
   readonly: PropTypes.bool,
   isvalidate: PropTypes.bool,
   validate: PropTypes.func,
-  value: PropTypes.string
+  value: PropTypes.string,
+  hideBrowseButton: PropTypes.bool
 };
 
 export function FormInputFileSelect({
@@ -510,7 +513,6 @@ export function InputCheckbox({ cid, helpid, value, onChange, controlProps, read
           {...props} />
       }
       label={controlProps.label}
-      labelPlacement={props?.labelPlacement ? props.labelPlacement : 'end'}
     />
   );
 }
@@ -521,7 +523,6 @@ InputCheckbox.propTypes = {
   controlProps: PropTypes.object,
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
-  labelPlacement: PropTypes.string
 };
 
 export function FormInputCheckbox({ hasError, required, label,
@@ -1189,13 +1190,11 @@ const useStylesKeyboardShortcut = makeStyles(() => ({
   }
 }));
 
-export function FormInputKeyboardShortcut({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
-  const cid = _.uniqueId('c');
-  const helpid = `h${cid}`;
+export function FormInputKeyboardShortcut({ hasError, label, className, helpMessage, onChange, ...props }) {
   const classes = useStylesKeyboardShortcut();
   return (
-    <FormInput label={label} error={hasError} className={clsx(classes.customRow, className)} helpMessage={helpMessage} testcid={testcid}>
-      <KeyboardShortcuts cid={cid} helpid={helpid} onChange={onChange} {...props} />
+    <FormInput label={label} error={hasError} className={clsx(classes.customRow, className)} helpMessage={helpMessage}>
+      <KeyboardShortcuts onChange={onChange} {...props} />
     </FormInput>
 
   );
@@ -1229,17 +1228,17 @@ FormInputQueryThreshold.propTypes = {
 };
 
 
-export function FormInputThemes({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
+export function FormInputSelectThemes({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
   const cid = _.uniqueId('c');
   const helpid = `h${cid}`;
   return (
     <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <Themes cid={cid} helpid={helpid} onChange={onChange} {...props} />
+      <SelectThemes cid={cid} helpid={helpid} onChange={onChange} {...props} />
     </FormInput>
   );
 }
 
-FormInputThemes.propTypes = {
+FormInputSelectThemes.propTypes = {
   hasError: PropTypes.bool,
   label: PropTypes.string,
   className: CustomPropTypes.className,

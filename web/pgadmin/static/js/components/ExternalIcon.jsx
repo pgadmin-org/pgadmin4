@@ -33,6 +33,6 @@ export const ConnectedIcon = ()=><ExternalIcon Icon={ConnectedSvg} style={{heigh
 export const DisonnectedIcon = ()=><ExternalIcon Icon={DisconnectedSvg} style={{height: '0.7em'}} />;
 export const RegexIcon = ()=><ExternalIcon Icon={RegexSvg} />;
 export const FormatCaseIcon = ()=><ExternalIcon Icon={FormatCaseSvg} />;
-export const ExpandDialog = ()=><ExternalIcon Icon={Expand} style={{height: '1em', width: '1em'}}  />;
-export const MinimizeDialog = ()=><ExternalIcon Icon={Collapse} style={{height: 'auto'}} />;
+export const ExpandDialogIcon = ()=><ExternalIcon Icon={Expand} style={{height: 'auto', width: '1em'}}  />;
+export const MinimizeDialogIcon = ()=><ExternalIcon Icon={Collapse} style={{height: 'auto'}} />;
 

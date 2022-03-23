@@ -12,10 +12,8 @@ import React from 'react';
 import '../helper/enzyme.helper';
 import { withTheme } from '../fake_theme';
 import { createMount } from '@material-ui/core/test-utils';
-import {
-  OutlinedInput,
-} from '@material-ui/core';
 import QueryThresholds from '../../../pgadmin/static/js/components/QueryThresholds';
+import { InputText } from '../../../pgadmin/static/js/components/FormComponents';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('QueryThresholds', () => {
@@ -41,45 +39,34 @@ describe('QueryThresholds', () => {
 
   describe('QueryThresholds', () => {
     let ThemedFormInputQueryThresholds = withTheme(QueryThresholds), ctrl;
-
+    let onChange = jasmine.createSpy('onChange');
     beforeEach(() => {
       ctrl = mount(
         <ThemedFormInputQueryThresholds
-          testcid="inpCid"
+          testcid="QueryThresholdCid"
           helpMessage="some help message"
-          /* InputText */
-          readonly={false}
-          disabled={false}
-          maxlength={1}
           value={defult_value}
           controlProps={{
             extraprop: 'test'
           }}
+          onChange={onChange}
         />);
     });
 
-    it('init Warning', () => {
-      expect(ctrl.find(OutlinedInput).at(0).prop('value')).toBe(5);
+    it('Warning', (done) => {
+      ctrl.find(InputText).at(0).find('input').simulate('change', { warning: 5, alert: 6 });
+      expect(ctrl.find(InputText).at(0).prop('value')).toBe(5);
+
+      expect(onChange).toHaveBeenCalledWith({ warning: '5', alert: 6 });
+      done();
     });
 
-    it('init Alert', () => {
-      expect(ctrl.find(OutlinedInput).at(1).prop('value')).toBe(6);
-    });
+    it('Alert', (done) => {
+      ctrl.find(InputText).at(1).find('input').simulate('change', { warning: 5, alert: 6 });
+      expect(ctrl.find(InputText).at(1).prop('value')).toBe(6);
 
-    it('warning change', () => {
-      let onChange = () => {/*This is intentional (SonarQube)*/ };
-      ctrl.setProps({
-        onChange: onChange
-      });
-      expect(ctrl.find(OutlinedInput).at(0).prop('value')).toBe(5);
-    });
-
-    it('Alert change', () => {
-      let onChange = () => {/*This is intentional (SonarQube)*/ };
-      ctrl.setProps({
-        onChange: onChange
-      });
-      expect(ctrl.find(OutlinedInput).at(1).prop('value')).toBe(6);
+      expect(onChange).toHaveBeenCalledWith({ warning: 5, alert: '6' });
+      done();
     });
   });
 

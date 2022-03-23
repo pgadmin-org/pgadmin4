@@ -20,7 +20,7 @@ import Theme from '../Theme';
 import HTMLReactParser from 'html-react-parser';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import { Rnd } from 'react-rnd';
-import { ExpandDialog, MinimizeDialog } from '../components/ExternalIcon';
+import { ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
 
 const ModalContext = React.createContext({});
 
@@ -154,6 +154,15 @@ function PaperComponent(props) {
   let classes = dialogStyle();
   let [dialogPosition, setDialogPosition] = useState(null);
   let resizeable = props.isresizeable == 'true' ? true : false;
+
+  const setEnableResizing = () => {
+    return props.isfullscreen == 'true' ? false : resizeable;
+  };
+
+  const setConditionalPosition = () => {
+    return props.isfullscreen == 'true' ? { x: 0, y: 0 } : dialogPosition && { x: dialogPosition.x, y: dialogPosition.y };
+  };
+
   return (
     props.isresizeable == 'true' ?
       <Rnd
@@ -168,8 +177,8 @@ function PaperComponent(props) {
         {...(props.width && { minWidth: 500 })}
         {...(props.width && { minHeight: 190 })}
         bounds="window"
-        enableResizing={props.isfullscreen == 'true' ? false : resizeable}
-        position={props.isfullscreen == 'true' ? { x: 0, y: 0 } : dialogPosition && { x: dialogPosition.x, y: dialogPosition.y }}
+        enableResizing={setEnableResizing()}
+        position={setConditionalPosition()}
         onDragStop={(e, position) => {
           if (props.isfullscreen !== 'true') {
             setDialogPosition({
@@ -241,11 +250,11 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, fullScr
             <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
             {
               showFullScreen && !isfullScreen &&
-              <Box marginLeft="auto"><PgIconButton title={gettext('Maximize')} icon={<ExpandDialog className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+              <Box marginLeft="auto"><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
             }
             {
               showFullScreen && isfullScreen &&
-              <Box marginLeft="auto"><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialog  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+              <Box marginLeft="auto"><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
             }
 
             <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>

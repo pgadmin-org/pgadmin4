@@ -61,7 +61,6 @@ export default function QueryThresholds({ value, onChange }) {
       <Grid
         container
         direction="row"
-        justifyContent="center"
         alignItems="center"
       >
         <Grid item lg={2} md={2} sm={2} xs={12}>

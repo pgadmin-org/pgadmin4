@@ -11,8 +11,7 @@ import React from 'react';
 import gettext from 'sources/gettext';
 import PreferencesComponent from './components/PreferencesComponent';
 import Notify from '../../../static/js/helpers/Notifier';
-// import PreferencesTree from './components/PreferencesTree';
-import { initPreferencesTree } from './components/PreferencesTree';
+import PreferencesTree from './components/PreferencesTree';
 
 export default class Preferences {
   static instance;
@@ -50,12 +49,15 @@ export default class Preferences {
 
   // This is a callback function to show preferences.
   show() {
+    
     // Render Preferences component
     Notify.showModal(gettext('Preferences'), (closeModal) => {
       return <PreferencesComponent
         renderTree={(prefTreeData) => {
-          initPreferencesTree(this.pgBrowser, document.getElementById('treeContainer'), prefTreeData);
+          // Render preferences tree component
+          return <PreferencesTree pgBrowser={this.pgBrowser} data={prefTreeData} />;
         }} closeModal={closeModal} />;
     }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: 900, dialogHeight: 550 });
   }
+
 }

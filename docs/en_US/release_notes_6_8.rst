@@ -23,3 +23,4 @@ Bug fixes
   | `Issue #7216 <https://redmine.postgresql.org/issues/7216>`_ -  Ensure that the values of certain fields are prettified in the statistics tab for collection nodes.
   | `Issue #7238 <https://redmine.postgresql.org/issues/7238>`_ -  Fixed an issue where foreign key is not removed even if the referred table is removed in ERD.
   | `Issue #7257 <https://redmine.postgresql.org/issues/7257>`_ -  Support running the container under OpenShift with alternate UIDs.
+  | `Issue #7261 <https://redmine.postgresql.org/issues/7261>`_ -  Correct typo in the documentation.

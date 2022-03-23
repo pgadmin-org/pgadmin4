@@ -17,7 +17,7 @@ export class ManagePreferenceTreeNodes {
   constructor(data) {
     this.tree = {}
     this.tempTree = new TreeNode(undefined, {});
-    this.treeData = data;
+    this.treeData = data || [];
   }
 
   public init = (_root: string) => new Promise((res, rej) => {
@@ -50,7 +50,7 @@ export class ManagePreferenceTreeNodes {
     if (path === null || path === undefined || path.length === 0 || path == '/preferences') {
       return this.tempTree;
     }
-    console.log('Path', path)
+
     return findInTree(this.tempTree, path);
   }
 
@@ -109,13 +109,15 @@ export class ManagePreferenceTreeNodes {
         await fill(self.treeData);
       }
 
-      if (node?.children.length > 0) return res(node.children);
-      else return res(null);
-
+      self.returnChildrens(node, res)
     }
     loadData();
   })
 
+  public returnChildrens = (node: any, res: any)  =>{
+    if (node?.children.length > 0) return res(node.children);
+    else return res(null);
+  }
 }
 
 

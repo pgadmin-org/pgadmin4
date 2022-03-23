@@ -16,6 +16,7 @@ import {
   OutlinedInput,
 } from '@material-ui/core';
 import KeyboardShortcuts from '../../../pgadmin/static/js/components/KeyboardShortcuts';
+import { InputCheckbox } from '../../../pgadmin/static/js/components/FormComponents';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('KeyboardShortcuts', () => {
@@ -26,7 +27,8 @@ describe('KeyboardShortcuts', () => {
     'key': {
       'char': 'a',
       'key_code': 97
-    }
+    },
+    'shift': false
   };
   let fields = [{
     type: 'keyCode',
@@ -63,21 +65,17 @@ describe('KeyboardShortcuts', () => {
 
   describe('KeyboardShortcuts', () => {
     let ThemedFormInputKeyboardShortcuts = withTheme(KeyboardShortcuts), ctrl;
-
+    let onChange = jasmine.createSpy('onChange');
     beforeEach(() => {
       ctrl = mount(
         <ThemedFormInputKeyboardShortcuts
-          testcid="inpCid"
-          helpMessage="some help message"
-          /* InputText */
-          readonly={false}
-          disabled={false}
-          maxlength={1}
           value={defult_value}
           fields={fields}
           controlProps={{
-            extraprop: 'test'
+            extraprop: 'test',
+            keyDown: onChange
           }}
+          onChange={onChange}
         />);
     });
 
@@ -85,15 +83,29 @@ describe('KeyboardShortcuts', () => {
       expect(ctrl.find(OutlinedInput).prop('value')).toBe('a');
     });
 
-    it('Key change', () => {
-      let onChange = () => {/*This is intentional (SonarQube)*/ };
-      ctrl.setProps({
-        controlProps: {
-          onKeyDown: onChange
-        }
-      });
+    it('Key change', (done) => {
+      ctrl.find(OutlinedInput).at(0).find('input').simulate('keydown', { key: '', keyCode: 32});
+      expect(onChange).toHaveBeenCalledWith({ ctrl: true, alt: true, key: { char: 'Space', key_code: 32 }, shift: false });
+      done();
+    });
 
-      expect(ctrl.find(OutlinedInput).prop('value')).toBe('a');
+    it('Shift option', (done) => {
+      ctrl.find(InputCheckbox).at(0).find('input').simulate('change', { target: { checked: true, name: 'shift' } });
+      expect(onChange).toHaveBeenCalledWith({ ctrl: true, alt: true, key: { char: 'a', key_code: 97 }, shift: true });
+      done();
+    });
+
+    it('Ctrl option', (done) => {
+      ctrl.find(InputCheckbox).at(1).find('input').simulate('change', { target: { checked: false, name: 'ctrl' } });
+      expect(onChange).toHaveBeenCalledWith({ ctrl: false, alt: true, key: { char: 'a', key_code: 97 }, shift: false });
+      done();
+    });
+
+
+    it('Alt option', (done) => {
+      ctrl.find(InputCheckbox).at(2).find('input').simulate('change', { target: { checked: false, name: 'alt' } });
+      expect(onChange).toHaveBeenCalledWith({ ctrl: true, alt: false, key: { char: 'a', key_code: 97 }, shift: false });
+      done();
     });
 
   });

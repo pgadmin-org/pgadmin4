@@ -13,6 +13,7 @@ import url_for from 'sources/url_for';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import getApiInstance from '../../../../../static/js/api_instance';
 import Notify from '../../../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 export function getBinaryPathSchema() {
 
@@ -49,6 +50,7 @@ export default class BinaryPathSchema extends BaseUISchema {
       {
         id: 'binaryPath', label: gettext('Binary Path'), cell: 'file', type: 'file',
         isvalidate: true, controlProps: { dialogType: 'select_folder', supportedTypes: ['*', 'sql', 'backup'], dialogTitle: 'Select folder' },
+        hideBrowseButton: pgAdmin.server_mode == 'True',
         validate: (data) => {
           const api = getApiInstance();
           if (_.isNull(data) || data.trim() === '') {
