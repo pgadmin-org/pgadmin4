@@ -93,7 +93,7 @@ function isValueEqual(val1, val2) {
   return (_.isEqual(val1, val2)
     || ((val1 === null || _.isUndefined(val1)) && val2 === '')
     || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
-    || (attrDefined ? _.isEqual(val1.toString(), val2.toString()) : false
+    || (attrDefined ? (!_.isObject(val1) && _.isEqual(val1.toString(), val2.toString())) : false
     ));
 }
 
@@ -108,7 +108,7 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
 
     /* The comparator and setter */
     const attrChanged = (id, change, force=false)=>{
-      if(isValueEqual(_.get(origVal, id), _.get(sessVal, id)) && !force && (_.isObject(_.get(origVal, id)) && _.isEqual(_.get(origVal, id), _.get(sessData, id)))) {
+      if(isValueEqual(_.get(origVal, id), _.get(sessVal, id)) && !force) {
         return;
       } else {
         change = change || _.get(sessVal, id);

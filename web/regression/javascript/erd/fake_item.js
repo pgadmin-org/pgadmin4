@@ -15,6 +15,7 @@ export class FakeNode {
   serializeData() {return this.getData();}
   getPortName(attnum) {return `port-${attnum}`;}
   getPort() {return null;}
+  getPorts() {return null;}
   addPort(obj) {return obj;}
   getColumnAt(pos) {return _.find(this.getColumns()||[], (c)=>c.attnum==pos);}
   remove() {/*This is intentional (SonarQube)*/}
@@ -44,4 +45,9 @@ export class FakeLink {
   getTargetPort() {return {remove: ()=>{/*This is intentional (SonarQube)*/}};}
   setTargetPort() {/*This is intentional (SonarQube)*/}
   remove() {/*This is intentional (SonarQube)*/}
+}
+
+export class FakePort {
+  constructor() {}
+  getLinks() {return null;}
 }

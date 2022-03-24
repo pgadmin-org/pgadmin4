@@ -10,7 +10,7 @@ import * as erdModule from 'pgadmin.tools.erd/erd_module';
 import erdPref from './erd_preferences';
 import BodyWidget from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
 import * as ERDSqlTool from 'tools/datagrid/static/js/show_query_tool';
-import { FakeLink, FakeNode } from '../fake_item';
+import { FakeLink, FakeNode, FakePort } from '../fake_item';
 import Notify from '../../../../pgadmin/static/js/helpers/Notifier';
 
 
@@ -310,22 +310,25 @@ describe('ERD BodyWidget', ()=>{
 
   it('onDeleteNode', (done)=>{
     let node = new FakeNode({name: 'table1', schema: 'erd1'});
-    spyOn(node, 'remove');
     let link = new FakeLink({local_table_uid: 'tid1'});
-    spyOn(link, 'remove');
+    let port = new FakePort();
+    spyOn(port, 'getLinks').and.returnValue([link]);
+    spyOn(node, 'remove');
+    spyOn(node, 'getPorts').and.returnValue([port]);
     let nodesDict = {
       'tid1': node
     };
     spyOn(bodyInstance.diagram, 'getModel').and.returnValue({
       'getNodesDict': ()=>nodesDict,
     });
+    spyOn(bodyInstance.diagram, 'removeOneToManyLink');
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
     spyOn(bodyInstance.diagram, 'getSelectedLinks').and.returnValue([link]);
 
     bodyInstance.onDeleteNode();
     setTimeout(()=>{
       expect(node.remove).toHaveBeenCalled();
-      expect(link.remove).toHaveBeenCalled();
+      expect(bodyInstance.diagram.removeOneToManyLink).toHaveBeenCalledWith(link);
       done();
     });
   });

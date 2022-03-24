@@ -28,16 +28,13 @@ export default function SelectThemes({onChange, ...props}) {
     props.options.forEach((opt)=> {
       if(opt.value == e) {
         setPreviewSrc(opt.preview_src);
-      } 
+      }
     });
     onChange(e);
   };
 
   return (
-    <Grid
-      container
-      direction="column"
-      justifyContent="center">
+    <Grid container direction="column">
       <Grid item lg={12} md={12} sm={12} xs={12}>
         <InputSelect ref={props.inputRef} onChange={themeChange} {...props} />
       </Grid>
