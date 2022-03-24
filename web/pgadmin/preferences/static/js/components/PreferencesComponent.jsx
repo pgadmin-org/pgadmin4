@@ -166,6 +166,7 @@ export default function PreferencesComponent({ ...props }) {
   const [initValues, setInitValues] = React.useState({});
   const [loadTree, setLoadTree] = React.useState(0);
   const api = getApiInstance();
+  const firstTreeElement = React.useRef('');
 
   useEffect(() => {
     const pref_url = url_for('preferences.index');
@@ -193,6 +194,10 @@ export default function PreferencesComponent({ ...props }) {
           'expanded': true,
           'isExpanded': true,
         };
+
+        if(firstTreeElement.current.length == 0) {
+          firstTreeElement.current = node.label;
+        }
 
         node.children.forEach(subNode => {
           let sid = Math.floor(Math.random() * 1000);
@@ -258,7 +263,7 @@ export default function PreferencesComponent({ ...props }) {
 
         let _val = element.value.split('|');
         preferencesValues[element.id] = { 'warning': _val[0], 'alert': _val[1] };
-      } else if (subNode.label == 'Results grid' && node.label == 'Query Tool') {
+      } else if (subNode.label == gettext('Results grid') && node.label == gettext('Query Tool')) {
         setResultsOptions(element, subNode, preferencesValues, type);
       } else {
         element.type = type;
@@ -327,10 +332,10 @@ export default function PreferencesComponent({ ...props }) {
   }
   function addNote(node, subNode, nodeData, preferencesData, note = '') {
     // Check and add the note for the element.
-    if (subNode.label == 'Nodes' && node.label == 'Browser') {
+    if (subNode.label == gettext('Nodes') && node.label == gettext('Browser')) {
       note = [gettext('This settings is to Show/Hide nodes in the browser tree.')].join('');
     } else {
-      note = [gettext(note)].join('');
+      note = [note].join('');
     }
 
     if (note && note.length > 0) {
@@ -374,7 +379,7 @@ export default function PreferencesComponent({ ...props }) {
 
     // Listen added preferences tree node event to expand the newly added node on tree load.
     pgAdmin.Browser.Events.on('preferences:tree:added', (item) => {
-      if (item._parent._fileName == 'Browser' && item._parent.isExpanded && !prefTreeInit.current) {
+      if (item._parent._fileName == firstTreeElement.current && item._parent.isExpanded && !prefTreeInit.current) {
         pgAdmin.Browser.ptree.tree.setActiveFile(item._parent._children[0], false);
       }
       else if (item.type == FileType.Directory) {

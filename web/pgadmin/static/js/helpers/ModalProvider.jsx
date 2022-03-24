@@ -191,6 +191,7 @@ function PaperComponent(props) {
             ...position,
           });
         }}
+        dragHandleClassName="modal-drag-area"
       >
         <Paper {...props} style={{ width: '100%', height: '100%', maxHeight: '100%', maxWidth: '100%' }} />
       </Rnd>
@@ -245,7 +246,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, fullScr
         fullWidth={isFullWidth}
         disableBackdropClick
       >
-        <DialogTitle>
+        <DialogTitle className='modal-drag-area'>
           <Box className={classes.titleBar}>
             <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
             {

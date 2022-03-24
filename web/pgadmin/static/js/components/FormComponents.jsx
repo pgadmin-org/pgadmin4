@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
   formLabel: {
     margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
     display: 'flex',
+    wordBreak: 'break-word'
   },
   formLabelError: {
     color: theme.palette.error.main,
@@ -407,12 +408,17 @@ FormInputText.propTypes = {
 /* Using the existing file dialog functions using showFileDialog */
 export function InputFileSelect({ controlProps, onChange, disabled, readonly, isvalidate = false, hideBrowseButton=false,validate, ...props }) {
   const inpRef = useRef();
+  let textControlProps = {};
+  if(controlProps?.placeholder) {
+    const {placeholder} = controlProps;
+    textControlProps = {placeholder};
+  }
   const onFileSelect = (value) => {
     onChange && onChange(decodeURI(value));
     inpRef.current.focus();
   };
   return (
-    <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} {...props} endAdornment={
+    <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} controlProps={textControlProps} {...props} endAdornment={
       <>
         {!hideBrowseButton &&
         <IconButton onClick={() => showFileDialog(controlProps, onFileSelect)}

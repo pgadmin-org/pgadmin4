@@ -40,7 +40,7 @@ export default function PreferencesTree({ pgBrowser, data }) {
       },
       sortComparator: (a, b) => {
         // No nee to sort Query tool options.
-        if (a._parent && a._parent._fileName == 'Query Tool') return 0;
+        if (a._parent && a._parent._fileName == gettext('Query Tool')) return 0;
         // Sort alphabetically
         if (a.constructor === b.constructor) {
           return pgAdmin.natural_sort(a.fileName, b.fileName);

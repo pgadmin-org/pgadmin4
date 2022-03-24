@@ -49,7 +49,13 @@ export default class BinaryPathSchema extends BaseUISchema {
       },
       {
         id: 'binaryPath', label: gettext('Binary Path'), cell: 'file', type: 'file',
-        isvalidate: true, controlProps: { dialogType: 'select_folder', supportedTypes: ['*', 'sql', 'backup'], dialogTitle: 'Select folder' },
+        isvalidate: true,
+        controlProps: {
+          dialogType: 'select_folder',
+          supportedTypes: ['*', 'sql', 'backup'],
+          dialogTitle: gettext('Select folder'),
+          placeholder: pgAdmin.server_mode == 'False' ? gettext('Select binary path...') : gettext('Enter binary path...')
+        },
         hideBrowseButton: pgAdmin.server_mode == 'True',
         validate: (data) => {
           const api = getApiInstance();
