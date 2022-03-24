@@ -5,4 +5,8 @@ FROM pg_catalog.pg_trigger t
 {% if trid %}
     AND t.oid = {{trid}}::OID
 {% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = t.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
     ORDER BY tgname;

@@ -774,9 +774,10 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             last_system_oid = (self.manager.db_info[did])['datlastsysoid']
 
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
+            "/".join([self.template_path, self._NODES_SQL]),
             datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects
+            showsysobj=self.blueprint.show_system_objects,
+            schema_diff=True
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:

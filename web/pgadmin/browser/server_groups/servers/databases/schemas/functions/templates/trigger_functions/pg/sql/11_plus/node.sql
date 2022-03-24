@@ -17,6 +17,10 @@ WHERE
 {% if scid %}
     AND pronamespace = {{scid}}::oid
 {% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = pr.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
     AND typname IN ('trigger', 'event_trigger')
     AND lanname NOT IN ('edbspl', 'sql', 'internal')
 ORDER BY

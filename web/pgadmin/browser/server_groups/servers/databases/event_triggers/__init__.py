@@ -853,14 +853,9 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
 
-        last_system_oid = 0
-        if self.manager.db_info is not None and did in self.manager.db_info:
-            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
-
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects
+            "/".join([self.template_path, self._NODES_SQL]),
+            schema_diff=True
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:

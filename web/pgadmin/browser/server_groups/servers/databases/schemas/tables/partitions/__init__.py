@@ -420,7 +420,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             SQL = render_template(
                 "/".join([self.partition_template_path, self._NODES_SQL]),
-                scid=scid, tid=tid
+                scid=scid, tid=tid, schema_diff=True
             )
             status, partitions = self.conn.execute_2darray(SQL)
             if not status:

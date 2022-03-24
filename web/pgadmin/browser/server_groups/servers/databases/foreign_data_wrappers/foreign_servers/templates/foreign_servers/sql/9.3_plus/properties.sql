@@ -22,5 +22,9 @@ WHERE srvfdw={{fid}}::oid
 {% if fsid %}
 WHERE srv.oid={{fsid}}::oid
 {% endif %}
+{% if schema_diff %}
+WHERE CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+    WHERE objid = srv.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
 ORDER BY srvname;
 {% endif %}

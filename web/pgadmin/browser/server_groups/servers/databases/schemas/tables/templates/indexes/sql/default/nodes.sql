@@ -13,4 +13,8 @@ WHERE indrelid = {{tid}}::OID
 {% if idx %}
     AND cls.oid = {{ idx }}::OID
 {% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = cls.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
     ORDER BY cls.relname

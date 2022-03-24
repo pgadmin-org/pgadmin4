@@ -1960,7 +1960,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         if not oid:
             sql = render_template("/".join([self.sql_template_path,
-                                            self._NODE_SQL]), scid=scid)
+                                            self._NODE_SQL]), scid=scid,
+                                  schema_diff=True)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)

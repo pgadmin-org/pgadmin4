@@ -27,4 +27,8 @@ FROM pg_catalog.pg_synonym s  JOIN pg_catalog.pg_namespace ns ON s.synnamespace 
  {% if syid %}
    AND s.oid={{syid}}::oid
  {% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = s.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
 ORDER BY synname;

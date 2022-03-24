@@ -758,7 +758,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return res
 
         SQL = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]), scid=scid)
+                                        self._PROPERTIES_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

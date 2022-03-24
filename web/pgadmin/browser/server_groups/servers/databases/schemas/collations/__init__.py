@@ -799,7 +799,8 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODES_SQL]), scid=scid)
+                                        self._NODES_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

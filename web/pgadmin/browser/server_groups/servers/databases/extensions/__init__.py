@@ -561,7 +561,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
 
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']))
+                                        self._PROPERTIES_SQL]))
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

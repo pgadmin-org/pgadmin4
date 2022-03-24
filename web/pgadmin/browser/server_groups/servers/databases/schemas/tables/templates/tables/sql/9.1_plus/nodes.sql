@@ -6,4 +6,8 @@ SELECT rel.oid, rel.relname AS name,
 FROM pg_catalog.pg_class rel
     WHERE rel.relkind IN ('r','s','t') AND rel.relnamespace = {{ scid }}::oid
     {% if tid %} AND rel.oid = {{tid}}::OID {% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = rel.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
     ORDER BY rel.relname;

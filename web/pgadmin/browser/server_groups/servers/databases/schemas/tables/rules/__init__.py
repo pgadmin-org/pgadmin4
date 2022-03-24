@@ -644,7 +644,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         else:
             SQL = render_template("/".join([self.template_path,
                                             self._NODES_SQL]),
-                                  tid=tid)
+                                  tid=tid, schema_diff=True)
             status, rules = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(rules)

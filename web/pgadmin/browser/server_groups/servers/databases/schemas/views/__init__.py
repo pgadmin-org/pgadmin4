@@ -1653,7 +1653,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if not oid:
             SQL = render_template("/".join(
                 [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
-                did=did, scid=scid, datlastsysoid=self.datlastsysoid)
+                did=did, scid=scid, datlastsysoid=self.datlastsysoid,
+                schema_diff=True)
             status, views = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(views)
@@ -2286,7 +2287,8 @@ class MViewNode(ViewNode, VacuumSettings):
         res = dict()
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
-            did=did, scid=scid, datlastsysoid=self.datlastsysoid)
+            did=did, scid=scid, datlastsysoid=self.datlastsysoid,
+            schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

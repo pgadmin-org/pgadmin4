@@ -511,7 +511,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         else:
             res = dict()
             sql = render_template("/".join([self.table_template_path,
-                                            self._NODES_SQL]), scid=scid)
+                                            self._NODES_SQL]), scid=scid,
+                                  schema_diff=True)
             status, tables = self.conn.execute_2darray(sql)
             if not status:
                 return False, tables

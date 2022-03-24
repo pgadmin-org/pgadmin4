@@ -280,7 +280,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         sql = render_template("/".join([self.template_path,
-                                        'nodes.sql']), did=did)
+                                        self._NODES_SQL]), did=did)
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -883,15 +883,9 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         if self.manager.version < 100000:
             return res
 
-        last_system_oid = 0
-        if self.manager.db_info is not None and did in self.manager.db_info:
-            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
-
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects,
-            did=did
+            "/".join([self.template_path, self._NODES_SQL]),
+            did=did, schema_diff=True
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:

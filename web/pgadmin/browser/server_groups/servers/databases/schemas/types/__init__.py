@@ -1551,7 +1551,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         res = dict()
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
-                              scid=scid, datlastsysoid=self.datlastsysoid)
+                              scid=scid, datlastsysoid=self.datlastsysoid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

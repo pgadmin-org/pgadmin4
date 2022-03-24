@@ -963,7 +963,8 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
 
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']))
+                                        self._PROPERTIES_SQL]),
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

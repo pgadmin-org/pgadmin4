@@ -41,4 +41,8 @@ FROM
     LEFT JOIN pg_catalog.pg_type typ ON rel.reloftype=typ.oid
     WHERE rel.relispartition
     {% if ptid %} AND rel.oid = {{ ptid }}::OID {% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = rel.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
     ORDER BY rel.relname;

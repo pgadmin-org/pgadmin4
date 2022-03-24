@@ -276,7 +276,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
 
-        sql = render_template("/".join([self.sql_path, 'nodes.sql']),
+        sql = render_template("/".join([self.sql_path, self._NODES_SQL]),
                               rgid=rg_id)
         status, result = self.conn.execute_2darray(sql)
         if not status:
@@ -308,7 +308,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
         res = []
-        sql = render_template("/".join([self.sql_path, 'nodes.sql']))
+        sql = render_template("/".join([self.sql_path, self._NODES_SQL]))
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -549,7 +549,7 @@ class ResourceGroupView(NodeView):
             for rg_id in data['ids']:
                 # Get name for resource group from rg_id
                 sql = render_template(
-                    "/".join([self.sql_path, 'delete.sql']),
+                    "/".join([self.sql_path, self._DELETE_SQL]),
                     rgid=rg_id, conn=self.conn
                 )
                 status, rgname = self.conn.execute_scalar(sql)
@@ -570,7 +570,7 @@ class ResourceGroupView(NodeView):
 
                 # drop resource group
                 sql = render_template(
-                    "/".join([self.sql_path, 'delete.sql']),
+                    "/".join([self.sql_path, self._DELETE_SQL]),
                     rgname=rgname, conn=self.conn
                 )
                 status, res = self.conn.execute_scalar(sql)

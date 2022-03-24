@@ -14,5 +14,9 @@ ORDER BY 2;
 SELECT u.umid AS oid, u.usename AS name, u.srvid AS fsid, pg_catalog.array_to_string(u.umoptions, ',') AS umoptions, fs.srvfdw AS fdwid
 FROM pg_catalog.pg_user_mappings u
 LEFT JOIN pg_catalog.pg_foreign_server fs ON fs.oid = u.srvid
+{% if schema_diff %}
+WHERE CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+    WHERE objid = u.umid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
 ORDER BY 2;
 {% endif %}

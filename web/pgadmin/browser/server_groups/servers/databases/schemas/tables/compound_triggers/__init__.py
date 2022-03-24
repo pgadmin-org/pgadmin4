@@ -973,7 +973,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             res = data
         else:
             SQL = render_template("/".join([self.template_path,
-                                            self._NODES_SQL]), tid=tid)
+                                            self._NODES_SQL]), tid=tid,
+                                  schema_diff=True)
             status, triggers = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(triggers)

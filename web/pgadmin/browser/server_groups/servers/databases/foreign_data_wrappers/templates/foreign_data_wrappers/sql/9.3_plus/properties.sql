@@ -23,4 +23,8 @@ WHERE fdw.oid={{fid}}::oid
 {% if fname %}
 WHERE fdw.fdwname={{ fname|qtLiteral }}::text
 {% endif %}
+{% if schema_diff %}
+WHERE CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+    WHERE objid = fdw.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
 ORDER BY fdwname

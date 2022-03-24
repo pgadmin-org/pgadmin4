@@ -831,7 +831,7 @@ AND relkind != 'c'))"""
                 data['is_schema_diff'] = True
 
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
+                "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data)
         return SQL, data
 
@@ -935,7 +935,8 @@ AND relkind != 'c'))"""
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODE_SQL]), scid=scid)
+                                        self._NODE_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
