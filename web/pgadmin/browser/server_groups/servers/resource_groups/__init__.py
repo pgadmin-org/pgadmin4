@@ -167,6 +167,8 @@ class ResourceGroupView(NodeView):
     _PROPERTIES_SQL = 'properties.sql'
     _CREATE_SQL = 'create.sql'
     _UPDATE_SQL = 'update.sql'
+    _NODES_SQL = 'nodes.sql'
+    _DELETE_SQL = 'delete.sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
