@@ -26,3 +26,4 @@ Bug fixes
   | `Issue #7257 <https://redmine.postgresql.org/issues/7257>`_ -  Support running the container under OpenShift with alternate UIDs.
   | `Issue #7261 <https://redmine.postgresql.org/issues/7261>`_ -  Correct typo in the documentation.
   | `Issue #7267 <https://redmine.postgresql.org/issues/7267>`_ -  Fixed an issue where unexpected error messages are displayed when users change the language via preferences.
+  | `Issue #7269 <https://redmine.postgresql.org/issues/7269>`_ -  Ensure that pgAdmin4 should work with latest jinja2 version.

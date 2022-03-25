@@ -33,6 +33,7 @@ from flask_security.utils import login_user, logout_user
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
+from jinja2 import select_autoescape
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
@@ -70,7 +71,7 @@ class PgAdmin(Flask):
     def __init__(self, *args, **kwargs):
         # Set the template loader to a postgres-version-aware loader
         self.jinja_options = ImmutableDict(
-            extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'],
+            autoescape=select_autoescape(enabled_extensions=('html', 'xml')),
             loader=VersionedTemplateLoader(self)
         )
         self.logout_hooks = []
