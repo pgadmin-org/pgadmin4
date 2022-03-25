@@ -25,7 +25,7 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ADD COLUMN {{conn|qtIdent(c.attname)}} {{ c.datatype }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}
 {% if c.coloptions %}
-{% for o in c.coloptions %}{% if o.option and o.value %}
+{% for o in c.coloptions %}{% if o.option is defined and o.value is defined %}
 {% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %}
 {% if c.attnotnull %} NOT NULL{% else %} NULL{% endif %}
@@ -70,13 +70,13 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {% endif %}
 {% endfor %}
 {% for o in c.coloptions_updated.added %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 {% if loop.first %}ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (ADD {% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %});{% endif %}
 {% endif %}
 {% endfor %}
 {% for o in c.coloptions_updated.changed %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 {% if loop.first %}ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (SET {% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %});{% endif %}
 {% endif %}
@@ -98,21 +98,21 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {% endif -%}
 {% if data.ftoptions %}
 {% for o in data.ftoptions.deleted %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     OPTIONS ( DROP {{o.option}});
 
 {% endif %}
 {% endfor %}
 {% for o in data.ftoptions.added %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     OPTIONS (ADD {{o.option}} {{o.value|qtLiteral}});
 
 {% endif %}
 {% endfor %}
 {% for o in data.ftoptions.changed %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     OPTIONS (SET {{o.option}} {{o.value|qtLiteral}});
 

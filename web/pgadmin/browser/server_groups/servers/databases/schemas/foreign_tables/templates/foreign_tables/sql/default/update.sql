@@ -57,21 +57,21 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
 {% endif -%}
 {% if data.ftoptions %}
 {% for o in data.ftoptions.deleted %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     OPTIONS (DROP {{o.option}});
 {% endif %}
 {% endfor %}
 {% for o in data.ftoptions.added %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     OPTIONS (ADD {{o.option}} {{o.value|qtLiteral}});
 {% endif %}
 {% endfor %}
 {% for o in data.ftoptions.changed %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 
 ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     OPTIONS (SET {{o.option}} {{o.value|qtLiteral}});

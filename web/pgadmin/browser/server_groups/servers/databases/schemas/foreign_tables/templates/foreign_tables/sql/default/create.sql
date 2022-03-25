@@ -12,7 +12,7 @@ CREATE FOREIGN TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ c
     SERVER {{ conn|qtIdent(data.ftsrvname) }}{% if data.ftoptions %}
 
 {% for o in data.ftoptions %}
-{% if o.option and o.value %}
+{% if o.option is defined and o.value is defined %}
 {% if loop.first %}    OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif -%};
 {% if data.owner %}
