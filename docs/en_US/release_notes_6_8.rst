@@ -20,7 +20,7 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #4258 <https://redmine.postgresql.org/issues/4258>`_ -  Fixed an issue where SQL for revoke statements are not shown for databases.
+  | `Issue #4256 <https://redmine.postgresql.org/issues/4256>`_ -  Fixed an issue where SQL for revoke statements are not shown for databases.
   | `Issue #7059 <https://redmine.postgresql.org/issues/7059>`_ -  Fixed an issue where the error is shown on logout when the authentication source is oauth2.
   | `Issue #7197 <https://redmine.postgresql.org/issues/7197>`_ -  Fixed an issue where foreign key relationships do not update when the primary key is modified.
   | `Issue #7216 <https://redmine.postgresql.org/issues/7216>`_ -  Ensure that the values of certain fields are prettified in the statistics tab for collection nodes.
