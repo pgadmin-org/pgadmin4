@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+  | `Issue #7249 <https://redmine.postgresql.org/issues/7249>`_ -  Added support for unique keys in ERD.
   | `Issue #7257 <https://redmine.postgresql.org/issues/7257>`_ -  Support running the container under OpenShift with alternate UIDs.
 
 Housekeeping
@@ -24,7 +25,6 @@ Bug fixes
   | `Issue #7216 <https://redmine.postgresql.org/issues/7216>`_ -  Ensure that the values of certain fields are prettified in the statistics tab for collection nodes.
   | `Issue #7221 <https://redmine.postgresql.org/issues/7221>`_ -  Ensure objects depending on extensions are not displayed in Schema Diff.
   | `Issue #7238 <https://redmine.postgresql.org/issues/7238>`_ -  Fixed an issue where foreign key is not removed even if the referred table is removed in ERD.
-  | `Issue #7249 <https://redmine.postgresql.org/issues/7249>`_ -  Added support for unique keys in ERD.
   | `Issue #7261 <https://redmine.postgresql.org/issues/7261>`_ -  Correct typo in the documentation.
   | `Issue #7263 <https://redmine.postgresql.org/issues/7263>`_ -  Fixed schema diff issue where function's difference DDL was showing incorrectly when arguments had default values with commas.
   | `Issue #7265 <https://redmine.postgresql.org/issues/7265>`_ -  Fixed schema diff issue in which the option 'null' doesn't appear in the DDL statement for the foreign table.
