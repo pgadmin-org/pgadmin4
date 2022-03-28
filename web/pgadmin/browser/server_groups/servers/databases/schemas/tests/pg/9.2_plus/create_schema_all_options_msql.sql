@@ -5,14 +5,14 @@ COMMENT ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 
 GRANT ALL ON SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#" TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT ALL ON TABLES TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT ALL ON SEQUENCES TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT EXECUTE ON FUNCTIONS TO PUBLIC;
 
-ALTER DEFAULT PRIVILEGES IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA "test_schema_$%{}[]()&*^!@""""'`\/#"
 GRANT USAGE ON TYPES TO PUBLIC;

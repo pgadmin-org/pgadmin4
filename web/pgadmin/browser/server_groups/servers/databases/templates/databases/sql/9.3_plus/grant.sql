@@ -41,24 +41,43 @@ COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
 {# Default privileges/ACLs for tables #}
 {% if data.deftblacl %}
 {% for priv in data.deftblacl %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{% if priv.acltype == 'grant' %}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% else %}
+{{ DEFAULT_PRIVILEGE.REMOVE(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endif %}
 {% endfor %}
+
 {% endif %}
 {# Default privileges/ACLs for sequences #}
 {% if data.defseqacl %}
 {% for priv in data.defseqacl %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{% if priv.acltype == 'grant' %}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% else %}
+{{ DEFAULT_PRIVILEGE.REMOVE(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endif %}
 {% endfor %}
 {% endif %}
+
 {# Default privileges/ACLs for functions #}
 {% if data.deffuncacl %}
 {% for priv in data.deffuncacl %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant) }}
+{% if priv.acltype == 'grant' %}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% else %}
+{{ DEFAULT_PRIVILEGE.REMOVE(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endif %}
 {% endfor %}
 {% endif %}
+
 {# Default privileges/ACLs for types #}
 {% if data.deftypeacl %}
 {% for priv in data.deftypeacl %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TYPES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{% if priv.acltype == 'grant' %}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TYPES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% else %}
+{{ DEFAULT_PRIVILEGE.REMOVE(conn, 'TYPES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endif %}
 {% endfor %}
 {% endif %}

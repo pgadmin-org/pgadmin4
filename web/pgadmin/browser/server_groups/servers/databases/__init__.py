@@ -426,7 +426,7 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
+            did=did, conn=self.conn, grant_reovke_sql=False
         )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:
@@ -1172,7 +1172,7 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
+            did=did, conn=self.conn, grant_reovke_sql=True
         )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:

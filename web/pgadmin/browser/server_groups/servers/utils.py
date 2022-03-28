@@ -31,6 +31,8 @@ def parse_priv_from_db(db_privileges):
         'grantee': db_privileges['grantee'],
         'privileges': []
     }
+    if 'acltype' in db_privileges:
+        acl['acltype'] = db_privileges['acltype']
 
     privileges = []
     for idx, priv in enumerate(db_privileges['privileges']):
@@ -133,12 +135,16 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
             if 'old_grantee' in priv and priv['old_grantee'] != 'PUBLIC' \
             else grantee
 
+        acltype = priv['acltype'] if 'acltype' in priv else 'defaultacls'
+
         # Appending and returning all ACL
         privileges.append({
+            'grantor': priv['grantor'],
             'grantee': grantee,
             'with_grant': priv_with_grant,
             'without_grant': priv_without_grant,
-            'old_grantee': old_grantee
+            'old_grantee': old_grantee,
+            'acltype': acltype
         })
 
     return privileges

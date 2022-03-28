@@ -1,0 +1,141 @@
+{
+  "scenarios": [
+    {
+      "type": "alter",
+      "name": "Alert default priviliges for functions",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "data": {
+        "deffuncacl": {
+          "deleted": [
+            {
+              "grantor": "enterprisedb",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_default_db_privileges_function.sql",
+      "expected_msql_file": "alter_default_db_privileges_function_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges for tables",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "data": {
+        "deftblacl": {
+          "deleted": [
+            {
+              "grantor": "enterprisedb",
+              "grantee": "enterprisedb",
+              "privileges": [
+                {"privilege_type":"D","privilege":true,"with_grant":false},
+                {"privilege_type":"w","privilege":true,"with_grant":false}
+              ],
+              "acltype": "deftblacl"
+            }
+          ],
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "enterprisedb"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_default_db_privileges_tables.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges for sequences",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "data": {
+        "defseqacl": {
+          "deleted": [
+            {
+              "grantor": "enterprisedb",
+              "grantee": "enterprisedb",
+              "privileges": [
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ],
+          "added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false},
+                                                      {"privilege_type":"r","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}]
+        },
+        "deftblacl": {"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+
+      },
+      "expected_sql_file": "alter_default_db_privileges_sequences.sql",
+      "expected_msql_file": "alter_default_db_privileges_sequences_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges for types",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "data": {
+        "deftypeacl": {
+          "deleted": [
+            {
+              "grantor": "enterprisedb",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        }
+
+      },
+      "expected_sql_file": "alter_default_db_privileges_types.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges reset all",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "data": {
+        "deffuncacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}]},
+        "deftypeacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}]},
+        "deftblacl":{"added":[{"grantee":"enterprisedb","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}],"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false,"cid":"nn626"},{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn627"},{"privilege_type":"w","privilege":true,"with_grant":false,"cid":"nn628"},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
+        "defseqacl":{"added":[{"grantee":"enterprisedb","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"enterprisedb"}],"deleted":[{"grantor":"enterprisedb","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn673"},{"privilege_type":"U","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+        },
+      "expected_sql_file": "alter_default_db_privileges_reset_all.sql"
+    }
+  ]
+}

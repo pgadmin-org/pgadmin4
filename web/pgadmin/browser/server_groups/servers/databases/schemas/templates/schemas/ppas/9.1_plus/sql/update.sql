@@ -69,22 +69,22 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% if data.deftblacl %}
 {% if 'deleted' in data.deftblacl %}
 {% for priv in data.deftblacl.deleted %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, 'TABLES', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, 'TABLES', priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.deftblacl %}
 {% for priv in data.deftblacl.changed %}
 {% if priv.grantee != priv.old_grantee %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, 'TABLES', priv.old_grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, 'TABLES', priv.old_grantee, priv.grantor) }}
 {% else %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, 'TABLES', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, 'TABLES', priv.grantee, priv.grantor) }}
 {% endif %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in data.deftblacl %}
 {% for priv in data.deftblacl.added %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 
@@ -93,18 +93,18 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% if data.defseqacl %}
 {% if 'deleted' in data.defseqacl %}
 {% for priv in data.defseqacl.deleted %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.defseqacl %}
 {% for priv in data.defseqacl.changed %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee) }}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee, priv.grantor) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in data.defseqacl %}
 {% for priv in data.defseqacl.added %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 
@@ -113,18 +113,18 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% if data.deffuncacl %}
 {% if 'deleted' in data.deffuncacl %}
 {% for priv in data.deffuncacl.deleted %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.deffuncacl %}
 {% for priv in data.deffuncacl.changed %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee) }}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee, priv.grantor) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in data.deffuncacl %}
 {% for priv in data.deffuncacl.added %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 

@@ -27,7 +27,7 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 
 {{ DEFAULT_PRIVILEGE.SET(
     conn, 'SCHEMA', data.name, type, priv.grantee,
-    priv.without_grant, priv.with_grant
+    priv.without_grant, priv.with_grant, priv.grantor
     ) }}{% endfor %}
 {% endif %}
 {% endfor %}

@@ -104,7 +104,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                   'timestamptz_1': '<TIMESTAMPTZ_1>',
                                   'password': '<PASSWORD>',
                                   'pga_job_id': '<PGA_JOB_ID>',
-                                  'timestamptz_2': '<TIMESTAMPTZ_2>'}
+                                  'timestamptz_2': '<TIMESTAMPTZ_2>',
+                                  'db_name': '<TEST_DB_NAME>'}
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
@@ -751,6 +752,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         if 'pga_job_id' in scenario:
             sql = sql.replace(self.JSON_PLACEHOLDERS['pga_job_id'],
                               str(object_id))
+
+        if 'TEST_DB_NAME' in scenario:
+            sql = sql.replace(self.JSON_PLACEHOLDERS['db_name'],
+                              self.server_information['test_db_name'])
 
         return sql
 

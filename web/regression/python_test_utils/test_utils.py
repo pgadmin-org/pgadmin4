@@ -633,9 +633,11 @@ def add_db_to_parent_node_dict(srv_id, db_id, test_db_name):
     })
 
 
-def add_schema_to_parent_node_dict(srv_id, db_id, schema_id, schema_name):
+def add_schema_to_parent_node_dict(srv_id, db_name, db_id, schema_id,
+                                   schema_name):
     """ This function stores the schema details into parent dict """
     server_information = {"server_id": srv_id, "db_id": db_id,
+                          "test_db_name": db_name,
                           "schema_id": schema_id,
                           "schema_name": schema_name}
     regression.parent_node_dict["schema"].append(server_information)
@@ -653,7 +655,8 @@ def create_parent_server_node(server_info):
     srv_id = create_server(server_info)
     # Create database
     test_db_name = "test_db_%s" % str(uuid.uuid4())[1:6]
-    db_id = create_database(server_info, test_db_name)
+    encodings = ['UTF-8', 'C', 'C']
+    db_id = create_database(server_info, test_db_name, encodings)
     add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
     # Create schema
     schema_name = "test_schema_%s" % str(uuid.uuid4())[1:6]
@@ -668,7 +671,7 @@ def create_parent_server_node(server_info):
 
     schema = regression.schema_utils.create_schema(connection, schema_name)
     return add_schema_to_parent_node_dict(
-        srv_id, db_id, schema[0], schema[1]
+        srv_id, test_db_name, db_id, schema[0], schema[1]
     )
 
 

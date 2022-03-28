@@ -1,7 +1,7 @@
 {% if data %}
 CREATE DATABASE {{ conn|qtIdent(data.name) }}
 {% if data.datowner %}
-    WITH {% endif %}{% if data.datowner %}
+    WITH{% endif %}{% if data.datowner %}
 
     OWNER = {{ conn|qtIdent(data.datowner) }}{% endif %}{% if data.template %}
 

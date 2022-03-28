@@ -50,22 +50,22 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {% if data[defacl] %}{% set acl = data[defacl] %}
 {% if 'deleted' in acl %}
 {% for priv in acl.deleted %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in acl %}
 {% for priv in acl.changed %}
 {% if priv.grantee != priv.old_grantee %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.old_grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.old_grantee, priv.grantor) }}
 {% else %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee, priv.grantor) }}
 {% endif %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in acl %}
 {% for priv in acl.added %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% endif %}
