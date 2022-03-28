@@ -48,6 +48,5 @@ export class FakeLink {
 }
 
 export class FakePort {
-  constructor() {}
   getLinks() {return null;}
 }

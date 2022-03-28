@@ -87,8 +87,8 @@ export class ConstraintsSchema extends BaseUISchema {
   changeColumnOptions(colOptions) {
     this.primaryKeyObj.changeColumnOptions(colOptions);
     this.fkObj.changeColumnOptions(colOptions);
+    this.uniqueConsObj.changeColumnOptions(colOptions);
     if(!this.inErd) {
-      this.uniqueConsObj.changeColumnOptions(colOptions);
       this.exConsObj.changeColumnOptions(colOptions);
     }
   }
@@ -163,7 +163,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'consrc'],
       disabled: this.inCatalog,
     },{
-      id: 'unique_group', type: 'group', label: gettext('Unique'), visible: !this.inErd,
+      id: 'unique_group', type: 'group', label: gettext('Unique'),
     },{
       id: 'unique_constraint', label: '',
       schema: this.uniqueConsObj,
@@ -338,7 +338,7 @@ export default class TableSchema extends BaseUISchema {
     const SUPPORTED_KEYS = [
       'name', 'schema', 'description', 'rlspolicy', 'forcerlspolicy', 'fillfactor',
       'toast_tuple_target', 'parallel_workers', 'relhasoids', 'relpersistence',
-      'columns', 'primary_key', 'foreign_key',
+      'columns', 'primary_key', 'foreign_key', 'unique_constraint',
     ];
     newData = _.pick(newData, SUPPORTED_KEYS);
 
@@ -975,7 +975,7 @@ export default class TableSchema extends BaseUISchema {
       id: 'seclabels', label: gettext('Security labels'), canEdit: false,
       schema: new SecLabelSchema(), editable: false, canAdd: true,
       type: 'collection', min_version: 90100, mode: ['edit', 'create'],
-      group: 'security_group', canDelete: true, control: 'unique-col-collection',
+      group: 'security_group', canDelete: true,
     },{
       id: 'vacuum_settings_str', label: gettext('Storage settings'),
       type: 'multiline', group: 'advanced', mode: ['properties'],

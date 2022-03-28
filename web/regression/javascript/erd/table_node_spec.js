@@ -135,31 +135,6 @@ describe('ERD TableNodeModel', ()=>{
       });
       expect(existPort.removeAllLinks).not.toHaveBeenCalled();
     });
-
-    it('remove columns', ()=>{
-      spyOn(existPort, 'getSubtype').and.returnValue('one');
-      existPort.removeAllLinks.calls.reset();
-      modelObj.setData({
-        name: 'noname',
-        schema: 'erd',
-        columns: [
-          {name: 'col2', not_null:false, attnum: 1},
-          {name: 'col3', not_null:false, attnum: 2},
-        ],
-      });
-      expect(modelObj.getData()).toEqual({
-        name: 'noname',
-        schema: 'erd',
-        columns: [
-          {name: 'col2', not_null:false, attnum: 1},
-          {name: 'col3', not_null:false, attnum: 2},
-        ],
-      });
-
-      expect(modelObj.getPortName).toHaveBeenCalledWith(0);
-      expect(existPort.removeAllLinks).toHaveBeenCalled();
-      expect(modelObj.removePort).toHaveBeenCalledWith(existPort);
-    });
   });
 
   it('getSchemaTableName', ()=>{

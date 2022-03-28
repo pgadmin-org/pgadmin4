@@ -268,10 +268,55 @@ export default class ERDCore {
   }
 
   syncTableLinks(tableNode, oldTableData) {
+    let self = this;
     let tableData = tableNode.getData();
-    let tableNodesDict = this.getModel().getNodesDict();
+    const tableNodesDict = this.getModel().getNodesDict();
 
+    /* Remove the links if column dropped or primary key removed */
+    _.differenceWith(oldTableData.columns, tableData.columns, function(existing, incoming) {
+      if(existing.attnum == incoming.attnum && existing.is_primary_key && !incoming.is_primary_key) {
+        return false;
+      }
+      return existing.attnum == incoming.attnum;
+    }).forEach((col)=>{
+      let existPort = tableNode.getPort(tableNode.getPortName(col.attnum));
+      if(existPort) {
+        Object.values(existPort.getLinks()).forEach((link)=>{
+          self.removeOneToManyLink(link);
+        });
+      }
+      tableNode.removePort(existPort);
+    });
+
+    /* Sync the name changes in references FK */
+    Object.values(tableNode.getPorts()).forEach((port)=>{
+      if(port.getSubtype() != 'one') {
+        return;
+      }
+      Object.values(port.getLinks()).forEach((link)=>{
+        let linkData = link.getData();
+        let fkTableNode = this.getModel().getNodesDict()[linkData.local_table_uid];
+
+        let newForeingKeys = [];
+        fkTableNode.getData().foreign_key?.forEach((theFkRow)=>{
+          for(let fkColumn of theFkRow.columns) {
+            let attnum = _.find(oldTableData.columns, (c)=>c.name==fkColumn.referenced).attnum;
+            fkColumn.referenced = _.find(tableData.columns, (colm)=>colm.attnum==attnum).name;
+            fkColumn.references_table_name = tableData.name;
+          }
+          newForeingKeys.push(theFkRow);
+        });
+        fkTableNode.setData({
+          ...fkTableNode.getData(),
+          foreign_key: newForeingKeys,
+        });
+      });
+    });
+
+    /* Sync the changed/removed/added foreign keys */
+    tableData = tableNode.getData();
     const addLink = (theFk)=>{
+      if(!theFk) return;
       let newData = {
         local_table_uid: tableNode.getID(),
         local_column_attnum: undefined,
@@ -287,6 +332,7 @@ export default class ERDCore {
     };
 
     const removeLink = (theFk)=>{
+      if(!theFk) return;
       let attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
       let existPort = tableNode.getPort(tableNode.getPortName(attnum));
       if(existPort && existPort.getSubtype() == 'many') {
@@ -316,9 +362,12 @@ export default class ERDCore {
           tableData.foreign_key[rowIndx].columns,
           'cid'
         );
-        if(changeDiffCols.removed.length > 0 || changeDiffCols.added.length > 0) {
-          removeLink(changeDiffCols.removed[0]);
-          addLink(changeDiffCols.added[0]);
+        if(changeDiffCols.removed.length > 0) {
+          /* any change in columns length remove all and create new link */
+          oldTableData.foreign_key[rowIndx].columns.forEach((col)=>{
+            removeLink(col);
+          });
+          addLink(tableData.foreign_key[rowIndx].columns[0]);
         }
       }
     }

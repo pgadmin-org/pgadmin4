@@ -200,7 +200,7 @@ basicSettings = createMuiTheme(basicSettings, {
     create: () => 'none',
   },
   zIndex: {
-    modal: 2000,
+    modal: 3001,
   },
   props: {
     MuiTextField: {

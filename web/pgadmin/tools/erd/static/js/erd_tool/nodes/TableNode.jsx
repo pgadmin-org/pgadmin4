@@ -17,6 +17,7 @@ import TableIcon from 'top/browser/server_groups/servers/databases/schemas/table
 import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/primary_key.svg';
 import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg';
 import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg';
+import UniqueKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/unique_constraint.svg';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 
@@ -94,17 +95,6 @@ export class TableNodeModel extends DefaultNodeModel {
   }
 
   setData(data) {
-    let self = this;
-    /* Remove the links if column dropped or primary key removed */
-    _.differenceWith(this._data.columns, data.columns, function(existing, incoming) {
-      return existing.attnum == incoming.attnum && incoming.is_primary_key == true;
-    }).forEach((col)=>{
-      let existPort = self.getPort(self.getPortName(col.attnum));
-      if(existPort && existPort.getSubtype() == 'one') {
-        existPort.removeAllLinks();
-        self.removePort(existPort);
-      }
-    });
     this._data = data;
     this.fireEvent({}, 'nodeUpdated');
   }
@@ -172,17 +162,22 @@ export class TableNodeWidget extends React.Component {
     });
   }
 
-  generateColumn(col, tableData) {
+  generateColumn(col, localFkCols, localUkCols) {
     let port = this.props.node.getPort(this.props.node.getPortName(col.attnum));
     let icon = ColumnIcon;
-    let localFkCols = [];
-    (tableData.foreign_key||[]).forEach((fk)=>{
-      localFkCols.push(...fk.columns.map((c)=>c.local_column));
-    });
+    /* Less priority */
+    if(localUkCols.indexOf(col.name) > -1) {
+      icon = UniqueKeyIcon;
+    }
     if(col.is_primary_key) {
       icon = PrimaryKeyIcon;
     } else if(localFkCols.indexOf(col.name) > -1) {
       icon = ForeignKeyIcon;
+    }
+
+    let cltype = col.cltype;
+    if(col.attlen) {
+      cltype += '('+ col.attlen + (col.attprecision ? ',' + col.attprecision : '') +')';
     }
     return (
       <div className='d-flex col-row' key={col.attnum}>
@@ -191,7 +186,7 @@ export class TableNodeWidget extends React.Component {
           <div className="my-auto">
             <span className='col-name'>{col.name}</span>&nbsp;
             {this.state.show_details &&
-            <span className='col-datatype'>{col.cltype}{col.attlen ? ('('+ col.attlen + (col.attprecision ? ','+col.attprecision : '') +')') : ''}</span>}
+            <span className='col-datatype'>{cltype}</span>}
           </div>
         </div>
         <div className="ml-auto col-row-port">{this.generatePort(port)}</div>
@@ -216,6 +211,14 @@ export class TableNodeWidget extends React.Component {
   render() {
     let tableData = this.props.node.getData();
     let tableMetaData = this.props.node.getMetadata();
+    let localFkCols = [];
+    (tableData.foreign_key||[]).forEach((fk)=>{
+      localFkCols.push(...fk.columns.map((c)=>c.local_column));
+    });
+    let localUkCols = [];
+    (tableData.unique_constraint||[]).forEach((uk)=>{
+      localUkCols.push(...uk.columns.map((c)=>c.column));
+    });
     return (
       <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
         <div className="table-toolbar">
@@ -243,7 +246,7 @@ export class TableNodeWidget extends React.Component {
             <div className="table-name my-auto">{tableData.name}</div>
           </div>
           <div className="table-cols">
-            {_.map(tableData.columns, (col)=>this.generateColumn(col, tableData))}
+            {_.map(tableData.columns, (col)=>this.generateColumn(col, localFkCols, localUkCols))}
           </div>
         </>}
       </div>

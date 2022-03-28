@@ -257,6 +257,7 @@ describe('ERD BodyWidget', ()=>{
       'getNodesDict': ()=>nodesDict,
     });
     spyOn(bodyInstance.diagram, 'addLink');
+    spyOn(bodyInstance.diagram, 'syncTableLinks');
     /* New */
     tableDialog.show.calls.reset();
     bodyInstance.addEditTable();
