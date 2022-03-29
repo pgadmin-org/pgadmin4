@@ -85,6 +85,10 @@ export class Tree {
   }
 
   async refresh(item) {
+    //  Set _children to null as empty array not reload the children nodes on refresh.
+    if(item.children?.length == 0) {
+      item._children = null;
+    }
     await this.tree.refresh(item);
   }
 
