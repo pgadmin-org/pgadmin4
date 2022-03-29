@@ -60,7 +60,7 @@ export default function KeyboardShortcuts({ value, onChange, fields }) {
 
   const onCtrlChange = (e) => {
     let newVal = { ...value };
-    newVal.ctrl = e.target.checked;
+    newVal.control = e.target.checked;
     onChange(newVal);
   };
 
@@ -105,7 +105,7 @@ export default function KeyboardShortcuts({ value, onChange, fields }) {
         } else if (element.name == 'control') {
           return <Grid item lg={2} md={2} sm={2} xs={12} className={classes.inputLabel} key={_.uniqueId('c')}>
             <Box className={classes.inputCheckboxClass}>
-              <InputCheckbox id={ctrlCid} helpid={ctrlhelpid} value={value?.ctrl}
+              <InputCheckbox id={ctrlCid} helpid={ctrlhelpid} value={value?.control}
                 controlProps={ctrlProps}
                 onChange={onCtrlChange}></InputCheckbox>
             </Box>

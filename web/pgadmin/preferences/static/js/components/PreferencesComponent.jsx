@@ -233,6 +233,7 @@ export default function PreferencesComponent({ ...props }) {
     });
   }, []);
   function setPreferences(node, subNode, nodeData, preferencesValues, preferencesData) {
+    let addBinaryPathNote = false;
     subNode.preferences.forEach((element) => {
       let note = '';
       let type = getControlMappedForType(element.type);
@@ -247,7 +248,10 @@ export default function PreferencesComponent({ ...props }) {
         element.editable = false;
         element.disabled = true;
         preferencesValues[element.id] = JSON.parse(element.value);
-        addNote(node, subNode, nodeData, preferencesData, note);
+        if(addBinaryPathNote) {
+          addNote(node, subNode, nodeData, preferencesData, note);
+        }
+        addBinaryPathNote = true;
       }
       else if (type == 'select') {
         setControlProps(element);

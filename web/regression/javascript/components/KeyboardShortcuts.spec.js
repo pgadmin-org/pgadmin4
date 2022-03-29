@@ -22,7 +22,7 @@ import { InputCheckbox } from '../../../pgadmin/static/js/components/FormCompone
 describe('KeyboardShortcuts', () => {
   let mount;
   let defult_value = {
-    'ctrl': true,
+    'control': true,
     'alt': true,
     'key': {
       'char': 'a',
@@ -85,26 +85,26 @@ describe('KeyboardShortcuts', () => {
 
     it('Key change', (done) => {
       ctrl.find(OutlinedInput).at(0).find('input').simulate('keydown', { key: '', keyCode: 32});
-      expect(onChange).toHaveBeenCalledWith({ ctrl: true, alt: true, key: { char: 'Space', key_code: 32 }, shift: false });
+      expect(onChange).toHaveBeenCalledWith({ control: true, alt: true, key: { char: 'Space', key_code: 32 }, shift: false });
       done();
     });
 
     it('Shift option', (done) => {
       ctrl.find(InputCheckbox).at(0).find('input').simulate('change', { target: { checked: true, name: 'shift' } });
-      expect(onChange).toHaveBeenCalledWith({ ctrl: true, alt: true, key: { char: 'a', key_code: 97 }, shift: true });
+      expect(onChange).toHaveBeenCalledWith({ control: true, alt: true, key: { char: 'a', key_code: 97 }, shift: true });
       done();
     });
 
-    it('Ctrl option', (done) => {
+    it('Control option', (done) => {
       ctrl.find(InputCheckbox).at(1).find('input').simulate('change', { target: { checked: false, name: 'ctrl' } });
-      expect(onChange).toHaveBeenCalledWith({ ctrl: false, alt: true, key: { char: 'a', key_code: 97 }, shift: false });
+      expect(onChange).toHaveBeenCalledWith({ control: false, alt: true, key: { char: 'a', key_code: 97 }, shift: false });
       done();
     });
 
 
     it('Alt option', (done) => {
       ctrl.find(InputCheckbox).at(2).find('input').simulate('change', { target: { checked: false, name: 'alt' } });
-      expect(onChange).toHaveBeenCalledWith({ ctrl: true, alt: false, key: { char: 'a', key_code: 97 }, shift: false });
+      expect(onChange).toHaveBeenCalledWith({ control: true, alt: false, key: { char: 'a', key_code: 97 }, shift: false });
       done();
     });
 
