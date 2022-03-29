@@ -36,7 +36,7 @@ GROUP BY g.rolname, gt.rolname, a.deftype
 ORDER BY a.deftype
 	)
 {% else %}
-
+SELECT * from (
 (SELECT
     CASE (e.deftype)
     WHEN 'r' THEN 'deftblacl'
@@ -157,5 +157,5 @@ FROM(
 LEFT JOIN pg_catalog.pg_roles g ON (e.grantor = g.oid)
    LEFT JOIN pg_catalog.pg_roles gt ON (e.grantee = gt.oid)
 GROUP BY g.rolname, gt.rolname, e.deftype
-ORDER BY e.deftype)
+ORDER BY e.deftype)) f order by f.acltype DESC
 {% endif %}
