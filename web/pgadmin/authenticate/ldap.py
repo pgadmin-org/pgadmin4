@@ -24,7 +24,8 @@ from pgadmin.model import User, ServerGroup, db, Role
 from flask import current_app
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import LDAP
-
+from sqlalchemy import func
+from flask_security import login_user
 
 ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
     "Error searching the LDAP directory: {}")
@@ -133,7 +134,8 @@ class LDAPAuthentication(BaseAuthentication):
         except LDAPBindError as e:
             current_app.logger.exception(
                 "Error binding to the LDAP server.")
-            return False, gettext("Error binding to the LDAP server.")
+            return False, gettext("Error binding to the LDAP server: {}\n".
+                                  format(e.args[0]))
         except LDAPStartTLSError as e:
             current_app.logger.exception(
                 "Error starting TLS: {}\n".format(e))
@@ -146,11 +148,38 @@ class LDAPAuthentication(BaseAuthentication):
 
         return True, None
 
+    def login(self, form):
+        user = getattr(form, 'user', None)
+        if user is None:
+            if config.LDAP_DN_CASE_SENSITIVE:
+                user = User.query.filter_by(username=self.username).first()
+            else:
+                user = User.query.filter(
+                    func.lower(User.username) == func.lower(
+                        self.username)).first()
+
+        if user is None:
+            current_app.logger.exception(
+                self.messages('USER_DOES_NOT_EXIST'))
+            return False, self.messages('USER_DOES_NOT_EXIST')
+
+        # Login user through flask_security
+        status = login_user(user)
+        if not status:
+            current_app.logger.exception(self.messages('LOGIN_FAILED'))
+            return False, self.messages('LOGIN_FAILED')
+        return True, None
+
     def __auto_create_user(self, user_email):
         """Add the ldap user to the internal SQLite database."""
         if config.LDAP_AUTO_CREATE_USER:
-            user = User.query.filter_by(
-                username=self.username).first()
+            if config.LDAP_DN_CASE_SENSITIVE:
+                user = User.query.filter_by(username=self.username).first()
+            else:
+                user = User.query.filter(
+                    func.lower(User.username) == func.lower(
+                        self.username)).first()
+
             if user is None:
                 return create_user({
                     'username': self.username,

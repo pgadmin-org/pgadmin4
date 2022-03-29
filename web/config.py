@@ -649,6 +649,10 @@ LDAP_BASE_DN = '<Base-DN>'
 # It can be optional while bind as pgAdmin user
 LDAP_SEARCH_BASE_DN = '<Search-Base-DN>'
 
+# The LDAP attribute indicates whether the DN (Distinguished Names)
+# are case sensitive or not
+LDAP_DN_CASE_SENSITIVE = False
+
 # Filter string for the user search.
 # For OpenLDAP, '(cn=*)' may well be enough.
 # For AD, you might use '(objectClass=user)' (REQUIRED)

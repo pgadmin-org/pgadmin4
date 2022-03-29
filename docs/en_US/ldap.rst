@@ -73,17 +73,19 @@ There are 3 ways to configure LDAP:
    limits the search to the base object. A *level* search is restricted to the immediate
    children of a base object, but excludes the base object itself. A *subtree* search
    includes all child objects as well as the base object."
+   "LDAP_DN_CASE_SENSITIVE", "Indicates whether the DN (Distinguished Names) are case sensitive or not.
+   Possible values are True or False. By default is set to False."
    "LDAP_USE_STARTTLS","Specifies if you want to use Transport Layer Security (TLS)
    for secure communication between LDAP clients and LDAP servers. If you specify
    the connection protocol in *LDAP_SERVER_URI* as *ldaps*, this parameter is ignored."
    "LDAP_CA_CERT_FILE","Specifies the path to the trusted CA certificate file. This
-   parameter is applicable only if you are using *ldaps* as connection protocol and
+   parameter is applicable only if you are using *ldaps* as connection protocol or
    you have set *LDAP_USE_STARTTLS* parameter to *True*."
    "LDAP_CERT_FILE","Specifies the path to the server certificate file. This parameter
-   is applicable only if you are using *ldaps* as connection protocol and you have
+   is applicable only if you are using *ldaps* as connection protocol or you have
    set *LDAP_USE_STARTTLS* parameter to *True*."
    "LDAP_KEY_FILE","Specifies the path to the server private key file. This parameter
-   is applicable only if you are using *ldaps* as connection protocol and you have
+   is applicable only if you are using *ldaps* as connection protocol or you have
    set *LDAP_USE_STARTTLS* parameter to *True*."
    "**Bind as pgAdmin user**"
    "LDAP_BASE_DN","Specifies the base DN from where a server will start the search
