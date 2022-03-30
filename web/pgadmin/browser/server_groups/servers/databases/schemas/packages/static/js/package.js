@@ -92,41 +92,6 @@ define('pgadmin.node.package', [
         // by default we want to allow create menu
         return true;
       },
-      // Define the model for package node.
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        initialize: function(attrs, args) {
-          if (_.size(attrs) === 0) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-
-            this.set({
-              'owner': userInfo.name, 'schema': schemaInfo._label,
-            }, {silent: true});
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-        // Define the schema for package node.
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          readonly: function(m) {
-            return !m.isNew();
-          },
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'owner', label: gettext('Owner'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          readonly: true, editable: false, visible: function(m) {
-            return !m.isNew();
-          },
-        },{
-          id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'],
-        }]
-      }),
       getSchema: (treeNodeInfo, itemNodeData) => {
         var nodeObj = pgBrowser.Nodes['package'];
         return new PackageSchema(

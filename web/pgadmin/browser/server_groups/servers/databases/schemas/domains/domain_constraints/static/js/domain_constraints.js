@@ -75,43 +75,6 @@ define('pgadmin.node.domain_constraints', [
       getSchema: function() {
         return new DomainConstraintSchema();
       },
-
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        // Domain Constraint Schema
-        schema: [{
-          id: 'name', label: gettext('Name'), type:'text', cell:'string',
-        },{
-          id: 'description', label: gettext('Comment'), type: 'multiline', cell:
-          'string', mode: ['properties', 'create', 'edit'], min_version: 90500,
-        }],
-        // Client Side Validation
-        validate: function() {
-          var err = {},
-            errmsg;
-
-          if (_.isUndefined(this.get('name')) || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            err['name'] = gettext('Name cannot be empty.');
-            errmsg = err['name'];
-          }
-
-          if (_.isUndefined(this.get('consrc')) || String(this.get('consrc')).replace(/^\s+|\s+$/g, '') == '') {
-            err['consrc'] = gettext('Check cannot be empty.');
-            errmsg = errmsg || err['consrc'];
-
-          }
-
-          this.errorModel.clear().set(err);
-
-          if (_.size(err)) {
-            this.trigger('on-status', {msg: errmsg});
-            return errmsg;
-          }
-
-          return null;
-
-        },
-      }),
     });
   }
 

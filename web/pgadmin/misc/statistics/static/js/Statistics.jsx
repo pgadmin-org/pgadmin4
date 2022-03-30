@@ -17,7 +17,7 @@ import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import sizePrettify from 'sources/size_prettify';
 import { getURL } from '../../../static/utils/utils';
-
+import Loader from 'sources/components/Loader';
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
     minHeight: '100%',
@@ -37,12 +37,18 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '0.5rem',
     fontSize: '0.875rem',
   },
+  loading: {
+    marginLeft: '0.5rem',
+    fontSize: '0.875rem',
+    colour: theme.palette.grey[400]
+  },
   autoResizer: {
     height: '100% !important',
     width: '100% !important',
     background: theme.palette.grey[400],
     padding: '7.5px',
-    overflow: 'auto !important',
+    overflowX: 'auto !important',
+    overflowY: 'hidden !important',
     minHeight: '100%',
     minWidth: '100%',
   },
@@ -58,7 +64,7 @@ function getColumn(data, singleLineStatistics) {
           accessor: row.name,
           sortble: true,
           resizable: false,
-          disableGlobalFilter: true,
+          disableGlobalFilter: false,
         };
         columns.push(column);
       });
@@ -71,14 +77,14 @@ function getColumn(data, singleLineStatistics) {
         accessor: 'name',
         sortble: true,
         resizable: false,
-        disableGlobalFilter: true,
+        disableGlobalFilter: false,
       },
       {
         Header: 'Value',
         accessor: 'value',
         sortble: true,
         resizable: false,
-        disableGlobalFilter: true,
+        disableGlobalFilter: false,
       },
     ];
   }
@@ -142,20 +148,21 @@ export default function Statistics({ nodeData, item, node, ...props }) {
   const [tableData, setTableData] = React.useState([]);
 
   const [msg, setMsg] = React.useState('');
+  const [loaderText, setLoaderText] = React.useState('');
   const [columns, setColumns] = React.useState([
     {
       Header: 'Statictics',
       accessor: 'name',
       sortble: true,
       resizable: false,
-      disableGlobalFilter: true,
+      disableGlobalFilter: false,
     },
     {
       Header: 'Value',
       accessor: 'value',
       sortble: true,
       resizable: false,
-      disableGlobalFilter: true,
+      disableGlobalFilter: false,
     },
   ]);
 
@@ -170,6 +177,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
 
       const api = getApiInstance();
       if (node.hasStatistics) {
+        setLoaderText('Loading...');
         api({
           url: url,
           type: 'GET',
@@ -180,6 +188,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
             if (!_.isUndefined(colData)) {
               setColumns(colData);
             }
+            setLoaderText('');
           })
           .catch((e) => {
             Notify.alert(
@@ -187,10 +196,12 @@ export default function Statistics({ nodeData, item, node, ...props }) {
               gettext(e.message)
             );
             // show failed message.
+            setLoaderText('');
             setMsg(gettext('Failed to retrieve data from the server.'));
           });
       } else {
-        setMsg(message);
+        setLoaderText('');
+        setMsg('No statistics are available for the selected object.');
       }
     }
     if (message != '') {
@@ -213,10 +224,12 @@ export default function Statistics({ nodeData, item, node, ...props }) {
         ></PgTable>
       ) : (
         <div className={classes.emptyPanel}>
-          <div className={classes.panelIcon}>
-            <i className="fa fa-exclamation-circle"></i>
-            <span className={classes.panelMessage}>{gettext(msg)}</span>
-          </div>
+          {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
+            <div className={classes.panelIcon}>
+              <i className="fa fa-exclamation-circle"></i>
+              <span className={classes.panelMessage}>{gettext(msg)}</span>
+            </div>
+          }
         </div>
       )}
     </>

@@ -17,7 +17,7 @@ import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import PgTable from 'sources/components/PgTable';
 import { getNodePrivilegeRoleSchema } from '../../../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui.js';
-import { InputSQL, InputText, FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
+import { InputSQL, FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import getApiInstance from '../../../../static/js/api_instance';
 import SchemaView from '../../../../static/js/SchemaView';
 import clsx from 'clsx';
@@ -117,7 +117,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
   const [selectedObject, setSelectedObject] = React.useState([]);
   const [selectedAcl, setSelectedAcl] = React.useState({});
   const [msqlData, setSQL] = React.useState('');
-  const [searchVal, setSearchVal] = React.useState('');
   const [loaderText, setLoaderText] = React.useState('');
   const [tablebData, setTableData] = React.useState([]);
   const [privOptions, setPrivOptions] = React.useState({});
@@ -314,17 +313,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
       loaderText={loaderText}
     >
       <WizardStep stepId={0}>
-        <Box className={classes.searchBox}>
-          <Box className={classes.searchPadding}></Box>
-          <InputText
-            placeholder={'Search'}
-            className={classes.searchInput}
-            value={searchVal}
-            onChange={(val) => {
-              setSearchVal(val);}
-            }>
-          </InputText>
-        </Box>
         <Box className={classes.panelContent}>
           <PgTable
             className={classes.table}
@@ -332,7 +320,6 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
             columns={columns}
             data={tablebData}
             isSelectRow={true}
-            searchText={searchVal}
             getSelectedRows={getTableSelectedRows}>
           </PgTable>
         </Box>

@@ -122,15 +122,45 @@ define(
                 that.resizedContainer.apply(myPanel);
               }
 
-              // Bind events only if they are configurable
-              if (that.canHide) {
-                _.each([wcDocker.EVENT.CLOSED, wcDocker.EVENT.VISIBILITY_CHANGED],
-                  function(ev) {
-                    myPanel.on(ev, that.handleVisibility.bind(myPanel, ev));
-                  });
+
+
+              if (myPanel._type == 'dashboard') {
+                getPanelView(
+                  pgBrowser.tree,
+                  $container[0],
+                  pgBrowser,
+                  myPanel._type
+                );
               }
 
+              // Rerender the dashboard panel when preference value 'show graph' gets changed.
+              pgBrowser.onPreferencesChange('dashboards', function() {
+                getPanelView(
+                  pgBrowser.tree,
+                  $container[0],
+                  pgBrowser,
+                  myPanel._type
+                );
+              });
+
+              _.each([wcDocker.EVENT.CLOSED, wcDocker.EVENT.VISIBILITY_CHANGED],
+                function(ev) {
+                  myPanel.on(ev, that.handleVisibility.bind(myPanel, ev));
+                });
+
               pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
+
+                if(myPanel.isVisible()) {
+                  getPanelView(
+                    pgBrowser.tree,
+                    $container[0],
+                    pgBrowser,
+                    myPanel._type
+                  );
+                }
+              });
+
+              pgBrowser.Events.on('pgadmin-browser:tree:refreshing', () => {
 
                 if(myPanel.isVisible()) {
                   getPanelView(
@@ -205,11 +235,6 @@ define(
         }
       },
       handleVisibility: function(eventName) {
-        // Supported modules
-        let type_module = {
-          dashboard: pgAdmin.Dashboard,
-        };
-        let module = type_module[this._type];
         if (_.isNull(pgBrowser.tree)) return;
 
         let selectedPanel = pgBrowser.docker.findPanels(this._type)[0];
@@ -218,18 +243,6 @@ define(
           .layout()
           .scene()
           .find('.pg-panel-content');
-
-        if (this._type === 'dashboard') {
-          if (eventName == 'panelClosed') {
-            module.toggleVisibility.call(module, false, true);
-          } else if (eventName == 'panelVisibilityChanged') {
-            module.toggleVisibility.call(
-              module,
-              pgBrowser.docker.findPanels(this._type)[0].isVisible(),
-              false
-            );
-          }
-        }
 
         if (isPanelVisible) {
           if (eventName == 'panelClosed') {

@@ -12,10 +12,10 @@ import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
 import ForeignDataWrapperSchema from './foreign_data_wrapper.ui';
 
 define('pgadmin.node.foreign_data_wrapper', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, $, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for foreign data wrapper collection
   if (!pgBrowser.Nodes['coll-foreign_data_wrapper']) {
@@ -87,44 +87,6 @@ define('pgadmin.node.foreign_data_wrapper', [
           }
         );
       },
-
-      // Defining model for foreign data wrapper node
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'fdwowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        // Defining schema for the foreign data wrapper node
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', readonly: function() {
-            // name field will be disabled only if edit mode
-            return (
-              this.mode == 'edit'
-            );
-          },
-        }, {
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        }, {
-          id: 'fdwowner', label: gettext('Owner'), type: 'text',
-          control: Backform.NodeListByNameControl, node: 'role',
-          mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline',
-        }],
-      }),
     });
   }
 

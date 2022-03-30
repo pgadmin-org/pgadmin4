@@ -1,0 +1,907 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+// eslint-disable-next-line react/display-name
+import React, { useEffect, useState } from 'react';
+import gettext from 'sources/gettext';
+import PropTypes from 'prop-types';
+import getApiInstance from 'sources/api_instance';
+import PgTable from 'sources/components/PgTable';
+import { makeStyles } from '@material-ui/core/styles';
+import url_for from 'sources/url_for';
+import Graphs from './Graphs';
+import Notify from '../../../static/js/helpers/Notifier';
+import { Box, Tab, Tabs } from '@material-ui/core';
+import { PgIconButton } from '../../../static/js/components/Buttons';
+import CancelIcon from '@mui/icons-material/Cancel';
+import SquareIcon from '@mui/icons-material/Square';
+import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
+import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
+import WelcomeDashboard from './WelcomeDashboard';
+import ActiveQuery from './ActiveQuery.ui';
+import _ from 'lodash';
+
+function parseData(data) {
+  var res = [];
+
+  data.forEach((row) => {
+    res.push({ ...row, icon: '' });
+  });
+  return res;
+}
+
+const useStyles = makeStyles((theme) => ({
+  emptyPanel: {
+    height: '100%',
+    background: theme.palette.grey[400],
+    overflow: 'auto',
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+  },
+  fixedSizeList: {
+    overflowX: 'hidden !important',
+    overflow: 'overlay !important',
+    height: 'auto !important',
+  },
+  dashboardPanel: {
+    height: '100%',
+    background: theme.palette.grey[400],
+  },
+  cardHeader: {
+    padding: '0.25rem 0.5rem',
+    fontWeight: 'bold',
+    backgroundColor: theme.otherVars.tableBg,
+    borderBottom: '1px solid',
+    borderBottomColor: theme.otherVars.borderColor,
+  },
+  searchPadding: {
+    display: 'flex',
+    flex: 2.5,
+  },
+  component: {
+    padding: '8px',
+  },
+  searchInput: {
+    flex: 1,
+  },
+  panelIcon: {
+    width: '80%',
+    margin: '0 auto',
+    marginTop: '25px !important',
+    position: 'relative',
+    textAlign: 'center',
+  },
+  panelMessage: {
+    marginLeft: '0.5rem',
+    fontSize: '0.875rem',
+  },
+  panelContent: {
+    ...theme.mixins.panelBorder,
+    flexDirection: 'column',
+    overflow: 'hidden !important',
+    flexGrow: 1
+  },
+  terminateButton: {
+    color: theme.palette.error.main
+  },
+  buttonClick: {
+    backgroundColor: theme.palette.grey[400]
+  }
+}));
+
+/* eslint-disable react/display-name */
+export default function Dashboard({
+  nodeData,
+  node,
+  item,
+  pgBrowser,
+  preferences,
+  sid,
+  did,
+  treeNodeInfo,
+  ...props
+}) {
+  const classes = useStyles();
+  let tab = ['Sessions', 'Locks', 'Prepared Transactions'];
+  const [dashData, setdashData] = useState([]);
+  const [msg, setMsg] = useState('');
+  const[infoMsg, setInfo] = useState('');
+  const [val, setVal] = useState(0);
+  const [schemaDict, setSchemaDict] = React.useState({});
+
+  if (!did) {
+    tab.push('Configuration');
+  }
+  val == 3 && did && setVal(0);
+  const tabChanged = (e, tabVal) => {
+    setVal(tabVal);
+  };
+
+  const serverConfigColumns = [
+    {
+      accessor: 'name',
+      Header: gettext('Name'),
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 110,
+    },
+    {
+      accessor: 'category',
+      Header: gettext('Category'),
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 150,
+    },
+    {
+      accessor: 'setting',
+      Header: gettext('Setting'),
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 50,
+    },
+    {
+      accessor: 'unit',
+      Header: gettext('Unit'),
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 30,
+    },
+    {
+      accessor: 'short_desc',
+      Header: gettext('Description'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+  ];
+
+  const activityColumns = [
+    {
+      accessor: 'terminate_query',
+      Header: () => null,
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 16,
+      maxWidth: 30,
+      id: 'btn-terminate',
+      // eslint-disable-next-line react/display-name
+      Cell: ({ row }) => {
+        var terminate_session_url =
+          url_for('dashboard.index') + 'terminate_session' + '/' + sid,
+          title = gettext('Terminate Session?'),
+          txtConfirm = gettext(
+            'Are you sure you wish to terminate the session?'
+          ),
+          txtSuccess = gettext('Session terminated successfully.'),
+          txtError = gettext(
+            'An error occurred whilst terminating the active query.'
+          );
+        const action_url = did
+          ? terminate_session_url + '/' + did
+          : terminate_session_url;
+
+        const api = getApiInstance();
+
+        return (
+          <PgIconButton
+            size="xs"
+            noBorder
+            icon={<CancelIcon />}
+            className={classes.terminateButton}
+            onClick={() => {
+              if (
+                !canTakeAction(row, 'terminate')
+              )
+                return;
+              let url = action_url + '/' + row.values.pid;
+              Notify.confirm(
+                title,
+                txtConfirm,
+                function () {
+                  api
+                    .delete(url)
+                    .then(function (res) {
+                      if (res.data == gettext('Success')) {
+                        setInfo(txtSuccess);
+                        Notify.success(txtSuccess);
+                      } else {
+                        setInfo(txtError);
+                        Notify.error(txtError);
+                      }
+                    })
+                    .catch(function (error) {
+                      Notify.alert(
+                        gettext('Failed to retrieve data from the server.'),
+                        gettext(error.message)
+                      );
+                    });
+                },
+                function () {
+                  return true;
+                }
+              );
+            }}
+            color="default"
+            aria-label="Terminate Session?"
+            title={gettext('Terminate Session?')}
+          ></PgIconButton>
+        );
+      },
+    },
+    {
+      accessor: 'cancel_Query',
+      Header: () => null,
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 16,
+      maxWidth: 30,
+      id: 'btn-cancel',
+      Cell: ({ row }) => {
+        var cancel_query_url =
+          url_for('dashboard.index') + 'cancel_query' + '/' + sid,
+          title = gettext('Cancel Active Query?'),
+          txtConfirm = gettext(
+            'Are you sure you wish to cancel the active query?'
+          ),
+          txtSuccess = gettext('Active query cancelled successfully.'),
+          txtError = gettext(
+            'An error occurred whilst cancelling the active query.'
+          );
+
+        const action_url = did ? cancel_query_url + '/' + did : cancel_query_url;
+
+        const api = getApiInstance();
+
+        return (
+          <PgIconButton
+            size="xs"
+            noBorder
+            icon={<SquareIcon fontSize="small" />}
+            onClick={() => {
+              if (!canTakeAction(row, 'cancel'))
+                return;
+              let url = action_url + '/' + row.values.pid;
+              Notify.confirm(
+                title,
+                txtConfirm,
+                function () {
+                  api
+                    .delete(url)
+                    .then(function (res) {
+                      if (res.data == gettext('Success')) {
+                        setInfo(txtSuccess);
+                        Notify.success(txtSuccess);
+                      } else {
+                        setInfo(txtError);
+                        Notify.error(txtError);
+                      }
+                    })
+                    .catch(function (error) {
+                      Notify.alert(
+                        gettext('Failed to retrieve data from the server.'),
+                        gettext(error.message)
+                      );
+                    });
+                },
+                function () {
+                  return true;
+                }
+              );
+            }}
+            color="default"
+            aria-label="Cancel the query"
+            title={gettext('Cancel the active query')}
+          ></PgIconButton>
+        );
+      },
+    },
+    {
+      accessor: 'view_active_query',
+      Header: () => null,
+      sortble: true,
+      resizable: true,
+      disableGlobalFilter: false,
+      minWidth: 16,
+      maxWidth: 30,
+      id: 'btn-edit',
+      Cell: ({ row }) => {
+        let canEditRow = true;
+        return (
+          <PgIconButton
+            className={row.isExpanded ?classes.buttonClick : ''}
+            icon={
+              row.isExpanded ? (
+                <ArrowDropDownOutlinedIcon  />
+              ) : (
+                <ArrowRightOutlinedIcon />
+              )
+            }
+            size="xs"
+            noBorder
+            onClick={(e) => {
+              e.preventDefault();
+              row.toggleRowExpanded(!row.isExpanded);
+              if(!(row.id in schemaDict)){
+                let schema = new ActiveQuery({
+                  query: row.original.query,
+                  backend_type: row.original.backend_type,
+                  state_change: row.original.state_change,
+                  query_start: row.original.query_start,
+                });
+                setSchemaDict(prevState => ({
+                  ...prevState,
+                  [row.id]: schema
+                }));
+              }
+            }}
+            disabled={!canEditRow}
+            aria-label="View the active session details"
+            title={gettext('View the active session details')}
+          />
+        );
+      },
+    },
+    {
+      accessor: 'pid',
+      Header: gettext('PID'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 60,
+    },
+    {
+      accessor: 'datname',
+      Header: gettext('Database'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 80,
+      isVisible: !did ? true: false
+    },
+    {
+      accessor: 'usename',
+      Header: gettext('User'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 80,
+    },
+    {
+      accessor: 'application_name',
+      Header: gettext('Application'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 150,
+    },
+    {
+      accessor: 'client_addr',
+      Header: gettext('Client'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 60,
+    },
+    {
+      accessor: 'backend_start',
+      Header: gettext('Backend start'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 150,
+    },
+    {
+      accessor: 'xact_start',
+      Header: gettext('Transaction start'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 150,
+    },
+    {
+      accessor: 'state',
+      Header: gettext('State'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 60,
+    },
+
+    {
+      accessor: 'waiting',
+      Header: gettext('Waiting'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      isVisible: treeNodeInfo?.server?.version < 90600
+    },
+    {
+      accessor: 'wait_event',
+      Header: gettext('Wait event'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+    {
+      accessor: 'blocking_pids',
+      Header: gettext('Blocking PIDs'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+  ];
+
+  const databaseLocksColumns = [
+    {
+      accessor: 'pid',
+      Header: gettext('PID'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 50,
+    },
+    {
+      accessor: 'datname',
+      Header: gettext('Database'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 80,
+      isVisible: !did ? true: false
+    },
+    {
+      accessor: 'locktype',
+      Header: gettext('Lock type'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 60,
+    },
+    {
+      accessor: 'relation',
+      Header: gettext('Target relation'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+    {
+      accessor: 'page',
+      Header: gettext('Page'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 50,
+    },
+    {
+      accessor: 'tuple',
+      Header: gettext('Tuple'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 50,
+    },
+    {
+      accessor: 'virtualxid',
+      Header: gettext('vXID (target)'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 100,
+      maxWidth: 100,
+    },
+    {
+      accessor: 'transactionid',
+      Header: gettext('XID (target)'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 100,
+    },
+    {
+      accessor: 'classid',
+      Header: gettext('Class'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 50,
+    },
+    {
+      accessor: 'objid',
+      Header: gettext('Object ID'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 100,
+    },
+    {
+      accessor: 'virtualtransaction',
+      Header: gettext('vXID (owner)'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 80,
+    },
+    {
+      accessor: 'mode',
+      Header: gettext('Mode'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+    {
+      id: 'granted',
+      accessor: 'granted',
+      Header: gettext('Granted?'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 50,
+      maxWidth: 80,
+      Cell: ({ value }) => String(value)
+    },
+  ];
+
+  const databasePreparedColumns = [
+    {
+      accessor: 'git',
+      Header: gettext('Name'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+    {
+      accessor: 'datname',
+      Header: gettext('Database'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+      minWidth: 26,
+      maxWidth: 80,
+      isVisible: !did ? true: false
+    },
+    {
+      accessor: 'Owner',
+      Header: gettext('Owner'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+    {
+      accessor: 'transaction',
+      Header: gettext('XID'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+    {
+      accessor: 'prepared',
+      Header: gettext('Prepared at'),
+      sortble: true,
+      resizable: false,
+      disableGlobalFilter: false,
+    },
+  ];
+
+  const canTakeAction = (row, cellAction) => {
+    // We will validate if user is allowed to cancel the active query
+    // If there is only one active session means it probably our main
+    // connection session
+    cellAction = cellAction || null;
+    var pg_version = treeNodeInfo.server.version || null,
+      is_cancel_session = cellAction === 'cancel',
+      txtMessage,
+      maintenance_database = treeNodeInfo.server.db,
+      is_super_user,
+      current_user;
+
+    var can_signal_backend =
+      treeNodeInfo.server && treeNodeInfo.server.user
+        ? treeNodeInfo.server.user.can_signal_backend
+        : false;
+
+    if (
+      treeNodeInfo.server &&
+      treeNodeInfo.server.user &&
+      treeNodeInfo.server.user.is_superuser
+    ) {
+      is_super_user = true;
+    } else {
+      is_super_user = false;
+      current_user =
+        treeNodeInfo.server && treeNodeInfo.server.user
+          ? treeNodeInfo.server.user.name
+          : null;
+    }
+
+    // With PG10, We have background process showing on dashboard
+    // We will not allow user to cancel them as they will fail with error
+    // anyway, so better usability we will throw our on notification
+
+    // Background processes do not have database field populated
+    if (pg_version && pg_version >= 100000 && !row.original.datname) {
+      if (is_cancel_session) {
+        txtMessage = gettext('You cannot cancel background worker processes.');
+      } else {
+        txtMessage = gettext(
+          'You cannot terminate background worker processes.'
+        );
+      }
+      Notify.info(txtMessage);
+      return false;
+      // If it is the last active connection on maintenance db then error out
+    } else if (
+      maintenance_database == row.original.datname &&
+      row.original.state == 'active'
+    ) {
+      if (is_cancel_session) {
+        txtMessage = gettext(
+          'You are not allowed to cancel the main active session.'
+        );
+      } else {
+        txtMessage = gettext(
+          'You are not allowed to terminate the main active session.'
+        );
+      }
+      Notify.error(txtMessage);
+      return false;
+    } else if (is_cancel_session && row.original.state == 'idle') {
+      // If this session is already idle then do nothing
+      Notify.info(gettext('The session is already in idle state.'));
+      return false;
+    } else if (can_signal_backend) {
+      // user with membership of 'pg_signal_backend' can terminate the session of non admin user.
+      return true;
+    } else if (is_super_user) {
+      // Super user can do anything
+      return true;
+    } else if (current_user && current_user == treeNodeInfo.server.user) {
+      // Non-super user can cancel only their active queries
+      return true;
+    } else {
+      // Do not allow to cancel someone else session to non-super user
+      if (is_cancel_session) {
+        txtMessage = gettext(
+          'Superuser privileges are required to cancel another users query.'
+        );
+      } else {
+        txtMessage = gettext(
+          'Superuser privileges are required to terminate another users query.'
+        );
+      }
+      Notify.error(txtMessage);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    let url,
+      message = gettext(
+        'Please connect to the selected server to view the dashboard.'
+      );
+
+    if (sid && props.serverConnected) {
+
+      if (val === 0) {
+        url = url_for('dashboard.activity');
+      } else if (val === 1) {
+        url = url_for('dashboard.locks');
+      } else if (val === 2) {
+        url = url_for('dashboard.prepared');
+      } else {
+        url = url_for('dashboard.config');
+      }
+
+      message = gettext('Loading dashboard...');
+      if (did) url += sid + '/' + did;
+      else url += sid;
+
+      const api = getApiInstance();
+      if (node) {
+        api({
+          url: url,
+          type: 'GET',
+        })
+          .then((res) => {
+            setdashData(parseData(res.data));
+          })
+          .catch((e) => {
+            Notify.alert(
+              gettext('Failed to retrieve data from the server.'),
+              gettext(e.message)
+            );
+            // show failed message.
+            setMsg(gettext('Failed to retrieve data from the server.'));
+          });
+      } else {
+        setMsg(message);
+      }
+    }
+    if (message != '') {
+      setMsg(message);
+    }
+  }, [nodeData, val, did, preferences, infoMsg]);
+
+  return (
+    <>
+      {sid && props.serverConnected ? (
+        <Box className={classes.dashboardPanel}>
+          <Box className={classes.emptyPanel}>
+            {!_.isUndefined(preferences) && preferences.show_graphs && (
+              <Graphs
+                preferences={preferences}
+                sid={sid}
+                did={did}
+                pageVisible={true}
+              ></Graphs>
+            )}
+            <Box className={classes.panelContent}>
+              <Box
+                className={classes.cardHeader}
+                title={gettext('Server activity')}
+              >
+                {gettext('Server activity')}{' '}
+              </Box>
+              <Tabs
+                value={val}
+                onChange={tabChanged}
+                className={classes.searchInput}
+              >
+                {tab.map((tabValue, i) => {
+                  return <Tab key={i} label={tabValue} />;
+                })}
+              </Tabs>
+
+              <PgTable
+                columns={
+                  val === 0
+                    ? activityColumns
+                    : val === 1
+                      ? databaseLocksColumns
+                      : val == 2
+                        ? databasePreparedColumns
+                        : serverConfigColumns
+                }
+                data={dashData}
+                schema={schemaDict}
+                offset={145}
+              ></PgTable>
+            </Box>
+          </Box>
+        </Box>
+      ) : sid && !props.serverConnected ? (
+        <Box className={classes.dashboardPanel}>
+          <div className={classes.emptyPanel}>
+            <div className={classes.panelIcon}>
+              <i className="fa fa-exclamation-circle"></i>
+              <span className={classes.panelMessage}>{gettext(msg)}</span>
+            </div>
+          </div>
+        </Box>
+      ) : (
+        <WelcomeDashboard
+          pgBrowser={pgBrowser}
+          node={node}
+          itemData={nodeData}
+          item={item}
+          sid={sid}
+          did={did}
+        />
+      )}
+    </>
+  );
+}
+
+Dashboard.propTypes = {
+  node: PropTypes.func,
+  itemData: PropTypes.object,
+  nodeData: PropTypes.object,
+  treeNodeInfo: PropTypes.object,
+  item: PropTypes.object,
+  pgBrowser: PropTypes.object,
+  preferences: PropTypes.object,
+  sid: PropTypes.string,
+  did: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+  row: PropTypes.object,
+  serverConnected: PropTypes.bool,
+};
+
+export function ChartContainer(props) {
+  return (
+    <div
+      className="card dashboard-graph"
+      role="object-document"
+      tabIndex="0"
+      aria-labelledby={props.id}
+    >
+      <div className="card-header">
+        <div className="d-flex">
+          <div id={props.id}>{props.title}</div>
+          <div className="ml-auto my-auto legend" ref={props.legendRef}></div>
+        </div>
+      </div>
+      <div className="card-body dashboard-graph-body">
+        <div className={'chart-wrapper ' + (props.errorMsg ? 'd-none' : '')}>
+          {props.children}
+        </div>
+        <ChartError message={props.errorMsg} />
+      </div>
+    </div>
+  );
+}
+
+ChartContainer.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  legendRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]).isRequired,
+  children: PropTypes.node.isRequired,
+  errorMsg: PropTypes.string,
+};
+
+export function ChartError(props) {
+  if (props.message === null) {
+    return <></>;
+  }
+  return (
+    <div className="pg-panel-error pg-panel-message" role="alert">
+      {props.message}
+    </div>
+  );
+}
+
+ChartError.propTypes = {
+  message: PropTypes.string,
+};
+
+export function DashboardRow({ children }) {
+  return <div className="row dashboard-row">{children}</div>;
+}
+DashboardRow.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export function DashboardRowCol({ breakpoint, parts, children }) {
+  return <div className={`col-${breakpoint}-${parts}`}>{children}</div>;
+}
+
+DashboardRowCol.propTypes = {
+  breakpoint: PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl']).isRequired,
+  parts: PropTypes.number.isRequired,
+  children: PropTypes.node.isRequired,
+};

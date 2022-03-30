@@ -98,36 +98,6 @@ define('pgadmin.node.column', [
       getSchema: function(treeNodeInfo, itemNodeData) {
         return getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser);
       },
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'attnum',
-
-        defaults: {
-          name: undefined,
-          attnum: undefined,
-          description: undefined,
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: 'inSchemaWithColumnCheck',
-          cellHeaderClasses:'width_percent_30',
-          editable: 'editable_check_for_table',
-        },{
-          id: 'attnum', label: gettext('Position'), cell: 'string',
-          type: 'text', disabled: 'notInSchema', mode: ['properties'],
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'notInSchema',
-        }],
-        // We will check if we are under schema node & in 'create' mode
-        notInSchema: function() {
-          if(this.node_info &&  'catalog' in this.node_info)
-          {
-            return true;
-          }
-          return false;
-        },
-      }),
       // Below function will enable right click menu for creating column
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu

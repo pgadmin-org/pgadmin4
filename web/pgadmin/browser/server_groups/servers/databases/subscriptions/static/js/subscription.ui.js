@@ -176,7 +176,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       mode: ['properties', 'edit', 'create'],
     },
     {
-      id: 'pub', label: gettext('Publication'), type: 'text', group: gettext('Connection'),
+      id: 'proppub', label: gettext('Publication'), type: 'text', group: gettext('Connection'),
       mode: ['properties'],
     },
     {

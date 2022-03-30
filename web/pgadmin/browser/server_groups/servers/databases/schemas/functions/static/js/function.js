@@ -11,7 +11,6 @@ import { getNodeAjaxOptions, getNodeListByName, getNodeListById} from '../../../
 import FunctionSchema from './function.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
-import _ from 'lodash';
 
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.function', [
@@ -109,44 +108,7 @@ define('pgadmin.node.function', [
           }
         );
       },
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-          if (isNew) {
-            // Set Selected Schema
-            var schema_id = args.node_info.schema._id;
-            this.set({'pronamespace': schema_id}, {silent: true});
-
-            // Set Current User
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'funcowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'isDisabled',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        },{
-          id: 'funcowner', label: gettext('Owner'), cell: 'string',
-          control: Backform.NodeListByNameControl, node: 'role',  type:
-          'text', disabled: 'isDisabled',
-        },{
-          id: 'pronamespace', label: gettext('Schema'), cell: 'string',
-          control: 'node-list-by-id', type: 'text', cache_level: 'database',
-          node: 'schema', disabled: 'isDisabled', mode: ['create', 'edit'],
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', disabled: 'isDisabled',
-        }],
-      }),
     });
-
   }
-
   return pgBrowser.Nodes['function'];
 });

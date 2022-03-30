@@ -305,49 +305,6 @@ function(
       getSchema: function(treeNodeInfo, itemNodeData) {
         return getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowser);
       },
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          description: undefined,
-          is_partitioned: false,
-          partition_value: undefined,
-        },
-        // Default values!
-        initialize: function(attrs, args) {
-          if (_.size(attrs) === 0) {
-            var userInfo = pgBrowser.serverInfo[
-                args.node_info.server._id
-              ].user,
-              schemaInfo = args.node_info.schema;
-
-            this.set({
-              'relowner': userInfo.name, 'schema': schemaInfo._label,
-            }, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'oid', label: gettext('OID'), type: 'text', mode: ['properties'],
-        },{
-          id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
-          mode: ['create', 'edit', 'properties'],
-        },{
-          id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'partition_value', label:gettext('Partition Scheme'),
-          type: 'text', visible: false,
-        },{
-          id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'],
-        }],
-      }),
       canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether table has disable trigger(s)
       canCreate_with_trigger_enable: function(itemData, item, data) {

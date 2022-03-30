@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useRef, useState, useReducer, useCallback, useMemo } from 'react';
 import {LineChart} from 'sources/chartjs';
-import {ChartContainer, DashboardRowCol, DashboardRow} from './dashboard_components';
+import {ChartContainer, DashboardRowCol, DashboardRow} from './Dashboard';
 import url_for from 'sources/url_for';
 import axios from 'axios';
 import gettext from 'sources/gettext';

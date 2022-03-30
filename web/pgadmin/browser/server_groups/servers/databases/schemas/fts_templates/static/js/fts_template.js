@@ -70,65 +70,6 @@ define('pgadmin.node.fts_template', [
 
       },
 
-      // Defining backform model for fts template node
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-          if (isNew) {
-            this.set('schema', args.node_info.schema._id);
-          }
-        },
-        // Defining schema for fts template
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', cellHeaderClasses: 'width_percent_50',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', mode:['properties'],
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', cellHeaderClasses: 'width_percent_50',
-        }],
-
-        /*
-         * Triggers control specific error messages for template name,
-         * lexize function and schema, if any one of them is not specified
-         * while creating new fts template
-         */
-        validate: function() {
-          var name = this.get('name'),
-            lexize = this.get('tmpllexize'),
-            schema = this.get('schema'),
-            msg;
-
-          // Validate fts template name
-          if (_.isUndefined(name) || _.isNull(name) || String(name).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name must be specified.');
-            this.errorModel.set('name', msg);
-            return msg;
-          }
-
-          // Validate lexize function control
-          else if (_.isUndefined(lexize) || _.isNull(lexize) || String(lexize).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Lexize function must be selected.');
-            this.errorModel.set('tmpllexize', msg);
-            return msg;
-          }
-
-          // Validate schema for fts template
-          else if (_.isUndefined(schema) || _.isNull(schema) || String(schema).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Schema must be selected.');
-            this.errorModel.set('schema', msg);
-            return msg;
-          }
-          else this.errorModel.clear();
-
-          this.trigger('on-status-clear');
-          return null;
-        },
-      }),
       getSchema: (treeNodeInfo, itemNodeData) => {
         let nodeObj = pgAdmin.Browser.Nodes['fts_template'];
         return new FTSTemplateSchema(

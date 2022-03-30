@@ -88,64 +88,6 @@ define('pgadmin.node.row_security_policy', [
           }
         );
       },
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', readonly: true, cellHeaderClasses: 'width_percent_50',
-          mode: ['properties']
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', mode: ['properties'],
-        }],
-        validate: function(keys) {
-          var msg;
-          this.errorModel.clear();
-          // If nothing to validate
-          if (keys && keys.length == 0) {
-            return null;
-          }
-
-          if(_.isUndefined(this.get('name'))
-            || String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
-            msg = gettext('Name cannot be empty.');
-            this.errorModel.set('name', msg);
-            return msg;
-          }
-          if (!this.isNew() && !_.isNull(this.get('using_orig')) && this.get('using_orig') != '' && String(this.get('using')).replace(/^\s+|\s+$/g, '') == ''){
-            msg = gettext('"USING" can not be empty once the value is set');
-            this.errorModel.set('using', msg);
-            return msg;
-          }
-          if (!this.isNew() && !_.isNull(this.get('withcheck_orig')) && this.get('withcheck_orig') != '' && String(this.get('withcheck')).replace(/^\s+|\s+$/g, '') == ''){
-            msg = gettext('"Withcheck" can not be empty once the value is set');
-            this.errorModel.set('withcheck', msg);
-            return msg;
-          }
-          return null;
-        },
-        disableWithCheck: function(m){
-          var event = m.get('event');
-          if ((event == 'SELECT') || (event == 'DELETE')){
-            m.set('withcheck', '');
-            return true;
-          }
-          return false;
-        },
-
-        disableUsing: function(m){
-          var event = m.get('event');
-
-          if (event == 'INSERT'){
-            return true;
-          }
-          return false;
-        },
-
-      }),
       canCreate: function(itemData, item) {
 
         var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),

@@ -68,25 +68,6 @@ define('pgadmin.node.cast', [
 
       },
 
-      // Define the backform model for cast node
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Define the schema for cast
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          editable: false, type: 'text', readonly: true, cellHeaderClasses: 'width_percent_50',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          editable: false, type: 'text', mode: ['properties'],
-        },
-        {
-          id: 'description', label: gettext('Comment'),
-          type: 'multiline', cellHeaderClasses: 'width_percent_50',
-        },
-        ],
-      }),
-
       getSchema: function(treeNodeInfo, itemNodeData){
         return new CastSchema({
           getTypeOptions: ()=>getNodeAjaxOptions('get_type', this, treeNodeInfo, itemNodeData),

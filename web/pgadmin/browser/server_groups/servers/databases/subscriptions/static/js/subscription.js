@@ -14,8 +14,8 @@ import Notify from '../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.subscription', [
   'sources/gettext', 'sources/url_for', 'jquery',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, pgAdmin, pgBrowser, Backform) {
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, url_for, $, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for subscriptions collection
   if (!pgBrowser.Nodes['coll-subscription']) {
@@ -24,7 +24,7 @@ define('pgadmin.node.subscription', [
         node: 'subscription',
         label: gettext('Subscriptions'),
         type: 'coll-subscription',
-        columns: ['name', 'subowner', 'pub', 'enabled'],
+        columns: ['name', 'subowner', 'proppub', 'enabled'],
         hasStatistics: true,
       });
   }
@@ -74,101 +74,6 @@ define('pgadmin.node.subscription', [
           enable: 'canCreate',
         }]);
       },
-      // Define the model for subscription node
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          subowner: undefined,
-          pubtable: undefined,
-          connect_timeout: 10,
-          pub:[],
-          enabled:true,
-          create_slot: true,
-          copy_data:true,
-          connect:true,
-          copy_data_after_refresh:false,
-          sync:'off',
-          refresh_pub: false,
-          password: '',
-          sslmode: 'prefer',
-          sslcompression: false,
-          sslcert: '',
-          sslkey: '',
-          sslrootcert: '',
-          sslcrl: '',
-          host: '',
-          hostaddr: '',
-          port: 5432,
-          db: 'postgres',
-        },
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'subowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        // Define the schema for the subscription node
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-          visible: function() {
-            if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-              && !_.isUndefined(this.node_info.server.version) &&
-                this.node_info.server.version >= 100000) {
-              return true;
-            }
-            return false;
-          },
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          type: 'text',
-        },
-        {
-          id: 'subowner', label: gettext('Owner'), type: 'text',
-          control: Backform.NodeListByNameControl, node: 'role',
-          mode: ['edit', 'properties', 'create'], select2: { allowClear: false},
-          disabled: function(m){
-            if(m.isNew())
-              return true;
-            return false;
-          },
-        },
-        {
-          id: 'enabled', label: gettext('Enabled?'),
-          type: 'switch', mode: ['properties'],
-          group: gettext('With'),
-          readonly: 'isConnect', deps :['connect'],
-          helpMessage: gettext('Specifies whether the subscription should be actively replicating, or whether it should be just setup but not started yet.'),
-        },
-        {
-          id: 'pub', label: gettext('Publication'), type: 'text', group: gettext('Connection'),
-          mode: ['properties'],
-        },
-        ],
-        sessChanged: function() {
-          if (!this.isNew() && _.isUndefined(this.attributes['refresh_pub']))
-            return false;
-          return pgBrowser.DataModel.prototype.sessChanged.apply(this);
-        },
-        canCreate: function(itemData, item) {
-          var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
-            server = treeData['server'];
-
-          // If server is less than 10 then do not allow 'create' menu
-          if (server && server.version < 100000)
-            return false;
-
-          // by default we want to allow create menu
-          return true;
-        },
-      }),
       getSchema: function(treeNodeInfo, itemNodeData){
         return new SubscriptionSchema(
           {

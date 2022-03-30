@@ -10,13 +10,12 @@
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
 import LanguageSchema from './language.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
-import _ from 'lodash';
 
 define('pgadmin.node.language', [
   'sources/gettext', 'sources/url_for', 'jquery',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, $, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for languages collection
   if (!pgBrowser.Nodes['coll-language']) {
@@ -71,37 +70,6 @@ define('pgadmin.node.language', [
         }]);
       },
 
-      // Define the model for language node
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'lanowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        // Define the schema for the language node
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties'],
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          type: 'text',
-        },{
-          id: 'lanowner', label: gettext('Owner'), type: 'text',
-          control: Backform.NodeListByNameControl, node: 'role',
-          mode: ['edit', 'properties', 'create'], select2: { allowClear: false },
-        },
-        {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline',
-        },
-        ],
-      }),
 
       getSchema: function(treeNodeInfo, itemNodeData){
         return new LanguageSchema(

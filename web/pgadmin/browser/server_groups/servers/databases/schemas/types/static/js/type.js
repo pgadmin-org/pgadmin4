@@ -74,48 +74,6 @@ define('pgadmin.node.type', [
 
       },
       ext_funcs: undefined,
-      /* Few fields are kept since the properties tab for collection is not
-      yet migrated to new react schema. Once the properties for collection
-      is removed, remove this model */
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          is_sys_type: false,
-          typtype: undefined,
-        },
-
-        // Default values!
-        initialize: function(attrs, args) {
-          if (_.size(attrs) === 0) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user,
-              schemaInfo = args.node_info.schema;
-
-            this.set({
-              'typeowner': userInfo.name, 'schema': schemaInfo._label,
-            }, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'schemaCheck',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        },{
-          id: 'typeowner', label: gettext('Owner'), cell: 'string',
-          control: 'node-list-by-name',
-          type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
-          disabled: 'inSchema', select2: {allowClear: false},
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema',
-        }]
-      }),
       getSchema: (treeNodeInfo, itemNodeData) => {
         let nodeObj = pgAdmin.Browser.Nodes['type'];
         return new TypeSchema(

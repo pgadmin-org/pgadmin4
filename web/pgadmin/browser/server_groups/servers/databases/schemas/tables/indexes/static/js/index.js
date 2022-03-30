@@ -92,29 +92,6 @@ define('pgadmin.node.index', [
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          nspname: undefined,
-          tabname: undefined,
-          spcname: undefined,
-          amname: 'btree',
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: 'inSchema',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'int', readonly: true, mode: ['properties'],
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema',
-        }],
-      }),
       // Below function will enable right click menu for creating column
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu

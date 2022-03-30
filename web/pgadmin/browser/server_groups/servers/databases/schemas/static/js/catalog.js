@@ -42,25 +42,6 @@ define('pgadmin.node.catalog', [
         this.initialized = true;
 
       },
-      model: pgBrowser.Node.Model.extend({
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'namespaceowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', readonly: true,
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
-          type: 'text',
-        }]
-      }),
       getSchema: function(treeNodeInfo) {
         return new CatalogSchema(
           {

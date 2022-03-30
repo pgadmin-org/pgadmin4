@@ -25,8 +25,9 @@ export function generateCollectionURL(item, type) {
   };
   var treeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(item);
   var actionType = type in opURL ? opURL[type] : type;
+  var nodeType = type === 'properties' ? nodeObj.type : nodeObj.node;
   return generate_url(
-    pgAdmin.Browser.URL, treeInfo, actionType, nodeObj.node,
+    pgAdmin.Browser.URL, treeInfo, actionType, nodeType,
     collectionPickFunction
   );
 }

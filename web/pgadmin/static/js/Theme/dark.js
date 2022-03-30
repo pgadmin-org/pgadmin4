@@ -92,7 +92,8 @@ export default function(basicSettings) {
       activeStepFg: '#FFFFFF',
       stepBg: '#FFFFFF',
       stepFg: '#000',
-      toggleBtnBg: '#000'
+      toggleBtnBg: '#000',
+      colorFg: '#FFFFFF',
     }
   });
 }

@@ -189,16 +189,6 @@ define('pgadmin.node.compound_trigger', [
         );
       },
 
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text',
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-        }],
-      }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
         if (data && data.check == false)

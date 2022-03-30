@@ -351,45 +351,6 @@ define('pgadmin.node.database', [
           }
         );
       },
-      /* Few fields are kept since the properties tab for collection is not
-      yet migrated to new react schema. Once the properties for collection
-      is removed, remove this model */
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'did',
-        defaults: {
-          name: undefined,
-          owner: undefined,
-          comment: undefined,
-        },
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'datowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        schema: [
-          {
-            id: 'name', label: gettext('Database'), cell: 'string',
-            editable: false, type: 'text',
-          },{
-            id: 'did', label: gettext('OID'), cell: 'string', mode: ['properties'],
-            editable: false, type: 'text',
-          },{
-            id: 'datowner', label: gettext('Owner'),
-            editable: false, type: 'text', node: 'role',
-            control: Backform.NodeListByNameControl, select2: { allowClear: false },
-          },{
-            id: 'comments', label: gettext('Comment'),
-            editable: false, type: 'multiline',
-          },
-        ],
-      }),
     });
 
     pgBrowser.SecurityGroupSchema = {

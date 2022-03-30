@@ -13,6 +13,11 @@ import Theme from 'sources/Theme';
 import Dependencies from '../../../misc/dependencies/static/js/Dependencies';
 import Dependents from '../../../misc/dependents/static/js/Dependents';
 import Statistics from '../../../misc/statistics/static/js/Statistics';
+import SQL from '../../../misc/sql/static/js/SQL';
+import Dashboard from '../../../dashboard/static/js/Dashboard';
+import _ from 'lodash';
+import { CollectionNodeView } from '../../../misc/properties/CollectionNodeProperties';
+
 
 /* The entry point for rendering React based view in properties, called in node.js */
 export function getPanelView(
@@ -21,10 +26,33 @@ export function getPanelView(
   pgBrowser,
   panelType
 ) {
-  let item = tree.selected(),
-    nodeData = item && tree.itemData(item),
-    node = item && nodeData && pgBrowser.Nodes[nodeData._type],
+  let item = !_.isNull(tree)? tree.selected(): null,
+
+    nodeData, node, treeNodeInfo, preferences;
+  if (item){
+    nodeData = tree.itemData(item);
+    node = nodeData && pgBrowser.Nodes[nodeData._type];
     treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
+    preferences = pgBrowser.get_preferences_for_module('dashboards');
+  }
+  if (panelType == 'dashboard') {
+    ReactDOM.render(
+      <Theme>
+        <Dashboard
+          treeNodeInfo={treeNodeInfo}
+          pgBrowser={pgBrowser}
+          nodeData={nodeData}
+          node={node}
+          item={item}
+          preferences={preferences}
+          did={((!_.isUndefined(treeNodeInfo)) && (!_.isUndefined(treeNodeInfo['database']))) ? treeNodeInfo['database']._id: 0}
+          sid={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['server']) ? treeNodeInfo['server']._id : ''}
+          serverConnected={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['server']) ? treeNodeInfo.server.connected: false}
+        />
+      </Theme>,
+      container
+    );
+  }
 
 
   if (panelType == 'statistics') {
@@ -36,6 +64,20 @@ export function getPanelView(
           nodeData={nodeData}
           node={node}
           item={item}
+        />
+      </Theme>,
+      container
+    );
+  }
+  if (panelType == 'properties') {
+    ReactDOM.render(
+      <Theme>
+        <CollectionNodeView
+          treeNodeInfo={treeNodeInfo}
+          item={item}
+          itemNodeData={nodeData}
+          node={node}
+          pgBrowser={pgBrowser}
         />
       </Theme>,
       container
@@ -59,6 +101,20 @@ export function getPanelView(
     ReactDOM.render(
       <Theme>
         <Dependents
+          treeNodeInfo={treeNodeInfo}
+          pgBrowser={pgBrowser}
+          nodeData={nodeData}
+          node={node}
+          item={item}
+        />
+      </Theme>,
+      container
+    );
+  }
+  if (panelType == 'sql') {
+    ReactDOM.render(
+      <Theme>
+        <SQL
           treeNodeInfo={treeNodeInfo}
           pgBrowser={pgBrowser}
           nodeData={nodeData}

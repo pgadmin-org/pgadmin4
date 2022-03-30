@@ -45,32 +45,6 @@ define('pgadmin.node.catalog_object_column', [
         getSchema: function() {
           return new CatalogObjectColumnSchema();
         },
-        model: pgAdmin.Browser.Node.Model.extend({
-          defaults: {
-            attname: undefined,
-            attowner: undefined,
-            atttypid: undefined,
-            attnum: undefined,
-            cltype: undefined,
-            collspcname: undefined,
-            attacl: undefined,
-            is_sys_obj: undefined,
-            description: undefined,
-          },
-          schema: [{
-            id: 'attname', label: gettext('Column'), cell: 'string',
-            type: 'text', readonly: true,
-          },{
-            id: 'attnum', label: gettext('Position'), cell: 'string',
-            type: 'text', readonly: true,
-          },{
-            id: 'cltype', label: gettext('Data type'), cell: 'string',
-            group: gettext('Definition'), type: 'text', readonly: true,
-          },{
-            id: 'description', label: gettext('Comment'), cell: 'string',
-            type: 'multiline', readonly: true,
-          }],
-        }),
       });
   }
 

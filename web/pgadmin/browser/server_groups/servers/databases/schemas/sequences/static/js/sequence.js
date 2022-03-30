@@ -106,41 +106,6 @@ define('pgadmin.node.sequence', [
           }
         );
       },
-
-      // Define the model for sequence node.
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-
-            this.set({'seqowner': userInfo.name}, {silent: true});
-            this.set({'schema': schemaInfo._label}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        // Define the schema for sequence node.
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'seqowner', label: gettext('Owner'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
-          control: Backform.NodeListByNameControl,
-        },{
-          id: 'comment', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'],
-        }],
-      }),
     });
   }
 

@@ -16,6 +16,7 @@ import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import { getURL } from '../../../static/utils/utils';
+import Loader from 'sources/components/Loader';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -71,7 +72,7 @@ function parseData(data, node) {
 export default function Dependencies({ nodeData, item, node, ...props }) {
   const classes = useStyles();
   const [tableData, setTableData] = React.useState([]);
-
+  const [loaderText, setLoaderText] = React.useState('');
   const [msg, setMsg] = React.useState('');
   var columns = [
     {
@@ -79,14 +80,14 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
       accessor: 'type',
       sortble: true,
       resizable: false,
-      disableGlobalFilter: true,
+      disableGlobalFilter: false,
     },
     {
       Header: 'Name',
       accessor: 'name',
       sortble: true,
       resizable: false,
-      disableGlobalFilter: true,
+      disableGlobalFilter: false,
     },
     {
       Header: 'Restriction',
@@ -114,7 +115,7 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
       );
       if (node.hasDepends) {
         const api = getApiInstance();
-
+        setLoaderText('Loading...');
         api({
           url: url,
           type: 'GET',
@@ -123,8 +124,10 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
             if (res.data.length > 0) {
               let data = parseData(res.data, node);
               setTableData(data);
+              setLoaderText('');
             } else {
               setMsg(message);
+              setLoaderText('');
             }
           })
           .catch((e) => {
@@ -157,10 +160,12 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
         ></PgTable>
       ) : (
         <div className={classes.emptyPanel}>
-          <div className={classes.panelIcon}>
-            <i className="fa fa-exclamation-circle"></i>
-            <span className={classes.panelMessage}>{gettext(msg)}</span>
-          </div>
+          {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
+            <div className={classes.panelIcon}>
+              <i className="fa fa-exclamation-circle"></i>
+              <span className={classes.panelMessage}>{gettext(msg)}</span>
+            </div>
+          }
         </div>
       )}
     </>

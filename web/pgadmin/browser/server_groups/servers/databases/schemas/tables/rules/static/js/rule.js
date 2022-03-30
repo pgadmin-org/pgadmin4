@@ -207,54 +207,6 @@ define('pgadmin.node.rule', [
           }
         );
       },
-      /**
-        Define model for the rule node and specify the node
-        properties of the model in schema.
-       */
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [{
-          id: 'name', label: gettext('Name'),
-          type: 'text', disabled: function(m) {
-            // disable name field it it is system rule
-            if (m && m.get('name') == '_RETURN') {
-              return true;
-            }
-            if (m.isNew && m.isNew() || m.node_info && m.node_info.server.version >= 90400) {
-              return false;
-            }
-            return true;
-          },
-        },
-        {
-          id: 'oid', label: gettext('OID'),
-          type: 'text', mode: ['properties'],
-        },
-        {
-          id: 'comment', label: gettext('Comment'), cell: 'string', type: 'multiline',
-        },
-        ],
-        validate: function() {
-
-          // Triggers specific error messages for fields
-          var err = {},
-            errmsg,
-            field_name = this.get('name');
-          if (_.isUndefined(field_name) || _.isNull(field_name) ||
-            String(field_name).replace(/^\s+|\s+$/g, '') === '')
-          {
-            err['name'] = gettext('Please specify name.');
-            errmsg = err['name'];
-            this.errorModel.set('name', errmsg);
-            return errmsg;
-          }
-          else
-          {
-            this.errorModel.unset('name');
-          }
-          return null;
-        },
-      }),
 
       // Show or hide create rule menu option on parent node
       canCreate: function(itemData, item, data) {

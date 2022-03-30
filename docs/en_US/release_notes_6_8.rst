@@ -9,12 +9,14 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+  | `Issue #7215 <https://redmine.postgresql.org/issues/7215>`_ -  Added transaction start time to Server activity sessions view.
   | `Issue #7249 <https://redmine.postgresql.org/issues/7249>`_ -  Added support for unique keys in ERD.
   | `Issue #7257 <https://redmine.postgresql.org/issues/7257>`_ -  Support running the container under OpenShift with alternate UIDs.
 
 Housekeeping
 ************
 
+  | `Issue #7132 <https://redmine.postgresql.org/issues/7132>`_ -  Port Properties panel for collection node, Dashboard, and SQL panel in React.
   | `Issue #7149 <https://redmine.postgresql.org/issues/7149>`_ -  Port preferences dialog to React.
 
 Bug fixes

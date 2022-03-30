@@ -16,7 +16,6 @@ import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import { generateNodeUrl } from './node_ajax';
 import Notify from '../../../static/js/helpers/Notifier';
-
 import gettext from 'sources/gettext';
 import 'wcdocker';
 

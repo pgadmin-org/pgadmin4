@@ -95,20 +95,20 @@ export default class DatabaseSchema extends BaseUISchema {
     return [
       {
         id: 'name', label: gettext('Database'), cell: 'text',
-        editable: false, type: 'text', noEmpty: true,
+        editable: false, type: 'text', noEmpty: true, isCollectionProperty: true,
       },{
         id: 'did', label: gettext('OID'), cell: 'text', mode: ['properties'],
         editable: false, type: 'text',
       },{
         id: 'datowner', label: gettext('Owner'),
         editable: false, type: 'select', options: this.fieldOptions.role,
-        controlProps: { allowClear: false },
+        controlProps: { allowClear: false }, isCollectionProperty: true,
       },{
         id: 'is_sys_obj', label: gettext('System database?'),
         cell: 'switch', type: 'switch', mode: ['properties'],
       },{
         id: 'comments', label: gettext('Comment'),
-        editable: false, type: 'multiline',
+        editable: false, type: 'multiline', isCollectionProperty: true,
       },{
         id: 'encoding', label: gettext('Encoding'),
         editable: false, type: 'select', group: gettext('Definition'),

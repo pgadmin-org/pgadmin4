@@ -469,10 +469,8 @@ module.exports = [{
         options: {
           type: 'commonjs',
           imports: [
-            'pure|pgadmin.dashboard',
             'pure|pgadmin.browser.quick_search',
             'pure|pgadmin.tools.user_management',
-            'pure|pgadmin.browser.object_sql',
             'pure|pgadmin.browser.bgprocess',
             'pure|pgadmin.node.server_group',
             'pure|pgadmin.node.server',

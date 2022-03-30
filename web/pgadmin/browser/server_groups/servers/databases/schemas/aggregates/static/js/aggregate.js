@@ -45,37 +45,6 @@ define('pgadmin.node.aggregate', [
 
         this.initialized = true;
       },
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-
-            this.set({'owner': userInfo.name}, {silent: true});
-            this.set({'schema': schemaInfo._label}, {silent: true});
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        schema: [{
-          id: 'name', label: gettext('Aggregate'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'owner', label: gettext('Owner'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          control: 'node-list-by-name',
-          node: 'role',
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-        }
-        ],
-      }),
       getSchema: ()=>{
         return new AggregateSchema();
       }

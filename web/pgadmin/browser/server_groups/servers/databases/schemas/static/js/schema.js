@@ -361,36 +361,6 @@ define('pgadmin.node.schema', [
       can_create_schema: function(node) {
         return pgBrowser.Nodes['database'].is_conn_allow.call(this, node);
       },
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'namespaceowner': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'namespaceowner', label: gettext('Owner'), cell: 'string',
-          type: 'text', control: 'node-list-by-name', node: 'role',
-          select2: { allowClear: false },
-        },{
-          id: 'is_sys_obj', label: gettext('System schema?'),
-          cell: 'switch', type: 'switch', mode: ['properties'],
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline'
-        }]
-      }),
       getSchema: function(treeNodeInfo, itemNodeData) {
         var schemaObj = pgBrowser.Nodes['schema'];
         return new PGSchema(

@@ -100,54 +100,6 @@ define('pgadmin.node.synonym', [
           }
         );
       },
-
-      model: pgAdmin.Browser.Node.Model.extend({
-        isNew: function() {
-          return !this.fetchFromServer;
-        },
-        idAttribute: 'oid',
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-            this.set({
-              'owner': userInfo.name,
-              'synobjschema': schemaInfo._label,
-              'schema': schemaInfo._label,
-              'targettype': 'r',
-            }, {silent: true});
-          } else {
-            this.fetchFromServer = true;
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', readonly: function(m) { return !m.isNew(); },
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'owner', label: gettext('Owner'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          readonly: true , control: 'node-list-by-name',
-          node: 'role', visible: false,
-        }],
-
-        // We will disable everything if we are under catalog node
-        inSchema: function() {
-          if(this.node_info &&  'catalog' in this.node_info)
-          {
-            return true;
-          }
-          return false;
-        },
-      }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
         if (data && data.check == false)

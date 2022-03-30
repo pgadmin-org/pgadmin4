@@ -48,16 +48,6 @@ define('pgadmin.node.edbvar', [
       },
       canDrop: false,
       canDropCascade: false,
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        }]
-      }),
       getSchema: () => {
         return new EDBVarSchema();
       }

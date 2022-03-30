@@ -1082,8 +1082,6 @@ define('pgadmin.browser.node', [
             b.panels['properties'] &&
             b.panels['properties'].panel &&
             b.panels['properties'].panel.isVisible()) {
-            // Show object properties (only when the 'properties' tab
-            // is active).
             this.showProperties(item, d, b.panels['properties'].panel);
           }
         }
@@ -1259,20 +1257,20 @@ define('pgadmin.browser.node', [
             d = i && tree.itemData(i),
             treeHierarchy = tree.getTreeNodeHierarchy(i);
 
-          if (_.isEqual($(this).data('node-prop'), treeHierarchy)) {
-            return;
-          }
-
           // Cache the current IDs for next time
           $(this).data('node-prop', treeHierarchy);
 
           /* Remove any dom rendered by getNodeView */
-          removeNodeView(j[0]);
-          /* getSchema is a schema for React. Get the react node view */
+          removeNodeView(pgBrowser.panels['properties'].panel.$container[0]);
+
+          var containerProperties =  pgBrowser.panels['properties'].panel.$container;
+          containerProperties.addClass('pg-panel-content pg-no-overflow pg-el-container');
+
+
           if(that.getSchema) {
             let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
             getNodeView(
-              that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
+              that.type, treeNodeInfo, 'properties', data, 'tab', containerProperties[0], this, onEdit
             );
             return;
           }

@@ -90,7 +90,8 @@ export default function(basicSettings) {
       activeStepFg: '#010b15',
       stepBg: '#FFFFFF',
       stepFg: '#000',
-      toggleBtnBg: '#6B6B6B'
+      toggleBtnBg: '#6B6B6B',
+      colorFg: '#FFFFFF',
     }
   });
 }

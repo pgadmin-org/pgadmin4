@@ -147,7 +147,7 @@ export default class PublicationSchema extends BaseUISchema {
       group: gettext('Definition'), mode: ['edit', 'create'],
       deps: ['all_table'], disabled: obj.isAllTable,
     },{
-      id: 'pubtable', label: gettext('Tables'), type: 'text', group: gettext('Definition'),
+      id: 'proptable', label: gettext('Tables'), type: 'text', group: gettext('Definition'),
       mode: ['properties'],
     },{
       type: 'nested-fieldset', mode: ['create','edit', 'properties'],

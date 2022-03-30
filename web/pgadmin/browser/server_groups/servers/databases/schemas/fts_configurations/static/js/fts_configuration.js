@@ -93,32 +93,6 @@ define('pgadmin.node.fts_configuration', [
           }
         );
       },
-
-      // Defining model for FTS Configuration node
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        initialize: function(attrs, opts) {
-          var isNew = (_.size(attrs) === 0);
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-
-          if (isNew) {
-            var user = pgBrowser.serverInfo[opts.node_info.server._id].user;
-            this.set({
-              'owner': user.name,
-              'schema': opts.node_info.schema._id,
-            }, {silent: true});
-          }
-        },
-        // Defining schema for FTS Configuration
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', cellHeaderClasses: 'width_percent_50',
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', cellHeaderClasses: 'width_percent_50',
-        }],
-      }),
     });
   }
 

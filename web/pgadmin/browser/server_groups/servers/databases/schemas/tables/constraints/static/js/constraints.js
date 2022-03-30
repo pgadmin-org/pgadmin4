@@ -43,24 +43,6 @@ define('pgadmin.node.constraints', [
 
         pgBrowser.add_menus([]);
       },
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          comment: undefined,
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'oid', label: gettext('Oid'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        },{
-          id: 'comment', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-        }],
-      }),
     });
   }
 
