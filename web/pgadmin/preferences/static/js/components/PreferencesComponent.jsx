@@ -358,33 +358,42 @@ export default function PreferencesComponent({ ...props }) {
 
   useEffect(() => {
     let initTreeTimeout = null;
+    let firstElement = null;
     // Listen selected preferences tree node event and show the appropriate components in right panel.
-    pgAdmin.Browser.Events.on('preferences:tree:selected', (item) => {
+    pgAdmin.Browser.Events.on('preferences:tree:selected', (event, item) => {
       if (item.type == FileType.File) {
         prefSchema.current.schemaFields.forEach((field) => {
           field.visible = field.parentId === item._metadata.data.id;
+          if(field.visible && _.isNull(firstElement)) {
+            firstElement = field;
+          }
         });
         setLoadTree(Math.floor(Math.random() * 1000));
         initTreeTimeout = setTimeout(() => {
           prefTreeInit.current = true;
+          if(firstElement) {
+            //set focus on first element on right side panel.
+            document.getElementsByName(firstElement.id.toString())[0].focus();
+            firstElement = '';
+          }
         }, 10);
       }
       else {
-        if (item.isExpanded && item._children && item._children.length > 0 && prefTreeInit.current) {
+        if (item.isExpanded && item._children && item._children.length > 0 && prefTreeInit.current && event.code !== 'ArrowUp') {
           pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
         }
       }
     });
 
     // Listen open preferences tree node event to default select first child node on parent node selection.
-    pgAdmin.Browser.Events.on('preferences:tree:opened', (item) => {
+    pgAdmin.Browser.Events.on('preferences:tree:opened', (event, item) => {
       pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
     });
 
     // Listen added preferences tree node event to expand the newly added node on tree load.
-    pgAdmin.Browser.Events.on('preferences:tree:added', (item) => {
+    pgAdmin.Browser.Events.on('preferences:tree:added', (event, item) => {
       if (item._parent._fileName == firstTreeElement.current && item._parent.isExpanded && !prefTreeInit.current) {
-        pgAdmin.Browser.ptree.tree.setActiveFile(item._parent._children[0], false);
+        pgAdmin.Browser.ptree.tree.setActiveFile(item._parent._children[0], true);
       }
       else if (item.type == FileType.Directory) {
         // Check the if newely added node is Directoy and call toggle to expand the node.
@@ -593,7 +602,7 @@ export default function PreferencesComponent({ ...props }) {
         <Box className={clsx(classes.preferences)}>
           <Box className={clsx(classes.treeContainer)} >
 
-            <Box className={clsx('aciTree', classes.tree)} id={'treeContainer'}>
+            <Box className={clsx('aciTree', classes.tree)} id={'treeContainer'} tabIndex={0}>
               {
                 useMemo(() => (prefTreeData && props.renderTree(prefTreeData)), [prefTreeData])
               }

@@ -26,7 +26,7 @@ function manageTreeEvents(event, eventName, item) {
   if (node_metadata.parent && node_metadata.parent.includes('/preferences') && obj.ptree.tree.type == 'preferences') {
     try {
       obj.Events.trigger(
-        'preferences:tree:' + eventName, item, d
+        'preferences:tree:' + eventName, event, item, d
       );
     } catch (e) {
       console.warn(e.stack || e);
