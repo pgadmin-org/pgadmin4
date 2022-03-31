@@ -267,11 +267,12 @@ export default class ERDCore {
     });
   }
 
-  syncTableLinks(tableNode, oldTableData) {
+  syncColDrop(tableNode, oldTableData) {
     let self = this;
+    if(!oldTableData) {
+      return;
+    }
     let tableData = tableNode.getData();
-    const tableNodesDict = this.getModel().getNodesDict();
-
     /* Remove the links if column dropped or primary key removed */
     _.differenceWith(oldTableData.columns, tableData.columns, function(existing, incoming) {
       if(existing.attnum == incoming.attnum && existing.is_primary_key && !incoming.is_primary_key) {
@@ -287,7 +288,13 @@ export default class ERDCore {
       }
       tableNode.removePort(existPort);
     });
+  }
 
+  syncFkRefNames(tableNode, oldTableData) {
+    if(!oldTableData) {
+      return;
+    }
+    let tableData = tableNode.getData();
     /* Sync the name changes in references FK */
     Object.values(tableNode.getPorts()).forEach((port)=>{
       if(port.getSubtype() != 'one') {
@@ -312,9 +319,17 @@ export default class ERDCore {
         });
       });
     });
+  }
 
+  syncTableLinks(tableNode, oldTableData) {
+    if(oldTableData) {
+      this.syncColDrop(tableNode, oldTableData);
+      this.syncFkRefNames(tableNode, oldTableData);
+    }
     /* Sync the changed/removed/added foreign keys */
-    tableData = tableNode.getData();
+    let tableData = tableNode.getData();
+    let tableNodesDict = this.getModel().getNodesDict();
+
     const addLink = (theFk)=>{
       if(!theFk) return;
       let newData = {

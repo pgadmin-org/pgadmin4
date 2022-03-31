@@ -35,3 +35,4 @@ Bug fixes
   | `Issue #7265 <https://redmine.postgresql.org/issues/7265>`_ -  Fixed schema diff issue in which the option 'null' doesn't appear in the DDL statement for the foreign table.
   | `Issue #7267 <https://redmine.postgresql.org/issues/7267>`_ -  Fixed an issue where unexpected error messages are displayed when users change the language via preferences.
   | `Issue #7269 <https://redmine.postgresql.org/issues/7269>`_ -  Ensure that pgAdmin4 should work with latest jinja2 version.
+  | `Issue #7275 <https://redmine.postgresql.org/issues/7275>`_ -  Fixed 'Cannot read properties of undefined' error while creating the table via the ERD tool.
