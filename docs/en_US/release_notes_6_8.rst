@@ -28,6 +28,7 @@ Bug fixes
   | `Issue #7197 <https://redmine.postgresql.org/issues/7197>`_ -  Fixed an issue where foreign key relationships do not update when the primary key is modified.
   | `Issue #7216 <https://redmine.postgresql.org/issues/7216>`_ -  Ensure that the values of certain fields are prettified in the statistics tab for collection nodes.
   | `Issue #7221 <https://redmine.postgresql.org/issues/7221>`_ -  Ensure objects depending on extensions are not displayed in Schema Diff.
+  | `Issue #7231 <https://redmine.postgresql.org/issues/7231>`_ -  Fixed an issue where 2FA was not showing the QR code when setting up the Authenticator app.
   | `Issue #7238 <https://redmine.postgresql.org/issues/7238>`_ -  Fixed an issue where foreign key is not removed even if the referred table is removed in ERD.
   | `Issue #7239 <https://redmine.postgresql.org/issues/7239>`_ -  Fixed an issue where the newly added table is not visible under the Tables node on refresh.
   | `Issue #7261 <https://redmine.postgresql.org/issues/7261>`_ -  Correct typo in the documentation.
