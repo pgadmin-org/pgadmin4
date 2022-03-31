@@ -1688,9 +1688,11 @@ def get_new_connection_user(sgid, sid=None):
                 status, users = conn.execute_2darray(
                     render_template(sql_path + _NODES_SQL)
                 )
+                _user = manager.user
                 user_list = [
-                    {'value': user['rolname'], 'label': user['rolname']} for
-                    user in users['rows'] if user['rolcanlogin']]
+                    {'value': user['rolname'], 'label': user['rolname'],
+                     'selected': True if user['rolname'] == _user else False}
+                    for user in users['rows'] if user['rolcanlogin']]
             else:
                 status = False
 
