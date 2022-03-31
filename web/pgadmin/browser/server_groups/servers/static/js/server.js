@@ -266,7 +266,9 @@ define('pgadmin.node.server', [
                     }
                     t.addIcon(i, {icon: d.icon});
                     obj.callbacks.refresh.apply(obj, [null, i]);
-                    t.close(i);
+                    setTimeout(() => {
+                      t.toggle(i);
+                    }, 10);
                     if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
                       delete pgBrowser.serverInfo[d._id];
                     }

@@ -105,6 +105,7 @@ _.extend(pgBrowser.browserTreeState, {
     })
       .done(function() {
         self.last_state = JSON.stringify(self.current_state);
+        self.fetch_state();
       })
       .fail(function(jqx) {
         var msg = jqx.responseText;
@@ -260,7 +261,7 @@ _.extend(pgBrowser.browserTreeState, {
   },
   expand_from_previous_state: function(item) {
     let self = this,
-      treeData = this.current_state || {},
+      treeData = this.stored_state || {},
       data = item && pgBrowser.tree.itemData(item),
       treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
