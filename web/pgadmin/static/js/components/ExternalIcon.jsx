@@ -11,8 +11,8 @@ import DisconnectedSvg from '../../img/fonticon/disconnected.svg?svgr';
 import RegexSvg from '../../img/fonticon/regex.svg?svgr';
 import FormatCaseSvg from '../../img/fonticon/format_case.svg?svgr';
 import PropTypes from 'prop-types';
-import Expand from '../../img/fonticon/expand.svg?svgr';
-import Collapse from '../../img/fonticon/minimize_collapse.svg?svgr';
+import Expand from '../../img/fonticon/open_in_full.svg?svgr';
+import Collapse from '../../img/fonticon/close_fullscreen.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -33,6 +33,6 @@ export const ConnectedIcon = ()=><ExternalIcon Icon={ConnectedSvg} style={{heigh
 export const DisonnectedIcon = ()=><ExternalIcon Icon={DisconnectedSvg} style={{height: '0.7em'}} />;
 export const RegexIcon = ()=><ExternalIcon Icon={RegexSvg} />;
 export const FormatCaseIcon = ()=><ExternalIcon Icon={FormatCaseSvg} />;
-export const ExpandDialogIcon = ()=><ExternalIcon Icon={Expand} style={{height: 'auto', width: '1em'}}  />;
-export const MinimizeDialogIcon = ()=><ExternalIcon Icon={Collapse} style={{height: 'auto'}} />;
+export const ExpandDialogIcon = ()=><ExternalIcon Icon={Expand} style={{height: '1.2em'}}  />;
+export const MinimizeDialogIcon = ()=><ExternalIcon Icon={Collapse} style={{height: '1.4em'}} />;
 

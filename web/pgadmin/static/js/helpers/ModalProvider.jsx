@@ -226,6 +226,10 @@ const useModalStyles = makeStyles(() => ({
     transition: 'none',
     flexShrink: 0,
     userSelect: 'none',
+  },
+  iconButtonStyle: {
+    marginLeft: 'auto',
+    marginRight: '0.3em'
   }
 }));
 
@@ -251,11 +255,11 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, fullScr
             <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
             {
               showFullScreen && !isfullScreen &&
-              <Box marginLeft="auto"><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+              <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
             }
             {
               showFullScreen && isfullScreen &&
-              <Box marginLeft="auto"><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+              <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
             }
 
             <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
