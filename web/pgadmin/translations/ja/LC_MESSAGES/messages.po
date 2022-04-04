@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-01 17:20+0530\n"
-"PO-Revision-Date: 2022-02-05 03:37+0900\n"
+"PO-Revision-Date: 2022-04-04 02:14+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -192,7 +192,7 @@ msgstr "LDAP の構成エラー: バインドパスワードを設定してく�
 
 #: pgadmin/authenticate/ldap.py:138
 msgid "Error binding to the LDAP server: {}\n"
-msgstr ""
+msgstr "LDAP サーバへのバインド中にエラーが発生しました: {}\n"
 
 #: pgadmin/authenticate/ldap.py:142
 msgid "Error starting TLS: {}\n"
@@ -337,7 +337,7 @@ msgstr "メモ"
 msgid ""
 "This email address will only be used for two factor authentication "
 "purposes. The email address for the user account will not be changed."
-msgstr ""
+msgstr "このメールアドレスは 2 段階認証目的のみに使用されます。ユーザアカウントのメールアドレスが変更されることはありません。"
 
 #: pgadmin/authenticate/mfa/email.py:268
 msgid "Enter code here"
@@ -361,7 +361,7 @@ msgstr "ユーザ対応の認証方式が指定されていません"
 
 #: pgadmin/authenticate/mfa/views.py:169
 msgid "'{}' is already registerd'"
-msgstr "'{}' は既に登録されています'"
+msgstr "'{}' はすでに登録されています'"
 
 #: pgadmin/authenticate/mfa/views.py:175
 msgid "'{}' unregistered from the authentication list."
@@ -4907,7 +4907,7 @@ msgstr "パーティション"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/coll_table_stats.sql:22
 msgid "Total Size"
-msgstr ""
+msgstr "合計サイズ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:43
@@ -6453,7 +6453,7 @@ msgstr "データベース..."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:95
 msgid "Connect Database"
-msgstr ""
+msgstr "データベースに接続"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:97
 msgid "Selected database is already connected."
@@ -6462,7 +6462,7 @@ msgstr "選択したデータベースへはすでに接続されています。
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:102
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:232
 msgid "Disconnect from database"
-msgstr ""
+msgstr "データベースから切断"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:104
 msgid "Selected database is already disconnected."
@@ -6487,7 +6487,7 @@ msgstr "データベースに再接続しますか？"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:233
 #, python-format
 msgid "Are you sure you want to disconnect from database - %s?"
-msgstr ""
+msgstr "データベース %s から切断しますか？"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:402
 msgid "Connect  to database."
@@ -8502,7 +8502,7 @@ msgstr "バイナリパス"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:64
 msgid "Select folder"
-msgstr ""
+msgstr "フォルダを選択"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:65
 #: pgadmin/static/js/backform.pgadmin.js:1172
@@ -8593,16 +8593,16 @@ msgstr "サーバに接続"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:105
 msgid "Database server is already connected."
-msgstr ""
+msgstr "データベースサーバにはすでに接続されています。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:110
 #: pgadmin/browser/server_groups/servers/static/js/server.js:304
 msgid "Disconnect from server"
-msgstr ""
+msgstr "サーバから切断"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:112
 msgid "Database server is already disconnected."
-msgstr ""
+msgstr "データベースサーバからはすでに切断されています。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:118
 msgid "Reload Configuration"
@@ -8665,7 +8665,7 @@ msgstr "選択したサーバには SSH トンネルパスワードが保存さ�
 #: pgadmin/browser/server_groups/servers/static/js/server.js:305
 #, python-format
 msgid "Are you sure you want to disconnect from the server %s?"
-msgstr ""
+msgstr "サーバ %s から切断しますか？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:355
 msgid "Reload server configuration"
@@ -9087,7 +9087,7 @@ msgstr "依存"
 
 #: pgadmin/browser/static/js/browser.js:378
 msgid "Register"
-msgstr ""
+msgstr "登録"
 
 #: pgadmin/browser/static/js/browser.js:429
 #: pgadmin/browser/static/js/toolbar.js:50
@@ -9195,7 +9195,7 @@ msgstr "このオブジェクトには利用できるメニューがありませ
 
 #: pgadmin/browser/static/js/node.js:156
 msgid "Refresh..."
-msgstr ""
+msgstr "再読み込み..."
 
 #: pgadmin/browser/static/js/node.js:168
 msgid "Properties..."
@@ -9249,7 +9249,7 @@ msgstr "作成 - %s"
 #: pgadmin/browser/static/js/node.js:899
 #, python-format
 msgid "Register - %s"
-msgstr ""
+msgstr "登録 - %s"
 
 #: pgadmin/browser/static/js/node.js:916
 #, python-format
@@ -9867,7 +9867,7 @@ msgstr "PID"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:428
 msgid "Transaction start"
-msgstr ""
+msgstr "トランザクション開始"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:437
 msgid "State"
@@ -9875,7 +9875,7 @@ msgstr "状態"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:447
 msgid "Waiting"
-msgstr ""
+msgstr "待機中"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:455
 msgid "Wait event"
@@ -10191,7 +10191,7 @@ msgstr "テーマ"
 msgid ""
 "A refresh is required to apply the theme. Above is the preview of the "
 "theme"
-msgstr ""
+msgstr "テーマを適用するには、再読み込みが必要です。上はテーマのプレビューです"
 
 #: pgadmin/misc/__init__.py:226
 msgid "Invalid binary path."
@@ -10301,108 +10301,112 @@ msgstr "この URL は直接呼び出せません。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:91
 msgid "Error while getting the host ip: ${error.response.data.errormsg}"
-msgstr ""
+msgstr "ホスト IP の取得中にエラーが発生しました: ${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:233
 msgid "Error while saving cloud wizard data: ${error.response.data.errormsg}"
-msgstr ""
+msgstr "クラウドウィザードのデータ保存中にエラーが発生しました: ${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:355
 msgid "Deploy Cloud Instance"
-msgstr ""
+msgstr "クラウドインスタンスを展開"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:364
 msgid "Deploy on Amazon RDS cloud."
-msgstr ""
+msgstr "Amazon RDS クラウド上に展開します。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:369
 msgid "Amazon RDS"
-msgstr ""
+msgstr "Amazon RDS"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:378
 msgid "More cloud providers are coming soon..."
-msgstr ""
+msgstr "他のクラウドプロバイダも随時追加される予定です..."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:428
 msgid "Please review the details before creating the cloud instance."
-msgstr ""
+msgstr "クラウドインスタンスを作成する前に、詳細を今一度確認してください。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:438
 msgid "Version and Instance Details"
-msgstr ""
+msgstr "バージョンとインスタンスの詳細"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:448
 msgid "Storage Details"
-msgstr ""
+msgstr "ストレージの詳細"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:458
 msgid "Database Details"
-msgstr ""
+msgstr "データベースの詳細"
 
 #: pgadmin/misc/cloud/static/js/cloud.js:58
 #: pgadmin/misc/cloud/static/js/cloud.js:70
 msgid "Deploy Cloud Instance..."
-msgstr ""
+msgstr "クラウドインスタンスを展開..."
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:45
 msgid "Instance name"
-msgstr ""
+msgstr "インスタンス名"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:48
 msgid "Public IP range"
-msgstr ""
+msgstr "パブリック IP の範囲"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:50
 msgid ""
 "IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, "
 "add multiple ip addresses/ranges by comma separated."
 msgstr ""
+"インバウンドトラフィックを許容する IP アドレスの範囲です - 例: 127.0.0.1/32。複数の IP "
+"アドレス/範囲を追加するには、コンマで区切って並べてください。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:52
 msgid "Version & Instance"
-msgstr ""
+msgstr "バージョン & インスタンス"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:92
 msgid "Region"
-msgstr ""
+msgstr "地域"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:97
 msgid "The cloud instance will be deployed in the selected region."
-msgstr ""
+msgstr "選択した地域にクラウドインスタンスが展開されます。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:99
 msgid "AWS access key"
-msgstr ""
+msgstr "AWS アクセスキー"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:102
 msgid "AWS secret access key"
-msgstr ""
+msgstr "AWS シークレットアクセスキー"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:105
 msgid "AWS session token"
-msgstr ""
+msgstr "AWS セッショントークン"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:107
 msgid "Temporary AWS session required session token."
-msgstr ""
+msgstr "一時的な AWS セッションには、セッショントークンが必要です。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:140
 msgid "Password must be 8 characters or more."
-msgstr ""
+msgstr "パスワードは 8 文字以上にしてください。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:145
 msgid "Invalid passowrd."
-msgstr ""
+msgstr "無効なパスワードです。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:164
 msgid "Database name"
-msgstr ""
+msgstr "データベース名"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:172
 msgid ""
 "At least 8 printable ASCII characters. Can not contain any of the "
 "following: / (slash), '(single quote), \"(double quote) and @ (at sign)."
 msgstr ""
+"最低 8 文字の印字可能な ASCII 文字です。/ (スラッシュ), '(シングルクォート), \"(ダブルクォート), @ (アットマーク) "
+"の使用はできません。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:174
 #: pgadmin/tools/user_management/static/js/user_management.js:348
@@ -10411,51 +10415,51 @@ msgstr "パスワードの確認"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:200
 msgid "Database version"
-msgstr ""
+msgstr "データベースのバージョン"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:207
 msgid "Instance class"
-msgstr ""
+msgstr "インスタンスクラス"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:210
 msgid "Standard classes (includes m classes)"
-msgstr ""
+msgstr "標準クラス (m クラスを含む)"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:211
 msgid "Memory optimized classes (includes r & x classes)"
-msgstr ""
+msgstr "メモリ最適化クラス (r & x クラスを含む)"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:212
 msgid "Burstable classes (includes t classes)"
-msgstr ""
+msgstr "バーストクラス (t クラスを含む)"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:215
 msgid "Instance type"
-msgstr ""
+msgstr "インスタンスの種類"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:275
 msgid "General Purpose SSD (gp2)"
-msgstr ""
+msgstr "汎用 SSD (gp2)"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:276
 msgid "Provisioned IOPS SSD (io1)"
-msgstr ""
+msgstr "プロビジョンド IOPS SSD (io1)"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:277
 msgid "Magnetic"
-msgstr ""
+msgstr "磁気ボリューム"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:280
 msgid "Allocated storage"
-msgstr ""
+msgstr "割り当てるストレージ"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:292
 msgid "Size in GiB."
-msgstr ""
+msgstr "GiB 単位での容量です。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:294
 msgid "Provisioned IOPS"
-msgstr ""
+msgstr "プロビジョンド IOPS"
 
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:122
 msgid "No dependency information is available for the selected object."
@@ -10804,6 +10808,8 @@ msgid ""
 "version.  The default path will be used for server versions that do not "
 "have a  path specified."
 msgstr ""
+"対応するバージョンの psql, pg_dump, pg_dumpall, pg_restore "
+"ユーティリティが置かれているディレクトリを入力してください。既定のパスとして指定されたものは、パスが未指定のサーババージョンに対しても使われるようになります。"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:280
 #: pgadmin/utils/constants.py:25
@@ -10812,7 +10818,7 @@ msgstr "結果グリッド"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:351
 msgid "This settings is to Show/Hide nodes in the browser tree."
-msgstr ""
+msgstr "この設定を変更すると、ブラウザツリーのノードを表示/非表示にできます。"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:572
 msgid "Browser tree refresh required"
@@ -11041,7 +11047,7 @@ msgstr "ブラウザツリーからサーバか子ノードを選択してくだ
 
 #: pgadmin/static/js/components/CodeMirror.jsx:250
 msgid "Previous"
-msgstr ""
+msgstr "戻る"
 
 #: pgadmin/static/js/components/CodeMirror.jsx:253
 #: pgadmin/tools/datagrid/templates/datagrid/index.html:109
@@ -11068,7 +11074,7 @@ msgstr "色を選択"
 
 #: pgadmin/static/js/components/PgTable.jsx:462
 msgid "No record found"
-msgstr ""
+msgstr "レコードが見つかりませんでした"
 
 #: pgadmin/static/js/components/QueryThresholds.jsx:81
 msgid "Alert"
@@ -11076,11 +11082,11 @@ msgstr "アラート"
 
 #: pgadmin/static/js/components/QueryThresholds.jsx:87
 msgid "(in minuts)"
-msgstr ""
+msgstr "(分)"
 
 #: pgadmin/static/js/helpers/ModalProvider.jsx:268
 msgid "Minimize"
-msgstr ""
+msgstr "最小化"
 
 #: pgadmin/static/js/helpers/Notifier.jsx:176
 msgid "Unknown error"
@@ -12604,7 +12610,7 @@ msgstr "テーブル: %s (%s)"
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:368
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:377
 msgid "Table name already exists"
-msgstr ""
+msgstr "テーブル名がすでに存在します"
 
 #: pgadmin/tools/erd/static/js/erd_tool/ui_components/BodyWidget.jsx:400
 msgid "Cannot drop table from outside of the current database."
@@ -15068,5 +15074,5 @@ msgstr ""
 #~ msgstr "カテゴリが選択されていません。"
 
 #~ msgid "flex"
-#~ msgstr ""
+#~ msgstr "flex"
 
