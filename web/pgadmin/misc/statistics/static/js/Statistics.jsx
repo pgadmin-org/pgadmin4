@@ -190,14 +190,27 @@ export default function Statistics({ nodeData, item, node, ...props }) {
             }
             setLoaderText('');
           })
-          .catch((e) => {
-            Notify.alert(
-              gettext('Failed to retrieve data from the server.'),
-              gettext(e.message)
-            );
+          .catch((err) => {
             // show failed message.
             setLoaderText('');
-            setMsg(gettext('Failed to retrieve data from the server.'));
+
+            if (err?.response?.data?.info == 'CRYPTKEY_MISSING') {
+              Notify.pgNotifier('error', err.request, 'The master password is not set', function(msg) {
+                setTimeout(function() {
+                  if (msg == 'CRYPTKEY_SET') {
+                    setMsg('No statistics are available for the selected object.');
+                  } else if (msg == 'CRYPTKEY_NOT_SET') {
+                    setMsg(gettext('The master password is not set.'));
+                  }
+                }, 100);
+              });
+            } else {
+              Notify.alert(
+                gettext('Failed to retrieve data from the server.'),
+                gettext(err.message)
+              );
+              setMsg(gettext('Failed to retrieve data from the server.'));
+            }
           });
       } else {
         setLoaderText('');

@@ -634,6 +634,7 @@ define('pgadmin.browser', [
               } else if(event.index == 2) {
                 /* Cancel button */
                 self.masterpass_callback_queue = [];
+                self.cancel_callback();
               } else if(event.index == 1) {
                 /* Reset Button */
                 event.cancel = true;
@@ -698,7 +699,9 @@ define('pgadmin.browser', [
       });
     },
 
-    set_master_password: function(password='', button_click=false, set_callback=()=>{/*This is intentional (SonarQube)*/}) {
+    set_master_password: function(password='', button_click=false,
+      set_callback=()=>{/*This is intentional (SonarQube)*/},
+      cancel_callback=()=>{/*This is intentional (SonarQube)*/}) {
       let data=null, self = this;
 
       data = JSON.stringify({
@@ -707,6 +710,7 @@ define('pgadmin.browser', [
       });
 
       self.masterpass_callback_queue.push(set_callback);
+      self.cancel_callback = cancel_callback;
 
       $.ajax({
         url: url_for('browser.set_master_password'),

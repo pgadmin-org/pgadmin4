@@ -530,17 +530,11 @@ function SchemaDialogView({
       });
       setFormReady(true);
       setLoaderText('');
-    }).catch((err)=>{
+    }).catch(()=>{
       if(unmounted) {
         return;
       }
       setLoaderText('');
-      if (err.response && err.response.data && err.response.data.errormsg) {
-        Notify.alert(
-          gettext(err.response.statusText),
-          gettext(err.response.data.errormsg)
-        );
-      }
     });
     /* Clear the focus timeout if unmounted */
     return ()=>{
@@ -819,14 +813,8 @@ function SchemaPropertiesView({
         setOrigData(data || {});
         setLoaderText('');
       }
-    }).catch((err)=>{
+    }).catch(()=>{
       setLoaderText('');
-      if (err.response && err.response.data && err.response.data.errormsg) {
-        Notify.alert(
-          gettext(err.response.statusText),
-          gettext(err.response.data.errormsg)
-        );
-      }
     });
   }, [getInitData]);
 

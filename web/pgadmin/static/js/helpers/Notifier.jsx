@@ -196,9 +196,13 @@ var Notifier = {
 
             if(resp.info == 'CRYPTKEY_MISSING') {
               var pgBrowser = window.pgAdmin.Browser;
-              pgBrowser.set_master_password('', ()=> {
+              pgBrowser.set_master_password('', false, ()=> {
                 if(onJSONResult && typeof(onJSONResult) == 'function') {
                   onJSONResult('CRYPTKEY_SET');
+                }
+              }, ()=> {
+                if(onJSONResult && typeof(onJSONResult) == 'function') {
+                  onJSONResult('CRYPTKEY_NOT_SET');
                 }
               });
               return;

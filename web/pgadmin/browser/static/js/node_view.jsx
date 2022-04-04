@@ -61,7 +61,25 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
           } else if(err.message){
             console.error('error msg', err.message);
           }
-          reject(err);
+
+          if (err?.response?.data?.info == 'CRYPTKEY_MISSING') {
+            Notify.pgNotifier('error', err.request, 'The master password is not set', function(msg) {
+              setTimeout(function() {
+                if (msg == 'CRYPTKEY_SET') {
+                  resolve(initData());
+                } else if (msg == 'CRYPTKEY_NOT_SET') {
+                  reject(err);
+                }
+              }, 100);
+            });
+          } else if (err?.response?.data?.errormsg) {
+            Notify.alert(
+              gettext(err.response.statusText),
+              gettext(err.response.data.errormsg)
+            );
+
+            reject(err);
+          }
         });
     }
   });
