@@ -315,6 +315,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
       <WizardStep stepId={0}>
         <Box className={classes.panelContent}>
           <PgTable
+            caveTable={false}
             className={classes.table}
             height={window.innerHeight - 450}
             columns={columns}

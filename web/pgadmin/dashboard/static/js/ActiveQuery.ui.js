@@ -30,7 +30,6 @@ export default class ActiveQuery extends BaseUISchema {
         readonly: true,
         mode: ['properties'],
         group: gettext('Details'),
-        disabled: true
       },
       {
         id: 'query_start',
@@ -39,8 +38,6 @@ export default class ActiveQuery extends BaseUISchema {
         editable: false,
         readonly: true,
         group: gettext('Details'),
-        disabled: true
-
       },
       {
         id: 'state_change',
@@ -49,7 +46,6 @@ export default class ActiveQuery extends BaseUISchema {
         editable: false,
         readonly: true,
         group: gettext('Details'),
-        disabled: true
       },
       {
         id: 'query',

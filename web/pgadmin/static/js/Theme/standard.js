@@ -103,7 +103,7 @@ export default function(basicSettings) {
       toggleBtnBg: '#000',
       editorToolbarBg: '#ebeef3',
       datagridBg: '#fff',
-
+      emptySpaceBg: '#ebeef3',
     }
   });
 }

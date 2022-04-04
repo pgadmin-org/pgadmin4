@@ -92,6 +92,7 @@ export default function(basicSettings) {
       stepFg: '#000',
       toggleBtnBg: '#6B6B6B',
       colorFg: '#FFFFFF',
+      emptySpaceBg: '#010B15',
     }
   });
 }

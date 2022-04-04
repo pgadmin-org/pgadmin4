@@ -24,9 +24,9 @@ import PropTypes from 'prop-types';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Checkbox, Box } from '@material-ui/core';
 import { InputText } from './FormComponents';
-import FormView from 'sources/SchemaView';
 import _ from 'lodash';
 import gettext from 'sources/gettext';
+import SchemaView from '../SchemaView';
 
 /* eslint-disable react/display-name */
 const useStyles = makeStyles((theme) => ({
@@ -37,8 +37,11 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.panelBorder,
     backgroundColor: theme.palette.background.default,
   },
+  autoResizerContainer: {
+    flexGrow: 1,
+    minHeight: 0
+  },
   autoResizer: {
-    height: '100% !important',
     width: '100% !important',
   },
   fixedSizeList: {
@@ -51,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '4px'
   },
   searchBox: {
-    marginBottom: '5px',
     display: 'flex',
     background: theme.palette.background.default
   },
@@ -60,10 +62,6 @@ const useStyles = makeStyles((theme) => ({
   },
   alert: {
     backgroundColor: theme.palette.error.main + '!important'
-  },
-
-  tableContentWidth: {
-    width: 'calc(100% - 3px)',
   },
   searchPadding: {
     flex: 2.5
@@ -77,14 +75,22 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 8,
 
   },
-  table: {
+  tableContainer: {
+    overflowX: 'auto',
     flexGrow: 1,
     minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: theme.otherVars.emptySpaceBg,
+  },
+  table: {
     borderSpacing: 0,
-    width: '100%',
     overflow: 'hidden',
     borderRadius: theme.shape.borderRadius,
-    border: '1px solid'+ theme.palette.grey[400]
+    border: '1px solid '+theme.otherVars.borderColor,
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
   },
   pgTableHeadar: {
     display: 'flex',
@@ -94,11 +100,16 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column'
   },
 
+  tableRowContent:{
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 0,
+  },
+
   expandedForm: {
-    ...theme.mixins.panelBorder,
+    ...theme.mixins.panelBorder.all,
     margin: '8px',
-    paddingBottom: '12px',
-    marginRight: '15px',
+    flexGrow: 1,
   },
 
   tableCell: {
@@ -155,6 +166,9 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     padding: '7.5px',
   },
+  caveTable: {
+    margin: '8px',
+  },
   panelIcon: {
     width: '80%',
     margin: '0 auto',
@@ -177,30 +191,63 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PgTable({ columns, data, isSelectRow, offset=105, ...props }) {
+const IndeterminateCheckbox = React.forwardRef(
+  ({ indeterminate, ...rest }, ref) => {
+    const defaultRef = React.useRef();
+    const resolvedRef = ref || defaultRef;
+
+    React.useEffect(() => {
+      resolvedRef.current.indeterminate = indeterminate;
+    }, [resolvedRef, indeterminate]);
+    return (
+      <>
+        <Checkbox
+          color="primary"
+          ref={resolvedRef} {...rest}
+        />
+      </>
+    );
+  },
+);
+
+IndeterminateCheckbox.displayName = 'SelectCheckbox';
+
+IndeterminateCheckbox.propTypes = {
+  indeterminate: PropTypes.bool,
+  rest: PropTypes.func,
+  getToggleAllRowsSelectedProps: PropTypes.func,
+  row: PropTypes.object,
+};
+
+const ROW_HEIGHT = 35;
+export default function PgTable({ columns, data, isSelectRow, caveTable=true, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
   const [searchVal, setSearchVal] = React.useState('');
   const tableRef = React.useRef();
   const rowHeights = React.useRef({});
-  const rowRef = React.useRef({});
 
   // Reset Search vakue in tab changed.
   React.useEffect(()=>{
     setSearchVal('');
-  },[columns]);
-  function getRowHeight(index, size) {
-    return rowHeights.current[index] + size || 35;
+    rowHeights.current = {};
+    tableRef.current?.resetAfterIndex(0);
+  }, [columns]);
+
+  function getRowHeight(index) {
+    return rowHeights.current[index] || ROW_HEIGHT;
   }
 
-  const setRowHeight = React.useCallback((index, size) => {
+  const setRowHeight = (index, size) => {
     if(tableRef.current) {
-      tableRef.current.resetAfterIndex(index);
-      if (!(rowHeights.current.hasOwnProperty(index))){
-        rowHeights.current = { ...rowHeights.current, [index]: size };
+      if(size == ROW_HEIGHT) {
+        delete rowHeights.current[index];
+      } else {
+        rowHeights.current[index] = size;
       }
+      tableRef.current.resetAfterIndex(index);
     }
-  }, []);
+  };
 
   const defaultColumn = React.useMemo(
     () => ({
@@ -209,34 +256,6 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
     []
   );
 
-  const IndeterminateCheckbox = React.forwardRef(
-    ({ indeterminate, ...rest }, ref) => {
-      const defaultRef = React.useRef();
-      const resolvedRef = ref || defaultRef;
-
-      React.useEffect(() => {
-        resolvedRef.current.indeterminate = indeterminate;
-      }, [resolvedRef, indeterminate]);
-      return (
-        <>
-          <Checkbox
-            color="primary"
-            ref={resolvedRef} {...rest}
-          />
-        </>
-      );
-    },
-  );
-
-  IndeterminateCheckbox.displayName = 'SelectCheckbox';
-
-  IndeterminateCheckbox.propTypes = {
-    indeterminate: PropTypes.bool,
-    rest: PropTypes.func,
-    getToggleAllRowsSelectedProps: PropTypes.func,
-    row: PropTypes.object,
-  };
-
   const {
     getTableProps,
     getTableBodyProps,
@@ -244,7 +263,7 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
     rows,
     prepareRow,
     selectedFlatRows,
-    state: { selectedRowIds, expanded },
+    state: { selectedRowIds },
     setGlobalFilter,
     setHiddenColumns,
   } = useTable(
@@ -327,11 +346,6 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
     }
   );
 
-  React.useEffect(()=>{
-    tableRef.current?.resetAfterIndex(0);
-  },[expanded]);
-
-
   React.useEffect(() => {
     setHiddenColumns(
       columns
@@ -365,45 +379,72 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
   const RenderRow = React.useCallback(
     ({ index, style }) => {
       const row = rows[index];
+      const [expandComplete, setExpandComplete] = React.useState(null);
+      const rowRef = React.useRef() ;
       prepareRow(row);
+
+      React.useEffect(()=>{
+        if(expandComplete && !row.isExpanded) {
+          setExpandComplete(false);
+        }
+      }, [row.isExpanded]);
+
+      React.useEffect(()=>{
+        if(rowRef.current) {
+          if(expandComplete == null) {
+            return;
+          }
+          let rowHeight;
+          rowRef.current.style.height='unset';
+          if(expandComplete) {
+            rowHeight = rowRef.current.offsetHeight;
+          } else {
+            rowHeight = ROW_HEIGHT;
+            rowRef.current.style.height = ROW_HEIGHT;
+          }
+          rowRef.current.style.height = rowHeight + 'px';
+          setRowHeight(index, rowHeight);
+        }
+      }, [expandComplete]);
+
       return (
-        <div className={classes.tableContentWidth} style={style} key={row.id}>
-          <div {...row.getRowProps()} className={classes.tr}>
-            {row.cells.map((cell) => {
-              let classNames = [classes.tableCell];
-              if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
-                classNames.push(classes.btnCell);
-              }
-              if(cell.column.id == 'btn-edit' && row.isExpanded) {
-                classNames.push(classes.expandedIconCell);
-              }
-              if (row.original.row_type === 'warning'){
-                classNames.push(classes.warning);
-              }
-              if (row.original.row_type === 'alert'){
-                classNames.push(classes.alert);
-              }
-              return (
-                <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, row.original.icon && row.original.icon[cell.column.id], row.original.icon[cell.column.id] && classes.cellIcon)}
-                  title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
-                  {cell.render('Cell')}
-                </div>
-              );
-            })}
+        <div style={style} key={row.id} ref={rowRef}>
+          <div className={classes.tableRowContent}>
+            <div {...row.getRowProps()} className={classes.tr}>
+              {row.cells.map((cell) => {
+                let classNames = [classes.tableCell];
+                if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
+                  classNames.push(classes.btnCell);
+                }
+                if(cell.column.id == 'btn-edit' && row.isExpanded) {
+                  classNames.push(classes.expandedIconCell);
+                }
+                if (row.original.row_type === 'warning'){
+                  classNames.push(classes.warning);
+                }
+                if (row.original.row_type === 'alert'){
+                  classNames.push(classes.alert);
+                }
+                return (
+                  <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, row.original.icon && row.original.icon[cell.column.id], row.original.icon[cell.column.id] && classes.cellIcon)}
+                    title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
+                    {cell.render('Cell')}
+                  </div>
+                );
+              })}
+            </div>
+            {!_.isUndefined(row) && row.isExpanded && (
+              <Box key={row.id} className={classes.expandedForm}>
+                <SchemaView
+                  getInitData={()=>Promise.resolve({})}
+                  viewHelperProps={{ mode: 'properties' }}
+                  schema={props.schema[row.id]}
+                  showFooter={false}
+                  onDataChange={()=>{setExpandComplete(true);}}
+                />
+              </Box>
+            )}
           </div>
-          {!_.isUndefined(row) && row.isExpanded && (
-            <Box key={row.id} className={classes.expandedForm} ref={rowRef} style={{height: rowHeights.current[index]}}>
-              <FormView
-                getInitData={() => {
-                  /*This is intentional (SonarQube)*/
-                }}
-                viewHelperProps={{ mode: 'properties' }}
-                schema={props.schema[row.id]}
-                showFooter={false}
-                onDataChange={() => { }}
-              />
-            </Box>
-          )}
         </div>
       );
     },
@@ -424,80 +465,70 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
           }}
         />
       </Box>
-      <AutoSizer
-        className={props.type === 'panel' ? props.className : classes.autoResizer}
-      >
-        {({ height }) => (
-          <div {...getTableProps()} className={classes.table}>
-            <div>
-              {headerGroups.map((headerGroup) => (
-                <div key={''} {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <div
-                      key={column.id}
-                      {...column.getHeaderProps()}
-                      className={clsx(classes.tableCellHeader, column.className)}
-                    >
-                      <div
-                        {...(column.sortble ? column.getSortByToggleProps() : {})}
-                      >
-                        {column.render('Header')}
-                        <span>
-                          {column.isSorted
-                            ? column.isSortedDesc
-                              ? ' 🔽'
-                              : ' 🔼'
-                            : ''}
-                        </span>
-                        {column.resizable && (
-                          <div
-                            {...column.getResizerProps()}
-                            className={classes.resizer}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {
-              data.length > 0 ? (
-                <div {...getTableBodyProps()} >
-                  <VariableSizeList
-                    ref={tableRef}
-                    className={props.type === 'dashboard' ? props.fixedSizeList : classes.fixedSizeList}
-                    height={height - offset}
-                    itemCount={rows.length}
-                    itemSize={(i) => {
-                      if (_.isUndefined(rows[i].isExpanded)) {
-                        rows[i].isExpanded = false;
-                      }
-                      if (rowRef.current && rows[i].isExpanded) {
-                        setRowHeight(i, rowRef.current.offsetHeight + 35);
-                      }
-                      return rows[i].isExpanded ? getRowHeight(i, 35) : 35;
-                    }}
-                    sorted={props?.sortOptions}
+      <div className={classes.tableContainer}>
+        <div {...getTableProps()} className={clsx(classes.table, caveTable ? classes.caveTable : '')}>
+          <div>
+            {headerGroups.map((headerGroup) => (
+              <div key={''} {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <div
+                    key={column.id}
+                    {...column.getHeaderProps()}
+                    className={clsx(classes.tableCellHeader, column.className)}
                   >
-                    {RenderRow}
-
-                  </VariableSizeList>
-                </div>
-              ) : (
-
-                <div className={classes.emptyPanel}>
-                  <div className={classes.panelIcon}>
-                    <i className="fa fa-exclamation-circle"></i>
-                    <span className={classes.panelMessage}>{gettext('No record found')}</span>
+                    <div
+                      {...(column.sortble ? column.getSortByToggleProps() : {})}
+                    >
+                      {column.render('Header')}
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? ' 🔽'
+                            : ' 🔼'
+                          : ''}
+                      </span>
+                      {column.resizable && (
+                        <div
+                          {...column.getResizerProps()}
+                          className={classes.resizer}
+                        />
+                      )}
+                    </div>
                   </div>
-
-                </div>
-              )}
+                ))}
+              </div>
+            ))}
           </div>
-        )}
-      </AutoSizer>
+          {
+            data.length > 0 ? (
+              <div {...getTableBodyProps()} className={classes.autoResizerContainer}>
+                <AutoSizer
+                  className={classes.autoResizer}
+                >
+                  {({ height }) => (
+                    <VariableSizeList
+                      ref={tableRef}
+                      className={classes.fixedSizeList}
+                      height={height}
+                      itemCount={rows.length}
+                      itemSize={getRowHeight}
+                      sorted={props?.sortOptions}
+                    >
+                      {RenderRow}
+                    </VariableSizeList>)}
+                </AutoSizer>
+              </div>
+            ) : (
+              <div className={classes.emptyPanel}>
+                <div className={classes.panelIcon}>
+                  <i className="fa fa-exclamation-circle"></i>
+                  <span className={classes.panelMessage}>{gettext('No record found')}</span>
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </div>
     </Box>
   );
 }
@@ -505,9 +536,9 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
 PgTable.propTypes = {
   stepId: PropTypes.number,
   height: PropTypes.number,
-  offset: PropTypes.number,
   customHeader: PropTypes.func,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  caveTable: PropTypes.bool,
   fixedSizeList: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),

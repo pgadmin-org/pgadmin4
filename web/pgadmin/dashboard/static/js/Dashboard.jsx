@@ -85,11 +85,11 @@ const useStyles = makeStyles((theme) => ({
   },
   panelContent: {
     ...theme.mixins.panelBorder,
+    display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden !important',
-    flexGrow: 1,
-    minWidth: '300px',
-    minHeight: '300px'
+    height: '100%',
+    minHeight: '400px'
   },
   arrowButton: {
     fontSize: '2rem !important',
@@ -339,6 +339,7 @@ export default function Dashboard({
         let canEditRow = true;
         return (
           <PgIconButton
+            size="xs"
             className={row.isExpanded ?classes.buttonClick : ''}
             icon={
               row.isExpanded ? (
@@ -809,31 +810,34 @@ export default function Dashboard({
               >
                 {gettext('Server activity')}{' '}
               </Box>
-              <Tabs
-                value={val}
-                onChange={tabChanged}
-                className={classes.searchInput}
-              >
-                {tab.map((tabValue, i) => {
-                  return <Tab key={i} label={tabValue} />;
-                })}
+              <Box display="flex">
+                <Tabs
+                  value={val}
+                  onChange={tabChanged}
+                  className={classes.searchInput}
+                >
+                  {tab.map((tabValue, i) => {
+                    return <Tab key={i} label={tabValue} />;
+                  })}
+                </Tabs>
                 <RefreshButton/>
-              </Tabs>
-
-              <PgTable
-                columns={
-                  val === 0
-                    ? activityColumns
-                    : val === 1
-                      ? databaseLocksColumns
-                      : val == 2
-                        ? databasePreparedColumns
-                        : serverConfigColumns
-                }
-                data={dashData}
-                schema={schemaDict}
-                offset={145}
-              ></PgTable>
+              </Box>
+              <Box flexGrow={1}>
+                <PgTable
+                  caveTable={false}
+                  columns={
+                    val === 0
+                      ? activityColumns
+                      : val === 1
+                        ? databaseLocksColumns
+                        : val == 2
+                          ? databasePreparedColumns
+                          : serverConfigColumns
+                  }
+                  data={dashData}
+                  schema={schemaDict}
+                ></PgTable>
+              </Box>
             </Box>
           </Box>
         </Box>
