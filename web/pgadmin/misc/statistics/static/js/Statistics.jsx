@@ -219,6 +219,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
     }
     if (message != '') {
       setMsg(message);
+      setLoaderText('');
     }
     return () => {
       setTableData([]);

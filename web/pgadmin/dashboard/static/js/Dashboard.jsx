@@ -25,6 +25,7 @@ import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import _ from 'lodash';
+import CachedIcon from '@mui/icons-material/Cached';
 
 function parseData(data) {
   var res = [];
@@ -86,13 +87,25 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.panelBorder,
     flexDirection: 'column',
     overflow: 'hidden !important',
-    flexGrow: 1
+    flexGrow: 1,
+    minWidth: '300px',
+    minHeight: '300px'
+  },
+  arrowButton: {
+    fontSize: '2rem !important',
+    margin: '-7px'
   },
   terminateButton: {
     color: theme.palette.error.main
   },
   buttonClick: {
     backgroundColor: theme.palette.grey[400]
+  },
+  refreshButton: {
+    marginLeft: 'auto',
+    height:  '1.9rem',
+    width:  '2.2rem',
+    ...theme.mixins.panelBorder,
   }
 }));
 
@@ -114,6 +127,7 @@ export default function Dashboard({
   const [msg, setMsg] = useState('');
   const[infoMsg, setInfo] = useState('');
   const [val, setVal] = useState(0);
+  const [refresh, setRefresh] = useState();
   const [schemaDict, setSchemaDict] = React.useState({});
 
   if (!did) {
@@ -145,7 +159,7 @@ export default function Dashboard({
     },
     {
       accessor: 'setting',
-      Header: gettext('Setting'),
+      Header: gettext('Value'),
       sortble: true,
       resizable: true,
       disableGlobalFilter: false,
@@ -273,7 +287,7 @@ export default function Dashboard({
           <PgIconButton
             size="xs"
             noBorder
-            icon={<SquareIcon fontSize="small" />}
+            icon={<SquareIcon/>}
             onClick={() => {
               if (!canTakeAction(row, 'cancel'))
                 return;
@@ -328,12 +342,11 @@ export default function Dashboard({
             className={row.isExpanded ?classes.buttonClick : ''}
             icon={
               row.isExpanded ? (
-                <ArrowDropDownOutlinedIcon  />
+                <ArrowDropDownOutlinedIcon  className={classes.arrowButton}/>
               ) : (
-                <ArrowRightOutlinedIcon />
+                <ArrowRightOutlinedIcon className={classes.arrowButton}/>
               )
             }
-            size="xs"
             noBorder
             onClick={(e) => {
               e.preventDefault();
@@ -753,7 +766,28 @@ export default function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, val, did, preferences, infoMsg]);
+    return () => {
+      setRefresh();
+    };
+  }, [nodeData, val, did, preferences, infoMsg, refresh]);
+
+  const RefreshButton = () =>{
+    return(
+      <PgIconButton
+        size="xs"
+        noBorder
+        className={classes.refreshButton}
+        icon={<CachedIcon />}
+        onClick={(e) => {
+          e.preventDefault();
+          setRefresh(true);
+        }}
+        color="default"
+        aria-label="Refresh"
+        title={gettext('Refresh')}
+      ></PgIconButton>
+    );
+  };
 
   return (
     <>
@@ -783,6 +817,7 @@ export default function Dashboard({
                 {tab.map((tabValue, i) => {
                   return <Tab key={i} label={tabValue} />;
                 })}
+                <RefreshButton/>
               </Tabs>
 
               <PgTable

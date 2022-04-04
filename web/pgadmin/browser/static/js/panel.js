@@ -122,8 +122,6 @@ define(
                 that.resizedContainer.apply(myPanel);
               }
 
-
-
               if (myPanel._type == 'dashboard') {
                 getPanelView(
                   pgBrowser.tree,
@@ -150,7 +148,7 @@ define(
 
               pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
 
-                if(myPanel.isVisible()) {
+                if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
                     $container[0],
@@ -162,7 +160,7 @@ define(
 
               pgBrowser.Events.on('pgadmin-browser:tree:refreshing', () => {
 
-                if(myPanel.isVisible()) {
+                if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
                     $container[0],
@@ -177,7 +175,6 @@ define(
       },
       eventFunc: function(eventName) {
         var name = $(this).data('pgAdminName');
-
         try {
           pgBrowser.Events.trigger(
             'pgadmin-browser:panel', eventName, this, arguments
@@ -244,10 +241,11 @@ define(
           .scene()
           .find('.pg-panel-content');
 
-        if (isPanelVisible) {
+        if (isPanelVisible && selectedPanel._type !== 'properties') {
           if (eventName == 'panelClosed') {
             removePanelView($container[0]);
-          } else if (eventName == 'panelVisibilityChanged') {
+          }
+          else if (eventName == 'panelVisibilityChanged' && selectedPanel._type !== 'properties') {
             getPanelView(
               pgBrowser.tree,
               $container[0],

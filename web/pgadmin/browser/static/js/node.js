@@ -1261,16 +1261,11 @@ define('pgadmin.browser.node', [
           $(this).data('node-prop', treeHierarchy);
 
           /* Remove any dom rendered by getNodeView */
-          removeNodeView(pgBrowser.panels['properties'].panel.$container[0]);
-
-          var containerProperties =  pgBrowser.panels['properties'].panel.$container;
-          containerProperties.addClass('pg-panel-content pg-no-overflow pg-el-container');
-
-
+          removeNodeView(j[0]);
           if(that.getSchema) {
             let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
             getNodeView(
-              that.type, treeNodeInfo, 'properties', data, 'tab', containerProperties[0], this, onEdit
+              that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
             );
             return;
           }

@@ -141,13 +141,14 @@ export default function Dependents({ nodeData, item, node, ...props }) {
       }
     }
     if (message != '') {
+      setLoaderText('');
       setMsg(message);
     }
 
     return () => {
       setTableData([]);
     };
-  }, [nodeData]);
+  }, [nodeData, item]);
 
   return (
     <>
@@ -162,7 +163,6 @@ export default function Dependents({ nodeData, item, node, ...props }) {
       ) : (
         <div className={classes.emptyPanel}>
           {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
-
             <div className={classes.panelIcon}>
               <i className="fa fa-exclamation-circle"></i>
               <span className={classes.panelMessage}>{gettext(msg)}</span>

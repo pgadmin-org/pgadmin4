@@ -53,8 +53,6 @@ export function getPanelView(
       container
     );
   }
-
-
   if (panelType == 'statistics') {
     ReactDOM.render(
       <Theme>
@@ -69,7 +67,7 @@ export function getPanelView(
       container
     );
   }
-  if (panelType == 'properties') {
+  if (panelType == 'properties' && nodeData?.is_collection) {
     ReactDOM.render(
       <Theme>
         <CollectionNodeView

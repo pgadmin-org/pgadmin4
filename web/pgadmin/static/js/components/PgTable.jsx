@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'overlay !important',
   },
   customHeader:{
-    marginTop: '12px',
+    marginTop: '8px',
     marginLeft: '4px'
   },
   searchBox: {
@@ -55,6 +55,13 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     background: theme.palette.background.default
   },
+  warning: {
+    backgroundColor: theme.palette.warning.main + '!important'
+  },
+  alert: {
+    backgroundColor: theme.palette.error.main + '!important'
+  },
+
   tableContentWidth: {
     width: 'calc(100% - 3px)',
   },
@@ -105,10 +112,11 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     backgroundColor: theme.otherVars.tableBg,
+    userSelect: 'text'
   },
   selectCell: {
     textAlign: 'center',
-    minWidth: '25px'
+    minWidth: 20
   },
   tableCellHeader: {
     fontWeight: theme.typography.fontWeightBold,
@@ -177,6 +185,10 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
   const rowHeights = React.useRef({});
   const rowRef = React.useRef({});
 
+  // Reset Search vakue in tab changed.
+  React.useEffect(()=>{
+    setSearchVal('');
+  },[columns]);
   function getRowHeight(index, size) {
     return rowHeights.current[index] + size || 35;
   }
@@ -257,21 +269,49 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
               id: 'selection',
               // The header can use the table's getToggleAllRowsSelectedProps method
               // to render a checkbox
-              Header: ({ getToggleAllRowsSelectedProps }) => (
-                <div className={classes.selectCell}>
-                  <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-                </div>
-              ),
+              Header: ({ getToggleAllRowsSelectedProps, toggleRowSelected, isAllRowsSelected, rows }) => {
+
+                const modifiedOnChange = (event) => {
+                  rows.forEach((row) => {
+                    //check each row if it is not disabled
+                    !(!_.isUndefined(row.original.canDrop) && !(row.original.canDrop)) && toggleRowSelected(row.id, event.currentTarget.checked);
+
+                  });
+                };
+
+                let allTableRows = 0;
+                let selectedTableRows = 0;
+                rows.forEach((row) => {
+                  row.isSelected && selectedTableRows++;
+                  (_.isUndefined(row.original.canDrop) || row.original.canDrop) && allTableRows++;
+                });
+                const disabled = allTableRows === 0;
+                const checked =
+                    (isAllRowsSelected ||
+                      allTableRows === selectedTableRows) &&
+                    !disabled;
+                return(
+                  <div className={classes.selectCell}>
+                    <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()
+                    }
+                    onChange={modifiedOnChange}
+                    checked={checked}
+                    />
+                  </div>
+                );},
               // The cell can use the individual row's getToggleRowSelectedProps method
               // to the render a checkbox
               Cell: ({ row }) => (
                 <div className={classes.selectCell}>
-                  <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+                  <IndeterminateCheckbox {...row.getToggleRowSelectedProps()}
+                    disabled={!_.isUndefined(row.original.canDrop) ? !(row.original.canDrop) : false}
+                  />
                 </div>
               ),
               sortble: false,
               width: 30,
-              minWidth: 0,
+              maxWidth: 30,
+              minWidth: 0
             },
             ...CLOUMNS,
           ];
@@ -337,8 +377,15 @@ export default function PgTable({ columns, data, isSelectRow, offset=105, ...pro
               if(cell.column.id == 'btn-edit' && row.isExpanded) {
                 classNames.push(classes.expandedIconCell);
               }
+              if (row.original.row_type === 'warning'){
+                classNames.push(classes.warning);
+              }
+              if (row.original.row_type === 'alert'){
+                classNames.push(classes.alert);
+              }
               return (
-                <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, row.original.icon && row.original.icon[cell.column.id], row.original.icon[cell.column.id] && classes.cellIcon)} title={String(cell.value)}>
+                <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, row.original.icon && row.original.icon[cell.column.id], row.original.icon[cell.column.id] && classes.cellIcon)}
+                  title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
                   {cell.render('Cell')}
                 </div>
               );
@@ -467,14 +514,17 @@ PgTable.propTypes = {
     PropTypes.node,
   ]),
   getToggleAllRowsSelectedProps: PropTypes.func,
+  toggleRowSelected: PropTypes.func,
   columns: PropTypes.array,
   data: PropTypes.array,
   isSelectRow: PropTypes.bool,
+  isAllRowsSelected: PropTypes.bool,
   row: PropTypes.func,
   setSelectedRows: PropTypes.func,
   getSelectedRows: PropTypes.func,
   searchText: PropTypes.string,
   type: PropTypes.string,
   sortOptions: PropTypes.array,
-  schema: PropTypes.object
+  schema: PropTypes.object,
+  rows: PropTypes.object
 };

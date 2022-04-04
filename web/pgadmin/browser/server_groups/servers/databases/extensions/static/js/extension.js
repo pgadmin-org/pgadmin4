@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import { getNodeAjaxOptions,getNodeListByName } from '../../../../../../static/js/node_ajax';
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
 import ExtensionsSchema from './extension.ui';
 
 define('pgadmin.node.extension', [
@@ -99,6 +99,7 @@ define('pgadmin.node.extension', [
         let nodeObj = pgAdmin.Browser.Nodes['extension'];
         return new ExtensionsSchema(
           {
+            role:()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             extensionsList:()=>getNodeAjaxOptions('avails', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'},
               (data)=>{
                 let res = [];

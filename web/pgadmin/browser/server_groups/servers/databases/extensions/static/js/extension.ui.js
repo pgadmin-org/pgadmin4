@@ -24,11 +24,13 @@ export default class ExtensionsSchema extends BaseUISchema {
     });
     fieldOptions = {
       extensionsList: [],
+      role:[],
       schemaList: [],
       ...fieldOptions,
     };
     this.extensionsList = fieldOptions.extensionsList;
     this.schemaList = fieldOptions.schemaList;
+    this.role = fieldOptions.role;
   }
 
   get idAttribute() {
@@ -88,6 +90,12 @@ export default class ExtensionsSchema extends BaseUISchema {
       {
         id: 'oid', label: gettext('OID'), type: 'text',
         mode: ['properties'],
+      },
+      {
+        id: 'owner', label: gettext('Owner'),
+        options: this.role,
+        type: 'select',
+        mode: ['properties'], controlProps: { allowClear: false},
       },
       {
         id: 'schema', label: gettext('Schema'), type: 'select',

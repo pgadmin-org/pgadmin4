@@ -29,7 +29,7 @@ function(
         label: gettext('Partitions'),
         type: 'coll-partition',
         columns: [
-          'name', 'schema', 'partition_value', 'is_partitioned', 'description',
+          'name', 'schema', 'partition_scheme',  'partition_value', 'is_partitioned', 'description',
         ],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,

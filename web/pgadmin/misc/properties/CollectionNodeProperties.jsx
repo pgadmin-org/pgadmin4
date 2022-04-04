@@ -19,6 +19,8 @@ import PgTable from 'sources/components/PgTable';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import { PgIconButton } from '../../static/js/components/Buttons';
+import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -56,6 +58,8 @@ const useStyles = makeStyles((theme) => ({
     width: '100% !important',
     background: theme.palette.grey[400],
     padding: '8px',
+    overflow: 'hidden !important',
+    overflowX: 'auto !important'
   },
   dropButton: {
     marginRight: '5px !important'
@@ -155,24 +159,13 @@ export function CollectionNodeView({
         .then(function (res) {
           if (res.success == 0) {
             pgBrowser.report_error(res.errormsg, res.info);
-          } else {
-            pgBrowser.Events.trigger(
-              'pgadmin:browser:tree:refresh',
-              selItem || pgBrowser.tree.selected(),
-              {
-                success: function () {
-                  pgBrowser.tree.select(selItem);
-                  selNode.callbacks.selected.apply(selNode, [selItem]);
-                },
-              }
-            );
           }
           setReload(true);
         })
         .catch(function (error) {
-          Notify.error(
+          Notify.alert(
             gettext('Error dropping %s', selectedItemData._label.toLowerCase()),
-            error.message
+            error.response.data.errormsg
           );
         });
     };
@@ -190,7 +183,6 @@ export function CollectionNodeView({
       let nodeObj =
       pgAdmin.Browser.Nodes[itemNodeData?._type.replace('coll-', '')];
 
-      let schema = nodeObj.getSchema.call(nodeObj, treeNodeInfo, itemNodeData);
       let url = generateCollectionURL.call(nodeObj, item, 'properties');
 
       const api = getApiInstance();
@@ -198,7 +190,8 @@ export function CollectionNodeView({
       let tableColumns = [];
       var column = {};
 
-      if (itemNodeData._type.indexOf('coll-') > -1) {
+      if (itemNodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
+        let schema = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, itemNodeData);
         schema.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {
@@ -208,6 +201,7 @@ export function CollectionNodeView({
                 sortble: true,
                 resizable: false,
                 disableGlobalFilter: false,
+                minWidth: 100,
                 // eslint-disable-next-line react/display-name
                 Cell: ({ value }) => {
                   return (<Switch color="primary" checked={value} className={classes.readOnlySwitch} value={value} readOnly title={String(value)} />);
@@ -220,30 +214,45 @@ export function CollectionNodeView({
                 sortble: true,
                 resizable: false,
                 disableGlobalFilter: false,
+                minWidth: 100,
               };
             }
             tableColumns.push(column);
           }
         });
-        api({
-          url: url,
-          type: 'GET',
-        })
-          .then((res) => {
-            res.data.forEach((element) => {
-              element['icon'] = '';
-            });
-            setPgTableColumns(tableColumns);
-            setData(res.data);
-            setInfoMsg('No properties are available for the selected object.');
-          })
-          .catch((err) => {
-            Notify.alert(
-              gettext('Failed to retrieve data from the server.'),
-              gettext(err.message)
-            );
-          });
+      }else{
+        node.columns.forEach((field) => {
+          column = {
+            Header: field,
+            accessor: field,
+            sortble: true,
+            resizable: false,
+            disableGlobalFilter: false,
+            minWidth: 100,
+          };
+          tableColumns.push(column);
+
+        });
       }
+
+      api({
+        url: url,
+        type: 'GET',
+      })
+        .then((res) => {
+          res.data.forEach((element) => {
+            element['icon'] = '';
+          });
+          setPgTableColumns(tableColumns);
+          setData(res.data);
+          setInfoMsg('No properties are available for the selected object.');
+        })
+        .catch((err) => {
+          Notify.alert(
+            gettext('Failed to retrieve data from the server.'),
+            gettext(err.message)
+          );
+        });
     }
   }, [itemNodeData, node, item, reload]);
 
@@ -252,8 +261,8 @@ export function CollectionNodeView({
       <Box >
         <PgIconButton
           className={classes.dropButton}
-          variant="outlined"
-          icon={<i className='fa fa-trash-alt delete_multiple' aria-hidden="true" role="img"></i>}
+
+          icon={<DeleteIcon/>}
           aria-label="Delete/Drop"
           title={gettext('Delete/Drop')}
           onClick={() => {
@@ -267,8 +276,7 @@ export function CollectionNodeView({
         ></PgIconButton>
         <PgIconButton
           className={classes.dropButton}
-          variant="outlined"
-          icon={<i className='pg-font-icon icon-drop_cascade delete_multiple_cascade' aria-hidden="true" role="img"></i>}
+          icon={<DeleteSweepIcon />}
           aria-label="Drop Cascade"
           title={gettext('Drop Cascade')}
           onClick={() => {
@@ -284,12 +292,12 @@ export function CollectionNodeView({
   };
 
   return (
-    <Theme>
+    <Theme className='obj_properties'>
       <Box className={classes.propertiesPanel}>
         {data.length > 0 ?
           (
             <PgTable
-              isSelectRow={!('catalog' in treeNodeInfo) && (itemNodeData.label !== 'Catalogs')}
+              isSelectRow={!('catalog' in treeNodeInfo) && (itemNodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
               customHeader={customHeader}
               className={classes.autoResizer}
               columns={pgTableColumns}

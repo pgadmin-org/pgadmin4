@@ -17,7 +17,7 @@ export default class ActiveQuery extends BaseUISchema {
     });
 
   }
-  
+
   get baseFields() {
     return [
 
@@ -26,7 +26,7 @@ export default class ActiveQuery extends BaseUISchema {
         label: gettext('Backend type'),
         type: 'text',
         editable: true,
-        noEmpty: true,
+        noEmpty: false,
         readonly: true,
         mode: ['properties'],
         group: gettext('Details'),

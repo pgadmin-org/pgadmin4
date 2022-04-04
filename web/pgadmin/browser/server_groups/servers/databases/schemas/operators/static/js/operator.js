@@ -24,6 +24,7 @@ define('pgadmin.node.operator', [
         columns: ['name', 'owner', 'description'],
         canDrop: false,
         canDropCascade: false,
+        canSelect: false
       });
   }
 

@@ -6,9 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
-// import {removeNodeView} from './node_view';
-// import Notify from '../../../static/js/helpers/Notifier';
 import {getPanelView} from './panel_view';
 
 define([
@@ -92,11 +89,10 @@ define([
       canDropCascade: true,
       selectParentNodeOnDelete: false,
       showProperties: function(item, data, panel) {
-
-        let container =  panel.$container[0];
+        let container =  panel.$container.find('.obj_properties').first();
         getPanelView(
           pgBrowser.tree,
-          container,
+          container[0],
           pgBrowser,
           panel._type
         );

@@ -142,6 +142,7 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
     }
     if (message != '') {
       setMsg(message);
+      setLoaderText('');
     }
     return () => {
       setTableData([]);
