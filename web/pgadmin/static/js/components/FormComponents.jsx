@@ -223,6 +223,7 @@ const DATE_TIME_FORMAT = {
 export function InputDateTimePicker({ value, onChange, readonly, controlProps, ...props }) {
   let format = '';
   let placeholder = '';
+  let regExp = /[a-zA-Z]/;
   if (controlProps?.pickerType === 'Date') {
     format = controlProps.format || DATE_TIME_FORMAT.DATE;
     placeholder = controlProps.placeholder || 'YYYY-MM-DD';
@@ -239,7 +240,7 @@ export function InputDateTimePicker({ value, onChange, readonly, controlProps, .
   };
 
   /* Value should be a date object instead of string */
-  value = _.isUndefined(value) ? null : value;
+  value = _.isUndefined(value) || regExp.test(value) ? null : value;
   if (!_.isNull(value)) {
     let parseValue = DateFns.parse(value, format, new Date());
     if (!DateFns.isValid(parseValue)) {
