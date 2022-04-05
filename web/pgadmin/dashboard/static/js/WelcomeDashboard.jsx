@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer'
   },
   link: {
-    color: theme.otherVars.stepFg + '!important',
+    color: theme.palette.text.primary + '!important',
   },
   cardColumn: {
     flex: '0 0 100%',

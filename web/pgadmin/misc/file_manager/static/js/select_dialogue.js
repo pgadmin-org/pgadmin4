@@ -60,7 +60,7 @@ module.exports =  Alertify.dialog('fileSelectionDlg', function() {
 
       // Add our class to alertify
       $(this.elements.body.childNodes[0]).addClass('alertify_tools_dialog_properties');
-
+      $(this.elements.root).css('z-index', 3002);
       $.get(url_for('file_manager.index'), function(data) {
         content.append(data);
       });
