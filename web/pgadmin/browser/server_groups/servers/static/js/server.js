@@ -884,7 +884,7 @@ define('pgadmin.node.server', [
               setTimeout(function() {
                 if (msg == 'CRYPTKEY_SET') {
                   connect_to_server(_node, _data, _tree, _item, _wasConnected);
-                } else {
+                } else if (msg != 'CRYPTKEY_NOT_SET') {
                   Alertify.dlgServerPass(
                     gettext('Connect to Server'),
                     msg, _node, _data, _tree, _item, _wasConnected
