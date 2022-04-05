@@ -1,5 +1,6 @@
 /* Overrides alertify js headers */
 .alertify {
+  z-index: 3000;
   position: fixed;
 
   .ajs-header {
