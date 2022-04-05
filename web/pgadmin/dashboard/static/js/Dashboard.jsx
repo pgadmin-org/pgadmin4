@@ -741,6 +741,7 @@ export default function Dashboard({
       }
 
       message = gettext('Loading dashboard...');
+      if (did && !props.dbConnected) return;
       if (did) url += sid + '/' + did;
       else url += sid;
 
@@ -771,7 +772,7 @@ export default function Dashboard({
     return () => {
       setRefresh();
     };
-  }, [nodeData, val, did, preferences, infoMsg, refresh]);
+  }, [nodeData, val, did, preferences, infoMsg, refresh, props.dbConnected]);
 
   const RefreshButton = () =>{
     return(
@@ -874,6 +875,7 @@ Dashboard.propTypes = {
   did: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   row: PropTypes.object,
   serverConnected: PropTypes.bool,
+  dbConnected: PropTypes.bool,
 };
 
 export function ChartContainer(props) {

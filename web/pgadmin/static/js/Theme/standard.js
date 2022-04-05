@@ -85,7 +85,6 @@ export default function(basicSettings) {
         padding: '5px 8px',
       },
       borderColor: '#dde0e6',
-      colorFg: '#222222',
       loader: {
         backgroundColor: fade('#000', 0.65),
         color: '#fff',

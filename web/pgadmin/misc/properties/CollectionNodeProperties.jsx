@@ -86,7 +86,7 @@ export function CollectionNodeView({
   const [data, setData] = React.useState([]);
   const [infoMsg, setInfoMsg] = React.useState('Please select an object in the tree view.');
   const [selectedObject, setSelectedObject] = React.useState([]);
-  const [reload, setReload] = React.useState();
+  const [reload, setReload] = React.useState(false);
 
   const [pgTableColumns, setPgTableColumns] = React.useState([
     {
@@ -162,7 +162,7 @@ export function CollectionNodeView({
           if (res.success == 0) {
             pgBrowser.report_error(res.errormsg, res.info);
           }
-          setReload(true);
+          setReload(!reload);
         })
         .catch(function (error) {
           Notify.alert(

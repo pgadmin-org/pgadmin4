@@ -147,8 +147,20 @@ define(
                 });
 
               pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
-
+                
                 if(myPanel.isVisible() && myPanel._type !== 'properties') {
+                  getPanelView(
+                    pgBrowser.tree,
+                    $container[0],
+                    pgBrowser,
+                    myPanel._type
+                  );
+                }
+              });
+
+              pgBrowser.Events.on('pgadmin:database:connected', () => {
+
+                if(myPanel.isVisible() && myPanel._type == 'dashboard' && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
                     $container[0],

@@ -381,23 +381,17 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
   const RenderRow = React.useCallback(
     ({ index, style }) => {
       const row = rows[index];
-      const [expandComplete, setExpandComplete] = React.useState(null);
+      const [expandComplete, setExpandComplete] = React.useState(false);
       const rowRef = React.useRef() ;
       prepareRow(row);
 
       React.useEffect(()=>{
-        if(expandComplete && !row.isExpanded) {
-          setExpandComplete(false);
-        }
-      }, [row.isExpanded]);
-
-      React.useEffect(()=>{
         if(rowRef.current) {
-          if(expandComplete == null) {
+          if(!expandComplete && rowRef.current.style.height == `${ROW_HEIGHT}px`) {
             return;
           }
           let rowHeight;
-          rowRef.current.style.height='unset';
+          rowRef.current.style.height = 'unset';
           if(expandComplete) {
             rowHeight = rowRef.current.offsetHeight;
           } else {

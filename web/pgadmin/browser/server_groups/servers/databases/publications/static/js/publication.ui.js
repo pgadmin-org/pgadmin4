@@ -144,11 +144,8 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'pubtable', label: gettext('Tables'), type: 'select',
       controlProps: { allowClear: true, multiple: true, creatable: true },
       options: this.fieldOptions.publicationTable,
-      group: gettext('Definition'), mode: ['edit', 'create'],
+      group: gettext('Definition'), mode: ['edit', 'create', 'properties'],
       deps: ['all_table'], disabled: obj.isAllTable,
-    },{
-      id: 'proptable', label: gettext('Tables'), type: 'text', group: gettext('Definition'),
-      mode: ['properties'],
     },{
       type: 'nested-fieldset', mode: ['create','edit', 'properties'],
       label: gettext('With'), group: gettext('Definition'),

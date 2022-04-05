@@ -23,7 +23,7 @@ define('pgadmin.node.publication', [
         node: 'publication',
         label: gettext('Publications'),
         type: 'coll-publication',
-        columns: ['name', 'pubowner', 'proptable', 'all_table'],
+        columns: ['name', 'pubowner', 'pubtable', 'all_table'],
 
       });
   }

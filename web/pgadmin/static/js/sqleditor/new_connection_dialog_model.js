@@ -429,7 +429,11 @@ export default function newConnectionDialogModel(response, sgid, sid, handler, c
             && m.get('server') !== '') {
             setTimeout(function() {
               if(self_local.options.length) {
-                m.set('user', self_local.options[0].value);
+                self_local.options.forEach(user => {
+                  if (user.selected) {
+                    m.set('user', user.value);
+                  }
+                });
               }
             }, 10);
             return false;
