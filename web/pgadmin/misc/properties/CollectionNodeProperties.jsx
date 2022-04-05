@@ -21,14 +21,16 @@ import PropTypes from 'prop-types';
 import { PgIconButton } from '../../static/js/components/Buttons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
     minHeight: '100%',
     minWidth: '100%',
-    background: theme.palette.grey[400],
+    background: theme.otherVars.emptySpaceBg,
     overflow: 'auto',
-    padding: '7.5px',
+    padding: '8px',
+    display: 'flex',
   },
   panelIcon: {
     width: '80%',
@@ -201,7 +203,7 @@ export function CollectionNodeView({
                 sortble: true,
                 resizable: false,
                 disableGlobalFilter: false,
-                minWidth: 100,
+                minWidth: 0,
                 // eslint-disable-next-line react/display-name
                 Cell: ({ value }) => {
                   return (<Switch color="primary" checked={value} className={classes.readOnlySwitch} value={value} readOnly title={String(value)} />);
@@ -214,7 +216,7 @@ export function CollectionNodeView({
                 sortble: true,
                 resizable: false,
                 disableGlobalFilter: false,
-                minWidth: 100,
+                minWidth: 0,
               };
             }
             tableColumns.push(column);
@@ -228,10 +230,9 @@ export function CollectionNodeView({
             sortble: true,
             resizable: false,
             disableGlobalFilter: false,
-            minWidth: 100,
+            minWidth: 0,
           };
           tableColumns.push(column);
-
         });
       }
 
@@ -261,7 +262,6 @@ export function CollectionNodeView({
       <Box >
         <PgIconButton
           className={classes.dropButton}
-
           icon={<DeleteIcon/>}
           aria-label="Delete/Drop"
           title={gettext('Delete/Drop')}
@@ -310,12 +310,8 @@ export function CollectionNodeView({
           :
           (
             <div className={classes.emptyPanel}>
-              <div className={classes.panelIcon}>
-                <i className="fa fa-exclamation-circle"></i>
-                <span className={classes.panelMessage}>{gettext(infoMsg)}</span>
-              </div>
+              <EmptyPanelMessage text={gettext(infoMsg)}/>
             </div>
-
           )
         }
       </Box>

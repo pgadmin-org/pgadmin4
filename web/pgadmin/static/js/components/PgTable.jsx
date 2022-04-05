@@ -27,6 +27,7 @@ import { InputText } from './FormComponents';
 import _ from 'lodash';
 import gettext from 'sources/gettext';
 import SchemaView from '../SchemaView';
+import EmptyPanelMessage from './EmptyPanelMessage';
 
 /* eslint-disable react/display-name */
 const useStyles = makeStyles((theme) => ({
@@ -162,9 +163,9 @@ const useStyles = makeStyles((theme) => ({
   emptyPanel: {
     minHeight: '100%',
     minWidth: '100%',
-    background: theme.palette.background.default,
     overflow: 'auto',
-    padding: '7.5px',
+    padding: '8px',
+    display: 'flex',
   },
   caveTable: {
     margin: '8px',
@@ -251,7 +252,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
 
   const defaultColumn = React.useMemo(
     () => ({
-      minWidth: 150,
+      minWidth: 50,
     }),
     []
   );
@@ -266,6 +267,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
     state: { selectedRowIds },
     setGlobalFilter,
     setHiddenColumns,
+    totalColumnsWidth
   } = useTable(
     {
       columns,
@@ -328,8 +330,8 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                 </div>
               ),
               sortble: false,
-              width: 30,
-              maxWidth: 30,
+              width: 35,
+              maxWidth: 35,
               minWidth: 0
             },
             ...CLOUMNS,
@@ -466,7 +468,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
         />
       </Box>
       <div className={classes.tableContainer}>
-        <div {...getTableProps()} className={clsx(classes.table, caveTable ? classes.caveTable : '')}>
+        <div {...getTableProps({style:{minWidth: totalColumnsWidth}})} className={clsx(classes.table, caveTable ? classes.caveTable : '')}>
           <div>
             {headerGroups.map((headerGroup) => (
               <div key={''} {...headerGroup.getHeaderGroupProps()}>
@@ -519,12 +521,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                 </AutoSizer>
               </div>
             ) : (
-              <div className={classes.emptyPanel}>
-                <div className={classes.panelIcon}>
-                  <i className="fa fa-exclamation-circle"></i>
-                  <span className={classes.panelMessage}>{gettext('No record found')}</span>
-                </div>
-              </div>
+              <EmptyPanelMessage text={gettext('No record found')}/>
             )
           }
         </div>

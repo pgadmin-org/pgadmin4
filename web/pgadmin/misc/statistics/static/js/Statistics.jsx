@@ -18,13 +18,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import sizePrettify from 'sources/size_prettify';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
+import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
     minHeight: '100%',
     minWidth: '100%',
-    background: theme.palette.grey[400],
+    background: theme.otherVars.emptySpaceBg,
     overflow: 'auto',
-    padding: '7.5px',
+    padding: '8px',
+    display: 'flex',
   },
   panelIcon: {
     width: '80%',
@@ -239,10 +241,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
       ) : (
         <div className={classes.emptyPanel}>
           {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
-            <div className={classes.panelIcon}>
-              <i className="fa fa-exclamation-circle"></i>
-              <span className={classes.panelMessage}>{gettext(msg)}</span>
-            </div>
+            <EmptyPanelMessage text={gettext(msg)}/>
           }
         </div>
       )}

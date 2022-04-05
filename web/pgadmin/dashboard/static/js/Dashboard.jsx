@@ -26,6 +26,7 @@ import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import _ from 'lodash';
 import CachedIcon from '@mui/icons-material/Cached';
+import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 
 function parseData(data) {
   var res = [];
@@ -191,8 +192,8 @@ export default function Dashboard({
       sortble: true,
       resizable: true,
       disableGlobalFilter: false,
-      minWidth: 16,
-      maxWidth: 30,
+      width: 35,
+      minWidth: 0,
       id: 'btn-terminate',
       // eslint-disable-next-line react/display-name
       Cell: ({ row }) => {
@@ -264,8 +265,8 @@ export default function Dashboard({
       sortble: true,
       resizable: true,
       disableGlobalFilter: false,
-      minWidth: 16,
-      maxWidth: 30,
+      width: 35,
+      minWidth: 0,
       id: 'btn-cancel',
       Cell: ({ row }) => {
         var cancel_query_url =
@@ -332,8 +333,8 @@ export default function Dashboard({
       sortble: true,
       resizable: true,
       disableGlobalFilter: false,
-      minWidth: 16,
-      maxWidth: 30,
+      width: 35,
+      minWidth: 0,
       id: 'btn-edit',
       Cell: ({ row }) => {
         let canEditRow = true;
@@ -844,10 +845,7 @@ export default function Dashboard({
       ) : sid && !props.serverConnected ? (
         <Box className={classes.dashboardPanel}>
           <div className={classes.emptyPanel}>
-            <div className={classes.panelIcon}>
-              <i className="fa fa-exclamation-circle"></i>
-              <span className={classes.panelMessage}>{gettext(msg)}</span>
-            </div>
+            <EmptyPanelMessage text={gettext(msg)}/>
           </div>
         </Box>
       ) : (
