@@ -352,7 +352,7 @@ REM Main build sequence Ends
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /t http://time.certum.pl "%DISTROOT%\%INSTALLERNAME%"
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%DISTROOT%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
