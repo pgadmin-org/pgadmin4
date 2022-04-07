@@ -1,0 +1,646 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+import React, {useCallback, useRef, useMemo, useState, useEffect} from 'react';
+import _ from 'lodash';
+import Layout, { LayoutHelper } from '../../../../../static/js/helpers/Layout';
+import EventBus from '../../../../../static/js/helpers/EventBus';
+import Query from './sections/Query';
+import { ConnectionBar } from './sections/ConnectionBar';
+import { ResultSet } from './sections/ResultSet';
+import { StatusBar } from './sections/StatusBar';
+import { MainToolBar } from './sections/MainToolBar';
+import { Messages } from './sections/Messages';
+import Theme from 'sources/Theme';
+import getApiInstance, {parseApiError} from '../../../../../static/js/api_instance';
+import url_for from 'sources/url_for';
+import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS } from './QueryToolConstants';
+import { useInterval } from '../../../../../static/js/custom_hooks';
+import { Box } from '@material-ui/core';
+import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
+import gettext from 'sources/gettext';
+import NewConnectionDialog from './dialogs/NewConnectionDialog';
+import { evalFunc } from '../../../../../static/js/utils';
+import { Notifications } from './sections/Notifications';
+import MacrosDialog from './dialogs/MacrosDialog';
+import Notifier from '../../../../../static/js/helpers/Notifier';
+import FilterDialog from './dialogs/FilterDialog';
+import { QueryHistory } from './sections/QueryHistory';
+import * as showQueryTool from '../show_query_tool';
+import * as commonUtils from 'sources/utils';
+import * as Kerberos from 'pgadmin.authenticate.kerberos';
+import PropTypes from 'prop-types';
+import { retrieveNodeName } from '../show_view_data';
+import 'wcdocker';
+import { useModal } from '../../../../../static/js/helpers/ModalProvider';
+
+export const QueryToolContext = React.createContext();
+export const QueryToolConnectionContext = React.createContext();
+export const QueryToolEventsContext = React.createContext();
+
+function fetchConnectionStatus(api, transId) {
+  return api.get(url_for('sqleditor.connection_status', {trans_id: transId}));
+}
+
+function initConnection(api, params, passdata) {
+  return api.post(url_for('NODE-server.connect_id', params), passdata);
+}
+
+function setPanelTitle(panel, title, qtState, dirty=false) {
+  if(title) {
+    title =title.split('\\').pop().split('/').pop();
+  } else if(qtState.current_file) {
+    title = qtState.current_file.split('\\').pop().split('/').pop();
+  } else {
+    title = qtState.params.title || 'Untitled';
+  }
+
+  title = title + (dirty ? '*': '');
+  if (qtState.is_new_tab) {
+    window.document.title = title;
+  } else {
+    setQueryToolDockerTitle(panel, true, title, qtState.current_file ? true : false);
+  }
+}
+export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, panel, eventBusObj}) {
+  const containerRef = React.useRef(null);
+  const forceClose = React.useRef(false);
+  const [qtState, _setQtState] = useState({
+    preferences: {
+      browser: {}, sqleditor: {},
+    },
+    is_new_tab: window.location == window.parent?.location,
+    current_file: null,
+    obtaining_conn: true,
+    connected: false,
+    connection_status: null,
+    connection_status_msg: '',
+    params: {
+      ...params,
+      is_query_tool: params.is_query_tool == 'true' ? true : false,
+      node_name: retrieveNodeName(selectedNodeInfo),
+    },
+    connection_list: [{
+      sgid: params.sgid,
+      sid: params.sid,
+      did: params.did,
+      user: params.username,
+      role: null,
+      title: _.unescape(params.title),
+      conn_title: getTitle(
+        pgAdmin, null, selectedNodeInfo, true, params.server_name, params.database_name || getDatabaseLabel(selectedNodeInfo),
+        params.username, params.is_query_tool == 'true' ? true : false),
+      server_name: params.server_name,
+      database_name: params.database_name || getDatabaseLabel(selectedNodeInfo),
+      is_selected: true,
+    }],
+  });
+
+  const setQtState = (state)=>{
+    _setQtState((prev)=>({...prev,...evalFunc(null, state, prev)}));
+  };
+  const eventBus = useRef(eventBusObj || (new EventBus()));
+  const docker = useRef(null);
+  const api = useMemo(()=>getApiInstance(), []);
+  const modal = useModal();
+
+  /* Connection status poller */
+  let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0 ?
+    qtState.preferences.sqleditor.connection_status_fetch_time*1000 : -1;
+  /* No need to poll when the query is executing. Query poller will the txn status */
+  if(qtState.connection_status === CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE && qtState.connected) {
+    pollTime = -1;
+  }
+  useInterval(async ()=>{
+    try {
+      let {data: respData} = await fetchConnectionStatus(api, qtState.params.trans_id);
+      if(respData.data) {
+        setQtState({
+          connected: true,
+          connection_status: respData.data.status,
+        });
+      } else {
+        setQtState({
+          connected: false,
+          connection_status: null,
+          connection_status_msg: gettext('An unexpected error occurred - ensure you are logged into the application.')
+        });
+      }
+      if(respData.data.notifies) {
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, respData.data.notifies);
+      }
+    } catch (error) {
+      console.error(error);
+      setQtState({
+        connected: false,
+        connection_status: null,
+        connection_status_msg: parseApiError(error),
+      });
+    }
+  }, pollTime);
+
+  let defaultLayout = {
+    dockbox: {
+      mode: 'vertical',
+      children: [
+        {
+          mode: 'horizontal',
+          children: [
+            {
+              tabs: [
+                LayoutHelper.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query />}),
+                LayoutHelper.getPanel({id: PANELS.HISTORY, title: 'Query History', content: <QueryHistory />,
+                  cached: undefined}),
+              ],
+            },
+            {
+              size: 75,
+              tabs: [
+                LayoutHelper.getPanel({
+                  id: PANELS.SCRATCH, title: gettext('Scratch Pad'),
+                  closable: true,
+                  content: <textarea style={{
+                    border: 0,
+                    height: '100%',
+                    width: '100%',
+                    resize: 'none'
+                  }}/>
+                }),
+              ]
+            }
+          ]
+        },
+        {
+          mode: 'horizontal',
+          children: [
+            {
+              tabs: [
+                LayoutHelper.getPanel({
+                  id: PANELS.DATA_OUTPUT, title: 'Data output', content: <ResultSet />,
+                }),
+                LayoutHelper.getPanel({
+                  id: PANELS.MESSAGES, title:'Messages', content: <Messages />,
+                }),
+                LayoutHelper.getPanel({
+                  id: PANELS.NOTIFICATIONS, title:'Notifications', content: <Notifications />,
+                }),
+              ],
+            }
+          ]
+        },
+      ]
+    },
+  };
+
+  const reflectPreferences = useCallback(()=>{
+    setQtState({preferences: {
+      browser: pgWindow.pgAdmin.Browser.get_preferences_for_module('browser'),
+      sqleditor: pgWindow.pgAdmin.Browser.get_preferences_for_module('sqleditor'),
+    }});
+  }, []);
+
+  const getSQLScript = ()=>{
+    // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
+    // Call AJAX only if script type url is present
+    if(qtState.params.is_query_tool && qtState.params.query_url) {
+      api.get(qtState.params.query_url)
+        .then((res)=>{
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, res.data);
+        })
+        .catch((err)=>{
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
+        });
+    } else if(qtState.params.sql_id) {
+      let sqlValue = localStorage.getItem(qtState.params.sql_id);
+      localStorage.removeItem(qtState.params.sql_id);
+      if(sqlValue) {
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, sqlValue);
+      }
+    }
+  };
+
+  const initializeQueryTool = ()=>{
+    let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
+    let baseUrl = '';
+    if(qtState.params.is_query_tool) {
+      let endpoint = 'sqleditor.initialize_sqleditor';
+
+      if(qtState.params.did) {
+        endpoint = 'sqleditor.initialize_sqleditor_with_did';
+      }
+      baseUrl = url_for(endpoint, {
+        ...selectedConn,
+        trans_id: qtState.params.trans_id,
+      });
+    } else {
+      baseUrl = url_for('sqleditor.initialize_viewdata', {
+        ...qtState.params,
+      });
+    }
+    api.post(baseUrl, qtState.params.is_query_tool ? null : JSON.stringify(qtState.params.sql_filter))
+      .then(()=>{
+        setQtState({
+          connected: true,
+          obtaining_conn: false,
+        });
+
+        if(!qtState.params.is_query_tool) {
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
+        }
+      }).catch((err)=>{
+        if(err.response?.request?.responseText?.search('Ticket expired') !== -1) {
+          Kerberos.fetch_ticket()
+            .then(()=>{
+              initializeQueryTool();
+            })
+            .catch((kberr)=>{
+              setQtState({
+                connected: false,
+                obtaining_conn: false,
+              });
+              eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, kberr);
+            });
+        }
+        setQtState({
+          connected: false,
+          obtaining_conn: false,
+        });
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
+      });
+  };
+
+  useEffect(()=>{
+    getSQLScript();
+    initializeQueryTool();
+
+    eventBus.current.registerListener(QUERY_TOOL_EVENTS.FOCUS_PANEL, (panelId)=>{
+      LayoutHelper.focus(docker.current, panelId);
+    });
+
+    eventBus.current.registerListener(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, (status)=>{
+      setQtState({connection_status: status});
+    });
+
+    eventBus.current.registerListener(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL, ()=>{
+      panel.off(window.wcDocker.EVENT.CLOSING);
+      panel.close();
+    });
+
+    reflectPreferences();
+    pgWindow.pgAdmin.Browser.onPreferencesChange('sqleditor', function() {
+      reflectPreferences();
+    });
+
+    /* WC docker events */
+    panel?.on(window.wcDocker.EVENT.CLOSING, function() {
+      if(!forceClose.current) {
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
+      } else {
+        panel.close();
+      }
+    });
+
+    pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', (fileName)=>{
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
+    }, pgAdmin);
+
+    pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:create_file', (fileName)=>{
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
+    }, pgAdmin);
+  }, []);
+
+  useEffect(()=>{
+    const pushHistory = (h)=>{
+      api.post(
+        url_for('sqleditor.add_query_history', {
+          'trans_id': qtState.params.trans_id,
+        }),
+        JSON.stringify(h),
+      ).catch((error)=>{console.error(error);});
+    };
+    eventBus.current.registerListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
+    return ()=>{eventBus.current.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);};
+  }, [qtState.params.trans_id]);
+
+
+  const handleApiError = (error, handleParams)=>{
+    if(error.response && pgAdmin.Browser?.UserManagement?.isPgaLoginRequired(error.response)) {
+      return pgAdmin.Browser.UserManagement.pgaLogin();
+    }
+
+    if(error.response?.status == 503 && error.response.data?.info == 'CONNECTION_LOST') {
+      // We will display re-connect dialog, no need to display error message again
+      modal.confirm(
+        gettext('Connection Warning'),
+        <p>
+          <span>{gettext('The application has lost the database connection:')}</span>
+          <br/><span>{gettext('⁃ If the connection was idle it may have been forcibly disconnected.')}</span>
+          <br/><span>{gettext('⁃ The application server or database server may have been restarted.')}</span>
+          <br/><span>{gettext('⁃ The user session may have timed out.')}</span>
+          <br />
+          <span>{gettext('Do you want to continue and establish a new session')}</span>
+        </p>,
+        function() {
+          handleParams?.connectionLostCallback?.();
+        }, null,
+        gettext('Continue'),
+        gettext('Cancel')
+      );
+    } else if(handleParams?.checkTransaction && error.response?.data.info == 'DATAGRID_TRANSACTION_REQUIRED') {
+      let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
+      initConnection(api, {
+        'gid': selectedConn.sgid,
+        'sid': selectedConn.sid,
+        'did': selectedConn.did,
+        'role': selectedConn.role,
+      }).then(()=>{
+        initializeQueryTool();
+      }).catch((err)=>{
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
+      });
+    } else {
+      let msg = parseApiError(error);
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
+      Notifier.error(msg);
+    }
+  };
+
+  useEffect(()=>{
+    const fileDone = (fileName, success=true)=>{
+      if(success) {
+        setQtState({
+          current_file: fileName,
+        });
+        setPanelTitle(panel, fileName, {...qtState, current_file: fileName});
+      }
+    };
+    const events = [
+      [QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, ()=>{
+        let fileParams = {
+          'supported_types': ['*', 'sql'], // file types allowed
+          'dialog_type': 'select_file', // open select file dialog
+        };
+        pgAdmin.FileManager.init();
+        pgAdmin.FileManager.show_dialog(fileParams);
+      }],
+      [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false)=>{
+        if(!isSaveAs && qtState.current_file) {
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, qtState.current_file);
+        } else {
+          let fileParams = {
+            'supported_types': ['*', 'sql'],
+            'dialog_type': 'create_file',
+            'dialog_title': 'Save File',
+            'btn_primary': 'Save',
+          };
+          pgAdmin.FileManager.init();
+          pgAdmin.FileManager.show_dialog(fileParams);
+        }
+      }],
+      [QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileDone],
+      [QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileDone],
+      [QUERY_TOOL_EVENTS.QUERY_CHANGED, (isDirty)=>{
+        if(qtState.params.is_query_tool) {
+          setPanelTitle(panel, null, qtState, isDirty);
+        }
+      }],
+      [QUERY_TOOL_EVENTS.HANDLE_API_ERROR, handleApiError],
+    ];
+
+    events.forEach((e)=>{
+      eventBus.current.registerListener(e[0], e[1]);
+    });
+
+    return ()=>{
+      events.forEach((e)=>{
+        eventBus.current.deregisterListener(e[0], e[1]);
+      });
+    };
+  }, [qtState]);
+
+  useEffect(()=>{
+    /* Fire query change so that title changes to latest */
+    eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE);
+  }, [qtState.params.title]);
+
+  const updateQueryToolConnection = useCallback((connectionData, isNew=false)=>{
+    setQtState((prev)=>{
+      let newConnList = [...prev.connection_list];
+      if(isNew) {
+        newConnList.push(connectionData);
+      }
+      for (const connItem of newConnList) {
+        if(connectionData.sid == connItem.sid
+          && connectionData.did == connItem.did
+          && connectionData.user == connItem.user
+          && connectionData.role == connItem.role) {
+          connItem.is_selected = true;
+        } else {
+          connItem.is_selected = false;
+        }
+      }
+      return {
+        connection_list: newConnList,
+      };
+    });
+    setQtState((prev)=>{
+      return {
+        params: {
+          ...prev.params,
+          sid: connectionData.sid,
+          did: connectionData.did,
+          title: connectionData.title,
+        },
+        obtaining_conn: true,
+        connected: false,
+      };
+    });
+    return api.post(url_for('sqleditor.update_sqleditor_connection', {
+      trans_id: qtState.params.trans_id,
+      sgid: connectionData.sgid,
+      sid: connectionData.sid,
+      did: connectionData.did
+    }), connectionData)
+      .then(({data: respData})=>{
+        setQtState((prev)=>{
+          return {
+            params: {
+              ...prev.params,
+              trans_id: respData.data.trans_id,
+            },
+            connected: respData.data.trans_id ? true : false,
+            obtaining_conn: false,
+          };
+        });
+        let msg = `${connectionData['server_name']}/${connectionData['database_name']} - Database connected`;
+        Notifier.success(msg);
+      });
+  }, [qtState.params.trans_id]);
+
+  const onNewConnClick = useCallback(()=>{
+    const onClose = ()=>LayoutHelper.close(docker.current, 'new-conn');
+    LayoutHelper.openDialog(docker.current, {
+      id: 'new-conn',
+      title: gettext('Add new connection'),
+      content: <NewConnectionDialog onSave={(_isNew, data)=>{
+        let connectionData = {
+          sgid: 0,
+          sid: data.sid,
+          did: data.did,
+          user: data.user,
+          role: data.role && null,
+          title: getTitle(pgAdmin, qtState.preferences.browser, null, false, data.server_name, data.database_name, data.user, true),
+          conn_title: getTitle(pgAdmin, null, null, true, data.server_name, data.database_name, data.user, true),
+          server_name: data.server_name,
+          database_name: data.database_name,
+          is_selected: true,
+        };
+        updateQueryToolConnection(connectionData, true);
+        onClose();
+        return Promise.resolve();
+      }}
+      onClose={onClose}/>
+    });
+  }, [qtState.preferences.browser]);
+
+
+  const onNewQueryToolClick = ()=>{
+    const transId = commonUtils.getRandomInt(1, 9999999);
+    let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
+    let parentData = {
+      server_group: {
+        _id: selectedConn.sgid || 0,
+      },
+      server: {
+        _id: selectedConn.sid,
+        server_type: qtState.params.server_type,
+      },
+      database: {
+        _id: selectedConn.did,
+        label: selectedConn.database_name,
+      },
+    };
+
+    const gridUrl = showQueryTool.generateUrl(transId, parentData, null);
+    const title = getTitle(pgAdmin, qtState.preferences.browser, null, false, selectedConn.server_name, selectedConn.database_name, selectedConn.user);
+    showQueryTool.launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, gridUrl, title, '');
+  };
+
+  const onManageMacros = useCallback(()=>{
+    const onClose = ()=>LayoutHelper.close(docker.current, 'manage-macros');
+    LayoutHelper.openDialog(docker.current, {
+      id: 'manage-macros',
+      title: gettext('Manage Macros'),
+      content: <MacrosDialog onSave={(newMacros)=>{
+        setQtState((prev)=>{
+          return {
+            params: {
+              ...prev.params,
+              macros: newMacros,
+            },
+          };
+        });
+      }}
+      onClose={onClose}/>
+    }, 850, 500);
+  }, [qtState.preferences.browser]);
+
+  const onFilterClick = useCallback(()=>{
+    const onClose = ()=>LayoutHelper.close(docker.current, 'filter-dialog');
+    LayoutHelper.openDialog(docker.current, {
+      id: 'filter-dialog',
+      title: gettext('Sort/Filter options'),
+      content: <FilterDialog onSave={()=>{
+        onClose();
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
+      }}
+      onClose={onClose}/>
+    }, 700, 400);
+  }, [qtState.preferences.browser]);
+
+  const onResetLayout = useCallback(()=>{
+    docker.current?.resetLayout();
+    eventBus.current.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.QUERY);
+  }, []);
+
+  const queryToolContextValue = React.useMemo(()=>({
+    docker: docker.current,
+    api: api,
+    modal: modal,
+    params: qtState.params,
+    preferences: qtState.preferences,
+  }), [qtState.params, qtState.preferences]);
+
+  const queryToolConnContextValue = React.useMemo(()=>({
+    connected: qtState.connected,
+    obtainingConn: qtState.obtaining_conn,
+    connectionStatus: qtState.connection_status,
+  }), [qtState]);
+
+  /* Push only those things in context which do not change frequently */
+  return (
+    <QueryToolContext.Provider value={queryToolContextValue}>
+      <QueryToolConnectionContext.Provider value={queryToolConnContextValue}>
+        <QueryToolEventsContext.Provider value={eventBus.current}>
+          <Theme>
+            <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
+              <ConnectionBar
+                connected={qtState.connected}
+                connecting={qtState.obtaining_conn}
+                connectionStatus={qtState.connection_status}
+                connectionStatusMsg={qtState.connection_status_msg}
+                connectionList={qtState.connection_list}
+                onConnectionChange={(connectionData)=>updateQueryToolConnection(connectionData)}
+                onNewConnClick={onNewConnClick}
+                onNewQueryToolClick={onNewQueryToolClick}
+                onResetLayout={onResetLayout}
+                docker={docker.current}
+              />
+              <MainToolBar
+                containerRef={containerRef}
+                onManageMacros={onManageMacros}
+                onFilterClick={onFilterClick}
+              />
+              <Layout
+                getLayoutInstance={(obj)=>docker.current=obj}
+                defaultLayout={defaultLayout}
+                layoutId="SQLEditor/Layout"
+                savedLayout={params.layout}
+              />
+              <StatusBar />
+            </Box>
+          </Theme>
+        </QueryToolEventsContext.Provider>
+      </QueryToolConnectionContext.Provider>
+    </QueryToolContext.Provider>
+  );
+}
+
+QueryToolComponent.propTypes = {
+  params:PropTypes.shape({
+    trans_id: PropTypes.number.isRequired,
+    sgid: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    sid: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    did: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+    server_type: PropTypes.string,
+    title: PropTypes.string.isRequired,
+    bgcolor: PropTypes.string,
+    fgcolor: PropTypes.string,
+    is_query_tool: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
+    username: PropTypes.string,
+    server_name: PropTypes.string,
+    database_name: PropTypes.string,
+    layout: PropTypes.string,
+  }),
+  pgWindow: PropTypes.object.isRequired,
+  pgAdmin: PropTypes.object.isRequired,
+  selectedNodeInfo: PropTypes.object,
+  panel: PropTypes.object,
+  eventBusObj: PropTypes.objectOf(EventBus),
+};

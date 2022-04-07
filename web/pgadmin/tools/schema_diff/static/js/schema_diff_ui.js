@@ -15,8 +15,7 @@ import Backbone from 'backbone';
 import Slick from 'sources/../bundle/slickgrid';
 import pgAdmin from 'sources/pgadmin';
 import {setPGCSRFToken} from 'sources/csrf';
-import {generateScript} from 'tools/datagrid/static/js/show_query_tool';
-import 'pgadmin.sqleditor';
+import 'pgadmin.tools.sqleditor';
 import pgWindow from 'sources/window';
 import _ from 'underscore';
 import Notify from '../../../../static/js/helpers/Notifier';
@@ -27,6 +26,7 @@ import { SchemaDiffSelect2Control, SchemaDiffHeaderView,
 
 import { handleDependencies, selectDependenciesForGroup,
   selectDependenciesForAll, selectDependencies } from './schema_diff_dependency';
+import { generateScript } from '../../../sqleditor/static/js/show_query_tool';
 
 var wcDocker = window.wcDocker;
 
@@ -252,6 +252,7 @@ export default class SchemaDiffUI {
           let data = res.data;
           let server_data = {};
           if (data) {
+            let sqlId = `schema${self.trans_id}`;
             server_data['sgid'] = data.gid;
             server_data['sid'] = data.sid;
             server_data['stype'] = data.type;
@@ -259,13 +260,13 @@ export default class SchemaDiffUI {
             server_data['user'] = data.user;
             server_data['did'] = self.model.get('target_did');
             server_data['database'] = data.database;
+            server_data['sql_id'] = sqlId;
 
             if (_.isUndefined(generated_script)) {
               generated_script = script_header + 'BEGIN;' + '\n' + self.model.get('diff_ddl') + '\n' + 'END;';
             }
-
-            pgWindow.pgAdmin.ddl_diff = generated_script;
-            generateScript(server_data, pgWindow.pgAdmin.DataGrid, Alertify);
+            localStorage.setItem(sqlId, generated_script);
+            generateScript(server_data, pgWindow.pgAdmin.Tools.SQLEditor, Alertify);
           }
 
           $('#diff_fetching_data').find('.schema-diff-busy-text').text('');

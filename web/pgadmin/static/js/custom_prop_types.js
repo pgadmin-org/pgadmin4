@@ -31,9 +31,9 @@ const CustomPropTypes = {
   ]),
 
   shortcut: PropTypes.shape({
-    alt: PropTypes.bool,
-    control: PropTypes.bool,
-    shift: PropTypes.bool,
+    alt: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    control: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    shift: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
     key: PropTypes.shape({
       char: PropTypes.string,
     }),

@@ -209,7 +209,7 @@ PaperComponent.propTypes = {
   height: PropTypes.number,
 };
 
-const useModalStyles = makeStyles(() => ({
+export const useModalStyles = makeStyles((theme) => ({
   titleBar: {
     display: 'flex',
     flexGrow: 1
@@ -227,9 +227,18 @@ const useModalStyles = makeStyles(() => ({
     flexShrink: 0,
     userSelect: 'none',
   },
+  footer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '0.5rem',
+    ...theme.mixins.panelBorder?.top,
+  },
+  margin: {
+    marginLeft: '0.25rem',
+  },
   iconButtonStyle: {
     marginLeft: 'auto',
-    marginRight: '0.3em'
+    marginRight: '4px'
   }
 }));
 

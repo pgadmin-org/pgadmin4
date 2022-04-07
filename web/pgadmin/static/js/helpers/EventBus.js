@@ -1,4 +1,3 @@
-import React from 'react';
 import _ from 'lodash';
 
 export default class EventBus {
@@ -6,11 +5,12 @@ export default class EventBus {
     this._eventListeners = [];
   }
 
-  registerListener(event, callback) {
+  registerListener(event, callback, once=false) {
     this._eventListeners = this._eventListeners || [];
     this._eventListeners.push({
       event: event,
       callback: callback,
+      fired: once ? 'pending' : 'ignore',
     });
   }
 
@@ -28,17 +28,19 @@ export default class EventBus {
   }
 
   fireEvent(event, ...args) {
+    let self = this;
     Promise.resolve(0).then(()=>{
       let allListeners = _.filter(this._eventListeners, (e)=>e.event==event);
       if(allListeners) {
         for(const listener of allListeners) {
           Promise.resolve(0).then(()=>{
             listener.callback(...args);
+            if(listener.fired == 'pending') {
+              self.deregisterListener(event, listener.callback);
+            }
           });
         }
       }
     });
   }
 }
-
-export const EventBusContext = React.createContext(new EventBus());

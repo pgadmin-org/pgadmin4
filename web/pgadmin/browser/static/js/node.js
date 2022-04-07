@@ -975,7 +975,7 @@ define('pgadmin.browser.node', [
           sql_url = 'sql';
         }
         // Open data grid & pass the URL for fetching
-        pgAdmin.DataGrid.show_query_tool(
+        pgAdmin.Tools.SQLEditor.showQueryTool(
           obj.generate_url(i, sql_url, d, true),
           i, scriptType
         );
@@ -1001,7 +1001,7 @@ define('pgadmin.browser.node', [
           };
           pgBrowser.Node.callbacks.show_script(data);
         }else{
-          pgAdmin.DataGrid.show_query_tool('', i);
+          pgAdmin.Tools.SQLEditor.showQueryTool('', i);
         }
       },
 

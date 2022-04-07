@@ -304,7 +304,7 @@ class TestTransactionControl(BaseTestGenerator):
 
     def _initialize_query_tool(self):
         self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
+        url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
         self.assertEqual(response.status_code, 200)
@@ -339,6 +339,6 @@ class TestTransactionControl(BaseTestGenerator):
         utils.create_table_with_query(self.server, self.db_name, create_sql)
 
     def _close_query_tool(self):
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)

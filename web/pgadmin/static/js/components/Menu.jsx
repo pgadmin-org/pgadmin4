@@ -18,6 +18,9 @@ const useStyles = makeStyles((theme)=>({
     '& .szh-menu': {
       padding: '4px 0px',
       zIndex: 1000,
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.primary,
+      border: `1px solid ${theme.otherVars.borderColor}`
     },
     '& .szh-menu__divider': {
       margin: 0,

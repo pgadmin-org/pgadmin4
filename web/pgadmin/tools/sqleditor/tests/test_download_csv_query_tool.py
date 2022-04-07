@@ -27,7 +27,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with valid query',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A","B","C"',
                 output_values='1,2,3',
@@ -41,7 +41,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with wrong TX id',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns=None,
                 output_values=None,
@@ -55,7 +55,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with wrong query',
             dict(
                 sql='SELECT * FROM this_table_does_not_exist',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns=None,
                 output_values=None,
@@ -69,7 +69,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download as txt without filename parameter',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A";"B";"C"',
                 output_values='1;2;3',
@@ -83,7 +83,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download as csv without filename parameter',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A","B","C"',
                 output_values='1,2,3',
@@ -211,7 +211,7 @@ class TestDownloadCSV(BaseTestGenerator):
                 self.assertEqual(response.status_code, 500)
 
         # Close query tool
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 

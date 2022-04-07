@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 define('app', [
-  'sources/pgadmin', 'bundled_browser', 'pgadmin.datagrid',
+  'sources/pgadmin', 'bundled_browser',
 ], function(pgAdmin) {
   var initializeModules = function(Object) {
     for (var key in Object) {

@@ -1,5 +1,6 @@
 import {useRef, useEffect, useState, useCallback} from 'react';
-export { useStopwatch } from 'react-timer-hook';
+import moment from 'moment';
+// export { useStopwatch } from 'react-timer-hook';
 
 /* React hook for setInterval */
 export function useInterval(callback, delay) {
@@ -78,6 +79,50 @@ export function useIsMounted() {
   return useCallback(() => ref.current, []);
 }
 
+export function useStopwatch() {
+  const prevTime = useRef(new Date());
+  const [totalMsec, setTotalMsec] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+
+  useInterval(() => {
+    setTotalMsec(moment(new Date()).diff(prevTime.current));
+  }, isRunning ? 100 : -1);
+
+  function start(startTime) {
+    prevTime.current = startTime || new Date();
+    setIsRunning(true);
+  }
+
+  const pause = (endTime)=>{
+    setIsRunning(false);
+    setTotalMsec(moment(endTime || new Date()).diff(prevTime.current));
+  };
+
+  function reset() {
+    setTotalMsec(0);
+  }
+
+  let msec = totalMsec;
+  /* Extract seconds from millisecs */
+  let seconds = parseInt(msec/1000);
+  msec = msec%1000;
+
+  /* Extract mins from seconds */
+  let minutes = parseInt(seconds/60);
+  seconds = seconds%60;
+
+  /* Extract hrs from mins */
+  let hours = parseInt(minutes/60);
+  minutes = minutes%60;
+
+  return {
+    hours: hours,
+    minutes: minutes,
+    seconds: seconds,
+    msec: msec,
+    start, pause, reset, isRunning,
+  };
+}
 
 /*
   shortcuts = [
@@ -105,27 +150,30 @@ export function useKeyboardShortcuts(shortcuts, eleRef) {
   const matchFound = (shortcut, e)=>{
     if(!shortcut) return false;
     let keyCode = e.which || e.keyCode;
-    return shortcut.alt == e.altKey &&
-      shortcut.shift == e.shiftKey &&
-      shortcut.control == e.ctrlKey &&
+    return Boolean(shortcut.alt) == e.altKey &&
+      Boolean(shortcut.shift) == e.shiftKey &&
+      Boolean(shortcut.control) == e.ctrlKey &&
       shortcut.key.key_code == keyCode;
   };
   useEffect(()=>{
     let ele = eleRef.current ?? document;
-    const keyupCallback = (e)=>{
-      for(let i=0; i<(shortcutsRef.current??[]).length; i++){
-        let {shortcut, options} = shortcutsRef.current[i];
-        if(matchFound(shortcut, e)) {
-          if(options.callback && (options.enabled ?? true)) {
-            options.callback(e);
-          }
-          break;
+    const keydownCallback = (e)=>{
+      Promise.resolve(0).then(()=>{
+        let allListeners = _.filter(shortcutsRef.current, (s)=>matchFound(s.shortcut, e));
+        for(const {options} of allListeners) {
+          Promise.resolve(0).then(()=>{
+            if(options.callback && (options.enabled ?? true)) {
+              e.preventDefault();
+              e.stopPropagation();
+              options.callback(e);
+            }
+          });
         }
-      }
+      });
     };
-    ele.addEventListener('keyup', keyupCallback);
+    ele.addEventListener('keydown', keydownCallback);
     return ()=>{
-      ele.removeEventListener('keyup', keyupCallback);
+      ele.removeEventListener('keydown', keydownCallback);
     };
   }, [eleRef.current]);
 

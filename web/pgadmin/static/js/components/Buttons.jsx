@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme)=>({
     }
   },
   iconButton: {
+    minWidth: 0,
     padding: '3px 6px',
     '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
       padding: '1px 4px',
@@ -59,6 +60,7 @@ const useStyles = makeStyles((theme)=>({
     '&:hover': {
       backgroundColor: theme.custom.icon.hoverMain,
       color: theme.custom.icon.hoverContrastText,
+      borderColor: theme.custom.icon.borderColor,
     },
   },
   splitButton: {
@@ -72,6 +74,7 @@ const useStyles = makeStyles((theme)=>({
   xsButton: {
     padding: '2px 1px',
     height: '24px',
+    minWidth: '24px',
     '& .MuiSvgIcon-root': {
       height: '0.8em',
     }
@@ -127,27 +130,29 @@ DefaultButton.propTypes = {
 
 
 /* pgAdmin Icon button, takes Icon component as input */
-export const PgIconButton = forwardRef(({icon, title, shortcut, accessKey, className, splitButton, style, color, ...props}, ref)=>{
+export const PgIconButton = forwardRef(({icon, title, shortcut, className, splitButton, style, color, accesskey, ...props}, ref)=>{
   const classes = useStyles();
 
   let shortcutTitle = null;
-  if(accessKey || shortcut) {
-    shortcutTitle = <ShortcutTitle title={title} accessKey={accessKey} shortcut={shortcut}/>;
+  if(accesskey || shortcut) {
+    shortcutTitle = <ShortcutTitle title={title} accesskey={accesskey} shortcut={shortcut}/>;
   }
 
   /* Tooltip does not work for disabled items */
   if(props.disabled) {
     if(color == 'primary') {
       return (
-        <PrimaryButton ref={ref} style={{minWidth: 0, ...style}}
-          className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)} {...props}>
+        <PrimaryButton ref={ref} style={style}
+          className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)}
+          accessKey={accesskey} {...props}>
           {icon}
         </PrimaryButton>
       );
     } else {
       return (
-        <DefaultButton ref={ref} style={{minWidth: 0, ...style}}
-          className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)} {...props}>
+        <DefaultButton ref={ref} style={style}
+          className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)}
+          accessKey={accesskey} {...props}>
           {icon}
         </DefaultButton>
       );
@@ -156,8 +161,9 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, accessKey, class
     if(color == 'primary') {
       return (
         <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
-          <PrimaryButton ref={ref} style={{minWidth: 0, ...style}}
-            className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)} {...props}>
+          <PrimaryButton ref={ref} style={style}
+            className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)}
+            accessKey={accesskey} {...props}>
             {icon}
           </PrimaryButton>
         </Tooltip>
@@ -165,8 +171,9 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, accessKey, class
     } else {
       return (
         <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
-          <DefaultButton ref={ref} style={{minWidth: 0, ...style}}
-            className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)} {...props}>
+          <DefaultButton ref={ref} style={style}
+            className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)}
+            accessKey={accesskey} {...props}>
             {icon}
           </DefaultButton>
         </Tooltip>
@@ -179,7 +186,7 @@ PgIconButton.propTypes = {
   icon: CustomPropTypes.children,
   title: PropTypes.string.isRequired,
   shortcut: CustomPropTypes.shortcut,
-  accessKey: PropTypes.string,
+  accesskey: PropTypes.string,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   style: PropTypes.object,
   color: PropTypes.oneOf(['primary', 'default', undefined]),

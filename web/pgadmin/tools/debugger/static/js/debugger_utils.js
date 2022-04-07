@@ -6,8 +6,8 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
-import {generateTitle} from '../../../datagrid/static/js/datagrid_panel_title';
-import {_set_dynamic_tab} from '../../../datagrid/static/js/show_query_tool';
+import {generateTitle} from '../../../sqleditor/static/js/sqleditor_title';
+import {_set_dynamic_tab} from '../../../sqleditor/static/js/show_query_tool';
 
 function setFocusToDebuggerEditor(editor, command) {
   const TAB = 9;

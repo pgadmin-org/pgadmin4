@@ -429,7 +429,7 @@ function prepareData(val, createMode=false) {
 
 /* If its the dialog */
 function SchemaDialogView({
-  getInitData, viewHelperProps, schema={}, showFooter=true, isTabView=true, ...props}) {
+  getInitData, viewHelperProps, loadingText, schema={}, showFooter=true, isTabView=true, ...props}) {
   const classes = useDialogStyles();
   /* Some useful states */
   const [dirty, setDirty] = useState(false);
@@ -704,7 +704,7 @@ function SchemaDialogView({
       <DepListenerContext.Provider value={depListenerObj.current}>
         <Box className={classes.root}>
           <Box className={classes.form}>
-            <Loader message={loaderText}/>
+            <Loader message={loaderText || loadingText}/>
             <FormView value={sessData} viewHelperProps={viewHelperProps}
               schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
               hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} className={props.formClassName} />
@@ -746,6 +746,7 @@ SchemaDialogView.propTypes = {
     }),
     inCatalog: PropTypes.bool,
   }).isRequired,
+  loadingText: PropTypes.string,
   schema: CustomPropTypes.schemaUI,
   onSave: PropTypes.func,
   onClose: PropTypes.func,

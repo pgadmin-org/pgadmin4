@@ -253,7 +253,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       return;
 
     // Call data grid method to render query tool
-    pgAdmin.DataGrid.show_query_tool('', tree.i);
+    pgAdmin.Tools.SQLEditor.showQueryTool('', tree.i);
   },
   bindSubMenuViewData: function() {
     const tree = this.getTreeDetails();
@@ -262,7 +262,7 @@ _.extend(pgBrowser.keyboardNavigation, {
       return;
 
     // Call data grid method to render view data
-    pgAdmin.DataGrid.show_data_grid({'mnuid': 1}, tree.i);
+    pgAdmin.Tools.SQLEditor.showViewData({'mnuid': 1}, tree.i);
   },
   bindSubMenuSearchObjects: function() {
     const tree = this.getTreeDetails();

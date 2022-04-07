@@ -29,7 +29,7 @@ export function parseApiError(error) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     if(error.response.headers['content-type'] == 'application/json') {
-      return `INTERNAL SERVER ERROR: ${error.response.data.errormsg}`;
+      return error.response.data.errormsg;
     } else {
       return error.response.statusText;
     }

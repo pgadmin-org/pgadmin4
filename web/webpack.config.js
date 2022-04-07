@@ -374,7 +374,7 @@ module.exports = [{
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
     slickgrid: sourceDir + '/bundle/slickgrid.js',
-    sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
+    sqleditor: './pgadmin/tools/sqleditor/static/js/index.js',
     debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
     schema_diff: './pgadmin/tools/schema_diff/static/js/schema_diff_hook.js',
     erd_tool: './pgadmin/tools/erd/static/js/erd_tool_hook.js',
@@ -463,7 +463,7 @@ module.exports = [{
       // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
       // It solves number of problems
       // Ref: http:/github.com/webpack-contrib/imports-loader/
-      test: require.resolve('./pgadmin/tools/datagrid/static/js/datagrid'),
+      test: require.resolve('./pgadmin/tools/sqleditor/static/js/index'),
       use: {
         loader: 'imports-loader',
         options: {
@@ -564,6 +564,7 @@ module.exports = [{
             'pure|pgadmin.tools.search_objects',
             'pure|pgadmin.tools.erd_module',
             'pure|pgadmin.tools.psql_module',
+            'pure|pgadmin.tools.sqleditor',
             'pure|pgadmin.misc.cloud',
           ],
         },

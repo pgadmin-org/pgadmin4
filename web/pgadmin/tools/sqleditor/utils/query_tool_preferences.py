@@ -18,22 +18,6 @@ from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields, \
 
 
 def register_query_tool_preferences(self):
-
-    self.info_notifier_timeout = self.preference.register(
-        'display', 'info_notifier_timeout',
-        gettext("Query info notifier timeout"), 'integer', 5,
-        category_label=PREF_LABEL_DISPLAY,
-        min_val=-1,
-        max_val=999999,
-        help_str=gettext(
-            'The length of time to display the query info notifier after '
-            'execution has completed. A value of -1 disables the notifier'
-            ' and a value of 0 displays it until clicked. Values greater'
-            ' than 0 display the notifier for the number of seconds'
-            ' specified.'
-        )
-    )
-
     self.explain_verbose = self.preference.register(
         'Explain', 'explain_verbose',
         gettext("Verbose output?"), 'boolean', False,
@@ -128,7 +112,7 @@ def register_query_tool_preferences(self):
         )
     )
 
-    self.show_prompt_commit_transaction = self.preference.register(
+    self.copy_sql_to_query_tool = self.preference.register(
         'Options', 'copy_sql_to_query_tool',
         gettext("Copy SQL from main window to query tool?"), 'boolean',
         False,
@@ -413,6 +397,24 @@ def register_query_tool_preferences(self):
 
     self.preference.register(
         'keyboard_shortcuts',
+        'clear_query',
+        gettext('Clear query'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': False,
+            'control': True,
+            'key': {
+                'key_code': 76,
+                'char': 'L'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
         'download_results',
         gettext('Download Results'),
         'keyboardshortcut',
@@ -608,19 +610,6 @@ def register_query_tool_preferences(self):
             'key': {
                 'key_code': 81,
                 'char': 'q'
-            }
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=accesskey_fields
-    )
-
-    self.preference.register(
-        'keyboard_shortcuts', 'btn_clear_options',
-        gettext('Accesskey (Clear editor options)'), 'keyboardshortcut',
-        {
-            'key': {
-                'key_code': 76,
-                'char': 'l'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,

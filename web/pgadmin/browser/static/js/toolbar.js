@@ -112,11 +112,11 @@ export function initializeToolbar(panel, wcDocker) {
   // Listen on button click event.
   panel.on(wcDocker.EVENT.BUTTON, function(data) {
     if ('name' in data && data.name === gettext('Query Tool'))
-      pgAdmin.DataGrid.show_query_tool('', pgAdmin.Browser.tree.selected());
+      pgAdmin.Tools.SQLEditor.showQueryTool('', pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('View Data'))
-      pgAdmin.DataGrid.show_data_grid({mnuid: 3}, pgAdmin.Browser.tree.selected());
+      pgAdmin.Tools.SQLEditor.showViewData({mnuid: 3}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('Filtered Rows'))
-      pgAdmin.DataGrid.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
+      pgAdmin.Tools.SQLEditor.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('Search objects'))
       pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('PSQL Tool')){

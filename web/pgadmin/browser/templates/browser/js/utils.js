@@ -56,6 +56,7 @@ define('pgadmin.browser.utils',
   pgAdmin['enable_psql'] =  '{{enable_psql}}' == 'True';
   pgAdmin['platform'] =  '{{platform}}';
   pgAdmin['qt_default_placeholder'] = '{{qt_default_placeholder}}'
+  pgAdmin['vw_edt_default_placeholder'] = '{{vw_edt_default_placeholder}}'
 
   /* GET Binary Path Browse config */
   pgAdmin['enable_binary_path_browsing'] = '{{ current_app.config.get('ENABLE_BINARY_PATH_BROWSING') }}' == 'True';

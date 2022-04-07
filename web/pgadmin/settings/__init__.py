@@ -122,7 +122,7 @@ def store(setting=None, value=None):
             store_setting(setting, value)
     except Exception as e:
         success = 0
-        errormsg = e.message
+        errormsg = str(e)
 
     try:
         info = traceback.format_exc()
@@ -141,12 +141,21 @@ def reset_layout():
     """Reset configuration setting"""
 
     try:
-        db.session.query(Setting) \
-            .filter(Setting.user_id == current_user.id)\
-            .filter((Setting.setting == 'Browser/Layout') |
-                    (Setting.setting == 'SQLEditor/Layout') |
-                    (Setting.setting == 'Debugger/Layout'))\
-            .delete()
+        if request.params['setting'] in [
+                'Browser/Layout', 'SQLEditor/Layout', 'Debugger/Layout']:
+            db.session.query(Setting) \
+                .filter(Setting.user_id == current_user.id) \
+                .filter((Setting.setting == 'Browser/Layout') |
+                        (Setting.setting == 'SQLEditor/Layout') |
+                        (Setting.setting == 'Debugger/Layout')) \
+                .delete()
+        else:
+            db.session.query(Setting) \
+                .filter(Setting.user_id == current_user.id)\
+                .filter((Setting.setting == 'Browser/Layout') |
+                        (Setting.setting == 'SQLEditor/Layout') |
+                        (Setting.setting == 'Debugger/Layout'))\
+                .delete()
 
         db.session.commit()
     except Exception as e:

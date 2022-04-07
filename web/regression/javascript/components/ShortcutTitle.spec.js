@@ -57,7 +57,6 @@ describe('ShortcutTitle', ()=>{
   });
 
   describe('shortcutToString', ()=>{
-
     it('shortcut', ()=>{
       spyOn(keyShort, 'isMac').and.returnValue(false);
       expect(shortcutToString(shortcut)).toBe('Ctrl + Shift + K');
@@ -69,6 +68,7 @@ describe('ShortcutTitle', ()=>{
     });
 
     it('accesskey', ()=>{
+      spyOnProperty(window.navigator, 'userAgent').and.returnValue('Unknown');
       expect(shortcutToString(null, 'A')).toEqual('Accesskey + A');
     });
 

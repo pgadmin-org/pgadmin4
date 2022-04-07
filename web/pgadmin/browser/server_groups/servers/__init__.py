@@ -1284,7 +1284,7 @@ class ServerNode(PGChildNodeView):
             }
         )
 
-    def connect(self, gid, sid, user_name=None):
+    def connect(self, gid, sid, user_name=None, resp_json=False):
         """
         Connect the Server and return the connection object.
         Verification Process before Connection:
@@ -1331,11 +1331,14 @@ class ServerNode(PGChildNodeView):
         else:
             return unauthorized(gettext(UNAUTH_REQ))
 
-        data = {}
+        data = None
         if request.form:
             data = request.form
         elif request.data:
             data = json.loads(request.data, encoding='utf-8')
+
+        if data is None:
+            data = {}
 
         password = None
         passfile = None
@@ -1406,9 +1409,10 @@ class ServerNode(PGChildNodeView):
         # password or both. Return the password template in case password is
         # not provided, or password has not been saved earlier.
         if prompt_password or prompt_tunnel_password:
-            return self.get_response_for_password(server, 428, prompt_password,
-                                                  prompt_tunnel_password,
-                                                  user=user_name)
+            return self.get_response_for_password(
+                server, 428, prompt_password, prompt_tunnel_password,
+                user=user_name, resp_json=resp_json
+            )
 
         status = True
         try:
@@ -1423,7 +1427,8 @@ class ServerNode(PGChildNodeView):
         except Exception as e:
             current_app.logger.exception(e)
             return self.get_response_for_password(
-                server, 401, True, True, getattr(e, 'message', str(e)))
+                server, 401, True, True, getattr(e, 'message', str(e)),
+                resp_json=resp_json)
 
         if not status:
 
@@ -1434,8 +1439,9 @@ class ServerNode(PGChildNodeView):
             if errmsg.find('Ticket expired') != -1:
                 return internal_server_error(errmsg)
 
-            return self.get_response_for_password(server, 401, True,
-                                                  True, errmsg)
+            return self.get_response_for_password(
+                server, 401, True, True, errmsg, resp_json=resp_json
+            )
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
                 try:
@@ -1859,47 +1865,54 @@ class ServerNode(PGChildNodeView):
 
     def get_response_for_password(self, server, status, prompt_password=False,
                                   prompt_tunnel_password=False, errmsg=None,
-                                  user=None):
+                                  user=None, resp_json=False):
 
         if server.use_ssh_tunnel:
+            data = {
+                "server_label": server.name,
+                "username": server.username,
+                "tunnel_username": server.tunnel_username,
+                "tunnel_host": server.tunnel_host,
+                "tunnel_identity_file": server.tunnel_identity_file,
+                "errmsg": errmsg,
+                "service": server.service,
+                "prompt_tunnel_password": prompt_tunnel_password,
+                "prompt_password": prompt_password,
+                "allow_save_password":
+                    True if config.ALLOW_SAVE_PASSWORD and
+                    session['allow_save_password'] else False,
+                "allow_save_tunnel_password":
+                    True if config.ALLOW_SAVE_TUNNEL_PASSWORD and
+                    session['allow_save_password'] else False
+            }
             return make_json_response(
                 success=0,
                 status=status,
                 result=render_template(
                     'servers/tunnel_password.html',
-                    server_label=server.name,
-                    username=server.username,
-                    tunnel_username=server.tunnel_username,
-                    tunnel_host=server.tunnel_host,
-                    tunnel_identity_file=server.tunnel_identity_file,
-                    errmsg=errmsg,
                     _=gettext,
-                    service=server.service,
-                    prompt_tunnel_password=prompt_tunnel_password,
-                    prompt_password=prompt_password,
-                    allow_save_password=True if
-                    config.ALLOW_SAVE_PASSWORD and
-                    session['allow_save_password'] else False,
-                    allow_save_tunnel_password=True if
-                    config.ALLOW_SAVE_TUNNEL_PASSWORD and
-                    session['allow_save_password'] else False
-                )
+                    **data,
+                ) if not resp_json else data
             )
         else:
+            data = {
+                "server_label": server.name,
+                "username": server.username,
+                "errmsg": errmsg,
+                "service": server.service,
+                "prompt_password": True,
+                "allow_save_password":
+                    True if config.ALLOW_SAVE_PASSWORD and
+                    session['allow_save_password'] else False,
+            }
             return make_json_response(
                 success=0,
                 status=status,
                 result=render_template(
                     'servers/password.html',
-                    server_label=server.name,
-                    username=user if user else server.username,
-                    errmsg=errmsg,
-                    service=server.service,
                     _=gettext,
-                    allow_save_password=True if
-                    config.ALLOW_SAVE_PASSWORD and
-                    session['allow_save_password'] else False,
-                )
+                    **data
+                ) if not resp_json else data
             )
 
     def clear_saved_password(self, gid, sid):

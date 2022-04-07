@@ -167,6 +167,9 @@
       background: $sql-hint-active-bg;
       color: $sql-hint-active-fg;
     }
+    & .sqleditor-hint {
+      padding-left: 20px;
+    }
   }
 }
 
@@ -207,4 +210,6 @@
 .bg-gray-lighter {
   background-color: $sql-editor-disable-bg !important;
 }
+
+
 

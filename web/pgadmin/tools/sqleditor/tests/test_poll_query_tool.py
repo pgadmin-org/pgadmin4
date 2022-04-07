@@ -77,7 +77,7 @@ NOTICE:  Hello, world!
 
         # Initialize query tool
         self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
+        url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
         self.assertEqual(response.status_code, 200)
@@ -110,7 +110,7 @@ NOTICE:  Hello, world!
             cnt += 1
 
         # Close query tool
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 

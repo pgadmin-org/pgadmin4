@@ -262,7 +262,7 @@ class TestEncodingCharset(BaseTestGenerator):
 
         # Initialize query tool
         self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'\
+        url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'\
             .format(self.trans_id, test_utils.SERVER_GROUP, self.encode_sid,
                     self.encode_did)
         response = self.tester.post(url)
@@ -283,7 +283,7 @@ class TestEncodingCharset(BaseTestGenerator):
         self.assertEqual(result, self.test_str)
 
         # Close query tool
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 

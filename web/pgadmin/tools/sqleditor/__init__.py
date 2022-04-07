@@ -11,16 +11,21 @@
 import os
 import pickle
 import re
+import random
 from urllib.parse import unquote
+from threading import Lock
 
 import simplejson as json
-from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
+from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT,\
+    ALLOW_SAVE_PASSWORD
+from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
-from flask import request, jsonify
+from flask import request
 from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.misc.file_manager import Filemanager
-from pgadmin.tools.sqleditor.command import QueryToolCommand
+from pgadmin.tools.sqleditor.command import QueryToolCommand, ObjectRegistry, \
+    SQLFilter
 from pgadmin.tools.sqleditor.utils.constant_definition import ASYNC_OK, \
     ASYNC_EXECUTION_ABORTED, \
     CONNECTION_STATUS_MESSAGE_MAPPING, TX_STATUS_INERROR
@@ -33,7 +38,8 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
-    CryptKeyMissing
+    CryptKeyMissing, ObjectGone
+from pgadmin.browser.utils import underscore_unescape
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
@@ -48,10 +54,13 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, ERROR_FETCHING_DATA
 from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.settings import get_setting
+from pgadmin.utils.preferences import Preferences
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
+sqleditor_close_session_lock = Lock()
 
 
 class SqlEditorModule(PgAdminModule):
@@ -73,13 +82,6 @@ class SqlEditorModule(PgAdminModule):
                      url=url_for('help.static', filename='index.html'))
         ]}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.sqleditor',
-            'path': url_for('sqleditor.index') + "sqleditor",
-            'when': None
-        }]
-
     def get_panels(self):
         return []
 
@@ -89,6 +91,15 @@ class SqlEditorModule(PgAdminModule):
             list: URL endpoints for sqleditor module
         """
         return [
+            'sqleditor.initialize_viewdata',
+            'sqleditor.initialize_sqleditor',
+            'sqleditor.initialize_sqleditor_with_did',
+            'sqleditor.filter_validate',
+            'sqleditor.filter',
+            'sqleditor.panel',
+            'sqleditor.close',
+            'sqleditor.update_sqleditor_connection',
+
             'sqleditor.view_data_start',
             'sqleditor.query_tool_start',
             'sqleditor.poll',
@@ -117,6 +128,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_macros',
             'sqleditor.set_macros',
             'sqleditor.get_new_connection_data',
+            'sqleditor.get_new_connection_servers',
             'sqleditor.get_new_connection_database',
             'sqleditor.get_new_connection_user',
             'sqleditor._check_server_connection_status',
@@ -124,6 +136,20 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.connect_server',
             'sqleditor.connect_server_with_user',
         ]
+
+    def on_logout(self, user):
+        """
+        This is a callback function when user logout from pgAdmin
+        :param user:
+        :return:
+        """
+        with sqleditor_close_session_lock:
+            if 'gridData' in session:
+                for trans_id in session['gridData']:
+                    close_sqleditor_session(trans_id)
+
+                # Delete all grid data from session variable
+                del session['gridData']
 
     def register_preferences(self):
         register_query_tool_preferences(self)
@@ -138,6 +164,480 @@ def index():
     return bad_request(
         errormsg=gettext('This URL cannot be requested directly.')
     )
+
+
+@blueprint.route("/filter", endpoint='filter')
+@login_required
+def show_filter():
+    return render_template(MODULE_NAME + '/filter.html')
+
+
+@blueprint.route(
+    '/initialize/viewdata/<int:trans_id>/<int:cmd_type>/<obj_type>/'
+    '<int:sgid>/<int:sid>/<int:did>/<int:obj_id>',
+    methods=["PUT", "POST"],
+    endpoint="initialize_viewdata"
+)
+@login_required
+def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
+    """
+    This method is responsible for creating an asynchronous connection.
+    After creating the connection it will instantiate and initialize
+    the object as per the object type. It will also create a unique
+    transaction id and store the information into session variable.
+
+    Args:
+        cmd_type: Contains value for which menu item is clicked.
+        obj_type: Contains type of selected object for which data grid to
+        be render
+        sgid: Server group Id
+        sid: Server Id
+        did: Database Id
+        obj_id: Id of currently selected object
+    """
+
+    if request.data:
+        filter_sql = json.loads(request.data, encoding='utf-8')
+    else:
+        filter_sql = request.args or request.form
+
+    # Create asynchronous connection using random connection id.
+    conn_id = str(random.randint(1, 9999999))
+    try:
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        # default_conn is same connection which is created when user connect to
+        # database from tree
+        default_conn = manager.connection(did=did)
+        conn = manager.connection(did=did, conn_id=conn_id,
+                                  auto_reconnect=False,
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
+    except (ConnectionLost, SSHTunnelConnectionLost):
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    status, msg = default_conn.connect()
+    if not status:
+        current_app.logger.error(msg)
+        return internal_server_error(errormsg=str(msg))
+
+    status, msg = conn.connect()
+    if not status:
+        current_app.logger.error(msg)
+        return internal_server_error(errormsg=str(msg))
+    try:
+        # if object type is partition then it is nothing but a table.
+        if obj_type == 'partition':
+            obj_type = 'table'
+
+        # Get the object as per the object type
+        command_obj = ObjectRegistry.get_object(
+            obj_type, conn_id=conn_id, sgid=sgid, sid=sid,
+            did=did, obj_id=obj_id, cmd_type=cmd_type,
+            sql_filter=filter_sql
+        )
+    except ObjectGone:
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    if 'gridData' not in session:
+        sql_grid_data = dict()
+    else:
+        sql_grid_data = session['gridData']
+
+    # Use pickle to store the command object which will be used later by the
+    # sql grid module.
+    sql_grid_data[str(trans_id)] = {
+        # -1 specify the highest protocol version available
+        'command_obj': pickle.dumps(command_obj, -1)
+    }
+
+    # Store the grid dictionary into the session variable
+    session['gridData'] = sql_grid_data
+
+    return make_json_response(
+        data={
+            'conn_id': conn_id
+        }
+    )
+
+
+@blueprint.route(
+    '/panel/<int:trans_id>',
+    methods=["POST"],
+    endpoint='panel'
+)
+def panel(trans_id):
+    """
+    This method calls index.html to render the data grid.
+
+    Args:
+        trans_id: unique transaction id
+    """
+
+    params = None
+    if request.args:
+        params = {k: v for k, v in request.args.items()}
+
+    close_url = ''
+    if request.form:
+        params['title'] = underscore_unescape(request.form['title'])
+        close_url = request.form['close_url']
+        if 'sql_filter' in request.form:
+            params['sql_filter'] = request.form['sql_filter']
+        if 'query_url' in request.form:
+            params['query_url'] = request.form['query_url']
+
+    params['trans_id'] = trans_id
+
+    # We need client OS information to render correct Keyboard shortcuts
+    params['client_platform'] = UserAgent(request.headers.get('User-Agent'))\
+        .platform
+
+    params['is_linux'] = False
+    from sys import platform as _platform
+    if "linux" in _platform:
+        params['is_linux'] = True
+
+    # Fetch the server details
+    params['bgcolor'] = None
+    params['fgcolor'] = None
+
+    s = Server.query.filter_by(id=params['sid']).first()
+    if s and s.bgcolor:
+        # If background is set to white means we do not have to change
+        # the title background else change it as per user specified
+        # background
+        if s.bgcolor != '#ffffff':
+            params['bgcolor'] = s.bgcolor
+        params['fgcolor'] = s.fgcolor or 'black'
+
+    params['server_name'] = s.name
+    params['username'] = s.username
+    params['layout'] = get_setting('SQLEditor/Layout')
+    params['macros'] = get_user_macros()
+    params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
+
+    return render_template(
+        "sqleditor/index.html",
+        close_url=close_url,
+        params=json.dumps(params),
+        requirejs=True,
+        basejs=True,
+    )
+
+
+@blueprint.route(
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    methods=["POST"], endpoint='initialize_sqleditor_with_did'
+)
+@blueprint.route(
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>',
+    methods=["POST"], endpoint='initialize_sqleditor'
+)
+@login_required
+def initialize_sqleditor(trans_id, sgid, sid, did=None):
+    """
+    This method is responsible for instantiating and initializing
+    the query tool object. It will also create a unique
+    transaction id and store the information into session variable.
+
+    Args:
+        sgid: Server group Id
+        sid: Server Id
+        did: Database Id
+    """
+    connect = True
+    # Read the data if present. Skipping read may cause connection
+    # reset error if data is sent from the client
+    if request.data:
+        _ = request.data
+
+    req_args = request.args
+    if ('recreate' in req_args and
+            req_args['recreate'] == '1'):
+        connect = False
+
+    is_error, errmsg, conn_id, version = _init_sqleditor(
+        trans_id, connect, sgid, sid, did)
+    if is_error:
+        return errmsg
+
+    return make_json_response(
+        data={
+            'connId': str(conn_id),
+            'serverVersion': version,
+        }
+    )
+
+
+def _connect(conn, **kwargs):
+    """
+    Connect the database.
+    :param conn: Connection instance.
+    :param kwargs: user, role and password data from user.
+    :return:
+    """
+    user = None
+    role = None
+    password = None
+    is_ask_password = False
+    if 'user' in kwargs and 'role' in kwargs:
+        user = kwargs['user']
+        role = kwargs['role'] if kwargs['role'] else None
+        password = kwargs['password'] if kwargs['password'] else None
+        is_ask_password = True
+    if user:
+        status, msg = conn.connect(user=user, role=role,
+                                   password=password)
+    else:
+        status, msg = conn.connect()
+
+    return status, msg, is_ask_password, user, role, password
+
+
+def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
+    # Create asynchronous connection using random connection id.
+    conn_id = str(random.randint(1, 9999999))
+
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+    if did is None:
+        did = manager.did
+    try:
+        command_obj = ObjectRegistry.get_object(
+            'query_tool', conn_id=conn_id, sgid=sgid, sid=sid, did=did
+        )
+    except Exception as e:
+        current_app.logger.error(e)
+        return True, internal_server_error(errormsg=str(e)), '', ''
+
+    try:
+        conn = manager.connection(did=did, conn_id=conn_id,
+                                  auto_reconnect=False,
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
+
+        if connect:
+            status, msg, is_ask_password, user, role, password = _connect(
+                conn, **kwargs)
+            if not status:
+                current_app.logger.error(msg)
+                if is_ask_password:
+                    server = Server.query.filter_by(id=sid).first()
+                    return True, make_json_response(
+                        success=0,
+                        status=428,
+                        result=render_template(
+                            'servers/password.html',
+                            server_label=server.name,
+                            username=user,
+                            errmsg=msg,
+                            _=gettext,
+                            allow_save_password=True if
+                            ALLOW_SAVE_PASSWORD and
+                            session['allow_save_password'] else False,
+                        )
+                    ), '', ''
+                else:
+                    return True, internal_server_error(
+                        errormsg=str(msg)), '', ''
+    except (ConnectionLost, SSHTunnelConnectionLost) as e:
+        current_app.logger.error(e)
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return True, internal_server_error(errormsg=str(e)), '', ''
+
+    if 'gridData' not in session:
+        sql_grid_data = dict()
+    else:
+        sql_grid_data = session['gridData']
+
+    # Set the value of auto commit and auto rollback specified in Preferences
+    pref = Preferences.module('sqleditor')
+    command_obj.set_auto_commit(pref.preference('auto_commit').get())
+    command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
+
+    # Use pickle to store the command object which will be used
+    # later by the sql grid module.
+    sql_grid_data[str(trans_id)] = {
+        # -1 specify the highest protocol version available
+        'command_obj': pickle.dumps(command_obj, -1)
+    }
+
+    # Store the grid dictionary into the session variable
+    session['gridData'] = sql_grid_data
+
+    return False, '', conn_id, manager.version
+
+
+@blueprint.route(
+    '/initialize/sqleditor/update_connection/<int:trans_id>/'
+    '<int:sgid>/<int:sid>/<int:did>',
+    methods=["POST"], endpoint='update_sqleditor_connection'
+)
+def update_sqleditor_connection(trans_id, sgid, sid, did):
+    # Remove transaction Id.
+    with sqleditor_close_session_lock:
+        data = json.loads(request.data, encoding='utf-8')
+
+        if 'gridData' not in session:
+            return make_json_response(data={'status': True})
+
+        grid_data = session['gridData']
+
+        # Return from the function if transaction id not found
+        if str(trans_id) not in grid_data:
+            return make_json_response(data={'status': True})
+
+        connect = True
+
+        req_args = request.args
+        if ('recreate' in req_args and
+                req_args['recreate'] == '1'):
+            connect = False
+
+        new_trans_id = str(random.randint(1, 9999999))
+        kwargs = {
+            'user': data['user'],
+            'role': data['role'] if 'role' in data else None,
+            'password': data['password'] if 'password' in data else None
+        }
+
+        is_error, errmsg, conn_id, version = _init_sqleditor(
+            new_trans_id, connect, sgid, sid, did, **kwargs)
+
+        if is_error:
+            return errmsg
+        else:
+            try:
+                # Check the transaction and connection status
+                status, error_msg, conn, trans_obj, session_obj = \
+                    check_transaction_status(trans_id)
+
+                status, error_msg, new_conn, new_trans_obj, new_session_obj = \
+                    check_transaction_status(new_trans_id)
+
+                new_session_obj['primary_keys'] = session_obj[
+                    'primary_keys'] if 'primary_keys' in session_obj else None
+                new_session_obj['columns_info'] = session_obj[
+                    'columns_info'] if 'columns_info' in session_obj else None
+                new_session_obj['client_primary_key'] = session_obj[
+                    'client_primary_key'] if 'client_primary_key'\
+                                             in session_obj else None
+
+                close_sqleditor_session(trans_id)
+                # Remove the information of unique transaction id from the
+                # session variable.
+                grid_data.pop(str(trans_id), None)
+                session['gridData'] = grid_data
+            except Exception as e:
+                current_app.logger.error(e)
+
+    return make_json_response(
+        data={
+            'connId': str(conn_id),
+            'serverVersion': version,
+            'trans_id': new_trans_id
+        }
+    )
+
+
+@blueprint.route('/close/<int:trans_id>', methods=["DELETE"], endpoint='close')
+def close(trans_id):
+    """
+    This method is used to close the asynchronous connection
+    and remove the information of unique transaction id from
+    the session variable.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    with sqleditor_close_session_lock:
+        if 'gridData' not in session:
+            return make_json_response(data={'status': True})
+
+        grid_data = session['gridData']
+        # Return from the function if transaction id not found
+        if str(trans_id) not in grid_data:
+            return make_json_response(data={'status': True})
+
+        try:
+            close_sqleditor_session(trans_id)
+            # Remove the information of unique transaction id from the
+            # session variable.
+            grid_data.pop(str(trans_id), None)
+            session['gridData'] = grid_data
+        except Exception as e:
+            current_app.logger.error(e)
+            return internal_server_error(errormsg=str(e))
+
+    return make_json_response(data={'status': True})
+
+
+@blueprint.route(
+    '/filter/validate/<int:sid>/<int:did>/<int:obj_id>',
+    methods=["PUT", "POST"], endpoint='filter_validate'
+)
+@login_required
+def validate_filter(sid, did, obj_id):
+    """
+    This method is used to validate the sql filter.
+
+    Args:
+        sid: Server Id
+        did: Database Id
+        obj_id: Id of currently selected object
+    """
+    if request.data:
+        filter_sql = json.loads(request.data, encoding='utf-8')
+    else:
+        filter_sql = request.args or request.form
+
+    try:
+        # Create object of SQLFilter class
+        sql_filter_obj = SQLFilter(sid=sid, did=did, obj_id=obj_id)
+
+        # Call validate_filter method to validate the SQL.
+        status, res = sql_filter_obj.validate_filter(filter_sql)
+    except ObjectGone:
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    return make_json_response(data={'status': status, 'result': res})
+
+
+def close_sqleditor_session(trans_id):
+    """
+    This function is used to cancel the transaction and release the connection.
+
+    :param trans_id: Transaction id
+    :return:
+    """
+    if 'gridData' in session and str(trans_id) in session['gridData']:
+        cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
+        # Use pickle.loads function to get the command object
+        cmd_obj = pickle.loads(cmd_obj_str)
+
+        # if connection id is None then no need to release the connection
+        if cmd_obj.conn_id is not None:
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+            if manager is not None:
+                conn = manager.connection(
+                    did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+
+                # Release the connection
+                if conn.connected():
+                    conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
+                    manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
 
 def check_transaction_status(trans_id):
@@ -286,8 +786,6 @@ def start_view_data(trans_id):
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
             'can_filter': can_filter, 'sql': sql,
-            'info_notifier_timeout':
-                blueprint.info_notifier_timeout.get() * 1000
         }
     )
 
@@ -1345,7 +1843,7 @@ def start_query_download_tool(trans_id):
             errormsg=TRANSACTION_STATUS_CHECK_FAILED
         )
 
-    data = request.values if request.values else None
+    data = request.values if request.values else request.json
     if data is None:
         return make_json_response(
             status=410,
@@ -1534,8 +2032,12 @@ def _check_server_connection_status(sgid, sid=None):
     '/new_connection_dialog/<int:sgid>/<int:sid>',
     methods=["GET"], endpoint='get_new_connection_data'
 )
+@blueprint.route(
+    '/new_connection_dialog',
+    methods=["GET"], endpoint='get_new_connection_servers'
+)
 @login_required
-def get_new_connection_data(sgid, sid=None):
+def get_new_connection_data(sgid=None, sid=None):
     """
     This method is used to get required data for get new connection.
     :extract_sql_from_network_parameters,
@@ -1822,7 +2324,9 @@ def connect_server(sid, usr=None):
             )
 
     view = SchemaDiffRegistry.get_node_view('server')
-    return view.connect(server.servergroup_id, sid, user_name=user)
+    return view.connect(
+        server.servergroup_id, sid, user_name=user, resp_json=True
+    )
 
 
 @blueprint.route(
@@ -1886,7 +2390,8 @@ def clear_query_history(trans_id):
     status, error_msg, conn, trans_obj, session_ob = \
         check_transaction_status(trans_id)
 
-    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db)
+    filter = request.json
+    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db, filter)
 
 
 @blueprint.route(

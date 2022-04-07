@@ -187,8 +187,8 @@ export default function FormView({
           if(_.isArray(dep)) {
             source = dep;
           }
-          if(field.depChange) {
-            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+          if(field.depChange || field.deferredDepChange) {
+            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
           }
           if(field.depChange || field.deferredDepChange) {
             depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);

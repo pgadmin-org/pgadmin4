@@ -112,6 +112,10 @@ _.extend(pgBrowser, {
     }, 500);
   },
 
+  triggerPreferencesChange: function(moduleChanged) {
+    $.event.trigger('prefchange:'+moduleChanged);
+  },
+
   reflectPreferences: function(module) {
     let obj = this;
 
@@ -130,7 +134,13 @@ _.extend(pgBrowser, {
   },
 
   onPreferencesChange: function(module, eventHandler) {
-    $(pgWindow).on('prefchange:'+module, function(event) {
+    let eventWindow = pgWindow;
+    if (window.location === window.parent?.location ) {
+      // The page is in a new tab
+      eventWindow = window;
+    }
+
+    $(eventWindow).on('prefchange:'+module, function(event) {
       eventHandler(event);
     });
   },

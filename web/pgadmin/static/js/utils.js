@@ -302,7 +302,7 @@ export function sprintf(i_str) {
 
 // Modified ref: http://stackoverflow.com/a/1293163/2343 to suite pgAdmin.
 // This will parse a delimited string into an array of arrays.
-export function CSVToArray( strData, strDelimiter, quoteChar){
+export function CSVToArray(strData, strDelimiter, quoteChar){
   strDelimiter = strDelimiter || ',';
   quoteChar = quoteChar || '"';
 
@@ -322,6 +322,12 @@ export function CSVToArray( strData, strDelimiter, quoteChar){
   // Create an array to hold our data. Give the array
   // a default empty first row.
   var arrData = [[]];
+
+  // The regex doesn't handle and skips start value if
+  // string starts with delimiter
+  if(strData.startsWith(strDelimiter)) {
+    arrData[ arrData.length - 1 ].push(null);
+  }
 
   // Create an array to hold our individual pattern
   // matching groups.

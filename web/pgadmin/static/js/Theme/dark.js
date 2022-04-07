@@ -22,7 +22,7 @@ export default function(basicSettings) {
         disabledContrastText: '#fff',
         hoverMain: '#303030',
         hoverContrastText: '#fff',
-        hoverBorderColor: '#2e2e2e',
+        hoverBorderColor: '#151515',
       },
       primary: {
         main: '#234d6e',
@@ -73,7 +73,7 @@ export default function(basicSettings) {
       icon: {
         main: '#6b6b6b',
         contrastText: '#fff',
-        borderColor: '#2e2e2e',
+        borderColor: darken('#2e2e2e', 0.6),
         disabledMain: '#6b6b6b',
         disabledContrastText: '#fff',
         disabledBorderColor: '#2e2e2e',
@@ -86,6 +86,7 @@ export default function(basicSettings) {
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: 'inherit',
       headerBg: '#424242',
+      activeBorder: '#d4d4d4',
       activeColor: '#d4d4d4',
       tableBg: '#424242',
       activeStepBg: '#234d6e',
@@ -93,6 +94,11 @@ export default function(basicSettings) {
       stepBg: '#FFFFFF',
       stepFg: '#000',
       toggleBtnBg: '#000',
+      editorToolbarBg: '#303030',
+      qtDatagridBg: '#2e2e2e',
+      qtDatagridSelectFg: '#d4d4d4',
+      cardHeaderBg: '#424242',
+      colorFg: '#FFFFFF',
       emptySpaceBg: '#212121',
     }
   });

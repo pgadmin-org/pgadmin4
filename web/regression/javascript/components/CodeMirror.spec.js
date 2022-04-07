@@ -52,9 +52,33 @@ describe('CodeMirror', ()=>{
       'setSelection': ()=>{/*This is intentional (SonarQube)*/},
       'scrollIntoView': ()=>{/*This is intentional (SonarQube)*/},
       'getWrapperElement': document.createElement('div'),
+      'on': ()=>{/*This is intentional (SonarQube)*/},
     });
   beforeEach(()=>{
     jasmineEnzyme();
+    window.pgAdmin = {
+      Browser: {
+        Events: {
+          on: jasmine.createSpy('on'),
+        },
+        get_preferences_for_module: ()=>({}),
+        docker: {
+          findPanels: function() {
+            return [
+              {
+                isVisible: function() {
+                  return true;
+                },
+              },
+            ];
+          },
+        },
+        onPreferencesChange: ()=>{/*This is intentional (SonarQube)*/},
+        utils: {
+          app_version_int: 1234,
+        },
+      },
+    };
     spyOn(OrigCodeMirror, 'fromTextArea').and.returnValue(cmObj);
     const ThemedCM = withTheme(CodeMirror);
     cmInstance = mount(
@@ -63,6 +87,10 @@ describe('CodeMirror', ()=>{
         options={options}
         className="testClass"
       />);
+  });
+
+  afterEach(()=>{
+    window.pgAdmin = undefined;
   });
 
   it('init', ()=>{

@@ -14,8 +14,8 @@ define([
   'alertify', 'sources/pgadmin', 'pgadmin.browser',
   'backbone', 'pgadmin.backgrid', 'codemirror', 'pgadmin.backform',
   'pgadmin.tools.debugger.ui', 'pgadmin.tools.debugger.utils',
-  'tools/datagrid/static/js/show_query_tool', 'sources/utils',
-  'pgadmin.authenticate.kerberos', 'tools/datagrid/static/js/datagrid_panel_title',
+  'tools/sqleditor/static/js/show_query_tool', 'sources/utils',
+  'pgadmin.authenticate.kerberos', 'tools/sqleditor/static/js/sqleditor_title',
   'wcdocker', 'pgadmin.browser.frame',
 ], function(
   gettext, url_for, $, _, Alertify, pgAdmin, pgBrowser, Backbone, Backgrid,

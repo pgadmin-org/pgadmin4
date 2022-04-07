@@ -22,17 +22,16 @@ ExternalIcon.propTypes = {
   Icon: PropTypes.elementType.isRequired,
 };
 
-export const QueryToolIcon = ()=><ExternalIcon Icon={QueryToolSvg} style={{height: '0.7em'}} />;
-export const SaveDataIcon = ()=><ExternalIcon Icon={SaveDataSvg} style={{height: '0.7em'}} />;
+export const QueryToolIcon = ()=><ExternalIcon Icon={QueryToolSvg} style={{height: '1rem'}} />;
+export const SaveDataIcon = ()=><ExternalIcon Icon={SaveDataSvg} style={{height: '1rem'}} />;
 export const PasteIcon = ()=><ExternalIcon Icon={PasteSvg} />;
 export const FilterIcon = ()=><ExternalIcon Icon={FilterSvg} />;
 export const CommitIcon = ()=><ExternalIcon Icon={CommitSvg} />;
 export const RollbackIcon = ()=><ExternalIcon Icon={RollbackSvg} />;
 export const ClearIcon = ()=><ExternalIcon Icon={ClearSvg} />;
-export const ConnectedIcon = ()=><ExternalIcon Icon={ConnectedSvg} style={{height: '0.7em'}} />;
-export const DisonnectedIcon = ()=><ExternalIcon Icon={DisconnectedSvg} style={{height: '0.7em'}} />;
+export const ConnectedIcon = ()=><ExternalIcon Icon={ConnectedSvg} style={{height: '1rem'}} />;
+export const DisonnectedIcon = ()=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem'}} />;
 export const RegexIcon = ()=><ExternalIcon Icon={RegexSvg} />;
 export const FormatCaseIcon = ()=><ExternalIcon Icon={FormatCaseSvg} />;
-export const ExpandDialogIcon = ()=><ExternalIcon Icon={Expand} style={{height: '1.2em'}}  />;
-export const MinimizeDialogIcon = ()=><ExternalIcon Icon={Collapse} style={{height: '1.4em'}} />;
-
+export const ExpandDialogIcon = ()=><ExternalIcon Icon={Expand} style={{height: '1.2rem'}}  />;
+export const MinimizeDialogIcon = ()=><ExternalIcon Icon={Collapse} style={{height: '1.4rem'}} />;

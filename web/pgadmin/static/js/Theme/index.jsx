@@ -81,7 +81,7 @@ basicSettings = createMuiTheme(basicSettings, {
           height: '28px',
           fontSize: '0.875rem',
           '& .MuiSvgIcon-root': {
-            height: '0.8em',
+            height: '1.2rem',
           }
         },
       },
@@ -167,13 +167,17 @@ basicSettings = createMuiTheme(basicSettings, {
     MuiDialog: {
       paper: {
         margin: 0,
+      },
+      scrollPaper: {
+        alignItems: 'flex-start',
+        margin: '5% auto',
       }
     },
     MuiTooltip: {
       popper: {
         top: 0,
         zIndex: 9999,
-      }
+      },
     },
     MuiMenu: {
       list: {
@@ -231,6 +235,9 @@ basicSettings = createMuiTheme(basicSettings, {
     MuiListItem: {
       disableGutters: true,
     },
+    MuiTooltip: {
+      arrow: true,
+    }
   },
 });
 
@@ -460,6 +467,7 @@ function getFinalTheme(baseTheme) {
       MuiCardHeader: {
         root: {
           padding: '4px 8px',
+          backgroundColor: baseTheme.otherVars.cardHeaderBg,
           ...mixins.panelBorder.bottom,
         }
       },
@@ -487,10 +495,21 @@ function getFinalTheme(baseTheme) {
           '&$selected': {
             backgroundColor: baseTheme.palette.primary.light,
             borderColor: baseTheme.palette.primary.main,
+            color: basicSettings.palette.getContrastText(baseTheme.palette.primary.light),
             '&:hover': {
               backgroundColor: baseTheme.palette.primary.light,
             }
           },
+        }
+      },
+      MuiTooltip: {
+        tooltip: {
+          fontSize: '0.7rem',
+          color: baseTheme.palette.background.default,
+          backgroundColor: baseTheme.palette.text.primary,
+        },
+        arrow: {
+          color: baseTheme.palette.text.primary,
         }
       }
     }

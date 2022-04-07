@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useRef, useMemo } from 'react';
 import DockLayout from 'rc-dock';
 import { makeStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
-import CustomPropTypes from '../custom_prop_types';
+import EventBus from './EventBus';
+import getApiInstance from '../api_instance';
+import url_for from 'sources/url_for';
+import { PgIconButton } from '../components/Buttons';
+import CloseIcon from '@material-ui/icons/CloseRounded';
+import gettext from 'sources/gettext';
+import {ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
 
 
 const useStyles = makeStyles((theme)=>({
@@ -26,10 +32,21 @@ const useStyles = makeStyles((theme)=>({
       paddingLeft: 0,
       backgroundColor: theme.palette.background.default,
       ...theme.mixins.panelBorder.bottom,
+      '& .dock-nav-wrap': {
+        cursor: 'move',
+      }
     },
     '& .dock-panel': {
       border: 'none',
+      '&.dragging': {
+        opacity: 0.6,
+        pointerEvents: 'visible',
+      },
+      '& .dock':  {
+        borderRadius: 'inherit',
+      },
       '&.dock-style-dialogs': {
+        borderRadius: theme.shape.borderRadius,
         '&.dock-panel.dragging': {
           opacity: 1,
         },
@@ -46,6 +63,10 @@ const useStyles = makeStyles((theme)=>({
             color: theme.palette.text.primary,
           }
         },
+      },
+      '& .dock-tabpane': {
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
       }
     },
     '& .dock-tab': {
@@ -54,9 +75,32 @@ const useStyles = makeStyles((theme)=>({
       marginRight: 0,
       background: 'unset',
       fontWeight: 'unset',
+      color: theme.palette.text.primary,
       '&::hover': {
         color: 'unset',
+      },
+      '& > div': {
+        padding: '4px 10px',
+      },
+      '& .drag-initiator': {
+        display: 'flex',
+        '& .dock-tab-close-btn': {
+          color: theme.palette.text.primary,
+          position: 'unset',
+          marginLeft: '8px',
+          fontSize: '18px',
+          transition: 'none',
+          '&::before': {
+            content: '"\\00d7"',
+            position: 'relative',
+            top: '-5px',
+          }
+        }
       }
+    },
+    '& .dock-extra-content': {
+      alignItems: 'center',
+      paddingRight: '10px',
     },
     '& .dock-vbox, & .dock-hbox .dock-vbox': {
       '& .dock-divider': {
@@ -91,25 +135,33 @@ const useStyles = makeStyles((theme)=>({
     },
     '& .dock-fbox': {
       zIndex: 1060,
+    },
+    '& .dock-mbox': {
+      zIndex: 1080,
+    },
+    '& .drag-accept-reject::after': {
+      content: '',
     }
   }
 }));
 
+export const LayoutEventsContext = React.createContext();
 
 export class LayoutHelper {
   static getPanel(attrs) {
     return {
       cached: true,
+      group: 'default',
       ...attrs,
     };
   }
 
   static close(docker, panelId) {
-    docker.dockMove(docker.find(panelId), 'remove');
+    docker?.dockMove(docker.find(panelId), 'remove');
   }
 
   static focus(docker, panelId) {
-    docker.updateTab(panelId, null, true);
+    docker?.updateTab(panelId, null, true);
   }
 
   static openDialog(docker, panelData, width=500, height=300) {
@@ -128,10 +180,14 @@ export class LayoutHelper {
         tabs: [LayoutHelper.getPanel({
           ...panelData,
           group: 'dialogs',
-          closable: true,
+          closable: false,
         })],
       }, null, 'float');
     }
+  }
+
+  static isTabOpen(docker, panelId) {
+    return Boolean(docker.find(panelId));
   }
 
   static openTab(docker, panelData, refTabId, direction, forceRerender=false) {
@@ -149,31 +205,110 @@ export class LayoutHelper {
   }
 }
 
-export default function Layout({groups, layoutInstance, ...props}) {
+function saveLayout(layoutObj, layoutId) {
+  let api = getApiInstance();
+  if(!layoutId || !layoutObj) {
+    return;
+  }
+  const formData = new FormData();
+  formData.append('setting', layoutId);
+  formData.append('value', JSON.stringify(layoutObj.saveLayout()));
+  api.post(url_for('settings.store_bulk'), formData)
+    .catch(()=>{/* No need to throw error */});
+}
+
+function getDialogsGroup() {
+  return {
+    disableDock: true,
+    tabLocked: true,
+    floatable: 'singleTab',
+    panelExtra: (panelData, context) => (
+      <div>
+        <PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={()=>{
+          context.dockMove(panelData, null, 'remove');
+        }} />
+      </div>
+    )
+  };
+}
+
+function getDefaultGroup() {
+  return {
+    maximizable: false,
+    panelExtra: (panelData, context) => {
+      let icon = <ExpandDialogIcon style={{width: '0.7em'}}/>;
+      let title = gettext('Maximise');
+      if(panelData?.parent?.mode == 'maximize') {
+        icon = <MinimizeDialogIcon />;
+        title = gettext('Restore');
+      }
+      return <div>
+        <PgIconButton title={title} icon={icon} size="xs" noBorder onClick={()=>{
+          context.dockMove(panelData, null, 'maximize');
+        }} />
+      </div>;
+    }
+  };
+}
+
+export default function Layout({groups, getLayoutInstance, layoutId, savedLayout, ...props}) {
   const classes = useStyles();
+  const layoutObj = useRef();
   const defaultGroups = React.useMemo(()=>({
-    'dialogs': {
-      disableDock: true,
-      tabLocked: true,
-      floatable: 'singleTab',
-    },
+    'dialogs': getDialogsGroup(),
+    'default': getDefaultGroup(),
     ...groups,
   }), [groups]);
-  return (
+
+  const layoutEventBus = React.useRef(new EventBus());
+  return useMemo(()=>(
     <div className={classes.docklayout}>
-      <DockLayout
-        style={{
-          height: '100%',
-        }}
-        ref={layoutInstance}
-        groups={defaultGroups}
-        {...props}
-      />
+      <LayoutEventsContext.Provider value={layoutEventBus.current}>
+        <DockLayout
+          style={{
+            height: '100%',
+          }}
+          ref={(obj)=>{
+            layoutObj.current = obj;
+            if(layoutObj.current) {
+              layoutObj.current.resetLayout = ()=>{
+                layoutObj.current.loadLayout(props.defaultLayout);
+                saveLayout(layoutObj.current, layoutId);
+              };
+            }
+            getLayoutInstance?.(layoutObj.current);
+            try {
+              layoutObj.current?.loadLayout(JSON.parse(savedLayout));
+            } catch {
+              /* Fallback to default */
+              layoutObj.current?.loadLayout(props.defaultLayout);
+            }
+          }}
+          groups={defaultGroups}
+          onLayoutChange={(_l, currentTabId, direction)=>{
+            saveLayout(layoutObj.current, layoutId);
+            if(Object.values(LAYOUT_EVENTS).indexOf(direction) > -1) {
+              layoutEventBus.current.fireEvent(LAYOUT_EVENTS[direction.toUpperCase()], currentTabId);
+            }
+          }}
+          {...props}
+        />
+      </LayoutEventsContext.Provider>
     </div>
-  );
+  ), []);
 }
 
 Layout.propTypes = {
   groups: PropTypes.object,
-  layoutInstance: CustomPropTypes.ref,
+  getLayoutInstance: PropTypes.func,
+};
+
+
+export const LAYOUT_EVENTS = {
+  ACTIVE: 'active',
+  REMOVE: 'remove',
+  FLOAT: 'float',
+  FRONT: 'front',
+  MAXIMIZE: 'maximize',
+  MOVE: 'move',
 };

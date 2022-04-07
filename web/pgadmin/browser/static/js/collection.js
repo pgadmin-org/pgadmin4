@@ -119,8 +119,8 @@ define([
         );
       },
       show_query_tool: function() {
-        if(pgAdmin.DataGrid) {
-          pgAdmin.DataGrid.show_query_tool('', pgAdmin.Browser.tree.selected());
+        if(pgAdmin.Tools.SQLEditor) {
+          pgAdmin.Tools.SQLEditor.showQueryTool('', pgAdmin.Browser.tree.selected());
         }
       },
       show_search_objects: function() {

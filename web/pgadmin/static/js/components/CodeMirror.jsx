@@ -8,11 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {default as OrigCodeMirror} from 'bundled_codemirror';
+import OrigCodeMirror from 'bundled_codemirror';
 import {useOnScreen} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
-import pgAdmin from 'sources/pgadmin';
+import pgWindow from 'sources/window';
 import gettext from 'sources/gettext';
 import { Box, InputAdornment, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
@@ -30,6 +30,11 @@ import { isMac } from '../keyboard_shortcuts';
 const useStyles = makeStyles((theme)=>({
   root: {
     position: 'relative',
+  },
+  hideCursor: {
+    '& .CodeMirror-cursors': {
+      display: 'none'
+    }
   },
   findDialog: {
     position: 'absolute',
@@ -70,31 +75,40 @@ function parseQuery(query, useRegex=false, matchCase=false) {
   return query;
 }
 
+function getRegexFinder(query) {
+  return (stream) => {
+    query.lastIndex = stream.pos;
+    var match = query.exec(stream.string);
+    if (match && match.index == stream.pos) {
+      stream.pos += match[0].length || 1;
+      return 'searching';
+    } else if (match) {
+      stream.pos = match.index;
+    } else {
+      stream.skipToEnd();
+    }
+  };
+}
+
+
+function getPlainStringFinder(query, matchCase) {
+  return (stream) => {
+    var matchIndex = (matchCase ? stream.string :  stream.string.toLowerCase()).indexOf(query, stream.pos);
+    if(matchIndex == -1) {
+      stream.skipToEnd();
+    } else if(matchIndex == stream.pos) {
+      stream.pos += query.length;
+      return 'searching';
+    } else {
+      stream.pos = matchIndex;
+    }
+  };
+}
+
 function searchOverlay(query, matchCase) {
   return {
     token: typeof query == 'string' ?
-      (stream) =>{
-        var matchIndex = (matchCase ? stream.string :  stream.string.toLowerCase()).indexOf(query, stream.pos);
-        if(matchIndex == -1) {
-          stream.skipToEnd();
-        } else if(matchIndex == stream.pos) {
-          stream.pos += query.length;
-          return 'searching';
-        } else {
-          stream.pos = matchIndex;
-        }
-      } : (stream) => {
-        query.lastIndex = stream.pos;
-        var match = query.exec(stream.string);
-        if (match && match.index == stream.pos) {
-          stream.pos += match[0].length || 1;
-          return 'searching';
-        } else if (match) {
-          stream.pos = match.index;
-        } else {
-          stream.skipToEnd();
-        }
-      }
+      getPlainStringFinder(query, matchCase) : getRegexFinder(query)
   };
 }
 
@@ -260,28 +274,96 @@ FindDialog.propTypes = {
   onClose: PropTypes.func,
 };
 
+function handleDrop(editor, e) {
+  var dropDetails = null;
+  try {
+    dropDetails = JSON.parse(e.dataTransfer.getData('text'));
+
+    /* Stop firefox from redirecting */
+
+    if(e.preventDefault) {
+      e.preventDefault();
+    }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  } catch(error) {
+    /* if parsing fails, it must be the drag internal of codemirror text */
+    return;
+  }
+
+  var cursor = editor.coordsChar({
+    left: e.x,
+    top: e.y,
+  });
+  editor.replaceRange(dropDetails.text, cursor);
+  editor.focus();
+  editor.setSelection({
+    ...cursor,
+    ch: cursor.ch + dropDetails.cur.from,
+  },{
+    ...cursor,
+    ch: cursor.ch +dropDetails.cur.to,
+  });
+}
+
+function calcFontSize(fontSize) {
+  if(fontSize) {
+    fontSize = parseFloat((Math.round(parseFloat(fontSize + 'e+2')) + 'e-2'));
+    let rounded = Number(fontSize);
+    if(rounded > 0) {
+      return rounded + 'em';
+    }
+  }
+  return '1em';
+}
+
 /* React wrapper for CodeMirror */
-export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className}) {
+export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className, autocomplete=false}) {
   const taRef = useRef();
   const editor = useRef();
   const cmWrapper = useRef();
   const isVisibleTrack = useRef();
   const classes = useStyles();
   const [[showFind, isReplace], setShowFind] = useState([false, false]);
-  const defaultOptions = {
-    tabindex: '0',
-    lineNumbers: true,
-    styleSelectedText: true,
-    mode: 'text/x-pgsql',
-    foldOptions: {
-      widget: '\u2026',
-    },
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-    extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-    dragDrop: false,
-    screenReaderLabel: gettext('SQL editor'),
-  };
+  const defaultOptions = useMemo(()=>{
+    let goLeftKey = 'Ctrl-Alt-Left',
+      goRightKey = 'Ctrl-Alt-Right',
+      commentKey = 'Ctrl-/';
+    if(isMac()) {
+      goLeftKey = 'Cmd-Alt-Left';
+      goRightKey = 'Cmd-Alt-Right';
+      commentKey = 'Cmd-/';
+    }
+    return {
+      tabindex: '0',
+      lineNumbers: true,
+      styleSelectedText: true,
+      mode: 'text/x-pgsql',
+      foldOptions: {
+        widget: '\u2026',
+      },
+      foldGutter: true,
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+      extraKeys: {
+        // Autocomplete sql command
+        ...(autocomplete ? {
+          'Ctrl-Space': 'autocomplete',
+        }: {}),
+        'Alt-Up': 'goLineUp',
+        'Alt-Down': 'goLineDown',
+        // Move word by word left/right
+        [goLeftKey]: 'goGroupLeft',
+        [goRightKey]: 'goGroupRight',
+        // Allow user to delete Tab(s)
+        'Shift-Tab': 'indentLess',
+        //comment
+        [commentKey]: 'toggleComment',
+      },
+      dragDrop: true,
+      screenReaderLabel: gettext('SQL editor'),
+    };
+  });
 
   useEffect(()=>{
     const finalOptions = {...defaultOptions, ...options};
@@ -317,29 +399,61 @@ export default function CodeMirror({currEditor, name, value, options, events, re
             setShowFind([false, false]);
             setShowFind([true, true]);
           }
-        }
+        },
+        'Cmd-G': false,
       });
     }
 
     Object.keys(events||{}).forEach((eventName)=>{
       editor.current.on(eventName, events[eventName]);
     });
-
+    editor.current.on('drop', handleDrop);
+    initPreferences();
     return ()=>{
       editor.current?.toTextArea();
     };
   }, []);
 
+  const initPreferences = ()=>{
+    reflectPreferences();
+    pgWindow?.pgAdmin?.Browser?.onPreferencesChange('sqleditor', function() {
+      reflectPreferences();
+    });
+  };
+
+  const reflectPreferences = ()=>{
+    let pref = pgWindow?.pgAdmin?.Browser?.get_preferences_for_module('sqleditor') || {};
+    let wrapEle = editor?.current.getWrapperElement();
+    wrapEle && (wrapEle.style.fontSize = calcFontSize(pref.sql_font_size));
+
+    if(pref.plain_editor_mode) {
+      editor?.current.setOption('mode', 'text/plain');
+      /* Although not required, setting explicitly as codemirror will remove code folding only on next edit */
+      editor?.current.setOption('foldGutter', false);
+    } else {
+      editor?.current.setOption('mode', 'text/x-pgsql');
+      editor?.current.setOption('foldGutter', pref.code_folding);
+    }
+
+    editor?.current.setOption('indentWithTabs', pref.indent_with_tabs);
+    editor?.current.setOption('indentUnit', pref.tab_size);
+    editor?.current.setOption('tabSize', pref.tab_size);
+    editor?.current.setOption('lineWrapping', pref.wrap_code);
+    editor?.current.setOption('autoCloseBrackets', pref.insert_pair_brackets);
+    editor?.current.setOption('matchBrackets', pref.brace_matching);
+    editor?.current.refresh();
+  };
+
   useEffect(()=>{
     if(editor.current) {
       if(disabled) {
-        cmWrapper.current.classList.add('cm_disabled');
-        editor.current.setOption('readOnly', 'nocursor');
+        editor.current.setOption('readOnly', true);
+        cmWrapper.current.classList.add(classes.hideCursor);
       } else if(readonly) {
-        cmWrapper.current.classList.add('cm_disabled');
         editor.current.setOption('readOnly', true);
         editor.current.addKeyMap({'Tab': false});
         editor.current.addKeyMap({'Shift-Tab': false});
+        cmWrapper.current.classList.add(classes.hideCursor);
       } else {
         cmWrapper.current.classList.remove('cm_disabled');
         editor.current.setOption('readOnly', false);
@@ -392,4 +506,5 @@ CodeMirror.propTypes = {
   readonly: PropTypes.bool,
   disabled: PropTypes.bool,
   className: CustomPropTypes.className,
+  autocomplete: PropTypes.bool,
 };

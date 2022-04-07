@@ -207,6 +207,7 @@ FormInputSQL.propTypes = {
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
   value: PropTypes.string,
+  controlProps: PropTypes.object,
   noLabel: PropTypes.bool,
   change: PropTypes.func,
 };
@@ -570,7 +571,7 @@ export function InputRadio({ helpid, value, onChange, controlProps, readonly, ..
           disableRipple
           {...props}
         />
-          
+
       }
       label={controlProps.label}
       className={(readonly || props.disabled) ? classes.readOnlySwitch : null}
@@ -820,6 +821,7 @@ export const InputSelect = forwardRef(({
   cid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, ...props }, ref) => {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
+
 
   /* React will always take options var as changed parameter. So,
   We cannot run the below effect with options dependency as it will keep on
@@ -1174,20 +1176,21 @@ const useStylesFormFooter = makeStyles((theme) => ({
 }));
 
 /* The form footer used mostly for showing error */
-export function FormFooterMessage(props) {
+export function FormFooterMessage({style, ...props}) {
   const classes = useStylesFormFooter();
 
   if (!props.message) {
     return <></>;
   }
   return (
-    <Box className={classes.root}>
+    <Box className={classes.root} style={style}>
       <NotifierMessage {...props}></NotifierMessage>
     </Box>
   );
 }
 
 FormFooterMessage.propTypes = {
+  style: PropTypes.object,
   message: PropTypes.string,
 };
 

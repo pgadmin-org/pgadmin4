@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getPanelTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
+import {getPanelTitle} from 'tools/sqleditor/static/js/sqleditor_title';
 import {getRandomInt, registerDetachEvent} from 'sources/utils';
 import Notify from '../../../../static/js/helpers/Notifier';
 

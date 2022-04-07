@@ -10,7 +10,7 @@ import sys
 from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
-    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER
+    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER, VW_EDT_DEFAULT_PLACEHOLDER
 from flask_security import current_user
 import config
 
@@ -483,7 +483,7 @@ def register_browser_preferences(self):
     self.ve_edt_tab_title = self.preference.register(
         'tab_settings', 'vw_edt_tab_title_placeholder',
         gettext("View/Edit data tab title"),
-        'text', '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
+        'text', VW_EDT_DEFAULT_PLACEHOLDER,
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
             'Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, '

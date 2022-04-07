@@ -54,7 +54,8 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
-    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER
+    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER,\
+    VW_EDT_DEFAULT_PLACEHOLDER
 from pgadmin.authenticate import AuthSourceManager
 
 try:
@@ -854,6 +855,7 @@ def utils():
             logout_url=get_logout_url(),
             platform=sys.platform,
             qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
+            vw_edt_default_placeholder=VW_EDT_DEFAULT_PLACEHOLDER,
             enable_psql=config.ENABLE_PSQL
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})

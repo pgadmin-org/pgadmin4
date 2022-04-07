@@ -9,7 +9,7 @@ import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import * as erdModule from 'pgadmin.tools.erd/erd_module';
 import erdPref from './erd_preferences';
 import BodyWidget from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
-import * as ERDSqlTool from 'tools/datagrid/static/js/show_query_tool';
+import * as ERDSqlTool from 'tools/sqleditor/static/js/show_query_tool';
 import { FakeLink, FakeNode, FakePort } from '../fake_item';
 import Notify from '../../../../pgadmin/static/js/helpers/Notifier';
 
@@ -42,6 +42,9 @@ let pgAdmin = {
     init: jasmine.createSpy(),
     show_dialog: jasmine.createSpy(),
   },
+  Tools: {
+    SQLEditor: {},
+  }
 };
 
 let pgWindow = {

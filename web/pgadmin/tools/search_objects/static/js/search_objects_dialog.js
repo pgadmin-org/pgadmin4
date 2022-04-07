@@ -9,7 +9,7 @@
 
 import gettext from 'sources/gettext';
 import {Dialog} from 'sources/alertify/dialog';
-import {getPanelTitle} from 'tools/datagrid/static/js/datagrid_panel_title';
+import {getPanelTitle} from 'tools/sqleditor/static/js/sqleditor_title';
 import {retrieveAncestorOfTypeDatabase} from 'sources/tree/tree_utils';
 
 export default class SearchObjectsDialog extends Dialog {

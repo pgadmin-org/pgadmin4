@@ -18,7 +18,7 @@ import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
 import Notify from '../../../../static/js/helpers/Notifier';
 
-import {generateTitle, refresh_db_node} from 'tools/datagrid/static/js/datagrid_panel_title';
+import {generateTitle, refresh_db_node} from 'tools/sqleditor/static/js/sqleditor_title';
 
 
 export function setPanelTitle(psqlToolPanel, panelTitle) {

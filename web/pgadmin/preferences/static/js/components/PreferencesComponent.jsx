@@ -26,7 +26,7 @@ import pgAdmin from 'sources/pgadmin';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getBinaryPathSchema } from '../../../../browser/server_groups/servers/static/js/binary_path.ui';
-import { _set_dynamic_tab } from '../../../../tools/datagrid/static/js/show_query_tool';
+import { _set_dynamic_tab } from '../../../../tools/sqleditor/static/js/show_query_tool';
 
 class PreferencesSchema extends BaseUISchema {
   constructor(initValues = {}, schemaFields = []) {
@@ -289,7 +289,7 @@ export default function PreferencesComponent({ ...props }) {
         if(_el.name == 'column_data_auto_resize') {
           size_control_id = _el.id;
         }
-        
+
       });
       element.disabled = (state) => {
         return state[size_control_id] != 'by_data';
@@ -343,7 +343,7 @@ export default function PreferencesComponent({ ...props }) {
     }
 
     if (note && note.length > 0) {
-      //Add Note for Nodes 
+      //Add Note for Nodes
       preferencesData.push(
         {
           id: _.uniqueId('note') + subNode.id,

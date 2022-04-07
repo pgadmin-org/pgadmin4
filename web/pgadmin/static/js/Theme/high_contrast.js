@@ -80,17 +80,23 @@ export default function(basicSettings) {
       }
     },
     otherVars: {
-      borderColor: '#4a4a4a',
+      borderColor: '#A6B7C8',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: '#1F2932',
       headerBg: '#010B15',
-      activeColor: '#d4d4d4',
+      activeBorder: '#fff',
+      activeColor: '#fff',
       tableBg: '#010B15',
       activeStepBg: '#84D6FF',
       activeStepFg: '#010b15',
       stepBg: '#FFFFFF',
       stepFg: '#000',
       toggleBtnBg: '#6B6B6B',
+      editorToolbarBg: '#010B15',
+      qtDatagridBg: '#010B15',
+      qtDatagridSelectFg: '#010B15',
+      cardHeaderBg: '#062F57',
+      colorFg: '#FFFFFF',
       emptySpaceBg: '#010B15',
     }
   });

@@ -112,7 +112,6 @@ class StartRunningQueryTest(BaseTestGenerator):
                             'not found.',
                      can_edit=False,
                      can_filter=False,
-                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -273,7 +272,6 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -318,7 +316,6 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -363,7 +360,6 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -409,7 +405,6 @@ class StartRunningQueryTest(BaseTestGenerator):
                      result='async function result output',
                      can_edit=True,
                      can_filter=True,
-                     info_notifier_timeout=5000,
                      notifies=None,
                      transaction_status=None
                  )
@@ -444,8 +439,7 @@ class StartRunningQueryTest(BaseTestGenerator):
         if self.expect_internal_server_error_called_with is not None:
             internal_server_error_mock.return_value = expected_response
         pickle_mock.loads.return_value = self.pickle_load_return
-        blueprint_mock = MagicMock(
-            info_notifier_timeout=MagicMock(get=lambda: 5))
+        blueprint_mock = MagicMock()
 
         # Save value for the later use
         self.is_begin_required_for_sql_query = \

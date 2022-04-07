@@ -14,7 +14,7 @@ let svgDownloader = {
   },
 
   downloadSVG: function(content, fileName)  {
-    // Safari xlink NS issue fix
+    // Safari xlink NS issue fixblobURL
     content = content.replace(/NS\d+:href/gi, 'xlink:href');
 
     var svgURL = this.blobURL(content, 'image/svg+xml');

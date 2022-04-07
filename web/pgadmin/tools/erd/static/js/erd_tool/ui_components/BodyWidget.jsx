@@ -22,7 +22,7 @@ import FloatingNote from './FloatingNote';
 import {setPanelTitle} from '../../erd_module';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
-import {showERDSqlTool} from 'tools/datagrid/static/js/show_query_tool';
+import {showERDSqlTool} from 'tools/sqleditor/static/js/show_query_tool';
 import 'wcdocker';
 import Theme from '../../../../../../static/js/Theme';
 import TableSchema from '../../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
@@ -579,7 +579,7 @@ export default class BodyWidget extends React.Component {
 
         let sqlId = `erd${this.props.params.trans_id}`;
         localStorage.setItem(sqlId, sqlScript);
-        showERDSqlTool(parentData, sqlId, this.props.params.title, this.props.pgWindow.pgAdmin.DataGrid, this.props.alertify);
+        showERDSqlTool(parentData, sqlId, this.props.params.title, this.props.pgWindow.pgAdmin.Tools.SQLEditor, this.props.alertify);
       })
       .catch((error)=>{
         this.handleAxiosCatch(error);

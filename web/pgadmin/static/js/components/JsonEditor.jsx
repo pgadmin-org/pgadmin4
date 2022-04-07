@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
 /* React wrapper for JsonEditor */
-export default function JsonEditor({currEditor, value, options, className}) {
+export default function JsonEditor({getEditor, value, options, className}) {
   const eleRef = useRef();
   const editor = useRef();
   const defaultOptions = {
@@ -34,9 +34,10 @@ export default function JsonEditor({currEditor, value, options, className}) {
       }
     });
     editor.current.setText(value);
-    currEditor && currEditor(editor.current);
+    getEditor?.(editor.current);
     editor.current.focus();
-    return ()=>editor.current?.destroy();
+    /* Required by json editor */
+    eleRef.current.style.height = eleRef.current.offsetHeight + 'px';
   }, []);
 
   useMemo(() => {
@@ -53,7 +54,7 @@ export default function JsonEditor({currEditor, value, options, className}) {
 }
 
 JsonEditor.propTypes = {
-  currEditor: PropTypes.func,
+  getEditor: PropTypes.func,
   value: PropTypes.string,
   options: PropTypes.object,
   className: CustomPropTypes.className,
