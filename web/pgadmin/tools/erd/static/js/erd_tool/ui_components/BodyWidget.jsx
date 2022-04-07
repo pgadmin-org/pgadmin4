@@ -657,11 +657,24 @@ export default class BodyWidget extends React.Component {
     };
 
     setTimeout(()=>{
+      let width = this.canvasEle.scrollWidth + 10;
+      let height = this.canvasEle.scrollHeight + 10;
+      let isCut = false;
+      /* Canvas limitation - https://html2canvas.hertzen.com/faq */
+      if(width >= 32767){
+        width = 32766;
+        isCut = true;
+      }
+      if(height >= 32767){
+        height = 32766;
+        isCut = true;
+      }
       html2canvas(this.canvasEle, {
-        width: this.canvasEle.scrollWidth + 10,
-        height: this.canvasEle.scrollHeight + 10,
+        width: width,
+        height: height,
         scrollX: 0,
         scrollY: 0,
+        scale: 1,
         useCORS: true,
         allowTaint: true,
         backgroundColor: window.getComputedStyle(this.canvasEle).backgroundColor,
@@ -691,6 +704,10 @@ export default class BodyWidget extends React.Component {
           ele.style.transform = prevTransform;
         });
         this.setLoading(null);
+        if(isCut) {
+          Notify.alert(gettext('Maximum image size limit'),
+            gettext('The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, and has been cropped to that size.'));
+        }
       });
     }, 1000);
   }
