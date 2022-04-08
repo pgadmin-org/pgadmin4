@@ -55,6 +55,9 @@ cat << EOF > "${BUILDROOT}/server.spec"
 %define __python /bin/true
 %endif
 
+# Don't strip binaries when packaging them as this might break cpython modules
+%define __strip /bin/true
+
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
 
