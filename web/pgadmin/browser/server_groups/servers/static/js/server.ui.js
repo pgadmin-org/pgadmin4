@@ -415,7 +415,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'db_res', label: gettext('DB restriction'), type: 'select', group: gettext('Advanced'),
         options: [],
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, controlProps: {
-          multiple: true, allowClear: false, creatable: true, noDropdown: true},
+          multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: 'Specify the databases to be restrict...'},
       },
       {
         id: 'passfile', label: gettext('Password file'), type: 'file',

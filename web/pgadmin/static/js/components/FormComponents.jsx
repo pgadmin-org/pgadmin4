@@ -895,6 +895,8 @@ export const InputSelect = forwardRef(({
     components: {
       Option: CustomSelectOption,
       SingleValue: CustomSelectSingleValue,
+      IndicatorSeparator: (props) => controlProps.noDropdown ? null: <RSComponents.IndicatorSeparator {...props} />,
+      DropdownIndicator: (props) => controlProps.noDropdown ? null: <RSComponents.DropdownIndicator {...props} />
     },
     isMulti: Boolean(controlProps.multiple),
     openMenuOnClick: !readonly,
@@ -915,7 +917,13 @@ export const InputSelect = forwardRef(({
     );
   } else {
     return (
-      <CreatableSelect ref={ref} {...commonProps} />
+      <CreatableSelect
+        ref={ref}
+        {...commonProps}
+        noOptionsMessage={() =>
+          !controlProps.noDropdown ? 'No options' : null
+        }
+      />
     );
   }
 });

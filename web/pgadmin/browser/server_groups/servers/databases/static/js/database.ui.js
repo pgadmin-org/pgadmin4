@@ -198,7 +198,7 @@ export default class DatabaseSchema extends BaseUISchema {
         helpMessage: gettext('Note: Changes to the schema restriction will require the Schemas node in the browser to be refreshed before they will be shown.'),
         helpMessageMode: ['edit', 'create'],
         controlProps: {
-          multiple: true, allowClear: false, creatable: true,
+          multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: 'Specify the schemas to be restrict...'
         }, depChange: (state)=>{
           if(!_.isUndefined(state.oid)) {
             obj.informText = undefined;
