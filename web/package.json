@@ -137,7 +137,7 @@
     "leaflet": "^1.5.1",
     "lodash": "4.*",
     "ml-matrix": "^6.5.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.33",
     "mousetrap": "^1.6.3",
     "notificar": "^1.0.1",
