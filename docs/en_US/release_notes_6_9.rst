@@ -24,6 +24,7 @@ Bug fixes
 *********
 
   | `Issue #6725 <https://redmine.postgresql.org/issues/6725>`_ -  Fixed an issue where the Query tool opens on minimum size if the user opens multiple query tool Window quickly.
+  | `Issue #7168 <https://redmine.postgresql.org/issues/7168>`_ -  Improvement to the Geometry Viewer popup to change the size of the result tables when column names are quite long.
   | `Issue #7187 <https://redmine.postgresql.org/issues/7187>`_ -  Fixed an issue where the downloaded ERD diagram was 0 bytes.
   | `Issue #7188 <https://redmine.postgresql.org/issues/7188>`_ -  Fixed an issue where the connection bar is not visible.
   | `Issue #7231 <https://redmine.postgresql.org/issues/7231>`_ -  Don't strip binaries when packaging them in the server RPM as this might break cpython modules.

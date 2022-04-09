@@ -24,7 +24,11 @@ const useStyles = makeStyles((theme)=>({
   mapContainer: {
     backgroundColor: theme.palette.background.default,
     height: '100%',
-    width: '100%'
+    width: '100%',
+    '& .leaflet-popup-content': {
+      overflow: 'auto',
+      margin: '8px',
+    }
   },
   table: {
     borderSpacing: 0,
@@ -38,7 +42,6 @@ const useStyles = makeStyles((theme)=>({
     ...theme.mixins.panelBorder.right,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
   },
   tableCellHead: {
     fontWeight: 'bold',
