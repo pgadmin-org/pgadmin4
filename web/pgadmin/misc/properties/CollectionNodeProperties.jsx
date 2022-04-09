@@ -162,12 +162,13 @@ export function CollectionNodeView({
           if (res.success == 0) {
             pgBrowser.report_error(res.errormsg, res.info);
           }
+          pgAdmin.Browser.tree.refresh(selItem);
           setReload(!reload);
         })
         .catch(function (error) {
           Notify.alert(
             gettext('Error dropping %s', selectedItemData._label.toLowerCase()),
-            error.response.data.errormsg
+            _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );
         });
     };
