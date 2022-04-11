@@ -5,6 +5,49 @@
   border-radius: $btn-border-radius;
 }
 
+.connection_status_wrapper {
+  width: 100%;
+  border-top: $panel-border;
+  border-bottom: $panel-border;
+}
+
+.connection_status .obtaining-conn {
+  background-image: $loader-icon-small !important;
+  background-position: center center;
+  background-repeat: no-repeat;
+  &:before {
+    content:'';
+  }
+  min-width: 50%;
+  min-height: 100%;
+}
+
+.connection_status {
+  background-color: $sql-title-bg;
+  color: $sql-title-fg;
+  border-right: $border-width solid $border-color;
+  padding: 0px 8px;
+}
+
+.editor-title {
+  padding: $sql-title-padding;
+  background: $sql-title-bg;
+  color: $sql-title-fg;
+}
+
+.connection-info {
+  background: $sql-title-bg;
+  color: $sql-title-fg;
+  width:100%;
+  display: inherit;
+}
+
+.connection-data {
+  display: inherit;
+  cursor: pointer;
+  width: auto;
+}
+
 #erd-tool-container {
 	width: 100%;
 	height: 100%;

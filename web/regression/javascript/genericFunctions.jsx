@@ -10,8 +10,9 @@
 import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import pgAdmin from 'sources/pgadmin';
-import {messages} from './fake_messages';
 import SchemaView from '../../pgadmin/static/js/SchemaView';
+import pgWindow from 'sources/window';
+import fakePgAdmin from './fake_pgadmin';
 
 export let getEditView = (schemaObj, getInitData)=> {
   return <SchemaView
@@ -68,7 +69,9 @@ export let getPropertiesView = (schemaObj, getInitData)=> {
 export let genericBeforeEach = ()=> {
   jasmineEnzyme();
   /* messages used by validators */
-  pgAdmin.Browser = pgAdmin.Browser || {};
-  pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-  pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+  pgAdmin.Browser = {
+    ...pgAdmin.Browser,
+    ...fakePgAdmin.Browser
+  };
+  pgWindow.pgAdmin = pgAdmin;
 };

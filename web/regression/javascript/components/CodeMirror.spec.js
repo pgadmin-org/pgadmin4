@@ -13,9 +13,11 @@ import '../helper/enzyme.helper';
 import {default as OrigCodeMirror} from 'bundled_codemirror';
 import { withTheme } from '../fake_theme';
 
+import pgWindow from 'sources/window';
 import CodeMirror from 'sources/components/CodeMirror';
 import { mount } from 'enzyme';
 import { FindDialog } from '../../../pgadmin/static/js/components/CodeMirror';
+import fakePgAdmin from '../fake_pgadmin';
 
 describe('CodeMirror', ()=>{
   let cmInstance, options={
@@ -56,29 +58,7 @@ describe('CodeMirror', ()=>{
     });
   beforeEach(()=>{
     jasmineEnzyme();
-    window.pgAdmin = {
-      Browser: {
-        Events: {
-          on: jasmine.createSpy('on'),
-        },
-        get_preferences_for_module: ()=>({}),
-        docker: {
-          findPanels: function() {
-            return [
-              {
-                isVisible: function() {
-                  return true;
-                },
-              },
-            ];
-          },
-        },
-        onPreferencesChange: ()=>{/*This is intentional (SonarQube)*/},
-        utils: {
-          app_version_int: 1234,
-        },
-      },
-    };
+    pgWindow.pgAdmin = fakePgAdmin;
     spyOn(OrigCodeMirror, 'fromTextArea').and.returnValue(cmObj);
     const ThemedCM = withTheme(CodeMirror);
     cmInstance = mount(
@@ -90,7 +70,7 @@ describe('CodeMirror', ()=>{
   });
 
   afterEach(()=>{
-    window.pgAdmin = undefined;
+    pgWindow.pgAdmin = undefined;
   });
 
   it('init', ()=>{

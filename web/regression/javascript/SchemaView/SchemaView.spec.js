@@ -340,18 +340,20 @@ describe('SchemaView', ()=>{
         ctrlMount({
           confirmOnCloseReset: false,
         });
-        ctrl.update();
-        simulateValidData();
-        onDataChange.calls.reset();
-        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
-        ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(confirmSpy).not.toHaveBeenCalled();
-          expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
-          expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-          expect(onDataChange).toHaveBeenCalledWith(false, {});
-          done();
+          simulateValidData();
+          onDataChange.calls.reset();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(confirmSpy).not.toHaveBeenCalled();
+            expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
+            expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
+            expect(onDataChange).toHaveBeenCalledWith(false, {});
+            done();
+          }, 0);
         }, 0);
       });
     });

@@ -444,10 +444,24 @@ function SchemaDialogView({
   const firstEleRef = useRef();
   const isNew = schema.isNew(schema.origData);
   const checkIsMounted = useIsMounted();
+  const preFormReadyQueue = useRef([]);
 
   const depListenerObj = useRef(new DepListener());
   /* The session data */
   const [sessData, sessDispatch] = useReducer(sessDataReducer, {});
+
+  useEffect(()=>{
+    /* Dispatch all the actions recorded before form ready */
+    if(formReady) {
+      if(preFormReadyQueue.current.length > 0) {
+        for (const dispatchPayload  of preFormReadyQueue.current) {
+          sessDispatch(dispatchPayload);
+        }
+      }
+      /* destroy the queue so that no one uses it */
+      preFormReadyQueue.current = undefined;
+    }
+  }, [formReady]);
 
   useEffect(()=>{
     /* if sessData changes, validate the schema */
@@ -663,11 +677,19 @@ function SchemaDialogView({
   };
 
   const sessDispatchWithListener = (action)=>{
-    sessDispatch({
+    let dispatchPayload = {
       ...action,
       depChange: (...args)=>depListenerObj.current.getDepChange(...args),
       deferredDepChange: (...args)=>depListenerObj.current.getDeferredDepChange(...args),
-    });
+    };
+    /* All the session changes coming before init should be queued up
+    They will be processed later when form is ready.
+    */
+    if(preFormReadyQueue.current) {
+      preFormReadyQueue.current.push(dispatchPayload);
+      return;
+    }
+    sessDispatch(dispatchPayload);
   };
 
   const stateUtils = useMemo(()=>({

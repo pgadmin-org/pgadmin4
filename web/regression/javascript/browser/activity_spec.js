@@ -10,6 +10,7 @@
 import pgAdmin from 'sources/pgadmin';
 import {pgBrowser} from 'pgadmin.browser.activity';
 import { getEpoch } from 'sources/utils';
+import pgWindow from 'sources/window';
 
 describe('For Activity', function(){
   beforeEach(function(){
@@ -17,7 +18,7 @@ describe('For Activity', function(){
     pgAdmin.override_user_inactivity_timeout = true;
 
     /* pgBrowser here is same as main window Browser */
-    window.pgAdmin = {
+    pgWindow.pgAdmin = {
       Browser: pgBrowser,
     };
   });
@@ -28,19 +29,19 @@ describe('For Activity', function(){
     });
 
     it('when timedout', function(){
-      window.pgAdmin = undefined;
+      pgWindow.pgAdmin = undefined;
       expect(pgBrowser.is_pgadmin_timedout()).toEqual(true);
     });
   });
 
   describe('is_inactivity_timeout', function(){
     it('when there is activity', function(){
-      window.pgAdmin.Browser.inactivity_timeout_at = getEpoch() + 30;
+      pgWindow.pgAdmin.Browser.inactivity_timeout_at = getEpoch() + 30;
       expect(pgBrowser.is_inactivity_timeout()).toEqual(false);
     });
 
     it('when there is no activity', function(){
-      window.pgAdmin.Browser.inactivity_timeout_at = getEpoch() - 30;
+      pgWindow.pgAdmin.Browser.inactivity_timeout_at = getEpoch() - 30;
       expect(pgBrowser.is_inactivity_timeout()).toEqual(true);
     });
   });
@@ -54,7 +55,7 @@ describe('For Activity', function(){
 
     it('initial log activity', function(){
       pgBrowser.log_activity();
-      expect(window.pgAdmin.Browser.inactivity_timeout_at).not.toBe(null);
+      expect(pgWindow.pgAdmin.Browser.inactivity_timeout_at).not.toBe(null);
       expect(pgBrowser.get_epoch_now).toHaveBeenCalled();
     });
 

@@ -29,6 +29,7 @@ Bug fixes
   | `Issue #7187 <https://redmine.postgresql.org/issues/7187>`_ -  Fixed an issue where the downloaded ERD diagram was 0 bytes.
   | `Issue #7188 <https://redmine.postgresql.org/issues/7188>`_ -  Fixed an issue where the connection bar is not visible.
   | `Issue #7231 <https://redmine.postgresql.org/issues/7231>`_ -  Don't strip binaries when packaging them in the server RPM as this might break cpython modules.
+  | `Issue #7252 <https://redmine.postgresql.org/issues/7252>`_ -  Ensure that Columns should always be visible in the import/export dialog.
   | `Issue #7260 <https://redmine.postgresql.org/issues/7260>`_ -  Fixed an issue where an Empty message popup after running a query.
   | `Issue #7262 <https://redmine.postgresql.org/issues/7262>`_ -  Ensure that Autocomplete should work after changing the connection.
   | `Issue #7294 <https://redmine.postgresql.org/issues/7294>`_ -  Fixed an issue where the copy and paste row does not work if the first column contains no data.
