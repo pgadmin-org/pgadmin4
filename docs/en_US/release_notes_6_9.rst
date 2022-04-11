@@ -12,7 +12,7 @@ New features
   | `Issue #3253 <https://redmine.postgresql.org/issues/3253>`_ -  Added status bar to the Query Tool.
   | `Issue #3989 <https://redmine.postgresql.org/issues/3989>`_ -  Ensure that row numbers should be visible in view when scrolling horizontally.
   | `Issue #6830 <https://redmine.postgresql.org/issues/6830>`_ -  Relocate GIS Viewer Button to the Left Side of the Results Table.
-
+  | `Issue #7012 <https://redmine.postgresql.org/issues/7012>`_ -  Disable the master password requirement when using alternative authentication sources.
 
 Housekeeping
 ************
