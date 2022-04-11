@@ -128,7 +128,7 @@ export default function Dashboard({
   const [msg, setMsg] = useState('');
   const[infoMsg, setInfo] = useState('');
   const [val, setVal] = useState(0);
-  const [refresh, setRefresh] = useState();
+  const [refresh, setRefresh] = useState(false);
   const [schemaDict, setSchemaDict] = React.useState({});
 
   if (!did) {
@@ -235,6 +235,7 @@ export default function Dashboard({
                       if (res.data == gettext('Success')) {
                         setInfo(txtSuccess);
                         Notify.success(txtSuccess);
+                        setRefresh(!refresh);
                       } else {
                         setInfo(txtError);
                         Notify.error(txtError);
@@ -769,9 +770,6 @@ export default function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-    return () => {
-      setRefresh();
-    };
   }, [nodeData, val, did, preferences, infoMsg, refresh, props.dbConnected]);
 
   const RefreshButton = () =>{
@@ -783,7 +781,7 @@ export default function Dashboard({
         icon={<CachedIcon />}
         onClick={(e) => {
           e.preventDefault();
-          setRefresh(true);
+          setRefresh(!refresh);
         }}
         color="default"
         aria-label="Refresh"

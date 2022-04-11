@@ -122,8 +122,8 @@ export function CollectionNodeView({
     if (selNode && selNode.type && selNode.type == 'coll-constraints') {
       // In order to identify the constraint type, the type should be passed to the server
       selRows = selRowModels.map((row) => ({
-        id: row.get('oid'),
-        _type: row.get('_type'),
+        id: row.original.oid,
+        _type: row.original._type,
       }));
     } else {
       selRows = selRowModels.map((row) => row.original.oid);
