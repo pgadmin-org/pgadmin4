@@ -1164,3 +1164,19 @@ select:-webkit-autofill:focus {
 .sql_textarea {
   height: 100%;
 }
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+ul {
+  margin-left: 0;
+  padding: 0;
+  cursor: default;
+}
+
+li {
+  padding: 0 0 0 0px;
+  list-style: none;
+  margin: 0;
+}

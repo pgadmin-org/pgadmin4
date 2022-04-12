@@ -141,13 +141,12 @@ def reset_layout():
     """Reset configuration setting"""
 
     try:
-        if request.params['setting'] in [
+        if hasattr(request, 'params') and \
+            request.params['setting'] in [
                 'Browser/Layout', 'SQLEditor/Layout', 'Debugger/Layout']:
             db.session.query(Setting) \
                 .filter(Setting.user_id == current_user.id) \
-                .filter((Setting.setting == 'Browser/Layout') |
-                        (Setting.setting == 'SQLEditor/Layout') |
-                        (Setting.setting == 'Debugger/Layout')) \
+                .filter((Setting.setting == request.params['setting'])) \
                 .delete()
         else:
             db.session.query(Setting) \
