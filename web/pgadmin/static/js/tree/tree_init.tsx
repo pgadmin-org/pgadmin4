@@ -86,12 +86,21 @@ var initBrowserTree = async (pgBrowser) => {
     return true;
   }
 
-  await treeModelX.root.ensureLoaded()
+  await treeModelX.root.ensureLoaded();
+  var _height = undefined;
+
+  document.getElementsByClassName('wcLayoutPane').forEach((item, index) => {
+    if (index > 0 && $(item).find('#tree').length == 1) {
+      _height = item.clientHeight - 30;
+    }
+  });
+
 
   // Render Browser Tree
   await render(
       <FileTreeX model={treeModelX}
-        onReady={itemHandle} create={create} remove={remove} update={update}/>
+        onReady={itemHandle} create={create} remove={remove} update={update}
+        height={_height} />
      , document.getElementById('tree'));
 }
 
