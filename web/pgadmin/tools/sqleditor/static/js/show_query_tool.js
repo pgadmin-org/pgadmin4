@@ -45,15 +45,15 @@ function hasServerInformations(parentData) {
   return parentData.server === undefined;
 }
 
-function generateTitle(pgBrowser, aciTreeIdentifier) {
-  return getPanelTitle(pgBrowser, aciTreeIdentifier);
+function generateTitle(pgBrowser, treeIdentifier) {
+  return getPanelTitle(pgBrowser, treeIdentifier);
 }
 
-export function showQueryTool(queryToolMod, pgBrowser, url, aciTreeIdentifier, transId) {
+export function showQueryTool(queryToolMod, pgBrowser, url, treeIdentifier, transId) {
   const sURL = url || '';
-  const queryToolTitle = generateTitle(pgBrowser, aciTreeIdentifier);
+  const queryToolTitle = generateTitle(pgBrowser, treeIdentifier);
 
-  const currentNode = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
+  const currentNode = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
   if (currentNode === undefined) {
     Notify.alert(
       gettext('Query Tool Error'),

@@ -24,13 +24,13 @@ export default class SearchObjectsDialog extends Dialog {
     return 'search_objects';
   }
 
-  draw(action, aciTreeItem, params, width=0, height=0) {
-    let dbInfo = retrieveAncestorOfTypeDatabase(this.pgBrowser, aciTreeItem, gettext('Search Objects Error'), this.alertify);
+  draw(action, treeItem, params, width=0, height=0) {
+    let dbInfo = retrieveAncestorOfTypeDatabase(this.pgBrowser, treeItem, gettext('Search Objects Error'), this.alertify);
     if (!dbInfo) {
       return;
     }
 
-    let dialogTitle = getPanelTitle(this.pgBrowser, aciTreeItem);
+    let dialogTitle = getPanelTitle(this.pgBrowser, treeItem);
     dialogTitle = gettext('Search Objects - ')  + dialogTitle;
     const dialog = this.createOrGetDialog(
       gettext('Search Objects...'),

@@ -34,8 +34,8 @@ export class Dialog {
 
   retrieveAncestorOfTypeServer(item) {
     let serverInformation = null;
-    let aciTreeItem = item || this.pgBrowser.tree.selected();
-    let treeNode = this.pgBrowser.tree.findNodeByDomElement(aciTreeItem);
+    let treeItem = item || this.pgBrowser.tree.selected();
+    let treeNode = this.pgBrowser.tree.findNodeByDomElement(treeItem);
 
     if (treeNode) {
       let nodeData;
@@ -105,8 +105,8 @@ export class Dialog {
     return factory.create(dialogTitle, typeOfDialog);
   }
 
-  canExecuteOnCurrentDatabase(aciTreeItem) {
-    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(aciTreeItem);
+  canExecuteOnCurrentDatabase(treeItem) {
+    const treeInfo = this.pgBrowser.tree.getTreeNodeHierarchy(treeItem);
 
     if (treeInfo.database && treeInfo.database._label.indexOf('=') >= 0) {
       this.alertify.alert(

@@ -602,7 +602,7 @@ export default function PreferencesComponent({ ...props }) {
         <Box className={clsx(classes.preferences)}>
           <Box className={clsx(classes.treeContainer)} >
 
-            <Box className={clsx('aciTree', classes.tree)} id={'treeContainer'} tabIndex={0}>
+            <Box className={clsx(classes.tree)} id={'treeContainer'} tabIndex={0}>
               {
                 useMemo(() => (prefTreeData && props.renderTree(prefTreeData)), [prefTreeData])
               }

@@ -51,15 +51,15 @@ export class TreeFake extends Tree {
     });
 
     super(tree, manageTree, pgBrowser);
-    this.aciTreeToOurTreeTranslator = {};
+    this.treeToOurTreeTranslator = {};
 
   }
 
   addNewNode(id, data, domNode, path) {
-    this.aciTreeToOurTreeTranslator[id] = id;
+    this.treeToOurTreeTranslator[id] = id;
     if (path !== null && path !== undefined) {
       if (typeof(path) === 'object') path = path.join('/');
-      this.aciTreeToOurTreeTranslator[id] = path != '' ? path + '/' + id : id;
+      this.treeToOurTreeTranslator[id] = path != '' ? path + '/' + id : id;
       if (path.indexOf('/browser/') != 0) path = path != '' ? '/browser/' + path : undefined;
     }
     return super.addNewNode(id, data, domNode, path);
@@ -67,29 +67,29 @@ export class TreeFake extends Tree {
 
   addChild(parent, child) {
     child.setParent(parent);
-    this.aciTreeToOurTreeTranslator[child.id] = this.aciTreeToOurTreeTranslator[parent.id] + '/' + child.id;
+    this.treeToOurTreeTranslator[child.id] = this.treeToOurTreeTranslator[parent.id] + '/' + child.id;
     parent.children.push(child);
   }
 
-  hasParent(aciTreeNode) {
-    let parents = this.translateTreeNodeIdFromReactTree(aciTreeNode).split('/');
+  hasParent(treeNode) {
+    let parents = this.translateTreeNodeIdFromReactTree(treeNode).split('/');
     return parents.length > 1;
   }
 
-  parent(aciTreeNode) {
-    if (this.hasParent(aciTreeNode)) {
-      let path = this.translateTreeNodeIdFromReactTree(aciTreeNode);
+  parent(treeNode) {
+    if (this.hasParent(treeNode)) {
+      let path = this.translateTreeNodeIdFromReactTree(treeNode);
       return [{id: this.findNode('/browser/' + path).parent().id}];
     }
 
     return null;
   }
 
-  translateTreeNodeIdFromReactTree(aciTreeNode) {
-    if (aciTreeNode === undefined || aciTreeNode[0] === undefined) {
+  translateTreeNodeIdFromReactTree(treeNode) {
+    if (treeNode === undefined || treeNode[0] === undefined) {
       return null;
     }
-    return this.aciTreeToOurTreeTranslator[aciTreeNode[0].id];
+    return this.treeToOurTreeTranslator[treeNode[0].id];
   }
 
   findNodeByDomElement(domElement) {
@@ -134,8 +134,8 @@ export class TreeFake extends Tree {
     return result;
   }
 
-  itemData(aciTreeNode) {
-    let node = this.findNodeByDomElement(aciTreeNode);
+  itemData(treeNode) {
+    let node = this.findNodeByDomElement(treeNode);
     if (node === undefined || node === null) {
       return undefined;
     }

@@ -29,7 +29,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     found them in the code then we are not vulnerable otherwise we might.
 
     We will cover,
-        1) Browser Tree (aciTree)
+        1) Browser Tree
         2) Properties Tab (BackFrom)
         3) Dependents Tab (BackGrid)
         4) SQL Tab (Code Mirror)

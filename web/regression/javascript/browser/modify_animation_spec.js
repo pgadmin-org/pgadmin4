@@ -32,7 +32,7 @@ describe('modifyAnimation', function () {
   describe('When browser tree animation is disabled', () => {
     beforeEach(() => {
       pgBrowser.get_preference.and.returnValue({value: false});
-      modifyAnimation.modifyAcitreeAnimation(pgBrowser);
+      modifyAnimation.modifyTreeAnimation(pgBrowser);
     });
     it('tree options to animate should be disabled', function() {
       expect(pgBrowser.get_preference).toHaveBeenCalled();
@@ -50,7 +50,7 @@ describe('modifyAnimation', function () {
   describe('When browser tree animation is enabled', () => {
     beforeEach(() => {
       pgBrowser.get_preference.and.returnValue({value: true});
-      modifyAnimation.modifyAcitreeAnimation(pgBrowser);
+      modifyAnimation.modifyTreeAnimation(pgBrowser);
     });
     it('tree options to animate should be enabled', function() {
       expect(pgBrowser.get_preference).toHaveBeenCalled();

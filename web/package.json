@@ -95,7 +95,6 @@
     "@types/classnames": "^2.2.6",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
-    "acitree": "git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7",
     "ajv": "^8.8.2",
     "alertifyjs": "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263",
     "aspen-decorations": "^1.0.2",

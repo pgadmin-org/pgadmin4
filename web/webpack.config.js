@@ -524,22 +524,6 @@ module.exports = [{
         },
       },
     },{
-      test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),
-      use: {
-        loader: 'imports-loader',
-        options: {
-          wrapper: 'window',
-        },
-      },
-    }, {
-      test: require.resolve('./node_modules/acitree/js/jquery.aciPlugin.min'),
-      use: {
-        loader: 'imports-loader',
-        options: {
-          wrapper: 'window',
-        },
-      },
-    }, {
       test: require.resolve('./pgadmin/static/bundle/browser'),
       use: {
         loader: 'imports-loader',

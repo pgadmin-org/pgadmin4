@@ -15,8 +15,8 @@ function getBrowserInstance() {
   return pgWindow.pgAdmin.Browser;
 }
 
-function modifyAcitreeAnimation(pgBrowser, tree) {
-  let enableAcitreeAnimation = pgBrowser.get_preference(
+function modifyTreeAnimation(pgBrowser, tree) {
+  let enableTreeAnimation = pgBrowser.get_preference(
     'browser', 'enable_acitree_animation'
   ).value;
 
@@ -24,7 +24,7 @@ function modifyAcitreeAnimation(pgBrowser, tree) {
     tree = pgBrowser.tree;
   }
 
-  if(enableAcitreeAnimation) {
+  if(enableTreeAnimation) {
     tree.options({
       animateRoot: true,
       unanimated: false,
@@ -48,11 +48,11 @@ function modifyAlertifyAnimation(pgBrowser) {
     pgBrowser = getBrowserInstance();
   }
 
-  let enableAcitreeAnimation = pgBrowser.get_preference(
+  let enableTreeAnimation = pgBrowser.get_preference(
     'browser', 'enable_alertify_animation'
   ).value;
 
-  if(enableAcitreeAnimation) {
+  if(enableTreeAnimation) {
     $(document).find('body').removeClass('alertify-no-animation');
     _.each(document.getElementsByTagName('iframe'), function(frame) {
       $(frame.contentDocument).find('body').removeClass('alertify-no-animation');
@@ -66,6 +66,6 @@ function modifyAlertifyAnimation(pgBrowser) {
 }
 
 module.exports = {
-  modifyAcitreeAnimation : modifyAcitreeAnimation,
+  modifyTreeAnimation : modifyTreeAnimation,
   modifyAlertifyAnimation: modifyAlertifyAnimation,
 };

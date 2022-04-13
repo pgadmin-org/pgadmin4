@@ -97,8 +97,7 @@ class BrowserModule(PgAdminModule):
             ('static', 'vendor/codemirror/codemirror.css'),
             ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
             ('static', context_menu_file),
-            ('static', wcdocker_file),
-            (BROWSER_STATIC, 'vendor/aciTree/css/aciTree.css')
+            ('static', wcdocker_file)
         ]:
             stylesheets.append(url_for(endpoint, filename=filename))
         return stylesheets
@@ -137,49 +136,6 @@ class BrowserModule(PgAdminModule):
             ),
             'deps': ['jquery', 'jqueryui.position'],
             'exports': 'jQuery.contextMenu',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': JQUERY_ACIPLUGIN,
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciPlugin.min'
-            ),
-            'deps': ['jquery'],
-            'exports': 'aciPluginClass',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acitree',
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciTree' if
-                current_app.debug else 'vendor/aciTree/jquery.aciTree.min'
-            ),
-            'deps': ['jquery', JQUERY_ACIPLUGIN],
-            'exports': 'aciPluginClass.plugins.aciTree',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acisortable',
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciSortable.min'
-            ),
-            'deps': ['jquery', JQUERY_ACIPLUGIN],
-            'exports': 'aciPluginClass.plugins.aciSortable',
-            'when': None,
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acifragment',
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciFragment.min'
-            ),
-            'deps': ['jquery', JQUERY_ACIPLUGIN],
-            'exports': 'aciPluginClass.plugins.aciFragment',
-            'when': None,
             'preloaded': True
         })
         scripts.append({

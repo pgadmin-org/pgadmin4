@@ -430,8 +430,8 @@ export class Tree {
     return node;
   }
 
-  translateTreeNodeIdFromReactTree(aciTreeNode) {
-    let currentTreeNode = aciTreeNode;
+  translateTreeNodeIdFromReactTree(treeNode) {
+    let currentTreeNode = treeNode;
     let path = [];
     while (currentTreeNode !== null && currentTreeNode !== undefined) {
       if (currentTreeNode.path !== '/browser') path.unshift(currentTreeNode.path);

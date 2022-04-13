@@ -113,13 +113,13 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       enable(gettext('PSQL Tool'), isEnabled);
       return isEnabled;
     },
-    psql_tool: function(data, aciTreeIdentifier, gen=false) {
-      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, aciTreeIdentifier, gettext('PSQL Error'));
+    psql_tool: function(data, treeIdentifier, gen=false) {
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
       if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
         return;
       }
 
-      const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
+      const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
       if (node === undefined || !node.getData()) {
         Notify.alert(
           gettext('PSQL Error'),
@@ -128,7 +128,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         return;
       }
 
-      parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
+      parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
 
       if(_.isUndefined(parentData.server)) {
         Notify.alert(

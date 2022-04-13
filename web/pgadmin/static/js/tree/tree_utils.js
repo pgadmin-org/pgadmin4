@@ -12,8 +12,8 @@ import Notify from '../helpers/Notifier';
 
 export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle) {
   let serverInformation = null;
-  let aciTreeItem = item || pgBrowser.tree.selected();
-  let treeNode = pgBrowser.tree.findNodeByDomElement(aciTreeItem);
+  let treeItem = item || pgBrowser.tree.selected();
+  let treeNode = pgBrowser.tree.findNodeByDomElement(treeItem);
 
   if (treeNode) {
     let nodeData;
@@ -59,8 +59,8 @@ export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle) {
 
 export function retrieveAncestorOfTypeDatabase(pgBrowser, item, errorAlertTitle) {
   let databaseInfo = null;
-  let aciTreeItem = item || pgBrowser.tree.selected();
-  let treeNode = pgBrowser.tree.findNodeByDomElement(aciTreeItem);
+  let treeItem = item || pgBrowser.tree.selected();
+  let treeNode = pgBrowser.tree.findNodeByDomElement(treeItem);
   if (treeNode) {
     if(treeNode.getData()._type === 'database') {
       databaseInfo = treeNode.getData();

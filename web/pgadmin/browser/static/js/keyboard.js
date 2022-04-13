@@ -368,12 +368,12 @@ _.extend(pgBrowser.keyboardNavigation, {
     return isPanelVisible;
   },
   getTreeDetails: function() {
-    const aciTree = pgAdmin.Browser.tree;
-    const selectedTreeNode = aciTree.selected() ? aciTree.selected() : aciTree.first();
-    const selectedTreeNodeData = selectedTreeNode ? aciTree.itemData(selectedTreeNode) : undefined;
+    const tree = pgAdmin.Browser.tree;
+    const selectedTreeNode = tree.selected() ? tree.selected() : tree.first();
+    const selectedTreeNodeData = selectedTreeNode ? tree.itemData(selectedTreeNode) : undefined;
 
     return {
-      t: aciTree,
+      t: tree,
       i: selectedTreeNode,
       d: selectedTreeNodeData,
     };

@@ -97,8 +97,8 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
     },
 
     // Callback to draw ERD Tool for objects
-    showErdTool: function(data, aciTreeIdentifier, gen=false) {
-      if (aciTreeIdentifier === undefined) {
+    showErdTool: function(data, treeIdentifier, gen=false) {
+      if (treeIdentifier === undefined) {
         Notify.alert(
           gettext('ERD Error'),
           gettext('No object selected.')
@@ -106,7 +106,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
         return;
       }
 
-      const parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
+      const parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
 
       if(_.isUndefined(parentData.database)) {
         Notify.alert(
@@ -117,7 +117,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, pgBrowser
       }
 
       const transId = getRandomInt(1, 9999999);
-      const panelTitle = getPanelTitle(pgBrowser, aciTreeIdentifier);
+      const panelTitle = getPanelTitle(pgBrowser, treeIdentifier);
       const [panelUrl, panelCloseUrl] = this.getPanelUrls(transId, panelTitle, parentData, gen);
 
       let erdToolForm = `

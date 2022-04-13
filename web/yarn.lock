@@ -2510,10 +2510,6 @@ ace-builds@^1.4.12:
   resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.4.13.tgz#186f42d3849ebcc6a48b93088a058489897514c1"
   integrity sha512-SOLzdaQkY6ecPKYRDDg+MY1WoGgXA34cIvYJNNoBMGGUswHmlauU2Hy0UL96vW0Fs/LgFbMUjD+6vqzWTldIYQ==
 
-"acitree@git+https://github.com/imsurinder90/jquery-aciTree.git#rc.7":
-  version "4.5.0-rc.7"
-  resolved "git+https://github.com/imsurinder90/jquery-aciTree.git#24dcd7536a008abe25da6adb7bfde8eeb53892f1"
-
 acorn-import-assertions@^1.7.6:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/acorn-import-assertions/-/acorn-import-assertions-1.8.0.tgz#ba2b5939ce62c238db6d93d81c9b111b29b855e9"

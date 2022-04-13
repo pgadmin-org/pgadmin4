@@ -16,15 +16,13 @@ define('pgadmin.browser', [
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
   'sources/csrf', 'sources/utils', 'sources/window', 'pgadmin.authenticate.kerberos',
   'sources/tree/tree_init',
-  'pgadmin.browser.utils', 'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin',
-  'jquery.acitree',
+  'pgadmin.browser.utils', 'wcdocker', 'jquery.contextmenu',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
   'pgadmin.browser.runtime', 'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode', 'pgadmin.browser.dialog',
-  'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state','jquery.acisortable',
-  'jquery.acifragment',
+  'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state'
 ], function(
   gettext, url_for, require, $, _,
   Bootstrap, pgAdmin, Alertify, codemirror,

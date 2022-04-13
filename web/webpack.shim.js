@@ -97,10 +97,6 @@ var webpackShimConfig = {
       'deps': ['jquery'],
       'exports': 'aciPluginClass',
     },
-    'jquery.acitree': {
-      'deps': ['jquery', 'jquery.aciplugin'],
-      'exports': 'aciPluginClass.plugins.aciTree',
-    },
     'jquery.acisortable': {
       'deps': ['jquery', 'jquery.aciplugin'],
       'exports': 'aciPluginClass.plugins.aciSortable',
@@ -157,12 +153,6 @@ var webpackShimConfig = {
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
     'pgadmin4-tree': path.join(__dirname, 'node_modules/pgadmin4-tree'),
-
-    // AciTree
-    'jquery.acitree': path.join(__dirname, './node_modules/acitree/js/jquery.aciTree.min'),
-    'jquery.aciplugin': path.join(__dirname, './node_modules/acitree/js/jquery.aciPlugin.min'),
-    'jquery.acisortable': path.join(__dirname, './node_modules/acitree/js/jquery.aciSortable.min'),
-    'jquery.acifragment': path.join(__dirname, './node_modules/acitree/js/jquery.aciFragment.min'),
 
     //xterm
     'xterm': path.join(__dirname, './node_modules/xterm/lib/xterm.js'),
