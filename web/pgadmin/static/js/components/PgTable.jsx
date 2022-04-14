@@ -274,6 +274,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
       data,
       defaultColumn,
       isSelectRow,
+      autoResetSortBy: false,
     },
     useGlobalFilter,
     useSortBy,

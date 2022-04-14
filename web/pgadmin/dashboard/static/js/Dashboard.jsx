@@ -27,6 +27,7 @@ import ActiveQuery from './ActiveQuery.ui';
 import _ from 'lodash';
 import CachedIcon from '@mui/icons-material/Cached';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
+import TabPanel from '../../../static/js/components/TabPanel';
 
 function parseData(data) {
   var res = [];
@@ -123,20 +124,19 @@ export default function Dashboard({
   ...props
 }) {
   const classes = useStyles();
-  let tab = ['Sessions', 'Locks', 'Prepared Transactions'];
+  let tabs = ['Sessions', 'Locks', 'Prepared Transactions'];
   const [dashData, setdashData] = useState([]);
   const [msg, setMsg] = useState('');
-  const[infoMsg, setInfo] = useState('');
-  const [val, setVal] = useState(0);
+  const [tabVal, setTabVal] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const [schemaDict, setSchemaDict] = React.useState({});
 
   if (!did) {
-    tab.push('Configuration');
+    tabs.push('Configuration');
   }
-  val == 3 && did && setVal(0);
+  tabVal == 3 && did && setTabVal(0);
   const tabChanged = (e, tabVal) => {
-    setVal(tabVal);
+    setTabVal(tabVal);
   };
 
   const serverConfigColumns = [
@@ -233,11 +233,9 @@ export default function Dashboard({
                     .delete(url)
                     .then(function (res) {
                       if (res.data == gettext('Success')) {
-                        setInfo(txtSuccess);
                         Notify.success(txtSuccess);
                         setRefresh(!refresh);
                       } else {
-                        setInfo(txtError);
                         Notify.error(txtError);
                       }
                     })
@@ -302,11 +300,12 @@ export default function Dashboard({
                     .delete(url)
                     .then(function (res) {
                       if (res.data == gettext('Success')) {
-                        setInfo(txtSuccess);
                         Notify.success(txtSuccess);
+                        setRefresh(!refresh);
                       } else {
-                        setInfo(txtError);
                         Notify.error(txtError);
+                        setRefresh(!refresh);
+
                       }
                     })
                     .catch(function (error) {
@@ -722,6 +721,10 @@ export default function Dashboard({
       return false;
     }
   };
+  useEffect(() => {
+    // Reset Tab values to 0, so that it will select "Sessions" on node changed.
+    nodeData?._type === 'database' && setTabVal(0);
+  },[nodeData]);
 
   useEffect(() => {
     let url,
@@ -731,11 +734,11 @@ export default function Dashboard({
 
     if (sid && props.serverConnected) {
 
-      if (val === 0) {
+      if (tabVal === 0) {
         url = url_for('dashboard.activity');
-      } else if (val === 1) {
+      } else if (tabVal === 1) {
         url = url_for('dashboard.locks');
-      } else if (val === 2) {
+      } else if (tabVal === 2) {
         url = url_for('dashboard.prepared');
       } else {
         url = url_for('dashboard.config');
@@ -755,10 +758,10 @@ export default function Dashboard({
           .then((res) => {
             setdashData(parseData(res.data));
           })
-          .catch((e) => {
+          .catch((error) => {
             Notify.alert(
               gettext('Failed to retrieve data from the server.'),
-              gettext(e.message)
+              _.isUndefined(error.response) ? error.message : error.response.data.errormsg
             );
             // show failed message.
             setMsg(gettext('Failed to retrieve data from the server.'));
@@ -770,7 +773,7 @@ export default function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, val, did, preferences, infoMsg, refresh, props.dbConnected]);
+  }, [nodeData, tabVal, did, preferences, refresh, props.dbConnected]);
 
   const RefreshButton = () =>{
     return(
@@ -810,33 +813,47 @@ export default function Dashboard({
               >
                 {gettext('Server activity')}{' '}
               </Box>
-              <Box display="flex">
-                <Tabs
-                  value={val}
-                  onChange={tabChanged}
-                  className={classes.searchInput}
-                >
-                  {tab.map((tabValue, i) => {
-                    return <Tab key={i} label={tabValue} />;
-                  })}
-                </Tabs>
-                <RefreshButton/>
-              </Box>
-              <Box flexGrow={1}>
-                <PgTable
-                  caveTable={false}
-                  columns={
-                    val === 0
-                      ? activityColumns
-                      : val === 1
-                        ? databaseLocksColumns
-                        : val == 2
-                          ? databasePreparedColumns
-                          : serverConfigColumns
-                  }
-                  data={dashData}
-                  schema={schemaDict}
-                ></PgTable>
+              <Box height="100%" display="flex" flexDirection="column">
+                <Box>
+                  <Tabs
+                    value={tabVal}
+                    onChange={tabChanged}
+                  >
+                    {tabs.map((tabValue, i) => {
+                      return <Tab key={i} label={tabValue} />;
+                    })}
+                    <RefreshButton/>
+                  </Tabs>
+                </Box>
+                <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
+                  <PgTable
+                    caveTable={false}
+                    columns={activityColumns}
+                    data={dashData}
+                    schema={schemaDict}
+                  ></PgTable>
+                </TabPanel>
+                <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
+                  <PgTable
+                    caveTable={false}
+                    columns={databaseLocksColumns}
+                    data={dashData}
+                  ></PgTable>
+                </TabPanel>
+                <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                  <PgTable
+                    caveTable={false}
+                    columns={databasePreparedColumns}
+                    data={dashData}
+                  ></PgTable>
+                </TabPanel>
+                <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
+                  <PgTable
+                    caveTable={false}
+                    columns={serverConfigColumns}
+                    data={dashData}
+                  ></PgTable>
+                </TabPanel>
               </Box>
             </Box>
           </Box>

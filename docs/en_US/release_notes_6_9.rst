@@ -35,3 +35,4 @@ Bug fixes
   | `Issue #7262 <https://redmine.postgresql.org/issues/7262>`_ -  Ensure that Autocomplete should work after changing the connection.
   | `Issue #7294 <https://redmine.postgresql.org/issues/7294>`_ -  Fixed an issue where the copy and paste row does not work if the first column contains no data.
   | `Issue #7296 <https://redmine.postgresql.org/issues/7296>`_ -  Ensure that after deleting multiple objects from the properties panel, the browser tree should be refreshed.
+  | `Issue #7308 <https://redmine.postgresql.org/issues/7308>`_ -  Ensure that sorting should be preserved on refresh for Server Activity.
