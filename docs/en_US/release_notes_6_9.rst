@@ -18,6 +18,7 @@ Housekeeping
 ************
 
   | `Issue #6131 <https://redmine.postgresql.org/issues/6131>`_ -  Port query tool to React.
+  | `Issue #6746 <https://redmine.postgresql.org/issues/6746>`_ -  Improve the Kerberos Documentation.
   | `Issue #7255 <https://redmine.postgresql.org/issues/7255>`_ -  Ensure the database and schema restriction controls are not shown as a drop-down.
 
 Bug fixes
