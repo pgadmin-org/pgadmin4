@@ -158,7 +158,7 @@ export function ResultSetToolbar({containerRef, canEdit}) {
         open={menuOpenId=='menu-copyheader'}
         onClose={handleMenuClose}
       >
-        <PgMenuItem hasCheck value="copy_with_headers" checked={checkedMenuItems['copy_with_headers']} onClick={checkMenuClick}>Copy with headers</PgMenuItem>
+        <PgMenuItem hasCheck value="copy_with_headers" checked={checkedMenuItems['copy_with_headers']} onClick={checkMenuClick}>{gettext('Copy with headers')}</PgMenuItem>
       </PgMenu>
     </>
   );

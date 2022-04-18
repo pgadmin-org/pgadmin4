@@ -23,7 +23,7 @@ import FormatListNumberedRoundedIcon from '@material-ui/icons/FormatListNumbered
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import {QUERY_TOOL_EVENTS, CONNECTION_STATUS} from '../QueryToolConstants';
 import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
-import { PgMenu, PgMenuDivider, PgMenuItem } from '../../../../../../static/js/components/Menu';
+import { PgMenu, PgMenuDivider, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
 import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
 import {shortcut_key} from 'sources/keyboard_shortcuts';
@@ -150,7 +150,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     'filter': true,
     'limit': false,
   });
-  const [menuOpenId, setMenuOpenId] = React.useState(null);
+  const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
   /* Menu button refs */
   const saveAsMenuRef = React.useRef(null);
@@ -188,14 +188,6 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
   const explainAnalyse = useCallback(()=>{
     explain(true);
   }, [explain]);
-
-  const openMenu = useCallback((e)=>{
-    setMenuOpenId(e.currentTarget.name);
-  }, []);
-
-  const handleMenuClose = useCallback(()=>{
-    setMenuOpenId(null);
-  }, []);
 
   const checkMenuClick = useCallback((e)=>{
     setCheckedMenuItems((prev)=>{
@@ -453,21 +445,21 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
             accesskey={shortcut_key(queryToolPref.btn_save_file)} disabled={buttonsDisabled['save'] || !queryToolCtx.params.is_query_tool}
             onClick={()=>{saveFile(false);}} />
           <PgIconButton title={gettext('File')} icon={<KeyboardArrowDownIcon />} splitButton disabled={!queryToolCtx.params.is_query_tool}
-            name="menu-saveas" ref={saveAsMenuRef} onClick={openMenu}
+            name="menu-saveas" ref={saveAsMenuRef} onClick={toggleMenu}
           />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Edit')} icon={
             <><EditRoundedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
           disabled={!queryToolCtx.params.is_query_tool}
-          name="menu-edit" ref={editMenuRef} onClick={openMenu} />
+          name="menu-edit" ref={editMenuRef} onClick={toggleMenu} />
         </PgButtonGroup>
         <PgButtonGroup size="small" color={highlightFilter ? 'primary' : 'default'}>
           <PgIconButton title={gettext('Sort/Filter')} icon={<FilterIcon />}
             onClick={onFilterClick} disabled={buttonsDisabled['filter']} accesskey={shortcut_key(queryToolPref.btn_filter_dialog)}/>
           <PgIconButton title={gettext('Filter options')} icon={<KeyboardArrowDownIcon />} splitButton
             disabled={buttonsDisabled['filter']} name="menu-filter" ref={filterMenuRef} accesskey={shortcut_key(queryToolPref.btn_filter_options)}
-            onClick={openMenu} />
+            onClick={toggleMenu} />
         </PgButtonGroup>
         <InputSelectNonSearch options={[
           {label: gettext('No limit'), value: '-1'},
@@ -482,7 +474,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
             onClick={executeQuery} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_query}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-autocommit" ref={autoCommitMenuRef} accesskey={shortcut_key(queryToolPref.btn_delete_row)}
-            onClick={openMenu} />
+            onClick={toggleMenu} disabled={!queryToolCtx.params.is_query_tool}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Explain')} icon={<ExplicitRoundedIcon />}
@@ -491,7 +483,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
             onClick={()=>{explainAnalyse();}} disabled={buttonsDisabled['explain_analyse'] || !queryToolCtx.params.is_query_tool} shortcut={queryToolPref.explain_analyze_query}/>
           <PgIconButton title={gettext('Explain Settings')} icon={<KeyboardArrowDownIcon />} splitButton
             disabled={!queryToolCtx.params.is_query_tool}
-            name="menu-explain" ref={explainMenuRef} onClick={openMenu} />
+            name="menu-explain" ref={explainMenuRef} onClick={toggleMenu} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Commit')} icon={<CommitIcon />}
@@ -502,7 +494,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Macros')} icon={
             <><FormatListNumberedRoundedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
-          disabled={!queryToolCtx.params.is_query_tool} name="menu-macros" ref={macrosMenuRef} onClick={openMenu} />
+          disabled={!queryToolCtx.params.is_query_tool} name="menu-macros" ref={macrosMenuRef} onClick={toggleMenu} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
@@ -510,15 +502,15 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       </Box>
       <PgMenu
         anchorRef={saveAsMenuRef}
-        open={menuOpenId=='menu-saveas'}
-        onClose={handleMenuClose}
+        open={openMenuName=='menu-saveas'}
+        onClose={onMenuClose}
       >
         <PgMenuItem onClick={()=>{saveFile(true);}}>{gettext('Save as')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={editMenuRef}
-        open={menuOpenId=='menu-edit'}
-        onClose={handleMenuClose}
+        open={openMenuName=='menu-edit'}
+        onClose={onMenuClose}
       >
         <PgMenuItem shortcut={FIXED_PREF.find}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
@@ -540,8 +532,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       </PgMenu>
       <PgMenu
         anchorRef={filterMenuRef}
-        open={menuOpenId=='menu-filter'}
-        onClose={handleMenuClose}
+        open={openMenuName=='menu-filter'}
+        onClose={onMenuClose}
       >
         <PgMenuItem onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, true);}}>{gettext('Filter by Selection')}</PgMenuItem>
         <PgMenuItem onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, false);}}>{gettext('Exclude by Selection')}</PgMenuItem>
@@ -549,8 +541,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       </PgMenu>
       <PgMenu
         anchorRef={autoCommitMenuRef}
-        open={menuOpenId=='menu-autocommit'}
-        onClose={handleMenuClose}
+        open={openMenuName=='menu-autocommit'}
+        onClose={onMenuClose}
       >
         <PgMenuItem hasCheck value="auto_commit" checked={checkedMenuItems['auto_commit']}
           onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
@@ -559,8 +551,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       </PgMenu>
       <PgMenu
         anchorRef={explainMenuRef}
-        open={menuOpenId=='menu-explain'}
-        onClose={handleMenuClose}
+        open={openMenuName=='menu-explain'}
+        onClose={onMenuClose}
       >
         <PgMenuItem hasCheck value="explain_verbose" checked={checkedMenuItems['explain_verbose']}
           onClick={checkMenuClick}>{gettext('Verbose')}</PgMenuItem>
@@ -577,8 +569,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       </PgMenu>
       <PgMenu
         anchorRef={macrosMenuRef}
-        open={menuOpenId=='menu-macros'}
-        onClose={handleMenuClose}
+        open={openMenuName=='menu-macros'}
+        onClose={onMenuClose}
       >
         <PgMenuItem onClick={onManageMacros}>{gettext('Manage macros')}</PgMenuItem>
         <PgMenuDivider />

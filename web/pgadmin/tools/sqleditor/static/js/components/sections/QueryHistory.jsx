@@ -19,7 +19,7 @@ import moment from 'moment';
 import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
 import AssessmentRoundedIcon from '@material-ui/icons/AssessmentRounded';
 import ExplicitRoundedIcon from '@material-ui/icons/ExplicitRounded';
-import { SaveDataIcon, CommitIcon, RollbackIcon } from '../../../../../../static/js/components/ExternalIcon';
+import { SaveDataIcon, CommitIcon, RollbackIcon, ViewDataIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { InputSwitch } from '../../../../../../static/js/components/FormComponents';
 import CodeMirror from '../../../../../../static/js/components/CodeMirror';
 import { DefaultButton } from '../../../../../../static/js/components/Buttons';
@@ -30,6 +30,7 @@ import { LayoutEventsContext, LAYOUT_EVENTS } from '../../../../../../static/js/
 import PropTypes from 'prop-types';
 import { parseApiError } from '../../../../../../static/js/api_instance';
 import * as clipboard from '../../../../../../static/js/clipboard';
+import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
 
 const useStyles = makeStyles((theme)=>({
   leftRoot: {
@@ -145,9 +146,9 @@ class QueryHistoryUtils {
   getDatePrefix(date) {
     let prefix = '';
     if (this.isDaysBefore(date, 0)) {
-      prefix = 'Today - ';
+      prefix = gettext('Today - ');
     } else if (this.isDaysBefore(date, 1)) {
-      prefix = 'Yesterday - ';
+      prefix = gettext('Yesterday - ');
     }
     return prefix;
   }
@@ -247,7 +248,7 @@ function QuerySourceIcon({source}) {
   case JSON.stringify(QuerySources.SAVE_DATA):
     return <SaveDataIcon style={{marginLeft: '-4px'}}/>;
   case JSON.stringify(QuerySources.VIEW_DATA):
-    return <SaveDataIcon style={{marginLeft: '-4px'}}/>;
+    return <ViewDataIcon style={{marginLeft: '-4px'}}/>;
   default:
     return <></>;
   }
@@ -312,7 +313,9 @@ function QueryHistoryDetails({entry}) {
   }, [entry]);
 
   if(!entry) {
-    return <></>;
+    return <Box display="flex" height="100%">
+      <EmptyPanelMessage text={gettext('Select an history entry to see details.')} />
+    </Box>;
   }
 
   return (
@@ -460,39 +463,45 @@ export function QueryHistory() {
       <Loader message={loaderText} />
       {React.useMemo(()=>(
         <Box display="flex" height="100%">
-          <Box flexBasis="50%" maxWidth="50%" className={classes.leftRoot}>
-            <Box padding="0.25rem" display="flex">
-              {gettext('Show queries generated internally by pgAdmin?')}
-              <InputSwitch value={showInternal} onChange={(e)=>{
-                setShowInternal(e.target.checked);
-                qhu.current.showInternal = e.target.checked;
-                setSelectedItemKey(qhu.current.getNextItemKey());
-              }} />
-              <Box marginLeft="auto">
-                <DefaultButton size="small" disabled={!selectedItemKey} onClick={onRemove}>Remove</DefaultButton>
-                <DefaultButton size="small" disabled={!qhu.current?.getGroups()?.length}
-                  className={classes.removeBtnMargin} onClick={onRemoveAll}>Remove All</DefaultButton>
+          {qhu.current.size() == 0 ?
+            <EmptyPanelMessage text={gettext('No history found')} />:
+            <>
+              <Box flexBasis="50%" maxWidth="50%" className={classes.leftRoot}>
+                <Box padding="0.25rem" display="flex" flexWrap="wrap">
+                  <Box marginRight="auto">
+                    {gettext('Show queries generated internally by pgAdmin?')}
+                    <InputSwitch value={showInternal} onChange={(e)=>{
+                      setShowInternal(e.target.checked);
+                      qhu.current.showInternal = e.target.checked;
+                      setSelectedItemKey(qhu.current.getNextItemKey());
+                    }} />
+                  </Box>
+                  <Box>
+                    <DefaultButton size="small" disabled={!selectedItemKey} onClick={onRemove}>{gettext('Remove')}</DefaultButton>
+                    <DefaultButton size="small" disabled={!qhu.current?.getGroups()?.length}
+                      className={classes.removeBtnMargin} onClick={onRemoveAll}>{gettext('Remove All')}</DefaultButton>
+                  </Box>
+                </Box>
+                <Box flexGrow="1" overflow="auto" className={classes.listRoot}>
+                  <List innerRef={listRef} className={classes.root} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
+                    {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
+                      <ListItem key={`section-${groupKey}`} className={classes.removePadding}>
+                        <List className={classes.removePadding}>
+                          <ListSubheader className={classes.listSubheader}>{groupHeader}</ListSubheader>
+                          {qhu.current.getGroupEntries(groupKey).map((entry) => (
+                            <HistoryEntry key={entry.itemKey} entry={entry} formatEntryDate={qhu.current.formatEntryDate}
+                              itemKey={entry.itemKey} selectedItemKey={selectedItemKey} onClick={()=>{setSelectedItemKey(entry.itemKey);}}/>
+                          ))}
+                        </List>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
               </Box>
-            </Box>
-            <Box flexGrow="1" overflow="auto" className={classes.listRoot}>
-              <List innerRef={listRef} className={classes.root} subheader={<li />} tabIndex="0" onKeyDown={onKeyPressed}>
-                {qhu.current.getGroups().map(([groupKey, groupHeader]) => (
-                  <ListItem key={`section-${groupKey}`} className={classes.removePadding}>
-                    <List className={classes.removePadding}>
-                      <ListSubheader className={classes.listSubheader}>{groupHeader}</ListSubheader>
-                      {qhu.current.getGroupEntries(groupKey).map((entry) => (
-                        <HistoryEntry key={entry.itemKey} entry={entry} formatEntryDate={qhu.current.formatEntryDate}
-                          itemKey={entry.itemKey} selectedItemKey={selectedItemKey} onClick={()=>{setSelectedItemKey(entry.itemKey);}}/>
-                      ))}
-                    </List>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </Box>
-          <Box flexBasis="50%" maxWidth="50%" overflow="auto">
-            <QueryHistoryDetails entry={selectedEntry}/>
-          </Box>
+              <Box flexBasis="50%" maxWidth="50%" overflow="auto">
+                <QueryHistoryDetails entry={selectedEntry}/>
+              </Box>
+            </>}
         </Box>
       ), [selectedItemKey, showInternal, qhu.current.size()])}
     </>

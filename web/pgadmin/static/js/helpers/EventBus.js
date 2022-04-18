@@ -20,7 +20,7 @@ export default class EventBus {
         if(e.event === event) {
           return e.callback.toString()!=callback.toString();
         }
-        return e.event!=event && e.callback.toString()!=callback.toString();
+        return true;
       });
     } else {
       this._eventListeners = this._eventListeners.filter((e)=>e.event!=event);

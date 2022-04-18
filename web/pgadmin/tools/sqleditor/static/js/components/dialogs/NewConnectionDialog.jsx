@@ -63,6 +63,9 @@ class NewConnectionSchema extends BaseUISchema {
         .then(({data: respData})=>{
           let groupedOptions = [];
           _.forIn(respData.data.result.server_list, (v, k)=>{
+            if(v.length == 0) {
+              return;
+            }
             /* initial selection */
             _.find(v, (o)=>o.value==obj.params.sid).selected = true;
             groupedOptions.push({

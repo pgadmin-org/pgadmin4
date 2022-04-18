@@ -627,7 +627,7 @@ export class ResultSetUtils {
       data.primary_keys = (_.isEmpty(data.primary_keys) && data.has_oids) ? data.oids : data.primary_keys;
       data.can_edit = !_.isEmpty(data.primary_keys);
       let procColumns = this.processColumns(data);
-      onResultsAvailable(data, procColumns, this.processRows(result, procColumns, this.processRows(result, procColumns)));
+      onResultsAvailable(data, procColumns, this.processRows(result, procColumns));
       this.setStartData(null);
       let planJson = this.getPlanJson(result, data);
       if(planJson) {
@@ -886,12 +886,14 @@ export function ResultSet() {
   };
   useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, fetchMoreRows);
-    return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, fetchMoreRows);
-  }, [queryData, columns]);
+    return ()=>{
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, fetchMoreRows);
+    };
+  }, [queryData?.has_more_rows, columns]);
 
   useEffect(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.ROWS_FETCHED, queryData?.rows_fetched_to, queryData?.rows_affected);
-  }, [queryData]);
+  }, [queryData?.rows_fetched_to, queryData?.rows_affected]);
 
   const warnSaveDataClose = ()=>{
     // No changes.
@@ -975,7 +977,7 @@ export function ResultSet() {
       }
 
       eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_DATA_DONE, true);
-      if(!_.size(dataChangeStore.added)) {
+      if(_.size(dataChangeStore.added)) {
         // Update the rows in a grid after addition
         respData.data.query_results.forEach((qr)=>{
           if(!_.isNull(qr.row_added)) {

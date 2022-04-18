@@ -170,8 +170,8 @@ export function TextEditor({row, column, onRowChange, onClose}) {
   }, []);
 
   const onOK = ()=>{
-    if(column.is_array && !isValidArray(value)) {
-      console.error(gettext('Arrays must start with "{" and end with "}"'));
+    if(column.is_array && !isValidArray(localVal)) {
+      Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
     } else {
       let columnVal = textColumnFinalVal(localVal, column);
       onRowChange({ ...row, [column.key]: columnVal}, true);
@@ -205,14 +205,14 @@ TextEditor.propTypes = EditorPropTypes;
 export function NumberEditor({row, column, onRowChange, onClose}) {
   const classes = useStyles();
   const value = row[column.key] ?? '';
-  const onBlur = ()=>{
+  const isValidData = ()=>{
     if(!column.is_array && isNaN(value)){
       Notifier.error(gettext('Please enter a valid number'));
-      return;
+      return false;
     } else if(column.is_array) {
       if(!isValidArray(value)) {
         Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
-        return;
+        return false;
       }
       let checkVal = value.trim().slice(1, -1);
       if(checkVal == '') {
@@ -223,16 +223,25 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
       for (const val of checkVal) {
         if(isNaN(val)) {
           Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
-          return;
+          return false;
         }
       }
     }
-    onClose(column.can_edit ? true : false);
+    return true;
+  };
+  const onBlur = ()=>{
+    if(isValidData()) {
+      onClose(column.can_edit ? true : false);
+      return true;
+    }
+    return false;
   };
   const onKeyDown = (e)=>{
     if(e.code == 'Tab') {
       e.preventDefault();
-      onBlur();
+      if(!onBlur()) {
+        e.stopPropagation();
+      }
     }
   };
   return (
@@ -245,7 +254,7 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
           onRowChange({ ...row, [column.key]: e.target.value });
         }
       }}
-      // onBlur={onBlur}
+      onBlur={onBlur}
       onKeyDown={onKeyDown}
     />
   );
@@ -269,7 +278,7 @@ export function CheckboxEditor({row, column, onRowChange, onClose}) {
   };
   const onBlur = ()=>{onClose(true);};
   let className = 'checked';
-  if(!value) {
+  if(!value && value != null) {
     className = 'unchecked';
   } else if(value == null){
     className = 'intermediate';
@@ -323,7 +332,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
           value={localVal}
           options={{
             onChange: onChange,
-            onError: (error)=>console.error('Invalid Json: ' + error.message.split(':')[0]),
+            onError: (error)=>Notifier.error('Invalid Json: ' + error.message.split(':')[0]),
           }}
           className={'jsoneditor-div'}
         />

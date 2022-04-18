@@ -250,6 +250,7 @@ function PlanContent({plan, pXpos, pYpos, ...props}) {
           strokeWidth={1.2}
           fill="gray"
           fillOpacity={0.2}
+          pointerEvents="none"
         />
         <tspan x={currentXpos + pWIDTH - (plan.width / 2) - xMargin}
           y={currentYpos + pHEIGHT - (plan.height / 2) - yMargin}

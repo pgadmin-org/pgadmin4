@@ -422,7 +422,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         eventBus.current.deregisterListener(e[0], e[1]);
       });
     };
-  }, [qtState]);
+  }, [qtState.params, qtState.current_file]);
 
   useEffect(()=>{
     /* Fire query change so that title changes to latest */
@@ -602,11 +602,12 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                 onResetLayout={onResetLayout}
                 docker={docker.current}
               />
-              <MainToolBar
-                containerRef={containerRef}
-                onManageMacros={onManageMacros}
-                onFilterClick={onFilterClick}
-              />
+              {React.useMemo(()=>(
+                <MainToolBar
+                  containerRef={containerRef}
+                  onManageMacros={onManageMacros}
+                  onFilterClick={onFilterClick}
+                />), [containerRef.current, onManageMacros, onFilterClick])}
               <Layout
                 getLayoutInstance={(obj)=>docker.current=obj}
                 defaultLayout={defaultLayout}

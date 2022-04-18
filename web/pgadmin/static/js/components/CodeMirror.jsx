@@ -405,6 +405,22 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     }
 
     Object.keys(events||{}).forEach((eventName)=>{
+      if(eventName === 'change') {
+        let timeoutId;
+        const change = (...args)=>{
+          /* In case of indent, change is triggered for each line */
+          /* This can be avoided and taking only the latest */
+          if(timeoutId) {
+            clearTimeout(timeoutId);
+          }
+          timeoutId = setTimeout(()=>{
+            events[eventName](...args);
+            timeoutId = null;
+          }, 0);
+        };
+        editor.current.on(eventName, change);
+        return;
+      }
       editor.current.on(eventName, events[eventName]);
     });
     editor.current.on('drop', handleDrop);

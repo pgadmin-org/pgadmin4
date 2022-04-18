@@ -15,6 +15,7 @@ import _ from 'lodash';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import { useStopwatch } from '../../../../../../static/js/custom_hooks';
 import { QueryToolEventsContext } from '../QueryToolComponent';
+import gettext from 'sources/gettext';
 
 
 const useStyles = makeStyles((theme)=>({
@@ -86,18 +87,18 @@ export function StatusBar() {
 
   let stagedText = '';
   if(dataRowChangeCounts.added > 0) {
-    stagedText += ` Added: ${dataRowChangeCounts.added};`;
+    stagedText += ' ' + gettext('Added: %s', dataRowChangeCounts.added);
   }
   if(dataRowChangeCounts.updated > 0) {
-    stagedText += ` Updated: ${dataRowChangeCounts.updated};`;
+    stagedText +=  ' ' + gettext('Updated: %s', dataRowChangeCounts.updated);
   }
   if(dataRowChangeCounts.deleted > 0) {
-    stagedText += ` Deleted: ${dataRowChangeCounts.deleted};`;
+    stagedText +=  ' ' + gettext('Deleted: %s', dataRowChangeCounts.deleted);
   }
 
   return (
     <Box className={classes.root}>
-      <Box className={clsx(classes.padding, classes.divider)}>Total rows: {rowsCount[0]} of {rowsCount[1]}</Box>
+      <Box className={clsx(classes.padding, classes.divider)}>{gettext('Total rows: %s of %s', rowsCount[0], rowsCount[1])}</Box>
       {lastTaskText &&
         <Box className={clsx(classes.padding, classes.divider)}>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
@@ -105,13 +106,13 @@ export function StatusBar() {
         <Box className={clsx(classes.padding, classes.divider)}>{lastTaskText} {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}.{msec.toString().padStart(3, '0')}</Box>
       }
       {Boolean(selectedRowsCount) &&
-        <Box className={clsx(classes.padding, classes.divider)}>Rows selected: {selectedRowsCount}</Box>}
+        <Box className={clsx(classes.padding, classes.divider)}>{gettext('Rows selected: %s',selectedRowsCount)}</Box>}
       {stagedText &&
         <Box className={clsx(classes.padding, classes.divider)}>
-          <span>Changes staged: {stagedText}</span>
+          <span>{gettext('Changes staged: %s', stagedText)}</span>
         </Box>
       }
-      <Box className={clsx(classes.padding, classes.mlAuto)}>Ln {position[0]}, Col {position[1]}</Box>
+      <Box className={clsx(classes.padding, classes.mlAuto)}>{gettext('Ln %s, Col %s', position[0], position[1])}</Box>
     </Box>
   );
 }

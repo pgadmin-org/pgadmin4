@@ -105,6 +105,20 @@ export default function(basicSettings) {
       qtDatagridSelectFg: '#222',
       cardHeaderBg: '#fff',
       emptySpaceBg: '#ebeef3',
+      explain: {
+        sev2: {
+          color: '#222222',
+          bg: '#FFEE88',
+        },
+        sev3: {
+          color: '#FFFFFF',
+          bg: '#EE8800'
+        },
+        sev4: {
+          color: '#FFFFFF',
+          bg: '#880000'
+        },
+      }
     }
   });
 }

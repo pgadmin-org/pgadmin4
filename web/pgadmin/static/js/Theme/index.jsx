@@ -19,6 +19,7 @@ import CustomPropTypes from '../custom_prop_types';
 import getStandardTheme from './standard';
 import getDarkTheme from './dark';
 import getHightContrastTheme from './high_contrast';
+import { CssBaseline } from '@material-ui/core';
 
 /* Common settings across all themes */
 let basicSettings = createMuiTheme();
@@ -278,6 +279,19 @@ function getFinalTheme(baseTheme) {
   return createMuiTheme({
     mixins: mixins,
     overrides: {
+      MuiCssBaseline: {
+        '@global': {
+          ul: {
+            margin: 0,
+            padding: 0,
+          },
+          li: {
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+          }
+        },
+      },
       MuiOutlinedInput:  {
         root: {
           '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
@@ -535,6 +549,7 @@ export default function Theme(props) {
   }, []);
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       {props.children}
     </ThemeProvider>
   );
@@ -561,6 +576,7 @@ export const commonTableStyles = makeStyles((theme)=>({
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
       userSelect: 'text',
+      maxWidth: '250px',
       '&:first-of-type':{
         borderLeft: 'none',
       },

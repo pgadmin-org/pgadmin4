@@ -94,7 +94,7 @@ function parseEwkbData(rows, column) {
 
   // generate map info content
   if (tooLargeDataSize || tooManyGeometries) {
-    infoList.push(supportedGeometries.length + ' of ' + rows.length + ' geometries rendered.');
+    infoList.push(gettext('%s of %s geometries rendered.', supportedGeometries.length, rows.length));
   }
   if (geometries3D.length > 0) {
     infoList.push(gettext('3D geometries not rendered.'));
@@ -116,7 +116,7 @@ function parseData(rows, columns, column) {
       'geoJSONs': [],
       'selectedSRID': 0,
       'getPopupContent': undefined,
-      'infoList': ['Empty row.'],
+      'infoList': [gettext('Empty row.')],
     };
   }
 
@@ -294,19 +294,19 @@ function TheMap({data}) {
     <>
       {data.selectedSRID === 4326 &&
     <LayersControl position="topright">
-      <LayersControl.BaseLayer checked name="Empty">
+      <LayersControl.BaseLayer checked name={gettext('Empty')}>
         <TileLayer
           url=""
         />
       </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer checked name="Street">
+      <LayersControl.BaseLayer checked name={gettext('Street')}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
           attribution='&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
         />
       </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name="Topography">
+      <LayersControl.BaseLayer name={gettext('Topography')}>
         <TileLayer
           url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
           maxZoom={17}
@@ -317,7 +317,7 @@ function TheMap({data}) {
           }
         />
       </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name="Gray Style">
+      <LayersControl.BaseLayer name={gettext('Gray Style')}>
         <TileLayer
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
           maxZoom={19}
@@ -328,7 +328,7 @@ function TheMap({data}) {
           subdomains='abcd'
         />
       </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name="Light Color">
+      <LayersControl.BaseLayer name={gettext('Light Color')}>
         <TileLayer
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.pn"
           maxZoom={19}
@@ -339,7 +339,7 @@ function TheMap({data}) {
           subdomains='abcd'
         />
       </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name="Dark Matter">
+      <LayersControl.BaseLayer name={gettext('Dark Matter')}>
         <TileLayer
           url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}{r}.png"
           maxZoom={19}

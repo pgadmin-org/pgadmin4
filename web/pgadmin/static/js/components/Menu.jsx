@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useRef } from 'react';
 import CheckIcon from '@material-ui/icons/Check';
 import PropTypes from 'prop-types';
 
@@ -33,6 +33,9 @@ const useStyles = makeStyles((theme)=>({
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
     }
+  },
+  checkIcon: {
+    width: '1.3rem',
   },
   hideCheck: {
     visibility: 'hidden',
@@ -70,7 +73,7 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
     };
   }
   return <MenuItem {...props} onClick={onClick} className={classes.menuItem}>
-    {hasCheck && <CheckIcon style={checked ? {} : {visibility: 'hidden'}}/>}
+    {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} />}
     {children}
     {(shortcut || accesskey) && <div className={classes.shortcut}>({shortcutToString(shortcut, accesskey)})</div>}
   </MenuItem>;
@@ -84,3 +87,32 @@ PgMenuItem.propTypes = {
   children: CustomPropTypes.children,
   onClick: PropTypes.func,
 };
+
+export function usePgMenuGroup() {
+  const [openMenuName, setOpenMenuName] = React.useState(null);
+  const prevMenuOpenIdRef = useRef(null);
+
+  const toggleMenu = React.useCallback((e)=>{
+    setOpenMenuName(()=>{
+      return prevMenuOpenIdRef.current == e.currentTarget?.name ? null : e.currentTarget?.name;
+    });
+    prevMenuOpenIdRef.current = null;
+  }, []);
+
+  const handleMenuClose = React.useCallback(()=>{
+    /* We have no way here to know if the menu was closed using menu button or not
+    We will keep the last menu name ref for sometime so that the menu does not
+    open again if menu button is clicked to close the menu */
+    prevMenuOpenIdRef.current = openMenuName;
+    setTimeout(()=>{
+      prevMenuOpenIdRef.current = null;
+    }, 300);
+    setOpenMenuName(null);
+  }, [openMenuName]);
+
+  return {
+    openMenuName: openMenuName,
+    toggleMenu: toggleMenu,
+    onMenuClose: handleMenuClose,
+  };
+}

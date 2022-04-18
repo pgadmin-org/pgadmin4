@@ -106,15 +106,15 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
           >
             <Tooltip title={queryToolCtx.params.is_query_tool ? '' : connTitle}>
               <Box display="flex" width="100%">
-                <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">{connecting && '(Obtaining connection)'}{connTitle}</Box>
+                <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">{connecting && gettext('(Obtaining connection)')}{connTitle}</Box>
                 {queryToolCtx.params.is_query_tool && <Box><KeyboardArrowDownIcon /></Box>}
               </Box>
             </Tooltip>
           </DefaultButton>
-          <PgIconButton title="New query tool" icon={<QueryToolIcon />} onClick={onNewQueryToolClick}/>
+          <PgIconButton title={gettext('New query tool for current connection')} icon={<QueryToolIcon />} onClick={onNewQueryToolClick}/>
         </PgButtonGroup>
         <PgButtonGroup size="small" variant="text" style={{marginLeft: 'auto'}}>
-          <PgIconButton title="Reset layout" icon={<RotateLeftRoundedIcon />} onClick={onResetLayout}/>
+          <PgIconButton title={gettext('Reset layout')} icon={<RotateLeftRoundedIcon />} onClick={onResetLayout}/>
         </PgButtonGroup>
       </Box>
       <PgMenu

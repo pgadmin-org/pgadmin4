@@ -116,7 +116,7 @@ export function initializeToolbar(panel, wcDocker) {
     else if ('name' in data && data.name === gettext('View Data'))
       pgAdmin.Tools.SQLEditor.showViewData({mnuid: 3}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('Filtered Rows'))
-      pgAdmin.Tools.SQLEditor.show_filtered_row({mnuid: 4}, pgAdmin.Browser.tree.selected());
+      pgAdmin.Tools.SQLEditor.showFilteredRow({mnuid: 4}, pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('Search objects'))
       pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('PSQL Tool')){

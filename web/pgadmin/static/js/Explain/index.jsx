@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme)=>({
   tabPanel: {
     padding: 0,
     backgroundColor: theme.palette.background.default,
-  }
+  },
 }));
 
 // Some predefined constants used to calculate image location and its border
@@ -261,7 +261,11 @@ function parsePlan(data, ctx) {
     totalCost = data['Total Cost'];
   if (startCost != undefined && totalCost != undefined) {
     arrowSize = Math.round(Math.log((startCost + totalCost) / 2 + startCost));
-    arrowSize = arrowSize < 1 ? 1 : arrowSize > 10 ? 10 : arrowSize;
+    if (arrowSize < 1) {
+      arrowSize = 1;
+    } else if (arrowSize > 10) {
+      arrowSize = 10;
+    }
   }
   data['arr_id'] = _.uniqueId('arr');
   ctx.arrows[data['arr_id']] = arrowSize;
@@ -292,15 +296,21 @@ function parsePlan(data, ctx) {
 
   if ('Actual Total Time' in data && 'Actual Loops' in data) {
     data['inclusive'] = Math.ceil10(
-      data['Actual Total Time'] * data['Actual Loops'], -3
+      data['Actual Total Time'], -3
     );
     data['exclusive'] = data['inclusive'];
     data['inclusive_factor'] =  data['inclusive'] / (
       data['total_time'] || data['Actual Total Time']
     );
-    data['inclusive_flag'] = data['inclusive_factor'] <= 0.1 ? '1' :
-      data['inclusive_factor'] < 0.5 ? '2' :
-        data['inclusive_factor'] <= 0.9 ? '3' : '4';
+    if (data['inclusive_factor'] <= 0.1) {
+      data['inclusive_flag'] = '1';
+    } else if (data['inclusive_factor'] < 0.5) {
+      data['inclusive_flag'] = '2';
+    } else if (data['inclusive_factor'] <= 0.9) {
+      data['inclusive_flag'] = '3';
+    } else {
+      data['inclusive_flag'] = '4';
+    }
   }
 
   if ('Actual Rows' in data && 'Plan Rows' in data) {
@@ -316,10 +326,20 @@ function parsePlan(data, ctx) {
       );
       data['rowsx_direction'] = 'positive';
     }
-    data['rowsx_flag'] = data['rowsx'] <= 10 ? '1' : (
-      data['rowsx'] <= 100 ? '2' : (data['rowsx'] <= 1000 ? '3' : '4')
-    );
-    data['rowsx'] = Math.ceil10(data['rowsx'], -2);
+    if (data['rowsx'] <= 10) {
+      data['rowsx_flag'] = '1';
+    } else if (data['rowsx'] <= 100 ) {
+      data['rowsx_flag'] = '2';
+    } else if (data['rowsx'] <= 1000 ) {
+      data['rowsx_flag'] = '3';
+    } else {
+      data['rowsx_flag'] = '4';
+    }
+    if('loops' in data) {
+      data['rowsx'] = Math.ceil10(data['rowsx'] / data['loops'] || 1, -2);
+    } else {
+      data['rowsx'] = Math.ceil10(data['rowsx'], -2);
+    }
   }
 
   // Start calculating xpos, ypos, width and height for child plans if any
@@ -337,6 +357,7 @@ function parsePlan(data, ctx) {
         ypos: ypos,
         total_time: data['total_time'] || data['Actual Total Time'],
         parent_node: lvl.join('_'),
+        loops: data['Actual Loops']
       }, ctx);
 
       if (maxChildWidth < plan.width) {
@@ -344,7 +365,7 @@ function parsePlan(data, ctx) {
       }
 
       if ('exclusive' in data) {
-        if (plan.inclusive) {
+        if (plan.inclusive < data['exclusive']) {
           data['exclusive'] -= plan.inclusive;
         }
       }
@@ -361,6 +382,11 @@ function parsePlan(data, ctx) {
       plans.push(plan);
       idx++;
     });
+  } else{
+    if('loops' in data && 'exclusive' in data) {
+      data['inclusive'] = Math.ceil10(data['Actual Total Time'] / data['loops'] || 1, -3);
+      data['exclusive'] = data['inclusive'];
+    }
   }
 
   if ('exclusive' in data) {
@@ -368,9 +394,15 @@ function parsePlan(data, ctx) {
     data['exclusive_factor'] = (
       data['exclusive'] / (data['total_time'] || data['Actual Total Time'])
     );
-    data['exclusive_flag'] = data['exclusive_factor'] <= 0.1 ? '1' :
-      data['exclusive_factor'] < 0.5 ? '2' :
-        data['exclusive_factor'] <= 0.9 ? '3' : '4';
+    if (data['exclusive_factor'] <= 0.1) {
+      data['exclusive_flag'] = '1';
+    } else if (data['exclusive_factor'] < 0.5) {
+      data['exclusive_flag'] = '2';
+    } else if (data['exclusive_factor'] <= 0.9) {
+      data['exclusive_flag'] = '3';
+    } else {
+      data['exclusive_flag'] = '4';
+    }
   }
 
   // Final Width and Height of current node
@@ -389,6 +421,7 @@ function parsePlanData(data, ctx) {
         ...data['Plan'],
         xpos: 0,
         ypos: 0,
+        loops: 1,
       }, ctx);
       retPlan['Plan'] = plan;
       retPlan['xpos'] = 0;
@@ -431,20 +464,23 @@ export default function Explain({plans=[]}) {
   const classes = useStyles();
   const [tabValue, setTabValue] = React.useState(0);
 
-  let ctx = React.useRef({
-    totalNodes: 0,
-    totalDownloadedNodes: 0,
-    isDownloaded: 0,
-    explainTable: {
-      rows: [],
-      statistics: {
-        tables: {},
-        nodes: {},
+  let ctx = React.useRef({});
+  let planData = React.useMemo(()=>{
+    ctx.current = {
+      totalNodes: 0,
+      totalDownloadedNodes: 0,
+      isDownloaded: 0,
+      explainTable: {
+        rows: [],
+        statistics: {
+          tables: {},
+          nodes: {},
+        },
       },
-    },
-    arrows: {},
-  });
-  let planData = React.useMemo(()=>(plans && parsePlanData(plans[0], ctx.current)), [plans]);
+      arrows: {},
+    };
+    return plans && parsePlanData(plans[0], ctx.current);
+  }, [plans]);
 
   if(_.isEmpty(plans)) {
     return <Box height="100%" display="flex" flexDirection="column">

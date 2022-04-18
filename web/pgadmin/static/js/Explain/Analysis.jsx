@@ -24,16 +24,19 @@ const useStyles = makeStyles((theme)=>({
     borderBottom: '2px dashed '+theme.palette.primary.main,
   },
   level2: {
-    backgroundColor: '#fff',
-    color: '#000',
+    backgroundColor: theme.otherVars.explain.sev2.bg,
+    color: theme.otherVars.explain.sev2.color,
   },
   level3: {
-    backgroundColor: '#fff',
-    color: '#000',
+    backgroundColor: theme.otherVars.explain.sev3.bg,
+    color: theme.otherVars.explain.sev3.color,
   },
   level4: {
-    backgroundColor: '#fff',
-    color: '#000',
+    backgroundColor: theme.otherVars.explain.sev4.bg,
+    color: theme.otherVars.explain.sev4.color,
+  },
+  textRight: {
+    textAlign: 'right',
   },
 }));
 
@@ -42,15 +45,6 @@ function getRowClassname(data, collapseParent) {
   let className = [];
   if(data['Plans']?.length > 0) {
     className.push(classes.collapsible);
-  }
-  if(!_.isEmpty(data['exclusive_flag'])) {
-    className.push(classes['level'+data['exclusive_flag']]);
-  }
-  if(!_.isEmpty(data['inclusive_flag'])) {
-    className.push(classes['level'+data['inclusive_flag']]);
-  }
-  if(!_.isEmpty(data['rowsx_flag'])) {
-    className.push(classes['level'+data['rowsx_flag']]);
   }
   if(collapseParent) {
     className.push(classes.collapseParent);
@@ -61,10 +55,10 @@ function getRowClassname(data, collapseParent) {
 function NodeText({displayText, extraInfo}) {
   return (
     <>
-      <ArrowRightAltIcon fontSize="small" /> {displayText}
-      {extraInfo?.length > 0 && <ul>
+      <ArrowRightAltIcon fontSize="small" style={{marginLeft: '-24px'}} /> {displayText}
+      {extraInfo?.length > 0 && <ul style={{fontSize: '13px'}}>
         {extraInfo.map((item, i)=>{
-          return <li key={i}>{HTMLReactParse(item)}</li>;
+          return <li key={i} style={{opacity: '0.8'}}>{HTMLReactParse(item)}</li>;
         })}
       </ul>}
     </>);
@@ -76,6 +70,7 @@ NodeText.propTypes = {
 
 function ExplainRow({row, show, activeExId, setActiveExId, collapsedExId, toggleCollapseExId}) {
   let data = row['data'];
+  const classes = useStyles();
   const exId = `pga_ex_${data['level'].join('_')}`;
   const parentExId = `pga_ex_${data['parent_node']}`;
   const collapsed = collapsedExId.findIndex((v)=>parentExId.startsWith(v)) > -1;
@@ -94,29 +89,28 @@ function ExplainRow({row, show, activeExId, setActiveExId, collapsedExId, toggle
       <td>
         <FiberManualRecordIcon fontSize="small" style={{visibility: activeExId==parentExId ? 'visible' : 'hidden'}} />
       </td>
-      <td>{data['_serial']}.</td>
+      <td className={classes.textRight}>{data['_serial']}.</td>
       <td style={{paddingLeft: data['level'].length*30+'px'}} title={row['tooltip_text']}>
         <NodeText displayText={row['display_text']} extraInfo={row['node_extra_info']} />
       </td>
-      <td style={show.show_timings ? {} : {display: 'none'}}>
+      <td className={clsx(classes.textRight, classes['level'+data['exclusive_flag']])} style={show.show_timings ? {} : {display: 'none'}}>
         {data['exclusive'] && (data['exclusive']+' ms')}
       </td>
-      <td style={show.show_timings ? {} : {display: 'none'}}>
+      <td className={clsx(classes.textRight, classes['level'+data['inclusive_flag']])} style={show.show_timings ? {} : {display: 'none'}}>
         {data['inclusive'] && (data['inclusive']+' ms')}
       </td>
-      <td style={{display: 'none'}}>{!_.isUndefined(data['rowsx_flag'])
-        && (data['rowsx_direction'] == 'positive' ? '&uarr;' : '&darr;')
-      }</td>
-      <td style={show.show_rowsx ? {} : {display: 'none'}}>
-        {data['rowsx']}
+      <td className={clsx(classes.textRight, classes['level'+data['rowsx_flag']])} style={show.show_rowsx ? {} : {display: 'none'}}>
+        {!_.isUndefined(data['rowsx_flag'])
+          && (data['rowsx_direction'] == 'positive' ? <>&uarr;</> : <>&darr;</>)
+        }&nbsp;{data['rowsx']}
       </td>
-      <td style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
+      <td className={classes.textRight} style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
         {data['Actual Rows']}
       </td>
-      <td style={(show.show_rowsx || show.show_plan_rows) ? {} : {display: 'none'}}>
+      <td className={classes.textRight} style={(show.show_rowsx || show.show_plan_rows) ? {} : {display: 'none'}}>
         {data['Plan Rows']}
       </td>
-      <td style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
+      <td className={classes.textRight} style={(show.show_rowsx || show.show_rows) ? {} : {display: 'none'}}>
         {data['Actual Loops']}
       </td>
     </tr>
@@ -130,7 +124,9 @@ ExplainRow.propTypes = {
       _serial: PropTypes.number,
       parent_node: PropTypes.number,
       exclusive: PropTypes.number,
+      exclusive_flag: PropTypes.string,
       inclusive: PropTypes.number,
+      inclusive_flag: PropTypes.string,
       rowsx_direction: PropTypes.string,
       rowsx: PropTypes.number,
       rowsx_flag: PropTypes.number,
@@ -178,7 +174,8 @@ export default function Analysis({explainTable}) {
         <th colSpan="2" style={explainTable.show_timings ? {} : {display: 'none'}}>
           <button disabled="">Timings</button>
         </th>
-        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}} colSpan="3">
+        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}
+          colSpan={(explainTable.show_rowsx) ? '3' : '1'}>
           <button disabled="">Rows</button>
         </th>
         <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}} rowSpan="2">

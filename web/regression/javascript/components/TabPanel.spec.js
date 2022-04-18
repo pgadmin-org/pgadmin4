@@ -37,12 +37,12 @@ describe('TabPanel', ()=>{
   });
 
   it('init', ()=>{
-    expect(panelInst.getDOMNode().hidden).toBeTrue();
+    expect(panelInst.find('div').at(0).getDOMNode().hidden).toBeTrue();
     expect(panelInst.find('h1')).not.toBe(null);
   });
 
   it('tab select', ()=>{
     panelInst.setProps({value: 0});
-    expect(panelInst.getDOMNode().hidden).toBeFalse();
+    expect(panelInst.find('div').at(0).getDOMNode().hidden).toBeFalse();
   });
 });
