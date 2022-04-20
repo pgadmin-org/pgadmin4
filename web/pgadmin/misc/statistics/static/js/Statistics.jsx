@@ -57,17 +57,51 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getColumn(data, singleLineStatistics) {
-  let columns = [];
+  let columns = [], column;
   if (!singleLineStatistics) {
     if (!_.isUndefined(data)) {
       data.forEach((row) => {
-        var column = {
-          Header: row.name,
-          accessor: row.name,
-          sortble: true,
-          resizable: false,
-          disableGlobalFilter: false,
-        };
+        if (row.name == 'Size') {
+          column = {
+            Header: row.name,
+            accessor: row.name,
+            sortble: true,
+            resizable: false,
+            disableGlobalFilter: false,
+            sortType: ((rowA, rowB, id) => {
+              let val1 = rowA.values[id];
+              let val2 = rowB.values[id];
+              const sizes = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+              sizes.some((t, i) => {
+                if (!_.isNull(rowA.values[id]) && typeof (rowA.values[id]) == 'string' && rowA.values[id].indexOf(t) > -1) {
+                  val1 = (parseInt(rowA.values[id]) * Math.pow(1024, i));
+                }
+
+                if (!_.isNull(rowB.values[id]) && typeof (rowB.values[id]) == 'string' && rowB.values[id].indexOf(t) > -1) {
+                  val2 = parseInt(rowB.values[id]) * Math.pow(1024, i);
+                }
+              });
+
+              if ((val1) > (val2) || _.isNull(val2)) {
+                return 1;
+              }
+              if ((val2) > (val1) || _.isNull(val1)) {
+                return -1;
+              }
+              return 0;
+
+            })
+          };
+        }else{
+          column = {
+            Header: row.name,
+            accessor: row.name,
+            sortble: true,
+            resizable: false,
+            disableGlobalFilter: false,
+          };
+
+        }
         columns.push(column);
       });
     }
