@@ -462,16 +462,12 @@ export default function CodeMirror({currEditor, name, value, options, events, re
 
   useEffect(()=>{
     if(editor.current) {
-      if(disabled) {
-        editor.current.setOption('readOnly', true);
-        cmWrapper.current.classList.add(classes.hideCursor);
-      } else if(readonly) {
+      if(readonly || disabled) {
         editor.current.setOption('readOnly', true);
         editor.current.addKeyMap({'Tab': false});
         editor.current.addKeyMap({'Shift-Tab': false});
         cmWrapper.current.classList.add(classes.hideCursor);
       } else {
-        cmWrapper.current.classList.remove('cm_disabled');
         editor.current.setOption('readOnly', false);
         editor.current.removeKeyMap('Tab');
         editor.current.removeKeyMap('Shift-Tab');

@@ -419,7 +419,7 @@ export default function Graphical({planData, ctx}) {
           </Box>
         </Box>} />
         <CardContent className={classes.explainContent}>
-          <table className={clsx(tableStyles.table, tableStyles.borderBottom)}>
+          <table className={clsx(tableStyles.table, tableStyles.borderBottom, tableStyles.wrapTd)}>
             <tbody>
               <NodeDetails download={false} plan={explainPlanDetails} />
             </tbody>

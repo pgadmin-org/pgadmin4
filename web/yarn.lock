@@ -8880,10 +8880,10 @@ react-checkbox-tree@^1.7.2:
     nanoid "^3.0.0"
     prop-types "^15.5.8"
 
-react-data-grid@^7.0.0-beta.11:
-  version "7.0.0-beta.11"
-  resolved "https://registry.yarnpkg.com/react-data-grid/-/react-data-grid-7.0.0-beta.11.tgz#16e87f87ac2d1f2c33816837f1be3c4210f1e4b2"
-  integrity sha512-IjJf3GZ7HxH7uSoDaQhKXV9+L8I64xRKgLVQNCblSgvEY20mg2XlMmEjiV9KqROTUM2MqI+IlEpeBLCZRB3mEw==
+react-data-grid@^7.0.0-beta.12:
+  version "7.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/react-data-grid/-/react-data-grid-7.0.0-beta.12.tgz#a6310a83a7ad4913a595a8b2a667e4951a95dc58"
+  integrity sha512-cgKE4fl/glKllpfY444H1ZF4mNDUfIU7kyrSYVUy8W1npTvGk9CL++ASs1pTSSi2Eg2Sx7vqnC1gEx6C92Kqjw==
   dependencies:
     clsx "^1.1.1"
 

@@ -237,6 +237,14 @@ function nodeExplainTableData(_planData, _ctx) {
   info.statistics.nodes[node_info] = node;
 }
 
+function parseExplainTableData(plan, ctx) {
+  nodeExplainTableData(plan, ctx);
+
+  plan['Plans']?.map((p)=>{
+    parseExplainTableData(p, ctx);
+  });
+}
+
 function parsePlan(data, ctx) {
   var idx = 1,
     lvl = data.level = data.level || [idx],
@@ -408,7 +416,6 @@ function parsePlan(data, ctx) {
   // Final Width and Height of current node
   data['width'] += maxChildWidth;
   data['Plans'] = plans;
-  nodeExplainTableData(data, ctx);
 
   return data;
 }
@@ -456,6 +463,8 @@ function parsePlanData(data, ctx) {
     if (data && 'Settings' in data) {
       retPlan['Statistics']['Settings'] = data['Settings'];
     }
+
+    parseExplainTableData(retPlan['Plan'], ctx);
   }
   return retPlan;
 }

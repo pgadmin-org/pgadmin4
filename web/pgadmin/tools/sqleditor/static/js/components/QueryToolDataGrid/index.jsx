@@ -105,7 +105,7 @@ function CustomRow(props) {
   const rowInfoValue = {
     rowIdx: props.rowIdx,
     getCellElement: (colIdx)=>{
-      return rowRef.current.querySelector(`.rdg-cell[aria-colindex="${colIdx+1}"]`);
+      return rowRef.current?.querySelector(`.rdg-cell[aria-colindex="${colIdx+1}"]`);
     }
   };
   return (

@@ -173,6 +173,10 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     if(column.is_array && !isValidArray(localVal)) {
       Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
     } else {
+      if(value == localVal) {
+        onClose(false);
+        return;
+      }
       let columnVal = textColumnFinalVal(localVal, column);
       onRowChange({ ...row, [column.key]: columnVal}, true);
       onClose();
@@ -320,6 +324,10 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
     setLocalVal(newVal);
   }, []);
   const onOK = ()=>{
+    if(value == localVal) {
+      onClose(false);
+      return;
+    }
     onRowChange({ ...row, [column.key]: localVal}, true);
     onClose();
   };

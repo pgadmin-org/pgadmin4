@@ -373,7 +373,7 @@ export function QueryHistory() {
 
   React.useEffect(async ()=>{
     layoutEvenBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
-      currentTabId == PANELS.HISTORY && listRef.current.focus();
+      currentTabId == PANELS.HISTORY && listRef.current?.focus();
     });
 
     setLoaderText(gettext('Fetching history...'));
@@ -399,7 +399,7 @@ export function QueryHistory() {
       refresh({});
     };
 
-    listRef.current.focus();
+    listRef.current?.focus();
     eventBus.registerListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
   }, []);

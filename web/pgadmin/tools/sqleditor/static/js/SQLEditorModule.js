@@ -348,7 +348,7 @@ export default class SQLEditor {
         <input name="close_url" value="${closeUrl}" hidden />`;
 
 
-    if(sURL){
+    if(sURL && typeof(sURL) === 'string'){
       queryToolForm +=`<input name="query_url" value="${sURL}" hidden />`;
     }
     if(sql_filter) {

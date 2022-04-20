@@ -487,7 +487,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     const onClose = ()=>LayoutHelper.close(docker.current, 'new-conn');
     LayoutHelper.openDialog(docker.current, {
       id: 'new-conn',
-      title: gettext('Add new connection'),
+      title: gettext('Add New Connection'),
       content: <NewConnectionDialog onSave={(_isNew, data)=>{
         let connectionData = {
           sgid: 0,

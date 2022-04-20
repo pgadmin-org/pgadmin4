@@ -311,7 +311,7 @@ export default function Query() {
         key.metaKey = true;
         key.ctrlKey = false;
         key.shiftKey = false;
-        key.altKey = true;
+        key.altKey = replace;
       }
       editor.current?.triggerOnKeyDown(
         new KeyboardEvent('keydown', key)

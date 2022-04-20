@@ -27,6 +27,18 @@ basicSettings = createMuiTheme(basicSettings, {
   typography: {
     fontSize: 14,
     htmlFontSize: 14,
+    fontFamily: [
+      'Roboto',
+      '"Helvetica Neue"',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
   },
   shape: {
     borderRadius: 4,
@@ -281,6 +293,9 @@ function getFinalTheme(baseTheme) {
     overrides: {
       MuiCssBaseline: {
         '@global': {
+          body: {
+            fontFamily: baseTheme.typography.fontFamily,
+          },
           ul: {
             margin: 0,
             padding: 0,
@@ -617,6 +632,11 @@ export const commonTableStyles = makeStyles((theme)=>({
     '& tbody tr:last-of-type td': {
       borderBottom: '1px solid '+theme.otherVars.borderColor,
     },
+  },
+  wrapTd: {
+    '& tbody td': {
+      whiteSpace: 'pre-wrap',
+    }
   },
   noHover: {
     '& tbody > tr': {

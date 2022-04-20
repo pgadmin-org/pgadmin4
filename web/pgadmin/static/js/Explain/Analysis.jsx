@@ -15,6 +15,7 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import HTMLReactParse from 'html-react-parser';
 import { commonTableStyles } from '../Theme';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 const useStyles = makeStyles((theme)=>({
   collapsible: {
@@ -172,26 +173,26 @@ export default function Analysis({explainTable}) {
         <th rowSpan="2"><button disabled="">#</button></th>
         <th rowSpan="2"><button disabled="">Node</button></th>
         <th colSpan="2" style={explainTable.show_timings ? {} : {display: 'none'}}>
-          <button disabled="">Timings</button>
+          <button disabled="">{gettext('Timings')}</button>
         </th>
-        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}
+        <th style={(explainTable.show_rowsx || explainTable.show_rows || explainTable.show_plan_rows) ? {} : {display: 'none'}}
           colSpan={(explainTable.show_rowsx) ? '3' : '1'}>
-          <button disabled="">Rows</button>
+          <button disabled="">{gettext('Rows')}</button>
         </th>
         <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}} rowSpan="2">
-          <button disabled="">Loops</button>
+          <button disabled="">{gettext('Loops')}</button>
         </th>
       </tr>
       <tr>
         <th style={explainTable.show_timings ? {} : {display: 'none'}}>
-          <button disabled="">Exclusive</button>
+          <button disabled="">{gettext('Exclusive')}</button>
         </th>
         <th style={explainTable.show_timings ? {} : {display: 'none'}}>
-          <button disabled="">Inclusive</button>
+          <button disabled="">{gettext('Inclusive')}</button>
         </th>
-        <th style={explainTable.show_rowsx ? {} : {display: 'none'}}><button disabled="">Rows X</button></th>
-        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}><button disabled="">Actual</button></th>
-        <th style={(explainTable.show_rowsx || explainTable.plan_rows) ? {} : {display: 'none'}}><button disabled="">Plan</button></th>
+        <th style={explainTable.show_rowsx ? {} : {display: 'none'}}><button disabled="">{gettext('Rows X')}</button></th>
+        <th style={(explainTable.show_rowsx || explainTable.show_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Actual')}</button></th>
+        <th style={(explainTable.show_rowsx || explainTable.show_plan_rows) ? {} : {display: 'none'}}><button disabled="">{gettext('Plan')}</button></th>
       </tr>
     </thead>
     <tbody>

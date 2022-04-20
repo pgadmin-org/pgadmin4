@@ -9,7 +9,9 @@ const useStyles = makeStyles((theme)=>({
     color: theme.palette.text.primary,
     margin: 'auto',
     marginTop: '24px',
-    fontSize: '0.9em',
+    fontSize: '0.8rem',
+    display: 'flex',
+    alignItems: 'center',
   },
 }));
 
@@ -17,8 +19,8 @@ export default function EmptyPanelMessage({text}) {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <InfoRoundedIcon />
-      <span marginLeft='4px'>{text}</span>
+      <InfoRoundedIcon style={{height: '1.2rem'}}/>
+      <span style={{marginLeft: '4px'}}>{text}</span>
     </Box>
   );
 }

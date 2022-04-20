@@ -92,7 +92,7 @@ export default function ExplainStatistics({explainTable}) {
             <tbody>
               {_.sortBy(Object.keys(explainTable.statistics.tables)).map((key, i)=>{
                 let table = explainTable.statistics.tables[key];
-                table.sum_of_times = _.sumBy(table.nodes, 'sum_of_times');
+                table.sum_of_times = _.sumBy(Object.values(table.nodes), 'sum_of_times');
                 return <React.Fragment key={i}>
                   <tr className={classes.tableRow}>
                     <td className={classes.tableName}>{table.name}</td>

@@ -19,6 +19,10 @@ import gettext from 'sources/gettext';
 import Theme from 'sources/Theme';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
+import { Box } from '@material-ui/core';
+import { LayoutHelper } from '../../../../../../static/js/helpers/Layout';
+import { PANELS } from '../QueryToolConstants';
+import { QueryToolContext } from '../QueryToolComponent';
 
 const useStyles = makeStyles((theme)=>({
   mapContainer: {
@@ -233,7 +237,7 @@ function GeoJsonLayer({data}) {
     } else {
       mapObj.setView(bounds.getCenter(), mapObj.getZoom());
     }
-  });
+  }, [data]);
 
   return (
     <GeoJSON
@@ -278,6 +282,7 @@ GeoJsonLayer.propTypes = {
 function TheMap({data}) {
   const mapObj = useMap();
   const infoControl = useRef(null);
+  const resetLayersKey = useRef(0);
   useEffect(()=>{
     infoControl.current = Leaflet.control({position: 'topright'});
     infoControl.current.onAdd = function () {
@@ -288,70 +293,71 @@ function TheMap({data}) {
     if(data.infoList.length > 0) {
       infoControl.current.addTo(mapObj);
     }
+    resetLayersKey.current++;
     return ()=>{infoControl.current && infoControl.current.remove();};
   }, [data]);
   return (
     <>
       {data.selectedSRID === 4326 &&
-    <LayersControl position="topright">
-      <LayersControl.BaseLayer checked name={gettext('Empty')}>
-        <TileLayer
-          url=""
-        />
-      </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer checked name={gettext('Street')}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-          attribution='&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
-        />
-      </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name={gettext('Topography')}>
-        <TileLayer
-          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-          maxZoom={17}
-          attribution={
-            '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-            + ' &copy; <a href="http://viewfinderpanoramas.org" target="_blank">SRTM</a>,'
-            + ' &copy; <a href="https://opentopomap.org" target="_blank">OpenTopoMap</a>'
-          }
-        />
-      </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name={gettext('Gray Style')}>
-        <TileLayer
-          url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
-          attribution={
-            '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-            + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
-          }
-          subdomains='abcd'
-        />
-      </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name={gettext('Light Color')}>
-        <TileLayer
-          url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.pn"
-          maxZoom={19}
-          attribution={
-            '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-            + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
-          }
-          subdomains='abcd'
-        />
-      </LayersControl.BaseLayer>
-      <LayersControl.BaseLayer name={gettext('Dark Matter')}>
-        <TileLayer
-          url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
-          attribution={
-            '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
-            + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
-          }
-          subdomains='abcd'
-        />
-      </LayersControl.BaseLayer>
-    </LayersControl>}
-      <GeoJsonLayer key={data.geoJSONs.length} data={data}/>
+      <LayersControl position="topright">
+        <LayersControl.BaseLayer checked name={gettext('Empty')}>
+          <TileLayer
+            url=""
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer checked name={gettext('Street')}>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
+            attribution='&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name={gettext('Topography')}>
+          <TileLayer
+            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+            maxZoom={17}
+            attribution={
+              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
+              + ' &copy; <a href="http://viewfinderpanoramas.org" target="_blank">SRTM</a>,'
+              + ' &copy; <a href="https://opentopomap.org" target="_blank">OpenTopoMap</a>'
+            }
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name={gettext('Gray Style')}>
+          <TileLayer
+            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
+            maxZoom={19}
+            attribution={
+              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
+              + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
+            }
+            subdomains='abcd'
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name={gettext('Light Color')}>
+          <TileLayer
+            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.pn"
+            maxZoom={19}
+            attribution={
+              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
+              + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
+            }
+            subdomains='abcd'
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name={gettext('Dark Matter')}>
+          <TileLayer
+            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}{r}.png"
+            maxZoom={19}
+            attribution={
+              '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>,'
+              + ' &copy; <a href="http://cartodb.com/attributions" target="_blank">CartoDB</a>'
+            }
+            subdomains='abcd'
+          />
+        </LayersControl.BaseLayer>
+      </LayersControl>}
+      <GeoJsonLayer key={resetLayersKey.current} data={data} />
     </>
   );
 }
@@ -367,18 +373,40 @@ TheMap.propTypes = {
 
 export function GeometryViewer({rows, columns, column}) {
   const classes = useStyles();
+  const mapRef = React.useRef();
+  const contentRef = React.useRef();
   const data = parseData(rows, columns, column);
+  const queryToolCtx = React.useContext(QueryToolContext);
   const crs = data.selectedSRID === 4326 ? CRS.EPSG3857 : CRS.Simple;
+
+  useEffect(()=>{
+    let timeoutId;
+    const contentResizeObserver = new ResizeObserver(()=>{
+      clearTimeout(timeoutId);
+      if(LayoutHelper.isTabVisible(queryToolCtx.docker, PANELS.GEOMETRY)) {
+        timeoutId = setTimeout(function () {
+          mapRef.current?.invalidateSize();
+        }, 100);
+      }
+    });
+    contentResizeObserver.observe(contentRef.current);
+  }, []);
+
   return (
-    <MapContainer
-      crs={crs}
-      zoom={2} center={[20, 100]}
-      preferCanvas={true}
-      scrollWheelZoom={false}
-      className={classes.mapContainer}
-    >
-      <TheMap data={data} />
-    </MapContainer>
+    <Box ref={contentRef} width="100%" height="100%">
+      <MapContainer
+        crs={crs}
+        zoom={2} center={[20, 100]}
+        preferCanvas={true}
+        scrollWheelZoom={false}
+        className={classes.mapContainer}
+        whenCreated={(map)=>{
+          mapRef.current = map;
+        }}
+      >
+        <TheMap data={data}/>
+      </MapContainer>
+    </Box>
   );
 }
 

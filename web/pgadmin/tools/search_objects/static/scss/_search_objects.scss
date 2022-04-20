@@ -60,6 +60,13 @@
                 .slick-header-sortable {
                     cursor: pointer !important;
 
+                    .slick-sort-indicator {
+                      width: 0px;
+                      height: 0px;
+                      position: relative;
+                      top: -2px;
+                    }
+
                     .slick-sort-indicator-asc {
                         background: none;
                         border-top: none;

@@ -129,7 +129,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
               onClick={onConnItemClick}>{conn.conn_title}</PgMenuItem>
           );
         })}
-        <PgMenuItem onClick={onNewConnClick}>{`< ${gettext('New connection...')} >`}</PgMenuItem>
+        <PgMenuItem onClick={onNewConnClick}>{`< ${gettext('New Connection...')} >`}</PgMenuItem>
       </PgMenu>
     </>
   );

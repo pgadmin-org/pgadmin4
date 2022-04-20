@@ -151,7 +151,7 @@
     "react": "^17.0.1",
     "react-aspen": "^1.1.0",
     "react-checkbox-tree": "^1.7.2",
-    "react-data-grid": "^7.0.0-beta.11",
+    "react-data-grid": "^7.0.0-beta.12",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.4",
     "react-leaflet": "^3.2.2",

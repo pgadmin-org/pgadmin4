@@ -81,6 +81,9 @@ const useStyles = makeStyles((theme)=>({
       },
       '& > div': {
         padding: '4px 10px',
+        '&:focus': {
+          outline: '2px solid '+theme.otherVars.activeBorder,
+        }
       },
       '& .drag-initiator': {
         display: 'flex',
@@ -190,6 +193,11 @@ export class LayoutHelper {
     return Boolean(docker.find(panelId));
   }
 
+  static isTabVisible(docker, panelId) {
+    let panelData = docker.find(panelId);
+    return panelData?.parent?.activeId == panelData.id;
+  }
+
   static openTab(docker, panelData, refTabId, direction, forceRerender=false) {
     let panel = docker.find(panelData.id);
     if(panel) {
@@ -201,6 +209,43 @@ export class LayoutHelper {
     } else {
       let tgtPanel = docker.find(refTabId);
       docker.dockMove(LayoutHelper.getPanel(panelData), tgtPanel, direction);
+    }
+  }
+
+  static moveTo(direction) {
+    let dockBar = document.activeElement.closest('.dock')?.querySelector('.dock-bar.drag-initiator');
+    if(dockBar) {
+      let key = {
+        key: 'ArrowRight', keyCode: 39, which: 39, code: 'ArrowRight',
+        metaKey: false, ctrlKey: false, shiftKey: false, altKey: false,
+        bubbles: true,
+      };
+      if(direction == 'right') {
+        key = {
+          ...key,
+          key: 'ArrowRight', keyCode: 39, which: 39, code: 'ArrowRight'
+        };
+      } else if(direction == 'left') {
+        key = {
+          ...key,
+          key: 'ArrowLeft', keyCode: 37, which: 37, code: 'ArrowLeft',
+        };
+      }
+      dockBar.dispatchEvent(new KeyboardEvent('keydown', key));
+    }
+  }
+
+  static switchPanel() {
+    let currDockPanel = document.activeElement.closest('.dock-panel.dock-style-default');
+    let dockLayoutPanels = currDockPanel?.closest('.dock-layout').querySelectorAll('.dock-panel.dock-style-default');
+    if(dockLayoutPanels?.length > 1) {
+      for(let i=0; i<dockLayoutPanels.length; i++) {
+        if(dockLayoutPanels[i] == currDockPanel) {
+          let newPanelIdx = (i+1)%dockLayoutPanels.length;
+          dockLayoutPanels[newPanelIdx]?.querySelector('.dock-tab.dock-tab-active .dock-tab-btn')?.focus();
+          break;
+        }
+      }
     }
   }
 }

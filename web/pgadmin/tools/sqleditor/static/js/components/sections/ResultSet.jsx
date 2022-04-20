@@ -1116,8 +1116,8 @@ export function ResultSet() {
   }, [selectedRows, selectedColumns, queryData, dataChangeStore, selectedCell.current]);
 
   useEffect(()=>{
-    const triggerAddRows = (_rows)=>{
-      let newRows = rsu.current.processRows(_rows, columns, true);
+    const triggerAddRows = (_rows, fromClipboard)=>{
+      let newRows = rsu.current.processRows(_rows, columns, fromClipboard);
       setRows((prev)=>[...newRows, ...prev]);
       let add = {};
       newRows.forEach((row)=>{
@@ -1191,7 +1191,7 @@ export function ResultSet() {
 
   const rowKeyGetter = React.useCallback((row)=>row[rsu.current.clientPK]);
   return (
-    <Box className={classes.root} ref={containerRef}>
+    <Box className={classes.root} ref={containerRef} tabIndex="0">
       <Loader message={loaderText} />
       <Loader message={isLoadingMore ? gettext('Loading more rows...') : null} style={{top: 'unset', right: 'unset', padding: '0.5rem 1rem'}}/>
       {(columns.length == 0 && rows.length == 0) &&

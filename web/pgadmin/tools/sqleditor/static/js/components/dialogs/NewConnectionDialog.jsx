@@ -67,7 +67,8 @@ class NewConnectionSchema extends BaseUISchema {
               return;
             }
             /* initial selection */
-            _.find(v, (o)=>o.value==obj.params.sid).selected = true;
+            let foundServer = _.find(v, (o)=>o.value==obj.params.sid);
+            foundServer && (foundServer.selected = true);
             groupedOptions.push({
               label: k,
               options: v,

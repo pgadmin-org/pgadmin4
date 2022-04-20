@@ -70,7 +70,7 @@ export function ResultSetToolbar({containerRef, canEdit}) {
       field_separator: queryToolPref.results_grid_field_separator,
     });
     let copiedRows = copyUtils.getCopiedRows();
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, copiedRows);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, copiedRows, true);
   }, [queryToolPref]);
   const copyData = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.COPY_DATA, checkedMenuItems['copy_with_headers']);
