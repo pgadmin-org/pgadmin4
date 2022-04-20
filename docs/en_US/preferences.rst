@@ -453,7 +453,7 @@ Expand the *Schema Diff* node to specify your display preferences.
 
 Use the *Ignore owner* switch to ignores the owner while comparing the objects.
 
-Use the *Ignore whitespaces* switch to ignores the whitespaces while comparing
+Use the *Ignore whitespace* switch to ignores the whitespace while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
 
 

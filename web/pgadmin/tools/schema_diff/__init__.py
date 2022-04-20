@@ -80,21 +80,20 @@ class SchemaDiffModule(PgAdminModule):
 
         self.preference.register(
             'display', 'ignore_whitespaces',
-            gettext("Ignore whitespaces"), 'boolean', False,
+            gettext("Ignore whitespace"), 'boolean', False,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, then the Schema Diff '
-                             'tool ignores the whitespaces while comparing '
-                             'the string objects. Whitespace includes space, '
-                             'tabs, and CRLF')
+            help_str=gettext('Set ignore whitespace on or off by default in '
+                             'the drop-down menu near the Compare button in '
+                             'the Schema Diff tab.')
         )
 
         self.preference.register(
             'display', 'ignore_owner',
             gettext("Ignore owner"), 'boolean', False,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, then the Schema Diff '
-                             'tool ignores the owner while comparing '
-                             'the objects.')
+            help_str=gettext('Set ignore owner on or off by default in the '
+                             'drop-down menu near the Compare button in the '
+                             'Schema Diff tab.')
         )
 
 
@@ -457,12 +456,14 @@ def schemas(sid, did):
 
 @blueprint.route(
     '/compare_database/<int:trans_id>/<int:source_sid>/<int:source_did>/'
-    '<int:target_sid>/<int:target_did>',
+    '<int:target_sid>/<int:target_did>/<int:ignore_owner>/'
+    '<int:ignore_whitespaces>',
     methods=["GET"],
     endpoint="compare_database"
 )
 @login_required
-def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
+def compare_database(trans_id, source_sid, source_did, target_sid, target_did,
+                     ignore_owner, ignore_whitespaces):
     """
     This function will compare the two databases.
     """
@@ -479,6 +480,9 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
                                     diff_model_obj)
 
     try:
+        ignore_owner = bool(ignore_owner)
+        ignore_whitespaces = bool(ignore_whitespaces)
+
         # Fetch all the schemas of source and target database
         # Compare them and get the status.
         schema_result = fetch_compare_schemas(source_sid, source_did,
@@ -501,7 +505,9 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
                 source_sid=source_sid, source_did=source_did,
                 target_sid=target_sid, target_did=target_did,
                 diff_model_obj=diff_model_obj, total_percent=total_percent,
-                node_percent=node_percent)
+                node_percent=node_percent,
+                ignore_owner=ignore_owner,
+                ignore_whitespaces=ignore_whitespaces)
         comparison_result = \
             comparison_result + comparison_schema_result
 
@@ -519,7 +525,9 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
                         node_percent=node_percent,
-                        is_schema_source_only=True)
+                        is_schema_source_only=True,
+                        ignore_owner=ignore_owner,
+                        ignore_whitespaces=ignore_whitespaces)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -536,7 +544,9 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
-                        node_percent=node_percent)
+                        node_percent=node_percent,
+                        ignore_owner=ignore_owner,
+                        ignore_whitespaces=ignore_whitespaces)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -554,7 +564,9 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
-                        node_percent=node_percent)
+                        node_percent=node_percent,
+                        ignore_owner=ignore_owner,
+                        ignore_whitespaces=ignore_whitespaces)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -573,13 +585,15 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
 
 @blueprint.route(
     '/compare_schema/<int:trans_id>/<int:source_sid>/<int:source_did>/'
-    '<int:source_scid>/<int:target_sid>/<int:target_did>/<int:target_scid>',
+    '<int:source_scid>/<int:target_sid>/<int:target_did>/<int:target_scid>/'
+    '<int:ignore_owner>/<int:ignore_whitespaces>',
     methods=["GET"],
     endpoint="compare_schema"
 )
 @login_required
 def compare_schema(trans_id, source_sid, source_did, source_scid,
-                   target_sid, target_did, target_scid):
+                   target_sid, target_did, target_scid, ignore_owner,
+                   ignore_whitespaces):
     """
     This function will compare the two schema.
     """
@@ -595,6 +609,8 @@ def compare_schema(trans_id, source_sid, source_did, source_scid,
     update_session_diff_transaction(trans_id, session_obj,
                                     diff_model_obj)
     try:
+        ignore_owner = bool(ignore_owner)
+        ignore_whitespaces = bool(ignore_whitespaces)
         all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
         node_percent = round(100 / len(all_registered_nodes))
         total_percent = 0
@@ -608,7 +624,9 @@ def compare_schema(trans_id, source_sid, source_did, source_scid,
                 schema_name=gettext('Schema Objects'),
                 diff_model_obj=diff_model_obj,
                 total_percent=total_percent,
-                node_percent=node_percent)
+                node_percent=node_percent,
+                ignore_owner=ignore_owner,
+                ignore_whitespaces=ignore_whitespaces)
 
         comparison_result = \
             comparison_result + comparison_schema_result
@@ -769,6 +787,8 @@ def compare_database_objects(**kwargs):
     diff_model_obj = kwargs.get('diff_model_obj')
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
+    ignore_owner = kwargs.get('ignore_owner')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
     comparison_result = []
 
     all_registered_nodes = SchemaDiffRegistry.get_registered_nodes(None,
@@ -788,7 +808,9 @@ def compare_database_objects(**kwargs):
                                source_did=source_did,
                                target_sid=target_sid,
                                target_did=target_did,
-                               group_name=gettext('Database Objects'))
+                               group_name=gettext('Database Objects'),
+                               ignore_owner=ignore_owner,
+                               ignore_whitespaces=ignore_whitespaces)
 
             if res is not None:
                 comparison_result = comparison_result + res
@@ -817,6 +839,9 @@ def compare_schema_objects(**kwargs):
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
     is_schema_source_only = kwargs.get('is_schema_source_only', False)
+    ignore_owner = kwargs.get('ignore_owner')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
+
     source_schema_name = None
     if is_schema_source_only:
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -848,7 +873,9 @@ def compare_schema_objects(**kwargs):
                                target_did=target_did,
                                target_scid=target_scid,
                                group_name=gettext(schema_name),
-                               source_schema_name=source_schema_name)
+                               source_schema_name=source_schema_name,
+                               ignore_owner=ignore_owner,
+                               ignore_whitespaces=ignore_whitespaces)
 
             if res is not None:
                 comparison_result = comparison_result + res

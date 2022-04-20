@@ -57,6 +57,8 @@ class SchemaDiffObjectCompare:
                          'did': kwargs.get('source_did')}
         target_params = {'sid': kwargs.get('target_sid'),
                          'did': kwargs.get('target_did')}
+        ignore_owner = kwargs.get('ignore_owner', False)
+        ignore_whitespaces = kwargs.get('ignore_whitespaces', False)
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -97,7 +99,9 @@ class SchemaDiffObjectCompare:
                                     node_label=self.blueprint.collection_label,
                                     group_name=group_name,
                                     ignore_keys=self.keys_to_ignore,
-                                    source_schema_name=source_schema_name)
+                                    source_schema_name=source_schema_name,
+                                    ignore_owner=ignore_owner,
+                                    ignore_whitespaces=ignore_whitespaces)
 
     def ddl_compare(self, **kwargs):
         """

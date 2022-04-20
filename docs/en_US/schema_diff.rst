@@ -65,6 +65,12 @@ same or different (and within the same server or from different servers).
     :alt: Schema diff compare button
     :align: center
 
+Use the drop-down near to *Compare* button to ignore owner and ignore whitespace.
+
+ * Ignore owner – Select to ignores the owner while comparing the objects.
+
+ * Ignore whitespace – Select to ignores the whitespace while comparing the string objects. Whitespace includes space, tabs, and CRLF.
+
 After you select servers, and databases, click on the
 *Compare* button to obtain the *Comparison Result*.
 

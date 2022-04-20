@@ -253,6 +253,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
     target_params = kwargs['target_params']
     group_name = kwargs['group_name']
     target_schema = kwargs.get('target_schema')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
     for key in intersect_keys:
         source_object_id, target_object_id = \
             get_source_target_oid(source_dict, target_dict, key)
@@ -263,7 +264,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
         current_app.logger.debug(
             "Schema Diff: Target Dict: {0}".format(dict2[key]))
 
-        if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys):
+        if are_dictionaries_identical(dict1[key], dict2[key], ignore_keys,
+                                      ignore_whitespaces):
             title = key
             if node == 'user_mapping':
                 title = _get_user_mapping_name(key)
@@ -316,7 +318,8 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                     source_params=temp_src_params,
                     target_params=temp_tgt_params,
                     source=dict1[key], target=dict2[key], diff_dict=diff_dict,
-                    target_schema=target_schema)
+                    target_schema=target_schema,
+                    ignore_whitespaces=ignore_whitespaces)
             else:
                 temp_src_params = copy.deepcopy(source_params)
                 temp_tgt_params = copy.deepcopy(target_params)
@@ -383,6 +386,8 @@ def compare_dictionaries(**kwargs):
     node_label = kwargs.get('node_label')
     ignore_keys = kwargs.get('ignore_keys', None)
     source_schema_name = kwargs.get('source_schema_name')
+    ignore_owner = kwargs.get('ignore_owner')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
     dict1 = copy.deepcopy(source_dict)
     dict2 = copy.deepcopy(target_dict)
@@ -413,9 +418,7 @@ def compare_dictionaries(**kwargs):
     target_only = _get_target_list(removed, target_dict, node, target_params,
                                    view_object, node_label, group_name)
 
-    pref = Preferences.module('schema_diff')
-    ignore_owner = pref.preference('ignore_owner').get()
-    # if ignore_owner if True then add all the possible owner keys to the
+    # if ignore_owner is True then add all the possible owner keys to the
     # ignore keys.
     if ignore_owner:
         owner_keys = ['owner', 'eventowner', 'funcowner', 'fdwowner',
@@ -431,7 +434,8 @@ def compare_dictionaries(**kwargs):
         "source_params": source_params,
         "target_params": target_params,
         "group_name": group_name,
-        "target_schema": target_schema
+        "target_schema": target_schema,
+        "ignore_whitespaces": ignore_whitespaces
     }
 
     identical, different = _get_identical_and_different_list(
@@ -441,12 +445,14 @@ def compare_dictionaries(**kwargs):
     return source_only + target_only + different + identical
 
 
-def are_lists_identical(source_list, target_list, ignore_keys):
+def are_lists_identical(source_list, target_list, ignore_keys,
+                        ignore_whitespaces):
     """
     This function is used to compare two list.
     :param source_list:
     :param target_list:
     :param ignore_keys: ignore keys to compare
+    :param ignore_whitespaces:
     :return:
     """
     if source_list is None or target_list is None or \
@@ -459,7 +465,8 @@ def are_lists_identical(source_list, target_list, ignore_keys):
         if isinstance(source_list[index], dict):
             if not are_dictionaries_identical(source_list[index],
                                               target_list[index],
-                                              ignore_keys):
+                                              ignore_keys,
+                                              ignore_whitespaces):
                 return False
         else:
             if source_list[index] != target_list[index]:
@@ -467,18 +474,17 @@ def are_lists_identical(source_list, target_list, ignore_keys):
     return True
 
 
-def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
+def are_dictionaries_identical(source_dict, target_dict, ignore_keys,
+                               ignore_whitespaces):
     """
     This function is used to recursively compare two dictionaries with
     same keys.
     :param source_dict: source dict
     :param target_dict: target dict
     :param ignore_keys: ignore keys to compare
+    :param ignore_whitespaces: ignore whitespaces while comparing
     :return:
     """
-    pref = Preferences.module('schema_diff')
-    ignore_whitespaces = pref.preference('ignore_whitespaces').get()
-
     src_keys = set(source_dict.keys())
     tar_keys = set(target_dict.keys())
 
@@ -511,7 +517,8 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
         if isinstance(source_dict[key], dict):
             if not are_dictionaries_identical(source_dict[key],
                                               target_dict[key],
-                                              ignore_keys):
+                                              ignore_keys,
+                                              ignore_whitespaces):
                 return False
         elif isinstance(source_dict[key], list):
             # Sort the source and target list on the basis of
@@ -520,7 +527,7 @@ def are_dictionaries_identical(source_dict, target_dict, ignore_keys):
                                                            target_dict[key])
             # Compare the source and target lists
             if not are_lists_identical(source_dict[key], target_dict[key],
-                                       ignore_keys):
+                                       ignore_keys, ignore_whitespaces):
                 return False
         else:
             source_value = source_dict[key]

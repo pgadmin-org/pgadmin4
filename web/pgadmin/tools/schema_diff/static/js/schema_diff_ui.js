@@ -38,6 +38,9 @@ export default class SchemaDiffUI {
     this.trans_id = trans_id;
     this.filters = ['Identical', 'Different', 'Source Only', 'Target Only'];
     this.sel_filters = ['Different', 'Source Only', 'Target Only'];
+    this.ignore_filters = ['owner', 'whitespaces'];
+    this.ignore_whitespaces = 0;
+    this.ignore_owner = 0;
     this.dataView = null;
     this.grid = null;
     this.selection = {};
@@ -179,6 +182,8 @@ export default class SchemaDiffUI {
     this.selection = JSON.parse(JSON.stringify(url_params));
 
     url_params['trans_id'] = self.trans_id;
+    url_params['ignore_owner'] = self.ignore_owner;
+    url_params['ignore_whitespaces'] = self.ignore_whitespaces;
 
     _.each(url_params, function(key, val) {
       url_params[key] = parseInt(val, 10);
@@ -837,6 +842,13 @@ export default class SchemaDiffUI {
     self.header.$el.find('button.btn-primary').on('click', self.compare_schemas.bind(self));
     self.header.$el.find('button#generate-script').on('click', self.generate_script.bind(self));
     self.header.$el.find('ul.filter a.dropdown-item').on('click', self.refresh_filters.bind(self));
+    self.header.$el.find('ul.ignore a.dropdown-item').on('click', self.refresh_ignore_settings.bind(self));
+
+    /* Set the default value for 'ignore owner' and 'ignore whitespace' */
+    let pref = pgWindow.pgAdmin.Browser.get_preferences_for_module('schema_diff');
+    if (pref.ignore_owner) self.header.$el.find('ul.ignore a.dropdown-item#btn-ignore-owner').click();
+    if (pref.ignore_whitespaces) self.header.$el.find('ul.ignore a.dropdown-item#btn-ignore-whitespaces').click();
+
 
     let footer_panel = self.docker.findPanels('schema_diff_footer_panel')[0],
       header_panel = self.docker.findPanels('schema_diff_header_panel')[0];
@@ -873,6 +885,23 @@ export default class SchemaDiffUI {
       // Refresh the grid
       self.dataView.refresh();
       self.check_empty_diff();
+    }
+  }
+
+  refresh_ignore_settings(event) {
+    let self = this,
+      element = $(event.currentTarget).find('.fa-check');
+
+    if (element.length == 1) {
+      if (element.hasClass('visibility-hidden') === true) {
+        element.removeClass('visibility-hidden');
+        if (event.currentTarget.id === 'btn-ignore-owner') self.ignore_owner = 1;
+        if (event.currentTarget.id === 'btn-ignore-whitespaces') self.ignore_whitespaces = 1;
+      } else {
+        element.addClass('visibility-hidden');
+        if (event.currentTarget.id === 'btn-ignore-owner') self.ignore_owner = 0;
+        if (event.currentTarget.id === 'btn-ignore-whitespaces') self.ignore_whitespaces = 0;
+      }
     }
   }
 

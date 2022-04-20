@@ -54,6 +54,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         target_params = {'sid': kwargs.get('target_sid'),
                          'did': kwargs.get('target_did'),
                          'scid': kwargs.get('target_scid')}
+        ignore_owner = kwargs.get('ignore_owner')
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -85,7 +87,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     node_label=self.blueprint.collection_label,
                                     group_name=group_name,
                                     ignore_keys=self.keys_to_ignore,
-                                    source_schema_name=source_schema_name)
+                                    source_schema_name=source_schema_name,
+                                    ignore_owner=ignore_owner,
+                                    ignore_whitespaces=ignore_whitespaces)
 
     def ddl_compare(self, **kwargs):
         """
@@ -274,6 +278,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         source = kwargs.get('source')
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         # Get the difference result for source and target columns
         col_diff = self.table_col_comp(source, target)
@@ -337,7 +342,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                         "dict2": dict2,
                         "source": source,
                         "target": target,
-                        "target_schema": target_schema
+                        "target_schema": target_schema,
+                        "ignore_whitespaces": ignore_whitespaces
                     }
                     diff = self._compare_source_and_target(
                         intersect_keys, module_view, source_params,
@@ -385,11 +391,13 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         source = kwargs['source']
         target = kwargs['target']
         target_schema = kwargs['target_schema']
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         for key in intersect_keys:
             # Recursively Compare the two dictionary
             if not are_dictionaries_identical(
-                    dict1[key], dict2[key], self.keys_to_ignore):
+                    dict1[key], dict2[key], self.keys_to_ignore,
+                    ignore_whitespaces):
                 diff_ddl = module_view.ddl_compare(
                     source_params=source_params,
                     target_params=target_params,
