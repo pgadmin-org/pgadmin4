@@ -1,4 +1,4 @@
-SELECT att.attname as name, att.*, def.*, pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS defval,
+SELECT DISTINCT ON (att.attnum) att.attname as name, att.*, def.*, pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS defval,
         CASE WHEN att.attndims > 0 THEN 1 ELSE 0 END AS isarray,
         pg_catalog.format_type(ty.oid,NULL) AS typname,
         pg_catalog.format_type(ty.oid,att.atttypmod) AS displaytypname,
