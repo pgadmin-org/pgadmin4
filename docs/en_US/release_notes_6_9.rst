@@ -14,6 +14,7 @@ New features
   | `Issue #6830 <https://redmine.postgresql.org/issues/6830>`_ -  Relocate GIS Viewer Button to the Left Side of the Results Table.
   | `Issue #7012 <https://redmine.postgresql.org/issues/7012>`_ -  Disable the master password requirement when using alternative authentication sources.
   | `Issue #7282 <https://redmine.postgresql.org/issues/7282>`_ -  Added options 'Ignore owner' and 'Ignore whitespace' to the schema diff panel.
+  | `Issue #7325 <https://redmine.postgresql.org/issues/7325>`_ -  Added support for Azure AD OAUTH2 authentication.
 
 Housekeeping
 ************
