@@ -22,6 +22,7 @@ import { PgIconButton } from '../../static/js/components/Buttons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
+import Loader from 'sources/components/Loader';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -87,6 +88,7 @@ export function CollectionNodeView({
   const [infoMsg, setInfoMsg] = React.useState('Please select an object in the tree view.');
   const [selectedObject, setSelectedObject] = React.useState([]);
   const [reload, setReload] = React.useState(false);
+  const [loaderText, setLoaderText] = React.useState('');
 
   const [pgTableColumns, setPgTableColumns] = React.useState([
     {
@@ -192,6 +194,7 @@ export function CollectionNodeView({
 
       let tableColumns = [];
       var column = {};
+      setLoaderText('Loading...');
 
       if (itemNodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
         let schema = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, itemNodeData);
@@ -248,6 +251,7 @@ export function CollectionNodeView({
           setPgTableColumns(tableColumns);
           setData(res.data);
           setInfoMsg('No properties are available for the selected object.');
+          setLoaderText('');
         })
         .catch((err) => {
           Notify.alert(
@@ -311,7 +315,9 @@ export function CollectionNodeView({
           :
           (
             <div className={classes.emptyPanel}>
-              <EmptyPanelMessage text={gettext(infoMsg)}/>
+              {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
+                <EmptyPanelMessage text={gettext(infoMsg)}/>
+              }
             </div>
           )
         }

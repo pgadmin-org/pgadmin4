@@ -15,6 +15,7 @@ import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import CodeMirror from '../../../../static/js/components/CodeMirror';
+import Loader from 'sources/components/Loader';
 
 const useStyles = makeStyles((theme) => ({
   textArea: {
@@ -27,10 +28,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SQL({ nodeData, node, ...props }) {
+export default function SQL({ nodeData, node, did,  ...props }) {
   const classes = useStyles();
   const [nodeSQL, setNodeSQL] = React.useState('');
-
+  const [loaderText, setLoaderText] = React.useState('');
   const [msg, setMsg] = React.useState('');
 
   useEffect(() => {
@@ -44,12 +45,13 @@ export default function SQL({ nodeData, node, ...props }) {
         true,
         node.url_jump_after_node
       );
+      setLoaderText('Loading...');
+      if (did && !props.dbConnected) return;
       sql =
         '-- ' + gettext('No SQL could be generated for the selected object.');
 
       if (node.hasSQL) {
         const api = getApiInstance();
-
         api({
           url: url,
           type: 'GET',
@@ -57,6 +59,7 @@ export default function SQL({ nodeData, node, ...props }) {
           .then((res) => {
             if (res.data.length > 0) {
               setNodeSQL(res.data);
+              setLoaderText('');
             } else {
               setMsg(sql);
             }
@@ -68,7 +71,11 @@ export default function SQL({ nodeData, node, ...props }) {
             );
             // show failed message.
             setMsg(gettext('Failed to retrieve data from the server.'));
+            setLoaderText('');
           });
+      }else{
+        setMsg(sql);
+        setLoaderText('');
       }
     }
     if (sql != '') {
@@ -77,31 +84,20 @@ export default function SQL({ nodeData, node, ...props }) {
     return () => {
       setNodeSQL([]);
     };
-  }, [nodeData]);
+  }, [nodeData, props.dbConnected]);
 
   return (
     <>
-      {nodeSQL.length > 0 ? (
-        <CodeMirror
-          className={classes.textArea}
-          value={nodeSQL}
-          options={{
-            lineNumbers: true,
-            mode: 'text/x-pgsql',
-            readOnly: true,
-          }}
-        />
-      ) : (
-        <CodeMirror
-          className={classes.textArea}
-          value={msg}
-          options={{
-            lineNumbers: true,
-            mode: 'text/x-pgsql',
-            readOnly: true,
-          }}
-        />
-      )}
+      <Loader message={loaderText} className={classes.loading} />
+      <CodeMirror
+        className={classes.textArea}
+        value={nodeSQL.length > 0 ? nodeSQL : msg}
+        readonly={true}
+        options={{
+          lineNumbers: true,
+          mode: 'text/x-pgsql',
+        }}
+      />
     </>
   );
 }
@@ -111,4 +107,6 @@ SQL.propTypes = {
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,
+  dbConnected: PropTypes.bool,
+  did: PropTypes.number
 };

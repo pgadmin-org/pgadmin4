@@ -119,6 +119,8 @@ export function getPanelView(
           nodeData={nodeData}
           node={node}
           item={item}
+          did={((!_.isUndefined(treeNodeInfo)) && (!_.isUndefined(treeNodeInfo['database']))) ? treeNodeInfo['database']._id: 0}
+          dbConnected={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['database']) ? treeNodeInfo.database.connected: false}
         />
       </Theme>,
       container

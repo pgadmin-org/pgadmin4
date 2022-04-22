@@ -80,6 +80,7 @@ function getColumn(data, singleLineStatistics) {
                 if (!_.isNull(rowB.values[id]) && typeof (rowB.values[id]) == 'string' && rowB.values[id].indexOf(t) > -1) {
                   val2 = parseInt(rowB.values[id]) * Math.pow(1024, i);
                 }
+
               });
 
               if ((val1) > (val2) || _.isNull(val2)) {
@@ -273,9 +274,8 @@ export default function Statistics({ nodeData, item, node, ...props }) {
         ></PgTable>
       ) : (
         <div className={classes.emptyPanel}>
-          {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
-            <EmptyPanelMessage text={gettext(msg)}/>
-          }
+          <Loader message={loaderText} className={classes.loading} />
+          <EmptyPanelMessage text={gettext(msg)}/>
         </div>
       )}
     </>

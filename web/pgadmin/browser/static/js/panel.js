@@ -160,7 +160,7 @@ define(
 
               pgBrowser.Events.on('pgadmin:database:connected', () => {
 
-                if(myPanel.isVisible() && myPanel._type == 'dashboard' && myPanel._type !== 'properties') {
+                if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
                     $container[0],
