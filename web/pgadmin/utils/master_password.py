@@ -34,9 +34,6 @@ def get_crypt_key():
             and enc_key is None:
         return False, None
     elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
-            config.ALTERNATE_ENCRYPTION_KEY:
-        return True, config.ALTERNATE_ENCRYPTION_KEY
-    elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
             'pass_enc_key' in session:
         return True, session['pass_enc_key']
     else:

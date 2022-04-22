@@ -554,27 +554,6 @@ ALLOW_SAVE_TUNNEL_PASSWORD = False
 MASTER_PASSWORD_REQUIRED = True
 
 ##########################################################################
-# When pgAdmin stores a connection password,
-# it encrypts it using a key that is formed either from the master password, or
-# from the pgAdmin login password for the user.
-#
-# In the case of auth methods such as OAuth or Kerberos, pgAdmin
-# doesn't have access to anything long-lived to form the encryption key from,
-# hence it uses the master password.
-
-# So, pgAdmin would use this alternate encryption key  if
-# a) the master password is disabled
-# AND
-# b) there is NO suitable key/pass available from the auth module for the user.
-
-# By setting this option, you should fully aware of the potential security
-# risk of using the same encryption key for multiple users,
-# that may be accessible to sysadmins who would not normally
-# be able to use pgAdmin.
-##########################################################################
-ALTERNATE_ENCRYPTION_KEY = None
-
-##########################################################################
 # Allows pgAdmin4 to create session cookies based on IP address, so even
 # if a cookie is stolen, the attacker will not be able to connect to the
 # server using that stolen cookie.

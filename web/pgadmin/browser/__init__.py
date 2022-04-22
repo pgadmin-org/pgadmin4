@@ -706,8 +706,7 @@ def index():
         auth_source = session['auth_source_manager'][
             'source_friendly_name']
 
-        if not config.MASTER_PASSWORD_REQUIRED and 'pass_enc_key' in session\
-                and not config.ALTERNATE_ENCRYPTION_KEY:
+        if not config.MASTER_PASSWORD_REQUIRED and 'pass_enc_key' in session:
             session['allow_save_password'] = False
 
     response = Response(render_template(

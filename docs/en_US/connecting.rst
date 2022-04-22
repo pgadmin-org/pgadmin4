@@ -38,13 +38,6 @@ It is set by the user and can be disabled using config.
 
     master_password
 
-The Alternate Encryption Key is used to secure and later unlock saved server passwords.
-It is **not recommended** to use the alternate encryption key.
-
-.. toctree::
-
-    alternate_encryption_key
-
 After defining a server connection, right-click on the server name, and select
 *Connect to server* to authenticate with the server, and start using pgAdmin to
 manage objects that reside on the server.

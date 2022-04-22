@@ -5,9 +5,7 @@
 ************************
 
 A master password is required to secure and later unlock the saved server
-passwords. This is applicable for desktop mode users and for the auth methods
-such as OAuth, Kerberos or Webserver where pgAdmin doesn't have access to anything
-long-lived to form the encryption key.
+passwords. This is applicable only for desktop mode users.
 
 * You are prompted to enter the master password when you open the window for
   the first time after starting the application.
@@ -25,15 +23,15 @@ long-lived to form the encryption key.
   See :ref:`config_py` for more information on configuration parameters and how
   they can be changed or enforced across an organisation.
 
-.. note:: If the master password and :ref:`alternate_encryption_key` is disabled,
-  then all the saved passwords will be removed.
+.. note:: If the master password is disabled, then all the saved passwords will
+    be removed.
 
 .. warning:: If the master password is disabled, then the saved passwords will
-    be encrypted using the :ref:`alternate_encryption_key` or a key which is derived
-    from information within the configuration database. Use of a master password
-    ensures that the encryption key does not need to be stored anywhere, and thus
-    prevents possible access to server credentials if the configuration database
-    becomes available to an attacker.
+    be encrypted using a key which is derived from information within the
+    configuration database. Use of a master password ensures that the encryption
+    key does not need to be stored anywhere, and thus prevents possible access
+    to server credentials if the configuration database becomes available to an
+    attacker.
 
     It is **strongly** recommended that you use the master password if you use
     the *Save Password* option.
