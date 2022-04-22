@@ -242,10 +242,15 @@ export const useModalStyles = makeStyles((theme) => ({
   }
 }));
 
-function ModalContainer({ id, title, content, dialogHeight, dialogWidth, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false }) {
+function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false }) {
   let useModalRef = useModal();
   const classes = useModalStyles();
-  let closeModal = () => useModalRef.closeModal(id);
+  let closeModal = (_e, reason) => {
+    useModalRef.closeModal(id);
+    if(reason == 'escapeKeyDown') {
+      onClose?.();
+    }
+  };
   const [isfullScreen, setIsFullScreen] = useState(fullScreen);
 
   return (
@@ -292,4 +297,5 @@ ModalContainer.propTypes = {
   isResizeable: PropTypes.bool,
   dialogHeight: PropTypes.number,
   dialogWidth: PropTypes.number,
+  onClose: PropTypes.func,
 };

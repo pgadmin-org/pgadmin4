@@ -38,6 +38,7 @@ import PropTypes from 'prop-types';
 import { retrieveNodeName } from '../show_view_data';
 import 'wcdocker';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
+import ConnectServerContent from '../../../../../browser/static/js/ConnectServerContent';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -429,59 +430,106 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE);
   }, [qtState.params.title]);
 
-  const updateQueryToolConnection = useCallback((connectionData, isNew=false)=>{
-    setQtState((prev)=>{
-      let newConnList = [...prev.connection_list];
-      if(isNew) {
-        newConnList.push(connectionData);
-      }
-      for (const connItem of newConnList) {
-        if(connectionData.sid == connItem.sid
-          && connectionData.did == connItem.did
-          && connectionData.user == connItem.user
-          && connectionData.role == connItem.role) {
-          connItem.is_selected = true;
-        } else {
-          connItem.is_selected = false;
+  const connectServerModal = async (modalData, connectCallback, cancelCallback) => {
+    modal.showModal(gettext('Connect to server'), (closeModal)=>{
+      return (
+        <ConnectServerContent
+          closeModal={()=>{
+            cancelCallback?.();
+            closeModal();
+          }}
+          data={modalData}
+          onOK={(formData)=>{
+            connectCallback(Object.fromEntries(formData));
+            closeModal();
+          }}
+        />
+      );
+    }, {
+      onClose: cancelCallback,
+    });
+  };
+
+  const updateQueryToolConnection = (connectionData, isNew=false)=>{
+    let currSelectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
+    let currConnected = qtState.connected;
+
+    const selectConn = (newConnData, connected=false, obtainingConn=true)=>{
+      setQtState((prevQtState)=>{
+        let newConnList = [...prevQtState.connection_list];
+        /* If new, add to the list */
+        if(isNew) {
+          newConnList.push(newConnData);
         }
-      }
-      return {
-        connection_list: newConnList,
-      };
-    });
-    setQtState((prev)=>{
-      return {
-        params: {
-          ...prev.params,
-          sid: connectionData.sid,
-          did: connectionData.did,
-          title: connectionData.title,
-        },
-        obtaining_conn: true,
-        connected: false,
-      };
-    });
-    return api.post(url_for('sqleditor.update_sqleditor_connection', {
-      trans_id: qtState.params.trans_id,
-      sgid: connectionData.sgid,
-      sid: connectionData.sid,
-      did: connectionData.did
-    }), connectionData)
-      .then(({data: respData})=>{
-        setQtState((prev)=>{
-          return {
-            params: {
-              ...prev.params,
-              trans_id: respData.data.trans_id,
-            },
-            connected: respData.data.trans_id ? true : false,
-            obtaining_conn: false,
-          };
-        });
-        let msg = `${connectionData['server_name']}/${connectionData['database_name']} - Database connected`;
-        Notifier.success(msg);
+        for (const connItem of newConnList) {
+          if(newConnData.sid == connItem.sid
+            && newConnData.did == connItem.did
+            && newConnData.user == connItem.user
+            && newConnData.role == connItem.role) {
+            connItem.is_selected = true;
+          } else {
+            connItem.is_selected = false;
+          }
+        }
+        return {
+          connection_list: newConnList,
+          obtaining_conn: obtainingConn,
+          connected: connected,
+        };
       });
-  }, [qtState.params.trans_id]);
+    };
+    /* If not new, select it initially to show loading */
+    if(!isNew) {
+      selectConn(connectionData);
+    }
+
+    return new Promise((resolve, reject)=>{
+      api.post(url_for('sqleditor.update_sqleditor_connection', {
+        trans_id: qtState.params.trans_id,
+        sgid: connectionData.sgid,
+        sid: connectionData.sid,
+        did: connectionData.did
+      }), connectionData)
+        .then(({data: respData})=>{
+          if(isNew) {
+            selectConn(connectionData);
+          }
+          setQtState((prev)=>{
+            return {
+              params: {
+                ...prev.params,
+                trans_id: respData.data.trans_id,
+                sid: connectionData.sid,
+                did: connectionData.did,
+                title: connectionData.title,
+              },
+              connected: respData.data.trans_id ? true : false,
+              obtaining_conn: false,
+            };
+          });
+          let msg = `${connectionData['server_name']}/${connectionData['database_name']} - Database connected`;
+          Notifier.success(msg);
+          resolve();
+        })
+        .catch((error)=>{
+          if(error?.response?.status == 428) {
+            connectServerModal(error.response?.data?.result, (passwordData)=>{
+              resolve(
+                updateQueryToolConnection({
+                  ...connectionData,
+                  ...passwordData,
+                }, isNew)
+              );
+            }, ()=>{
+            // selectConn(currSelectedConn, currConnected, false);
+            });
+          } else {
+            selectConn(currSelectedConn, currConnected, false);
+            reject(error);
+          }
+        });
+    });
+  };
 
   const onNewConnClick = useCallback(()=>{
     const onClose = ()=>LayoutHelper.close(docker.current, 'new-conn');
@@ -494,20 +542,30 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           sid: data.sid,
           did: data.did,
           user: data.user,
-          role: data.role && null,
+          role: data.role ?? null,
+          password: data.password,
           title: getTitle(pgAdmin, qtState.preferences.browser, null, false, data.server_name, data.database_name, data.user, true),
           conn_title: getTitle(pgAdmin, null, null, true, data.server_name, data.database_name, data.user, true),
           server_name: data.server_name,
           database_name: data.database_name,
           is_selected: true,
         };
-        updateQueryToolConnection(connectionData, true);
-        onClose();
+
+        let existIdx = _.findIndex(qtState.connection_list, (conn)=>(
+          conn.sid == connectionData.sid && conn.did == connectionData.did
+          && conn.user == connectionData.user && conn.role == connectionData.role
+        ));
+        if(existIdx > -1) {
+          return Promise.reject(gettext('Connection with this configuration already present.'));
+        }
+        updateQueryToolConnection(connectionData, true).then(()=>{
+          onClose();
+        });
         return Promise.resolve();
       }}
       onClose={onClose}/>
     });
-  }, [qtState.preferences.browser]);
+  }, [qtState.preferences.browser, qtState.connection_list, qtState.params]);
 
 
   const onNewQueryToolClick = ()=>{

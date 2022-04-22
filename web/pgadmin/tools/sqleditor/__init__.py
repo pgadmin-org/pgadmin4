@@ -432,16 +432,15 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
                     return True, make_json_response(
                         success=0,
                         status=428,
-                        result=render_template(
-                            'servers/password.html',
-                            server_label=server.name,
-                            username=user,
-                            errmsg=msg,
-                            _=gettext,
-                            allow_save_password=True if
-                            ALLOW_SAVE_PASSWORD and
+                        result={
+                            "server_label": server.name,
+                            "username": user or server.username,
+                            "errmsg": msg,
+                            "prompt_password": True,
+                            "allow_save_password": True
+                            if ALLOW_SAVE_PASSWORD and
                             session['allow_save_password'] else False,
-                        )
+                        }
                     ), '', ''
                 else:
                     return True, internal_server_error(

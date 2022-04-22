@@ -155,6 +155,7 @@ export class LayoutHelper {
     return {
       cached: true,
       group: 'default',
+      minWidth: 200,
       ...attrs,
     };
   }
