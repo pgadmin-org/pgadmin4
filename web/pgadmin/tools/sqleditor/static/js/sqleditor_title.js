@@ -16,7 +16,7 @@ const pgAdmin = pgWindow.pgAdmin;
 
 export function getDatabaseLabel(parentData) {
   return parentData.database ? parentData.database.label
-    : parentData.server.db;
+    : parentData.server?.db;
 }
 
 function isServerInformationAvailable(parentData) {

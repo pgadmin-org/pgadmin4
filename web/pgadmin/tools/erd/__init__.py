@@ -479,6 +479,7 @@ def initialize_erd(trans_id, sgid, sid, did):
     return make_json_response(
         data={
             'connId': str(trans_id),
+            'database': conn.db,
             'serverVersion': conn.manager.version,
         }
     )

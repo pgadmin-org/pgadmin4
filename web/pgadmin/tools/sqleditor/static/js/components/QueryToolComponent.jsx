@@ -111,7 +111,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const modal = useModal();
 
   /* Connection status poller */
-  let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0 ?
+  let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0 && !qtState.obtaining_conn ?
     qtState.preferences.sqleditor.connection_status_fetch_time*1000 : -1;
   /* No need to poll when the query is executing. Query poller will the txn status */
   if(qtState.connection_status === CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE && qtState.connected) {

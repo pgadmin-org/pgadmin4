@@ -47,6 +47,8 @@ export default class CopyData {
     }
     clipboard.copyToClipboard(csvRows.join('\n'));
     localStorage.setItem('copied-with-headers', withHeaders);
+    /* Push actual row to storage, can be used to identify null columns */
+    localStorage.setItem('copied-rows', JSON.stringify(rows));
   }
 
   escape(iStr) {

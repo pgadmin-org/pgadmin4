@@ -547,10 +547,12 @@ export class ResultSetUtils {
     return columns;
   }
 
-  processClipboardVal(columnVal, col) {
+  processClipboardVal(columnVal, col, rawCopiedVal) {
     if(columnVal === '') {
       if(col.has_default_val) {
         columnVal = undefined;
+      } else if(rawCopiedVal === null) {
+        columnVal = null;
       }
     }
     if(col.cell === 'boolean') {
@@ -570,14 +572,19 @@ export class ResultSetUtils {
     if(!_.isArray(result) || !_.size(result)) {
       return retVal;
     }
-    for(const rec of result) {
+    let copiedRowsObjects = [];
+    try {
+      /* If the raw row objects are available, use to them identify null values */
+      copiedRowsObjects = JSON.parse(localStorage.getItem('copied-rows'));
+    } catch {/* Suppress the error */}
+    for(const [recIdx, rec] of result?.entries()) {
       // Convert 2darray to dict.
       let rowObj = {};
       for(const col of columns) {
         let columnVal = rec[col.pos];
         /* If the source is clipboard, then it needs some extra handling */
         if(fromClipboard) {
-          columnVal = this.processClipboardVal(columnVal, col);
+          columnVal = this.processClipboardVal(columnVal, col, copiedRowsObjects[recIdx]?.[col.key]);
         }
         rowObj[col.key] = columnVal;
       }
@@ -605,15 +612,16 @@ export class ResultSetUtils {
   }
 
   queryFinished(httpMessage, onResultsAvailable, onExplain) {
-    let msg;
     let endTime = new Date();
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END, true);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, httpMessage.data.data.transaction_status);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_END, gettext('Query complete'), endTime);
     this.setEndTime(endTime);
 
-    msg = gettext('Query returned successfully in %s.', this.queryRunTime());
+    let msg = gettext('Query returned successfully in %s.', this.queryRunTime());
     if(this.hasResultsToDisplay(httpMessage.data.data)) {
+      msg = gettext('Successfully run. Total query runtime: %s.', this.queryRunTime())
+        + '\n' + gettext('%s rows affected.', httpMessage.data.data?.rows_affected);
       if(!_.isNull(httpMessage.data.data.additional_messages)){
         msg = httpMessage.data.data.additional_messages + '\n' + msg;
       }
@@ -1194,10 +1202,10 @@ export function ResultSet() {
     <Box className={classes.root} ref={containerRef} tabIndex="0">
       <Loader message={loaderText} />
       <Loader message={isLoadingMore ? gettext('Loading more rows...') : null} style={{top: 'unset', right: 'unset', padding: '0.5rem 1rem'}}/>
-      {(columns.length == 0 && rows.length == 0) &&
+      {!queryData &&
         <EmptyPanelMessage text={gettext('No data output. Execute a query to get output.')}/>
       }
-      {(columns.length != 0 || rows.length != 0) && <>
+      {queryData && <>
         <ResultSetToolbar containerRef={containerRef} canEdit={queryData.can_edit}/>
         <Box flexGrow="1" minHeight="0">
           <QueryToolDataGrid

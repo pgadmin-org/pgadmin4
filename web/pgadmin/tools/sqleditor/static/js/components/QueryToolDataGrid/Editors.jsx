@@ -22,8 +22,7 @@ import Notifier from '../../../../../../static/js/helpers/Notifier';
 const useStyles = makeStyles((theme)=>({
   textEditor: {
     position: 'absolute',
-
-    zIndex: 1050,
+    zIndex: 1080,
     backgroundColor: theme.palette.background.default,
     padding: '0.25rem',
     fontSize: '12px',
@@ -41,7 +40,7 @@ const useStyles = makeStyles((theme)=>({
   },
   jsonEditor: {
     position: 'absolute',
-    zIndex: 1050,
+    zIndex: 1080,
     backgroundColor: theme.palette.background.default,
     ...theme.mixins.panelBorder,
     padding: '0.25rem',

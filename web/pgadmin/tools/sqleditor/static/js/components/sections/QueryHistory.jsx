@@ -14,7 +14,7 @@ import _ from 'lodash';
 import clsx from 'clsx';
 import { Box, Grid, List, ListItem, ListSubheader } from '@material-ui/core';
 import url_for from 'sources/url_for';
-import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
+import { QueryToolConnectionContext, QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent';
 import moment from 'moment';
 import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
 import AssessmentRoundedIcon from '@material-ui/icons/AssessmentRounded';
@@ -86,6 +86,9 @@ const useStyles = makeStyles((theme)=>({
   },
   removeBtnMargin: {
     marginLeft: '0.25rem',
+  },
+  queryMargin: {
+    marginTop: '12px',
   }
 }));
 
@@ -337,12 +340,13 @@ function QueryHistoryDetails({entry}) {
           <DefaultButton size="xs" className={classes.copyBtn} onClick={onCopyToEditor}>{gettext('Copy to Query Editor')}</DefaultButton>
           <CodeMirror
             value={entry.query}
+            readonly={true}
             options={{
               foldGutter: false,
               lineNumbers: false,
               gutters: [],
-              readOnly: true,
             }}
+            className={classes.queryMargin}
           />
         </Box>
         <Box marginTop="0.5rem">
@@ -361,6 +365,7 @@ QueryHistoryDetails.propTypes = {
 export function QueryHistory() {
   const qhu = React.useRef(new QueryHistoryUtils());
   const queryToolCtx = React.useContext(QueryToolContext);
+  const queryToolConnCtx = React.useContext(QueryToolConnectionContext);
   const classes = useStyles();
   const eventBus = React.useContext(QueryToolEventsContext);
   const [selectedItemKey, setSelectedItemKey] = React.useState(1);
@@ -371,11 +376,16 @@ export function QueryHistory() {
   const layoutEvenBus = React.useContext(LayoutEventsContext);
   const listRef = React.useRef();
 
-  React.useEffect(async ()=>{
+  React.useEffect(()=>{
     layoutEvenBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
       currentTabId == PANELS.HISTORY && listRef.current?.focus();
     });
+  }, []);
 
+  React.useEffect(async ()=>{
+    if(!queryToolConnCtx.connected) {
+      return;
+    }
     setLoaderText(gettext('Fetching history...'));
     try {
       let {data: respData} = await queryToolCtx.api.get(url_for('sqleditor.get_query_history', {
@@ -402,7 +412,7 @@ export function QueryHistory() {
     listRef.current?.focus();
     eventBus.registerListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
-  }, []);
+  }, [queryToolConnCtx.connected]);
 
   const onRemove = async ()=>{
     setLoaderText(gettext('Removing history entry...'));

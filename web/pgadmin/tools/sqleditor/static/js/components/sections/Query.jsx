@@ -166,9 +166,11 @@ export default function Query() {
   const layoutEvenBus = useContext(LayoutEventsContext);
   const lastSavedText = React.useRef('');
   const markedLine = React.useRef(0);
+  const marker = React.useRef();
 
   const removeHighlightError = (cmObj)=>{
     // Remove already existing marker
+    marker.current?.clear();
     cmObj.removeLineClass(markedLine.current, 'wrap', 'CodeMirror-activeline-background');
     markedLine.current = 0;
   };
@@ -218,7 +220,7 @@ export default function Query() {
         endMarker = errorLine.length;
 
       // Mark the error text
-      cmObj.markText({
+      marker.current = cmObj.markText({
         line: errorLineNo,
         ch: startMarker,
       }, {

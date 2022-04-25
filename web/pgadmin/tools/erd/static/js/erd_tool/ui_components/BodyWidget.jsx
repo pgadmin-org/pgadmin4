@@ -81,6 +81,7 @@ export default class BodyWidget extends React.Component {
       table_dialog_open: true,
       oto_dialog_open: true,
       otm_dialog_open: true,
+      database: null,
     };
     this.diagram = new ERDCore();
     /* Flag for checking if user has opted for save before close */
@@ -575,6 +576,7 @@ export default class BodyWidget extends React.Component {
           sid: this.props.params.sid,
           did: this.props.params.did,
           stype: this.props.params.server_type,
+          database: this.state.database,
         };
 
         let sqlId = `erd${this.props.params.trans_id}`;
@@ -764,6 +766,7 @@ export default class BodyWidget extends React.Component {
       this.setState({
         conn_status: CONNECT_STATUS.CONNECTED,
         server_version: response.data.data.serverVersion,
+        database: response.data.data.database,
       });
       return true;
     } catch (error) {

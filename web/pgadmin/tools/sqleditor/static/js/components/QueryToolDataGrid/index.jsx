@@ -335,12 +335,8 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   };
 
   useEffect(()=>{
-    if(columns.length > 0 || rows.length > 0) {
-      let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
-      setColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter, classes));
-    } else {
-      setColumns([], [], 0);
-    }
+    let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
+    setColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter, classes));
   }, [columns, rowsResetKey]);
 
   useEffect(()=>{

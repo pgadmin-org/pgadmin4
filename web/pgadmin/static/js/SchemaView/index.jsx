@@ -734,12 +734,12 @@ function SchemaDialogView({
               onClose={onErrClose} />
           </Box>
           {showFooter && <Box className={classes.footer}>
-            {useMemo(()=><Box>
+            {useMemo(()=>((!props.disableSqlHelp || !props.disableDialogHelp) && <Box>
               <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
                 disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
               <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."
                 disabled={props.disableDialogHelp}/>
-            </Box>, [])}
+            </Box>), [])}
             <Box marginLeft="auto">
               <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
                 {gettext('Close')}

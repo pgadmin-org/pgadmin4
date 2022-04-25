@@ -211,5 +211,6 @@
   background-color: $sql-editor-disable-bg !important;
 }
 
-
-
+.sql-editor-mark {
+  border-bottom: 2px dotted red;
+}

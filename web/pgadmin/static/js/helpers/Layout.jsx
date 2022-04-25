@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme)=>({
       border: 'none',
       '&.dragging': {
         opacity: 0.6,
-        pointerEvents: 'visible',
       },
       '& .dock':  {
         borderRadius: 'inherit',
@@ -49,6 +48,7 @@ const useStyles = makeStyles((theme)=>({
         borderRadius: theme.shape.borderRadius,
         '&.dock-panel.dragging': {
           opacity: 1,
+          pointerEvents: 'visible',
         },
         '& .dock-ink-bar': {
           height: '0px',

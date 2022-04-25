@@ -85,6 +85,7 @@ export function generateScript(parentData, queryToolMod) {
     +`&sid=${parentData.sid}`
     +`&server_type=${parentData.stype}`
     +`&did=${parentData.did}`
+    +`&database_name=${parentData.database}`
     +`&sql_id=${parentData.sql_id}`;
 
   launchQueryTool(queryToolMod, transId, url_endpoint, queryToolTitle, '');
@@ -102,6 +103,7 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, queryToolMo
     },
     database: {
       _id: parentData.did,
+      label: parentData.database,
     },
   };
 
