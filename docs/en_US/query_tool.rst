@@ -310,8 +310,14 @@ The Query History tab displays information about recent commands:
 You can show or hide the queries generated internally by pgAdmin (during
 'View/Edit Data' or 'Save Data' operations).
 
-To erase the content of the *Query History* tab, select *Clear history* from
-the *Clear* drop-down menu.
+You can remove a single query by selecting it and clicking on the *Remove*
+button. If you would like to remove all of the histories from the
+*Query History* tab, then click on the *Remove All* button.
+
+By using the *Copy* button, you can copy a particular query to the clipboard,
+and with the *Copy to Query Editor* button, you can copy a specific query to
+the Query Editor tab. During this operation, all existing content in the
+Query Editor is erased.
 
 Query History is maintained across sessions for each database on a per-user
 basis when running in Query Tool mode. In View/Edit Data mode, history is not
@@ -339,13 +345,13 @@ User can connect to another server or database from existing open session of que
 * Click on the connection link next to connection status.
 * Now click on the *<New Connection>* option from the dropdown.
 
-.. image:: images/new_connection_options.png
+.. image:: images/query_tool_new_connection_options.png
     :alt: Query tool connection options
     :align: center
 
-* Now select server, database, user, and role to connect and click OK.
+* Now select server, database, user, and role to connect and click on the 'Save' button.
 
-.. image:: images/new_connection_dialog.png
+.. image:: images/query_tool_new_connection_dialog.png
     :alt: Query tool connection dialog
     :align: center
 
@@ -367,22 +373,11 @@ To create a macro, select the *Manage Macros* option from the *Macros* menu on t
    :alt: Query Tool Manage Macros dialogue
    :align: center
 
-To clear a macro, select the macro on the *Manage Macros* dialogue, and then click the *Clear* button.
-
-.. image:: images/query_tool_macros_clear_row.png
-   :alt: Query Tool Manage Macros clear the row
-   :align: center
-
-The server will prompt you for confirmation to clear the macro.
+To delete a macro, select the macro on the *Manage Macros* dialogue, and then click the *Delete* button.
+The server will prompt you for confirmation to delete the macro.
 
 .. image:: images/query_tool_macros_clear_confirmation.png
    :alt: Query Tool Manage Macros Clear row confirmation
-   :align: center
-
-To clear all macros, click on the *Clear* button on left side of the key. The server will prompt you for confirmation to clear all the rows.
-
-.. image:: images/query_tool_macros_clear_all.png
-   :alt: Query Tool Macros Clear All
    :align: center
 
 To execute a macro, simply select the appropriate shortcut keys, or select it from the *Macros* menu.

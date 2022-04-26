@@ -40,8 +40,8 @@ File Options
    |                      |    selected content of the SQL Editor panel.                                                      |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
-Editing Options
-***************
+Filter/Limit Options
+********************
 
 .. table::
    :class: longtable
@@ -50,71 +50,11 @@ Editing Options
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
-   | *Save Data Changes*  | Click the *Save Data Changes* icon to save data changes (insert, update, or delete) in the Data   | F6             |
-   |                      | Output Panel to the server.                                                                       |                |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Find*               | Use the *Find* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd+F          |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Find next* to locate the next occurrence of the search target.                            | Cmd+G          |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Find previous* to move to the last occurrence of the search target.                       | Cmd+Shift+G    |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Persistent find* to identify all occurrences of the search target within the editor.      |                |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Cmd+Shift+F    |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Replace all* to locate and replace all occurrences of the target within the editor.       |                |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Jump* to navigate to the next occurrence of the search target.                            | Alt+G          |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Copy*               | Click the *Copy* icon to copy the content with or without header:                                 |  Accesskey + C |
+   | *Filter*             | Click the *Filter* icon to set filtering and sorting criteria for the data when in *View/Edit data| Accesskey + F  |
+   |                      | mode*. Click the down arrow to access other filtering and sorting options:                        |                |
    |                      |                                                                                                   |                |
-   |                      |  * Click the *Copy* icon to copy the content that is currently highlighted in the Data Output     |                |
-   |                      |     panel.                                                                                        |                |
-   |                      |                                                                                                   |                |
-   |                      |  *  Click *Copy with headers* to copy the highlighted content along with the header.              |                |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Paste*              | Click the *Paste* icon to paste a previously copied row into a new row.                           | Accesskey + P  |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     |Accesskey + D   |
-   |                      | when you click the *Save Data Changes* icon.                                                      |                |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Edit*               | Use options on the *Edit* menu to access text editing tools; the options operate on the text      |                |
-   |                      | displayed in the SQL Editor panel when in Query Tool mode:                                        |                |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Indent Selection* to indent the currently selected text.                                  | Tab            |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Unindent Selection* to remove indentation from the currently selected text.               | Shift+Tab      |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Inline Comment Selection* to enclose any lines that contain the selection in SQL style    | Cmd+/          |
-   |                      | comment notation.                                                                                 |                |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Inline Uncomment Selection* to remove SQL style comment notation from the selected line.  | Cmd+.          |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Block Comment* to enclose all lines that contain the selection in C style comment         | Shift+Cmd+/    |
-   |                      | notation.  This option acts as a toggle.                                                          |                |
-   |                      +---------------------------------------------------------------------------------------------------+----------------+
-   |                      | Select *Format SQL* to format the selected SQL or all the SQL if none is selected                 | Shift+Cmd+K    |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-
-View/Edit Data Resultset Control
-********************************
-
-.. table::
-   :class: longtable
-   :widths: 1 4 1
-
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | Icon                 | Behavior                                                                                          | Shortcut       |
-   +======================+===================================================================================================+================+
-   | *Filter*             | Click the *Filter* icon to set filtering and sorting criteria for the data when in View/Edit data | Accesskey + F  |
-   |                      | mode. Click the down arrow to access other filtering and sorting options:                         |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Click *Sort/Filter* to open the sorting and filtering dialogue. In the *SQL Filter*, you can   |                |
-   |                      |    enter a SQL query as filtering criteria. In *Data Sorting*, you can select the column and      |                |
-   |                      |    specify the order for sorting.                                                                 |                |
+   |                      |  * In the *SQL Filter*, you can enter a SQL query as filtering criteria.                          |                |
+   |                      |    In *Data Sorting*, you can select the column and specify the order for sorting.                |                |
    |                      |                                                                                                   |                |
    |                      |  * Click *Filter by Selection* to show only the rows containing the values in the selected cells. |                |
    |                      |                                                                                                   |                |
@@ -125,11 +65,47 @@ View/Edit Data Resultset Control
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Limit Selector       | Select a value in the *Limit Selector* to limit the size of the dataset to a number of rows.      | Accesskey + R  |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     | Accesskey + Q  |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+
+Query Editing Options
+*********************
+
+.. image:: images/query_editing.png
+    :alt: Query tool editing options
+    :align: center
+
+.. table::
+   :class: longtable
+   :widths: 1 4 1
+
+   +----------------------+---------------------------------------------------------------------------------------------------+-----------------------+
+   | Icon                 | Behavior                                                                                          | Shortcut              |
+   +======================+===================================================================================================+=======================+
+   | *Edit*               | Use the *Edit* menu to search, replace, or navigate the code displayed in the SQL Editor:         |                       |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Find* to provide a search target, and search the SQL Editor contents.                     | Cmd+F                 |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Replace* to locate and replace (with prompting) individual occurrences of the target.     | Option+Cmd+F (MAC)    |
+   |                      |                                                                                                   | Ctrl+Shift+F (Others) |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Jump* to navigate to the next occurrence of the search target.                            | Alt+G                 |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Indent Selection* to indent the currently selected text.                                  | Tab                   |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Unindent Selection* to remove indentation from the currently selected text.               | Shift+Tab             |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Toggle Comment* to comment/uncomment any lines that contain the selection in SQL style.   | Cmd+/                 |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Clear Query* to clear the query editor window.                                            | Cmd+.                 |
+   |                      +---------------------------------------------------------------------------------------------------+-----------------------+
+   |                      | Select *Format SQL* to format the selected SQL or all the SQL if none is selected                 | Shift+Cmd+K           |
+   +----------------------+---------------------------------------------------------------------------------------------------+-----------------------+
 
 Query Execution
 ***************
+
+.. image:: images/query_execution.png
+    :alt: Query tool execute options
+    :align: center
 
 .. table::
    :class: longtable
@@ -138,6 +114,8 @@ Query Execution
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | Icon                 | Behavior                                                                                          | Shortcut       |
    +======================+===================================================================================================+================+
+   | *Stop*               | Click the *Stop* icon to cancel the execution of the currently running query.                     | Accesskey + Q  |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Execute/Refresh*    | Click the *Execute/Refresh* icon to either execute or refresh the query highlighted in the SQL    | F5             |
    |                      | editor panel. Click the down arrow to access other execution options:                             |                |
    |                      |                                                                                                   |                |
@@ -173,17 +151,59 @@ Query Execution
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Rollback*           | Click the *Rollback* icon to rollback the transaction.                                            | Shift+CTRL+R   |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Clear*              | Use options on the *Clear* drop-down menu to erase display contents:                              | Accesskey + L  |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Clear Query Window* to erase the content of the SQL Editor panel.                      |                |
-   |                      |                                                                                                   |                |
-   |                      |  * Select *Clear History* to erase the content of the *History* tab.                              |                |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Save results to*    | Click the Save results to file icon to save the result set of the current query as a delimited    | F8             |
-   |  *file*              | text file (CSV, if the field separator is set to a comma). This button will only be enabled when  |                |
-   |                      | a query has been executed and there are results in the data grid. You can specify the CSV/TXT     |                |
-   |                      | settings in the Preference Dialogue under SQL Editor -> CSV/TXT output.                           |                |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Macros*             | Click the *Macros* icon to manage the macros. You can create, edit or clear the macros through    |                |
    |                      | the *Manage Macros* option.                                                                       |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+
+Data Editing Options
+********************
+
+.. image:: images/query_data_editing.png
+    :alt: Query tool data editing options
+    :align: center
+
+.. table::
+   :class: longtable
+   :widths: 1 4 1
+
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | Icon                 | Behavior                                                                                          | Shortcut       |
+   +======================+===================================================================================================+================+
+   | *Add row*            | Click the *Add row* icon to add a new row                                                         |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Copy*               | Click the *Copy* icon to copy the content with or without header:                                 |  Accesskey + C |
+   |                      |                                                                                                   |                |
+   |                      |  * Click the *Copy* icon to copy the content that is currently highlighted in the Data Output     |                |
+   |                      |     panel.                                                                                        |                |
+   |                      |                                                                                                   |                |
+   |                      |  *  Click *Copy with headers* to copy the highlighted content along with the header.              |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Paste*              | Click the *Paste* icon to paste a previously copied row into a new row.                           | Accesskey + P  |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     | Accesskey + D  |
+   |                      | when you click the *Save Data Changes* icon.                                                      |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Save Data Changes*  | Click the *Save Data Changes* icon to save data changes (insert, update, or delete) in the Data   | F6             |
+   |                      | Output Panel to the server.                                                                       |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | *Save results to*    | Click the Save results to file icon to save the result set of the current query as a delimited    | F8             |
+   | *file*               | text file (CSV, if the field separator is set to a comma). This button will only be enabled when  |                |
+   |                      | a query has been executed and there are results in the data grid. You can specify the CSV/TXT     |                |
+   |                      | settings in the Preference Dialogue under SQL Editor -> CSV/TXT output.                           |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+
+Status Bar
+**********
+
+.. image:: images/query_status_bar.png
+    :alt: Query tool status bar
+    :align: center
+
+The status bar shows the following information:
+
+* **Total rows**: The total number of rows returned by the query.
+* **Query complete**: The time is taken by the query to complete.
+* **Rows selected**: The number of rows selected in the data output panel.
+* **Changes staged**: This information showed the number of rows added, deleted, and updated.
+* **Ln**: In the Query tab, it is the line number at which the cursor is positioned.
+* **Col**: In the Query tab, it is the column number at which the cursor is positioned

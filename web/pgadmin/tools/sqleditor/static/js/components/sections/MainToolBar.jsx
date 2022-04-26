@@ -549,13 +549,13 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'jumpToLine');}}>{gettext('Jump')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={FIXED_PREF.indent}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentMore');}}>{gettext('Indent')}</PgMenuItem>
+          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentMore');}}>{gettext('Indent Selection')}</PgMenuItem>
         <PgMenuItem shortcut={FIXED_PREF.unindent}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentLess');}}>{gettext('Unindent')}</PgMenuItem>
+          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
         <PgMenuItem shortcut={FIXED_PREF.comment}
-          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'toggleComment');}}>{gettext('Toggle comment')}</PgMenuItem>
+          onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.clear_query}
-          onClick={clearQuery}>{gettext('Clear query')}</PgMenuItem>
+          onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />
         <PgMenuItem shortcut={FIXED_PREF.format_sql}onClick={formatSQL}>{gettext('Format SQL')}</PgMenuItem>
       </PgMenu>
