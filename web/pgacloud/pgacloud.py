@@ -40,8 +40,6 @@ def get_args(providers):
     """ Creates the parsers and returns the args """
     # Create the top-level parser
     parser = argparse.ArgumentParser(prog='pgacloud.py')
-    parser.add_argument('--debug', action=argparse.BooleanOptionalAction,
-                        default=True, help='send debug messages to stderr')
 
     # Create the provider sub-parser
     parsers = parser.add_subparsers(help='provider help', dest='provider')

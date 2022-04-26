@@ -16,8 +16,8 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues = {}) {
     super({
       oid: undefined,
-      aws_name: '',
-      aws_public_ip: initValues.hostIP,
+      name: '',
+      public_ip: initValues.hostIP,
       ...initValues
     });
 
@@ -34,10 +34,10 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
   get baseFields() {
     return [
       {
-        id: 'aws_name', label: gettext('Instance name'), type: 'text',
+        id: 'name', label: gettext('Instance name'), type: 'text',
         mode: ['create'], noEmpty: true,
       }, {
-        id: 'aws_public_ip', label: gettext('Public IP range'), type: 'text',
+        id: 'public_ip', label: gettext('Public IP range'), type: 'text',
         mode: ['create'],
         helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated.'),
       }, {
@@ -60,10 +60,10 @@ class CloudDBCredSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues = {}) {
     super({
       oid: null,
-      aws_region: '',
-      aws_access_key: '',
-      aws_secret_access_key: '',
-      aws_session_token: '',
+      region: '',
+      access_key: '',
+      secret_access_key: '',
+      session_token: '',
       is_valid_cred: false,
       ...initValues
     });
@@ -81,20 +81,20 @@ class CloudDBCredSchema extends BaseUISchema {
   get baseFields() {
     return [
       {
-        id: 'aws_region', label: gettext('Region'),
+        id: 'region', label: gettext('Region'),
         type: 'select',
         options: this.fieldOptions.regions,
         controlProps: { allowClear: false },
         noEmpty: true,
         helpMessage: gettext('The cloud instance will be deployed in the selected region.')
       },{
-        id: 'aws_access_key', label: gettext('AWS access key'), type: 'text',
+        id: 'access_key', label: gettext('AWS access key'), type: 'text',
         mode: ['create'], noEmpty: true,
       }, {
-        id: 'aws_secret_access_key', label: gettext('AWS secret access key'), type: 'password',
+        id: 'secret_access_key', label: gettext('AWS secret access key'), type: 'password',
         mode: ['create'], noEmpty: true,
       }, {
-        id: 'aws_session_token', label: gettext('AWS session token'), type: 'multiline',
+        id: 'session_token', label: gettext('AWS session token'), type: 'multiline',
         mode: ['create'], noEmpty: false,
         helpMessage: gettext('Temporary AWS session required session token.')
       }
@@ -108,11 +108,11 @@ class DatabaseSchema extends BaseUISchema {
     super({
       oid: undefined,
       gid: undefined,
-      aws_db_name: '',
-      aws_db_username: '',
-      aws_db_password: '',
-      aws_db_confirm_password: '',
-      aws_db_port: 5432,
+      db_name: '',
+      db_username: '',
+      db_password: '',
+      db_confirm_password: '',
+      db_port: 5432,
       ...initValues,
     });
 
@@ -123,18 +123,18 @@ class DatabaseSchema extends BaseUISchema {
   }
 
   validate(data, setErrMsg) {
-    if(!isEmptyString(data.aws_db_password) && !isEmptyString(data.aws_db_confirm_password)
-    && data.aws_db_password != data.aws_db_confirm_password) {
-      setErrMsg('aws_db_confirm_password', gettext('Passwords do not match.'));
+    if(!isEmptyString(data.db_password) && !isEmptyString(data.db_confirm_password)
+    && data.db_password != data.db_confirm_password) {
+      setErrMsg('db_confirm_password', gettext('Passwords do not match.'));
       return true;
     }
-    if (!isEmptyString(data.aws_db_confirm_password) && data.aws_db_confirm_password.length < 8) {
-      setErrMsg('aws_db_confirm_password', gettext('Password must be 8 characters or more.'));
+    if (!isEmptyString(data.db_confirm_password) && data.db_confirm_password.length < 8) {
+      setErrMsg('db_confirm_password', gettext('Password must be 8 characters or more.'));
       return true;
     }
-    if (data.aws_db_confirm_password.includes('\'') || data.aws_db_confirm_password.includes('"') ||
-    data.aws_db_confirm_password.includes('@') || data.aws_db_confirm_password.includes('/')) {
-      setErrMsg('aws_db_confirm_password', gettext('Invalid passowrd.'));
+    if (data.db_confirm_password.includes('\'') || data.db_confirm_password.includes('"') ||
+    data.db_confirm_password.includes('@') || data.db_confirm_password.includes('/')) {
+      setErrMsg('db_confirm_password', gettext('Invalid passowrd.'));
       return true;
     }
 
@@ -153,32 +153,33 @@ class DatabaseSchema extends BaseUISchema {
       controlProps: { allowClear: false },
       noEmpty: true,
     }, {
-      id: 'aws_db_name', label: gettext('Database name'), type: 'text',
+      id: 'db_name', label: gettext('Database name'), type: 'text',
       mode: ['create'], noEmpty: true,
     }, {
-      id: 'aws_db_username', label: gettext('Username'), type: 'text',
+      id: 'db_username', label: gettext('Username'), type: 'text',
       mode: ['create'], noEmpty: true,
     }, {
-      id: 'aws_db_password', label: gettext('Password'), type: 'password',
+      id: 'db_password', label: gettext('Password'), type: 'password',
       mode: ['create'], noEmpty: true,
       helpMessage: gettext('At least 8 printable ASCII characters. Can not contain any of the following: / \(slash\), \'\(single quote\), "\(double quote\) and @ \(at sign\).')
     }, {
-      id: 'aws_db_confirm_password', label: gettext('Confirm password'),
+      id: 'db_confirm_password', label: gettext('Confirm password'),
       type: 'password',
       mode: ['create'], noEmpty: true,
     }, {
-      id: 'aws_db_port', label: gettext('Port'), type: 'text',
+      id: 'db_port', label: gettext('Port'), type: 'text',
       mode: ['create'], noEmpty: true,
     }];
   }
 }
 
+
 export class InstanceSchema extends BaseUISchema {
   constructor(versionOpts, instanceOpts, getInstances) {
     super({
-      aws_db_version: '',
-      aws_db_instance_class: 'm',
-      aws_instance_type: '',
+      db_version: '',
+      db_instance_class: 'm',
+      instance_type: '',
       reload_instances: true,
     });
     this.versionOpts = versionOpts;
@@ -189,14 +190,14 @@ export class InstanceSchema extends BaseUISchema {
 
   get baseFields() {
     return [{
-      id: 'aws_db_version', label: gettext('Database version'),
+      id: 'db_version', label: gettext('Database version'),
       type: 'select',
       options: this.versionOpts,
       controlProps: { allowClear: false },
-      deps: ['aws_name'],
+      deps: ['name'],
       noEmpty: true,
     },{
-      id: 'aws_db_instance_class', label: gettext('Instance class'),
+      id: 'db_instance_class', label: gettext('Instance class'),
       type: 'toggle',
       options: [
         {'label': gettext('Standard classes (includes m classes)'), value: 'm'},
@@ -204,11 +205,11 @@ export class InstanceSchema extends BaseUISchema {
         {'label': gettext('Burstable classes (includes t classes)'), value: 't'},
       ],  noEmpty: true, orientation: 'vertical',
     },{
-      id: 'aws_instance_type', label: gettext('Instance type'),
+      id: 'instance_type', label: gettext('Instance type'),
       options: this.instanceOpts,
-      deps: ['aws_db_version', 'aws_db_instance_class'],
+      deps: ['db_version', 'db_instance_class'],
       depChange: (state, source)=> {
-        if (source[0] == 'aws_db_instance_class') {
+        if (source[0] == 'db_instance_class') {
           return {reload_instances: false};
         } else {
           state.instanceData = [];
@@ -218,10 +219,10 @@ export class InstanceSchema extends BaseUISchema {
       type: (state) => {
         return {
           type: 'select',
-          options: ()=>this.getInstances(state.aws_db_version,
+          options: ()=>this.getInstances(state.db_version,
             state.reload_instances, state.instanceData),
           optionsLoaded: (options) => { state.instanceData = options; },
-          optionsReloadBasis: state.aws_db_version + (state.aws_db_instance_class || 'm'),
+          optionsReloadBasis: state.db_version + (state.db_instance_class || 'm'),
           controlProps: {
             allowClear: false,
             filter: (options) => {
@@ -229,11 +230,11 @@ export class InstanceSchema extends BaseUISchema {
               let pattern = 'db.m';
               let pattern_1 = 'db.m';
 
-              if (state.aws_db_instance_class) {
-                pattern = 'db.' + state.aws_db_instance_class;
-                pattern_1 = 'db.' + state.aws_db_instance_class;
+              if (state.db_instance_class) {
+                pattern = 'db.' + state.db_instance_class;
+                pattern_1 = 'db.' + state.db_instance_class;
               }
-              if (state.aws_db_instance_class == 'x') {
+              if (state.db_instance_class == 'x') {
                 pattern_1 = 'db.' + 'r';
               }
               return options.filter((option) => {
@@ -251,17 +252,17 @@ export class InstanceSchema extends BaseUISchema {
 export class StorageSchema extends BaseUISchema {
   constructor() {
     super({
-      aws_storage_type: 'io1',
-      aws_storage_size: 100,
-      aws_storage_IOPS: 3000,
-      aws_storage_msg: 'Minimum: 20 GiB. Maximum: 16,384 GiB.'
+      storage_type: 'io1',
+      storage_size: 100,
+      storage_IOPS: 3000,
+      storage_msg: 'Minimum: 20 GiB. Maximum: 16,384 GiB.'
     });
   }
 
   get baseFields() {
     return [
       {
-        id: 'aws_storage_type', label: gettext('Storage type'), type: 'select',
+        id: 'storage_type', label: gettext('Storage type'), type: 'select',
         mode: ['create'],
         options: [
           {'label': gettext('General Purpose SSD (gp2)'), 'value': 'gp2'},
@@ -269,30 +270,30 @@ export class StorageSchema extends BaseUISchema {
           {'label': gettext('Magnetic'), 'value': 'standard'}
         ], noEmpty: true,
       },{
-        id: 'aws_storage_size', label: gettext('Allocated storage'), type: 'text',
-        mode: ['create'], noEmpty: true, deps: ['aws_storage_type'],
+        id: 'storage_size', label: gettext('Allocated storage'), type: 'text',
+        mode: ['create'], noEmpty: true, deps: ['storage_type'],
         depChange: (state, source)=> {
-          if (source[0] !== 'aws_storage_size')
-            if(state.aws_storage_type === 'io1') {
-              return {aws_storage_size: 100};
-            } else if(state.aws_storage_type === 'gp2') {
-              return {aws_storage_size: 20};
+          if (source[0] !== 'storage_size')
+            if(state.storage_type === 'io1') {
+              return {storage_size: 100};
+            } else if(state.storage_type === 'gp2') {
+              return {storage_size: 20};
             } else {
-              return {aws_storage_size: 5};
+              return {storage_size: 5};
             }
         },
         helpMessage: gettext('Size in GiB.')
       }, {
-        id: 'aws_storage_IOPS', label: gettext('Provisioned IOPS'), type: 'text',
+        id: 'storage_IOPS', label: gettext('Provisioned IOPS'), type: 'text',
         mode: ['create'],
         visible: (state) => {
-          if(state.aws_storage_type === 'io1') return true;
+          if(state.storage_type === 'io1') return true;
           return false;
-        } , deps: ['aws_storage_type'],
+        } , deps: ['storage_type'],
         depChange: (state, source) => {
-          if (source[0] !== 'aws_storage_IOPS') {
-            if(state.aws_storage_type === 'io1') {
-              return {aws_storage_IOPS: 3000};
+          if (source[0] !== 'storage_IOPS') {
+            if(state.storage_type === 'io1') {
+              return {storage_IOPS: 3000};
             }
           }
         },
@@ -301,8 +302,338 @@ export class StorageSchema extends BaseUISchema {
   }
 }
 
+
+class BigAnimalInstanceSchema extends BaseUISchema {
+  constructor(fieldOptions = {}, initValues={}) {
+    super({
+      oid: undefined,
+      instance_type: '',
+      instance_series: '',
+      instance_size: '',
+      ...initValues
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+
+    this.initValues = initValues;
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get baseFields() {
+    return [
+      {
+        id: 'instance_type', label: gettext('Instance type'),
+        mode: ['create'],
+        deps: [['region']],
+        type: (state) => {
+          return {
+            type: 'select',
+            options: ()=>this.fieldOptions.instance_types(state.region),
+            optionsReloadBasis: state.region,
+            optionsLoaded: (options) => { state.instanceData = options; },
+            controlProps: {
+              allowClear: false,
+              filter: (options) => {
+                if (options.length == 0) return;
+                let _types = _.uniq(_.map(options, 'category')),
+                  _options = [];
+                _.forEach(_types, (region) => {
+                  _options.push({
+                    'label': region,
+                    'value': region
+                  });
+                });
+                return _options;
+              },
+            }
+          };
+        },
+        noEmpty: true,
+      },{
+        id: 'instance_series', label: gettext('Instance series'),
+        mode: ['create'], deps: ['instance_type'],
+        type: (state) => {
+          return {
+            type: 'select',
+            options: state.instanceData,
+            optionsReloadBasis: state.instance_type,
+            controlProps: {
+              allowClear: false,
+              filter: (options) => {
+                if (options.length == 0) return;
+                let _types = _.filter(options, {'category': state.instance_type}),
+                  _options = [];
+                _types = _.uniq(_.map(_types, 'familyName'));
+                _.forEach(_types, (value) => {
+                  _options.push({
+                    'label': value,
+                    'value': value
+                  });
+                });
+                return _options;
+              },
+            }
+          };
+        },
+        noEmpty: true,
+      },{
+        id: 'instance_size', label: gettext('Instance size'),
+        mode: ['create'], deps: ['instance_series'],
+        type: (state) => {
+          return {
+            type: 'select',
+            options: state.instanceData,
+            optionsReloadBasis: state.instance_series,
+            controlProps: {
+              allowClear: false,
+              filter: (options) => {
+                if (options.length == 0) return;
+                let _types = _.filter(options, {'familyName': state.instance_series}),
+                  _options = [];
+                _.forEach(_types, (value) => {
+                  _options.push({
+                    'label': value.instanceType + ' (' + value.cpu + 'vCPU, ' + value.ram + 'GB RAM)',
+                    'value': value.instanceType + ' (' + value.cpu + 'vCPU, ' + value.ram + 'GB RAM)' + '||' + value.id,
+                  });
+                });
+                return _options;
+              },
+            }
+          };
+        }, noEmpty: true,
+      },
+    ];
+  }
+}
+
+
+class BigAnimalVolumeSchema extends BaseUISchema {
+  constructor(fieldOptions = {}, initValues = {}) {
+    super({
+      oid: undefined,
+      volume_type: '',
+      volume_properties: '',
+      ...initValues
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+    this.initValues = initValues;
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get baseFields() {
+    return [
+      {
+        id: 'volume_type', label: gettext('Volume type'),
+        mode: ['create'], deps: [['region']],
+        type: (state) => {
+          return {
+            type: 'select',
+            options: ()=>this.fieldOptions.volume_types(state.region),
+            optionsReloadBasis: state.region,
+          };
+        }, noEmpty: true,
+      },{
+        id: 'volume_properties', label: gettext('Volume properties'),
+        mode: ['create'], deps: ['volume_type'],
+        type: (state) => {
+          return {
+            type: 'select',
+            options: ()=>this.fieldOptions.volume_properties(state.region, state.volume_type),
+            optionsReloadBasis: state.volume_type,
+          };
+        }, noEmpty: true,
+      },
+    ];
+  }
+}
+
+
+class BigAnimalNetworkSchema extends BaseUISchema {
+  constructor(fieldOptions = {}, initValues = {}) {
+    super({
+      oid: undefined,
+      cloud_type: '',
+      public_ip: '',
+      ...initValues
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+    this.initValues = initValues;
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get baseFields() {
+    var obj = this;
+    return [
+      {
+        id: 'cloud_type', label: gettext('Cloud type'), type: 'toggle',
+        mode: ['create'],
+        options: [
+          {'label': gettext('Private'), 'value': 'private'},
+          {'label': gettext('Public'), 'value': 'public'},
+        ], noEmpty: true,
+      },{
+        id: 'public_ip', label: gettext('Public IP range'), type: 'text',
+        mode: ['create'], deps: ['cloud_type'],
+        disabled: (state) => {
+          if (state.cloud_type == 'public') return false;
+          return true;
+        },
+        depChange: (state, source)=> {
+           if(source[0] == 'cloud_type') {
+             if (state.cloud_type == 'public') {
+               return {public_ip: obj.initValues.hostIP};
+             } else {
+               return {public_ip: ''};
+             }
+           }
+        },
+        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated. Leave it blank for 0.0.0.0/0'),
+      },
+    ];
+  }
+}
+class BigAnimalDatabaseSchema extends BaseUISchema {
+  constructor(fieldOptions = {}, initValues = {}) {
+    super({
+      oid: undefined,
+      password: '',
+      confirm_password: '',
+      database_type: '',
+      postgres_version: '',
+      ...initValues
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+    this.initValues = initValues;
+  }
+
+
+  validate(data, setErrMsg) {
+    if(!isEmptyString(data.password) && !isEmptyString(data.confirm_password)
+    && data.password != data.confirm_password) {
+      setErrMsg('confirm_password', gettext('Passwords do not match.'));
+      return true;
+    }
+    if (!isEmptyString(data.confirm_password) && data.confirm_password.length < 12) {
+      setErrMsg('confirm_password', gettext('Password must be 12 characters or more.'));
+      return true;
+    }
+
+    return false;
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get baseFields() {
+    return [
+      {
+        id: 'gid', label: gettext('Server group'), type: 'select',
+        options: this.fieldOptions.server_groups,
+        mode: ['create'],
+        controlProps: { allowClear: false },
+        noEmpty: true,
+      }, {
+        id: 'database_type', label: gettext('Database type'), mode: ['create'],
+        type: 'select',
+        options: this.fieldOptions.db_types,
+        noEmpty: true, orientation: 'vertical',
+      },{
+        id: 'postgres_version', label: gettext('PostgreSQL version'), type: 'select',
+        mode: ['create'], noEmpty: true,
+        options: this.fieldOptions.db_versions,
+      },{
+        id: 'password', label: gettext('Database password'), type: 'password',
+        mode: ['create'], noEmpty: true,
+      },{
+        id: 'confirm_password', label: gettext('Confirm password'), type: 'password',
+        mode: ['create'], noEmpty: true,
+      },
+    ];
+  }
+}
+
+class BigAnimalClusterSchema extends BaseUISchema {
+  constructor(fieldOptions = {}, initValues = {}) {
+    super({
+      oid: undefined,
+      name: '',
+      region: '',
+      public_ip: initValues.hostIP,
+      ...initValues
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+    this.initValues = initValues;
+
+    this.instance_types = new BigAnimalInstanceSchema({
+      instance_types: this.fieldOptions.instance_types,
+    });
+    this.volume_types = new BigAnimalVolumeSchema({
+      volume_types: this.fieldOptions.volume_types,
+      volume_properties: this.fieldOptions.volume_properties
+    });
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get baseFields() {
+    return [
+      {
+        id: 'name', label: gettext('Cluster name'), type: 'text',
+        mode: ['create'], noEmpty: true,
+      },{
+        id: 'region', label: gettext('Region'), type: 'select',
+        options: this.fieldOptions.regions,
+        controlProps: { allowClear: false },
+        noEmpty: true,
+        mode: ['create'],
+      },{
+        type: 'nested-fieldset', label: gettext('Instance Type'),
+        mode: ['create'], deps: ['region'],
+        schema: this.instance_types,
+      },{
+        type: 'nested-fieldset', label: gettext('Storage'),
+        mode: ['create'], deps: ['region'],
+        schema: this.volume_types,
+      }, {
+        type: 'nested-fieldset', label: gettext('Network Connectivity'),
+        mode: ['create'],
+        schema: new BigAnimalNetworkSchema({}, this.initValues),
+      }
+    ];
+  }
+}
+
+
 export {
   CloudInstanceDetailsSchema,
   CloudDBCredSchema,
   DatabaseSchema,
+  BigAnimalClusterSchema,
+  BigAnimalDatabaseSchema
 };

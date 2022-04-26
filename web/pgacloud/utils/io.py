@@ -13,20 +13,17 @@ import sys
 import time
 
 
-def debug(args, message):
+def debug(message):
     """ Print a debug message """
-    if not args.debug:
-        return
-
     now = datetime.datetime.now()
 
     print('[{}]: {}'.format(now.strftime("%H:%M:%S"), message),
-          file=sys.stderr, flush=True)
+          file=sys.stderr)
 
 
-def error(args, message):
+def error(message):
     """ Print an error message and exit """
-    debug(args, message)
+    debug(message)
 
     output({'error': message})
 
@@ -35,4 +32,4 @@ def error(args, message):
 
 def output(data):
     """ Dump JSON output from a dict """
-    print(json.dumps(data), flush=True)
+    print(json.dumps(data))

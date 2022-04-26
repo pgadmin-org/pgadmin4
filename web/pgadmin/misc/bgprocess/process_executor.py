@@ -170,7 +170,8 @@ class ProcessLogger(Thread):
         Thread.__init__(self)
         self.process = None
         self.stream = None
-        self.logger = open(os.path.join(_out_dir, stream_type), 'wb')
+        self.logger = open(os.path.join(_out_dir, stream_type), 'wb',
+                           buffering=0)
 
     def attach_process_stream(self, process, stream):
         """

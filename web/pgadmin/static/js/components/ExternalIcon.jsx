@@ -14,6 +14,7 @@ import FormatCaseSvg from '../../img/fonticon/format_case.svg?svgr';
 import PropTypes from 'prop-types';
 import Expand from '../../img/fonticon/open_in_full.svg?svgr';
 import Collapse from '../../img/fonticon/close_fullscreen.svg?svgr';
+import AWS from '../../img/aws.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -64,3 +65,6 @@ ExpandDialogIcon.propTypes = {style: PropTypes.object};
 
 export const MinimizeDialogIcon = ({style})=><ExternalIcon Icon={Collapse} style={{height: '1.4rem', ...style}} />;
 MinimizeDialogIcon.propTypes = {style: PropTypes.object};
+
+export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '1.4rem', ...style}} />;
+AWSIcon.propTypes = {style: PropTypes.object};

@@ -588,7 +588,6 @@ InputRadio.propTypes = {
   labelPlacement: PropTypes.string
 };
 
-
 export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled, readonly, ...props }, ref) => {
   return (
     <ToggleButtonGroup
@@ -1272,7 +1271,7 @@ export function NotifierMessage({ type = MESSAGE_TYPE.SUCCESS, message, closable
   return (
     <Box className={clsx(classes.container, classes[`container${type}`])}>
       <FormIcon type={type} className={classes[`icon${type}`]} />
-      <Box className={classes.message}>{message}</Box>
+      <Box className={classes.message}>{HTMLReactParse(message || '')}</Box>
       {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
         <FormIcon close={true} />
       </IconButton>}

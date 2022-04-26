@@ -13,7 +13,7 @@ from flask_babel import gettext
 # Mimetypes
 MIMETYPE_APP_HTML = 'text/html'
 MIMETYPE_APP_JS = 'application/javascript'
-
+MIMETYPE_APP_JSON = 'application/json'
 
 # Preference labels
 PREF_LABEL_KEYBOARD_SHORTCUTS = gettext('Keyboard shortcuts')

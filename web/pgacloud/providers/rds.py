@@ -144,7 +144,7 @@ class RdsProvider(AbsProvider):
             name = 'pgacloud_{}_{}_{}'.format(args.name,
                                               ip[0].replace('.', '-'),
                                               get_random_id())
-            debug(args, 'Creating security group: {}...'.format(name))
+            debug('Creating security group: {}...'.format(name))
             output({'Creating': 'Creating security group: {}...'.format(name)})
             response = ec2.create_security_group(
                 Description='Inbound access for {} to RDS instance {}'.format(
@@ -152,7 +152,7 @@ class RdsProvider(AbsProvider):
                 GroupName=name
             )
         except Exception as e:
-            error(args, str(e))
+            error(str(e))
 
         return response['GroupId']
 
@@ -172,8 +172,7 @@ class RdsProvider(AbsProvider):
             })
         try:
             output({'Adding': 'Adding ingress rule for: {}...'.format(ip)})
-            debug(args,
-                  'Adding ingress rule for: {}...'.format(ip))
+            debug('Adding ingress rule for: {}...'.format(ip))
             ec2.authorize_security_group_ingress(
                 GroupId=security_group,
                 IpPermissions=[
@@ -186,7 +185,7 @@ class RdsProvider(AbsProvider):
                 ]
             )
         except Exception as e:
-            error(args, e)
+            error(e)
 
     def _create_rds_instance(self, args, security_group):
         """ Create an RDS instance """
@@ -197,7 +196,7 @@ class RdsProvider(AbsProvider):
             else args.db_password
 
         try:
-            debug(args, 'Creating RDS instance: {}...'.format(args.name))
+            debug('Creating RDS instance: {}...'.format(args.name))
             rds.create_db_instance(DBInstanceIdentifier=args.name,
                                    AllocatedStorage=args.storage_size,
                                    DBName=args.db_name,
@@ -218,18 +217,18 @@ class RdsProvider(AbsProvider):
 
         except rds.exceptions.DBInstanceAlreadyExistsFault as e:
             try:
-                debug(args, DEL_SEC_GROUP_MSG.format(security_group))
+                debug(DEL_SEC_GROUP_MSG.format(security_group))
                 ec2.delete_security_group(GroupId=security_group)
             except Exception:
                 pass
-            error(args, 'RDS instance {} already exists.'.format(args.name))
+            error('RDS instance {} already exists.'.format(args.name))
         except Exception as e:
             try:
-                debug(args, DEL_SEC_GROUP_MSG.format(security_group))
+                debug(DEL_SEC_GROUP_MSG.format(security_group))
                 ec2.delete_security_group(GroupId=security_group)
             except Exception:
                 pass
-            error(args, str(e))
+            error(str(e))
 
         # Wait for completion
         running = True
@@ -252,7 +251,7 @@ class RdsProvider(AbsProvider):
         """ Delete an RDS instance """
         rds = self._get_aws_client('rds', args)
 
-        debug(args, 'Deleting RDS instance: {}...'.format(name))
+        debug('Deleting RDS instance: {}...'.format(name))
         try:
             rds.delete_db_instance(
                 DBInstanceIdentifier=name,
@@ -260,7 +259,7 @@ class RdsProvider(AbsProvider):
                 DeleteAutomatedBackups=True
             )
         except Exception as e:
-            error(args, str(e))
+            error(str(e))
 
         # Wait for completion
         while True:
@@ -269,7 +268,7 @@ class RdsProvider(AbsProvider):
             except rds.exceptions.DBInstanceNotFoundFault:
                 return
             except Exception as e:
-                error(args, str(e))
+                error(str(e))
 
             time.sleep(5)
 
@@ -277,13 +276,13 @@ class RdsProvider(AbsProvider):
         """ Delete a security group """
         ec2 = self._get_aws_client('ec2', args)
 
-        debug(args, 'Deleting security group: {}...'.format(id))
+        debug('Deleting security group: {}...'.format(id))
         try:
             ec2.delete_security_group(
                 GroupId=id
             )
         except Exception as e:
-            error(args, str(e))
+            error(str(e))
 
     ##########################################################################
     # User commands
