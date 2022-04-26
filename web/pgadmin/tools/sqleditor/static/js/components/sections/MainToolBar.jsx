@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme)=>({
     alignItems: 'center',
     gap: '4px',
     backgroundColor: theme.otherVars.editorToolbarBg,
+    flexWrap: 'wrap',
     ...theme.mixins.panelBorder.bottom,
   },
 }));
@@ -322,7 +323,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, 'ROLLBACK;', null, true);
   };
   const executeMacro = (m)=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, m.sql, null, true);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION, null, m.sql);
   };
   const onLimitChange=(e)=>{
     setLimit(e.target.value);

@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme)=>({
     lineHeight: '16px',
 
     '&.checked, &.unchecked': {
-      background: theme.palette.background.default,
+      background: theme.palette.grey[200],
     },
     '&.checked:after': {
       content: '\'\\2713\'',

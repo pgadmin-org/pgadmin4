@@ -237,11 +237,20 @@ export default function Query() {
     }
   };
 
-  const triggerExecution = (explainObject)=>{
+  const triggerExecution = (explainObject, macroSQL)=>{
     if(queryToolCtx.params.is_query_tool) {
-      let query = editor.current?.getSelection() || editor.current?.getValue() || '';
+      let external = null;
+      let query = editor.current?.getSelection();
+      if(!_.isUndefined(macroSQL)) {
+        const regex = /\$SELECTION\$/gi;
+        query =  macroSQL.replace(regex, query);
+        external = true;
+      } else{
+        /* Normal execution */
+        query = query || editor.current?.getValue() || '';
+      }
       if(query) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject);
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, query, explainObject, external);
       }
     } else {
       eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, null, null);
@@ -375,7 +384,7 @@ export default function Query() {
     });
   }, [queryToolCtx.params.trans_id]);
 
-  const isDirty = ()=>lastSavedText.current !== editor.current.getValue();
+  const isDirty = ()=>(queryToolCtx.params.is_query_tool && lastSavedText.current !== editor.current.getValue());
 
   const cursorActivity = useCallback((cmObj)=>{
     const c = cmObj.getCursor();

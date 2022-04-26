@@ -68,9 +68,13 @@ function setPanelTitle(panel, title, qtState, dirty=false) {
     setQueryToolDockerTitle(panel, true, title, qtState.current_file ? true : false);
   }
 }
+
+function onBeforeUnload(e) {
+  e.preventDefault();
+  e.returnValue = 'prevent';
+}
 export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, panel, eventBusObj}) {
   const containerRef = React.useRef(null);
-  const forceClose = React.useRef(false);
   const [qtState, _setQtState] = useState({
     preferences: {
       browser: {}, sqleditor: {},
@@ -111,7 +115,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const modal = useModal();
 
   /* Connection status poller */
-  let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0 && !qtState.obtaining_conn ?
+  let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
+    && !qtState.obtaining_conn && qtState.preferences?.sqleditor?.connection_status ?
     qtState.preferences.sqleditor.connection_status_fetch_time*1000 : -1;
   /* No need to poll when the query is executing. Query poller will the txn status */
   if(qtState.connection_status === CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE && qtState.connected) {
@@ -299,11 +304,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
     /* WC docker events */
     panel?.on(window.wcDocker.EVENT.CLOSING, function() {
-      if(!forceClose.current) {
-        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
-      } else {
-        panel.close();
-      }
+      window.removeEventListener('beforeunload', onBeforeUnload);
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
     });
 
     pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', (fileName)=>{
@@ -313,6 +315,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:create_file', (fileName)=>{
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
     }, pgAdmin);
+
+    window.addEventListener('beforeunload', onBeforeUnload);
   }, []);
 
   useEffect(()=>{

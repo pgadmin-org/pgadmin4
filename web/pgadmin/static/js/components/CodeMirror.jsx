@@ -134,7 +134,7 @@ export function FindDialog({editor, show, replace, onClose}) {
   const search = ()=>{
     if(editor) {
       let query = parseQuery(findVal, useRegex, matchCase);
-      searchCursor.current = editor.getSearchCursor(query, editor.getCursor(true), !matchCase);
+      searchCursor.current = editor.getSearchCursor(query, 0, !matchCase);
       if(findVal != '') {
         editor.removeOverlay(highlightsearch.current);
         highlightsearch.current = searchOverlay(query, matchCase);
@@ -221,6 +221,8 @@ export function FindDialog({editor, show, replace, onClose}) {
   };
 
   const onReplaceAll = ()=>{
+    /* search from start */
+    search();
     while(searchCursor.current.from()) {
       onReplace();
     }
@@ -253,10 +255,13 @@ export function FindDialog({editor, show, replace, onClose}) {
       />}
 
       <Box display="flex" className={classes.marginTop}>
-        <PgIconButton title={gettext('Previous')} icon={<ArrowUpwardRoundedIcon />} size="xs" noBorder onClick={onFindPrev} />
-        <PgIconButton title={gettext('Next')} icon={<ArrowDownwardRoundedIcon />} size="xs" noBorder onClick={onFindNext}/>
+        <PgIconButton title={gettext('Previous')} icon={<ArrowUpwardRoundedIcon />} size="xs" noBorder onClick={onFindPrev}
+          style={{marginRight: '2px'}} />
+        <PgIconButton title={gettext('Next')} icon={<ArrowDownwardRoundedIcon />} size="xs" noBorder onClick={onFindNext}
+          style={{marginRight: '2px'}} />
         {replace && <>
-          <PgIconButton title={gettext('Replace')} icon={<SwapHorizRoundedIcon style={{height: 'unset'}}/>} size="xs" noBorder onClick={onReplace} />
+          <PgIconButton title={gettext('Replace')} icon={<SwapHorizRoundedIcon style={{height: 'unset'}}/>} size="xs" noBorder onClick={onReplace}
+            style={{marginRight: '2px'}} />
           <PgIconButton title={gettext('Replace All')} icon={<SwapCallsRoundedIcon />} size="xs" noBorder onClick={onReplaceAll}/>
         </>}
         <Box marginLeft="auto">
