@@ -70,7 +70,7 @@ export function FinalSummary(props) {
 
   if (props.cloudProvider == 'biganimal') {
     summary = getBigAnimalSummary(props.cloudProvider, props.instanceData, props.databaseData);
-    summaryHeader[1] = 'Version Details'
+    summaryHeader[1] = 'Version Details';
   } else {
     summary = getAWSSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }

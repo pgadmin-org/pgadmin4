@@ -166,7 +166,7 @@ export class Tree {
   }
 
   async close(item) {
-    await this.tree.closeDirectory(item);
+    await this.tree.closeDir(item);
   }
 
   async toggle(item) {

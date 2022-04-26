@@ -144,7 +144,7 @@
     "path-fx": "^2.0.0",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.9",
-    "pgadmin4-tree": "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#c966febebcdffaa46f1ccf0769fe5308f179d613",
+    "pgadmin4-tree": "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#2c288ccc0ae0c98b41e56e79abf1204be3861702",
     "postcss": "^8.2.15",
     "raf": "^3.4.1",
     "rc-dock": "^3.2.9",

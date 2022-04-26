@@ -496,13 +496,13 @@ class BigAnimalNetworkSchema extends BaseUISchema {
           return true;
         },
         depChange: (state, source)=> {
-           if(source[0] == 'cloud_type') {
-             if (state.cloud_type == 'public') {
-               return {public_ip: obj.initValues.hostIP};
-             } else {
-               return {public_ip: ''};
-             }
-           }
+          if(source[0] == 'cloud_type') {
+            if (state.cloud_type == 'public') {
+              return {public_ip: obj.initValues.hostIP};
+            } else {
+              return {public_ip: ''};
+            }
+          }
         },
         helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated. Leave it blank for 0.0.0.0/0'),
       },
