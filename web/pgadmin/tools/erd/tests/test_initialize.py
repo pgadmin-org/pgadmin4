@@ -44,6 +44,7 @@ class ERDInitialize(BaseTestGenerator):
         response_data = json.loads(response.data.decode('utf-8'))
         self.assertEqual(response_data['data'], {
             'connId': str(trans_id),
+            'database': self.db_name,
             'serverVersion': self.server_information['server_version'],
         })
 
