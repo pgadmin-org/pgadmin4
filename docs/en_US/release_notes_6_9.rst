@@ -41,3 +41,4 @@ Bug fixes
   | `Issue #7307 <https://redmine.postgresql.org/issues/7307>`_ -  Fixed an issue where the table showed duplicate columns when creating multiple sequences on the same column.
   | `Issue #7308 <https://redmine.postgresql.org/issues/7308>`_ -  Ensure that sorting should be preserved on refresh for Server Activity.
   | `Issue #7322 <https://redmine.postgresql.org/issues/7322>`_ -  Fixed an issue while creating a new database throwing an error that failed to retrieve data.
+  | `Issue #7333 <https://redmine.postgresql.org/issues/7333>`_ -  Fixed an issue where the drag and drop table in ERD throws an error.

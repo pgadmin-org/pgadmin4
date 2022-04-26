@@ -209,7 +209,7 @@ export class TableNodeWidget extends React.Component {
   }
 
   render() {
-    let tableData = this.props.node.getData();
+    let tableData = this.props.node.getData() || {};
     let tableMetaData = this.props.node.getMetadata();
     let localFkCols = [];
     (tableData.foreign_key||[]).forEach((fk)=>{

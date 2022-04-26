@@ -96,7 +96,7 @@ export default class BodyWidget extends React.Component {
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onDetailsToggle', 'onHelpClick', 'onDropNode',
+      'onDetailsToggle', 'onHelpClick', 'onDropNode', 'onBeforeUnload',
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
@@ -223,6 +223,7 @@ export default class BodyWidget extends React.Component {
     });
 
     this.props.panel?.on(window.wcDocker?.EVENT.CLOSING, () => {
+      window.removeEventListener('beforeunload', this.onBeforeUnload);
       if(this.state.dirty) {
         this.closeOnSave = false;
         this.confirmBeforeClose();
@@ -241,11 +242,11 @@ export default class BodyWidget extends React.Component {
       await this.loadTablesData();
     }
 
-    window.addEventListener('beforeunload', this.onBeforeUnload.bind(this));
+    window.addEventListener('beforeunload', this.onBeforeUnload);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.onBeforeUnload.bind(this));
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
   }
 
   componentDidUpdate() {
@@ -306,7 +307,6 @@ export default class BodyWidget extends React.Component {
   }
 
   closePanel() {
-    window.onbeforeunload = null;
     this.props.panel.off(window.wcDocker.EVENT.CLOSING);
     this.props.pgWindow.pgAdmin.Browser.docker.removePanel(this.props.panel);
   }
