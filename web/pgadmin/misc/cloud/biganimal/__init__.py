@@ -389,9 +389,9 @@ def deploy_on_biganimal(data):
             _private_network
             ]
 
-    if 'public_ip' in data['instance_details']:
+    if 'biganimal_public_ip' in data['instance_details']:
         args.append('--public-ip')
-        args.append(str(data['instance_details']['public_ip']))
+        args.append(str(data['instance_details']['biganimal_public_ip']))
 
     _cmd_msg = '{0} {1} {2}'.format(_cmd, _cmd_script, ' '.join(args))
     try:

@@ -142,7 +142,7 @@ define('pgadmin.misc.cloud', [
         onrestore:function(){
           Alertify.cloudWizardDialog().elements.modal.style.maxHeight=0;
         },
-      }).resizeTo(920, 620);
+      }).resizeTo(920, 650);
     },
 
 

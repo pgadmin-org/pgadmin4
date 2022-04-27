@@ -464,7 +464,7 @@ class BigAnimalNetworkSchema extends BaseUISchema {
     super({
       oid: undefined,
       cloud_type: '',
-      public_ip: '',
+      biganimal_public_ip: '',
       ...initValues
     });
 
@@ -488,8 +488,10 @@ class BigAnimalNetworkSchema extends BaseUISchema {
           {'label': gettext('Private'), 'value': 'private'},
           {'label': gettext('Public'), 'value': 'public'},
         ], noEmpty: true,
+        helpMessage: gettext('Private networking allows only IP addresses within your private network to connect to your cluster.'
+        + ' Public means that any client can connect to your cluster’s public IP address over the internet.')
       },{
-        id: 'public_ip', label: gettext('Public IP range'), type: 'text',
+        id: 'biganimal_public_ip', label: gettext('Public IP range'), type: 'text',
         mode: ['create'], deps: ['cloud_type'],
         disabled: (state) => {
           if (state.cloud_type == 'public') return false;
@@ -498,9 +500,9 @@ class BigAnimalNetworkSchema extends BaseUISchema {
         depChange: (state, source)=> {
           if(source[0] == 'cloud_type') {
             if (state.cloud_type == 'public') {
-              return {public_ip: obj.initValues.hostIP};
+              return {biganimal_public_ip: obj.initValues.hostIP};
             } else {
-              return {public_ip: ''};
+              return {biganimal_public_ip: ''};
             }
           }
         },

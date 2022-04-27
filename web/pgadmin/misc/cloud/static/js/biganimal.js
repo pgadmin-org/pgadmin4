@@ -157,7 +157,7 @@ export function getBigAnimalSummary(cloud, bigAnimalInstanceData, bigAnimalDatab
     createData('Instance name', bigAnimalInstanceData.name),
     createData('Region', bigAnimalInstanceData.region),
     createData('Cluster type', bigAnimalInstanceData.cloud_type),
-    createData('Public IPs', bigAnimalInstanceData.public_ip),
+    createData('Public IPs', bigAnimalInstanceData.biganimal_public_ip),
   ];
 
   let instance_size = bigAnimalInstanceData.instance_size.split('||');
