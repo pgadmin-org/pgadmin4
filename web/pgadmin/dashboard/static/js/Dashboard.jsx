@@ -353,18 +353,16 @@ export default function Dashboard({
             onClick={(e) => {
               e.preventDefault();
               row.toggleRowExpanded(!row.isExpanded);
-              if(!(row.id in schemaDict)){
-                let schema = new ActiveQuery({
-                  query: row.original.query,
-                  backend_type: row.original.backend_type,
-                  state_change: row.original.state_change,
-                  query_start: row.original.query_start,
-                });
-                setSchemaDict(prevState => ({
-                  ...prevState,
-                  [row.id]: schema
-                }));
-              }
+              let schema = new ActiveQuery({
+                query: row.original.query,
+                backend_type: row.original.backend_type,
+                state_change: row.original.state_change,
+                query_start: row.original.query_start,
+              });
+              setSchemaDict(prevState => ({
+                ...prevState,
+                [row.id]: schema
+              }));
             }}
             disabled={!canEditRow}
             aria-label="View the active session details"

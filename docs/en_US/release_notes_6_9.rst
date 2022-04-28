@@ -40,6 +40,7 @@ Bug fixes
   | `Issue #7294 <https://redmine.postgresql.org/issues/7294>`_ -  Fixed an issue where the copy and paste row does not work if the first column contains no data.
   | `Issue #7296 <https://redmine.postgresql.org/issues/7296>`_ -  Ensure that after deleting multiple objects from the properties panel, the browser tree should be refreshed.
   | `Issue #7299 <https://redmine.postgresql.org/issues/7299>`_ -  Fixed sorting issue in the statistics panel.
+  | `Issue #7305 <https://redmine.postgresql.org/issues/7305>`_ -  Fixed an issue where the Dashboard Server Activity was showing old queries as active.
   | `Issue #7307 <https://redmine.postgresql.org/issues/7307>`_ -  Fixed an issue where the table showed duplicate columns when creating multiple sequences on the same column.
   | `Issue #7308 <https://redmine.postgresql.org/issues/7308>`_ -  Ensure that sorting should be preserved on refresh for Server Activity.
   | `Issue #7322 <https://redmine.postgresql.org/issues/7322>`_ -  Fixed an issue while creating a new database throwing an error that failed to retrieve data.

@@ -228,12 +228,12 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
   const tableRef = React.useRef();
   const rowHeights = React.useRef({});
 
-  // Reset Search vakue in tab changed.
+  // Reset Search value on tab changes.
   React.useEffect(()=>{
     setSearchVal('');
     rowHeights.current = {};
     tableRef.current?.resetAfterIndex(0);
-  }, [columns]);
+  }, [data]);
 
   function getRowHeight(index) {
     return rowHeights.current[index] || ROW_HEIGHT;
