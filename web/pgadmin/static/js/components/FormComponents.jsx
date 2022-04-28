@@ -155,13 +155,16 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({ value, options, onChange, className, controlProps, ...props }) {
+export function InputSQL({ value, options, onChange, className, controlProps, inputRef, ...props }) {
   const classes = useStyles();
   const editor = useRef();
 
   return (
     <CodeMirror
-      currEditor={(obj) => editor.current = obj}
+      currEditor={(obj) => {
+        editor.current = obj;
+        inputRef?.(obj);
+      }}
       value={value || ''}
       options={{
         lineNumbers: true,
@@ -186,6 +189,7 @@ InputSQL.propTypes = {
   readonly: PropTypes.bool,
   className: CustomPropTypes.className,
   controlProps: PropTypes.object,
+  inputRef: CustomPropTypes.ref,
 };
 
 export function FormInputSQL({ hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props }) {

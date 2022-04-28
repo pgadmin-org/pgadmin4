@@ -75,7 +75,7 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   case 'file':
     return <FormInputFileSelect name={name} value={value} onChange={onTextChange} className={className} inputRef={inputRef} {...props} />;
   case 'sql':
-    return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} {...props} />;
+    return <FormInputSQL name={name} value={value} onChange={onSqlChange} className={className} noLabel={noLabel} inputRef={inputRef} {...props} />;
   case 'note':
     return <FormNote className={className} {...props} />;
   case 'datetimepicker':
