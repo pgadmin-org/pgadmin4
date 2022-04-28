@@ -594,16 +594,18 @@ def validate_filter(sid, did, obj_id):
         obj_id: Id of currently selected object
     """
     if request.data:
-        filter_sql = json.loads(request.data, encoding='utf-8')
+        filter_data = json.loads(request.data, encoding='utf-8')
     else:
-        filter_sql = request.args or request.form
+        filter_data = request.args or request.form
 
     try:
         # Create object of SQLFilter class
         sql_filter_obj = SQLFilter(sid=sid, did=did, obj_id=obj_id)
 
         # Call validate_filter method to validate the SQL.
-        status, res = sql_filter_obj.validate_filter(filter_sql)
+        status, res = sql_filter_obj.validate_filter(filter_data['filter_sql'])
+        if not status:
+            return internal_server_error(errormsg=str(res))
     except ObjectGone:
         raise
     except Exception as e:

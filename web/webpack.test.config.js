@@ -217,6 +217,7 @@ module.exports = {
       'tools': path.join(__dirname, './pgadmin/tools/'),
       'pgadmin.user_management.current_user': regressionDir + '/javascript/fake_current_user',
       'pgadmin.browser.constants': regressionDir + '/javascript/fake_constants',
+      'pgadmin.help': path.join(__dirname, './pgadmin/help/static/js/help'),
     },
   },
 };

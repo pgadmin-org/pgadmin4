@@ -16,7 +16,9 @@ import SchemaView from 'sources/SchemaView';
 import 'wcdocker';
 
 /* The entry point for rendering React based view in properties, called in node.js */
-export function getUtilityView(schema, treeNodeInfo, actionType, formType, container, containerPanel, onSave, extraData, saveBtnName, urlBase, sqlHelpUrl, helpUrl) {
+export function getUtilityView(schema, treeNodeInfo, actionType, formType, container, containerPanel,
+  onSave, extraData, saveBtnName, urlBase, sqlHelpUrl, helpUrl, isTabView=true) {
+
   let serverInfo = treeNodeInfo && ('server' in treeNodeInfo) &&
       pgAdmin.Browser.serverInfo && pgAdmin.Browser.serverInfo[treeNodeInfo.server._id];
   let inCatalog = treeNodeInfo && ('catalog' in treeNodeInfo);
@@ -90,6 +92,7 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
       onDataChange={()=>{/*This is intentional (SonarQube)*/}}
       confirmOnCloseReset={confirmOnReset}
       hasSQL={false}
+      isTabView={isTabView}
       disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}
       disableDialogHelp={helpUrl == undefined || helpUrl == ''}
     />, container);

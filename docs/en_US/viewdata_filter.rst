@@ -15,5 +15,3 @@ in the edit grid window:
 .. image:: images/viewdata_filter_dialog.png
     :alt: View Data filter dialog window
     :align: center
-
-.. note:: Use SHIFT + ENTER keys to apply filter.

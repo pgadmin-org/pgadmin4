@@ -207,13 +207,13 @@ export default class SQLEditor {
   // This is a callback function to show data when user click on menu item.
   showViewData(data, i) {
     const transId = commonUtils.getRandomInt(1, 9999999);
-    showViewData.showViewData(this, pgBrowser, alertify, data, i, transId);
+    showViewData.showViewData(this, pgBrowser, data, i, transId);
   }
 
   // This is a callback function to show filtered data when user click on menu item.
   showFilteredRow(data, i) {
     const transId = commonUtils.getRandomInt(1, 9999999);
-    showViewData.showViewData(this, pgBrowser, alertify, data, i, transId, true, this.preferences);
+    showViewData.showViewData(this, pgBrowser, data, i, transId, true);
   }
 
   // This is a callback function to show query tool when user click on menu item.

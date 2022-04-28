@@ -9,21 +9,51 @@
 import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {getDatabaseLabel, generateTitle} from './sqleditor_title';
-import CodeMirror from 'bundled_codemirror';
-import * as SqlEditorUtils from 'sources/sqleditor_utils';
-import $ from 'jquery';
+import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'underscore';
 import Notify from '../../../../static/js/helpers/Notifier';
+import { isEmptyString } from 'sources/validators';
+import { getUtilityView } from '../../../../browser/static/js/utility_view';
+
+export default class DataFilterSchema extends BaseUISchema {
+  constructor(fieldOptions = {}) {
+    super({
+      filter_sql: ''
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+  }
+
+  get baseFields() {
+    return [{
+      id: 'filter_sql',
+      label: gettext('Data Filter'),
+      type: 'sql', isFullTab: true, cell: 'text',
+    }];
+  }
+
+  validate(state, setError) {
+    let errmsg = null;
+
+    if (isEmptyString(state.filter_sql)) {
+      errmsg = gettext('Data filter can not be empty.');
+      setError('filter_sql', errmsg);
+      return true;
+    } else {
+      setError('filter_sql', null);
+    }
+  }
+}
 
 export function showViewData(
   queryToolMod,
   pgBrowser,
-  alertify,
   connectionData,
   treeIdentifier,
   transId,
-  filter=false,
-  preferences=null
+  filter=false
 ) {
   const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
   if (node === undefined || !node.getData()) {
@@ -49,26 +79,16 @@ export function showViewData(
 
   const gridUrl = generateUrl(transId, connectionData, node.getData(), parentData);
   const queryToolTitle = generateViewDataTitle(pgBrowser, treeIdentifier);
+
   if(filter) {
-    initFilterDialog(alertify, pgBrowser);
-
     const validateUrl = generateFilterValidateUrl(node.getData(), parentData);
-
-    let okCallback = function(sql) {
-      queryToolMod.launch(transId, gridUrl, false, queryToolTitle, null, sql);
-    };
-
-    $.get(url_for('sqleditor.filter'),
-      function(data) {
-        alertify.filterDialog(gettext('Data Filter - %s', queryToolTitle), data, validateUrl, preferences, okCallback)
-          .resizeTo(pgBrowser.stdW.sm,pgBrowser.stdH.sm);
-      }
-    );
+    // Show Data Filter Dialog
+    showFilterDialog(pgBrowser, node, queryToolMod, transId, gridUrl,
+      queryToolTitle, validateUrl);
   } else {
     queryToolMod.launch(transId, gridUrl, false, queryToolTitle);
   }
 }
-
 
 export function retrieveNameSpaceName(parentData) {
   if(!parentData) {
@@ -130,170 +150,26 @@ function generateFilterValidateUrl(nodeData, parentData) {
   return url_for('sqleditor.filter_validate', url_params);
 }
 
-function initFilterDialog(alertify, pgBrowser) {
-  // Create filter dialog using alertify
-  let filter_editor = null;
-  if (!alertify.filterDialog) {
-    alertify.dialog('filterDialog', function factory() {
-      return {
-        main: function(title, message, validateUrl, preferences, okCallback) {
-          this.set('title', title);
-          this.message = message;
-          this.validateUrl = validateUrl;
-          this.okCallback = okCallback;
-          this.preferences = preferences;
-        },
+function showFilterDialog(pgBrowser, treeNodeInfo, queryToolMod, transId,
+  gridUrl, queryToolTitle, validateUrl) {
 
-        setup:function() {
-          return {
-            buttons:[{
-              text: '',
-              key: 112,
-              className: 'btn btn-primary-icon pull-left fa fa-question pg-alertify-icon-button',
-              attrs: {
-                name: 'dialog_help',
-                type: 'button',
-                label: gettext('Data Filter'),
-                'aria-label': gettext('Help'),
-                url: url_for('help.static', {
-                  'filename': 'viewdata_filter.html',
-                }),
-              },
-            },{
-              text: gettext('Cancel'),
-              key: 27,
-              className: 'btn btn-secondary fa fa-times pg-alertify-button',
-            },{
-              text: gettext('OK'),
-              key: null,
-              className: 'btn btn-primary fa fa-check pg-alertify-button',
-            }],
-            options: {
-              modal: 0,
-              resizable: true,
-              maximizable: false,
-              pinnable: false,
-              autoReset: false,
-            },
-          };
-        },
-        build: function() {
-          var that = this;
-          alertify.pgDialogBuild.apply(that);
+  let schema = new DataFilterSchema();
 
-          // Set the tooltip of OK
-          $(that.__internal.buttons[2].element).attr('title', gettext('Use SHIFT + ENTER to apply filter...'));
+  // Register dialog panel
+  pgBrowser.Node.registerUtilityPanel();
+  var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+    j = panel.$container.find('.obj_properties').first();
+  panel.title(gettext('Data Filter - %s', queryToolTitle));
+  panel.focus();
 
-          // For sort/filter dialog we capture the keypress event
-          // and on "shift + enter" we clicked on "OK" button.
-          $(that.elements.body).on('keypress', function(evt) {
-            if (evt.shiftKey && evt.keyCode == 13) {
-              that.__internal.buttons[2].element.click();
-            }
-          });
-        },
-        prepare:function() {
-          var that = this,
-            $content = $(this.message),
-            $sql_filter = $content.find('#sql_filter');
+  var helpUrl = url_for('help.static', {'filename': 'viewdata_filter.html'});
 
-          $(this.elements.header).attr('data-title', this.get('title'));
-          $(this.elements.body.childNodes[0]).addClass(
-            'dataview_filter_dialog'
-          );
+  let okCallback = function() {
+    queryToolMod.launch(transId, gridUrl, false, queryToolTitle, null, schema._sessData.filter_sql);
+  };
 
-          this.setContent($content.get(0));
-          // Disable OK button
-          that.__internal.buttons[2].element.disabled = true;
-
-          // Apply CodeMirror to filter text area.
-          filter_editor = this.filter_obj = CodeMirror.fromTextArea($sql_filter.get(0), {
-            lineNumbers: true,
-            mode: 'text/x-pgsql',
-            extraKeys: pgBrowser.editor_shortcut_keys,
-            indentWithTabs: !that.preferences.use_spaces,
-            indentUnit: that.preferences.tab_size,
-            tabSize: that.preferences.tab_size,
-            lineWrapping: that.preferences.wrap_code,
-            autoCloseBrackets: that.preferences.insert_pair_brackets,
-            matchBrackets: that.preferences.brace_matching,
-            screenReaderLabel: gettext('Filter SQL'),
-          });
-
-          let sql_font_size = SqlEditorUtils.calcFontSize(that.preferences.sql_font_size);
-          $(this.filter_obj.getWrapperElement()).css('font-size', sql_font_size);
-
-          setTimeout(function() {
-            // Set focus on editor
-            that.filter_obj.refresh();
-            that.filter_obj.focus();
-          }, 500);
-
-          that.filter_obj.on('change', function() {
-            if (that.filter_obj.getValue() !== '') {
-              that.__internal.buttons[2].element.disabled = false;
-            } else {
-              that.__internal.buttons[2].element.disabled = true;
-            }
-          });
-        },
-
-        callback: function(closeEvent) {
-
-          if (closeEvent.button.text == gettext('OK')) {
-            var sql = this.filter_obj.getValue();
-            var that = this;
-            closeEvent.cancel = true; // Do not close dialog
-
-            // Make ajax call to include the filter by selection
-            $.ajax({
-              url: that.validateUrl,
-              method: 'POST',
-              async: false,
-              contentType: 'application/json',
-              data: JSON.stringify(sql),
-            })
-              .done(function(res) {
-                if (res.data.status) {
-                  that.okCallback(sql);
-                  that.close(); // Close the dialog
-                }
-                else {
-                  Notify.alert(
-                    gettext('Validation Error'),
-                    gettext(res.data.result),
-                    function(){
-                      filter_editor.focus();
-                    },
-                  );
-                }
-              })
-              .fail(function(e) {
-                if (e.status === 410){
-                  pgBrowser.report_error(gettext('Error filtering rows - %s.', e.statusText), e.responseJSON.errormsg);
-
-                } else {
-                  Notify.alert(
-                    gettext('Validation Error'),
-                    e
-                  );
-                }
-
-              });
-          } else if(closeEvent.index == 0) {
-            /* help Button */
-            closeEvent.cancel = true;
-            pgBrowser.showHelp(
-              closeEvent.button.element.name,
-              closeEvent.button.element.getAttribute('url'),
-              null, null
-            );
-            return;
-          }
-        },
-      };
-    });
-  }
+  getUtilityView(schema, treeNodeInfo, 'create', 'dialog', j[0], panel,
+    okCallback, [], 'OK', validateUrl, undefined, helpUrl, false);
 }
 
 function hasServerOrDatabaseConfiguration(parentData) {
