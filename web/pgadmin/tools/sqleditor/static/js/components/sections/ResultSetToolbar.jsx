@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme)=>({
   },
 }));
 
-export function ResultSetToolbar({containerRef, canEdit}) {
+export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
   const classes = useStyles();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -46,6 +46,7 @@ export function ResultSetToolbar({containerRef, canEdit}) {
     'save-data': true,
     'delete-rows': true,
     'copy-rows': true,
+    'save-result': true,
   });
   const [menuOpenId, setMenuOpenId] = React.useState(null);
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
@@ -110,6 +111,10 @@ export function ResultSetToolbar({containerRef, canEdit}) {
   }, []);
 
   useEffect(()=>{
+    setDisableButton('save-result', (totalRowCount||0) < 1);
+  }, [totalRowCount]);
+
+  useEffect(()=>{
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA, copyData);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA, copyData);
   }, [checkedMenuItems['copy_with_headers']]);
@@ -150,7 +155,8 @@ export function ResultSetToolbar({containerRef, canEdit}) {
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Save results to file')} icon={<GetAppRoundedIcon />}
-            onClick={downloadResult} shortcut={queryToolPref.download_results}/>
+            onClick={downloadResult} shortcut={queryToolPref.download_results}
+            disabled={buttonsDisabled['save-result']} />
         </PgButtonGroup>
       </Box>
       <PgMenu
@@ -167,4 +173,5 @@ export function ResultSetToolbar({containerRef, canEdit}) {
 ResultSetToolbar.propTypes = {
   containerRef: CustomPropTypes.ref,
   canEdit: PropTypes.bool,
+  totalRowCount: PropTypes.number,
 };

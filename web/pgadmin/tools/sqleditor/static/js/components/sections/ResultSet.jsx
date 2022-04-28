@@ -1206,7 +1206,7 @@ export function ResultSet() {
         <EmptyPanelMessage text={gettext('No data output. Execute a query to get output.')}/>
       }
       {queryData && <>
-        <ResultSetToolbar containerRef={containerRef} canEdit={queryData.can_edit}/>
+        <ResultSetToolbar containerRef={containerRef} canEdit={queryData.can_edit} totalRowCount={queryData?.rows_affected}/>
         <Box flexGrow="1" minHeight="0">
           <QueryToolDataGrid
             columns={columns}
