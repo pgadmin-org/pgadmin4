@@ -150,11 +150,11 @@ export default function ImportExportServers() {
         setSummaryText('The following servers will be exported. Click the Finish button to complete the export process.');
         setNoteText('');
       } else if (selectionFormData.imp_exp == 'i') {
-        setSummaryText('The following servers will be imported. Click the Finish button to complete the import process.');
+        setSummaryText(gettext('The following servers will be imported. Click the Finish button to complete the import process.'));
         if (selectionFormData.replace_servers) {
-          setNoteText('All existing server groups and servers will be removed before the servers above are imported. On a successful import process, the browser tree will be refreshed.');
+          setNoteText(gettext('All existing server groups and servers will be removed before the servers above are imported. On a successful import process, the browser tree will be refreshed.'));
         } else {
-          setNoteText('On a successful import process, the browser tree will be refreshed.');
+          setNoteText(gettext('On a successful import process, the browser tree will be refreshed.'));
         }
       }
     }
@@ -259,7 +259,7 @@ export default function ImportExportServers() {
             </table>
           </Paper>
           {selectionFormData.imp_exp == 'i' &&
-          <FormNote className={classes.noteContainer} text={gettext(noteText)}/> }
+          <FormNote className={classes.noteContainer} text={noteText}/> }
         </WizardStep>
       </Wizard>
     </Box>
