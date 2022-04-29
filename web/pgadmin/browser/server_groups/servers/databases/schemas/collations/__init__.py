@@ -683,10 +683,10 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             for arg in required_args:
                 if arg not in data:
-                    return "-- missing definition"
+                    return gettext("-- missing definition")
 
             if self._check_definition(data):
-                return "-- missing definition"
+                return gettext("-- missing definition")
 
             SQL = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),

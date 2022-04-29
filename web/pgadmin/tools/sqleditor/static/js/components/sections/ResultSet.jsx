@@ -765,7 +765,7 @@ export function ResultSet() {
           }
           LayoutHelper.openTab(queryToolCtx.docker, {
             id: PANELS.EXPLAIN,
-            title:'Explain',
+            title:gettext('Explain'),
             content: <Explain plans={planJson} />,
             closable: true,
           }, PANELS.MESSAGES, 'after-tab', true);
@@ -1147,7 +1147,7 @@ export function ResultSet() {
       let selRowsData = selectedRows.size === 0 ? rows : rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
       LayoutHelper.openTab(queryToolCtx.docker, {
         id: PANELS.GEOMETRY,
-        title:'Geometry Viewer',
+        title:gettext('Geometry Viewer'),
         content: <GeometryViewer rows={selRowsData} columns={columns} column={column} />,
         closable: true,
       }, PANELS.MESSAGES, 'after-tab', true);

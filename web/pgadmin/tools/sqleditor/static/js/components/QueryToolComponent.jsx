@@ -160,7 +160,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             {
               tabs: [
                 LayoutHelper.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query />}),
-                LayoutHelper.getPanel({id: PANELS.HISTORY, title: 'Query History', content: <QueryHistory />,
+                LayoutHelper.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
                   cached: undefined}),
               ],
             },
@@ -187,13 +187,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             {
               tabs: [
                 LayoutHelper.getPanel({
-                  id: PANELS.DATA_OUTPUT, title: 'Data output', content: <ResultSet />,
+                  id: PANELS.DATA_OUTPUT, title: gettext('Data output'), content: <ResultSet />,
                 }),
                 LayoutHelper.getPanel({
-                  id: PANELS.MESSAGES, title:'Messages', content: <Messages />,
+                  id: PANELS.MESSAGES, title: gettext('Messages'), content: <Messages />,
                 }),
                 LayoutHelper.getPanel({
-                  id: PANELS.NOTIFICATIONS, title:'Notifications', content: <Notifications />,
+                  id: PANELS.NOTIFICATIONS, title: gettext('Notifications'), content: <Notifications />,
                 }),
               ],
             }

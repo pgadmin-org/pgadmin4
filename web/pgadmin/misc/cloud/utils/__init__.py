@@ -13,6 +13,7 @@ from flask_security import current_user
 from pgadmin.misc.bgprocess.processes import IProcessDesc
 from pgadmin.utils import html
 from pgadmin.model import db, Server
+from flask_babel import gettext
 
 
 def get_my_ip():
@@ -74,8 +75,8 @@ class CloudProcessDesc(IProcessDesc):
 
     @property
     def message(self):
-        return "Deployment on {0} is started for instance {1}.".format(
-            self.provider, self.instance_name)
+        return gettext("Deployment on {0} is started for instance {1}.".format(
+            self.provider, self.instance_name))
 
     def details(self, cmd, args):
         res = '<div>' + self.message
@@ -88,4 +89,4 @@ class CloudProcessDesc(IProcessDesc):
 
     @property
     def type_desc(self):
-        return "Cloud Deployment"
+        return gettext("Cloud Deployment")

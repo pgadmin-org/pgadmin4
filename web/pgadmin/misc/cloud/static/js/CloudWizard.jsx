@@ -57,7 +57,8 @@ const useStyles = makeStyles(() =>
 export default function CloudWizard({ nodeInfo, nodeData }) {
   const classes = useStyles();
 
-  var steps = ['Cloud Provider', 'Credentials', 'Instance Specification', 'Database Details', 'Review'];
+  var steps = [gettext('Cloud Provider'), gettext('Credentials'),
+    gettext('Instance Specification'), gettext('Database Details'), gettext('Review')];
   const [currentStep, setCurrentStep] = React.useState('');
   const [selectionVal, setCloudSelection] = React.useState('');
   const [errMsg, setErrMsg] = React.useState('');

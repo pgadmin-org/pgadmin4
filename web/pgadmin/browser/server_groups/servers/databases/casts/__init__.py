@@ -614,7 +614,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
                     data=data, conn=self.conn
                 )
             else:
-                return "-- definition incomplete", None
+                return gettext("-- definition incomplete"), None
             return sql, data['srctyp'] + "->" + data["trgtyp"]
 
     @check_precondition

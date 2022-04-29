@@ -57,7 +57,7 @@ export default function ImportExportServers() {
   const classes = useStyles();
   const tableClasses = commonTableStyles();
 
-  var steps = ['Import/Export', 'Database Servers', 'Summary'];
+  var steps = [gettext('Import/Export'), gettext('Database Servers'), gettext('Summary')];
   const [loaderText, setLoaderText] = React.useState('');
   const [errMsg, setErrMsg] = React.useState('');
   const [selectionFormData, setSelectionFormData] = React.useState({});

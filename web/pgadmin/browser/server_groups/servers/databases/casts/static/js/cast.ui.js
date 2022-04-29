@@ -143,11 +143,11 @@ export default class CastSchema extends BaseUISchema {
     {
       id: 'castcontext', label: gettext('Context'), readonly: true,
       options:[{
-        label: 'IMPLICIT', value: 'IMPLICIT',
+        label: gettext('IMPLICIT'), value: 'IMPLICIT',
       },{
-        label: 'EXPLICIT', value: 'EXPLICIT',
+        label: gettext('EXPLICIT'), value: 'EXPLICIT',
       },{
-        label: 'ASSIGNMENT', value: 'ASSIGNMENT',
+        label: gettext('ASSIGNMENT'), value: 'ASSIGNMENT',
       }], type: 'select', group: gettext('Definition'),
       mode:['properties', 'edit'],
       controlProps: {

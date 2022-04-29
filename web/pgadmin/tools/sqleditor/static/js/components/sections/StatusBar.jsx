@@ -59,7 +59,7 @@ export function StatusBar() {
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.EXECUTION_END, ()=>{
       pauseTimer();
-      setLastTaskText('Query complete');
+      setLastTaskText(gettext('Query complete'));
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.TASK_START, (taskText, startTime)=>{
       resetTimer();

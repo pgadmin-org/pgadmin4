@@ -483,8 +483,8 @@ def dump_database_servers(output_file, selected_servers,
         err_msg = error_str.format(e.strerror)
         return _handle_error(err_msg, from_setup)
 
-    msg = "Configuration for %s servers dumped to %s" % \
-          (servers_dumped, output_file.name)
+    msg = gettext("Configuration for %s servers dumped to %s" %
+                  (servers_dumped, output_file.name))
     print(msg)
 
     return True, msg
@@ -500,7 +500,7 @@ def validate_json_data(data, is_admin):
     skip_servers = []
     # Loop through the servers...
     if "Servers" not in data:
-        return "'Servers' attribute not found in the specified file."
+        return gettext("'Servers' attribute not found in the specified file.")
 
     for server in data["Servers"]:
         obj = data["Servers"][server]
@@ -514,13 +514,13 @@ def validate_json_data(data, is_admin):
 
         def check_attrib(attrib):
             if attrib not in obj:
-                return ("'%s' attribute not found for server '%s'" %
-                        (attrib, server))
+                return gettext("'%s' attribute not found for server '%s'" %
+                               (attrib, server))
             return None
 
         def check_is_integer(value):
             if not isinstance(value, int):
-                return "Port must be integer for server '%s'" % server
+                return gettext("Port must be integer for server '%s'" % server)
             return None
 
         for attrib in ("Group", "Name"):
@@ -547,8 +547,8 @@ def validate_json_data(data, is_admin):
 
         if "Host" not in obj and "HostAddr" not in obj and not \
                 is_service_attrib_available:
-            return ("'Host', 'HostAddr' or 'Service' attribute "
-                    "not found for server '%s'" % server)
+            return gettext("'Host', 'HostAddr' or 'Service' attribute not "
+                           "found for server '%s'" % server)
 
     for server in skip_servers:
         del data["Servers"][server]
@@ -581,11 +581,11 @@ def load_database_servers(input_file, selected_servers,
         with open(file_path) as f:
             data = json.load(f)
     except json.decoder.JSONDecodeError as e:
-        return _handle_error("Error parsing input file %s: %s" %
-                             (file_path, e), from_setup)
+        return _handle_error(gettext("Error parsing input file %s: %s" %
+                             (file_path, e)), from_setup)
     except Exception as e:
-        return _handle_error("Error reading input file %s: [%d] %s" %
-                             (file_path, e.errno, e.strerror), from_setup)
+        return _handle_error(gettext("Error reading input file %s: [%d] %s" %
+                             (file_path, e.errno, e.strerror)), from_setup)
 
     f.close()
 
@@ -623,8 +623,8 @@ def load_database_servers(input_file, selected_servers,
                     if from_setup:
                         print(ADD_SERVERS_MSG % (groups_added, servers_added))
                     return _handle_error(
-                        "Error creating server group '%s': %s" %
-                        (new_group.name, e), from_setup)
+                        gettext("Error creating server group '%s': %s" %
+                                (new_group.name, e)), from_setup)
 
                 group_id = new_group.id
                 groups_added = groups_added + 1
@@ -695,8 +695,8 @@ def load_database_servers(input_file, selected_servers,
             except Exception as e:
                 if from_setup:
                     print(ADD_SERVERS_MSG % (groups_added, servers_added))
-                return _handle_error("Error creating server '%s': %s" %
-                                     (new_server.name, e), from_setup)
+                return _handle_error(gettext("Error creating server '%s': %s" %
+                                             (new_server.name, e)), from_setup)
 
             servers_added = servers_added + 1
 
@@ -732,8 +732,9 @@ def clear_database_servers(load_user=current_user, from_setup=False):
     try:
         db.session.commit()
     except Exception as e:
-        error_msg = "Error clearing server configuration with error (%s)" % \
-                    str(e)
+        error_msg = \
+            gettext("Error clearing server configuration with error (%s)" %
+                    str(e))
         if from_setup:
             print(error_msg)
             sys.exit(1)

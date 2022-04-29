@@ -655,7 +655,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
 
             for arg in required_args:
                 if arg not in data:
-                    return "-- missing definition"
+                    return gettext("-- missing definition")
 
             name = data['name']
             SQL = render_template("/".join([self.template_path,
