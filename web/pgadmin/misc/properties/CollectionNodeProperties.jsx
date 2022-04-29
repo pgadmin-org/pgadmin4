@@ -90,6 +90,11 @@ export function CollectionNodeView({
   const [reload, setReload] = React.useState(false);
   const [loaderText, setLoaderText] = React.useState('');
 
+  //Reload the collection node on refresh or change in children count
+  React.useEffect(() => {
+    setReload(!reload);
+  }, [item?._children]);
+
   const [pgTableColumns, setPgTableColumns] = React.useState([
     {
       Header: 'properties',

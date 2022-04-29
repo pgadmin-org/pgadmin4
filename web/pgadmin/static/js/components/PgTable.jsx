@@ -229,8 +229,10 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
   const rowHeights = React.useRef({});
 
   // Reset Search value on tab changes.
+
   React.useEffect(()=>{
-    setSearchVal('');
+    setSearchVal(prevState => (prevState));
+    setGlobalFilter(searchVal || undefined);
     rowHeights.current = {};
     tableRef.current?.resetAfterIndex(0);
   }, [data]);

@@ -45,3 +45,4 @@ Bug fixes
   | `Issue #7308 <https://redmine.postgresql.org/issues/7308>`_ -  Ensure that sorting should be preserved on refresh for Server Activity.
   | `Issue #7322 <https://redmine.postgresql.org/issues/7322>`_ -  Fixed an issue while creating a new database throwing an error that failed to retrieve data.
   | `Issue #7333 <https://redmine.postgresql.org/issues/7333>`_ -  Fixed an issue where the drag and drop table in ERD throws an error.
+  | `Issue #7339 <https://redmine.postgresql.org/issues/7339>`_ -  Ensure that the Dashboard column sort order should be remembered when the refresh button is clicked.
