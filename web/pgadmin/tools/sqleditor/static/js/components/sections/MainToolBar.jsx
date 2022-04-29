@@ -253,7 +253,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (isDirty)=>{
       setDisableButton('save-data', !isDirty);
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CHANGED, (rows)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows)=>{
       setDisableButton('delete-rows', !rows);
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.SET_FILTER_INFO, (canFilter, filterApplied)=>{

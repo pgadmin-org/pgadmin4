@@ -730,51 +730,101 @@ export function ResultSet() {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectedColumns, setSelectedColumns] = useState(new Set());
   const selectedCell = useRef([]);
-  const setSelectedCell = (val)=>selectedCell.current=val;
+  const setSelectedCell = (val)=>{
+    selectedCell.current=val;
+    fireRowsColsCellChanged();
+  };
   const [rowsResetKey, setRowsResetKey] = useState(true);
 
   rsu.current.setEventBus(eventBus);
 
+  const isDataChanged = ()=>{
+    return Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
+  };
+
+  const fireRowsColsCellChanged = ()=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedCell.current?.length);
+  };
+
   const executionStartCallback = async (query, explainObject, external=false, reconnect=false)=>{
-    /* Reset */
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, null);
-    dispatchDataChange({type: 'reset'});
-    setSelectedRows(new Set());
-    setSelectedColumns(new Set());
-    setLoaderText(gettext('Waiting for the query to complete...'));
-    let goForPoll = await rsu.current.startExecution(
-      query, explainObject,
-      ()=>{
-        setColumns([]);
-        setRows([]);
-      },
-      {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
-    );
-    if(goForPoll) {
-      rsu.current.pollForResult(
-        (procQueryData, procColumns, procRows)=>{
-          setQueryData(procQueryData);
-          setColumns(procColumns);
-          setRows(procRows);
-          setRowsResetKey(!rowsResetKey);
-        },
-        (planJson)=>{
-          /* No need to open if plan is empty */
-          if(!LayoutHelper.isTabOpen(queryToolCtx.docker, PANELS.EXPLAIN) && !planJson) {
-            return;
-          }
-          LayoutHelper.openTab(queryToolCtx.docker, {
-            id: PANELS.EXPLAIN,
-            title:gettext('Explain'),
-            content: <Explain plans={planJson} />,
-            closable: true,
-          }, PANELS.MESSAGES, 'after-tab', true);
-        },
+    const yesCallback = async ()=>{
+      /* Reset */
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, null);
+      dispatchDataChange({type: 'reset'});
+      setSelectedRows(new Set());
+      setSelectedColumns(new Set());
+      setLoaderText(gettext('Waiting for the query to complete...'));
+      let goForPoll = await rsu.current.startExecution(
+        query, explainObject,
         ()=>{
           setColumns([]);
           setRows([]);
+        },
+        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
+      );
+      if(goForPoll) {
+        rsu.current.pollForResult(
+          (procQueryData, procColumns, procRows)=>{
+            setQueryData(procQueryData);
+            setColumns(procColumns);
+            setRows(procRows);
+            setRowsResetKey(!rowsResetKey);
+          },
+          (planJson)=>{
+            /* No need to open if plan is empty */
+            if(!LayoutHelper.isTabOpen(queryToolCtx.docker, PANELS.EXPLAIN) && !planJson) {
+              return;
+            }
+            LayoutHelper.openTab(queryToolCtx.docker, {
+              id: PANELS.EXPLAIN,
+              title: gettext('Explain'),
+              content: <Explain plans={planJson} />,
+              closable: true,
+            }, PANELS.MESSAGES, 'after-tab', true);
+          },
+          ()=>{
+            setColumns([]);
+            setRows([]);
+          }
+        );
+      }
+    };
+
+    if(isDataChanged()) {
+      queryToolCtx.modal.confirm(
+        gettext('Unsaved changes'),
+        gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
+        yesCallback,
+        function() {
+          eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
         }
       );
+    } else {
+      yesCallback();
+    }
+  };
+
+  const triggerFilter = async (include)=>{
+    if(_.isEmpty(selectedCell.current)) {
+      return;
+    }
+    setLoaderText(gettext('Applying the new filter...'));
+    try {
+      let data = {
+        [selectedCell.current[1].key]: selectedCell.current[0][selectedCell.current[1].key],
+      };
+      if(include) {
+        await rsu.current.includeFilter(data);
+      } else {
+        await rsu.current.excludeFilter(data);
+      }
+      setLoaderText('');
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
+    } catch(err) {
+      eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err, {
+        checkTransaction: true,
+      });
+      setLoaderText('');
     }
   };
 
@@ -831,6 +881,7 @@ export function ResultSet() {
         setLoaderText('');
       }
     });
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, triggerFilter);
   }, []);
 
   useEffect(()=>{
@@ -838,39 +889,10 @@ export function ResultSet() {
     return ()=>{
       eventBus.deregisterListener(QUERY_TOOL_EVENTS.EXECUTION_START, executionStartCallback);
     };
-  }, [queryToolCtx.docker]);
+  }, [queryToolCtx.docker, dataChangeStore]);
 
   useEffect(()=>{
-    const triggerFilter = async (include)=>{
-      if(_.isEmpty(selectedCell.current)) {
-        return;
-      }
-      setLoaderText(gettext('Applying the new filter...'));
-      try {
-        let data = {
-          [selectedCell.current[1].key]: selectedCell.current[0][selectedCell.current[1].key],
-        };
-        if(include) {
-          await rsu.current.includeFilter(data);
-        } else {
-          await rsu.current.excludeFilter(data);
-        }
-        setSelectedCell([]);
-        setLoaderText('');
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
-      } catch(err) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err, {
-          checkTransaction: true,
-        });
-        setLoaderText('');
-      }
-    };
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, triggerFilter);
-    return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, triggerFilter);
-  }, [selectedCell.current]);
-
-  useEffect(()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CHANGED, selectedRows.size, selectedColumns.size);
+    fireRowsColsCellChanged();
   }, [selectedRows.size, selectedColumns.size]);
 
   useEffect(()=>{
@@ -905,8 +927,7 @@ export function ResultSet() {
 
   const warnSaveDataClose = ()=>{
     // No changes.
-    if(!_.size(dataChangeStore.updated) && !_.size(dataChangeStore.added) && !_.size(dataChangeStore.deleted)
-        || !queryToolCtx.preferences?.sqleditor.prompt_save_data_changes) {
+    if(!isDataChanged() || !queryToolCtx.preferences?.sqleditor.prompt_save_data_changes) {
       eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE);
       return;
     }

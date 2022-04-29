@@ -372,6 +372,14 @@ function getFinalTheme(baseTheme) {
           }
         },
       },
+      MuiSelect: {
+        icon: {
+          color: baseTheme.palette.text.primary,
+          '&.Mui-disabled': {
+            color: baseTheme.palette.text.muted,
+          }
+        },
+      },
       MuiIconButton: {
         root: {
           color: baseTheme.palette.text.primary,

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { Box, makeStyles } from '@material-ui/core';
 import _ from 'lodash';
-import React, {useState, useEffect, useCallback, useContext, useRef} from 'react';
+import React, {useState, useEffect, useMemo, useContext, useRef} from 'react';
 import ReactDataGrid, {Row, useRowSelection} from 'react-data-grid';
 import LockIcon from '@material-ui/icons/Lock';
 import EditIcon from '@material-ui/icons/Edit';
@@ -19,7 +19,7 @@ import clsx from 'clsx';
 import { PgIconButton } from '../../../../../../static/js/components/Buttons';
 import MapIcon from '@material-ui/icons/Map';
 import { QueryToolEventsContext } from '../QueryToolComponent';
-import PropTypes, { number } from 'prop-types';
+import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
@@ -99,15 +99,22 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 export const RowInfoContext = React.createContext();
+export const DataGridExtrasContext = React.createContext();
 
 function CustomRow(props) {
   const rowRef = useRef();
+  const dataGridExtras = useContext(DataGridExtrasContext);
   const rowInfoValue = {
     rowIdx: props.rowIdx,
     getCellElement: (colIdx)=>{
       return rowRef.current?.querySelector(`.rdg-cell[aria-colindex="${colIdx+1}"]`);
     }
   };
+  if(!props.isRowSelected && props.selectedCellIdx > 0) {
+    dataGridExtras.onSelectedCellChange?.([props.row, props.viewportColumns?.[props.selectedCellIdx]]);
+  } else if(props.selectedCellIdx == 0) {
+    dataGridExtras.onSelectedCellChange?.(null);
+  }
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
       <Row ref={rowRef} {...props} />
@@ -116,7 +123,11 @@ function CustomRow(props) {
 }
 
 CustomRow.propTypes = {
-  rowIdx: number,
+  rowIdx: PropTypes.number,
+  isRowSelected: PropTypes.bool,
+  selectedCellIdx: PropTypes.number,
+  row: PropTypes.object,
+  viewportColumns: PropTypes.array,
 };
 
 function SelectAllHeaderRenderer(props) {
@@ -134,9 +145,14 @@ SelectAllHeaderRenderer.propTypes = {
   onAllRowsSelectionChange: PropTypes.func,
 };
 
-function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsChange}) {
+function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsChange, isCellSelected}) {
   const classes = useStyles();
   const eventBus = useContext(QueryToolEventsContext);
+  const dataGridExtras = useContext(DataGridExtrasContext);
+
+  if(isCellSelected) {
+    dataGridExtras.onSelectedCellChange?.(null);
+  }
 
   const onClick = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, true, ()=>{
@@ -176,6 +192,7 @@ SelectableHeaderRenderer.propTypes = {
   column: PropTypes.object,
   selectedColumns: PropTypes.objectOf(Set),
   onSelectedColumnsChange: PropTypes.func,
+  isCellSelected: PropTypes.bool,
 };
 
 function setEditorFormatter(col) {
@@ -345,14 +362,6 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
     });
   }, [dataChangeStore, selectedColumns]);
 
-  const onRowClick = useCallback((row, column)=>{
-    if(column.key === ROWNUM_KEY) {
-      onSelectedCellChange && onSelectedCellChange(null);
-    } else {
-      onSelectedCellChange && onSelectedCellChange([row, column]);
-    }
-  }, []);
-
   function handleCopy() {
     if (window.isSecureContext) {
       eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA);
@@ -360,22 +369,23 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }
 
   return (
-    <ReactDataGrid
-      id="datagrid"
-      columns={readyColumns}
-      rows={rows}
-      className={classes.root}
-      headerRowHeight={40}
-      rowHeight={25}
-      mincolumnWidthBy={50}
-      enableCellSelect={true}
-      onRowClick={onRowClick}
-      onCopy={handleCopy}
-      components={{
-        rowRenderer: CustomRow,
-      }}
-      {...props}
-    />
+    <DataGridExtrasContext.Provider value={useMemo(()=>({onSelectedCellChange}), [])}>
+      <ReactDataGrid
+        id="datagrid"
+        columns={readyColumns}
+        rows={rows}
+        className={classes.root}
+        headerRowHeight={40}
+        rowHeight={25}
+        mincolumnWidthBy={50}
+        enableCellSelect={true}
+        onCopy={handleCopy}
+        components={{
+          rowRenderer: CustomRow,
+        }}
+        {...props}
+      />
+    </DataGridExtrasContext.Provider>
   );
 }
 

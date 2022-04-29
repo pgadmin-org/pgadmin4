@@ -73,7 +73,7 @@ export function StatusBar() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.ROWS_FETCHED, (fetched, total)=>{
       setRowsCount([fetched||0, total||0]);
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CHANGED, (rows)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows)=>{
       setSelectedRowsCount(rows);
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (_isDirty, dataChangeStore)=>{

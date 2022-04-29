@@ -525,7 +525,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                 }, isNew)
               );
             }, ()=>{
-            // selectConn(currSelectedConn, currConnected, false);
             });
           } else {
             selectConn(currSelectedConn, currConnected, false);
@@ -541,31 +540,37 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       id: 'new-conn',
       title: gettext('Add New Connection'),
       content: <NewConnectionDialog onSave={(_isNew, data)=>{
-        let connectionData = {
-          sgid: 0,
-          sid: data.sid,
-          did: data.did,
-          user: data.user,
-          role: data.role ?? null,
-          password: data.password,
-          title: getTitle(pgAdmin, qtState.preferences.browser, null, false, data.server_name, data.database_name, data.user, true),
-          conn_title: getTitle(pgAdmin, null, null, true, data.server_name, data.database_name, data.user, true),
-          server_name: data.server_name,
-          database_name: data.database_name,
-          is_selected: true,
-        };
+        return new Promise((resolve, reject)=>{
+          let connectionData = {
+            sgid: 0,
+            sid: data.sid,
+            did: data.did,
+            user: data.user,
+            role: data.role ?? null,
+            password: data.password,
+            title: getTitle(pgAdmin, qtState.preferences.browser, null, false, data.server_name, data.database_name, data.role || data.user, true),
+            conn_title: getTitle(pgAdmin, null, null, true, data.server_name, data.database_name, data.role || data.user, true),
+            server_name: data.server_name,
+            database_name: data.database_name,
+            is_selected: true,
+          };
 
-        let existIdx = _.findIndex(qtState.connection_list, (conn)=>(
-          conn.sid == connectionData.sid && conn.did == connectionData.did
-          && conn.user == connectionData.user && conn.role == connectionData.role
-        ));
-        if(existIdx > -1) {
-          return Promise.reject(gettext('Connection with this configuration already present.'));
-        }
-        updateQueryToolConnection(connectionData, true).then(()=>{
-          onClose();
+          let existIdx = _.findIndex(qtState.connection_list, (conn)=>(
+            conn.sid == connectionData.sid && conn.did == connectionData.did
+            && conn.user == connectionData.user && conn.role == connectionData.role
+          ));
+          if(existIdx > -1) {
+            reject(gettext('Connection with this configuration already present.'));
+            return;
+          }
+          updateQueryToolConnection(connectionData, true)
+            .catch((err)=>{
+              reject(err);
+            }).then(()=>{
+              resolve();
+              onClose();
+            });
         });
-        return Promise.resolve();
       }}
       onClose={onClose}/>
     });

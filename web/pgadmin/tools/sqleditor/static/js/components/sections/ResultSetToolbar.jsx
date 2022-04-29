@@ -104,9 +104,9 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (isDirty)=>{
       setDisableButton('save-data', !isDirty);
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CHANGED, (rows, cols)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, (rows, cols, cells)=>{
       setDisableButton('delete-rows', !rows);
-      setDisableButton('copy-rows', (!rows && !cols));
+      setDisableButton('copy-rows', (!rows && !cols && !cells));
     });
   }, []);
 

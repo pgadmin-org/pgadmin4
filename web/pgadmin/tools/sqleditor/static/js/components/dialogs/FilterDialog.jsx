@@ -136,7 +136,7 @@ export default function FilterDialog({onClose, onSave}) {
       getInitData={getInitData}
       schema={filterSchemaObj}
       viewHelperProps={{
-        mode: 'edit',
+        mode: 'create',
       }}
       onSave={onSaveClick}
       onClose={onClose}
