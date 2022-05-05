@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { Box, makeStyles } from '@material-ui/core';
 import _ from 'lodash';
-import React, {useState, useEffect, useMemo, useContext, useRef} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 import ReactDataGrid, {Row, useRowSelection} from 'react-data-grid';
 import LockIcon from '@material-ui/icons/Lock';
 import EditIcon from '@material-ui/icons/Edit';
@@ -369,7 +369,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }
 
   return (
-    <DataGridExtrasContext.Provider value={useMemo(()=>({onSelectedCellChange}), [])}>
+    <DataGridExtrasContext.Provider value={{onSelectedCellChange}}>
       <ReactDataGrid
         id="datagrid"
         columns={readyColumns}
