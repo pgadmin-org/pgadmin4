@@ -151,7 +151,7 @@
     "react": "^17.0.1",
     "react-aspen": "^1.1.0",
     "react-checkbox-tree": "^1.7.2",
-    "react-data-grid": "git+https://github.com/adityatoshniwal/react-data-grid.git/#0cbf9165a98bd723604c9c0d5954b50b179d3901",
+    "react-data-grid": "git+https://github.com/adityatoshniwal/react-data-grid.git/#1dc310dfaf5afea359404e867b7cf54953f47d1e",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.4",
     "react-leaflet": "^3.2.2",

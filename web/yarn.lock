@@ -8877,9 +8877,9 @@ react-checkbox-tree@^1.7.2:
     nanoid "^3.0.0"
     prop-types "^15.5.8"
 
-"react-data-grid@git+https://github.com/adityatoshniwal/react-data-grid.git/#0cbf9165a98bd723604c9c0d5954b50b179d3901":
+"react-data-grid@git+https://github.com/adityatoshniwal/react-data-grid.git/#1dc310dfaf5afea359404e867b7cf54953f47d1e":
   version "7.0.0-beta.12"
-  resolved "git+https://github.com/adityatoshniwal/react-data-grid.git/#0cbf9165a98bd723604c9c0d5954b50b179d3901"
+  resolved "git+https://github.com/adityatoshniwal/react-data-grid.git/#1dc310dfaf5afea359404e867b7cf54953f47d1e"
   dependencies:
     clsx "^1.1.1"
 
