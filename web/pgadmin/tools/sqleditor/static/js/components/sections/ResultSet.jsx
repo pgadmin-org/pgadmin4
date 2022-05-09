@@ -618,14 +618,17 @@ export class ResultSetUtils {
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_END, gettext('Query complete'), endTime);
     this.setEndTime(endTime);
 
-    let msg = gettext('Query returned successfully in %s.', this.queryRunTime());
+    let retMsg, tabMsg;
+    retMsg = tabMsg = gettext('Query returned successfully in %s.', this.queryRunTime());
     if(this.hasResultsToDisplay(httpMessage.data.data)) {
-      msg = gettext('Successfully run. Total query runtime: %s.', this.queryRunTime())
-        + '\n' + gettext('%s rows affected.', httpMessage.data.data?.rows_affected);
+      let msg1 = gettext('Successfully run. Total query runtime: %s.', this.queryRunTime());
+      let msg2 = gettext('%s rows affected.', httpMessage.data.data?.rows_affected);
+      retMsg = msg1 + ' ' + msg2;
+      tabMsg = msg1 + '\n' + msg2;
       if(!_.isNull(httpMessage.data.data.additional_messages)){
-        msg = httpMessage.data.data.additional_messages + '\n' + msg;
+        tabMsg = httpMessage.data.data.additional_messages + '\n' + tabMsg;
       }
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, tabMsg);
       this.setClientPK(httpMessage.data.data.client_primary_key);
       let {result} = httpMessage.data.data;
       let data = {
@@ -646,12 +649,12 @@ export class ResultSetUtils {
       }
     } else {
       if (httpMessage.data.data.result) {
-        msg = httpMessage.data.data.result + '\n\n' + msg;
+        tabMsg = httpMessage.data.data.result + '\n\n' + tabMsg;
       }
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, tabMsg, true);
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
     }
-    return msg;
+    return retMsg;
   }
 }
 

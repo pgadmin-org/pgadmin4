@@ -261,9 +261,12 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
     setEditorFormatter(col);
   }
 
+  let rowNumWidth = canvasContext.measureText((totalRowCount||'').toString()).width;
+  /* padding 8 on both sides*/
+  rowNumWidth += 16;
   let rowNumCol = {
     key: ROWNUM_KEY, name: '', frozen: true, resizable: false,
-    minWidth: 45, width: canvasContext.measureText((totalRowCount||'').toString()).width,
+    minWidth: 45, width: rowNumWidth,
   };
   rowNumCol.cellClass = cellClassGetter(rowNumCol);
   retColumns.unshift(rowNumCol);

@@ -445,6 +445,7 @@ function SchemaDialogView({
   const isNew = schema.isNew(schema.origData);
   const checkIsMounted = useIsMounted();
   const preFormReadyQueue = useRef([]);
+  const Notifier = props.Notifier || Notify;
 
   const depListenerObj = useRef(new DepListener());
   /* The session data */
@@ -578,7 +579,7 @@ function SchemaDialogView({
     };
     /* Confirm before reset */
     if(props.confirmOnCloseReset) {
-      Notify.confirm(
+      Notifier.confirm(
         gettext('Warning'),
         gettext('Changes will be lost. Are you sure you want to reset?'),
         resetIt,
@@ -605,7 +606,7 @@ function SchemaDialogView({
       changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
     }
     if (schema.warningText) {
-      Notify.confirm(
+      Notifier.confirm(
         gettext('Warning'),
         schema.warningText,
         ()=> {
@@ -626,7 +627,7 @@ function SchemaDialogView({
     props.onSave(isNew, changeData)
       .then(()=>{
         if(schema.informText) {
-          Notify.alert(
+          Notifier.alert(
             gettext('Warning'),
             schema.informText,
           );
@@ -785,6 +786,7 @@ SchemaDialogView.propTypes = {
   customSaveBtnName: PropTypes.string,
   customSaveBtnIconType: PropTypes.string,
   formClassName: CustomPropTypes.className,
+  Notifier: PropTypes.object,
 };
 
 const usePropsStyles = makeStyles((theme)=>({

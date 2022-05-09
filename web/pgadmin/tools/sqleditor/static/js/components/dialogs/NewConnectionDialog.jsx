@@ -249,6 +249,7 @@ export default function NewConnectionDialog({onClose, onSave}) {
     disableDialogHelp={true}
     isTabView={false}
     formClassName={classes.root}
+    Notifier={queryToolCtx.modal}
   />;
 }
 

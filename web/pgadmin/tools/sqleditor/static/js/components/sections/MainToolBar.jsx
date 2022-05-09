@@ -151,6 +151,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     'rollback': true,
     'filter': true,
     'limit': false,
+    'execute-options': !queryToolCtx.params.is_query_tool,
   });
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
@@ -306,9 +307,11 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     if(isInTxn()) {
       setDisableButton('commit', false);
       setDisableButton('rollback', false);
+      setDisableButton('execute-options', true);
     } else {
       setDisableButton('commit', true);
       setDisableButton('rollback', true);
+      setDisableButton('execute-options', !queryToolCtx.params.is_query_tool);
     }
     eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE, warnTxnClose);
     return ()=>{
@@ -338,7 +341,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     });
   };
   const onHelpClick=()=>{
-    let url = url_for('help.static', {'filename': 'query_tool.html'});
+    let url = url_for('help.static', {'filename': queryToolCtx.params.is_query_tool ? 'query_tool.html' : 'editgrid.html'});
     window.open(url, 'pgadmin_help');
   };
   const confirmDiscard=(callback)=>{
@@ -504,7 +507,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
             onClick={executeQuery} disabled={buttonsDisabled['execute']} shortcut={queryToolPref.execute_query}/>
           <PgIconButton title={gettext('Execute options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-autocommit" ref={autoCommitMenuRef} accesskey={shortcut_key(queryToolPref.btn_delete_row)}
-            onClick={toggleMenu} disabled={!queryToolCtx.params.is_query_tool}/>
+            onClick={toggleMenu} disabled={buttonsDisabled['execute-options']}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Explain')} icon={<ExplicitRoundedIcon />}
