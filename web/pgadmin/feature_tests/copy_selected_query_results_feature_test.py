@@ -54,16 +54,17 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
         self._copies_columns()
         self._copies_row_using_keyboard_shortcut()
         self._copies_column_using_keyboard_shortcut()
-        self._copies_rectangular_selection()
-        self._shift_resizes_rectangular_selection()
+        # The below calls is commented since the new data grid does not
+        # support range selection. This can be enabled once the
+        # range selection is implemented.
+        # self._copies_rectangular_selection()
+        # self._shift_resizes_rectangular_selection()
+
         self._shift_resizes_column_selection()
-        self._mouseup_outside_grid_still_makes_a_selection()
+        self._mouseup_outside_grid_does_not_make_a_selection()
         self._copies_rows_with_header()
 
     def paste_values_to_scratch_pad(self):
-        self.page.driver.switch_to.default_content()
-        self.page.driver.switch_to.frame(
-            self.page.driver.find_element(By.TAG_NAME, "iframe"))
         scratch_pad_ele = self.page.find_by_css_selector(
             QueryToolLocators.scratch_pad_css)
         self.page.paste_values(scratch_pad_ele)
@@ -73,7 +74,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
     def _copies_rows(self):
         first_row = self.page.find_by_xpath(
-            QueryToolLocators.output_row_xpath.format(1))
+            QueryToolLocators.output_cell_xpath.format(2, 1))
         first_row.click()
 
         copy_button = self.page.find_by_css_selector(
@@ -85,8 +86,10 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
                          clipboard_text)
 
     def _copies_rows_with_header(self):
-        self.page.find_by_css_selector('#btn-copy-row-dropdown').click()
-        self.page.find_by_css_selector('a#btn-copy-with-header').click()
+        self.page.find_by_css_selector(QueryToolLocators.copy_options_css)\
+            .click()
+        self.page.find_by_css_selector(QueryToolLocators.copy_headers_btn_css)\
+            .click()
 
         select_all = self.page.find_by_xpath(
             QueryToolLocators.select_all_column)
@@ -122,7 +125,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
     def _copies_row_using_keyboard_shortcut(self):
         first_row = self.page.find_by_xpath(
-            QueryToolLocators.output_row_xpath.format(1))
+            QueryToolLocators.output_cell_xpath.format(2, 1))
         first_row.click()
 
         ActionChains(self.page.driver).key_down(
@@ -216,7 +219,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
             '"Some-Name"\t6\n"Some-Other-Name"\t22\n"Yet-Another-Name"\t14',
             clipboard_text)
 
-    def _mouseup_outside_grid_still_makes_a_selection(self):
+    def _mouseup_outside_grid_does_not_make_a_selection(self):
         bottom_right_cell = self.page.find_by_xpath(
             QueryToolLocators.output_column_data_xpath.format('cool info')
         )
@@ -233,7 +236,7 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
         clipboard_text = self.paste_values_to_scratch_pad()
 
-        self.assertIn('"cool info"', clipboard_text)
+        self.assertNotIn('"cool info"', clipboard_text)
 
     def after(self):
         self.page.close_query_tool()

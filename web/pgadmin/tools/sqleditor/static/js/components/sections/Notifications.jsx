@@ -47,10 +47,10 @@ export function Notifications() {
     <tbody>
       {notices.map((notice, i)=>{
         return <tr key={i}>
-          <td>{notice.recorded_time}</td>
-          <td>{notice.channel}</td>
-          <td>{notice.pid}</td>
-          <td>{notice.payload}</td>
+          <td data-label="recorded_time">{notice.recorded_time}</td>
+          <td data-label="channel">{notice.channel}</td>
+          <td data-label="pid">{notice.pid}</td>
+          <td data-label="payload">{notice.payload}</td>
         </tr>;
       })}
     </tbody>

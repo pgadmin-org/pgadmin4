@@ -145,19 +145,7 @@ CREATE TABLE public.nonintpkey
 
     @staticmethod
     def _get_cell_xpath(cell, row):
-
-        if row == 1:
-            xpath_grid_row = "//*[contains(@class, 'ui-widget-content') " \
-                             "and contains(@style, 'top:0px')]"
-        else:
-            xpath_grid_row = "//*[contains(@class, 'ui-widget-content') " \
-                             "and contains(@style, 'top:25px')]"
-
-        xpath_row_cell = '//div[contains(@class, "' + cell + '")]'
-
-        xpath_cell = '{0}{1}'.format(xpath_grid_row, xpath_row_cell)
-
-        return xpath_cell
+        return QueryToolLocators.output_cell_xpath.format(row, cell)
 
     @staticmethod
     def _load_config_data(config_key):
@@ -179,22 +167,22 @@ CREATE TABLE public.nonintpkey
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         # Run test to insert a new row in table with default values
         self._add_row(config_data_local)
-        self._verify_row_data(row_height=0,
+        self._verify_row_data(row=1,
                               config_check_data=config_data_local['add'])
 
         # Run test to copy/paste a row
         self._copy_paste_row(config_data_local)
 
         self._update_row(config_data_local)
-        self.page.click_tab("Messages")
+        self.page.click_tab("id-messages", rc_dock=True)
         self._verify_messsages("")
-        self.page.click_tab("Data Output")
+        self.page.click_tab("id-dataoutput", rc_dock=True)
         updated_row_data = {
             i: config_data_local['update'][i] if i in config_data_local[
                 'update'] else val
             for i, val in config_data_local['add'].items()
         }
-        self._verify_row_data(row_height=0,
+        self._verify_row_data(row=1,
                               config_check_data=updated_row_data)
 
         self.page.close_data_grid()
@@ -273,14 +261,12 @@ CREATE TABLE public.nonintpkey
                 QueryToolLocators.text_editor_ok_btn_css).click()
         else:
             # Boolean editor test for to True click
+            checkbox_el = self.page.find_by_css_selector(
+                QueryToolLocators.row_editor_checkbox_css)
             if data[1] == 'true':
-                checkbox_el = cell_el.find_element(
-                    By.XPATH, ".//*[contains(@class, 'multi-checkbox')]")
                 checkbox_el.click()
             # Boolean editor test for to False click
             elif data[1] == 'false':
-                checkbox_el = cell_el.find_element(
-                    By.XPATH, ".//*[contains(@class, 'multi-checkbox')]")
                 # Sets true
                 checkbox_el.click()
                 # Sets false
@@ -312,7 +298,7 @@ CREATE TABLE public.nonintpkey
         )
 
     def _copy_paste_row(self, config_data_l):
-        row0_cell0_xpath = CheckForViewDataTest._get_cell_xpath("r0", 1)
+        row0_cell0_xpath = CheckForViewDataTest._get_cell_xpath(1, 1)
 
         self.page.find_by_xpath(row0_cell0_xpath).click()
         self.page.find_by_css_selector(
@@ -321,14 +307,15 @@ CREATE TABLE public.nonintpkey
             QueryToolLocators.paste_button_css).click()
 
         # Update primary key of copied cell
-        self._add_update_save_row(config_data_l['copy'], row=2)
+        # Copy pasted rows go to first row
+        self._add_update_save_row(config_data_l['copy'], row=1)
 
         # Verify row 1 and row 2 data
         updated_row_data = {
             i: config_data_l['copy'][i] if i in config_data_l['copy'] else val
             for i, val in config_data_l['add'].items()
         }
-        self._verify_row_data(row_height=25,
+        self._verify_row_data(row=2,
                               config_check_data=updated_row_data)
 
     def _add_update_save_row(self, data, row=1):
@@ -337,9 +324,9 @@ CREATE TABLE public.nonintpkey
             items[item] = int(items[item])
         items.sort(reverse=False)
         for idx in items:
-            cell_xpath = CheckForViewDataTest._get_cell_xpath(
-                'r' + str(idx), row
-            )
+            # rowindex starts with 2 and 1st colindex is rownum
+            cell_xpath = CheckForViewDataTest\
+                ._get_cell_xpath(str(idx + 1), row + 1)
             time.sleep(0.2)
             self._update_cell(cell_xpath, data[str(idx)])
         self.page.find_by_css_selector(
@@ -351,6 +338,9 @@ CREATE TABLE public.nonintpkey
         time.sleep(2)
 
     def _add_row(self, config_data_l):
+        self.page.find_by_css_selector(
+            QueryToolLocators.btn_add_row).click()
+        time.sleep(1)
         self._add_update_save_row(config_data_l['add'], 1)
 
     def _update_row(self, config_data_l):
@@ -361,11 +351,13 @@ CREATE TABLE public.nonintpkey
             QueryToolLocators.query_messages_panel)
         self.assertEqual(text, messages_ele.text)
 
-    def _verify_row_data(self, row_height, config_check_data):
+    def _verify_row_data(self, row, config_check_data):
         self.page.click_execute_query_button()
+        self.driver.execute_script(
+            "document.querySelector('.rdg').scrollLeft=0"
+        )
 
-        xpath = "//*[contains(@class, 'ui-widget-content') and " \
-                "contains(@style, 'top:" + str(row_height) + "px')]"
+        xpath = QueryToolLocators.output_row_xpath.format(2)
         scroll_on_arg_for_js = "arguments[0].scrollIntoView(false)"
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
@@ -379,9 +371,10 @@ CREATE TABLE public.nonintpkey
         for idx in actual_list:
             while retry > 0:
                 try:
-                    result_row = self.page.find_by_xpath(xpath)
-                    element = \
-                        result_row.find_element(By.CLASS_NAME, "r" + str(idx))
+                    element = self.page.find_by_xpath(
+                        QueryToolLocators.output_cell_xpath
+                        .format(row + 1, idx + 1)
+                    )
                     self.page.driver.execute_script(
                         scroll_on_arg_for_js, element)
                     break
@@ -399,6 +392,7 @@ CREATE TABLE public.nonintpkey
         list_item.sort(reverse=True)
         for idx in list_item:
             time.sleep(0.4)
-            element = result_row.find_element(By.CLASS_NAME, "r" + str(idx))
+            element = self.page.find_by_xpath(
+                QueryToolLocators.output_cell_xpath.format(2, idx + 1))
             self.page.driver.execute_script(
                 scroll_on_arg_for_js, element)

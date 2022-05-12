@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { Box, makeStyles } from '@material-ui/core';
 import _ from 'lodash';
-import React, {useState, useEffect, useContext, useRef} from 'react';
+import React, {useState, useEffect, useContext, useRef, useLayoutEffect} from 'react';
 import ReactDataGrid, {Row, useRowSelection} from 'react-data-grid';
 import LockIcon from '@material-ui/icons/Lock';
 import EditIcon from '@material-ui/icons/Edit';
@@ -130,23 +130,42 @@ CustomRow.propTypes = {
   viewportColumns: PropTypes.array,
 };
 
-function SelectAllHeaderRenderer(props) {
+function getCopyShortcutHandler(handleCopy) {
+  return (e)=>{
+    if((e.ctrlKey || e.metaKey) && e.key !== 'Control' && e.keyCode == 67) {
+      handleCopy();
+    }
+  };
+}
+
+function SelectAllHeaderRenderer({onAllRowsSelectionChange, isCellSelected}) {
   const [checked, setChecked] = useState(false);
+  const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
+  const dataGridExtras = useContext(DataGridExtrasContext);
   const onClick = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS, true, ()=>{
       setChecked(!checked);
-      props.onAllRowsSelectionChange(!checked);
+      onAllRowsSelectionChange(!checked);
     });
   };
-  return <div style={{widht: '100%', height: '100%'}} onClick={onClick}></div>;
+
+  useLayoutEffect(() => {
+    if (!isCellSelected) return;
+    cellRef.current?.focus({ preventScroll: true });
+  }, [isCellSelected]);
+
+  return <div ref={cellRef} style={{width: '100%', height: '100%'}} onClick={onClick}
+    tabIndex="0" onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)}></div>;
 }
 SelectAllHeaderRenderer.propTypes = {
   onAllRowsSelectionChange: PropTypes.func,
+  isCellSelected: PropTypes.bool,
 };
 
 function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsChange, isCellSelected}) {
   const classes = useStyles();
+  const cellRef = useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const dataGridExtras = useContext(DataGridExtrasContext);
 
@@ -168,11 +187,17 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
 
   const isSelected = selectedColumns.has(column.idx);
 
+  useLayoutEffect(() => {
+    if (!isCellSelected) return;
+    cellRef.current?.focus({ preventScroll: true });
+  }, [isCellSelected]);
+
   return (
-    <Box className={clsx(classes.columnHeader, isSelected ? classes.colHeaderSelected : null)} onClick={onClick}>
+    <Box ref={cellRef} className={clsx(classes.columnHeader, isSelected ? classes.colHeaderSelected : null)} onClick={onClick} tabIndex="0"
+      onKeyDown={getCopyShortcutHandler(dataGridExtras.handleCopy)} data-column-key={column.key}>
       {(column.column_type_internal == 'geometry' || column.column_type_internal == 'geography') &&
       <Box>
-        <PgIconButton title={gettext('View all geometries in this column')} icon={<MapIcon />} size="small" style={{marginRight: '0.25rem'}} onClick={(e)=>{
+        <PgIconButton title={gettext('View all geometries in this column')} icon={<MapIcon data-label="MapIcon"/>} size="small" style={{marginRight: '0.25rem'}} onClick={(e)=>{
           e.stopPropagation();
           eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, column);
         }}/>
@@ -182,8 +207,8 @@ function SelectableHeaderRenderer({column, selectedColumns, onSelectedColumnsCha
         <span>{column.display_type}</span>
       </Box>
       <Box marginLeft="4px">{column.can_edit ?
-        <EditIcon fontSize="small" style={{fontSize: '0.875rem'}} />:
-        <LockIcon fontSize="small" style={{fontSize: '0.875rem'}} />
+        <EditIcon fontSize="small" style={{fontSize: '0.875rem'}} data-label="EditIcon"/>:
+        <LockIcon fontSize="small" style={{fontSize: '0.875rem'}} data-label="LockIcon"/>
       }</Box>
     </Box>
   );
@@ -372,7 +397,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }
 
   return (
-    <DataGridExtrasContext.Provider value={{onSelectedCellChange}}>
+    <DataGridExtrasContext.Provider value={{onSelectedCellChange, handleCopy}}>
       <ReactDataGrid
         id="datagrid"
         columns={readyColumns}

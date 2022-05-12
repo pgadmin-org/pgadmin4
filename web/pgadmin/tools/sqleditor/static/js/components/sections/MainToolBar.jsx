@@ -537,6 +537,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         anchorRef={saveAsMenuRef}
         open={openMenuName=='menu-saveas'}
         onClose={onMenuClose}
+        label={gettext('File Menu')}
       >
         <PgMenuItem onClick={()=>{saveFile(true);}}>{gettext('Save as')}</PgMenuItem>
       </PgMenu>
@@ -544,6 +545,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         anchorRef={editMenuRef}
         open={openMenuName=='menu-edit'}
         onClose={onMenuClose}
+        label={gettext('Edit Menu')}
       >
         <PgMenuItem shortcut={FIXED_PREF.find}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_FIND_REPLACE, false);}}>{gettext('Find')}</PgMenuItem>
@@ -567,6 +569,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         anchorRef={filterMenuRef}
         open={openMenuName=='menu-filter'}
         onClose={onMenuClose}
+        label={gettext('Filter Options Menu')}
       >
         <PgMenuItem onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, true);}}>{gettext('Filter by Selection')}</PgMenuItem>
         <PgMenuItem onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, false);}}>{gettext('Exclude by Selection')}</PgMenuItem>
@@ -576,6 +579,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         anchorRef={autoCommitMenuRef}
         open={openMenuName=='menu-autocommit'}
         onClose={onMenuClose}
+        label={gettext('Execute Options Menu')}
       >
         <PgMenuItem hasCheck value="auto_commit" checked={checkedMenuItems['auto_commit']}
           onClick={checkMenuClick}>{gettext('Auto commit?')}</PgMenuItem>
@@ -586,6 +590,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         anchorRef={explainMenuRef}
         open={openMenuName=='menu-explain'}
         onClose={onMenuClose}
+        label={gettext('Explain Options Menu')}
       >
         <PgMenuItem hasCheck value="explain_verbose" checked={checkedMenuItems['explain_verbose']}
           onClick={checkMenuClick}>{gettext('Verbose')}</PgMenuItem>
@@ -604,6 +609,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
         anchorRef={macrosMenuRef}
         open={openMenuName=='menu-macros'}
         onClose={onMenuClose}
+        label={gettext('Macros Menu')}
       >
         <PgMenuItem onClick={onManageMacros}>{gettext('Manage macros')}</PgMenuItem>
         <PgMenuDivider />

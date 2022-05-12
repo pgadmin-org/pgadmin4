@@ -24,47 +24,47 @@ ExternalIcon.propTypes = {
   Icon: PropTypes.elementType.isRequired,
 };
 
-export const QueryToolIcon = ({style})=><ExternalIcon Icon={QueryToolSvg} style={{height: '1rem', ...style}} />;
+export const QueryToolIcon = ({style})=><ExternalIcon Icon={QueryToolSvg} style={{height: '1rem', ...style}} data-label="QueryToolIcon" />;
 QueryToolIcon.propTypes = {style: PropTypes.object};
 
-export const ViewDataIcon = ({style})=><ExternalIcon Icon={ViewDataSvg} style={{height: '0.8rem', ...style}} />;
+export const ViewDataIcon = ({style})=><ExternalIcon Icon={ViewDataSvg} style={{height: '0.8rem', ...style}} data-label="ViewDataIcon" />;
 ViewDataIcon.propTypes = {style: PropTypes.object};
 
-export const SaveDataIcon = ({style})=><ExternalIcon Icon={SaveDataSvg} style={{height: '1rem', ...style}} />;
+export const SaveDataIcon = ({style})=><ExternalIcon Icon={SaveDataSvg} style={{height: '1rem', ...style}} data-label="SaveDataIcon" />;
 SaveDataIcon.propTypes = {style: PropTypes.object};
 
-export const PasteIcon = ({style})=><ExternalIcon Icon={PasteSvg} style={style} />;
+export const PasteIcon = ({style})=><ExternalIcon Icon={PasteSvg} style={style} data-label="PasteIcon" />;
 PasteIcon.propTypes = {style: PropTypes.object};
 
-export const FilterIcon = ({style})=><ExternalIcon Icon={FilterSvg} style={style} />;
+export const FilterIcon = ({style})=><ExternalIcon Icon={FilterSvg} style={style} data-label="FilterIcon" />;
 FilterIcon.propTypes = {style: PropTypes.object};
 
-export const CommitIcon = ({style})=><ExternalIcon Icon={CommitSvg} style={style} />;
+export const CommitIcon = ({style})=><ExternalIcon Icon={CommitSvg} style={{height: '1.2rem', ...style}} data-label="CommitIcon" />;
 CommitIcon.propTypes = {style: PropTypes.object};
 
-export const RollbackIcon = ({style})=><ExternalIcon Icon={RollbackSvg} style={style} />;
+export const RollbackIcon = ({style})=><ExternalIcon Icon={RollbackSvg} style={{height: '1.2rem', ...style}} data-label="RollbackIcon" />;
 RollbackIcon.propTypes = {style: PropTypes.object};
 
-export const ClearIcon = ({style})=><ExternalIcon Icon={ClearSvg} style={style} />;
+export const ClearIcon = ({style})=><ExternalIcon Icon={ClearSvg} style={style} data-label="ClearIcon" />;
 ClearIcon.propTypes = {style: PropTypes.object};
 
-export const ConnectedIcon = ({style})=><ExternalIcon Icon={ConnectedSvg} style={{height: '1rem', ...style}} />;
+export const ConnectedIcon = ({style})=><ExternalIcon Icon={ConnectedSvg} style={{height: '1rem', ...style}} data-label="ConnectedIcon" />;
 ConnectedIcon.propTypes = {style: PropTypes.object};
 
-export const DisonnectedIcon = ({style})=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem', ...style}} />;
+export const DisonnectedIcon = ({style})=><ExternalIcon Icon={DisconnectedSvg} style={{height: '1rem', ...style}} data-label="DisonnectedIcon" />;
 DisonnectedIcon.propTypes = {style: PropTypes.object};
 
-export const RegexIcon = ({style})=><ExternalIcon Icon={RegexSvg} style={style} />;
+export const RegexIcon = ({style})=><ExternalIcon Icon={RegexSvg} style={style} data-label="RegexIcon" />;
 RegexIcon.propTypes = {style: PropTypes.object};
 
-export const FormatCaseIcon = ({style})=><ExternalIcon Icon={FormatCaseSvg} style={style} />;
+export const FormatCaseIcon = ({style})=><ExternalIcon Icon={FormatCaseSvg} style={style} data-label="FormatCaseIcon" />;
 FormatCaseIcon.propTypes = {style: PropTypes.object};
 
-export const ExpandDialogIcon = ({style})=><ExternalIcon Icon={Expand} style={{height: '1.2rem', ...style}}  />;QueryToolIcon.propTypes = {style: PropTypes.object};
+export const ExpandDialogIcon = ({style})=><ExternalIcon Icon={Expand} style={{height: '1.2rem', ...style}} data-label="ExpandDialogIcon" />;
 ExpandDialogIcon.propTypes = {style: PropTypes.object};
 
-export const MinimizeDialogIcon = ({style})=><ExternalIcon Icon={Collapse} style={{height: '1.4rem', ...style}} />;
+export const MinimizeDialogIcon = ({style})=><ExternalIcon Icon={Collapse} style={{height: '1.4rem', ...style}} data-label="MinimizeDialogIcon" />;
 MinimizeDialogIcon.propTypes = {style: PropTypes.object};
 
-export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '1.4rem', ...style}} />;
+export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '1.4rem', ...style}} data-label="AWSIcon" />;
 AWSIcon.propTypes = {style: PropTypes.object};

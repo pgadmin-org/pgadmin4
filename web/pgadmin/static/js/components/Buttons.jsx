@@ -94,8 +94,9 @@ export const PrimaryButton = forwardRef((props, ref)=>{
     allClassName.push(classes.xsButton);
   }
   noBorder && allClassName.push(classes.noBorder);
+  const dataLabel = typeof(children) == 'string' ? children : undefined;
   return (
-    <Button ref={ref} size={size} className={clsx(allClassName)} {...otherProps} variant="contained" color="primary" >{children}</Button>
+    <Button ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} {...otherProps} variant="contained" color="primary">{children}</Button>
   );
 });
 PrimaryButton.displayName = 'PrimaryButton';
@@ -116,8 +117,9 @@ export const DefaultButton = forwardRef((props, ref)=>{
     allClassName.push(classes.xsButton);
   }
   noBorder && allClassName.push(classes.noBorder);
+  const dataLabel = typeof(children) == 'string' ? children : undefined;
   return (
-    <Button variant="outlined" color="default" ref={ref} size={size} className={clsx(allClassName)} {...otherProps} >{children}</Button>
+    <Button variant="outlined" color="default" ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} {...otherProps}>{children}</Button>
   );
 });
 DefaultButton.displayName = 'DefaultButton';
@@ -144,7 +146,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
       return (
         <PrimaryButton ref={ref} style={style}
           className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)}
-          accessKey={accesskey} {...props}>
+          accessKey={accesskey} data-label={title || ''} {...props}>
           {icon}
         </PrimaryButton>
       );
@@ -152,7 +154,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
       return (
         <DefaultButton ref={ref} style={style}
           className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)}
-          accessKey={accesskey} {...props}>
+          accessKey={accesskey} data-label={title || ''} {...props}>
           {icon}
         </DefaultButton>
       );
@@ -163,7 +165,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
         <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
           <PrimaryButton ref={ref} style={style}
             className={clsx(classes.iconButton, (splitButton ? classes.splitButton : ''), className)}
-            accessKey={accesskey} {...props}>
+            accessKey={accesskey} data-label={title || ''} {...props}>
             {icon}
           </PrimaryButton>
         </Tooltip>
@@ -173,7 +175,7 @@ export const PgIconButton = forwardRef(({icon, title, shortcut, className, split
         <Tooltip title={shortcutTitle || title || ''} aria-label={title || ''}>
           <DefaultButton ref={ref} style={style}
             className={clsx(classes.iconButton, classes.iconButtonDefault, (splitButton ? classes.splitButton : ''), className)}
-            accessKey={accesskey} {...props}>
+            accessKey={accesskey} data-label={title || ''} {...props}>
             {icon}
           </DefaultButton>
         </Tooltip>

@@ -53,18 +53,23 @@ function initConnection(api, params, passdata) {
 }
 
 function setPanelTitle(panel, title, qtState, dirty=false) {
-  if(title) {
-    title =title.split('\\').pop().split('/').pop();
-  } else if(qtState.current_file) {
+  if(qtState.current_file) {
     title = qtState.current_file.split('\\').pop().split('/').pop();
-  } else {
-    title = qtState.params.title || 'Untitled';
+  } else if (!qtState.is_new_tab) {
+    if(!title) {
+      title = panel.$titleText?.[0].textContent;
+      if(panel.is_dirty_editor) {
+        // remove asterisk
+        title = title.slice(0, -1);
+      }
+    }
   }
 
   title = title + (dirty ? '*': '');
   if (qtState.is_new_tab) {
     window.document.title = title;
   } else {
+    panel.is_dirty_editor = dirty;
     setQueryToolDockerTitle(panel, true, title, qtState.current_file ? true : false);
   }
 }
@@ -109,6 +114,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const setQtState = (state)=>{
     _setQtState((prev)=>({...prev,...evalFunc(null, state, prev)}));
   };
+  const isDirtyRef = useRef(false); // usefull when conn change.
   const eventBus = useRef(eventBusObj || (new EventBus()));
   const docker = useRef(null);
   const api = useMemo(()=>getApiInstance(), []);
@@ -411,6 +417,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       [QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileDone],
       [QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileDone],
       [QUERY_TOOL_EVENTS.QUERY_CHANGED, (isDirty)=>{
+        isDirtyRef.current = isDirty;
         if(qtState.params.is_query_tool) {
           setPanelTitle(panel, null, qtState, isDirty);
         }
@@ -511,6 +518,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               obtaining_conn: false,
             };
           });
+          setPanelTitle(panel, connectionData.title, qtState, isDirtyRef.current);
           let msg = `${connectionData['server_name']}/${connectionData['database_name']} - Database connected`;
           Notifier.success(msg);
           resolve();

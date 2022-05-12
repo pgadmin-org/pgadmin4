@@ -411,7 +411,7 @@ export default function Graphical({planData, ctx}) {
         onNodeClick={onNodeClick}
       />
       {Boolean(explainPlanDetails) &&
-      <Card className={classes.explainDetails}>
+      <Card className={classes.explainDetails} data-label="explain-details">
         <CardHeader title={<Box display="flex">
           {explainPlanTitle}
           <Box marginLeft="auto">

@@ -239,11 +239,11 @@ class QueryHistoryUtils {
 function QuerySourceIcon({source}) {
   switch(JSON.stringify(source)) {
   case JSON.stringify(QuerySources.EXECUTE):
-    return <PlayArrowRoundedIcon style={{marginLeft: '-4px'}}/>;
+    return <PlayArrowRoundedIcon style={{marginLeft: '-4px'}} data-label="ExecuteIcon" />;
   case JSON.stringify(QuerySources.EXPLAIN):
-    return <ExplicitRoundedIcon/>;
+    return <ExplicitRoundedIcon data-label="ExplainIcon" />;
   case JSON.stringify(QuerySources.EXPLAIN_ANALYZE):
-    return <AssessmentRoundedIcon/>;
+    return <AssessmentRoundedIcon data-label="ExplainAnalyzeIcon" />;
   case JSON.stringify(QuerySources.COMMIT):
     return <CommitIcon style={{marginLeft: '-4px'}}/>;
   case JSON.stringify(QuerySources.ROLLBACK):
@@ -262,7 +262,7 @@ QuerySourceIcon.propTypes = {
 
 function HistoryEntry({entry, formatEntryDate, itemKey, selectedItemKey, onClick}) {
   const classes = useStyles();
-  return <ListItem tabIndex="0" ref={(ele)=>{
+  return <ListItem tabIndex="0" data-label="history-entry" data-pgadmin={entry.is_pgadmin_query} ref={(ele)=>{
     selectedItemKey==itemKey && ele && ele.scrollIntoView({
       block: 'center',
       behavior: 'smooth',
@@ -324,7 +324,7 @@ function QueryHistoryDetails({entry}) {
   return (
     <>
       {entry.info && <Box className={classes.infoHeader}>{entry.info}</Box>}
-      <Box padding="0.5rem">
+      <Box padding="0.5rem" data-label="history-detail">
         <Grid container>
           <Grid item sm={4}>{entry.start_time.toLocaleDateString() + ' ' + entry.start_time.toLocaleTimeString()}</Grid>
           <Grid item sm={4}>{entry?.row_affected > 0 && entry.row_affected}</Grid>

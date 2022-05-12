@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme)=>({
     },
     '& .szh-menu__divider': {
       margin: 0,
+      background: theme.otherVars.borderColor,
     }
   },
   menuItem: {
@@ -47,13 +48,17 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-export function PgMenu({open, className, ...props}) {
+export function PgMenu({open, className, label, ...props}) {
   const classes = useStyles();
+  const state = open ? 'open' : 'closed';
+  props.anchorRef?.current?.setAttribute('data-state', state);
   return (
     <ControlledMenu
-      state={open ? 'open' : 'closed'}
+      state={state}
       {...props}
       className={clsx(classes.menu, className)}
+      aria-label={label || 'Menu'}
+      data-state={state}
     />
   );
 }
@@ -61,6 +66,8 @@ export function PgMenu({open, className, ...props}) {
 PgMenu.propTypes = {
   open: PropTypes.bool,
   className: CustomPropTypes.className,
+  label: PropTypes.string,
+  anchorRef: CustomPropTypes.ref,
 };
 
 export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false, accesskey, shortcut, children, ...props})=>{
@@ -72,7 +79,8 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
       props.onClick(e);
     };
   }
-  return <MenuItem {...props} onClick={onClick} className={classes.menuItem}>
+  const dataLabel = typeof(children) == 'string' ? children : undefined;
+  return <MenuItem {...props} onClick={onClick} className={classes.menuItem} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} />}
     {children}
     {(shortcut || accesskey) && <div className={classes.shortcut}>({shortcutToString(shortcut, accesskey)})</div>}

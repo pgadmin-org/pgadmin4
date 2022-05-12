@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-export default function Loader({message, style}) {
+export default function Loader({message, style, ...props}) {
   const classes = useStyles();
   if(!message) {
     return <></>;
   }
   return (
-    <Box className={classes.root} style={style}>
+    <Box className={classes.root} style={style} data-label="loader" {...props}>
       <Box className={classes.loaderRoot}>
         <CircularProgress className={classes.loader} />
         <Typography className={classes.message}>{message}</Typography>

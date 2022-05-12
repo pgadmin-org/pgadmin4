@@ -196,17 +196,12 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.fill_codemirror_area_with(
             "select '<img src=\"x\" onerror=\"console.log(1)\">'"
         )
-        self.page.find_by_id("btn-flash").click()
+        self.page.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css).click()
 
-        result_row = self.page.find_by_xpath(
-            "//*[contains(@class, 'ui-widget-content') and "
-            "contains(@style, 'top:0px')]"
-        )
-
-        cells = result_row.find_elements(By.TAG_NAME, 'div')
-
-        # remove first element as it is row number.
-        source_code = cells[1].get_attribute('innerHTML')
+        source_code = self.page\
+            .find_by_xpath(QueryToolLocators.output_cell_xpath.format(2, 2))\
+            .get_attribute('innerHTML')
 
         self._check_escaped_characters(
             source_code,
@@ -225,13 +220,12 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.find_by_css_selector(
             QueryToolLocators.btn_execute_query_css).click()
 
-        self.page.click_tab('Query History')
+        self.page.click_tab('id-history', rc_dock=True)
 
         # Check for history entry
-        history_ele = self.page.find_by_css_selector(
-            ".query-history div.query-group:first-child"
-            " .list-item.selected .query"
-        )
+        history_ele = self.page\
+            .find_by_css_selector(
+                QueryToolLocators.query_history_specific_entry.format(2))
 
         source_code = history_ele.get_attribute('innerHTML')
 
@@ -246,7 +240,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             try:
                 history_ele = self.driver \
                     .find_element(By.CSS_SELECTOR,
-                                  ".query-detail .content-value")
+                                  QueryToolLocators.query_history_detail)
                 source_code = history_ele.get_attribute('innerHTML')
                 break
             except StaleElementReferenceException:
@@ -258,25 +252,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             "Query tool (History Details-Message)"
         )
 
-        retry = 2
-        while retry > 0:
-            try:
-                # Check for history details error message
-                history_ele = self.page.find_by_css_selector(
-                    ".query-detail .history-error-text"
-                )
-                source_code = history_ele.get_attribute('innerHTML')
-                break
-            except StaleElementReferenceException:
-                retry -= 1
-
-        self._check_escaped_characters(
-            source_code,
-            self.check_xss_chars_set2,
-            "Query tool (History Details-Error)"
-        )
-
-        self.page.click_tab('Query Editor')
+        self.page.click_tab('id-query', rc_dock=True)
 
     def _check_xss_view_data(self):
         print(
@@ -284,13 +260,11 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             file=sys.stderr, end=""
         )
 
-        self.page.find_by_css_selector(".slick-header-column")
-        cells = self.driver. \
-            find_elements(By.CSS_SELECTOR, ".slick-header-column")
-
         # remove first element as it is row number.
         # currently 4th col
-        source_code = cells[4].get_attribute('innerHTML')
+        source_code = self.page \
+            .find_by_xpath(QueryToolLocators.output_cell_xpath.format(1, 5)) \
+            .get_attribute('innerHTML')
 
         self._check_escaped_characters(
             source_code,
@@ -310,7 +284,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self.page.find_by_css_selector(
             QueryToolLocators.btn_explain).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('Explain')
+        self.page.click_tab('id-explain', rc_dock=True)
 
         for idx in range(3):
             # Re-try logic
@@ -318,7 +292,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                 ActionChains(self.driver).move_to_element(
                     self.driver.find_element(
                         By.CSS_SELECTOR,
-                        'div.pgadmin-explain-container > svg > g > g > image')
+                        'div#id-explain svg > g > g > image')
                 ).click().perform()
                 break
             except Exception:
@@ -333,8 +307,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
                     raise
 
         source_code = self.driver.find_element(
-            By.CSS_SELECTOR,
-            '.pgadmin-explain-details:not(.d-none)').get_attribute('innerHTML')
+            By.CSS_SELECTOR, QueryToolLocators.explain_details)\
+            .get_attribute('innerHTML')
 
         self._check_escaped_characters(
             source_code,

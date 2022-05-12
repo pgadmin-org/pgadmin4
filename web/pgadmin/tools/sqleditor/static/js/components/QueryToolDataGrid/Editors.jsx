@@ -186,7 +186,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     <Portal container={document.body}>
       <Box ref={(ele)=>{
         setEditorPosition(getCellElement(column.idx), ele);
-      }} className={classes.textEditor}>
+      }} className={classes.textEditor} data-label="pg-editor">
         <textarea ref={autoFocusAndSelect} className={classes.textarea} value={localVal} onChange={onChange} />
         <Box display="flex" justifyContent="flex-end">
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
@@ -287,7 +287,7 @@ export function CheckboxEditor({row, column, onRowChange, onClose}) {
     className = 'intermediate';
   }
   return (
-    <div onClick={changeValue} tabIndex="0" onBlur={onBlur}>
+    <div onClick={changeValue} tabIndex="0" onBlur={onBlur} data-label="pg-checkbox-editor">
       <span className={clsx(classes.check, className)}></span>
     </div>
   );
@@ -334,7 +334,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
     <Portal container={document.body}>
       <Box ref={(ele)=>{
         setEditorPosition(getCellElement(column.idx), ele);
-      }} className={classes.jsonEditor}>
+      }} className={classes.jsonEditor} data-label="pg-editor">
         <JsonEditor
           value={localVal}
           options={{

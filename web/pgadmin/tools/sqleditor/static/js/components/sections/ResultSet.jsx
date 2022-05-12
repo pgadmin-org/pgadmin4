@@ -1225,7 +1225,7 @@ export function ResultSet() {
   return (
     <Box className={classes.root} ref={containerRef} tabIndex="0">
       <Loader message={loaderText} />
-      <Loader message={isLoadingMore ? gettext('Loading more rows...') : null} style={{top: 'unset', right: 'unset', padding: '0.5rem 1rem'}}/>
+      <Loader data-label="loader-more-rows" message={isLoadingMore ? gettext('Loading more rows...') : null} style={{top: 'unset', right: 'unset', padding: '0.5rem 1rem'}}/>
       {!queryData &&
         <EmptyPanelMessage text={gettext('No data output. Execute a query to get output.')}/>
       }

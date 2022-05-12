@@ -298,7 +298,7 @@ def setup_webdriver_specification(arguments):
         options.add_argument("--window-size=1790,1080")
         options.add_argument("--disable-infobars")
         # options.add_experimental_option('w3c', False)
-        driver_local = webdriver.Chrome(chrome_options=options)
+        driver_local = webdriver.Chrome(options=options)
 
     # maximize browser window
     driver_local.maximize_window()

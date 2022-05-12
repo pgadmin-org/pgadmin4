@@ -87,9 +87,9 @@ class PgadminPage:
 
         # In case of react dialog we use different xpath
         if react_dialog:
-            modal_button = self.find_by_xpath(
-                "//button[contains(@class,'MuiButtonBase-root')]"
-                "//span[text()='%s']" % button_text)
+            modal_button = self.find_by_css_selector(
+                ".react-draggable button[data-label='{0}']"
+                .format(button_text))
         else:
             modal_button = self.find_by_xpath(
                 "//div[contains(@class, 'alertify') and "
@@ -203,9 +203,7 @@ class PgadminPage:
             self.driver.switch_to.frame(
                 self.driver.find_elements(By.TAG_NAME, "iframe")[0])
             time.sleep(.5)
-            self.click_element(self.find_by_xpath(
-                '//button[contains(@class, "ajs-button") and '
-                'contains(.,"Don\'t save")]'))
+            self.find_by_css_selector("button[data-test='dont-save']").click()
 
             if self.check_if_element_exist_by_xpath(
                     "//button[text()='Rollback']", 1):
@@ -214,15 +212,22 @@ class PgadminPage:
         self.driver.switch_to.default_content()
 
     def clear_query_tool(self):
-        self.click_element(
-            self.find_by_css_selector(QueryToolLocators.btn_clear_dropdown)
-        )
+        retry = 3
+        edit_options = self.find_by_css_selector(
+            QueryToolLocators.btn_edit_dropdown)
+        while retry > 0:
+            self.click_element(edit_options)
+            time.sleep(0.3)
+            if edit_options.get_attribute("data-state") == "open":
+                break
+            else:
+                retry -= 1
+
         ActionChains(self.driver).move_to_element(
             self.find_by_css_selector(QueryToolLocators.btn_clear)).perform()
         self.click_element(
             self.find_by_css_selector(QueryToolLocators.btn_clear)
         )
-        self.driver.switch_to.default_content()
         self.click_modal('Yes', True)
 
     def execute_query(self, query):
@@ -230,89 +235,75 @@ class PgadminPage:
         self.click_execute_query_button()
 
     def click_execute_query_button(self, timeout=20):
-        retry = 5
         execute_button = self.find_by_css_selector(
             QueryToolLocators.btn_execute_query_css)
-        first_click = execute_button.get_attribute('data-click-counter')
-        while retry > 0:
-            execute_button.click()
-            execute_button = self.find_by_css_selector(
-                QueryToolLocators.btn_execute_query_css)
-            second_click = execute_button.get_attribute(
-                'data-click-counter')
-            if first_click != second_click:
-                self.wait_for_query_tool_loading_indicator_to_appear()
-                break
-            else:
-                retry -= 1
+        execute_button.click()
         self.wait_for_query_tool_loading_indicator_to_disappear(timeout)
 
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
-        query_options = self.driver.find_element(
-            By.CSS_SELECTOR, QueryToolLocators.btn_query_dropdown)
-        expanded = query_options.get_attribute("aria-expanded")
-        if expanded == "false":
-            query_options.click()
+        menu_btn = self.driver.find_element_by_css_selector(
+            QueryToolLocators.btn_query_dropdown)
+        if menu_btn.get_attribute('data-state') == "closed":
+            menu_btn.click()
 
-        def update_execute_option_setting(
-                css_selector_of_option_status, css_selector_of_option,):
+        def update_execute_option_setting(css_selector_of_option):
             retry = 3
-            check_status = self.driver.find_element(
-                By.CSS_SELECTOR, css_selector_of_option_status)
-            if 'visibility-hidden' in check_status.get_attribute('class'):
+            menu_option = self.driver.find_element_by_css_selector(
+                css_selector_of_option)
+            if menu_option.get_attribute('data-checked') == 'false':
                 while retry > 0:
-                    self.find_by_css_selector(css_selector_of_option).click()
+                    menu_option.click()
                     time.sleep(0.2)
-                    if 'visibility-hidden' not in \
-                            check_status.get_attribute('class'):
+                    if menu_option.get_attribute('data-checked') == 'true':
                         break
                     else:
                         retry -= 1
 
         if option == 'auto_commit':
             update_execute_option_setting(
-                QueryToolLocators.btn_auto_commit_check_status,
                 QueryToolLocators.btn_auto_commit)
         if option == 'auto_rollback':
             update_execute_option_setting(
-                QueryToolLocators.btn_auto_rollback_check_status,
                 QueryToolLocators.btn_auto_rollback)
+
+        if menu_btn.get_attribute('data-state') == "open":
+            menu_btn.click()
 
     def uncheck_execute_option(self, option):
         """"This function will uncheck auto commit or auto roll back based on
         user input. If button is already unchecked, no action will be taken"""
-        query_options = self.driver.find_element_by_css_selector(
-            QueryToolLocators.btn_query_dropdown)
-        expanded = query_options.get_attribute("aria-expanded")
-        if expanded == "false":
-            query_options.click()
+        menu = self.driver.find_element_by_css_selector(
+            QueryToolLocators.query_tool_menu.format('Execute Options Menu'))
 
-        def update_execute_option_setting(
-                css_selector_of_option_status, css_selector_of_option):
+        if menu.get_attribute('data-state') == "closed":
+            self.driver.find_element_by_css_selector(
+                QueryToolLocators.btn_query_dropdown).click()
+
+        def update_execute_option_setting(css_selector_of_option):
             retry = 3
-            check_status = self.driver.find_element_by_css_selector(
-                css_selector_of_option_status)
-            if 'visibility-hidden' not in check_status.get_attribute('class'):
+            menu_option = self.driver.find_element_by_css_selector(
+                css_selector_of_option)
+            if menu_option.get_attribute('data-checked') == 'true':
                 while retry > 0:
-                    self.find_by_css_selector(
-                        css_selector_of_option).click()
+                    menu_option.click()
                     time.sleep(0.2)
-                    if 'visibility-hidden' in \
-                            check_status.get_attribute('class'):
+                    if menu_option.get_attribute('data-checked') == 'false':
                         break
                     else:
                         retry -= 1
 
         if option == 'auto_commit':
             update_execute_option_setting(
-                QueryToolLocators.btn_auto_commit_check_status,
                 QueryToolLocators.btn_auto_commit)
         if option == 'auto_rollback':
             update_execute_option_setting(
-                QueryToolLocators.btn_auto_rollback_check_status,
                 QueryToolLocators.btn_auto_rollback)
+
+        if menu.get_attribute('data-state') == "open":
+            self.driver.find_element_by_css_selector(
+                QueryToolLocators.btn_query_dropdown).click()
 
     def close_data_grid(self):
         self.driver.switch_to.default_content()
@@ -331,6 +322,7 @@ class PgadminPage:
             self.click_element(object_menu_item)
             delete_menu_item = self.find_by_partial_link_text("Remove Server")
             self.click_element(delete_menu_item)
+            self.driver.switch_to.default_content()
             self.click_modal('Yes', True)
             time.sleep(1)
         else:
@@ -1054,15 +1046,15 @@ class PgadminPage:
                 driver.switch_to.default_content()
                 driver.switch_to.frame(
                     driver.find_element_by_tag_name("iframe"))
-                element = driver.find_element_by_css_selector(
-                    "#output-panel .CodeMirror")
+                element = driver.find_element(
+                    By.CSS_SELECTOR, "#sqleditor-container .CodeMirror")
                 if element.is_displayed() and element.is_enabled():
                     return element
             except (NoSuchElementException, WebDriverException):
                 return False
 
         time.sleep(1)
-        self.wait_for_query_tool_loading_indicator_to_disappear(12)
+        # self.wait_for_query_tool_loading_indicator_to_disappear(12)
 
         retry = 2
         while retry > 0:
@@ -1071,7 +1063,9 @@ class PgadminPage:
                 WebDriverWait(self.driver, 10).until(
                     EC.frame_to_be_available_and_switch_to_it(
                         (By.TAG_NAME, "iframe")))
-                self.find_by_xpath("//a[text()='Query Editor']").click()
+                self.find_by_css_selector(
+                    "div.dock-tab-btn[id$=\"id-query\"]").click()
+                # self.find_by_xpath("//div[text()='Query Editor']").click()
 
                 codemirror_ele = WebDriverWait(
                     self.driver, timeout=self.timeout, poll_frequency=0.01) \
@@ -1099,11 +1093,16 @@ class PgadminPage:
                 "arguments[0].CodeMirror.lineCount(),0);",
                 codemirror_ele, field_content)
 
-    def click_tab(self, tab_name):
+    def click_tab(self, tab_name, rc_dock=False):
+        if rc_dock:
+            tab = self.find_by_css_selector(
+                NavMenuLocators.rcdock_tab.format(tab_name))
+            self.click_element(tab)
+            return
+
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
             (By.XPATH, NavMenuLocators.select_tab_xpath.format(tab_name))))
-        click_tab = True
-        while click_tab:
+        while True:
             tab = self.find_by_xpath(
                 NavMenuLocators.select_tab_xpath.format(tab_name))
             self.click_element(tab)
@@ -1188,15 +1187,16 @@ class PgadminPage:
 
         self._wait_for("spinner to disappear", spinner_has_disappeared, 20)
 
-    def wait_for_query_tool_loading_indicator_to_disappear(self, timeout=20):
+    def wait_for_query_tool_loading_indicator_to_disappear(
+            self, timeout=20, container_id="id-dataoutput"):
         def spinner_has_disappeared(driver):
             try:
                 # Refer the status message as spinner appears only on the
                 # the data output panel
-                spinner = driver.find_element(
+                driver.find_element(
                     By.CSS_SELECTOR,
-                    ".sql-editor .sql-editor-busy-text-status")
-                return "d-none" in spinner.get_attribute("class")
+                    "#{0} div[data-label='loader']".format(container_id))
+                return False
             except NoSuchElementException:
                 # wait for loading indicator disappear animation to complete.
                 time.sleep(0.5)
@@ -1207,8 +1207,7 @@ class PgadminPage:
 
     def wait_for_query_tool_loading_indicator_to_appear(self):
         status = self.check_if_element_exist_by_xpath(
-            "//div[@id='editor-panel']//"
-            "div[@class='pg-sp-container sql-editor-busy-fetching']", 1)
+            "//div[@id='id-dataoutput']//div[@data-label='loader']", 1)
         return status
 
     def wait_for_app(self):
@@ -1340,14 +1339,15 @@ class PgadminPage:
 
         if required_status == 'Yes':
             status_changed_successfully = \
-                self.toggle_switch_box(switch_box_element,
-                                       expected_attr_in_class_tag='success',
-                                       unexpected_attr_in_class_tag='off')
+                self.toggle_switch_box(
+                    switch_box_element,
+                    expected_attr_in_class_tag='Mui-checked',
+                    unexpected_attr_in_class_tag='')
         else:
             status_changed_successfully = \
-                self.toggle_switch_box(switch_box_element,
-                                       expected_attr_in_class_tag='off',
-                                       unexpected_attr_in_class_tag='success')
+                self.toggle_switch_box(
+                    switch_box_element, expected_attr_in_class_tag='',
+                    unexpected_attr_in_class_tag='Mui-checked')
         return status_changed_successfully
 
     def toggle_switch_box(self, switch_box_ele, expected_attr_in_class_tag,
