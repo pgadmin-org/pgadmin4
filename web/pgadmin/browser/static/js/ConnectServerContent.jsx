@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import gettext from 'sources/gettext';
 import { Box } from '@material-ui/core';
 import { DefaultButton, PrimaryButton } from '../../../static/js/components/Buttons';
@@ -8,8 +8,10 @@ import PropTypes from 'prop-types';
 import { useModalStyles } from '../../../static/js/helpers/ModalProvider';
 import { FormFooterMessage, InputCheckbox, InputText, MESSAGE_TYPE } from '../../../static/js/components/FormComponents';
 
-export default function ConnectServerContent({closeModal, data, onOK}) {
+export default function ConnectServerContent({closeModal, data, onOK, setHeight}) {
   const classes = useModalStyles();
+  const containerRef = useRef();
+  const firstEleRef = useRef();
   const [formData, setFormData] = useState({
     tunnel_password: '',
     save_tunnel_password: false,
@@ -25,12 +27,22 @@ export default function ConnectServerContent({closeModal, data, onOK}) {
     setFormData((prev)=>({...prev, [id]: val}));
   };
 
+  useEffect(()=>{
+    setTimeout(()=>{
+      firstEleRef.current && firstEleRef.current.focus();
+    }, 275);
+  }, []);
+
+  useEffect(()=>{
+    setHeight?.(containerRef.current?.offsetHeight);
+  }, [containerRef.current]);
+
   if(!data) {
     return <>No data</>;
   }
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
+    <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
       <Box flexGrow="1" p={2}>
         {data.prompt_tunnel_password && <>
           <Box>
@@ -42,10 +54,10 @@ export default function ConnectServerContent({closeModal, data, onOK}) {
             </span>
           </Box>
           <Box marginTop='12px'>
-            <InputText type="password" value={formData['tunnel_password']} maxLength={null}
-              onChange={(e)=>onTextChange(e, 'tunnel_password')} autoFocus />
+            <InputText inputRef={firstEleRef} type="password" value={formData['tunnel_password']} maxLength={null}
+              onChange={(e)=>onTextChange(e, 'tunnel_password')} />
           </Box>
-          <Box marginTop='12px'>
+          <Box marginTop='12px' marginBottom='12px'>
             <InputCheckbox controlProps={{label: gettext('Save Password')}} value={formData['save_tunnel_password']}
               onChange={(e)=>onTextChange(e.target.checked, 'save_tunnel_password')} disabled={!data.allow_save_tunnel_password} />
           </Box>
@@ -60,8 +72,13 @@ export default function ConnectServerContent({closeModal, data, onOK}) {
             </span>
           </Box>
           <Box marginTop='12px'>
-            <InputText type="password" value={formData['password']} maxLength={null}
-              onChange={(e)=>onTextChange(e, 'password')} autoFocus />
+            <InputText inputRef={(ele)=>{
+              if(!data.prompt_tunnel_password) {
+                /* Set only if no tunnel password asked */
+                firstEleRef.current = ele;
+              }
+            }} type="password" value={formData['password']} maxLength={null}
+            onChange={(e)=>onTextChange(e, 'password')} />
           </Box>
           <Box marginTop='12px'>
             <InputCheckbox controlProps={{label: gettext('Save Password')}} value={formData['save_password']}
@@ -99,5 +116,6 @@ export default function ConnectServerContent({closeModal, data, onOK}) {
 ConnectServerContent.propTypes = {
   closeModal: PropTypes.func,
   data: PropTypes.object,
-  onOK: PropTypes.func
+  onOK: PropTypes.func,
+  setHeight: PropTypes.func
 };

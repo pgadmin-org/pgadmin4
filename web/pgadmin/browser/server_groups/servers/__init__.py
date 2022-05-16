@@ -1284,7 +1284,7 @@ class ServerNode(PGChildNodeView):
             }
         )
 
-    def connect(self, gid, sid, user_name=None, resp_json=False):
+    def connect(self, gid, sid):
         """
         Connect the Server and return the connection object.
         Verification Process before Connection:
@@ -1410,8 +1410,7 @@ class ServerNode(PGChildNodeView):
         # not provided, or password has not been saved earlier.
         if prompt_password or prompt_tunnel_password:
             return self.get_response_for_password(
-                server, 428, prompt_password, prompt_tunnel_password,
-                user=user_name, resp_json=resp_json
+                server, 428, prompt_password, prompt_tunnel_password
             )
 
         status = True
@@ -1427,8 +1426,7 @@ class ServerNode(PGChildNodeView):
         except Exception as e:
             current_app.logger.exception(e)
             return self.get_response_for_password(
-                server, 401, True, True, getattr(e, 'message', str(e)),
-                resp_json=resp_json)
+                server, 401, True, True, getattr(e, 'message', str(e)))
 
         if not status:
 
@@ -1440,7 +1438,7 @@ class ServerNode(PGChildNodeView):
                 return internal_server_error(errmsg)
 
             return self.get_response_for_password(
-                server, 401, True, True, errmsg, resp_json=resp_json
+                server, 401, True, True, errmsg
             )
         else:
             if save_password and config.ALLOW_SAVE_PASSWORD:
@@ -1864,8 +1862,7 @@ class ServerNode(PGChildNodeView):
             return internal_server_error(errormsg=str(e))
 
     def get_response_for_password(self, server, status, prompt_password=False,
-                                  prompt_tunnel_password=False, errmsg=None,
-                                  user=None, resp_json=False):
+                                  prompt_tunnel_password=False, errmsg=None):
 
         if server.use_ssh_tunnel:
             data = {
@@ -1888,11 +1885,7 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 success=0,
                 status=status,
-                result=render_template(
-                    'servers/tunnel_password.html',
-                    _=gettext,
-                    **data,
-                ) if not resp_json else data
+                result=data
             )
         else:
             data = {
@@ -1908,11 +1901,7 @@ class ServerNode(PGChildNodeView):
             return make_json_response(
                 success=0,
                 status=status,
-                result=render_template(
-                    'servers/password.html',
-                    _=gettext,
-                    **data
-                ) if not resp_json else data
+                result=data
             )
 
     def clear_saved_password(self, gid, sid):

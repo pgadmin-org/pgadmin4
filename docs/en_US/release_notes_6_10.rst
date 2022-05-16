@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #7337 <https://redmine.postgresql.org/issues/7337>`_ -  Port connect server password dialog to React.
 
 Bug fixes
 *********

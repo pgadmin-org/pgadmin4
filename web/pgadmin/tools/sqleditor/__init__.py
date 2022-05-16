@@ -134,7 +134,6 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor._check_server_connection_status',
             'sqleditor.get_new_connection_role',
             'sqleditor.connect_server',
-            'sqleditor.connect_server_with_user',
         ]
 
     def on_logout(self, user):
@@ -2295,38 +2294,28 @@ def get_new_connection_role(sgid, sid=None):
 
 
 @blueprint.route(
-    '/connect_server/<int:sid>/<usr>',
-    methods=["POST"],
-    endpoint="connect_server_with_user"
-)
-@blueprint.route(
     '/connect_server/<int:sid>',
     methods=["POST"],
     endpoint="connect_server"
 )
 @login_required
-def connect_server(sid, usr=None):
+def connect_server(sid):
     # Check if server is already connected then no need to reconnect again.
     server = Server.query.filter_by(id=sid).first()
     driver = get_driver(PG_DEFAULT_DRIVER)
     manager = driver.connection_manager(sid)
-    conn = manager.connection()
-    user = None
 
-    if usr and manager.user != usr:
-        user = usr
-    else:
-        user = manager.user
-        if conn.connected():
-            return make_json_response(
-                success=1,
-                info=gettext("Server connected."),
-                data={}
-            )
+    conn = manager.connection()
+    if conn.connected():
+        return make_json_response(
+            success=1,
+            info=gettext("Server connected."),
+            data={}
+        )
 
     view = SchemaDiffRegistry.get_node_view('server')
     return view.connect(
-        server.servergroup_id, sid, user_name=user, resp_json=True
+        server.servergroup_id, sid
     )
 
 

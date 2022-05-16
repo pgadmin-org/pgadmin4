@@ -210,6 +210,10 @@ PaperComponent.propTypes = {
 };
 
 export const useModalStyles = makeStyles((theme) => ({
+  container: {
+    backgroundColor: theme.palette.background.default
+  },
+
   titleBar: {
     display: 'flex',
     flexGrow: 1

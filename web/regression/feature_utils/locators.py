@@ -24,7 +24,7 @@ class BrowserToolBarLocators():
     filter_data_button_css = \
         ".wcFrameButton[title='Filtered Rows']:not(.disabled)"
 
-    filter_alertify_box_css = ".alertify .ajs-header[data-title~='Filter']"
+    filter_alertify_box_css = ".wcPanelTab.wcPanelTabActive.wcNotMoveable"
 
 
 class NavMenuLocators:

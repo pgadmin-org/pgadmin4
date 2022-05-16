@@ -498,9 +498,10 @@ define('pgadmin.browser.node', [
 
       return null;
     },
-    addUtilityPanel: function(width, height) {
+    addUtilityPanel: function(width, height, docker) {
       var body = window.document.body,
-        el = document.createElement('div');
+        el = document.createElement('div'),
+        dockerObject = docker || pgBrowser.docker;
 
       body.insertBefore(el, body.firstChild);
 
@@ -513,7 +514,7 @@ define('pgadmin.browser.node', [
         new_height = height;
       }
 
-      var new_panel = pgBrowser.docker.addPanel(
+      var new_panel = dockerObject.addPanel(
         'utility_props', window.wcDocker.DOCK.FLOAT, undefined, {
           w: new_width,
           h: new_height,
@@ -548,8 +549,8 @@ define('pgadmin.browser.node', [
       }
     },
 
-    registerUtilityPanel: function() {
-      var w = pgBrowser.docker,
+    registerUtilityPanel: function(docker) {
+      var w = docker || pgBrowser.docker,
         p = w.findPanels('utility_props');
 
       if (p && p.length == 1)
@@ -572,7 +573,7 @@ define('pgadmin.browser.node', [
         },
         events: events,
       });
-      p.load(pgBrowser.docker);
+      p.load(w);
     },
     register_node_panel: function() {
       var w = pgBrowser.docker,

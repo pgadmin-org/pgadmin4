@@ -92,5 +92,5 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
              BrowserToolBarLocators.filter_data_button_css),
             (By.CSS_SELECTOR, BrowserToolBarLocators.filter_alertify_box_css)),
             'Filter dialogue did not open on clicking filter button.')
-        self.page.click_modal('Cancel')
+        self.page.click_modal('Close', True)
         self.page.close_query_tool(prompt=False)

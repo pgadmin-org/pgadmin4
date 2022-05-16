@@ -10,6 +10,7 @@
 import { getNodeListById } from '../../../../static/js/node_ajax';
 import ServerSchema from './server.ui';
 import Notify from '../../../../../static/js/helpers/Notifier';
+import { showServerPassword } from '../../../../static/js/password_dialogs';
 
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
@@ -885,10 +886,11 @@ define('pgadmin.node.server', [
                 if (msg == 'CRYPTKEY_SET') {
                   connect_to_server(_node, _data, _tree, _item, _wasConnected);
                 } else if (msg != 'CRYPTKEY_NOT_SET') {
-                  Alertify.dlgServerPass(
+                  showServerPassword(
                     gettext('Connect to Server'),
-                    msg, _node, _data, _tree, _item, _wasConnected
-                  ).resizeTo();
+                    msg, _node, _data, _tree, _item, _wasConnected, onSuccess,
+                    onFailure, onCancel
+                  );
                 }
               }, 100);
             });
@@ -953,88 +955,6 @@ define('pgadmin.node.server', [
             }
           }
         };
-
-      // Ask Password and send it back to the connect server
-      if (!Alertify.dlgServerPass) {
-        Alertify.dialog('dlgServerPass', function factory() {
-          return {
-            main: function(
-              title, message, node, _data, _tree, _item,
-              _status, _onSuccess, _onFailure, _onCancel
-            ) {
-              this.set('title', title);
-              this.message = message;
-              this.tree = _tree;
-              this.nodeData = _data;
-              this.nodeItem = _item;
-              this.node= node;
-              this.connected = _status;
-              this.onSuccess = _onSuccess || onSuccess;
-              this.onFailure = _onFailure || onFailure;
-              this.onCancel = _onCancel || onCancel;
-            },
-            setup:function() {
-              return {
-                buttons:[{
-                  text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                  key: 27,
-                },{
-                  text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-                }],
-                focus: {element: '#password', select: true},
-                options: {
-                  modal: 0, resizable: false, maximizable: false, pinnable: false,
-                },
-              };
-            },
-            build:function() {/*This is intentional (SonarQube)*/},
-            prepare:function() {
-              this.setContent(this.message);
-            },
-            callback: function(closeEvent) {
-              var _tree = this.tree,
-                _item = this.nodeItem,
-                _node = this.node,
-                _data = this.nodeData,
-                _status = this.connected,
-                _onSuccess = this.onSuccess,
-                _onFailure = this.onFailure,
-                _onCancel = this.onCancel;
-
-              if (closeEvent.button.text == gettext('OK')) {
-
-                var _url = _node.generate_url(_item, 'connect', _data, true);
-
-                if (!_status) {
-                  _tree.setLeaf(_item);
-                  _tree.removeIcon(_item);
-                  _tree.addIcon(_item, {icon: 'icon-server-connecting'});
-                }
-
-                $.ajax({
-                  type: 'POST',
-                  timeout: 30000,
-                  url: _url,
-                  data: $('#frmPassword').serialize(),
-                })
-                  .done(function(res) {
-                    return _onSuccess(
-                      res, _node, _data, _tree, _item, _status
-                    );
-                  })
-                  .fail(function(xhr, status, error) {
-                    return _onFailure(
-                      xhr, status, error, _node, _data, _tree, _item, _status
-                    );
-                  });
-              } else {
-                _onCancel && typeof(_onCancel) == 'function' &&
-                  _onCancel(_tree, _item, _data, _status);
-              }
-            },
-          };
-        });
-      }
 
       var onCancel = function(_tree, _item, _data, _status) {
         _data.is_connecting = false;

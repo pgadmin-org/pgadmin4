@@ -12,6 +12,7 @@ import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import DatabaseSchema from './database.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
+import { showServerPassword } from '../../../../../static/js/password_dialogs';
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
@@ -400,11 +401,11 @@ define('pgadmin.node.database', [
                   if (msg == 'CRYPTKEY_SET') {
                     connect_to_database(_model, _data, _tree, _item, _wasConnected);
                   } else {
-                    Alertify.dlgServerPass(
+                    showServerPassword(
                       gettext('Connect to database'),
                       msg, _model, _data, _tree, _item, _status,
                       onSuccess, onFailure, onCancel
-                    ).resizeTo();
+                    );
                   }
                 }, 100);
               });

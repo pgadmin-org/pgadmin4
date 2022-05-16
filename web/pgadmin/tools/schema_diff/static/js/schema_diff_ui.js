@@ -19,6 +19,7 @@ import 'pgadmin.tools.sqleditor';
 import pgWindow from 'sources/window';
 import _ from 'underscore';
 import Notify from '../../../../static/js/helpers/Notifier';
+import { showSchemaDiffServerPassword } from '../../../../browser/static/js/password_dialogs';
 
 
 import { SchemaDiffSelect2Control, SchemaDiffHeaderView,
@@ -920,17 +921,21 @@ export default class SchemaDiffUI {
   }
 
   connect_server(server_id, callback) {
+    let self = this;
     var  onFailure = function(
         xhr, status, error, sid, err_callback
       ) {
         Notify.pgNotifier('error', xhr, error, function(msg) {
           setTimeout(function() {
-            Alertify.dlgServerPass(
+            showSchemaDiffServerPassword(
+              self.docker,
               gettext('Connect to Server'),
               msg,
               sid,
-              err_callback
-            ).resizeTo();
+              err_callback,
+              onSuccess,
+              onFailure
+            );
           }, 100);
         });
       },
@@ -940,79 +945,6 @@ export default class SchemaDiffUI {
           suc_callback(res.data);
         }
       };
-
-
-    // Ask Password and send it back to the connect server
-    if (!Alertify.dlgServerPass) {
-      Alertify.dialog('dlgServerPass', function factory() {
-        return {
-          main: function(
-            title, message, sid, success_callback, _onSuccess, _onFailure, _onCancel
-          ) {
-            this.set('title', title);
-            this.message = message;
-            this.server_id = sid;
-            this.success_callback = success_callback;
-            this.onSuccess = _onSuccess || onSuccess;
-            this.onFailure = _onFailure || onFailure;
-            this.onCancel = _onCancel || onCancel;
-          },
-          setup:function() {
-            return {
-              buttons:[{
-                text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                key: 27,
-              },{
-                text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-              }],
-              focus: {element: '#password', select: true},
-              options: {
-                modal: 0, resizable: false, maximizable: false, pinnable: false,
-              },
-            };
-          },
-          build:function() {/*This is intentional (SonarQube)*/},
-          prepare:function() {
-            this.setContent(this.message);
-          },
-          callback: function(closeEvent) {
-            var _onFailure = this.onFailure,
-              _onSuccess = this.onSuccess,
-              _onCancel = this.onCancel,
-              _success_callback = this.success_callback;
-
-            if (closeEvent.button.text == gettext('OK')) {
-
-              var _url = url_for('schema_diff.connect_server', {'sid': this.server_id});
-
-              $.ajax({
-                type: 'POST',
-                timeout: 30000,
-                url: _url,
-                data: $('#frmPassword').serialize(),
-              })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    return _onSuccess(res, _success_callback);
-                  }
-                })
-                .fail(function(xhr, status, error) {
-                  return _onFailure(
-                    xhr, status, error, this.server_id, _success_callback
-                  );
-                });
-            } else {
-              _onCancel && typeof(_onCancel) == 'function' &&
-                _onCancel();
-            }
-          },
-        };
-      });
-    }
-
-    var onCancel = function() {
-      return false;
-    };
 
     var url = url_for('schema_diff.connect_server', {'sid': server_id});
     $.post(url)
