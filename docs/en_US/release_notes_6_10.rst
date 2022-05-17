@@ -19,3 +19,4 @@ Bug fixes
 *********
 
   | `Issue #7372 <https://redmine.postgresql.org/issues/7372>`_ -  Tell Docker to always pull the latest base images when building containers.
+  | `Issue #7383 <https://redmine.postgresql.org/issues/7383>`_ -  Fixed an issue where Preferences are not saved when the dialog is maximized.

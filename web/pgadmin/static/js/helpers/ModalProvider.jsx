@@ -9,6 +9,7 @@
 
 import { Box, Dialog, DialogContent, DialogTitle, makeStyles, Paper } from '@material-ui/core';
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import { getEpoch } from 'sources/utils';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../components/Buttons';
 import Draggable from 'react-draggable';
@@ -148,6 +149,9 @@ const dialogStyle = makeStyles((theme) => ({
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     borderRadius: theme.shape.borderRadius,
   },
+  fullScreen: {
+    transform: 'none !important'
+  }
 }));
 
 function PaperComponent(props) {
@@ -167,7 +171,7 @@ function PaperComponent(props) {
     props.isresizeable == 'true' ?
       <Rnd
         size={props.isfullscreen == 'true' && { width: '100%', height: '100%' }}
-        className={classes.dialog}
+        className={clsx(classes.dialog, props.isfullscreen == 'true' ? classes.fullScreen : '')}
         default={{
           x: 300,
           y: 100,
