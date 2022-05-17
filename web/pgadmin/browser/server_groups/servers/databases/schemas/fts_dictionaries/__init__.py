@@ -215,11 +215,6 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             driver = get_driver(PG_DEFAULT_DRIVER)
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -401,7 +396,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             ))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         # Handle templates and its schema name properly
         if res['rows'][0]['template_schema'] is not None and \

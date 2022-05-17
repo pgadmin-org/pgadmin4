@@ -198,10 +198,6 @@ class RowSecurityView(PGChildNodeView):
             schema, table = row_security_policies_utils.get_parent(self.conn,
                                                                    kwargs[
                                                                        'tid'])
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
             self.schema = schema
             self.table = table
             # Set template path for the sql scripts
@@ -315,7 +311,7 @@ class RowSecurityView(PGChildNodeView):
         sql = render_template("/".join(
             [self.template_path, self._PROPERTIES_SQL]
         ), plid=plid, scid=scid, policy_table_id=tid,
-            datlastsysoid=self.datlastsysoid)
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -555,7 +551,8 @@ class RowSecurityView(PGChildNodeView):
 
         SQL = row_security_policies_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, scid=scid,
-            plid=plid, policy_table_id=tid, datlastsysoid=self.datlastsysoid)
+            plid=plid, policy_table_id=tid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
         return ajax_response(response=SQL)
 
@@ -632,7 +629,8 @@ class RowSecurityView(PGChildNodeView):
             sql = row_security_policies_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=self.table, scid=scid,
                 plid=oid, policy_table_id=tid,
-                datlastsysoid=self.datlastsysoid, with_header=False)
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                with_header=False)
 
         drop_sql = ''
         if drop_req:

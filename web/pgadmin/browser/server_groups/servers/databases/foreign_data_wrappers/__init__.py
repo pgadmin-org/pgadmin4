@@ -216,11 +216,6 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -380,7 +375,8 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         if res['rows'][0]['fdwoptions'] is not None:
             res['rows'][0]['fdwoptions'] = tokenize_options(

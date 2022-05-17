@@ -231,10 +231,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             self.driver = get_driver(PG_DEFAULT_DRIVER)
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = self.manager.db_info[kwargs['did']][
-                'datlastsysoid'] if self.manager.db_info is not None \
-                and kwargs['did'] in self.manager.db_info else 0
-
             # Set the template path for the SQL scripts
             self.template_path = (
                 "subscriptions/sql/#{0}#".format(self.manager.version)

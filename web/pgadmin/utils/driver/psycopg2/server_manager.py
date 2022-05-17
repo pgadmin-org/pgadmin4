@@ -217,7 +217,7 @@ SELECT
     db.oid as did, db.datname, db.datallowconn,
     pg_catalog.pg_encoding_to_char(db.encoding) AS serverencoding,
     pg_catalog.has_database_privilege(db.oid, 'CREATE') as cancreate,
-    datlastsysoid, datistemplate
+    datistemplate
 FROM
     pg_catalog.pg_database db
 WHERE db.oid = {0}""".format(did))

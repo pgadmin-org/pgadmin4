@@ -665,10 +665,6 @@ rolmembership:{
                         _("Connection to the server has been lost.")
                     )
 
-                self.datlastsysoid = \
-                    self.manager.db_info[self.manager.did]['datlastsysoid'] \
-                    if self.manager.db_info is not None and \
-                    self.manager.did in self.manager.db_info else 0
                 self.datistemplate = False
                 if (
                     self.manager.db_info is not None and
@@ -843,7 +839,8 @@ rolmembership:{
             return gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=res['rows'][0],
@@ -1129,7 +1126,7 @@ rolmembership:{
             query = render_template(
                 "/".join([self.sql_path, 'dependents.sql']),
                 fetch_dependents=True, rid=rid,
-                lastsysoid=db_row['datlastsysoid']
+                lastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
 
             status, result = temp_conn.execute_dict(query)

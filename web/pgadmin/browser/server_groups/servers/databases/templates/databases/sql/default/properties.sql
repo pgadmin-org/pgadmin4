@@ -23,7 +23,7 @@ FROM pg_catalog.pg_database db
 WHERE {% if did %}
 db.oid = {{ did|qtLiteral }}::OID{% else %}{% if name %}
 db.datname = {{ name|qtLiteral }}::text{% else %}
-db.oid > {{ last_system_oid|qtLiteral }}::OID
+db.oid > {{ last_system_oid|qtLiteral }}::OID OR db.datname IN ('postgres', 'edb')
 {% endif %}{% endif %}
 {% if db_restrictions %}
 

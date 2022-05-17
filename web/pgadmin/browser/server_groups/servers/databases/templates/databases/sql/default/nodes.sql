@@ -6,7 +6,7 @@ FROM
     LEFT OUTER JOIN pg_catalog.pg_tablespace ta ON db.dattablespace = ta.oid
 WHERE {% if did %}
 db.oid = {{ did|qtLiteral }}::OID{% else %}
-db.oid > {{ last_system_oid }}::OID
+db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
 {% endif %}
 {% if db_restrictions %}
 

@@ -246,12 +246,6 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            # We need datlastsysoid to check if current index is system index
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.table_template_path = compile_template_path(
                 'tables/sql',
                 self.manager.server_type,
@@ -514,7 +508,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+            did=did, tid=tid, idx=idx,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -700,7 +695,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 # so that we create template for dropping index
                 SQL = render_template(
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
-                    did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+                    did=did, tid=tid, idx=idx,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
 
                 status, res = self.conn.execute_dict(SQL)
@@ -757,7 +753,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             SQL, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid)
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -808,7 +804,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             sql, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid, mode='create')
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create')
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -837,7 +833,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL = index_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, did=did,
-            tid=tid, idx=idx, datlastsysoid=self.datlastsysoid,
+            tid=tid, idx=idx, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             add_not_exists_clause=True
         )
 
@@ -868,7 +864,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid, mode='create')
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create')
 
             sql = sql.strip('\n').strip(' ')
 
@@ -876,7 +872,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema=target_schema,
                 table=self.table, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 template_path=None, with_header=False,
                 add_not_exists_clause=True
             )
@@ -973,7 +969,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 SQL = render_template(
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:

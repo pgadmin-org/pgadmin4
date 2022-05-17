@@ -197,10 +197,6 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(
                 PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
             self.template_path = 'rules/sql'
             self.table_template_path = compile_template_path(
                 'tables/sql',
@@ -310,7 +306,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template("/".join(
             [self.template_path, self._PROPERTIES_SQL]
-        ), rid=rid, datlastsysoid=self.datlastsysoid)
+        ), rid=rid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:

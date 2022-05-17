@@ -226,14 +226,6 @@ def check_precondition(f):
             kwargs['sid']
         )
         self.conn = self.manager.connection(did=kwargs['did'])
-        self.datlastsysoid = 0
-        if (
-            self.manager.db_info is not None and
-            kwargs['did'] in self.manager.db_info
-        ):
-            self.datlastsysoid = self.manager.db_info[kwargs['did']][
-                'datlastsysoid']
-
         # Set template path for sql scripts
         if self.manager.server_type == 'ppas':
             _temp = self.ppas_template_path(self.manager.version)
@@ -401,7 +393,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
-            vid=vid, datlastsysoid=self.datlastsysoid)
+            vid=vid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -474,7 +466,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]
-        ), vid=vid, datlastsysoid=self.datlastsysoid)
+        ), vid=vid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=res)
@@ -649,7 +641,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                               self._SQL_PREFIX + self._PROPERTIES_SQL]),
                     did=did,
                     vid=vid,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res_data = self.conn.execute_dict(SQL)
                 if not status:
@@ -774,7 +766,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 [self.template_path,
                  self._SQL_PREFIX + self._PROPERTIES_SQL]),
                 vid=vid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -1371,7 +1363,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]),
             vid=vid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -1534,7 +1526,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL
             ]),
             scid=scid, vid=vid, did=did,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1548,7 +1540,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 self.column_template_path, self._PROPERTIES_SQL
             ]),
             scid=scid, tid=vid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, data = self.conn.execute_dict(SQL)
         if not status:
@@ -1593,7 +1585,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL
             ]),
             scid=scid, vid=vid, did=did,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1608,7 +1600,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 self.column_template_path, self._PROPERTIES_SQL
             ]),
             scid=scid, tid=vid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, data = self.conn.execute_dict(SQL)
         if not status:
@@ -1653,7 +1645,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if not oid:
             SQL = render_template("/".join(
                 [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
-                did=did, scid=scid, datlastsysoid=self.datlastsysoid,
+                did=did, scid=scid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 schema_diff=True)
             status, views = self.conn.execute_2darray(SQL)
             if not status:
@@ -2063,7 +2056,7 @@ class MViewNode(ViewNode, VacuumSettings):
         """
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._PROPERTIES_SQL]
-        ), did=did, vid=vid, datlastsysoid=self.datlastsysoid)
+        ), did=did, vid=vid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=res)
@@ -2287,7 +2280,7 @@ class MViewNode(ViewNode, VacuumSettings):
         res = dict()
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
-            did=did, scid=scid, datlastsysoid=self.datlastsysoid,
+            did=did, scid=scid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:

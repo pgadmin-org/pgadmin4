@@ -526,7 +526,7 @@ class Connection(BaseConnection):
 SELECT
     db.oid as did, db.datname, db.datallowconn,
     pg_encoding_to_char(db.encoding) AS serverencoding,
-    has_database_privilege(db.oid, 'CREATE') as cancreate, datlastsysoid,
+    has_database_privilege(db.oid, 'CREATE') as cancreate,
     datistemplate
 FROM
     pg_catalog.pg_database db

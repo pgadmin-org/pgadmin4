@@ -263,7 +263,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         SQL = render_template("/".join([self.partition_template_path,
                                         self._PROPERTIES_SQL]),
                               did=did, scid=scid, tid=tid,
-                              datlastsysoid=self.datlastsysoid)
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -372,7 +372,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.partition_template_path,
                                             self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+                                  ptid=ptid,
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -408,7 +409,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.partition_template_path,
                                             self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+                                  ptid=ptid,
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             status, result = self.conn.execute_dict(SQL)
             if not status:
                 current_app.logger.error(result)
@@ -428,11 +430,11 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 return False
 
             for row in partitions['rows']:
-                SQL = render_template("/".join([self.partition_template_path,
-                                                self._PROPERTIES_SQL]),
-                                      did=did, scid=scid, tid=tid,
-                                      ptid=row['oid'],
-                                      datlastsysoid=self.datlastsysoid)
+                SQL = render_template(
+                    "/".join([self.partition_template_path,
+                              self._PROPERTIES_SQL]),
+                    did=did, scid=scid, tid=tid, ptid=row['oid'],
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
                 status, result = self.conn.execute_dict(SQL)
 
                 if not status:
@@ -712,7 +714,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.partition_template_path,
                                             self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+                                  ptid=ptid,
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -750,7 +753,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                     "/".join([self.partition_template_path,
                               self._PROPERTIES_SQL]),
                     did=did, scid=scid, tid=tid, ptid=ptid,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -804,7 +807,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template(
                 "/".join([self.partition_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid, ptid=ptid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:

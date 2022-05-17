@@ -155,11 +155,6 @@ class AggregateView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -317,7 +312,7 @@ class AggregateView(PGChildNodeView):
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               scid=scid, agid=agid,
-                              datlastsysoid=self.datlastsysoid)
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -327,7 +322,8 @@ class AggregateView(PGChildNodeView):
             return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return True, res['rows'][0]
 

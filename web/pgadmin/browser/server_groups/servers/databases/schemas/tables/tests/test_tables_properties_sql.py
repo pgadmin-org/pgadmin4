@@ -11,6 +11,7 @@ import os
 from regression.python_test_utils.template_helper import file_as_template
 from regression.python_test_utils.sql_template_test_base import \
     SQLTemplateTestBase
+from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
 
 
 class TestTablesPropertiesSql(SQLTemplateTestBase):
@@ -46,7 +47,7 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
         public_schema_id = 2200
         sql = template.render(scid=public_schema_id,
                               did=self.database_id,
-                              datlastsysoid=self.last_system_oid,
+                              datlastsysoid=DATABASE_LAST_SYSTEM_OID,
                               tid=self.table_id
                               )
         return sql
@@ -54,12 +55,12 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
     def test_setup(self, connection, cursor):
         cursor.execute("""
             SELECT
-                db.oid as did, datlastsysoid
+                db.oid as did
             FROM
                 pg_catalog.pg_database db
             WHERE db.datname = '{0}'""".format(self.database_name)
                        )
-        self.database_id, self.last_system_oid = cursor.fetchone()
+        self.database_id = cursor.fetchone()[0]
 
         cursor.execute("SELECT oid FROM pg_catalog.pg_class where relname="
                        "'test_table'")

@@ -113,11 +113,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
             self.qtTypeIdent = driver.qtTypeIdent
-            # We need datlastsysoid to check if current table is system table
-            self.datlastsysoid = self.manager.db_info[
-                did
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                did in self.manager.db_info else 0
 
             ver = self.manager.version
             server_type = self.manager.server_type
@@ -577,7 +572,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         sql = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -748,7 +743,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             index_sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=table, did=did, tid=tid,
-                idx=row['oid'], datlastsysoid=self.datlastsysoid,
+                idx=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 template_path=None, with_header=json_resp,
                 add_not_exists_clause=add_not_exists_clause
             )
@@ -780,7 +775,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     get_reverse_engineered_sql(
                         self.conn, schema=schema, table=table, scid=scid,
                         plid=row['oid'], policy_table_id=tid,
-                        datlastsysoid=self.datlastsysoid,
+                        datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                         template_path=None, with_header=json_resp)
                 policy_sql = "\n" + policy_sql
 
@@ -806,7 +801,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         for row in rset['rows']:
             trigger_sql = trigger_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=table, tid=tid,
-                trid=row['oid'], datlastsysoid=self.datlastsysoid,
+                trid=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects,
                 template_path=None, with_header=json_resp)
             trigger_sql = "\n" + trigger_sql
@@ -837,7 +832,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 compound_trigger_sql = \
                     compound_trigger_utils.get_reverse_engineered_sql(
                         self.conn, schema=schema, table=table, tid=tid,
-                        trid=row['oid'], datlastsysoid=self.datlastsysoid)
+                        trid=row['oid'],
+                        datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
                 compound_trigger_sql = "\n" + compound_trigger_sql
 
                 # Add into main sql
@@ -864,7 +860,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             rules_sql = '\n'
             sql = render_template("/".join(
                 [self.rules_template_path, self._PROPERTIES_SQL]
-            ), rid=row['oid'], datlastsysoid=self.datlastsysoid)
+            ), rid=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(sql)
             if not status:

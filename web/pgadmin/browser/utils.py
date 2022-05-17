@@ -21,6 +21,7 @@ from pgadmin.utils.ajax import make_json_response, precondition_required,\
     internal_server_error
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
+from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
 
 
 def underscore_escape(text):
@@ -391,6 +392,7 @@ class PGChildNodeView(NodeView):
     _GET_SUBTYPES_SQL = 'get_subtypes.sql'
     _GET_EXTERNAL_FUNCTIONS_SQL = 'get_external_functions.sql'
     _GET_TABLE_FOR_PUBLICATION = 'get_tables.sql'
+    _DATABASE_LAST_SYSTEM_OID = DATABASE_LAST_SYSTEM_OID
 
     def get_children_nodes(self, manager, **kwargs):
         """

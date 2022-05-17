@@ -263,13 +263,6 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            # We need datlastsysoid to check if current compound trigger
-            # is system trigger
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -451,7 +444,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               tid=tid, trid=trid,
-                              datlastsysoid=self.datlastsysoid)
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -575,10 +568,10 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 # We will first fetch the compound trigger name for
                 # current request so that we create template for
                 # dropping compound trigger
-                SQL = render_template("/".join([self.template_path,
-                                                self._PROPERTIES_SQL]),
-                                      tid=tid, trid=trid,
-                                      datlastsysoid=self.datlastsysoid)
+                SQL = render_template(
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
+                    tid=tid, trid=trid,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -637,7 +630,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             data['table'] = self.table
 
             SQL, name = compound_trigger_utils.get_sql(
-                self.conn, data, tid, trid, self.datlastsysoid)
+                self.conn, data, tid, trid, self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -659,7 +652,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
                                   tid=tid, trid=new_trid,
-                                  datlastsysoid=self.datlastsysoid)
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(SQL)
 
@@ -716,7 +709,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         try:
             sql, name = compound_trigger_utils.get_sql(
-                self.conn, data, tid, trid, self.datlastsysoid)
+                self.conn, data, tid, trid, self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -747,7 +740,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             SQL = compound_trigger_utils.get_reverse_engineered_sql(
                 self.conn, schema=self.schema, table=self.table, tid=tid,
-                trid=trid, datlastsysoid=self.datlastsysoid)
+                trid=trid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -780,7 +773,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
                                   tid=tid, trid=trid,
-                                  datlastsysoid=self.datlastsysoid)
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -885,10 +878,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         target_schema = kwargs.get('target_schema', None)
 
         if data:
-            sql, name = compound_trigger_utils.get_sql(self.conn,
-                                                       data,
-                                                       tid, oid,
-                                                       self.datlastsysoid)
+            sql, name = compound_trigger_utils.get_sql(
+                self.conn, data, tid, oid, self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -898,10 +889,10 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                                   scid=scid, tid=tid,
                                   trid=oid, only_sql=True)
             else:
-                sql = render_template("/".join([self.template_path,
-                                                self._PROPERTIES_SQL]),
-                                      tid=tid, trid=oid,
-                                      datlastsysoid=self.datlastsysoid)
+                sql = render_template(
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
+                    tid=tid, trid=oid,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -935,11 +926,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         if target_schema:
             data['schema'] = target_schema
 
-        sql, name = compound_trigger_utils.get_sql(self.conn,
-                                                   data,
-                                                   tid,
-                                                   None,
-                                                   self.datlastsysoid)
+        sql, name = compound_trigger_utils.get_sql(
+            self.conn, data, tid, None, self._DATABASE_LAST_SYSTEM_OID)
 
         # If compound trigger is disbaled then add sql
         # code for the same

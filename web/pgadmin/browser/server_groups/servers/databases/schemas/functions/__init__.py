@@ -1609,12 +1609,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         # Set System Functions Status
         resp_data['sysfunc'] = False
-        if fnid <= self.manager.db_info[did]['datlastsysoid']:
+        if fnid <= self._DATABASE_LAST_SYSTEM_OID:
             resp_data['sysfunc'] = True
 
         # Set System Functions Status
         resp_data['sysproc'] = False
-        if fnid <= self.manager.db_info[did]['datlastsysoid']:
+        if fnid <= self._DATABASE_LAST_SYSTEM_OID:
             resp_data['sysproc'] = True
 
         # Get formatted Security Labels

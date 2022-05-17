@@ -139,11 +139,6 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.template_path = self.EXT_TEMPLATE_PATH
 
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -257,7 +252,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return True, res['rows'][0]
 

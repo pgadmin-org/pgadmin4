@@ -229,11 +229,6 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -358,7 +353,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 _("Could not find the FTS Parser node in the database node."))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         return True, res['rows'][0]
 
     @check_precondition

@@ -262,13 +262,6 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            # We need datlastsysoid to check if current trigger is system
-            # trigger
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             # we will set template path for sql scripts
             self.table_template_path = compile_template_path(
                 'tables/sql',
@@ -543,7 +536,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               tid=tid, trid=trid,
-                              datlastsysoid=self.datlastsysoid)
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -668,10 +661,10 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             for trid in data['ids']:
                 # We will first fetch the trigger name for current request
                 # so that we create template for dropping trigger
-                SQL = render_template("/".join([self.template_path,
-                                                self._PROPERTIES_SQL]),
-                                      tid=tid, trid=trid,
-                                      datlastsysoid=self.datlastsysoid)
+                SQL = render_template(
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
+                    tid=tid, trid=trid,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -730,7 +723,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             SQL, name = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=trid,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects)
 
             if not isinstance(SQL, str):
@@ -754,7 +747,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
                                   tid=tid, trid=new_trid,
-                                  datlastsysoid=self.datlastsysoid)
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(SQL)
 
@@ -812,7 +805,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             sql, name = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=trid,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects)
             if not isinstance(sql, str):
                 return sql
@@ -843,7 +836,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL = trigger_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, tid=tid,
-            trid=trid, datlastsysoid=self.datlastsysoid,
+            trid=trid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects)
 
         return ajax_response(response=SQL)
@@ -868,7 +861,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         if data:
             SQL, name = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=oid,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects,
                 is_schema_diff=True)
 
@@ -887,7 +880,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
                 SQL = trigger_utils.get_reverse_engineered_sql(
                     self.conn, schema=schema, table=self.table, tid=tid,
-                    trid=oid, datlastsysoid=self.datlastsysoid,
+                    trid=oid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                     show_system_objects=self.blueprint.show_system_objects,
                     template_path=None, with_header=False)
 
@@ -918,7 +911,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
                                   tid=tid, trid=trid,
-                                  datlastsysoid=self.datlastsysoid)
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(SQL)
             if not status:

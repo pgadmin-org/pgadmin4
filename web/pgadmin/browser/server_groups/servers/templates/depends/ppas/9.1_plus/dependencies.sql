@@ -1,5 +1,5 @@
 SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin, ad.adsrc,
-    CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind || COALESCE(dep.refobjsubid::text, '') ELSE cl.relkind END
+    CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind::text || COALESCE(dep.refobjsubid::text, '') ELSE cl.relkind::text END
         WHEN tg.oid IS NOT NULL THEN 'Tr'::text
         WHEN ty.oid IS NOT NULL THEN CASE WHEN ty.typtype = 'd' THEN 'd'::text ELSE 'Ty'::text END
         WHEN ns.oid IS NOT NULL THEN CASE WHEN ns.nspparent != 0 THEN 'Pa'::text ELSE 'n'::text END
@@ -7,7 +7,7 @@ SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin,
         WHEN pr.oid IS NOT NULL THEN 'Pf'::text
         WHEN la.oid IS NOT NULL THEN 'l'::text
         WHEN rw.oid IS NOT NULL THEN 'Rl'::text
-        WHEN co.oid IS NOT NULL THEN CASE WHEN co.contypid > 0 THEN 'Cd' ELSE 'C'::text || contype END
+        WHEN co.oid IS NOT NULL THEN CASE WHEN co.contypid > 0 THEN 'Cd' ELSE 'C'::text || contype::text END
         WHEN ad.oid IS NOT NULL THEN 'A'::text
         WHEN fs.oid IS NOT NULL THEN 'Fs'::text
         WHEN fdw.oid IS NOT NULL THEN 'Fw'::text
@@ -74,7 +74,7 @@ refclassid IN ( SELECT oid FROM pg_catalog.pg_class WHERE relname IN
    'pg_synonym'))
 UNION
 SELECT DISTINCT dep.deptype, dep.refclassid, dep.refobjid, cl.relkind, ad.adbin, ad.adsrc,
-    CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind || COALESCE(dep.refobjsubid::text, '') ELSE cl.relkind END
+    CASE WHEN cl.relkind IS NOT NULL THEN CASE WHEN cl.relkind = 'r' THEN cl.relkind::text || COALESCE(dep.refobjsubid::text, '') ELSE cl.relkind::text END
     ELSE '' END AS type,
 	NULL AS ownertable,
 	CASE WHEN cl.relname IS NOT NULL OR att.attname IS NOT NULL THEN cl.relname || COALESCE('.' || att.attname, '')

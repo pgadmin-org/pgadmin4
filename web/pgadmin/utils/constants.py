@@ -113,3 +113,4 @@ UTILITIES_ARRAY = ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']
 
 ENTER_EMAIL_ADDRESS = "Email address: "
 USER_NOT_FOUND = gettext("The specified user ID (%s) could not be found.")
+DATABASE_LAST_SYSTEM_OID = 16383

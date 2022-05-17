@@ -1,10 +1,10 @@
 {% if fetch_database %}
 SELECT 'd' as type, datname,
     datallowconn AND pg_catalog.has_database_privilege(datname, 'CONNECT') AS datallowconn,
-    datdba, datlastsysoid
+    datdba
 FROM pg_catalog.pg_database db
 UNION
-SELECT 'M', spcname, null, null, null
+SELECT 'M', spcname, null, null
     FROM pg_catalog.pg_tablespace where spcowner= {{rid}}::oid
 ORDER BY 1, 2
 {% endif %}

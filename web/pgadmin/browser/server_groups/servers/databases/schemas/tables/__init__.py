@@ -306,7 +306,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -1059,7 +1059,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 SQL = render_template(
                     "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                     did=did, scid=scid, tid=tid,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -1111,7 +1111,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             SQL = render_template(
                 "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -1150,7 +1150,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             SQL = render_template(
                 "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -1219,7 +1219,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             SQL = render_template(
                 "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -1369,7 +1369,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1417,7 +1417,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1468,7 +1468,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1521,7 +1521,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1601,7 +1601,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template("/".join(
             [self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         sql = ''

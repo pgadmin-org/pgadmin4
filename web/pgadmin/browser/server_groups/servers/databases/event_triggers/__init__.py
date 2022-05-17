@@ -196,11 +196,6 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.template_path = 'event_triggers/sql/9.3_plus'
 
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -370,7 +365,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         result = res['rows'][0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
             self.datistemplate)
         result = self._formatter(result)
 

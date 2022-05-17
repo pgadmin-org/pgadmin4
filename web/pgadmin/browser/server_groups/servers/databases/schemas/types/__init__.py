@@ -235,15 +235,6 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
 
-            # We need datlastsysoid to check if current type is system type
-            self.datlastsysoid = 0
-            if (
-                self.manager.db_info is not None and
-                kwargs['did'] in self.manager.db_info
-            ):
-                self.datlastsysoid = self.manager.db_info[kwargs['did']][
-                    'datlastsysoid']
-
             # Declare allows acl on type
             self.acl = ['U']
 
@@ -278,7 +269,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects)
 
         status, res = self.conn.execute_dict(SQL)
@@ -604,7 +595,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.template_path,
                       self._PROPERTIES_SQL]),
             scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -1157,7 +1148,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     "/".join([self.template_path,
                               self._PROPERTIES_SQL]),
                     scid=scid, tid=tid,
-                    datlastsysoid=self.datlastsysoid,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                     show_system_objects=self.blueprint.show_system_objects
                 )
                 status, res = self.conn.execute_dict(sql)
@@ -1363,7 +1354,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.template_path,
                       self._PROPERTIES_SQL]),
             scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -1431,7 +1422,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.template_path,
                       self._PROPERTIES_SQL]),
             scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -1551,7 +1542,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         res = dict()
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
-                              scid=scid, datlastsysoid=self.datlastsysoid,
+                              scid=scid,
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                               schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:

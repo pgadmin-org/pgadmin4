@@ -14,6 +14,7 @@ Housekeeping
 ************
 
   | `Issue #7337 <https://redmine.postgresql.org/issues/7337>`_ -  Port connect server password dialog to React.
+  | `Issue #7283 <https://redmine.postgresql.org/issues/7283>`_ -  PG 15 compatibility issues fixed.
 
 Bug fixes
 *********

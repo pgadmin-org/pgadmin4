@@ -282,11 +282,6 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -458,7 +453,7 @@ It may have been removed by another user or moved to another schema.
 
         # Set System Domain Status
         data['sysdomain'] = False
-        if doid <= self.manager.db_info[did]['datlastsysoid'] or \
+        if doid <= self._DATABASE_LAST_SYSTEM_OID or \
                 self.datistemplate:
             data['sysdomain'] = True
 

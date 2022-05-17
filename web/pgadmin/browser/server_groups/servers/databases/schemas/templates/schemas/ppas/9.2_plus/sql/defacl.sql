@@ -4,7 +4,7 @@ SELECT
     WHEN 'S' THEN 'defseqacl'
     WHEN 'f' THEN 'deffuncacl'
     WHEN 'T' THEN 'deftypeacl'
-    ELSE 'UNKNOWN - ' || a.deftype
+    ELSE 'UNKNOWN - ' || a.deftype::text
     END AS deftype,
     COALESCE(gt.rolname, 'PUBLIC') grantee,
     g.rolname grantor,

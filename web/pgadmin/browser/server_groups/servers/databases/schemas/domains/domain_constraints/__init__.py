@@ -260,11 +260,6 @@ class DomainConstraintView(PGChildNodeView):
             self.manager = driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -413,7 +408,8 @@ class DomainConstraintView(PGChildNodeView):
 
         data = res['rows'][0]
         data['is_sys_obj'] = (
-            data['oid'] <= self.datlastsysoid or self.datistemplate)
+            data['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         return ajax_response(
             response=data,
             status=200

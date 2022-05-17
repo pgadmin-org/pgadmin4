@@ -140,11 +140,6 @@ def check_precondition(f):
             return gone(errormsg=gettext("Could not find the server."))
 
         self.conn = self.manager.connection(did=kwargs['did'])
-        self.datlastsysoid = \
-            self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-            if self.manager.db_info is not None and \
-            kwargs['did'] in self.manager.db_info else 0
-
         self.datistemplate = False
         if (
             self.manager.db_info is not None and
@@ -571,7 +566,8 @@ It may have been removed by another user.
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
         copy_data['is_sys_obj'] = (
-            copy_data['oid'] <= self.datlastsysoid or self.datistemplate)
+            copy_data['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         copy_data = self._formatter(copy_data, scid)
 
         return ajax_response(
