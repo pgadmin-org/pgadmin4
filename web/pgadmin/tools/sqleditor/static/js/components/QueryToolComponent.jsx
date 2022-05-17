@@ -378,7 +378,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       let msg = parseApiError(error);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
-      Notifier.error(msg);
     }
   };
 
