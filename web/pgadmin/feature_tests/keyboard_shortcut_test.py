@@ -93,12 +93,8 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             NavMenuLocators.preference_menu_item_css)
         pref_menu_item.click()
 
-        browser_node = self.page.find_by_xpath(
+        self.page.find_by_xpath(
             NavMenuLocators.specified_preference_tree_node.format('Browser'))
-        if self.page.find_by_xpath(
-            NavMenuLocators.specified_pref_node_exp_status.
-                format('Browser')).get_attribute('aria-expanded') == 'false':
-            ActionChains(self.driver).double_click(browser_node).perform()
 
         display_node = self.page.find_by_xpath(
             NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
@@ -116,7 +112,7 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
             else:
                 attempt -= 1
 
-        maximize_button = self.page.find_by_css_selector(
+        maximize_button = self.page.find_by_xpath(
             NavMenuLocators.maximize_pref_dialogue_css)
         maximize_button.click()
 
@@ -128,18 +124,17 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
         for s in self.new_shortcuts:
             key = self.new_shortcuts[s]['shortcut'][2]
             locator = self.new_shortcuts[s]['locator']
-            file_menu = self.page.find_by_xpath(
-                "//div[contains(@class,'pgadmin-control-group') "
-                "and contains(.,'" + locator + "')]"
-            )
+            file_menu = \
+                self.page.find_by_xpath("//div[label[text()='{}']]"
+                                        "/following-sibling::div//div/"
+                                        "input".format(locator))
 
-            field = file_menu.find_element(By.NAME, 'key')
-            field.click()
-            field.send_keys(key)
+            file_menu.click()
+            file_menu.send_keys(key)
+
+        maximize_button = self.page.find_by_xpath(
+            NavMenuLocators.maximize_pref_dialogue_css)
+        maximize_button.click()
 
         # save and close the preference dialog.
-        self.page.click_modal('Save')
-
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")
-        )
+        self.page.click_modal('Save', True)

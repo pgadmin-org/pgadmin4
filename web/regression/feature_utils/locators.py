@@ -24,7 +24,8 @@ class BrowserToolBarLocators():
     filter_data_button_css = \
         ".wcFrameButton[title='Filtered Rows']:not(.disabled)"
 
-    filter_alertify_box_css = ".wcPanelTab.wcPanelTabActive.wcNotMoveable"
+    filter_alertify_box_css = "//*[@id='0']/div[contains(text()," \
+                              "'Data Filter')]"
 
 
 class NavMenuLocators:
@@ -51,34 +52,30 @@ class NavMenuLocators:
     show_system_objects_pref_label_xpath = \
         "//label[contains(text(), 'Show system objects?')]"
 
-    maximize_pref_dialogue_css = ".ajs-dialog.pg-el-container .ajs-maximize"
+    maximize_pref_dialogue_css = "//div[text()='Preferences']" \
+                                 "//following::div//span[1]"
 
     specified_pref_node_exp_status = \
-        "//div[div[span[span[(@class='aciTreeText')and " \
-        "(text()='{0} ' or text()='{0}')]]]]"
+        "//*[@id='treeContainer']//div//span[text()='{0}']"
 
     specified_preference_tree_node = \
-        "//div//span[(@class='aciTreeText')and " \
-        "(text()='{0} ' or text()='{0}')]"
+        "//*[@id='treeContainer']//div//span[text()='{0}']" \
 
     specified_sub_node_of_pref_tree_node = \
-        "//span[text()='{0}']//following::span[text()='{1}']"
-
+        "//*[@id='treeContainer']//div//span[text()='{1}']"
     insert_bracket_pair_switch_btn = \
-        "//div[span[normalize-space(text())='Insert bracket pairs?']]" \
-        "//div[contains(@class,'toggle btn')]"
+        "//label[text()='Insert bracket pairs?']//following::div[1]//span"
 
     copy_sql_to_query_tool_switch_btn = \
-        "//div[span[normalize-space(text())=" \
-        "'Copy SQL from main window to query tool?']]" \
-        "//div[contains(@class,'toggle btn')]"
+        "//label[text()='Copy SQL from main window to query tool?']" \
+        "//following::div[1]//span"
 
     backup_filename_txt_box_name = "file"
 
     restore_file_name_txt_box_name = "file"
 
     backup_btn_xpath = \
-        "//button[ contains(.,'Backup')]"
+        "//button/span[text()='Backup']"
 
     bcg_process_status_alertifier_css = \
         ".ajs-message.ajs-bg-bgprocess.ajs-visible"

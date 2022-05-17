@@ -87,9 +87,8 @@ class PgadminPage:
 
         # In case of react dialog we use different xpath
         if react_dialog:
-            modal_button = self.find_by_css_selector(
-                ".react-draggable button[data-label='{0}']"
-                .format(button_text))
+            modal_button = self.find_by_xpath(
+                "//span[text()='{}']".format(button_text))
         else:
             modal_button = self.find_by_xpath(
                 "//div[contains(@class, 'alertify') and "

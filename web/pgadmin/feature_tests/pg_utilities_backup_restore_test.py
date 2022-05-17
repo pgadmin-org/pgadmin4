@@ -216,8 +216,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 take_bckup.click()
                 if self.page.wait_for_element_to_disappear(
                     lambda driver: driver.find_element(
-                        By.NAME,
-                        NavMenuLocators.backup_filename_txt_box_name)):
+                        By.XPATH,
+                        "//*[@id='0']/div[contains(text(),'Backup')]")):
                     click = False
             except Exception:
                 retry -= 1
@@ -282,7 +282,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
         )
 
-        maximize_button = self.page.find_by_css_selector(
+        maximize_button = self.page.find_by_xpath(
             NavMenuLocators.maximize_pref_dialogue_css)
         maximize_button.click()
 
@@ -309,27 +309,44 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 return None
             server_version = get_server_version_string()
             server_types = default_binary_path.keys()
+            path_already_set = True
             for serv in server_types:
                 if serv == 'pg' and server_version is not None:
-                    path_input = self.page.find_by_xpath(
-                        "//td[span[text()='PostgreSQL {0}']]"
-                        "/following-sibling::td//input".format(server_version))
-                    self.page.clear_edit_box(path_input)
-                    path_input.click()
-                    path_input.send_keys(default_binary_path['pg'])
+                    path_input = \
+                        self.page.find_by_xpath(
+                            "//div[span[text()='PostgreSQL {}']]"
+                            "/following-sibling::div//div/input".format(
+                                server_version))
+                    exiting_path = path_input.get_property("value")
+                    if exiting_path != default_binary_path['pg']:
+                        path_already_set = False
+                        self.page.clear_edit_box(path_input)
+                        path_input.click()
+                        path_input.send_keys(default_binary_path['pg'])
                 elif serv == 'ppas' and server_version is not None:
-                    path_input = self.page.find_by_xpath(
-                        "//td[span[text()='EDB Advanced Server {0}']]"
-                        "/following-sibling::td//input".format(server_version))
-                    self.page.clear_edit_box(path_input)
-                    path_input.click()
-                    path_input.send_keys(default_binary_path['ppas'])
+
+                    if exiting_path != default_binary_path['pg']:
+                        path_already_set = False
+                        path_input = self.page.find_by_xpath(
+                            "//div[span[text()='EDB Advanced Server {}']]"
+                            "/following-sibling::div//div/input".format(
+                                server_version))
+                        self.page.clear_edit_box(path_input)
+                        path_input.click()
+                        path_input.send_keys(default_binary_path['ppas'])
                 else:
                     print('Binary path Key is Incorrect or '
                           'server version is None.')
 
+        maximize_button = self.page.find_by_xpath(
+            NavMenuLocators.maximize_pref_dialogue_css)
+        maximize_button.click()
+
         # save and close the preference dialog.
-        self.page.click_modal('Save')
+        if path_already_set:
+            self.page.click_modal('Cancel', True)
+        else:
+            self.page.click_modal('Save', True)
 
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")

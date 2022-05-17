@@ -111,7 +111,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
         )
 
-        maximize_button = self.page.find_by_css_selector(
+        maximize_button = self.page.find_by_xpath(
             NavMenuLocators.maximize_pref_dialogue_css)
         maximize_button.click()
 
@@ -125,30 +125,32 @@ class PGDataypeFeatureTest(BaseFeatureTest):
                 get_attribute('aria-expanded') == 'false':
             ActionChains(self.driver).double_click(sql_editor).perform()
 
-        option_node = self.page.find_by_xpath(
-            NavMenuLocators.specified_sub_node_of_pref_tree_node.format(
-                specified_preference_tree_node_name, 'Editor'))
+        option_node = \
+            self.page.find_by_xpath("//*[@id='treeContainer']"
+                                    "//div//span[text()='Editor']")
         option_node.click()
 
-        self.page.set_switch_box_status(
-            NavMenuLocators.insert_bracket_pair_switch_btn, 'No')
+        switch_box_element = self.page.find_by_xpath(
+            NavMenuLocators.insert_bracket_pair_switch_btn)
+
+        switch_box_element.click()
+
+        maximize_button = self.page.find_by_xpath(
+            NavMenuLocators.maximize_pref_dialogue_css)
+        maximize_button.click()
+        time.sleep(0.5)
 
         # save and close the preference dialog.
-        self.page.click_modal('Save')
-
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")
-        )
-        time.sleep(0.5)
+        self.page.click_modal('Save', react_dialog=True)
 
     def _create_enum_type(self):
         query = """CREATE TYPE public.rainbow AS ENUM ('red', 'orange',
         'yellow','green','blue','purple');
         """
         self.page.fill_codemirror_area_with(query)
-        execute_query = self.page.find_by_css_selector(
-            QueryToolLocators.btn_execute_query_css)
-        execute_query.click()
+        time.sleep(0.5)
+        self.page.find_by_css_selector(
+            QueryToolLocators.btn_execute_query_css).click()
         self.page.clear_query_tool()
 
     def runTest(self):
@@ -160,7 +162,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
 
         # Check data types
         self._check_datatype()
-        self.page.close_query_tool()
+        self.page.close_query_tool(False)
 
     def after(self):
         self.page.remove_server(self.server)
@@ -184,13 +186,13 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             # wait for the visibility of the grid to appear
             wait.until(EC.visibility_of_element_located(
                 (By.XPATH,
-                 "//*[contains(@class,'column-type')]"
+                 "//*[contains(@class,'makeStyles-columnName')]"
                  )
             ))
             wait.until(EC.visibility_of_element_located(
                 (By.XPATH,
-                 "//*[contains(@class,'column-type') and "
-                 "contains(.,'{}')]".format(batch['datatype'][0])
+                 "//*[contains(@class,'makeStyles-columnName') "
+                 "and //span[text()='{}']]".format(batch['datatype'][0])
                  )
             ))
 
