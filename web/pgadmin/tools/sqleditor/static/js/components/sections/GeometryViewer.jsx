@@ -1,4 +1,3 @@
-
 /////////////////////////////////////////////////////////////
 //
 // pgAdmin 4 - PostgreSQL Tools
@@ -398,7 +397,6 @@ export function GeometryViewer({rows, columns, column}) {
         crs={crs}
         zoom={2} center={[20, 100]}
         preferCanvas={true}
-        scrollWheelZoom={false}
         className={classes.mapContainer}
         whenCreated={(map)=>{
           mapRef.current = map;
