@@ -214,8 +214,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
   const openFile = useCallback(()=>{
     confirmDiscard(()=>{
       eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE);
-    });
-  }, []);
+    }, true);
+  }, [buttonsDisabled['save']]);
 
   const saveFile = useCallback((saveAs=false)=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, saveAs);
@@ -344,7 +344,12 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     let url = url_for('help.static', {'filename': queryToolCtx.params.is_query_tool ? 'query_tool.html' : 'editgrid.html'});
     window.open(url, 'pgadmin_help');
   };
-  const confirmDiscard=(callback)=>{
+  const confirmDiscard=(callback, checkSaved=false)=>{
+    if(checkSaved && buttonsDisabled['save']) {
+      /* No need to check  */
+      callback();
+      return;
+    }
     queryToolCtx.modal.confirm(
       gettext('Unsaved changes'),
       gettext('Are you sure you wish to discard the current changes?'),
