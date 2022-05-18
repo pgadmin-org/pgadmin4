@@ -24,3 +24,4 @@ Bug fixes
   | `Issue #7376 <https://redmine.postgresql.org/issues/7376>`_ -  Fixed an issue where a popup for unsaved changes appears when clicking on the open file button for a blank query editor.
   | `Issue #7383 <https://redmine.postgresql.org/issues/7383>`_ -  Fixed an issue where Preferences are not saved when the dialog is maximized.
   | `Issue #7388 <https://redmine.postgresql.org/issues/7388>`_ -  Fixed an issue where an error message fills the entire window if the query is long.
+  | `Issue #7393 <https://redmine.postgresql.org/issues/7393>`_ -  Ensure that the editor position should not get changed once it is opened.

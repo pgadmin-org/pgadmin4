@@ -30,7 +30,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
 
   const onKeyDown = (e) => {
     // If enter key is pressed then click on OK button
-    if (e.keyCode == 13) {
+    if (e.key === 'Enter') {
       okBtnRef.current?.click();
     }
   };

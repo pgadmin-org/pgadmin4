@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import { makeStyles, Box, Portal } from '@material-ui/core';
-import React, {useContext} from 'react';
+import React, {useContext, useLayoutEffect, useRef} from 'react';
 import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import CloseIcon from '@material-ui/icons/Close';
@@ -123,6 +123,10 @@ function setEditorPosition(cellEle, editorEle) {
   if(!editorEle || !cellEle) {
     return;
   }
+  /* Once the position is set, then don't change it */
+  if(editorEle.style.left || editorEle.style.top) {
+    return;
+  }
   let gridEle = cellEle.closest('.rdg');
   let cellRect = cellEle.getBoundingClientRect();
   let position = {
@@ -158,6 +162,12 @@ function textColumnFinalVal(columnVal, column) {
   }
   return columnVal;
 }
+
+function suppressEnterKey(e) {
+  if(e.keyCode == 13) {
+    e.stopPropagation();
+  }
+}
 export function TextEditor({row, column, onRowChange, onClose}) {
   const classes = useStyles();
   const value = row[column.key] ?? '';
@@ -186,7 +196,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
     <Portal container={document.body}>
       <Box ref={(ele)=>{
         setEditorPosition(getCellElement(column.idx), ele);
-      }} className={classes.textEditor} data-label="pg-editor">
+      }} className={classes.textEditor} data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <textarea ref={autoFocusAndSelect} className={classes.textarea} value={localVal} onChange={onChange} />
         <Box display="flex" justifyContent="flex-end">
           <DefaultButton startIcon={<CloseIcon />} onClick={()=>onClose(false)} size="small">
@@ -240,7 +250,7 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
     return false;
   };
   const onKeyDown = (e)=>{
-    if(e.code == 'Tab') {
+    if(e.code === 'Tab' || e.code === 'Enter') {
       e.preventDefault();
       if(!onBlur()) {
         e.stopPropagation();
@@ -267,6 +277,7 @@ NumberEditor.propTypes = EditorPropTypes;
 export function CheckboxEditor({row, column, onRowChange, onClose}) {
   const classes = useStyles();
   const value = row[column.key] ?? null;
+  const containerRef = useRef();
   const changeValue = ()=>{
     if(!column.can_edit) {
       return;
@@ -286,8 +297,21 @@ export function CheckboxEditor({row, column, onRowChange, onClose}) {
   } else if(value == null){
     className = 'intermediate';
   }
+
+  const onSpaceHit = (e)=>{
+    if(e.code === 'Space') {
+      e.preventDefault();
+      e.stopPropagation();
+      changeValue();
+    }
+  };
+
+  useLayoutEffect(()=>{
+    containerRef.current.focus();
+  }, []);
+
   return (
-    <div onClick={changeValue} tabIndex="0" onBlur={onBlur} data-label="pg-checkbox-editor">
+    <div ref={containerRef} onClick={changeValue} onKeyDown={onSpaceHit} tabIndex="0" onBlur={onBlur} data-label="pg-checkbox-editor">
       <span className={clsx(classes.check, className)}></span>
     </div>
   );
@@ -334,7 +358,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
     <Portal container={document.body}>
       <Box ref={(ele)=>{
         setEditorPosition(getCellElement(column.idx), ele);
-      }} className={classes.jsonEditor} data-label="pg-editor">
+      }} className={classes.jsonEditor} data-label="pg-editor" onKeyDown={suppressEnterKey} >
         <JsonEditor
           value={localVal}
           options={{

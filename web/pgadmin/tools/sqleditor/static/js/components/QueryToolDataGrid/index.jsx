@@ -115,9 +115,14 @@ function CustomRow(props) {
   } else if(props.selectedCellIdx == 0) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
+  const openEditorOnEnter = (e)=>{
+    if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
+      props.selectCell(props.row, props.viewportColumns?.[props.selectedCellIdx], true);
+    }
+  };
   return (
     <RowInfoContext.Provider value={rowInfoValue}>
-      <Row ref={rowRef} {...props} />
+      <Row ref={rowRef} onKeyDown={openEditorOnEnter} {...props} />
     </RowInfoContext.Provider>
   );
 }
@@ -128,6 +133,7 @@ CustomRow.propTypes = {
   selectedCellIdx: PropTypes.number,
   row: PropTypes.object,
   viewportColumns: PropTypes.array,
+  selectCell: PropTypes.func,
 };
 
 function getCopyShortcutHandler(handleCopy) {
@@ -391,9 +397,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   }, [dataChangeStore, selectedColumns]);
 
   function handleCopy() {
-    if (window.isSecureContext) {
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA);
-    }
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA);
   }
 
   return (
