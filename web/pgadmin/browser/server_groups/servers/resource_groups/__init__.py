@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import make_json_response, \
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
 
 
 class ResourceGroupModule(CollectionNodeModule):
@@ -346,7 +347,7 @@ class ResourceGroupView(NodeView):
             return gone(gettext("""Could not find the resource group."""))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            res['rows'][0]['oid'] <= DATABASE_LAST_SYSTEM_OID or
             self.datistemplate)
 
         return ajax_response(
