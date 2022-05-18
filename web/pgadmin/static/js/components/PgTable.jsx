@@ -291,6 +291,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
             // Let's make a column for selection
             {
               id: 'selection',
+              resizable: false,
               // The header can use the table's getToggleAllRowsSelectedProps method
               // to render a checkbox
               Header: ({ getToggleAllRowsSelectedProps, toggleRowSelected, isAllRowsSelected, rows }) => {
@@ -342,11 +343,6 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
         } else {
           return [...CLOUMNS];
         }
-      });
-      hooks.useInstanceBeforeDimensions.push(({ headerGroups }) => {
-        // fix the parent group of the selection button to not be resizable
-        const selectionGroupHeader = headerGroups[0].headers[0];
-        selectionGroupHeader.resizable = false;
       });
     }
   );
@@ -486,13 +482,13 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                             : ' 🔼'
                           : ''}
                       </span>
-                      {column.resizable && (
-                        <div
-                          {...column.getResizerProps()}
-                          className={classes.resizer}
-                        />
-                      )}
                     </div>
+                    {column.resizable && (
+                      <div
+                        {...column.getResizerProps()}
+                        className={classes.resizer}
+                      />
+                    )}
                   </div>
                 ))}
               </div>

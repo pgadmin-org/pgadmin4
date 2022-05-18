@@ -9,12 +9,13 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+  | `Issue #7364 <https://redmine.postgresql.org/issues/7364>`_ -  Added the ability to resize columns on dashboard tables.
 
 Housekeeping
 ************
 
-  | `Issue #7337 <https://redmine.postgresql.org/issues/7337>`_ -  Port connect server password dialog to React.
   | `Issue #7283 <https://redmine.postgresql.org/issues/7283>`_ -  PG 15 compatibility issues fixed.
+  | `Issue #7337 <https://redmine.postgresql.org/issues/7337>`_ -  Port connect server password dialog to React.
 
 Bug fixes
 *********

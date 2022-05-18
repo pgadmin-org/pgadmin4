@@ -100,14 +100,14 @@ export function CollectionNodeView({
       Header: 'properties',
       accessor: 'Properties',
       sortble: true,
-      resizable: false,
+      resizable: true,
       disableGlobalFilter: false,
     },
     {
       Header: 'value',
       accessor: 'value',
       sortble: true,
-      resizable: false,
+      resizable: true,
       disableGlobalFilter: false,
     },
   ]);
@@ -210,7 +210,7 @@ export function CollectionNodeView({
                 Header: field.label,
                 accessor: field.id,
                 sortble: true,
-                resizable: false,
+                resizable: true,
                 disableGlobalFilter: false,
                 minWidth: 0,
                 // eslint-disable-next-line react/display-name
@@ -223,7 +223,7 @@ export function CollectionNodeView({
                 Header: field.label,
                 accessor: field.id,
                 sortble: true,
-                resizable: false,
+                resizable: true,
                 disableGlobalFilter: false,
                 minWidth: 0,
               };
@@ -237,7 +237,7 @@ export function CollectionNodeView({
             Header: field,
             accessor: field,
             sortble: true,
-            resizable: false,
+            resizable: true,
             disableGlobalFilter: false,
             minWidth: 0,
           };

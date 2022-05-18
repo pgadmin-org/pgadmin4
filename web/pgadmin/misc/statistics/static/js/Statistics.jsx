@@ -66,7 +66,7 @@ function getColumn(data, singleLineStatistics) {
             Header: row.name,
             accessor: row.name,
             sortble: true,
-            resizable: false,
+            resizable: true,
             disableGlobalFilter: false,
             sortType: ((rowA, rowB, id) => {
               let val1 = rowA.values[id];
@@ -98,7 +98,7 @@ function getColumn(data, singleLineStatistics) {
             Header: row.name,
             accessor: row.name,
             sortble: true,
-            resizable: false,
+            resizable: true,
             disableGlobalFilter: false,
           };
 
