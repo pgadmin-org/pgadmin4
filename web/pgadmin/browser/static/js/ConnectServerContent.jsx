@@ -12,6 +12,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
   const classes = useModalStyles();
   const containerRef = useRef();
   const firstEleRef = useRef();
+  const okBtnRef = useRef();
   const [formData, setFormData] = useState({
     tunnel_password: '',
     save_tunnel_password: false,
@@ -25,6 +26,13 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
       val = e.target.value;
     }
     setFormData((prev)=>({...prev, [id]: val}));
+  };
+
+  const onKeyDown = (e) => {
+    // If enter key is pressed then click on OK button
+    if (e.keyCode == 13) {
+      okBtnRef.current?.click();
+    }
   };
 
   useEffect(()=>{
@@ -55,7 +63,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
           </Box>
           <Box marginTop='12px'>
             <InputText inputRef={firstEleRef} type="password" value={formData['tunnel_password']} maxLength={null}
-              onChange={(e)=>onTextChange(e, 'tunnel_password')} />
+              onChange={(e)=>onTextChange(e, 'tunnel_password')} onKeyDown={(e)=>onKeyDown(e)} />
           </Box>
           <Box marginTop='12px' marginBottom='12px'>
             <InputCheckbox controlProps={{label: gettext('Save Password')}} value={formData['save_tunnel_password']}
@@ -78,7 +86,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
                 firstEleRef.current = ele;
               }
             }} type="password" value={formData['password']} maxLength={null}
-            onChange={(e)=>onTextChange(e, 'password')} />
+            onChange={(e)=>onTextChange(e, 'password')} onKeyDown={(e)=>onKeyDown(e)}/>
           </Box>
           <Box marginTop='12px'>
             <InputCheckbox controlProps={{label: gettext('Save Password')}} value={formData['save_password']}
@@ -93,7 +101,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
         <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={()=>{
           closeModal();
         }} >{gettext('Cancel')}</DefaultButton>
-        <PrimaryButton data-test="save" className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={()=>{
+        <PrimaryButton ref={okBtnRef} data-test="save" className={classes.margin} startIcon={<CheckRoundedIcon />} onClick={()=>{
           let postFormData = new FormData();
           if(data.prompt_tunnel_password) {
             postFormData.append('tunnel_password', formData.tunnel_password);
