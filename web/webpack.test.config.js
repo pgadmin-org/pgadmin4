@@ -219,5 +219,8 @@ module.exports = {
       'pgadmin.browser.constants': regressionDir + '/javascript/fake_constants',
       'pgadmin.help': path.join(__dirname, './pgadmin/help/static/js/help'),
     },
+    fallback: {
+      'fs': false
+    },
   },
 };
