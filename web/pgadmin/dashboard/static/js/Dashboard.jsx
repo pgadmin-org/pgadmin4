@@ -793,6 +793,7 @@ export default function Dashboard({
           <Box className={classes.emptyPanel}>
             {!_.isUndefined(preferences) && preferences.show_graphs && (
               <Graphs
+                key={sid + did}
                 preferences={preferences}
                 sid={sid}
                 did={did}
@@ -802,9 +803,9 @@ export default function Dashboard({
             <Box className={classes.panelContent}>
               <Box
                 className={classes.cardHeader}
-                title={gettext('Server activity')}
+                title={props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}
               >
-                {gettext('Server activity')}{' '}
+                {props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}{' '}
               </Box>
               <Box height="100%" display="flex" flexDirection="column">
                 <Box>
