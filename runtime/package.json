@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "eslint": "^6.3.0",
-    "nw": "0.61.0"
+    "nw": "^0.64.0"
   },
   "scripts": {
     "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js ."
