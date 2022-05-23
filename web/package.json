@@ -141,7 +141,7 @@
     "moment-timezone": "^0.5.34",
     "mousetrap": "^1.6.3",
     "notificar": "^1.0.1",
-    "notistack": "^1.0.10",
+    "notistack": "^2.0.0",
     "path-fx": "^2.0.0",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.9",
