@@ -338,6 +338,9 @@ var getThemeWebpackConfig = function(theme_name) {
       modules: ['node_modules', '.'],
       extensions: ['.js'],
       unsafeCache: true,
+      fallback: {
+        'fs': false
+      },
     },
     // Watch mode Configuration: After initial build, webpack will watch for
     // changes in files and compiles only files which are changed,
@@ -562,6 +565,9 @@ module.exports = [{
     modules: ['node_modules', '.'],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     unsafeCache: true,
+    fallback: {
+      'fs': false
+    },
   },
   // Watch mode Configuration: After initial build, webpack will watch for
   // changes in files and compiles only files which are changed,

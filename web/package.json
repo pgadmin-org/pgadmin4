@@ -97,6 +97,7 @@
     "@types/react-dom": "^16.0.11",
     "ajv": "^8.8.2",
     "alertifyjs": "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263",
+    "anti-trojan-source": "^1.4.0",
     "aspen-decorations": "^1.0.2",
     "axios": "^0.21.1",
     "babelify": "~10.0.0",

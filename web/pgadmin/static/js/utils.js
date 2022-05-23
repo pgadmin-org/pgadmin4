@@ -12,6 +12,7 @@ import $ from 'jquery';
 import gettext from 'sources/gettext';
 import 'wcdocker';
 import Notify from './helpers/Notifier';
+import { hasTrojanSource } from 'anti-trojan-source';
 
 var wcDocker = window.wcDocker;
 
@@ -467,4 +468,15 @@ export function getBrowser() {
     name: M[0],
     version: M[1],
   };
+}
+
+export function checkTrojanSource(content, isPasteEvent) {
+  // Call the hasTrojanSource function of 'anti-trojan-source' package
+  if (hasTrojanSource({ sourceText: content})) {
+    let msg = gettext('The file opened contains bidirectional Unicode characters which could be interpreted differently than what is displayed. If this is unexpected it is recommended that you review the text in an application that can display hidden Unicode characters before proceeding.');
+    if (isPasteEvent) {
+      msg = gettext('The pasted text contains bidirectional Unicode characters which could be interpreted differently than what is displayed. If this is unexpected it is recommended that you review the text in an application that can display hidden Unicode characters before proceeding.');
+    }
+    Notify.alert(gettext('Trojan Source Warning'), msg);
+  }
 }

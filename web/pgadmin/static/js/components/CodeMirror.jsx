@@ -26,6 +26,7 @@ import SwapCallsRoundedIcon from '@material-ui/icons/SwapCallsRounded';
 import _ from 'lodash';
 import { RegexIcon, FormatCaseIcon } from './ExternalIcon';
 import { isMac } from '../keyboard_shortcuts';
+import { checkTrojanSource } from '../utils';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -323,6 +324,11 @@ function calcFontSize(fontSize) {
   return '1em';
 }
 
+function handlePaste(editor, e) {
+  let copiedText = e.clipboardData.getData('text');
+  checkTrojanSource(copiedText, true);
+}
+
 /* React wrapper for CodeMirror */
 export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className, autocomplete=false}) {
   const taRef = useRef();
@@ -429,6 +435,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
       editor.current.on(eventName, events[eventName]);
     });
     editor.current.on('drop', handleDrop);
+    editor.current.on('paste', handlePaste);
     initPreferences();
     return ()=>{
       editor.current?.toTextArea();

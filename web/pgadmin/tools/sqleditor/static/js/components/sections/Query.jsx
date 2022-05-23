@@ -18,6 +18,7 @@ import gettext from 'sources/gettext';
 import OrigCodeMirror from 'bundled_codemirror';
 import Notifier from '../../../../../../static/js/helpers/Notifier';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
+import { checkTrojanSource } from '../../../../../../static/js/utils';
 
 const useStyles = makeStyles(()=>({
   sql: {
@@ -277,6 +278,8 @@ export default function Query() {
         'file_name': decodeURI(fileName),
       }).then((res)=>{
         editor.current.setValue(res.data);
+        //Check the file content for Trojan Source
+        checkTrojanSource(res.data);
         lastSavedText.current = res.data;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, isDirty());
