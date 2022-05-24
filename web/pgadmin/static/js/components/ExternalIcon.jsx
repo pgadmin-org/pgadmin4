@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 import Expand from '../../img/fonticon/open_in_full.svg?svgr';
 import Collapse from '../../img/fonticon/close_fullscreen.svg?svgr';
 import AWS from '../../img/aws.svg?svgr';
+import BigAnimal from '../../img/biganimal.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -68,3 +69,6 @@ MinimizeDialogIcon.propTypes = {style: PropTypes.object};
 
 export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '1.4rem', ...style}} data-label="AWSIcon" />;
 AWSIcon.propTypes = {style: PropTypes.object};
+
+export const BigAnimalIcon = ({style})=><ExternalIcon Icon={BigAnimal} style={{height: '1.4rem', ...style}} data-label="BigAnimalIcon" />;
+BigAnimalIcon.propTypes = {style: PropTypes.object};

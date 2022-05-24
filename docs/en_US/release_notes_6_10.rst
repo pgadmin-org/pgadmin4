@@ -21,6 +21,7 @@ Bug fixes
 *********
 
   | `Issue #7002 <https://redmine.postgresql.org/issues/7002>`_ -  Added the ability to detect and warn users about bidirectional Unicode characters.
+  | `Issue #7368 <https://redmine.postgresql.org/issues/7368>`_ -  Ensure that unwanted APIs should not be getting called for BigAnimal.
   | `Issue #7372 <https://redmine.postgresql.org/issues/7372>`_ -  Tell Docker to always pull the latest base images when building containers.
   | `Issue #7373 <https://redmine.postgresql.org/issues/7373>`_ -  Fixed an issue with geometry window zoom mouse scroll not working.
   | `Issue #7376 <https://redmine.postgresql.org/issues/7376>`_ -  Fixed an issue where a popup for unsaved changes appears when clicking on the open file button for a blank query editor.

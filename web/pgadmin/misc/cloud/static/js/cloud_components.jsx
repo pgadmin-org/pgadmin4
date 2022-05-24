@@ -12,7 +12,6 @@ import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import { DefaultButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import { makeStyles } from '@material-ui/core/styles';
-import { AWSIcon } from '../../../../static/js/components/ExternalIcon';
 import PropTypes from 'prop-types';
 import { getAWSSummary } from './aws';
 import { getBigAnimalSummary } from './biganimal';
@@ -49,7 +48,7 @@ export function ToggleButtons(props) {
         (props.options||[]).map((option)=>{
           return (<ToggleButton value={option.value} key={option.label} aria-label={option.label} component={props.cloudProvider == option.value ? PrimaryButton : DefaultButton}>
             <CheckRoundedIcon style={{visibility: props.cloudProvider == option.value  ? 'visible': 'hidden'}}/>&nbsp;
-            {option.value == 'rds' ? <AWSIcon className={classes.icon} /> : ''}&nbsp;&nbsp;{option.label}
+            {option.icon}&nbsp;&nbsp;{option.label}
           </ToggleButton>);
         })
       }

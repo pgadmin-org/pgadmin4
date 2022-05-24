@@ -25,6 +25,8 @@ import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudSte
   validateCloudStep2, validateCloudStep3} from './aws';
 import {BigAnimalInstance, BigAnimalDatabase, validateBigAnimal,
   validateBigAnimalStep2, validateBigAnimalStep3} from './biganimal';
+import { isEmptyString } from 'sources/validators';
+import { AWSIcon, BigAnimalIcon } from '../../../../static/js/components/ExternalIcon';
 
 const useStyles = makeStyles(() =>
   ({
@@ -71,6 +73,8 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
   const [verificationIntiated, setVerificationIntiated] = React.useState(false);
   const [bigAnimalInstanceData, setBigAnimalInstanceData] = React.useState({});
   const [bigAnimalDatabaseData, setBigAnimalDatabaseData] = React.useState({});
+
+
 
   const axiosApi = getApiInstance();
 
@@ -194,6 +198,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
             reject();
           });
       } else if(activeStep == 0 && cloudProvider == 'biganimal') {
+        if (!isEmptyString(verificationURI)) { resolve(); return; }
         setErrMsg([MESSAGE_TYPE.INFO, 'Getting EDB BigAnimal verification URL...']);
         validateBigAnimal()
           .then((res) => {
@@ -272,7 +277,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
           </Box>
           <Box className={classes.messageBox}>
             <ToggleButtons cloudProvider={cloudProvider} setCloudProvider={setCloudProvider}
-              options={[{'label': 'Amazon RDS', value: 'rds'}, {'label': 'EDB BigAnimal', value: 'biganimal'}]}
+              options={[{label: 'Amazon RDS', value: 'rds', icon: <AWSIcon className={classes.icon} />}, {label: 'EDB BigAnimal', value: 'biganimal', icon: <BigAnimalIcon className={classes.icon} />}]}
             ></ToggleButtons>
           </Box>
           <Box className={classes.messageBox}>
@@ -287,7 +292,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
                 <br/>{gettext('By clicking the below button, you will be redirected to the EDB BigAnimal authentication page in a new tab.')}
               </Box>
             </Box>}
-            {cloudProvider == 'biganimal' && <PrimaryButton onClick={authenticateBigAnimal}>
+            {cloudProvider == 'biganimal' && <PrimaryButton onClick={authenticateBigAnimal} disabled={verificationIntiated ? true: false}>
               {gettext('Click here to authenticate yourself to EDB BigAnimal')}
             </PrimaryButton>}
             {cloudProvider == 'biganimal' && <Box className={classes.messageBox}>

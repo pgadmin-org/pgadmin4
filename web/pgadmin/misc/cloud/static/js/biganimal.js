@@ -17,7 +17,6 @@ import getApiInstance from '../../../../static/js/api_instance';
 import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
 
-
 const axiosApi = getApiInstance();
 
 // BigAnimal Instance
@@ -33,30 +32,39 @@ export function BigAnimalInstance(props) {
           return url_for('biganimal.regions');
         }
       }),
-      instance_types: (region_id)=>getNodeAjaxOptions('biganimal_instance_types', pgAdmin.Browser.Nodes['server'],
-        props.nodeInfo, props.nodeData, {
-          useCache:false,
-          cacheNode: 'server',
-          customGenerateUrl: ()=>{
-            return url_for('biganimal.instance_types', {'region_id': region_id || 0});
-          }
-        }),
-      volume_types: (region_id)=>getNodeAjaxOptions('biganimal_volume_types', pgAdmin.Browser.Nodes['server'],
-        props.nodeInfo, props.nodeData, {
-          useCache:false,
-          cacheNode: 'server',
-          customGenerateUrl: ()=>{
-            return url_for('biganimal.volume_types', {'region_id': region_id || 0});
-          }
-        }),
-      volume_properties: (region_id, volume_type)=>getNodeAjaxOptions('biganimal_volume_properties', pgAdmin.Browser.Nodes['server'],
-        props.nodeInfo, props.nodeData, {
-          useCache:false,
-          cacheNode: 'server',
-          customGenerateUrl: ()=>{
-            return url_for('biganimal.volume_properties', {'region_id': region_id || 0, 'volume_type': volume_type || ''});
-          }
-        }),
+      instance_types: (region_id)=>{
+        if (isEmptyString(region_id)) return [];
+        return getNodeAjaxOptions('biganimal_instance_types', pgAdmin.Browser.Nodes['server'],
+          props.nodeInfo, props.nodeData, {
+            useCache:false,
+            cacheNode: 'server',
+            customGenerateUrl: ()=>{
+              return url_for('biganimal.instance_types', {'region_id': region_id || 0});
+            }
+          });
+      },
+      volume_types: (region_id)=>{
+        if (isEmptyString(region_id)) return [];
+        return getNodeAjaxOptions('biganimal_volume_types', pgAdmin.Browser.Nodes['server'],
+          props.nodeInfo, props.nodeData, {
+            useCache:false,
+            cacheNode: 'server',
+            customGenerateUrl: ()=>{
+              return url_for('biganimal.volume_types', {'region_id': region_id || 0});
+            }
+          });
+      },
+      volume_properties: (region_id, volume_type)=>{
+        if (isEmptyString(region_id) || isEmptyString(volume_type)) return [];
+        return getNodeAjaxOptions('biganimal_volume_properties', pgAdmin.Browser.Nodes['server'],
+          props.nodeInfo, props.nodeData, {
+            useCache:false,
+            cacheNode: 'server',
+            customGenerateUrl: ()=>{
+              return url_for('biganimal.volume_properties', {'region_id': region_id || 0, 'volume_type': volume_type || ''});
+            }
+          });
+      },
     }, {
       nodeInfo: props.nodeInfo,
       nodeData: props.nodeData,
@@ -145,7 +153,6 @@ export function validateBigAnimal() {
       });
   });
 }
-
 
 function createData(name, value) {
   return { name, value };
