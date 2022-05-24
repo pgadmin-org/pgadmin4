@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme)=>({
   primaryButton: {
     border: '1px solid '+theme.palette.primary.main,
     '&.Mui-disabled': {
-      color: theme.palette.primary.contrastText,
+      color: [theme.palette.primary.contrastText,'!important'],
       backgroundColor: theme.palette.primary.disabledMain,
     },
     '&:hover': {
@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme)=>({
     border: '1px solid '+theme.palette.default.borderColor,
     whiteSpace: 'nowrap',
     '&.Mui-disabled': {
-      color: theme.palette.default.disabledContrastText,
+      color: [theme.palette.default.disabledContrastText, '!important'],
       borderColor: theme.palette.default.disabledBorderColor
     },
     '&:hover': {
