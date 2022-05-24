@@ -1194,7 +1194,12 @@ export function ResultSet() {
 
   useEffect(()=>{
     const renderGeometries = (column)=>{
-      let selRowsData = selectedRows.size === 0 ? rows : rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+      let selRowsData = rows;
+      if(selectedRows.size != 0) {
+        selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+      } else if(selectedCell.current[0]) {
+        selRowsData = [selectedCell.current[0]];
+      }
       LayoutHelper.openTab(queryToolCtx.docker, {
         id: PANELS.GEOMETRY,
         title:gettext('Geometry Viewer'),
