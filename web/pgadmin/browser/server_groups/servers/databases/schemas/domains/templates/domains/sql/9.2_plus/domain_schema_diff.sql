@@ -22,11 +22,21 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }} OWNER TO {% if data
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }}
     ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% endif -%};
+{% if c.description %}
+
+COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }}
+    IS '{{ c.description }}';
+{% endif %}
 {% endfor -%}
 {% for c in data.constraints.changed %}{% if c.conname and c.consrc %}
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }}
     ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% endif -%};
+{% if c.description %}
+
+COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_data.basensp, o_data.name) }}
+    IS '{{ c.description }}';
+{% endif %}
 {% endfor -%}
 {% endif %}
 

@@ -65,6 +65,12 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
     ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% if c.connoinherit %} NO INHERIT{% endif -%};{% endif -%}
+
+{% if c.description %}
+
+COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
+    IS '{{ c.description }}';
+{% endif %}
 {% endfor -%}{% endif -%}
 {% set seclabels = data.seclabels %}
 {% if 'deleted' in seclabels and seclabels.deleted|length > 0 %}

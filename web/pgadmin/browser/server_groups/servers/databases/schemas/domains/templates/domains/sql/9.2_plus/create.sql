@@ -17,8 +17,8 @@ ALTER DOMAIN {{ conn|qtIdent(data.basensp, data.name) }} OWNER TO {{ conn|qtIden
 
 ALTER DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
     ADD CONSTRAINT {{ conn|qtIdent(c.conname) }} CHECK ({{ c.consrc }}){% if not c.convalidated %} NOT VALID{% endif %}{% endif -%};
-
 {% if c.description %}
+
 COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(data.basensp, data.name) }}
     IS '{{ c.description }}';
 {% endif %}
