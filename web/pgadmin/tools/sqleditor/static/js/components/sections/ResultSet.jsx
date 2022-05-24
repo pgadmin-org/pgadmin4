@@ -733,8 +733,18 @@ export function ResultSet() {
   const [selectedRows, setSelectedRows] = useState(new Set());
   const [selectedColumns, setSelectedColumns] = useState(new Set());
   const selectedCell = useRef([]);
+  const selectedRange = useRef(null);
   const setSelectedCell = (val)=>{
     selectedCell.current=val;
+    fireRowsColsCellChanged();
+  };
+  const setSelectedRange = (val)=>{
+    if(val.startColumnIdx != val.endColumnIdx ||
+      val.startRowIdx != val.endRowIdx) {
+      selectedRange.current=val;
+    } else {
+      selectedRange.current=null;
+    }
     fireRowsColsCellChanged();
   };
   const [rowsResetKey, setRowsResetKey] = useState(true);
@@ -746,7 +756,7 @@ export function ResultSet() {
   };
 
   const fireRowsColsCellChanged = ()=>{
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedCell.current?.length);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.SELECTED_ROWS_COLS_CELL_CHANGED, selectedRows.size, selectedColumns.size, selectedRange.current, selectedCell.current?.length);
   };
 
   const executionStartCallback = async (query, explainObject, external=false, reconnect=false)=>{
@@ -1078,6 +1088,17 @@ export function ResultSet() {
       /* Row num col is added by QueryDataGrid, index will be +1 */
       copyCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
       copyRows = _.map(rows, (r)=>_.pick(r, _.map(copyCols, (c)=>c.key)));
+    } else if(selectedRange.current) {
+      let startColumnIdx = Math.min(selectedRange.current.startColumnIdx, selectedRange.current.endColumnIdx);
+      let endColumnIdx = Math.max(selectedRange.current.startColumnIdx, selectedRange.current.endColumnIdx);
+      let startRowIdx = Math.min(selectedRange.current.startRowIdx, selectedRange.current.endRowIdx);
+      let endRowIdx = Math.max(selectedRange.current.startRowIdx, selectedRange.current.endRowIdx);
+      copyCols = _.filter(columns, (_c, i)=>{
+        /* Row num col is added by QueryDataGrid, index will be +1 */
+        let idx = i+1;
+        return idx>=startColumnIdx && idx<=endColumnIdx;
+      });
+      copyRows = rows.slice(startRowIdx, endRowIdx+1);
     } else if(selectedCell.current[0] && selectedCell.current[1]) {
       copyCols = [selectedCell.current[1]];
       copyRows = [{[selectedCell.current[1].key]: selectedCell.current[0][selectedCell.current[1].key]}];
@@ -1139,13 +1160,18 @@ export function ResultSet() {
   };
 
   useEffect(()=>{
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
     eventBus.registerListener(QUERY_TOOL_EVENTS.COPY_DATA, copyDataFunc);
     return ()=>{
-      eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
       eventBus.deregisterListener(QUERY_TOOL_EVENTS.COPY_DATA, copyDataFunc);
     };
-  }, [selectedRows, selectedColumns, queryData, dataChangeStore, selectedCell.current]);
+  }, [selectedRows, selectedColumns, columns, rows]);
+
+  useEffect(()=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
+    return ()=>{
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_DELETE_ROWS, triggerDeleteRows);
+    };
+  }, [selectedRows, queryData, dataChangeStore, rows]);
 
   useEffect(()=>{
     const triggerAddRows = (_rows, fromClipboard)=>{
@@ -1251,6 +1277,7 @@ export function ResultSet() {
             selectedColumns={selectedColumns}
             onSelectedColumnsChange={setSelectedColumns}
             onSelectedCellChange={setSelectedCell}
+            onSelectedRangeChange={setSelectedRange}
           />
         </Box>
       </>}

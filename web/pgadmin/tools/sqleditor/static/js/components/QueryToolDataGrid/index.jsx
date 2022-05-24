@@ -39,6 +39,12 @@ const useStyles = makeStyles((theme)=>({
       fontWeight: 'abc',
       '&[aria-colindex="1"]': {
         padding: 0,
+      },
+      '&[aria-selected=true]:not([role="columnheader"]):not([aria-colindex="1"])': {
+        outlineWidth: '1px',
+        outlineOffset: '-1px',
+        backgroundColor: theme.palette.primary.light,
+        color: theme.otherVars.qtDatagridSelectFg,
       }
     },
     '& .rdg-header-row .rdg-cell': {
@@ -412,9 +418,12 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
         mincolumnWidthBy={50}
         enableCellSelect={true}
         onCopy={handleCopy}
+        onMultiCopy={handleCopy}
         components={{
           rowRenderer: CustomRow,
         }}
+        enableRangeSelection={true}
+        rangeLeftBoundaryColIdx={0}
         {...props}
       />
     </DataGridExtrasContext.Provider>
