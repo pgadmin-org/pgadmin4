@@ -85,8 +85,9 @@ class SchemaDiffObjectCompare:
                 target = self.fetch_objects_to_compare(**target_params)
 
         # If both the dict have no items then return None.
-        if not (source or target) or (
-                len(source) <= 0 and len(target) <= 0):
+        if not (source or target) or not \
+            (isinstance(source, dict) and isinstance(target, dict)) or \
+                (len(source) <= 0 and len(target) <= 0):
             return None
 
         return compare_dictionaries(view_object=self,
