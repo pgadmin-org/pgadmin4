@@ -264,7 +264,7 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
       value={value}
       onChange={(e)=>{
         if(column.can_edit) {
-          onRowChange({ ...row, [column.key]: e.target.value });
+          onRowChange({ ...row, [column.key]: (e.target.value == '' ? null :  e.target.value)});
         }
       }}
       onBlur={onBlur}

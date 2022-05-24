@@ -18,13 +18,13 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-function NullAndDefaultFormatter({value, column, children}) {
+function NullAndDefaultFormatter({value, column, children, style}) {
   const classes = useStyles();
   if (_.isUndefined(value) && column.has_default_val) {
-    return <span className={classes.disabledCell}>[default]</span>;
+    return <div className={classes.disabledCell} style={style}>[default]</div>;
   } else if ((_.isUndefined(value) && column.not_null) ||
       (_.isUndefined(value) || _.isNull(value))) {
-    return <span className={classes.disabledCell}>[null]</span>;
+    return <div className={classes.disabledCell} style={style}>[null]</div>;
   }
   return children;
 }
@@ -32,6 +32,7 @@ NullAndDefaultFormatter.propTypes = {
   value: PropTypes.any,
   column: PropTypes.object,
   children: CustomPropTypes.children,
+  style: PropTypes.object,
 };
 
 const FormatterPropTypes = {
@@ -54,7 +55,7 @@ TextFormatter.propTypes = FormatterPropTypes;
 export function NumberFormatter({row, column}) {
   let value = row[column.key];
   return (
-    <NullAndDefaultFormatter value={value} column={column}>
+    <NullAndDefaultFormatter value={value} column={column} style={{textAlign: 'right'}}>
       <div style={{textAlign: 'right'}}>{value}</div>
     </NullAndDefaultFormatter>
   );
