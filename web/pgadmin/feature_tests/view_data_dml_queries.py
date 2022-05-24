@@ -252,7 +252,7 @@ CREATE TABLE public.nonintpkey
             else:
                 key_to_press = Keys.CONTROL
             actions = ActionChains(self.driver)
-            actions.move_to_element(jsoneditor_area_ele).click().perform()
+            # actions.move_to_element(jsoneditor_area_ele).click().perform()
             actions.key_down(key_to_press).send_keys('a').key_up(key_to_press)\
                 .send_keys(Keys.DELETE).perform()
             actions.send_keys(value) .perform()

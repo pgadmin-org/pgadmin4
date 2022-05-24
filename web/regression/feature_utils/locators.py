@@ -167,7 +167,7 @@ class QueryToolLocators:
     query_history_selected_icon = query_history_selected + ' svg'
 
     invalid_query_history_entry_css = \
-        "#id-history li[data-label='history-entry'][class*='itemError']"
+        "#id-history li[data-label='history-entry']"
 
     explain_details = "#id-explain div[data-label='explain-details']"
 

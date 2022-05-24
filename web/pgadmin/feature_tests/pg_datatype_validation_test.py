@@ -186,13 +186,13 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             # wait for the visibility of the grid to appear
             wait.until(EC.visibility_of_element_located(
                 (By.XPATH,
-                 "//*[contains(@class,'makeStyles-columnName')]"
+                 "//*[@id='id-dataoutput']"
                  )
             ))
             wait.until(EC.visibility_of_element_located(
                 (By.XPATH,
-                 "//*[contains(@class,'makeStyles-columnName') "
-                 "and //span[text()='{}']]".format(batch['datatype'][0])
+                 "//*[@id='id-dataoutput']//"
+                 "span[contains(text(),'{}')]".format(batch['datatype'][0])
                  )
             ))
 
