@@ -335,6 +335,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
   const formatSQL=()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL);
   };
+  const toggleCase=()=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE);
+  };
   const clearQuery=()=>{
     confirmDiscard(()=>{
       eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, '');
@@ -416,6 +419,12 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       shortcut: FIXED_PREF.format_sql,
       options: {
         callback: ()=>{formatSQL();}
+      }
+    },
+    {
+      shortcut: queryToolPref.toggle_case,
+      options: {
+        callback: ()=>{toggleCase();}
       }
     },
     {
@@ -565,6 +574,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'indentLess');}}>{gettext('Unindent Selection')}</PgMenuItem>
         <PgMenuItem shortcut={FIXED_PREF.comment}
           onClick={()=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_EXEC_CMD, 'toggleComment');}}>{gettext('Toggle Comment')}</PgMenuItem>
+        <PgMenuItem shortcut={queryToolPref.toggle_case}
+          onClick={toggleCase}>{gettext('Toggle Case Of Selected Text')}</PgMenuItem>
         <PgMenuItem shortcut={queryToolPref.clear_query}
           onClick={clearQuery}>{gettext('Clear Query')}</PgMenuItem>
         <PgMenuDivider />

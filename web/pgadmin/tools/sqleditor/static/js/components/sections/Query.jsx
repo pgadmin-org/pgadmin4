@@ -377,6 +377,16 @@ export default function Query() {
         }
       }).catch(()=>{/* failure should be ignored */});
     });
+    eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_TOGGLE_CASE, ()=>{
+      let selectedText = editor.current?.getSelection();
+      if (!selectedText) return;
+
+      if (selectedText === selectedText.toUpperCase()) {
+        editor.current.replaceSelection(selectedText.toLowerCase());
+      } else {
+        editor.current.replaceSelection(selectedText.toUpperCase());
+      }
+    });
 
     editor.current.focus();
   }, []);

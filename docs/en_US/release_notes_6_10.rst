@@ -29,5 +29,6 @@ Bug fixes
   | `Issue #7383 <https://redmine.postgresql.org/issues/7383>`_ -  Fixed an issue where Preferences are not saved when the dialog is maximized.
   | `Issue #7388 <https://redmine.postgresql.org/issues/7388>`_ -  Fixed an issue where an error message fills the entire window if the query is long.
   | `Issue #7393 <https://redmine.postgresql.org/issues/7393>`_ -  Ensure that the editor position should not get changed once it is opened.
+  | `Issue #7399 <https://redmine.postgresql.org/issues/7399>`_ -  Added missing toggle case keyboard shortcuts to the query tool.
   | `Issue #7402 <https://redmine.postgresql.org/issues/7402>`_ -  Ensure that Dashboard graphs should be refreshed on changing the node from the browser tree.
   | `Issue #7403 <https://redmine.postgresql.org/issues/7403>`_ -  Fixed an issue where comments on domain constraints were not visible when selecting a domain node.
