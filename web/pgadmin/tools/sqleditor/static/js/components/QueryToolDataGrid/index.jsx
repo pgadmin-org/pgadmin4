@@ -382,7 +382,7 @@ function getTextWidth(column, rows, canvas, columnWidthBy) {
 }
 
 export default function QueryToolDataGrid({columns, rows, totalRowCount, dataChangeStore,
-  onSelectedCellChange, rowsResetKey, selectedColumns, onSelectedColumnsChange, columnWidthBy, ...props}) {
+  onSelectedCellChange, selectedColumns, onSelectedColumnsChange, columnWidthBy, ...props}) {
   const classes = useStyles();
   const [readyColumns, setColumns] = useState([]);
   const eventBus = useContext(QueryToolEventsContext);
@@ -394,7 +394,7 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
   useEffect(()=>{
     let initCols = initialiseColumns(columns, rows, totalRowCount, columnWidthBy);
     setColumns(formatColumns(initCols, dataChangeStore, selectedColumns, onSelectedColumnsChangeWrapped, props.rowKeyGetter, classes));
-  }, [columns, rowsResetKey]);
+  }, [columns]);
 
   useEffect(()=>{
     setColumns((prevCols)=>{
@@ -440,6 +440,5 @@ QueryToolDataGrid.propTypes = {
   selectedColumns: PropTypes.objectOf(Set),
   onSelectedColumnsChange: PropTypes.func,
   rowKeyGetter: PropTypes.func,
-  rowsResetKey: PropTypes.any,
   columnWidthBy: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

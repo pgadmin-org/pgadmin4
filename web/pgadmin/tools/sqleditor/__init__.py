@@ -324,6 +324,7 @@ def panel(trans_id):
     return render_template(
         "sqleditor/index.html",
         close_url=close_url,
+        title=params['title'],
         params=json.dumps(params),
         requirejs=True,
         basejs=True,

@@ -747,7 +747,7 @@ export function ResultSet() {
     }
     fireRowsColsCellChanged();
   };
-  const [rowsResetKey, setRowsResetKey] = useState(true);
+  const [rowsResetKey, setRowsResetKey] = useState(0);
 
   rsu.current.setEventBus(eventBus);
 
@@ -778,10 +778,10 @@ export function ResultSet() {
       if(goForPoll) {
         rsu.current.pollForResult(
           (procQueryData, procColumns, procRows)=>{
+            setRowsResetKey((prev)=>prev+1);
             setQueryData(procQueryData);
             setColumns(procColumns);
             setRows(procRows);
-            setRowsResetKey(!rowsResetKey);
           },
           (planJson)=>{
             /* No need to open if plan is empty */
@@ -1272,7 +1272,7 @@ export function ResultSet() {
                 queryToolCtx.preferences.sqleditor.column_data_max_width :
                 queryToolCtx.preferences?.sqleditor?.column_data_auto_resize
             }
-            rowsResetKey={rowsResetKey}
+            key={rowsResetKey}
             rowKeyGetter={rowKeyGetter}
             onScroll={handleScroll}
             onRowsChange={onRowsChange}

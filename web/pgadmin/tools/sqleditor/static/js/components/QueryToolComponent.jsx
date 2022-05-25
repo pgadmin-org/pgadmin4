@@ -63,6 +63,8 @@ function setPanelTitle(panel, title, qtState, dirty=false) {
         title = title.slice(0, -1);
       }
     }
+  } else {
+    title = qtState.params.title;
   }
 
   title = title + (dirty ? '*': '');
