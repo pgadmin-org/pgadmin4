@@ -1,5 +1,4 @@
 /////////////////////////////////////////////////////////////
-//234567890
 // pgAdmin 4 - PostgreSQL Tools
 //
 // Copyright (C) 2013 - 2022, The pgAdmin Development Team

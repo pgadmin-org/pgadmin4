@@ -35,3 +35,4 @@ Bug fixes
   | `Issue #7402 <https://redmine.postgresql.org/issues/7402>`_ -  Ensure that Dashboard graphs should be refreshed on changing the node from the browser tree.
   | `Issue #7403 <https://redmine.postgresql.org/issues/7403>`_ -  Fixed an issue where comments on domain constraints were not visible when selecting a domain node.
   | `Issue #7405 <https://redmine.postgresql.org/issues/7405>`_ -  Ensure that null values are accepted for the numeric columns in react-data-grid.
+  | `Issue #7408 <https://redmine.postgresql.org/issues/7408>`_ -  Fixed an issue when a table has a column with an array type with length or precision, the column type is not selected while editing the table.

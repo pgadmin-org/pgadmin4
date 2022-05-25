@@ -184,7 +184,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
         edit_types_list = [row['typname'] for row in rset['rows']]
 
     # We will need present type in edit mode
-    edit_types_list.append(data['cltype'])
+    edit_types_list.append(data['typname'])
     data['edit_types'] = sorted(edit_types_list)
 
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
