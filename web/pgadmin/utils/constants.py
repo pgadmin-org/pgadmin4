@@ -68,9 +68,6 @@ SUPPORTED_AUTH_SOURCES = [INTERNAL,
 
 BINARY_PATHS = {
     "as_bin_paths": [
-        {"version": "90600", "next_major_version": "100000",
-         "serverType": gettext("EDB Advanced Server 9.6"), "binaryPath": None,
-         "isDefault": False},
         {"version": "100000", "next_major_version": "110000",
          "serverType": gettext("EDB Advanced Server 10"), "binaryPath": None,
          "isDefault": False},
@@ -85,12 +82,12 @@ BINARY_PATHS = {
          "isDefault": False},
         {"version": "140000", "next_major_version": "150000",
          "serverType": gettext("EDB Advanced Server 14"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "150000", "next_major_version": "160000",
+         "serverType": gettext("EDB Advanced Server 15"), "binaryPath": None,
          "isDefault": False}
     ],
     "pg_bin_paths": [
-        {"version": "90600", "next_major_version": "100000",
-         "serverType": gettext("PostgreSQL 9.6"), "binaryPath": None,
-         "isDefault": False},
         {"version": "100000", "next_major_version": "110000",
          "serverType": gettext("PostgreSQL 10"), "binaryPath": None,
          "isDefault": False},
@@ -105,6 +102,9 @@ BINARY_PATHS = {
          "isDefault": False},
         {"version": "140000", "next_major_version": "150000",
          "serverType": gettext("PostgreSQL 14"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "150000", "next_major_version": "160000",
+         "serverType": gettext("PostgreSQL 15"), "binaryPath": None,
          "isDefault": False}
     ]
 }
