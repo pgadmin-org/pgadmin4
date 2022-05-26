@@ -124,12 +124,15 @@ class NewConnectionSchema extends BaseUISchema {
         depChange: (state)=>{
           /* Once the option is selected get the name */
           /* Force sid to null, and set only if connected */
+          let selectedServer = _.find(this.flatServers, (s)=>s.value==state.sid);
           return {
-            server_name: _.find(this.flatServers, (s)=>s.value==state.sid)?.label,
+            server_name: selectedServer?.label,
             did: null,
             user: null,
             role: null,
             sid: null,
+            fgcolor: selectedServer?.fgcolor,
+            bgcolor: selectedServer?.bgcolor,
           };
         },
         deferredDepChange: (state, source, topState, actionObj)=>{
@@ -181,6 +184,10 @@ class NewConnectionSchema extends BaseUISchema {
         id: 'server_name', label: '', type: 'text', visible: false,
       },{
         id: 'database_name', label: '', type: 'text', visible: false,
+      },{
+        id: 'bgcolor', label: '', type: 'text', visible: false,
+      },{
+        id: 'fgcolor', label: '', type: 'text', visible: false,
       },
     ];
   }

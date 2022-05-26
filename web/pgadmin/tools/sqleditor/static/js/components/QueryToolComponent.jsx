@@ -514,6 +514,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                 sid: connectionData.sid,
                 did: connectionData.did,
                 title: connectionData.title,
+                fgcolor: connectionData.fgcolor,
+                bgcolor: connectionData.bgcolor,
               },
               connected: respData.data.trans_id ? true : false,
               obtaining_conn: false,
@@ -561,6 +563,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             conn_title: getTitle(pgAdmin, null, null, true, data.server_name, data.database_name, data.role || data.user, true),
             server_name: data.server_name,
             database_name: data.database_name,
+            bgcolor: data.bgcolor,
+            fgcolor: data.fgcolor,
             is_selected: true,
           };
 

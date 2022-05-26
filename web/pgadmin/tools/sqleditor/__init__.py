@@ -2061,6 +2061,8 @@ def get_new_connection_data(sgid=None, sid=None):
                 "value": server.serialize['id'],
                 'image': server_icon_and_background(connected, manager,
                                                     server),
+                'fgcolor': server.serialize['fgcolor'],
+                'bgcolor': server.serialize['bgcolor'],
                 'connected': connected})
 
         msg = "Success"
