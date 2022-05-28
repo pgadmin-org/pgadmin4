@@ -100,7 +100,7 @@ var initBrowserTree = async (pgBrowser) => {
   await render(
       <FileTreeX model={treeModelX}
         onReady={itemHandle} create={create} remove={remove} update={update}
-        height={_height} />
+        height={_height} disableCache={true} />
      , document.getElementById('tree'));
 }
 

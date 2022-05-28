@@ -20,6 +20,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #6962 <https://redmine.postgresql.org/issues/6962>`_ -  Fixed the browser tree overlapping nodes and expansion issue.
   | `Issue #7002 <https://redmine.postgresql.org/issues/7002>`_ -  Added the ability to detect and warn users about bidirectional Unicode characters.
   | `Issue #7347 <https://redmine.postgresql.org/issues/7347>`_ -  Ensure that when Authentication buttons are disabled their text is visible in the Dark and High contrast theme.
   | `Issue #7368 <https://redmine.postgresql.org/issues/7368>`_ -  Ensure that unwanted APIs should not be getting called for BigAnimal.
