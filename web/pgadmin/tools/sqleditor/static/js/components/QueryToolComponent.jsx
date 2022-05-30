@@ -104,6 +104,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       user: params.username,
       role: null,
       title: _.unescape(params.title),
+      fgcolor: params.fgcolor,
+      bgcolor: params.bgcolor,
       conn_title: getTitle(
         pgAdmin, null, selectedNodeInfo, true, params.server_name, params.database_name || getDatabaseLabel(selectedNodeInfo),
         params.username, params.is_query_tool == 'true' ? true : false),
