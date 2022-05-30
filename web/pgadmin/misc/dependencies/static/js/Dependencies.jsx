@@ -81,14 +81,14 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
       Header: 'Type',
       accessor: 'type',
       sortble: true,
-      resizable: false,
+      resizable: true,
       disableGlobalFilter: false,
     },
     {
       Header: 'Name',
       accessor: 'name',
       sortble: true,
-      resizable: false,
+      resizable: true,
       disableGlobalFilter: false,
     },
     {
@@ -163,7 +163,7 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
         ></PgTable>
       ) : (
         <div className={classes.emptyPanel}>
-          {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
+          {loaderText ? (<Loader message={loaderText}/>) :
             <EmptyPanelMessage text={gettext(msg)}/>
           }
         </div>

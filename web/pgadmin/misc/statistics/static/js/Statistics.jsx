@@ -39,11 +39,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: '0.5rem',
     fontSize: '0.875rem',
   },
-  loading: {
-    marginLeft: '0.5rem',
-    fontSize: '0.875rem',
-    colour: theme.palette.grey[400]
-  },
   autoResizer: {
     height: '100% !important',
     width: '100% !important',
@@ -113,14 +108,14 @@ function getColumn(data, singleLineStatistics) {
         Header: 'Statictics',
         accessor: 'name',
         sortble: true,
-        resizable: false,
+        resizable: true,
         disableGlobalFilter: false,
       },
       {
         Header: 'Value',
         accessor: 'value',
         sortble: true,
-        resizable: false,
+        resizable: true,
         disableGlobalFilter: false,
       },
     ];
@@ -191,14 +186,14 @@ export default function Statistics({ nodeData, item, node, ...props }) {
       Header: 'Statictics',
       accessor: 'name',
       sortble: true,
-      resizable: false,
+      resizable: true,
       disableGlobalFilter: false,
     },
     {
       Header: 'Value',
       accessor: 'value',
       sortble: true,
-      resizable: false,
+      resizable: true,
       disableGlobalFilter: false,
     },
   ]);
@@ -274,7 +269,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
         ></PgTable>
       ) : (
         <div className={classes.emptyPanel}>
-          <Loader message={loaderText} className={classes.loading} />
+          <Loader message={loaderText} />
           <EmptyPanelMessage text={gettext(msg)}/>
         </div>
       )}

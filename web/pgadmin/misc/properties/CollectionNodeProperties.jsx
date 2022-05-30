@@ -320,7 +320,7 @@ export function CollectionNodeView({
           :
           (
             <div className={classes.emptyPanel}>
-              {loaderText ? (<Loader message={loaderText} className={classes.loading} />) :
+              {loaderText ? (<Loader message={loaderText}/>) :
                 <EmptyPanelMessage text={gettext(infoMsg)}/>
               }
             </div>

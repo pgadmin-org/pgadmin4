@@ -88,7 +88,7 @@ export default function SQL({ nodeData, node, did,  ...props }) {
 
   return (
     <>
-      <Loader message={loaderText} className={classes.loading} />
+      <Loader message={loaderText}/>
       <CodeMirror
         className={classes.textArea}
         value={nodeSQL.length > 0 ? nodeSQL : msg}
