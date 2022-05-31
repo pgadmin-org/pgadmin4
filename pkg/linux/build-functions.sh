@@ -142,6 +142,13 @@ _build_runtime() {
     # Copy nwjs into the staging directory
     mkdir -p "${DESKTOPROOT}/usr/${APP_NAME}/bin"
 
+    # The chmod command below is needed to fix the permission issue of
+    # the NWjs binaries and files.
+    # Change the permission for others and group the same as the owner
+    chmod -R og=u "${BUILDROOT}/nwjs-v${NW_VERSION}-linux-x64"/*
+    # Explicitly remove write permissions for others and group
+    chmod -R og-w "${BUILDROOT}/nwjs-v${NW_VERSION}-linux-x64"/*
+
     # YARN:
     # cp -r "${BUILDROOT}/node_modules/nw/nwjs"/* "${DESKTOPROOT}/usr/${APP_NAME}/bin"
     #  YARN END
