@@ -18,14 +18,14 @@ import Graphs from './Graphs';
 import Notify from '../../../static/js/helpers/Notifier';
 import { Box, Tab, Tabs } from '@material-ui/core';
 import { PgIconButton } from '../../../static/js/components/Buttons';
-import CancelIcon from '@mui/icons-material/Cancel';
-import SquareIcon from '@mui/icons-material/Square';
-import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
-import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
+import CancelIcon from '@material-ui/icons/Cancel';
+import StopSharpIcon from '@material-ui/icons/StopSharp';
+import ArrowRightOutlinedIcon from '@material-ui/icons/ArrowRightOutlined';
+import ArrowDropDownOutlinedIcon from '@material-ui/icons/ArrowDropDownOutlined';
 import WelcomeDashboard from './WelcomeDashboard';
 import ActiveQuery from './ActiveQuery.ui';
 import _ from 'lodash';
-import CachedIcon from '@mui/icons-material/Cached';
+import CachedOutlinedIcon from '@material-ui/icons/CachedOutlined';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
 
@@ -287,7 +287,7 @@ export default function Dashboard({
           <PgIconButton
             size="xs"
             noBorder
-            icon={<SquareIcon/>}
+            icon={<StopSharpIcon/>}
             onClick={() => {
               if (!canTakeAction(row, 'cancel'))
                 return;
@@ -774,7 +774,7 @@ export default function Dashboard({
         size="xs"
         noBorder
         className={classes.refreshButton}
-        icon={<CachedIcon />}
+        icon={<CachedOutlinedIcon />}
         onClick={(e) => {
           e.preventDefault();
           setRefresh(!refresh);
