@@ -1,6 +1,6 @@
 """
 Using Completion class from
-    https://github.com/prompt-toolkit/python-prompt-toolkit/blob/master/prompt_toolkit/completion/base.py
+    https://github.com/prompt-toolkit/python-prompt-toolkit/blob/master/src/prompt_toolkit/completion/base.py
 """
 
 __all__ = (
@@ -8,7 +8,7 @@ __all__ = (
 )
 
 
-class Completion(object):
+class Completion:
     """
     :param text: The new string that will be inserted into the document.
     :param start_position: Position relative to the cursor_position where the
@@ -36,21 +36,34 @@ class Completion(object):
 
         assert self.start_position <= 0
 
-    def __repr__(self):
-        return "%s(text=%r, start_position=%r)" % (
-            self.__class__.__name__, self.text, self.start_position)
+    def __repr__(self) -> str:
+        if isinstance(self.display, str) and self.display == self.text:
+            return "{}(text={!r}, start_position={!r})".format(
+                self.__class__.__name__,
+                self.text,
+                self.start_position,
+            )
+        else:
+            return "{}(text={!r}, start_position={!r}, display={!r})".format(
+                self.__class__.__name__,
+                self.text,
+                self.start_position,
+                self.display,
+            )
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Completion):
+            return False
         return (
             self.text == other.text and
             self.start_position == other.start_position and
             self.display == other.display and
-            self.display_meta == other.display_meta)
-
-    def __hash__(self):
-        return hash(
-            (self.text, self.start_position, self.display, self.display_meta)
+            self._display_meta == other._display_meta
         )
+
+    def __hash__(self) -> int:
+        return hash((self.text, self.start_position, self.display,
+                     self._display_meta))
 
     @property
     def display_meta(self):
@@ -58,9 +71,17 @@ class Completion(object):
         if self._display_meta is not None:
             return self._display_meta
 
-        elif self._get_display_meta:
-            self._display_meta = self._get_display_meta()
-            return self._display_meta
+    def new_completion_from_position(self, position: int) -> "Completion":
+        """
+        (Only for internal use!)
+        Get a new completion by splitting this one. Used by `Application` when
+        it needs to have a list of new completions after inserting the common
+        prefix.
+        """
+        assert position - self.start_position >= 0
 
-        else:
-            return ''
+        return Completion(
+            text=self.text[position - self.start_position:],
+            display=self.display,
+            display_meta=self._display_meta,
+        )

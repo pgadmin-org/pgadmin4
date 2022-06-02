@@ -16,8 +16,20 @@ from .completion import Completion
 from collections import namedtuple, defaultdict, OrderedDict
 
 from .sqlcompletion import (
-    FromClauseItem, suggest_type, Database, Schema, Table,
-    Function, Column, View, Keyword, Datatype, Alias, JoinCondition, Join)
+    FromClauseItem,
+    suggest_type,
+    Database,
+    Schema,
+    Table,
+    Function,
+    Column,
+    View,
+    Keyword,
+    Datatype,
+    Alias,
+    JoinCondition,
+    Join
+)
 from .parseutils.meta import FunctionMetadata, ColumnMetadata, ForeignKey
 from .parseutils.utils import last_word
 from .parseutils.tables import TableReference
@@ -228,7 +240,7 @@ class SQLAutoComplete(object):
         :return:
         """
         # casing should be a dict {lowercasename:PreferredCasingName}
-        self.casing = dict((word.lower(), word) for word in words)
+        self.casing = {word.lower(): word for word in words}
 
     def extend_relations(self, data, kind):
         """extend metadata for tables or views.
@@ -305,13 +317,15 @@ class SQLAutoComplete(object):
         # would result if we'd recalculate the arg lists each time we suggest
         # functions (in large DBs)
 
-        self._arg_list_cache = \
-            dict((usage,
-                 dict((meta, self._arg_list(meta, usage))
-                      for sch, funcs in self.dbmetadata["functions"].items()
-                      for func, metas in funcs.items()
-                      for meta in metas))
-                 for usage in ("call", "call_display", "signature"))
+        self._arg_list_cache = {
+            usage: {
+                meta: self._arg_list(meta, usage)
+                for sch, funcs in self.dbmetadata["functions"].items()
+                for func, metas in funcs.items()
+                for meta in metas
+            }
+            for usage in ("call", "call_display", "signature")
+        }
 
     def extend_foreignkeys(self, fk_data):
 
@@ -341,8 +355,8 @@ class SQLAutoComplete(object):
                 parentschema, parenttable, parcol,
                 childschema, childtable, childcol
             )
-            childcolmeta.foreignkeys.append((fk))
-            parcolmeta.foreignkeys.append((fk))
+            childcolmeta.foreignkeys.append(fk)
+            parcolmeta.foreignkeys.append(fk)
 
     def extend_datatypes(self, type_data):
 
@@ -383,11 +397,6 @@ class SQLAutoComplete(object):
         yields prompt_toolkit Completion instances for any matches found
         in the collection of available completions.
 
-        Args:
-            text:
-            collection:
-            mode:
-            meta:
         """
         if not collection:
             return []
@@ -487,8 +496,11 @@ class SQLAutoComplete(object):
                 # We also use the unescape_name to make sure quoted names have
                 # the same priority as unquoted names.
                 lexical_priority = (
-                    tuple(0 if c in (" _") else -ord(c)
-                          for c in self.unescape_name(item.lower())) + (1,) +
+                    tuple(
+                        0 if c in " _" else -ord(c)
+                        for c in self.unescape_name(item.lower())
+                    ) +
+                    (1,) +
                     tuple(c for c in item)
                 )
 
@@ -551,11 +563,14 @@ class SQLAutoComplete(object):
         self.fetch_schema_objects(schema, 'views')
 
         tables = suggestion.table_refs
-        do_qualify = suggestion.qualifiable and {
-            "always": True,
-            "never": False,
-            "if_more_than_one_table": len(tables) > 1,
-        }[self.qualify_columns]
+        do_qualify = (
+            suggestion.qualifiable and
+            {
+                "always": True,
+                "never": False,
+                "if_more_than_one_table": len(tables) > 1,
+            }[self.qualify_columns]
+        )
 
         def qualify(col, tbl):
             return (tbl + '.' + col) if do_qualify else col
@@ -579,13 +594,15 @@ class SQLAutoComplete(object):
             # (...' which should
             # suggest only columns that appear in the last table and one more
             ltbl = tables[-1].ref
-            other_tbl_cols = set(
-                c.name for t, cs in scoped_cols.items() if t.ref != ltbl
-                for c in cs
-            )
-            scoped_cols = \
-                dict((t, [col for col in cols if col.name in other_tbl_cols])
-                     for t, cols in scoped_cols.items() if t.ref == ltbl)
+            other_tbl_cols = {
+                c.name for t, cs in scoped_cols.items()
+                if t.ref != ltbl for c in cs
+            }
+            scoped_cols = {
+                t: [col for col in cols if col.name in other_tbl_cols]
+                for t, cols in scoped_cols.items()
+                if t.ref == ltbl
+            }
 
         lastword = last_word(word_before_cursor, include="most_punctuations")
         if lastword == "*":
@@ -598,9 +615,11 @@ class SQLAutoComplete(object):
                         p.match(col.default)
                         for p in self.insert_col_skip_patterns
                     )
-                scoped_cols = \
-                    dict((t, [col for col in cols if filter(col)])
-                         for t, cols in scoped_cols.items())
+
+                scoped_cols = {
+                    t: [col for col in cols if filter(col)]
+                    for t, cols in scoped_cols.items()
+                }
             if self.asterisk_column_order == "alphabetic":
                 for cols in scoped_cols.values():
                     cols.sort(key=operator.attrgetter("name"))
@@ -650,10 +669,10 @@ class SQLAutoComplete(object):
         tbls = suggestion.table_refs
         cols = self.populate_scoped_cols(tbls)
         # Set up some data structures for efficient access
-        qualified = dict((normalize_ref(t.ref), t.schema) for t in tbls)
-        ref_prio = dict((normalize_ref(t.ref), n) for n, t in enumerate(tbls))
-        refs = set(normalize_ref(t.ref) for t in tbls)
-        other_tbls = set((t.schema, t.name) for t in list(cols)[:-1])
+        qualified = {normalize_ref(t.ref): t.schema for t in tbls}
+        ref_prio = {normalize_ref(t.ref): n for n, t in enumerate(tbls)}
+        refs = {normalize_ref(t.ref) for t in tbls}
+        other_tbls = {(t.schema, t.name) for t in list(cols)[:-1]}
         joins = []
         # Iterate over FKs in existing tables to find potential joins
         fks = (
@@ -689,10 +708,11 @@ class SQLAutoComplete(object):
             ]
             # Schema-qualify if (1) new table in same schema as old, and old
             # is schema-qualified, or (2) new in other schema, except public
-            if not suggestion.schema and \
-                (qualified[normalize_ref(rtbl.ref)] and
-                 left.schema == right.schema or
-                 left.schema not in (right.schema, "public")):
+            if not suggestion.schema and (
+                qualified[normalize_ref(rtbl.ref)] and
+                left.schema == right.schema or
+                left.schema not in (right.schema, "public")
+            ):
                 join = left.schema + "." + join
             prio = ref_prio[normalize_ref(rtbl.ref)] * 2 + (
                 0 if (left.schema, left.tbl) in other_tbls else 1
@@ -726,8 +746,8 @@ class SQLAutoComplete(object):
             return d
 
         # Tables that are closer to the cursor get higher prio
-        ref_prio = dict((tbl.ref, num)
-                        for num, tbl in enumerate(suggestion.table_refs))
+        ref_prio = \
+            {tbl.ref: num for num, tbl in enumerate(suggestion.table_refs)}
         # Map (schema, table, col) to tables
         coldict = list_dict(
             ((t.schema, t.name, c.name), t) for t, c in cols if t.ref != lref
@@ -761,9 +781,14 @@ class SQLAutoComplete(object):
 
             def filt(f):
                 return (
-                    not f.is_aggregate and not f.is_window and
+                    not f.is_aggregate and
+                    not f.is_window and
                     not f.is_extension and
-                    (f.is_public or f.schema_name == suggestion.schema)
+                    (
+                        f.is_public or
+                        f.schema_name in self.search_path or
+                        f.schema_name == suggestion.schema
+                    )
                 )
 
         else:
@@ -781,12 +806,18 @@ class SQLAutoComplete(object):
         # Function overloading means we way have multiple functions of the same
         # name at this point, so keep unique names only
         all_functions = self.populate_functions(suggestion.schema, filt)
-        funcs = set(
-            self._make_cand(f, alias, suggestion, arg_mode)
-            for f in all_functions
-        )
+        funcs = {self._make_cand(f, alias, suggestion, arg_mode)
+                 for f in all_functions}
 
         matches = self.find_matches(word_before_cursor, funcs, meta="function")
+
+        if not suggestion.schema and not suggestion.usage:
+            # also suggest hardcoded functions using startswith matching
+            predefined_funcs = self.find_matches(
+                word_before_cursor, self.functions, mode="strict",
+                meta="function"
+            )
+            matches.extend(predefined_funcs)
 
         return matches
 
@@ -930,6 +961,16 @@ class SQLAutoComplete(object):
         types = self.populate_schema_objects(suggestion.schema, "datatypes")
         types = [self._make_cand(t, False, suggestion) for t in types]
         matches = self.find_matches(word_before_cursor, types, meta="datatype")
+
+        if not suggestion.schema:
+            # Also suggest hardcoded types
+            matches.extend(
+                self.find_matches(
+                    word_before_cursor, self.datatypes, mode="strict",
+                    meta="datatype"
+                )
+            )
+
         return matches
 
     def get_word_before_cursor(self, word=False):
@@ -995,7 +1036,7 @@ class SQLAutoComplete(object):
         :return: {TableReference:{colname:ColumnMetaData}}
 
         """
-        ctes = dict((normalize_ref(t.name), t.columns) for t in local_tbls)
+        ctes = {normalize_ref(t.name): t.columns for t in local_tbls}
         columns = OrderedDict()
         meta = self.dbmetadata
 

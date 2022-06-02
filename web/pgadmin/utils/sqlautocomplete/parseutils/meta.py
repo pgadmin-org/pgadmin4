@@ -53,7 +53,7 @@ def parse_defaults(defaults_string):
     yield current
 
 
-class FunctionMetadata(object):
+class FunctionMetadata:
     def __init__(
         self,
         schema_name,

@@ -41,8 +41,7 @@ def extract_from_part(parsed, stop_at_punctuation=True):
     for item in parsed.tokens:
         if tbl_prefix_seen:
             if is_subselect(item):
-                for x in extract_from_part(item, stop_at_punctuation):
-                    yield x
+                yield from extract_from_part(item, stop_at_punctuation)
             elif stop_at_punctuation and item.ttype is Punctuation:
                 return
             # An incomplete nested select won't be recognized correctly as a
@@ -63,16 +62,13 @@ def extract_from_part(parsed, stop_at_punctuation=True):
                 yield item
         elif item.ttype is Keyword or item.ttype is Keyword.DML:
             item_val = item.value.upper()
-            if (
-                item_val
-                in (
-                    "COPY",
-                    "FROM",
-                    "INTO",
-                    "UPDATE",
-                    "TABLE",
-                ) or item_val.endswith("JOIN")
-            ):
+            if item_val in (
+                "COPY",
+                "FROM",
+                "INTO",
+                "UPDATE",
+                "TABLE",
+            ) or item_val.endswith("JOIN"):
                 tbl_prefix_seen = True
         # 'SELECT a, FROM abc' will detect FROM as part of the column list.
         # So this check here is necessary.

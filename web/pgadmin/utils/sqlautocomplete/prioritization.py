@@ -14,7 +14,7 @@ def _compile_regex(keyword):
     return re.compile(pattern, re.MULTILINE | re.IGNORECASE)
 
 
-class PrevalenceCounter(object):
+class PrevalenceCounter:
     def __init__(self, keywords):
         self.keyword_counts = defaultdict(int)
         self.name_counts = defaultdict(int)
