@@ -414,7 +414,7 @@ If you wish to host pgAdmin under a subdirectory using Traefik, the
 configuration changes are typically made to the way the container is launched
 and not to Traefik itself. For example, to host pgAdmin under */pgadmin4/*
 instead of at the root directory, the Traefik configuration above may be used if
-the container is launched like this:
+the container is launched like this while using the version v1 of Traefik:
 
 .. code-block:: bash
 
@@ -430,3 +430,16 @@ The *SCRIPT_NAME* environment variable has been set to tell the container it is
 being hosted under a subdirectory (in the same way as the *X-Script-Name* header
 is used with Nginx), and a label has been added to tell Traefik to route
 requests under the subdirectory to this container.
+
+While using the Traefik configuration for version v2 for hosting pgAdmin under subdirectory
+the container is typically launched per the example below:
+
+.. code-block:: bash
+
+    docker pull dpage/pgadmin4
+    docker run --name "pgadmin4" \
+        -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
+        -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+        -e "SCRIPT_NAME=/pgadmin4" \
+        -l "traefik.frontend.pgadmin4.rule=Host(`host.example.com`) && PathPrefix(`/pgadmin4`)" \
+        -d dpage/pgadmin4

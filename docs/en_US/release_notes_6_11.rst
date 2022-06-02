@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #7315 <https://redmine.postgresql.org/issues/7315>`_ -  Updates documentation for the Traefik v2 container deployment.
   | `Issue #7411 <https://redmine.postgresql.org/issues/7411>`_ -  Update pgcli to latest release 3.4.1.
 
 Bug fixes
