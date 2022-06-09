@@ -294,11 +294,11 @@ describe('SchemaView', ()=>{
       }, 0);
     });
 
-    let onRestAction = (done)=> {
+    let onRestAction = (done, data)=> {
       ctrl.update();
       expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
       expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-      expect(onDataChange).toHaveBeenCalledWith(false, {});
+      expect(onDataChange).toHaveBeenCalledWith(false, data);
       done();
     };
 
@@ -313,7 +313,7 @@ describe('SchemaView', ()=>{
           /* Press OK */
           confirmSpy.calls.argsFor(0)[2]();
           setTimeout(()=>{
-            onRestAction(done);
+            onRestAction(done, { id: undefined, field1: null, field2: null, fieldcoll: null });
           }, 0);
         }, 0);
       });
@@ -351,7 +351,8 @@ describe('SchemaView', ()=>{
             expect(confirmSpy).not.toHaveBeenCalled();
             expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
             expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-            expect(onDataChange).toHaveBeenCalledWith(false, {});
+            // on reset, orig data will be considered
+            expect(onDataChange).toHaveBeenCalledWith(false, { id: undefined, field1: null, field2: null, fieldcoll: null });
             done();
           }, 0);
         }, 0);
@@ -461,7 +462,7 @@ describe('SchemaView', ()=>{
           /* Press OK */
           confirmSpy.calls.argsFor(0)[2]();
           setTimeout(()=>{
-            onRestAction(done);
+            onRestAction(done, {});
           }, 0);
         }, 0);
       });

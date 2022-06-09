@@ -230,17 +230,17 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
       axiosApi.get(_url)
         .then((res) => {
           if (res.data && res.data.success == 1 ) {
-            setErrMsg([MESSAGE_TYPE.SUCCESS, 'Authentication completed successfully. Click the Next button to proceed.']);
+            setErrMsg([MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
             setVerificationIntiated(true);
             clearInterval(myInterval);
           }
           else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'access_denied') {
-            setErrMsg([MESSAGE_TYPE.INFO, 'Verification failed. Access Denied...']);
+            setErrMsg([MESSAGE_TYPE.INFO, gettext('Verification failed. Access Denied...')]);
             setVerificationIntiated(false);
             clearInterval(myInterval);
           }
           else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'forbidden') {
-            setErrMsg([MESSAGE_TYPE.INFO, 'Authentication completed successfully but you do not have permission to create the cluster.']);
+            setErrMsg([MESSAGE_TYPE.INFO, gettext('Authentication completed successfully but you do not have permission to create the cluster.')]);
             setVerificationIntiated(false);
             clearInterval(myInterval);
           }

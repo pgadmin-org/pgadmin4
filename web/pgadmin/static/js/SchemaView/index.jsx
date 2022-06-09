@@ -485,6 +485,11 @@ function SchemaDialogView({
     setDirty(isDataChanged);
 
     /* tell the callbacks the data has changed */
+    if(viewHelperProps.mode !== 'edit') {
+      /* If new then merge the changed data with origData */
+      changedData = _.assign({}, schema.origData, changedData);
+    }
+
     props.onDataChange && props.onDataChange(isDataChanged, changedData);
   }, [sessData, formReady]);
 

@@ -155,6 +155,9 @@ export function validateBigAnimal() {
 }
 
 function createData(name, value) {
+  if (typeof(value) == 'boolean') {
+    value = (value === true) ? 'True' : 'False';
+  }
   return { name, value };
 }
 
@@ -184,6 +187,7 @@ export function getBigAnimalSummary(cloud, bigAnimalInstanceData, bigAnimalDatab
     createData('Password', 'xxxxxxx'),
     createData('Database Type',  bigAnimalDatabaseData.database_type),
     createData('Database Version',  bigAnimalDatabaseData.postgres_version),
+    createData('High Availability',  bigAnimalDatabaseData.high_availability),
   ];
 
   return [rows1, rows2, rows3, rows4];
@@ -194,8 +198,7 @@ export function validateBigAnimalStep2(cloudInstanceDetails) {
   if (isEmptyString(cloudInstanceDetails.name) ||
   isEmptyString(cloudInstanceDetails.region) || isEmptyString(cloudInstanceDetails.instance_type) ||
   isEmptyString(cloudInstanceDetails.instance_series)|| isEmptyString(cloudInstanceDetails.instance_size) ||
-  isEmptyString(cloudInstanceDetails.volume_type)|| isEmptyString(cloudInstanceDetails.volume_properties) ||
-  isEmptyString(cloudInstanceDetails.cloud_type)) {
+  isEmptyString(cloudInstanceDetails.volume_type)|| isEmptyString(cloudInstanceDetails.volume_properties)) {
     isError = true;
   }
 

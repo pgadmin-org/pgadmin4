@@ -147,7 +147,7 @@ class DatabaseSchema extends BaseUISchema {
 
   get baseFields() {
     return [{
-      id: 'gid', label: gettext('Server group'), type: 'select',
+      id: 'gid', label: gettext('pgAdmin server group'), type: 'select',
       options: this.fieldOptions.server_groups,
       mode: ['create'],
       controlProps: { allowClear: false },
@@ -458,59 +458,6 @@ class BigAnimalVolumeSchema extends BaseUISchema {
   }
 }
 
-
-class BigAnimalNetworkSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues = {}) {
-    super({
-      oid: undefined,
-      cloud_type: '',
-      biganimal_public_ip: '',
-      ...initValues
-    });
-
-    this.fieldOptions = {
-      ...fieldOptions,
-    };
-    this.initValues = initValues;
-  }
-
-  get idAttribute() {
-    return 'oid';
-  }
-
-  get baseFields() {
-    var obj = this;
-    return [
-      {
-        id: 'cloud_type', label: gettext('Cloud type'), type: 'toggle',
-        mode: ['create'],
-        options: [
-          {'label': gettext('Private'), 'value': 'private'},
-          {'label': gettext('Public'), 'value': 'public'},
-        ], noEmpty: true,
-        helpMessage: gettext('Private networking allows only IP addresses within your private network to connect to your cluster.'
-        + ' Public means that any client can connect to your cluster’s public IP address over the internet.')
-      },{
-        id: 'biganimal_public_ip', label: gettext('Public IP range'), type: 'text',
-        mode: ['create'], deps: ['cloud_type'],
-        disabled: (state) => {
-          if (state.cloud_type == 'public') return false;
-          return true;
-        },
-        depChange: (state, source)=> {
-          if(source[0] == 'cloud_type') {
-            if (state.cloud_type == 'public') {
-              return {biganimal_public_ip: obj.initValues.hostIP};
-            } else {
-              return {biganimal_public_ip: ''};
-            }
-          }
-        },
-        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated. Leave it blank for 0.0.0.0/0'),
-      },
-    ];
-  }
-}
 class BigAnimalDatabaseSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues = {}) {
     super({
@@ -550,7 +497,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
   get baseFields() {
     return [
       {
-        id: 'gid', label: gettext('Server group'), type: 'select',
+        id: 'gid', label: gettext('pgAdmin server group'), type: 'select',
         options: this.fieldOptions.server_groups,
         mode: ['create'],
         controlProps: { allowClear: false },
@@ -570,7 +517,12 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
       },{
         id: 'confirm_password', label: gettext('Confirm password'), type: 'password',
         mode: ['create'], noEmpty: true,
+      },{
+        type: 'nested-fieldset', label: gettext('Availability'),
+        mode: ['create'],
+        schema: new BigAnimalHighAvailSchema(),
       },
+
     ];
   }
 }
@@ -581,7 +533,8 @@ class BigAnimalClusterSchema extends BaseUISchema {
       oid: undefined,
       name: '',
       region: '',
-      public_ip: initValues.hostIP,
+      cloud_type: 'public',
+      biganimal_public_ip: initValues.hostIP,
       ...initValues
     });
 
@@ -615,6 +568,10 @@ class BigAnimalClusterSchema extends BaseUISchema {
         noEmpty: true,
         mode: ['create'],
       },{
+        id: 'biganimal_public_ip', label: gettext('Public IP range'), type: 'text',
+        mode: ['create'],
+        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated. Leave it blank for 0.0.0.0/0'),
+      },{
         type: 'nested-fieldset', label: gettext('Instance Type'),
         mode: ['create'], deps: ['region'],
         schema: this.instance_types,
@@ -622,15 +579,46 @@ class BigAnimalClusterSchema extends BaseUISchema {
         type: 'nested-fieldset', label: gettext('Storage'),
         mode: ['create'], deps: ['region'],
         schema: this.volume_types,
-      }, {
-        type: 'nested-fieldset', label: gettext('Network Connectivity'),
-        mode: ['create'],
-        schema: new BigAnimalNetworkSchema({}, this.initValues),
       }
     ];
   }
 }
 
+
+
+class BigAnimalHighAvailSchema extends BaseUISchema {
+  constructor(fieldOptions = {}, initValues = {}) {
+    super({
+      oid: undefined,
+      high_availability: '',
+      ...initValues
+    });
+
+    this.fieldOptions = {
+      ...fieldOptions,
+    };
+    this.initValues = initValues;
+  }
+
+  get idAttribute() {
+    return 'oid';
+  }
+
+  get baseFields() {
+    return [
+      {
+        id: 'high_availability_note', type: 'note',
+        mode: ['create'],
+        text: gettext('High availability clusters are configured with one primary and two '
+        + 'replicas with synchronous streaming replication. Clusters are configured across availability zones in regions with availability zones.'),
+      },{
+        id: 'high_availability', label: gettext('High Availability'), type: 'switch',
+        mode: ['create'],
+        helpMessage: gettext('Turning on high availability means your number of CPUs will triple, as will your cost.'),
+      }
+    ];
+  }
+}
 
 export {
   CloudInstanceDetailsSchema,

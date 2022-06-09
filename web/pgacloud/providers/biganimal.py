@@ -70,12 +70,17 @@ class BigAnimalProvider(AbsProvider):
         parser_create_instance.add_argument('--public-ip', default='',
                                             help='Public IP '
                                                  '(default: 127.0.0.1)')
+        parser_create_instance.add_argument('--high-availability',
+                                            required=True,
+                                            help='High Availability')
 
     def cmd_create_instance(self, args):
         """ Create a biganimal cluster """
 
         try:
             private_network = True if args.private_network == '1' else False
+            high_availability = True if args.high_availability == '1' else\
+                False
             ip = args.public_ip if args.public_ip else '0.0.0.0/0'
             IpRanges = []
 
@@ -102,7 +107,7 @@ class BigAnimalProvider(AbsProvider):
                 'replicas': 3,
                 'volumePropertiesId': args.volume_properties,
                 'volumeTypeId': args.volume_type,
-                'zoneRedundantHa': False,
+                'zoneRedundantHa': high_availability,
                 'pgConfigMap': [],
             }
 

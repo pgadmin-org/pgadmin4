@@ -366,6 +366,8 @@ def deploy_on_biganimal(data):
     _label = data['instance_details']['name']
     _private_network = '1' if str(data['instance_details']['cloud_type']
                                   ) == 'private' else '0'
+    _high_availability = '1' if data['db_details']['high_availability']\
+        else '0'
     _instance_size = data['instance_details']['instance_size'].split('||')[1]
 
     args = [_cmd_script,
@@ -386,7 +388,9 @@ def deploy_on_biganimal(data):
             '--instance-type',
             str(_instance_size),
             '--private-network',
-            _private_network
+            _private_network,
+            '--high-availability',
+            _high_availability
             ]
 
     if 'biganimal_public_ip' in data['instance_details']:
