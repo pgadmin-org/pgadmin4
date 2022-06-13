@@ -323,6 +323,15 @@ def register_query_tool_preferences(self):
         )
     )
 
+    self.query_success_notification = self.preference.register(
+        'display', 'query_success_notification',
+        gettext("Show query success notification?"), 'boolean', True,
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext('If set to True, the Query Tool '
+                         'will show notifications on successful query '
+                         'execution.')
+    )
+
     self.preference.register(
         'keyboard_shortcuts',
         'execute_query',

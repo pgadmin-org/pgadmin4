@@ -139,6 +139,10 @@ export class ResultSetUtils {
     this.eventBus = eventBus;
   }
 
+  setQtPref(pref) {
+    this.qtPref = pref;
+  }
+
   setStartData(data) {
     this.startData = data;
   }
@@ -314,7 +318,9 @@ export class ResultSetUtils {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, httpMessage.data.data.result || 'Execution Cancelled!', true);
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
       }
-      Notifier.success(msg);
+      if(this.qtPref?.query_success_notification) {
+        Notifier.success(msg);
+      }
       if(!ResultSetUtils.isQueryStillRunning(httpMessage)) {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_HISTORY, {
           status: true,
@@ -750,6 +756,7 @@ export function ResultSet() {
   const [rowsResetKey, setRowsResetKey] = useState(0);
 
   rsu.current.setEventBus(eventBus);
+  rsu.current.setQtPref(queryToolCtx.preferences?.sqleditor);
 
   const isDataChanged = ()=>{
     return Boolean(_.size(dataChangeStore.updated) || _.size(dataChangeStore.added) || _.size(dataChangeStore.deleted));
