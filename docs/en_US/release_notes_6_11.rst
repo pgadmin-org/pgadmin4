@@ -20,3 +20,4 @@ Bug fixes
 *********
 
   | `Issue #7411 <https://redmine.postgresql.org/issues/7411>`_ -  Fixed an issue where the Database restriction is not working.
+  | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Skip the history records if the JSON info can't be parsed instead of showing 'No history'.

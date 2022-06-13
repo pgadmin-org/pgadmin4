@@ -392,10 +392,15 @@ export function QueryHistory() {
         'trans_id': queryToolCtx.params.trans_id,
       }));
       respData.data.result.forEach((h)=>{
-        h = JSON.parse(h);
-        h.start_time_orig = h.start_time;
-        h.start_time = new Date(h.start_time);
-        qhu.current.addEntry(h);
+        try {
+          h = JSON.parse(h);
+          h.start_time_orig = h.start_time;
+          h.start_time = new Date(h.start_time);
+          qhu.current.addEntry(h);
+        } catch {
+          /* skip the hist record */
+          return;
+        }
       });
       setSelectedItemKey(qhu.current.getNextItemKey());
     } catch (error) {
