@@ -318,6 +318,17 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
     });
 
+    panel?.on(window.wcDocker.EVENT.VISIBILITY_CHANGED, function() {
+      /* Focus the appropriate panel on visible */
+      if(panel.isVisible()) {
+        if(LayoutHelper.isTabVisible(docker.current, PANELS.QUERY)) {
+          LayoutHelper.focus(docker.current, PANELS.QUERY);
+        } else if(LayoutHelper.isTabVisible(docker.current, PANELS.HISTORY)) {
+          LayoutHelper.focus(docker.current, PANELS.HISTORY);
+        }
+      }
+    });
+
     pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', (fileName)=>{
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
     }, pgAdmin);

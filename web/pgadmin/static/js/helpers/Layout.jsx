@@ -333,6 +333,7 @@ export default function Layout({groups, getLayoutInstance, layoutId, savedLayout
           groups={defaultGroups}
           onLayoutChange={(_l, currentTabId, direction)=>{
             saveLayout(layoutObj.current, layoutId);
+            direction = direction == 'update' ? 'active' : direction;
             if(Object.values(LAYOUT_EVENTS).indexOf(direction) > -1) {
               layoutEventBus.current.fireEvent(LAYOUT_EVENTS[direction.toUpperCase()], currentTabId);
             }
