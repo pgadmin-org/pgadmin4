@@ -7,12 +7,22 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useEffect } from 'react';
-import Chart from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 const defaultOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  animation: {
+    duration: 0,
+    active: {
+      duration: 0,
+    },
+    resize: {
+      duration: 0,
+    },
+  },
   elements: {
     line: {
       tension: 0,
@@ -23,17 +33,42 @@ const defaultOptions = {
   layout: {
     padding: 8,
   },
-  hover: {
-    animationDuration:0,
-  },
+  scales: {
+    x: {
+      display: false,
+      grid: {
+        display: false,
+      },
+      ticks: {
+        display: false,
+      },
+    },
+    y: {
+      min: 0,
+      ticks: {
+        callback: function(label) {
+          if (Math.floor(label) === label) {
+            return label;
+          }
+        },
+        color: getComputedStyle(document.documentElement).getPropertyValue('--color-fg'),
+      },
+      grid: {
+        drawBorder: false,
+        zeroLineColor: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
+        color: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
+      },
+    },
+  }
 };
 
 export default function BaseChart({type='line', id, options, data, redraw=false, ...props}) {
   const chartRef = React.useRef();
   const chartObj = React.useRef();
-  let optionsMerged = Chart.helpers.configMerge(defaultOptions, options);
+  let optionsMerged = _.merge(defaultOptions, options);
 
   const initChart = function() {
+    Chart.register(...registerables);
     let chartContext = chartRef.current.getContext('2d');
     chartObj.current = new Chart(chartContext, {
       type: type,

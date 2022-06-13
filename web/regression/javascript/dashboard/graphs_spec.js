@@ -27,30 +27,6 @@ describe('Graphs.js', ()=>{
     });
   });
 
-  it('legendCallback', ()=>{
-    expect(legendCallback({
-      id: 1,
-      data: {
-        datasets: [{
-          label: 'Label1',
-          backgroundColor: '#00BCD4',
-        },{
-          label: 'Label2',
-          backgroundColor: '#9CCC65',
-        }],
-      },
-    })).toEqual([
-      '<div class="1-legend d-flex">',
-      '<div class="legend-value"><span style="background-color:#00BCD4">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-      '<span class="legend-label">Label1</span>',
-      '</div>',
-      '<div class="legend-value"><span style="background-color:#9CCC65">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-      '<span class="legend-label">Label2</span>',
-      '</div>',
-      '</div>',
-    ].join(''));
-  });
-
   describe('getStatsUrl', ()=>{
     it('for server', ()=>{
       expect(getStatsUrl(432, -1, ['chart1'])).toEqual('/dashboard/dashboard_stats/432?chart_names=chart1');

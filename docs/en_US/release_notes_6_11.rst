@@ -16,12 +16,13 @@ Housekeeping
 
   | `Issue #7315 <https://redmine.postgresql.org/issues/7315>`_ -  Updates documentation for the Traefik v2 container deployment.
   | `Issue #7411 <https://redmine.postgresql.org/issues/7411>`_ -  Update pgcli to latest release 3.4.1.
+  | `Issue #7469 <https://redmine.postgresql.org/issues/7469>`_ -  Upgrade Chartjs to the latest 3.8.0.
 
 Bug fixes
 *********
 
-  | `Issue #7411 <https://redmine.postgresql.org/issues/7411>`_ -  Fixed an issue where the Database restriction is not working.
   | `Issue #7423 <https://redmine.postgresql.org/issues/7423>`_ -  Fixed an issue where there is no setting to turn off notifications in the Query Tool.
   | `Issue #7441 <https://redmine.postgresql.org/issues/7441>`_ -  Ensure that the Query Editor should be focused when switching between query tool tabs.
   | `Issue #7443 <https://redmine.postgresql.org/issues/7443>`_ -  Fixed and issue where 'Use spaces' not working in the query tool.
+  | `Issue #7453 <https://redmine.postgresql.org/issues/7453>`_ -  Fixed an issue where the Database restriction is not working.
   | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Skip the history records if the JSON info can't be parsed instead of showing 'No history'.

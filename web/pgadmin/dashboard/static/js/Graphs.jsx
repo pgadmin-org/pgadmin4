@@ -40,7 +40,7 @@ export function transformData(labels, refreshRate) {
 }
 
 /* Custom ChartJS legend callback */
-export function legendCallback(chart) {
+export function generateLegend(chart) {
   var text = [];
   text.push('<div class="' + chart.id + '-legend d-flex">');
   for (let chart_val of chart.data.datasets) {
@@ -262,70 +262,41 @@ export function GraphsWrapper(props) {
   const bioStatsLegendRef = useRef();
   const options = useMemo(()=>({
     normalized: true,
-    legendCallback: legendCallback,
-    animation: {
-      duration: 0,
-    },
-    hover: {
-      animationDuration: 0,
-    },
-    responsiveAnimationDuration: 0,
-    legend: {
-      display: false,
-    },
     elements: {
       point: {
         radius: props.showDataPoints ? POINT_SIZE : 0,
       },
     },
-    tooltips: {
-      enabled: props.showTooltip,
-      callbacks: {
-        title: function(tooltipItem, data) {
-          let title = '';
-          try {
-            title = parseInt(tooltipItem[0].xLabel)*data.refreshRate + gettext(' seconds ago');
-          } catch (error) {
-            title = '';
-          }
-          return title;
-        },
+    plugins: {
+      legend: {
+        display: false,
       },
+      tooltip: {
+        enabled: props.showTooltip,
+        callbacks: {
+          title: function(tooltipItem) {
+            let title = '';
+            try {
+              title = parseInt(tooltipItem[0].label) * tooltipItem[0].chart?.data.refreshRate + gettext(' seconds ago');
+            } catch (error) {
+              title = '';
+            }
+            return title;
+          },
+        },
+      }
     },
     scales: {
-      yAxes: [{
-        ticks: {
-          min: 0,
-          userCallback: function(label) {
-            if (Math.floor(label) === label) {
-              return label;
-            }
-          },
-          fontColor: getComputedStyle(document.documentElement).getPropertyValue('--color-fg'),
-        },
-        gridLines: {
-          drawBorder: false,
-          zeroLineColor: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
-          color: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
-        },
-      }],
-      xAxes: [{
-        display: false,
-        gridLines: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-          reverse: true,
-        },
-      }],
+      x: {
+        reverse: true,
+      },
     },
   }), [props.showTooltip, props.showDataPoints]);
   const updateOptions = useMemo(()=>({duration: 0}), []);
 
   const onInitCallback = useCallback(
     (legendRef)=>(chart)=>{
-      legendRef.current.innerHTML = chart.generateLegend();
+      legendRef.current.innerHTML = generateLegend(chart);
     }
   );
 
