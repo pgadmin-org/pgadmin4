@@ -230,21 +230,29 @@ class DatabaseView(PGChildNodeView):
             conn=self.conn,
             last_system_oid=last_system_oid,
             db_restrictions=db_disp_res,
-            show_system_objects=self.blueprint.show_system_objects,
         )
         status, res = self.conn.execute_dict(SQL, params)
 
         if not status:
             return internal_server_error(errormsg=res)
 
+        result_set = []
         for row in res['rows']:
+            row['is_sys_obj'] = (
+                row['did'] <= self._DATABASE_LAST_SYSTEM_OID or
+                self.datistemplate)
+            if self.skip_db(row):
+                continue
+
             if self.manager.db == row['name']:
                 row['canDrop'] = False
             else:
                 row['canDrop'] = True
 
+            result_set.append(row)
+
         return ajax_response(
-            response=res['rows'],
+            response=result_set,
             status=200
         )
 
@@ -255,6 +263,35 @@ class DatabaseView(PGChildNodeView):
             last_system_oid = self._DATABASE_LAST_SYSTEM_OID
 
         return last_system_oid
+
+    def get_icon(self, res, connected):
+        if not connected and not res['is_template']:
+            icon = "icon-database-not-connected"
+        elif not connected and res['is_template']:
+            icon = 'icon-database-template-not-connected'
+        elif connected and res['is_template']:
+            icon = 'icon-database-template-connected'
+        else:
+            icon = "pg-icon-database"
+
+        return icon
+
+    def skip_db(self, row):
+
+        if not self.blueprint.show_system_objects \
+            and row['is_sys_obj'] \
+                and row['name'] not in ('postgres', 'edb') \
+                or not self.blueprint.show_database_template \
+                and row['is_sys_obj'] \
+                and row['name'] not in ('postgres', 'edb'):
+            return True
+
+        if not self.blueprint.show_database_template \
+            and row['is_template'] and \
+            not row['is_sys_obj'] and \
+                row['name'] not in ('postgres', 'edb'):
+            return True
+        return False
 
     def get_nodes(self, gid, sid, is_schema_diff=False):
         res = []
@@ -278,7 +315,6 @@ class DatabaseView(PGChildNodeView):
             "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=last_system_oid,
             db_restrictions=db_disp_res,
-            show_system_objects=self.blueprint.show_system_objects,
         )
         status, rset = self.conn.execute_dict(SQL, params)
 
@@ -287,6 +323,12 @@ class DatabaseView(PGChildNodeView):
 
         for row in rset['rows']:
             dbname = row['name']
+            row['is_sys_obj'] = (
+                row['did'] <= self._DATABASE_LAST_SYSTEM_OID or
+                self.datistemplate)
+
+            if self.skip_db(row):
+                continue
             if self.manager.db == dbname:
                 connected = True
                 can_drop = can_dis_conn = False
@@ -295,19 +337,21 @@ class DatabaseView(PGChildNodeView):
                 connected = conn.connected()
                 can_drop = can_dis_conn = True
 
+            icon = self.get_icon(row, connected)
+
             res.append(
                 self.blueprint.generate_browser_node(
                     row['did'],
                     sid,
                     row['name'],
-                    icon="icon-database-not-connected" if not connected
-                    else "pg-icon-database",
+                    icon=icon,
                     connected=connected,
                     tablespace=row['spcname'],
                     allowConn=row['datallowconn'],
                     canCreate=row['cancreate'],
                     canDisconn=can_dis_conn,
                     canDrop=can_drop,
+                    isTemplate=row['is_template'],
                     inode=True if row['datallowconn'] else False
                 )
             )
@@ -429,8 +473,7 @@ class DatabaseView(PGChildNodeView):
 
         result = res['rows'][0]
         result['is_sys_obj'] = (
-            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
-            self.datistemplate)
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID)
         # Fetching variable for database
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
@@ -650,7 +693,8 @@ class DatabaseView(PGChildNodeView):
                 allowConn=True,
                 canCreate=response['cancreate'],
                 canDisconn=True,
-                canDrop=True
+                canDrop=True,
+                isTemplate=response['is_template']
             )
         )
 
@@ -829,14 +873,16 @@ class DatabaseView(PGChildNodeView):
 
         can_drop = can_dis_conn = is_can_drop
 
+        icon = self.get_icon(res,
+                             self.conn.connected()
+                             if self._db['datallowconn'] else False)
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 did,
                 sid,
                 res['name'],
-                icon="pg-icon-{0}".format(self.node_type) if
-                self._db['datallowconn'] and self.conn.connected() else
-                "icon-database-not-connected",
+                icon=icon,
                 connected=self.conn.connected() if
                 self._db['datallowconn'] else False,
                 tablespace=res['spcname'],
@@ -844,7 +890,8 @@ class DatabaseView(PGChildNodeView):
                 canCreate=res['cancreate'],
                 canDisconn=can_dis_conn,
                 canDrop=can_drop,
-                inode=True if res['datallowconn'] else False
+                inode=True if res['datallowconn'] else False,
+                isTemplate=res['is_template'],
             )
         )
 

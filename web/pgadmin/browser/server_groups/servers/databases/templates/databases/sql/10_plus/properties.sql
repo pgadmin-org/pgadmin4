@@ -20,13 +20,16 @@ FROM pg_catalog.pg_database db
     LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (
         db.oid=descr.objoid AND descr.classoid='pg_database'::regclass
     )
-WHERE {% if did %}
+WHERE
+{% if show_user_defined_templates is defined  %}
+     db.datistemplate = {{show_user_defined_templates}} AND
+{% endif %}
+{% if did %}
 db.oid = {{ did|qtLiteral }}::OID{% else %}{% if name %}
 db.datname = {{ name|qtLiteral }}::text{% else %}
 db.oid > {{ last_system_oid|qtLiteral }}::OID OR db.datname IN ('postgres', 'edb')
 {% endif %}{% endif %}
 {% if db_restrictions %}
-
 AND
 db.datname in ({{db_restrictions}})
 {% endif %}

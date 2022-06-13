@@ -236,6 +236,16 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         else:
             return False
 
+    @property
+    def show_database_template(self):
+        """
+        Show/Hide the user defined template in the database server.
+        """
+        if self.pref_show_user_defined_templates:
+            return self.pref_show_user_defined_templates.get()
+        else:
+            return False
+
     def register_preferences(self):
         """
         register_preferences
@@ -251,6 +261,8 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         self.pref_show_system_objects = self.browser_preference.preference(
             'show_system_objects'
         )
+        self.pref_show_user_defined_templates = \
+            self.browser_preference.preference('show_user_defined_templates')
         self.pref_show_node = self.browser_preference.register(
             'node', 'show_node_' + self.node_type,
             self.collection_label, 'node', self.SHOW_ON_BROWSER,

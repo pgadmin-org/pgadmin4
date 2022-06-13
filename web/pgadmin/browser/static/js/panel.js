@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getPanelView, removePanelView } from './panel_view';
+import { getPanelView } from './panel_view';
 
 define(
   ['underscore', 'sources/pgadmin', 'jquery', 'wcdocker'],
@@ -254,10 +254,7 @@ define(
           .find('.pg-panel-content');
 
         if (isPanelVisible && selectedPanel._type !== 'properties') {
-          if (eventName == 'panelClosed') {
-            removePanelView($container[0]);
-          }
-          else if (eventName == 'panelVisibilityChanged' && selectedPanel._type !== 'properties') {
+          if (eventName == 'panelVisibilityChanged' && selectedPanel._type !== 'properties') {
             getPanelView(
               pgBrowser.tree,
               $container[0],

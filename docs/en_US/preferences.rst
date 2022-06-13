@@ -1,3 +1,4 @@
+
 .. _preferences:
 
 ***************************
@@ -68,6 +69,8 @@ Use the fields on the *Display* panel to specify general display preferences:
 * When the *Show system objects?* switch is set to *True*, the client will
   display system objects such as system schemas (for example, *pg_temp*) or
   system columns (for example,  *xmin* or *ctid*) in the tree control.
+* When the *Show template databases?* switch is set to *True*, the client will
+  display template databases.
 
 Use the fields on the *Keyboard shortcuts* panel to configure shortcuts for the
 main window navigation:

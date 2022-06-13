@@ -52,7 +52,7 @@ export default class DatabaseSchema extends BaseUISchema {
     super({
       name: undefined,
       owner: undefined,
-      is_sys_obj: undefined,
+      is_sys_obj: false,
       comment: undefined,
       encoding: 'UTF8',
       template: undefined,
@@ -141,8 +141,10 @@ export default class DatabaseSchema extends BaseUISchema {
         min: -1,
       },{
         id: 'is_template', label: gettext('Template?'),
-        editable: false, type: 'switch', group: gettext('Definition'),
-        readonly: true,  mode: ['properties', 'edit'],
+        type: 'switch', group: gettext('Definition'),
+        mode: ['properties', 'edit', 'create'], readonly: function(state) {return (state.is_sys_obj); },
+        helpMessage: gettext('Note: When the preferences setting \'show template databases\' is set to false, then template databases won\'t be displayed in the browser tree.'),
+        helpMessageMode: ['edit', 'create'],
       },{
         id: 'datallowconn', label: gettext('Allow connections?'),
         editable: false, type: 'switch', group: gettext('Definition'),

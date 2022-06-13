@@ -9,4 +9,5 @@ CREATE DATABASE <TEST_DB_NAME>
     LC_COLLATE = 'C'
     LC_CTYPE = 'C'
     TABLESPACE = pg_default
-    CONNECTION LIMIT = -1;
+    CONNECTION LIMIT = -1
+    IS_TEMPLATE = False;

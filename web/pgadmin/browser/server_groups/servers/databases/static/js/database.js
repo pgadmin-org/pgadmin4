@@ -187,7 +187,8 @@ define('pgadmin.node.database', [
                   d.is_connecting = false;
                   t.unload(i);
                   t.setInode(i);
-                  t.addIcon(i, {icon: 'icon-database-not-connected'});
+                  var dbIcon = d.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
+                  t.addIcon(i, {icon: dbIcon});
                   pgBrowser.Events.trigger(
                     'pgadmin:database:connect:cancelled', i, d, self
                   );
@@ -209,6 +210,11 @@ define('pgadmin.node.database', [
             connect_to_database(obj, d, t, i, true);
           }
           return false;
+        },
+        updated: (_i, _opts)=>{
+          pgBrowser.tree.refresh(_i._parent).then(() =>{
+            if (_opts && _opts.success) _opts.success();
+          });
         },
         /* Disconnect the database */
         disconnect_database: function(args) {
@@ -237,7 +243,8 @@ define('pgadmin.node.database', [
                       Notify.success(_.unescape(res.info));
                       t.removeIcon(i);
                       data.connected = false;
-                      data.icon = 'icon-database-not-connected';
+                      data.icon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
+
                       t.addIcon(i, {icon: data.icon});
                       t.unload(i);
                       pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state', i);
@@ -294,7 +301,6 @@ define('pgadmin.node.database', [
           if(!data || data._type != 'database') {
             return false;
           }
-
           pgBrowser.tree.addIcon(item, {icon: data.icon});
           if (!data.connected && data.allowConn && !data.is_connecting) {
             data.is_connecting = true;
@@ -386,14 +392,16 @@ define('pgadmin.node.database', [
                 },
                 function(fun_error) {
                   tree.setInode(_item);
-                  tree.addIcon(_item, {icon: 'icon-database-not-connected'});
+                  var dbIcon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
+                  tree.addIcon(_item, {icon: dbIcon});
                   Notify.pgNotifier(fun_error, xhr, gettext('Connect  to database.'));
                 }
               );
             } else {
               if (!_status) {
                 tree.setInode(_item);
-                tree.addIcon(_item, {icon: 'icon-database-not-connected'});
+                var dbIcon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
+                tree.addIcon(_item, {icon: dbIcon});
               }
 
               Notify.pgNotifier('error', xhr, error, function(msg) {
@@ -422,7 +430,8 @@ define('pgadmin.node.database', [
               if (typeof res.data.icon == 'string') {
                 _tree.removeIcon(_item);
                 _data.icon = res.data.icon;
-                _tree.addIcon(_item, {icon: _data.icon});
+                var dbIcon = _data.isTemplate ? 'icon-database-template-connected':_data.icon;
+                _tree.addIcon(_item, {icon: dbIcon});
               }
               if(res.data.already_connected) {
                 res.info = gettext('Database already connected.');
@@ -457,7 +466,8 @@ define('pgadmin.node.database', [
             _tree.unload(_item);
             _tree.setInode(_item);
             _tree.removeIcon(_item);
-            _tree.addIcon(_item, {icon: 'icon-database-not-connected'});
+            var dbIcon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
+            _tree.addIcon(_item, {icon: dbIcon});
             obj.trigger('connect:cancelled', obj, _item, _data);
             pgBrowser.Events.trigger(
               'pgadmin:database:connect:cancelled', _item, _data, obj

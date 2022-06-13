@@ -46,7 +46,10 @@ export default function SQL({ nodeData, node, did,  ...props }) {
         node.url_jump_after_node
       );
       setLoaderText('Loading...');
-      if (did && !props.dbConnected) return;
+      if (did && !props.dbConnected){
+        setLoaderText('');
+        return;
+      }
       sql =
         '-- ' + gettext('No SQL could be generated for the selected object.');
 

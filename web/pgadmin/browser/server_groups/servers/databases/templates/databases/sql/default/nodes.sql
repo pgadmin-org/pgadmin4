@@ -1,5 +1,6 @@
 SELECT
     db.oid as did, db.datname as name, ta.spcname as spcname, db.datallowconn,
+    db.datistemplate AS is_template,
     pg_catalog.has_database_privilege(db.oid, 'CREATE') as cancreate, datdba as owner
 FROM
     pg_catalog.pg_database db
@@ -13,12 +14,6 @@ db.oid = {{ did|qtLiteral }}::OID
 db.datname in ({{db_restrictions}})
 {% elif not did%}
 db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
-{% endif %}
-
-{% if show_system_objects %}
-AND db.datistemplate in (false, {{show_system_objects}})
-{% else %}
-AND db.datistemplate in (false)
 {% endif %}
 
 ORDER BY datname;

@@ -74,6 +74,7 @@ def get_db_data(db_owner):
         "privileges": [],
         "securities": [],
         "variables": [],
+        'is_template': False,
         "schema_res": ["public", "sample"]
     }
     return data

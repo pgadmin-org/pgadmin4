@@ -27,6 +27,13 @@ def register_browser_preferences(self):
         gettext("Show system objects?"), 'boolean', False,
         category_label=PREF_LABEL_DISPLAY
     )
+
+    self.show_user_defined_templates = self.preference.register(
+        'display', 'show_user_defined_templates',
+        gettext("Show template databases?"), 'boolean', False,
+        category_label=PREF_LABEL_DISPLAY
+    )
+
     if config.SERVER_MODE:
         self.hide_shared_server = self.preference.register(
             'display', 'hide_shared_server',
