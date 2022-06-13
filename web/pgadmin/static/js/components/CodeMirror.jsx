@@ -463,7 +463,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
       editor?.current.setOption('foldGutter', pref.code_folding);
     }
 
-    editor?.current.setOption('indentWithTabs', pref.indent_with_tabs);
+    editor?.current.setOption('indentWithTabs', !pref.use_spaces);
     editor?.current.setOption('indentUnit', pref.tab_size);
     editor?.current.setOption('tabSize', pref.tab_size);
     editor?.current.setOption('lineWrapping', pref.wrap_code);

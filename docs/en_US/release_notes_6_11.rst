@@ -20,4 +20,5 @@ Bug fixes
 *********
 
   | `Issue #7411 <https://redmine.postgresql.org/issues/7411>`_ -  Fixed an issue where the Database restriction is not working.
+  | `Issue #7443 <https://redmine.postgresql.org/issues/7443>`_ -  Fixed and issue where 'Use spaces' not working in the query tool.
   | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Skip the history records if the JSON info can't be parsed instead of showing 'No history'.
