@@ -52,6 +52,14 @@ to login to pgAdmin. This variable is required and must be set at launch time.
 This is the password used when setting up the initial administrator account to
 login to pgAdmin. This variable is required and must be set at launch time.
 
+**PGADMIN_DEFAULT_PASSWORD_FILE**
+
+This is the password used when setting up the initial administrator account to
+login to pgAdmin. This value should be set to *docker secret* in order to set
+the password. This variable is supported in docker swarm environment or while creating
+container with docker compose. PGADMIN_DEFAULT_PASSWORD or PGADMIN_DEFAULT_PASSWORD_FILE
+variable is required and must be set at launch time.
+
 **PGADMIN_DISABLE_POSTFIX**
 
 *Default: <null>*

@@ -36,8 +36,8 @@ EOF
 fi
 
 if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
-    if [ -z "${PGADMIN_DEFAULT_EMAIL}" -o -z "${PGADMIN_DEFAULT_PASSWORD}" ]; then
-        echo 'You need to define the PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD environment variables.'
+    if ([ -z "${PGADMIN_DEFAULT_EMAIL}" ]) || ( [ -z "${PGADMIN_DEFAULT_PASSWORD}" ] && [ ! -n "${PGADMIN_DEFAULT_PASSWORD_FILE}" ] ); then
+        echo 'You need to define the PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD or PGADMIN_DEFAULT_PASSWORD_FILE environment variables.'
         exit 1
     fi
 
@@ -45,6 +45,11 @@ if [ ! -f /var/lib/pgadmin/pgadmin4.db ]; then
     if [ $? -ne 0 ]; then
         echo "'${PGADMIN_DEFAULT_EMAIL}' does not appear to be a valid email address. Please reset the PGADMIN_DEFAULT_EMAIL environment variable and try again."
         exit 1
+    fi
+
+    # Read secret contents
+    if [ -n "${PGADMIN_DEFAULT_PASSWORD_FILE}" ]; then
+        export PGADMIN_DEFAULT_PASSWORD=$(cat ${PGADMIN_DEFAULT_PASSWORD_FILE})
     fi
 
     # Set the default username and password in a
