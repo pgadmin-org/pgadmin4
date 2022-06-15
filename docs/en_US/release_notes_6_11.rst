@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+  | `Issue #7178 <https://redmine.postgresql.org/issues/7178>`_ -  Added capability to deploy PostgreSQL servers on Microsoft Azure.
   | `Issue #7332 <https://redmine.postgresql.org/issues/7332>`_ -  Added support for passing password using Docker Secret to Docker images.
   | `Issue #7351 <https://redmine.postgresql.org/issues/7351>`_ -  Added the option 'Show template databases?' to display template databases regardless of the setting of 'Show system objects?'.
 

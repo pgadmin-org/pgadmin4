@@ -12,7 +12,7 @@ import _ from 'lodash';
 import {
   FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
   FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, InputSQL, FormNote, FormInputDateTimePicker, PlainString,
-  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio
+  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio, FormButton
 } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -21,7 +21,7 @@ import CustomPropTypes from '../custom_prop_types';
 import { SelectRefresh } from '../components/SelectRefresh';
 
 /* Control mapping for form view */
-function MappedFormControlBase({ type, value, id, onChange, className, visible, inputRef, noLabel, ...props }) {
+function MappedFormControlBase({ type, value, id, onChange, className, visible, inputRef, noLabel, onClick, ...props }) {
   const name = id;
   const onTextChange = useCallback((e) => {
     let val = e;
@@ -86,6 +86,8 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
     return <FormInputQueryThreshold name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'theme':
     return <FormInputSelectThemes name={name} value={value} onChange={onTextChange} {...props}/>;
+  case 'button':
+    return <FormButton name={name} value={value} className={className} onClick={onClick}  {...props} />;
   default:
     return <PlainString value={value} {...props} />;
   }
@@ -103,7 +105,8 @@ MappedFormControlBase.propTypes = {
   ]),
   visible: PropTypes.bool,
   inputRef: CustomPropTypes.ref,
-  noLabel: PropTypes.bool
+  noLabel: PropTypes.bool,
+  onClick: PropTypes.func
 };
 
 /* Control mapping for grid cell view */
@@ -197,11 +200,11 @@ const ALLOWED_PROPS_FIELD_COMMON = [
   'mode', 'value', 'readonly', 'disabled', 'hasError', 'id',
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
   'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
-  'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton'
+  'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton', 'btnName'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
-  'type', 'onChange', 'state', 'noLabel', 'text',
+  'type', 'onChange', 'state', 'noLabel', 'text','onClick'
 ];
 
 const ALLOWED_PROPS_FIELD_CELL = [

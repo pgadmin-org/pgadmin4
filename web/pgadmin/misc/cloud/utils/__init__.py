@@ -20,10 +20,10 @@ def get_my_ip():
     """ Return the public IP of this host """
     http = urllib3.PoolManager()
     try:
-        external_ip = http.request('GET', 'http://ident.me').data
+        external_ip = http.request('GET', 'http://ifconfig.me/ip').data
     except Exception:
         try:
-            external_ip = http.request('GET', 'http://ifconfig.me/ip').data
+            external_ip = http.request('GET', 'http://ident.me').data
         except Exception:
             external_ip = '127.0.0.1'
 

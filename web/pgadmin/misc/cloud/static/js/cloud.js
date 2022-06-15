@@ -10,6 +10,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Theme from 'sources/Theme';
 import CloudWizard from './CloudWizard';
+import getApiInstance from '../../../../static/js/api_instance';
 
 
 // Cloud Wizard
@@ -124,6 +125,15 @@ define('pgadmin.misc.cloud', [
             hooks: {
               // Triggered when the dialog is closed
               onclose: function () {
+                if(event.target instanceof Object){
+                  const axiosApi = getApiInstance();
+                  let _url = url_for('cloud.clear_cloud_session');
+                  axiosApi.post(_url)
+                    .then(() => {})
+                    .catch((error) => {
+                      Alertify.error(gettext(`Error while clearing cloud wizard data: ${error.response.data.errormsg}`));
+                    });
+                }
                 // Clear the view and remove the react component.
                 return setTimeout((function () {
                   ReactDOM.unmountComponentAtNode(document.getElementById('cloudWizardDlg'));

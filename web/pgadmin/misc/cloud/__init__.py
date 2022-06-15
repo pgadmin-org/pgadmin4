@@ -26,6 +26,7 @@ from pgadmin.misc.cloud.utils import get_my_ip
 from pgadmin.misc.cloud.biganimal import deploy_on_biganimal,\
     clear_biganimal_session
 from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
+from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
 
 # set template path for sql scripts
 MODULE_NAME = 'cloud'
@@ -75,7 +76,8 @@ class CloudModule(PgAdminModule):
         return ['cloud.deploy_on_cloud',
                 'cloud.update_cloud_server',
                 'cloud.update_cloud_process',
-                'cloud.get_host_ip']
+                'cloud.get_host_ip',
+                'cloud.clear_cloud_session']
 
 
 # Create blueprint for CloudModule class
@@ -102,6 +104,15 @@ def script():
     return res
 
 
+@blueprint.route('/clear_cloud_session/',
+                 methods=['POST'], endpoint='clear_cloud_session')
+@login_required
+def clear_session():
+    """Get host IP Address"""
+    clear_cloud_session()
+    return make_json_response(success=1)
+
+
 @blueprint.route('/get_host_ip/',
                  methods=['GET'], endpoint='get_host_ip')
 @login_required
@@ -123,6 +134,8 @@ def deploy_on_cloud():
         status, resp = deploy_on_rds(data)
     elif data['cloud'] == 'biganimal':
         status, resp = deploy_on_biganimal(data)
+    elif data['cloud'] == 'azure':
+        status, resp = deploy_on_azure(data)
     else:
         status = False
         resp = gettext('No cloud implementation.')
@@ -188,7 +201,7 @@ def update_server(data):
         _server['status'] = False
     else:
         _server['status'] = True
-        clear_cloud_session()
+    clear_cloud_session()
 
     return True, _server
 
@@ -197,6 +210,7 @@ def clear_cloud_session():
     """Clear cloud sessions."""
     clear_aws_session()
     clear_biganimal_session()
+    clear_azure_session()
 
 
 @blueprint.route(

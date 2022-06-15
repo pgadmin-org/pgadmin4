@@ -16,6 +16,7 @@ import Expand from '../../img/fonticon/open_in_full.svg?svgr';
 import Collapse from '../../img/fonticon/close_fullscreen.svg?svgr';
 import AWS from '../../img/aws.svg?svgr';
 import BigAnimal from '../../img/biganimal.svg?svgr';
+import Azure from '../../img/azure.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -72,3 +73,6 @@ AWSIcon.propTypes = {style: PropTypes.object};
 
 export const BigAnimalIcon = ({style})=><ExternalIcon Icon={BigAnimal} style={{height: '1.4rem', ...style}} data-label="BigAnimalIcon" />;
 BigAnimalIcon.propTypes = {style: PropTypes.object};
+
+export const AzureIcon = ({style})=><ExternalIcon Icon={Azure} style={{height: '1.4rem', ...style}} data-label="AzureIcon" />;
+AzureIcon.propTypes = {style: PropTypes.object};

@@ -1289,3 +1289,22 @@ NotifierMessage.propTypes = {
   closable: PropTypes.bool,
   onClose: PropTypes.func,
 };
+
+
+export function FormButton({required, label,
+  className, helpMessage, onClick, disabled, ...props }) {
+  return (
+    <FormInput required={required} label={label} className={className}  helpMessage={helpMessage}>
+      <PrimaryButton onClick={onClick} disabled={disabled} >{gettext(props.btnName)}</PrimaryButton>
+    </FormInput>
+  );
+}
+FormButton.propTypes = {
+  required: PropTypes.bool,
+  label: PropTypes.string,
+  className: CustomPropTypes.className,
+  helpMessage: PropTypes.string,
+  onClick: PropTypes.func,
+  disabled: PropTypes.bool,
+  btnName: PropTypes.string
+};

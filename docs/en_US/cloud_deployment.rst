@@ -16,3 +16,4 @@ To launch the *Cloud Deployment...* tool, right click on the *Server Group* or
 
    cloud_aws_rds
    cloud_edb_biganimal
+   cloud_azure_postgresql

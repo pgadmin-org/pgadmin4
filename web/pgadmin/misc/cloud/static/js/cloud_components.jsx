@@ -14,6 +14,7 @@ import { DefaultButton, PrimaryButton } from '../../../../static/js/components/B
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { getAWSSummary } from './aws';
+import  {getAzureSummary} from './azure';
 import { getBigAnimalSummary } from './biganimal';
 import { commonTableStyles } from '../../../../static/js/Theme';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
@@ -70,7 +71,10 @@ export function FinalSummary(props) {
   if (props.cloudProvider == 'biganimal') {
     summary = getBigAnimalSummary(props.cloudProvider, props.instanceData, props.databaseData);
     summaryHeader[1] = 'Version Details';
-  } else {
+  } else if(props.cloudProvider == 'azure'){
+    summaryHeader.push('Network Connectivity','Availability');
+    summary = getAzureSummary(props.cloudProvider, props.instanceData, props.databaseData);
+  }else {
     summary = getAWSSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }
 
