@@ -466,6 +466,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
       confirm_password: '',
       database_type: '',
       postgres_version: '',
+      high_availability: false,
       ...initValues
     });
 
@@ -590,7 +591,7 @@ class BigAnimalHighAvailSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues = {}) {
     super({
       oid: undefined,
-      high_availability: '',
+      high_availability: false,
       ...initValues
     });
 
