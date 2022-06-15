@@ -1186,7 +1186,7 @@ class DatabaseView(PGChildNodeView):
         This function will generate sql for sql panel
         """
 
-        conn = self.manager.connection()
+        conn = self.manager.connection(did=did)
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, conn=conn, last_system_oid=0,
