@@ -25,13 +25,14 @@ WHERE
      db.datistemplate = {{show_user_defined_templates}} AND
 {% endif %}
 {% if did %}
-db.oid = {{ did|qtLiteral }}::OID{% else %}{% if name %}
-db.datname = {{ name|qtLiteral }}::text{% else %}
-db.oid > {{ last_system_oid|qtLiteral }}::OID OR db.datname IN ('postgres', 'edb')
-{% endif %}{% endif %}
+db.oid = {{ did|qtLiteral }}::OID
+{% endif %}
 {% if db_restrictions %}
-AND
+
+{% if did %}AND{% endif %}
 db.datname in ({{db_restrictions}})
+{% elif not did%}
+db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
 {% endif %}
 
 ORDER BY datname;
