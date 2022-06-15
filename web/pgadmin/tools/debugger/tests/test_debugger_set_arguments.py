@@ -52,11 +52,10 @@ class DebuggerSetArguments(BaseTestGenerator):
             debugger_utils.initialize_target(self, utils)
 
     def set_arguments(self):
-        args = {"data": json.dumps([
+        args = json.dumps([
             {"server_id": self.server_id, "database_id": self.db_id,
              "schema_id": self.schema_id, "function_id": self.func_id,
              "arg_id": 0, "is_null": 0, "is_expression": 0, "use_default": 1}])
-        }
 
         return self.tester.post(
             self.url + str(self.server_id) + '/' + str(self.db_id) + '/' +

@@ -6,19 +6,9 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
+
 import {generateTitle} from '../../../sqleditor/static/js/sqleditor_title';
 import {_set_dynamic_tab} from '../../../sqleditor/static/js/show_query_tool';
-
-function setFocusToDebuggerEditor(editor, command) {
-  const TAB = 9;
-  if (!command)
-    return;
-  let key = command.which || command.keyCode;
-  // Keys other than Tab key
-  if (key !== TAB) {
-    editor.focus();
-  }
-}
 
 function getFunctionId(treeInfoObject) {
   let objectId;
@@ -99,7 +89,6 @@ function getAppropriateLabel(treeInfo) {
 }
 
 module.exports = {
-  setFocusToDebuggerEditor: setFocusToDebuggerEditor,
   getFunctionId: getFunctionId,
   getProcedureId: getProcedureId,
   setDebuggerTitle: setDebuggerTitle,

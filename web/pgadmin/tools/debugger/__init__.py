@@ -65,9 +65,9 @@ class DebuggerModule(PgAdminModule):
     def get_own_javascripts(self):
         scripts = list()
         for name, script in [
+            ['pgadmin.tools.debugger', 'js/index'],
             ['pgadmin.tools.debugger.controller', 'js/debugger'],
             ['pgadmin.tools.debugger.ui', 'js/debugger_ui'],
-            ['pgadmin.tools.debugger.direct', 'js/direct']
         ]:
             scripts.append({
                 'name': name,
@@ -266,17 +266,6 @@ def index():
     )
 
 
-@blueprint.route("/js/debugger.js")
-@login_required
-def script():
-    """render the main debugger javascript file"""
-    return Response(
-        response=render_template("debugger/js/debugger.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 @blueprint.route("/js/debugger_ui.js")
 @login_required
 def script_debugger_js():
@@ -288,7 +277,7 @@ def script_debugger_js():
     )
 
 
-@blueprint.route("/js/direct.js")
+@blueprint.route("/js/debugger.js")
 @login_required
 def script_debugger_direct_js():
     """
@@ -296,7 +285,7 @@ def script_debugger_direct_js():
     from server for debugging
     """
     return Response(
-        response=render_template("debugger/js/direct.js", _=gettext),
+        response=render_template("debugger/js/debugger.js", _=gettext),
         status=200,
         mimetype=MIMETYPE_APP_JS
     )
@@ -885,7 +874,7 @@ def initialize_target(debug_type, trans_id, sid, did,
     # be be required
     if request.method == 'POST':
         de_inst.function_data['args_value'] = \
-            json.loads(request.values['data'], encoding='utf-8')
+            json.loads(request.data, encoding='utf-8')
 
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
@@ -1562,10 +1551,17 @@ def clear_all_breakpoint(trans_id):
     else:
         template_path = DEBUGGER_SQL_V3_PATH
 
+    status = True
+    result = ''
     if conn.connected():
         # get the data sent through post from client
-        if request.form['breakpoint_list']:
-            line_numbers = request.form['breakpoint_list'].split(",")
+        if 'breakpoint_list' in json.loads(request.data):
+            line_numbers = []
+            if json.loads(request.data)['breakpoint_list'] is not None and \
+                    json.loads(request.data)['breakpoint_list'] != '':
+                line_numbers = json.loads(request.data)[
+                    'breakpoint_list'].split(",")
+
             for line_no in line_numbers:
                 sql = render_template(
                     "/".join([template_path, "clear_breakpoint.sql"]),
@@ -1629,7 +1625,7 @@ def deposit_parameter_value(trans_id):
 
     if conn.connected():
         # get the data sent through post from client
-        data = json.loads(request.values['data'], encoding='utf-8')
+        data = json.loads(request.data, encoding='utf-8')
 
         if data:
             sql = render_template(
@@ -1842,8 +1838,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
         - Function Id
     """
 
-    if request.values['data']:
-        data = json.loads(request.values['data'], encoding='utf-8')
+    if request.data:
+        data = json.loads(request.data, encoding='utf-8')
 
     try:
         for i in range(0, len(data)):

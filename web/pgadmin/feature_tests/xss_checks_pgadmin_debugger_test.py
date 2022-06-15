@@ -114,15 +114,15 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             )
 
             wait.until(EC.presence_of_element_located(
-                (By.XPATH, "//td[contains(@class,'test_function') and "
-                           "contains(.,'Hello, pgAdmin4')]"))
+                (By.XPATH, "//div[@id='id-results']//td "
+                           "[contains(.,'Hello, pgAdmin4')]"))
             )
 
             # Only this tab is vulnerable rest are BackGrid & Code Mirror
             # control which are already tested in Query tool test case
-            self.page.click_tab("Messages")
+            self.page.click_tab('id-debugger-messages', rc_dock=True)
             source_code = self.page.find_by_xpath(
-                "//*[@id='messages']"
+                "//div[@id='id-debugger-messages'] //div[@id='debugger-msg']"
             ).get_attribute('innerHTML')
             self._check_escaped_characters(
                 source_code,
@@ -140,5 +140,6 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code
-        assert source_code.find(string_to_find) != - \
-            1, "{0} might be vulnerable to XSS ".format(source)
+        assert source_code.find(
+            string_to_find) != -1, "{0} might be vulnerable to XSS ".format(
+            source)

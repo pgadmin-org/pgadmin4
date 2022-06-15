@@ -9,6 +9,8 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+  | `Issue #2647 <https://redmine.postgresql.org/issues/2647>`_ -  Added mouse over indication for breakpoint area in the Debugger.
+  | `Issue #2648 <https://redmine.postgresql.org/issues/2648>`_ -  Added search text option to the Debugger panel.
   | `Issue #7178 <https://redmine.postgresql.org/issues/7178>`_ -  Added capability to deploy PostgreSQL servers on Microsoft Azure.
   | `Issue #7332 <https://redmine.postgresql.org/issues/7332>`_ -  Added support for passing password using Docker Secret to Docker images.
   | `Issue #7351 <https://redmine.postgresql.org/issues/7351>`_ -  Added the option 'Show template databases?' to display template databases regardless of the setting of 'Show system objects?'.
@@ -16,6 +18,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #6132 <https://redmine.postgresql.org/issues/6132>`_ -  Port Debugger to React.
   | `Issue #7315 <https://redmine.postgresql.org/issues/7315>`_ -  Updates documentation for the Traefik v2 container deployment.
   | `Issue #7411 <https://redmine.postgresql.org/issues/7411>`_ -  Update pgcli to latest release 3.4.1.
   | `Issue #7469 <https://redmine.postgresql.org/issues/7469>`_ -  Upgrade Chartjs to the latest 3.8.0.

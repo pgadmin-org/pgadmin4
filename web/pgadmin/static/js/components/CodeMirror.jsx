@@ -330,7 +330,7 @@ function handlePaste(editor, e) {
 }
 
 /* React wrapper for CodeMirror */
-export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className, autocomplete=false}) {
+export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className, autocomplete=false, gutters=['CodeMirror-linenumbers', 'CodeMirror-foldgutter']}) {
   const taRef = useRef();
   const editor = useRef();
   const cmWrapper = useRef();
@@ -355,7 +355,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
         widget: '\u2026',
       },
       foldGutter: true,
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+      gutters: gutters,
       extraKeys: {
         // Autocomplete sql command
         ...(autocomplete ? {
@@ -416,22 +416,6 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     }
 
     Object.keys(events||{}).forEach((eventName)=>{
-      if(eventName === 'change') {
-        let timeoutId;
-        const change = (...args)=>{
-          /* In case of indent, change is triggered for each line */
-          /* This can be avoided and taking only the latest */
-          if(timeoutId) {
-            clearTimeout(timeoutId);
-          }
-          timeoutId = setTimeout(()=>{
-            events[eventName](...args);
-            timeoutId = null;
-          }, 0);
-        };
-        editor.current.on(eventName, change);
-        return;
-      }
       editor.current.on(eventName, events[eventName]);
     });
     editor.current.on('drop', handleDrop);
@@ -531,4 +515,5 @@ CodeMirror.propTypes = {
   disabled: PropTypes.bool,
   className: CustomPropTypes.className,
   autocomplete: PropTypes.bool,
+  gutters: PropTypes.array
 };

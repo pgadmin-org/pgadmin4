@@ -58,13 +58,13 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
 
     def clear_all_breakpoint(self):
         if hasattr(self, 'no_breakpoint') and self.no_breakpoint:
-            breakpoint_data = {"breakpoint_list": ''}
+            breakpoint_data = {"breakpoint_list": None}
         else:
-            breakpoint_data = {"breakpoint_list": 3}
+            breakpoint_data = {"breakpoint_list": '3'}
 
         return self.tester.post(
             self.url + str(self.trans_id),
-            data=breakpoint_data)
+            data=json.dumps(breakpoint_data))
 
     def runTest(self):
         """
