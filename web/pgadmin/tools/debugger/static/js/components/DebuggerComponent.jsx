@@ -1132,6 +1132,11 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       LayoutHelper.focus(docker.current, panelId);
     });
 
+    eventBus.current.registerListener(
+      DEBUGGER_EVENTS.TRIGGER_RESET_LAYOUT, () => {
+        docker.current?.resetLayout();
+      });
+
 
   }, []);
 

@@ -20,9 +20,9 @@ class ArgementsCollectionSchema extends BaseUISchema {
       value: undefined,
       use_default: false,
       default_value: undefined,
+      isArrayType: false,
+      isValid: true
     });
-
-    this.isValid = true;
   }
 
   get baseFields() {
@@ -63,11 +63,43 @@ class ArgementsCollectionSchema extends BaseUISchema {
         label: gettext('Value'),
         type: 'text',
         cell: (state) => {
-          let dtype = 'text';
-          if(state.type == 'date') {
-            dtype = 'datetimepicker';
-          } else if(state.type == 'numeric') {
-            dtype = 'numeric';
+          let dtype = '';
+          state.isArrayType = false;
+          if(state.type.indexOf('[]') != -1) {
+            state.isArrayType = true;
+            dtype = 'text';
+          } else {
+            switch (state.type) {
+            case 'boolean':
+              dtype = 'checkbox';
+              break;
+            case 'integer':
+            case 'smallint':
+            case 'bigint':
+            case 'serial':
+            case 'smallserial':
+            case 'bigserial':
+            case 'oid':
+            case 'cid':
+            case 'xid':
+            case 'tid':
+              dtype = 'int';
+              break;
+            case 'real':
+            case 'numeric':
+            case 'double precision':
+            case 'decimal':
+              dtype = 'numeric';
+              break;
+            case 'string':
+              dtype = 'text';
+              break;
+            case 'date':
+              dtype = 'datetimepicker';
+              break;
+            default:
+              dtype = 'text';
+            }
           }
 
           return {
@@ -77,7 +109,7 @@ class ArgementsCollectionSchema extends BaseUISchema {
                 placeholder: gettext('YYYY-MM-DD'),
                 autoOk: true, pickerType: 'Date', ampm: false,
               })
-            }
+            },
           };
         },
         editable: true,
@@ -99,6 +131,27 @@ class ArgementsCollectionSchema extends BaseUISchema {
         cell: '',
       },
     ];
+  }
+
+  isValidArray(val) {
+    val = val?.trim();
+    return !(val != '' && (val.charAt(0) != '{' || val.charAt(val.length - 1) != '}'));
+  }
+
+  validate(state, setError) {
+    if(state.isArrayType && state.value && state.value != '') {
+      let isValid = this.isValidArray(state.value);
+      state.isValid = isValid;
+      if(isValid) {
+        setError('value', null);
+      } else {
+        setError('value', 'Arrays must start with "{" and end with "}"');
+        return true;
+      }
+    } else {
+      state.isValid = true;
+    }
+    return false;
   }
 
 }

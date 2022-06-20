@@ -83,7 +83,12 @@ function getAppropriateLabel(treeInfo) {
     return treeInfo.trigger_function.label;
   } else if (treeInfo.trigger) {
     return treeInfo.trigger.label;
-  } else {
+  } else if(treeInfo.edbfunc) {
+    return treeInfo.edbfunc.label;
+  } else if(treeInfo.edbproc) {
+    return treeInfo.edbproc.label;
+  }
+  else {
     return treeInfo.procedure.label;
   }
 }

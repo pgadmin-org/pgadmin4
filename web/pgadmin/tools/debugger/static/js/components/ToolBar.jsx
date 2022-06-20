@@ -17,6 +17,7 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import NotInterestedIcon from '@material-ui/icons/NotInterested';
 import StopIcon from '@material-ui/icons/Stop';
 import HelpIcon from '@material-ui/icons/HelpRounded';
+import RotateLeftRoundedIcon from '@material-ui/icons/RotateLeftRounded';
 
 import gettext from 'sources/gettext';
 import { shortcut_key } from 'sources/keyboard_shortcuts';
@@ -87,6 +88,10 @@ export function ToolBar() {
     window.open(url, 'pgadmin_help');
   };
 
+  const onResetLayout=() => {
+    eventBus.fireEvent(DEBUGGER_EVENTS.TRIGGER_RESET_LAYOUT);
+  };
+
   useEffect(() => {
     eventBus.registerListener(DEBUGGER_EVENTS.DISABLE_MENU, () => {
       setDisableButton('start', true);
@@ -123,17 +128,21 @@ export function ToolBar() {
           accesskey={shortcut_key(preferences?.btn_start)} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
-        <PgIconButton data-test='toggle-breakpoint' title={gettext('Toggle breakpoint')} disabled={buttonsDisabled['toggle-breakpoint']} icon={<FiberManualRecordIcon />}
+        <PgIconButton data-test='toggle-breakpoint' title={gettext('Toggle breakpoint')} disabled={buttonsDisabled['toggle-breakpoint']} icon={<FiberManualRecordIcon style={{height: '2rem'}} />}
           accesskey={shortcut_key(preferences?.btn_toggle_breakpoint)} onClick={() => { toggleBreakpoint(); }} />
         <PgIconButton data-test='clear-breakpoint' title={gettext('Clear all breakpoints')} disabled={buttonsDisabled['clear-all-breakpoints']} icon={<NotInterestedIcon />}
           accesskey={shortcut_key(preferences?.btn_clear_breakpoints)} onClick={() => { clearAllBreakpoint(); }} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
-        <PgIconButton data-test='stop-debugger' title={gettext('Stop')} icon={<StopIcon />} disabled={buttonsDisabled['stop']} onClick={() => { stop(); }}
+        <PgIconButton data-test='stop-debugger' title={gettext('Stop')} icon={<StopIcon style={{height: '2rem'}} />} disabled={buttonsDisabled['stop']} onClick={() => { stop(); }}
           accesskey={shortcut_key(preferences?.btn_stop)} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
         <PgIconButton data-test='debugger-help' title={gettext('Help')} icon={<HelpIcon />} onClick={onHelpClick} />
+      </PgButtonGroup>
+      <PgButtonGroup size="small" variant="text" style={{marginLeft: 'auto'}}>
+        <PgIconButton title={gettext('Reset layout')} icon={<RotateLeftRoundedIcon />}
+          onClick={onResetLayout} />
       </PgButtonGroup>
     </Box>
   );

@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 
 import React, { useEffect, useRef } from 'react';
@@ -22,6 +21,7 @@ import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import * as commonUtils from 'sources/utils';
 import pgAdmin from 'sources/pgadmin';
+import Loader from 'sources/components/Loader';
 import Alertify from 'pgadmin.alertifyjs';
 
 import SchemaView from '../../../../../static/js/SchemaView';
@@ -76,6 +76,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   const debuggerArgsData = useRef([]);
   const [loadArgs, setLoadArgs] = React.useState(0);
   const [isDisableDebug, setIsDisableDebug] = React.useState(true);
+  const [loaderText, setLoaderText] = React.useState('');
   const debuggerFinalArgs = useRef([]);
   const InputArgIds = useRef([]);
   const wcDocker = window.wcDocker;
@@ -246,7 +247,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function setFuncObj(funcArgsData, argMode, argType, argName, defValList, isUnnamedParam=false) {
-    let index, values, vals, funcObj=[];
+    let index, values, funcObj=[];
     for(const argData of funcArgsData) {
       index = argData['arg_id'];
       if (debuggerInfo['proargmodes'] != null &&
@@ -255,13 +256,8 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       }
 
       values = [];
-      if (argType[index].indexOf('[]') != -1) {
-        vals = argData['value'].split(',');
-        _.each(vals, function (val) {
-          values.push({
-            'value': val,
-          });
-        });
+      if (argType[index].indexOf('[]') != -1 && argData['value'].length > 0) {
+        values = `{${argData['value']}}`;
       } else {
         values = argData['value'];
       }
@@ -451,6 +447,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   });
 
   function clearArgs() {
+    setLoaderText('Loading...');
     setLoadArgs(0);
     let base_url = null;
 
@@ -486,11 +483,13 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       /* setTimeout required to get updated argruments as 'Clear All' will delete all saved arguments form sqlite db. */
       setTimeout(() => {
         /* Reload the debugger arguments */
+        setLoaderText('');
         setLoadArgs(Math.floor(Math.random() * 1000));
         /* Disable debug button */
         setIsDisableDebug(true);
       }, 100);
     }).catch(function (er) {
+      setLoaderText('');
       Notify.alert(
         gettext('Clear failed'),
         er.responseJSON.errormsg
@@ -500,17 +499,23 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
   function setDebuggingArgs(argsList, argSet) {
     if (argsList.length === 0) {
-      debuggerFinalArgs.current.changed.forEach(changedArg => {
-        argSet.push(changedArg.name);
-        argsList.push(changedArg);
-      });
-
+      // Add all parameters
       debuggerArgsData.current.aregsCollection.forEach(arg => {
         if (!argSet.includes(arg.name)) {
           argSet.push(arg.name);
           argsList.push(arg);
         }
       });
+
+      // Update values if any change in the args.
+      debuggerFinalArgs.current.changed.forEach(changedArg => {
+        argsList.forEach((el, _index) => {
+          if(changedArg.name == el.name) {
+            argsList[_index] = changedArg;
+          }
+        });
+      });
+
     }
   }
 
@@ -567,6 +572,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'is_expression': arg.expr ? 1 : 0,
         'use_default': arg.use_default ? 1 : 0,
         'value': arg.value,
+        'is_array_value': arg?.isArrayType,
       });
     } else {
       // Below will format the data to be stored in sqlite database
@@ -580,6 +586,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'is_expression': arg.expr ? 1 : 0,
         'use_default': arg.use_default ? 1 : 0,
         'value': debuggerInfo.value,
+        'is_array_value': arg?.isArrayType,
       });
     }
 
@@ -684,6 +691,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
   function startDebugging() {
     var self = this;
+    setLoaderText('Starting debugger.');
     /* Initialize the target once the debug button is clicked and create asynchronous connection
       and unique transaction ID If the debugging is started again then treeInfo is already stored. */
     var [treeInfo, d] = getSelectedNodeData();
@@ -693,7 +701,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     var sqliteFuncArgsList = [];
     var intCount = 0;
 
-    let argsList = debuggerFinalArgs.current?.changed ? [] : debuggerArgsData.current.aregsCollection;
+    let argsList = []; //debuggerFinalArgs.current?.changed ? [] : debuggerArgsData.current.aregsCollection;
     let argSet = [];
 
     setDebuggingArgs(argsList, argSet);
@@ -789,6 +797,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           })
             .then(function () {/*This is intentional (SonarQube)*/ })
             .catch((error) => {
+              setLoaderText('');
               Notify.alert(
                 gettext('Error occured: '),
                 gettext(error.response.data)
@@ -796,9 +805,10 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             });
           /* Close the debugger modal dialog */
           props.closeModal();
-
+          setLoaderText('');
         })
         .catch(function (error) {
+          setLoaderText('');
           Notify.alert(
             gettext('Debugger Target Initialization Error'),
             gettext(error.response.data)
@@ -825,7 +835,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             gettext(error.response.data)
           );
         });
-
+      setLoaderText('');
       // Set the new input arguments given by the user during debugging
       var _Url = url_for('debugger.set_arguments', {
         'sid': debuggerInfo.server_id,
@@ -840,6 +850,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       })
         .then(function () {/*This is intentional (SonarQube)*/ })
         .catch(function (error) {
+          setLoaderText('');
           Notify.alert(
             gettext('Debugger Listener Startup Set Arguments Error'),
             gettext(error.response.data)
@@ -855,34 +866,43 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       <Box className={classes.body}>
         {
           loadArgs > 0 &&
-          <SchemaView
-            formType={'dialog'}
-            getInitData={initData}
-            viewHelperProps={{ mode: 'edit' }}
-            schema={debuggerArgsSchema.current}
-            showFooter={false}
-            isTabView={false}
-            onDataChange={(isChanged, changedData) => {
-              let isValid = false;  
-              let skipStep = false;
-              if('_sessData' in debuggerArgsSchema.current) {
-                isValid = true;
-                debuggerArgsSchema.current._sessData.aregsCollection.forEach((data)=> {
+          <>
+            <Loader message={loaderText} />
+            <SchemaView
+              formType={'dialog'}
+              getInitData={initData}
+              viewHelperProps={{ mode: 'edit' }}
+              schema={debuggerArgsSchema.current}
+              showFooter={false}
+              isTabView={false}
+              onDataChange={(isChanged, changedData) => {
+                let isValid = false;
+                let skipStep = false;
+                if('_sessData' in debuggerArgsSchema.current) {
+                  isValid = true;
+                  debuggerArgsSchema.current._sessData.aregsCollection.forEach((data)=> {
 
-                  if(skipStep) {return;}
+                    if(skipStep) {return;}
 
-                  if((data.is_null || data.use_default || data?.value?.toString()?.length > 0) && isValid) {
-                    isValid = true;
-                  } else {
-                    isValid = false;
-                    skipStep = true;
-                  }
-                });
-              }
-              setIsDisableDebug(!isValid);
-              debuggerFinalArgs.current = changedData.aregsCollection;
-            }}
-          />
+                    if((data.is_null || data.use_default || data?.value?.toString()?.length > 0) && isValid) {
+                      isValid = true;
+                    } else {
+                      isValid = false;
+                      skipStep = true;
+                    }
+
+                    if(!data.isValid) {
+                      isValid = false;
+                      skipStep = true;
+                    }
+
+                  });
+                }
+                setIsDisableDebug(!isValid);
+                debuggerFinalArgs.current = changedData.aregsCollection;
+              }}
+            />
+          </>
         }
       </Box>
       <Box className={classes.footer}>
@@ -895,7 +915,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           <DefaultButton className={classes.buttonMargin} onClick={() => { props.closeModal(); }} startIcon={<CloseSharpIcon onClick={() => { props.closeModal(); }} />}>
             {gettext('Cancel')}
           </DefaultButton>
-          <PrimaryButton className={classes.buttonMargin} startIcon={<BugReportRoundedIcon className={classes.debugBtn} />} 
+          <PrimaryButton className={classes.buttonMargin} startIcon={<BugReportRoundedIcon className={classes.debugBtn} />}
             disabled={isDisableDebug}
             onClick={() => { startDebugging(); }}>
             {gettext('Debug')}

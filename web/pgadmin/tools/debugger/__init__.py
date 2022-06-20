@@ -12,6 +12,7 @@
 import simplejson as json
 import random
 import re
+import copy
 
 from flask import url_for, Response, render_template, request, \
     current_app
@@ -263,31 +264,6 @@ blueprint = DebuggerModule(MODULE_NAME, __name__)
 def index():
     return bad_request(
         errormsg=gettext("This URL cannot be called directly.")
-    )
-
-
-@blueprint.route("/js/debugger_ui.js")
-@login_required
-def script_debugger_js():
-    """render the debugger UI javascript file"""
-    return Response(
-        response=render_template("debugger/js/debugger_ui.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
-@blueprint.route("/js/debugger.js")
-@login_required
-def script_debugger_direct_js():
-    """
-    Render the javascript file required send and receive the response
-    from server for debugging
-    """
-    return Response(
-        response=render_template("debugger/js/debugger.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
     )
 
 
@@ -1110,6 +1086,21 @@ def start_debugger_listener(trans_id):
                 else:
                     arg_type = de_inst.function_data['args_type'].split(",")
 
+            debugger_args_values = []
+            if de_inst.function_data['args_value']:
+                debugger_args_values = copy.deepcopy(
+                    de_inst.function_data['args_value'])
+                for arg in debugger_args_values:
+                    if arg['type'].endswith('[]'):
+                        if arg['value'] and arg['value'] != 'NULL':
+                            val_list = arg['value'][1:-1].split(',')
+                            debugger_args_data = []
+                            for _val in val_list:
+                                debugger_args_data.append({
+                                    'value': _val
+                                })
+                            arg['value'] = debugger_args_data
+
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
                 str_query = render_template(
@@ -1118,7 +1109,7 @@ def start_debugger_listener(trans_id):
                     is_func=de_inst.function_data['is_func'],
                     lan_name=de_inst.function_data['language'],
                     ret_type=de_inst.function_data['return_type'],
-                    data=de_inst.function_data['args_value'],
+                    data=debugger_args_values,
                     arg_type=arg_type,
                     args_mode=arg_mode
                 )
@@ -1128,7 +1119,7 @@ def start_debugger_listener(trans_id):
                     func_name=func_name,
                     is_func=de_inst.function_data['is_func'],
                     ret_type=de_inst.function_data['return_type'],
-                    data=de_inst.function_data['args_value'],
+                    data=debugger_args_values,
                     is_ppas_database=de_inst.function_data['is_ppas_database']
                 )
 
@@ -1797,18 +1788,10 @@ def get_array_string(data, i):
     :return: Array string.
     """
     array_string = ''
-    if data[i]['value'].__class__.__name__ in (
-            'list') and data[i]['value']:
-        for k in range(0, len(data[i]['value'])):
-            if data[i]['value'][k]['value'] is None:
-                array_string += 'NULL'
-            else:
-                array_string += str(data[i]['value'][k]['value'])
-            if k != (len(data[i]['value']) - 1):
-                array_string += ','
-    elif data[i]['value'].__class__.__name__ in (
-            'list') and not data[i]['value']:
-        array_string = ''
+
+    if data[i]['value']:
+        array_string = data[i]['value'][1:-1].split(',')
+        array_string = ','.join(array_string)
     else:
         array_string = data[i]['value']
 
@@ -1853,7 +1836,8 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
             # handle the Array list sent from the client
             array_string = ''
-            if 'value' in data[i]:
+            if 'is_array_value' in data[i] and 'value' in data[i] and data[i][
+                    'is_array_value']:
                 array_string = get_array_string(data, i)
 
             # Check if data is already available in database then update the

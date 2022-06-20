@@ -431,7 +431,6 @@ export default class Debugger {
               setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, db_label, null, self.pgBrowser);
 
               panel.focus();
-
               // Register Panel Closed event
               panel.on(self.wcDocker.EVENT.CLOSED, function () {
                 var closeUrl = url_for('debugger.close', {
