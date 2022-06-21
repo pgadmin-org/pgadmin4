@@ -33,7 +33,11 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    # Comment out the below line as the latest version having some
+    # problem https://github.com/nwjs/nw.js/issues/7902, so for the time being
+    # hardcoded the version to 0.62.2
+    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    NW_VERSION="0.62.2"
 
     pushd "${BUILD_ROOT}" > /dev/null
         while true;do
