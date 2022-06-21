@@ -18,8 +18,7 @@ import {genericBeforeEach} from '../genericFunctions';
 
 describe('DebuggerArgs', () => {
   let mount;
-  let schemaObj = new DebuggerArgumentSchema(
-  );
+  let schemaObj = new DebuggerArgumentSchema();
 
   /* Use createMount so that material ui components gets the required context */
   /* https://material-ui.com/guides/testing/#api */

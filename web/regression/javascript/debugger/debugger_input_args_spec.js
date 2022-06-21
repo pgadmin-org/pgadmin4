@@ -22,16 +22,13 @@ import pgAdmin from 'sources/pgadmin';
 
 import { messages } from '../fake_messages';
 import FunctionArguments from '../../../pgadmin/tools/debugger/static/js/debugger_ui';
-import Debugger from '../../../pgadmin/tools/debugger/static/js/DebuggerModule';
 import {TreeFake} from '../tree/tree_fake';
 
 
 describe('Debugger Component', () => {
   let funcArgs;
-  let debuggerInstance;
   let mountDOM;
   let tree;
-  let params;
   let networkMock;
 
   beforeEach(() => {
@@ -46,10 +43,19 @@ describe('Debugger Component', () => {
     pgAdmin.Browser = pgAdmin.Browser || {};
     pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
     pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
-    pgAdmin.Browser.stdH.md = 100;
-    pgAdmin.Browser.stdW.md = 100;
+    pgAdmin.Browser.stdH =  pgAdmin.Browser.stdH || {
+      sm: 200,
+      md: 400,
+      lg: 550,
+      default: 550,
+    };
+    pgAdmin.Browser.stdW = pgAdmin.Browser.stdW || {
+      sm: 500,
+      md: 700,
+      lg: 900,
+      default: 500,
+    };
     funcArgs = new FunctionArguments();
-    debuggerInstance = new Debugger(pgAdmin, pgAdmin.Browser);
     pgAdmin.Browser.preferences_cache = [
       {
         'id': 115,
@@ -240,17 +246,10 @@ describe('Debugger Component', () => {
     tree = new TreeFake();
     pgAdmin.Browser.tree = tree;
     pgAdmin.Browser.docker = docker;
-
-    params = {
-      transId: 1234,
-      directDebugger: debuggerInstance,
-      funcArgsInstance: funcArgs
-    };
     networkMock = new MockAdapter(axios);
   });
 
   it('Debugger Args', () => {
-    params.directDebugger.debug_type = 1;
     networkMock.onGet(url_for('debugger.init', {'function': 1, 'schema': 1, 'database': 1, 'server': 1})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'debug_info':[{'name':'_test2','prosrc':'begin\nselect \'1\';\nend','lanname':'plpgsql','proretset':false,'prorettype':1043,'rettype':'varchar','proargtypenames':'date','proargtypes':'1082','proargnames':'test_date','proargmodes':null,'pkg':0,'pkgname':'','pkgconsoid':0,'schema':2200,'schemaname':'public','isfunc':true,'signature':'test_date date','proargdefaults':null,'pronargdefaults':0,'require_input':true}],'trans_id':'7165'}});
 
     let debugInfo = {
