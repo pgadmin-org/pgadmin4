@@ -74,10 +74,11 @@ describe('FormComponents', ()=>{
           /* InputText */
           readonly={false}
           disabled={false}
-          maxlength={50}
+
           value={'thevalue'}
           controlProps={{
-            extraprop: 'test'
+            extraprop: 'test',
+            maxLength: 50,
           }}
         />);
     });

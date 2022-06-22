@@ -326,7 +326,9 @@ FormInputDateTimePicker.propTypes = {
 
 /* Use forwardRef to pass ref prop to OutlinedInput */
 export const InputText = forwardRef(({
-  cid, helpid, readonly, disabled, maxlength = 255, value, onChange, controlProps, type, ...props }, ref) => {
+  cid, helpid, readonly, disabled, value, onChange, controlProps, type, ...props }, ref) => {
+
+  const maxlength = typeof(controlProps?.maxLength) != 'undefined' ? controlProps.maxLength : 255;
 
   const classes = useStyles();
   const patterns = {
@@ -388,7 +390,6 @@ InputText.propTypes = {
   label: PropTypes.string,
   readonly: PropTypes.bool,
   disabled: PropTypes.bool,
-  maxlength: PropTypes.number,
   value: PropTypes.any,
   onChange: PropTypes.func,
   controlProps: PropTypes.object,

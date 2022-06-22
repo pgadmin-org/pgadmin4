@@ -210,12 +210,15 @@ export default class ServerSchema extends BaseUISchema {
         id: 'gss_encrypted', label: gettext('GSS encrypted?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
       },{
-        id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
+        id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
         mode: ['create'],
         deps: ['connect_now', 'kerberos_conn'],
         visible: function(state) {
           return state.connect_now && obj.isNew(state);
+        },
+        controlProps: {
+          maxLength: null
         },
         disabled: function(state) {return state.kerberos_conn;},
       },{
@@ -395,6 +398,9 @@ export default class ServerSchema extends BaseUISchema {
         deps: ['use_ssh_tunnel'],
         disabled: function(state) {
           return !state.use_ssh_tunnel;
+        },
+        controlProps: {
+          maxLength: null
         },
         readonly: obj.isConnected,
       }, {

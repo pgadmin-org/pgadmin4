@@ -28,6 +28,7 @@ Bug fixes
 *********
 
   | `Issue #7423 <https://redmine.postgresql.org/issues/7423>`_ -  Fixed an issue where there is no setting to turn off notifications in the Query Tool.
+  | `Issue #7440 <https://redmine.postgresql.org/issues/7440>`_ -  Fixed an issue where passwords entered in the 'Connect To Server' dialog were truncated.
   | `Issue #7441 <https://redmine.postgresql.org/issues/7441>`_ -  Ensure that the Query Editor should be focused when switching between query tool tabs.
   | `Issue #7443 <https://redmine.postgresql.org/issues/7443>`_ -  Fixed and issue where 'Use spaces' not working in the query tool.
   | `Issue #7453 <https://redmine.postgresql.org/issues/7453>`_ -  Fixed an issue where the Database restriction is not working.

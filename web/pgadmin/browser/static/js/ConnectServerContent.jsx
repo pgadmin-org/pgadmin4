@@ -62,7 +62,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
             </span>
           </Box>
           <Box marginTop='12px'>
-            <InputText inputRef={firstEleRef} type="password" value={formData['tunnel_password']} maxLength={null}
+            <InputText inputRef={firstEleRef} type="password" value={formData['tunnel_password']} controlProps={{maxLength:null}}
               onChange={(e)=>onTextChange(e, 'tunnel_password')} onKeyDown={(e)=>onKeyDown(e)} />
           </Box>
           <Box marginTop='12px' marginBottom='12px'>
@@ -85,7 +85,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
                 /* Set only if no tunnel password asked */
                 firstEleRef.current = ele;
               }
-            }} type="password" value={formData['password']} maxLength={null}
+            }} type="password" value={formData['password']} controlProps={{maxLength:null}}
             onChange={(e)=>onTextChange(e, 'password')} onKeyDown={(e)=>onKeyDown(e)}/>
           </Box>
           <Box marginTop='12px'>
