@@ -143,7 +143,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     let funcArgsData = [];
     if (res.data.data.args_count != 0) {
       setIsDisableDebug(false);
-      for(const i of res.data.data.result) {
+      for (const i of res.data.data.result) {
         // Below will format the data to be stored in sqlite database
         funcArgsData.push({
           'arg_id': i['arg_id'],
@@ -246,9 +246,9 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     return myObj;
   }
 
-  function setFuncObj(funcArgsData, argMode, argType, argName, defValList, isUnnamedParam=false) {
-    let index, values, funcObj=[];
-    for(const argData of funcArgsData) {
+  function setFuncObj(funcArgsData, argMode, argType, argName, defValList, isUnnamedParam = false) {
+    let index, values, funcObj = [];
+    for (const argData of funcArgsData) {
       index = argData['arg_id'];
       if (debuggerInfo['proargmodes'] != null &&
         (argMode && argMode[index] == 'o' && !isEdbProc) && !isUnnamedParam) {
@@ -278,7 +278,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function setUnnamedParamNonDefVal(argType, defValList, myargname) {
-    let myObj= [];
+    let myObj = [];
     for (let i = 0; i < argType.length; i++) {
       myObj.push({
         'name': myargname[i],
@@ -508,13 +508,15 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       });
 
       // Update values if any change in the args.
-      debuggerFinalArgs.current.changed.forEach(changedArg => {
-        argsList.forEach((el, _index) => {
-          if(changedArg.name == el.name) {
-            argsList[_index] = changedArg;
-          }
+      if (debuggerFinalArgs.current) {
+        debuggerFinalArgs.current.changed.forEach(changedArg => {
+          argsList.forEach((el, _index) => {
+            if (changedArg.name == el.name) {
+              argsList[_index] = changedArg;
+            }
+          });
         });
-      });
+      }
 
     }
   }
@@ -692,172 +694,179 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   function startDebugging() {
     var self = this;
     setLoaderText('Starting debugger.');
-    /* Initialize the target once the debug button is clicked and create asynchronous connection
-      and unique transaction ID If the debugging is started again then treeInfo is already stored. */
-    var [treeInfo, d] = getSelectedNodeData();
-    if(!d) return;
+    try {
+      /* Initialize the target once the debug button is clicked and create asynchronous connection
+        and unique transaction ID If the debugging is started again then treeInfo is already stored. */
+      var [treeInfo, d] = getSelectedNodeData();
+      if (!d) return;
 
-    var argsValueList = [];
-    var sqliteFuncArgsList = [];
-    var intCount = 0;
+      var argsValueList = [];
+      var sqliteFuncArgsList = [];
+      var intCount = 0;
 
-    let argsList = []; //debuggerFinalArgs.current?.changed ? [] : debuggerArgsData.current.aregsCollection;
-    let argSet = [];
+      let argsList = []; //debuggerFinalArgs.current?.changed ? [] : debuggerArgsData.current.aregsCollection;
+      let argSet = [];
 
-    setDebuggingArgs(argsList, argSet);
+      setDebuggingArgs(argsList, argSet);
 
-    argsList.forEach(arg => {
-      checkArgsVal(arg, argsValueList);
-      setSqliteFuncArgs(d, treeInfo, arg, intCount, sqliteFuncArgsList);
-      intCount = intCount + 1;
-    });
+      argsList.forEach(arg => {
+        checkArgsVal(arg, argsValueList);
+        setSqliteFuncArgs(d, treeInfo, arg, intCount, sqliteFuncArgsList);
+        intCount = intCount + 1;
+      });
 
-    var baseUrl;
+      var baseUrl;
 
-    /* If debugging is not started again then we should initialize the target otherwise not */
-    if (restartDebug == 0) {
-      baseUrl = checkTypeAndGetUrl(d, treeInfo);
+      /* If debugging is not started again then we should initialize the target otherwise not */
+      if (restartDebug == 0) {
+        baseUrl = checkTypeAndGetUrl(d, treeInfo);
 
-      api({
-        url: baseUrl,
-        method: 'POST',
-        data: JSON.stringify(argsValueList),
-      })
-        .then(function (res_post) {
-
-          var url = url_for(
-            'debugger.direct', {
-              'trans_id': res_post.data.data.debuggerTransId,
-            }
-          );
-
-          var browserPreferences = pgAdmin.Browser.get_preferences_for_module('browser');
-          var open_new_tab = browserPreferences.new_browser_tab_open;
-          if (open_new_tab && open_new_tab.includes('debugger')) {
-            window.open(url, '_blank');
-            // Send the signal to runtime, so that proper zoom level will be set.
-            setTimeout(function () {
-              pgAdmin.Browser.send_signal_to_runtime('Runtime new window opened');
-            }, 500);
-          } else {
-            pgAdmin.Browser.Events.once(
-              'pgadmin-browser:frame:urlloaded:frm_debugger',
-              function (frame) {
-                frame.openURL(url);
-              });
-
-            // Create the debugger panel as per the data received from user input dialog.
-            var propertiesPanel = pgAdmin.Browser.docker.findPanels('properties');
-            var panel = pgAdmin.Browser.docker.addPanel(
-              'frm_debugger', wcDocker.DOCK.STACKED, propertiesPanel[0]
-            );
-            var browser_pref = pgAdmin.Browser.get_preferences_for_module('browser');
-            var label = getAppropriateLabel(treeInfo);
-            setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgAdmin.Browser);
-            panel.focus();
-
-            // Panel Closed event
-            panel.on(wcDocker.EVENT.CLOSED, function () {
-              var closeUrl = url_for('debugger.close', {
-                'trans_id': res_post.data.data.debuggerTransId,
-              });
-              api({
-                url: closeUrl,
-                method: 'DELETE',
-              });
-            });
-            /* TO-DO check how to add this is new lib for wc-docker */
-            commonUtils.registerDetachEvent(panel);
-
-            // Panel Rename event
-            panel.on(wcDocker.EVENT.RENAME, function (panel_data) {
-              Alertify.prompt('', panel_data.$titleText[0].textContent,
-                // We will execute this function when user clicks on the OK button
-                function (evt, value) {
-                  if (value) {
-                    // Remove the leading and trailing white spaces.
-                    value = value.trim();
-                    var name = getAppropriateLabel(treeInfo);
-                    setDebuggerTitle(panel, self.preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgAdmin.Browser);
-                  }
-                },
-                // We will execute this function when user clicks on the Cancel
-                // button.  Do nothing just close it.
-                function (evt) { evt.cancel = false; }
-              ).set({ 'title': gettext('Rename Panel') });
-            });
-          }
-
-          var _url = getSetArgsUrl(d, treeInfo);
-
-          api({
-            url: _url,
-            method: 'POST',
-            data: JSON.stringify(sqliteFuncArgsList),
-          })
-            .then(function () {/*This is intentional (SonarQube)*/ })
-            .catch((error) => {
-              setLoaderText('');
-              Notify.alert(
-                gettext('Error occured: '),
-                gettext(error.response.data)
-              );
-            });
-          /* Close the debugger modal dialog */
-          props.closeModal();
-          setLoaderText('');
+        api({
+          url: baseUrl,
+          method: 'POST',
+          data: JSON.stringify(argsValueList),
         })
-        .catch(function (error) {
-          setLoaderText('');
-          Notify.alert(
-            gettext('Debugger Target Initialization Error'),
-            gettext(error.response.data)
-          );
+          .then(function (res_post) {
+
+            var url = url_for(
+              'debugger.direct', {
+                'trans_id': res_post.data.data.debuggerTransId,
+              }
+            );
+
+            var browserPreferences = pgAdmin.Browser.get_preferences_for_module('browser');
+            var open_new_tab = browserPreferences.new_browser_tab_open;
+            if (open_new_tab && open_new_tab.includes('debugger')) {
+              window.open(url, '_blank');
+              // Send the signal to runtime, so that proper zoom level will be set.
+              setTimeout(function () {
+                pgAdmin.Browser.send_signal_to_runtime('Runtime new window opened');
+              }, 500);
+            } else {
+              pgAdmin.Browser.Events.once(
+                'pgadmin-browser:frame:urlloaded:frm_debugger',
+                function (frame) {
+                  frame.openURL(url);
+                });
+
+              // Create the debugger panel as per the data received from user input dialog.
+              var propertiesPanel = pgAdmin.Browser.docker.findPanels('properties');
+              var panel = pgAdmin.Browser.docker.addPanel(
+                'frm_debugger', wcDocker.DOCK.STACKED, propertiesPanel[0]
+              );
+              var browser_pref = pgAdmin.Browser.get_preferences_for_module('browser');
+              var label = getAppropriateLabel(treeInfo);
+              setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgAdmin.Browser);
+              panel.focus();
+
+              // Panel Closed event
+              panel.on(wcDocker.EVENT.CLOSED, function () {
+                var closeUrl = url_for('debugger.close', {
+                  'trans_id': res_post.data.data.debuggerTransId,
+                });
+                api({
+                  url: closeUrl,
+                  method: 'DELETE',
+                });
+              });
+              /* TO-DO check how to add this is new lib for wc-docker */
+              commonUtils.registerDetachEvent(panel);
+
+              // Panel Rename event
+              panel.on(wcDocker.EVENT.RENAME, function (panel_data) {
+                Alertify.prompt('', panel_data.$titleText[0].textContent,
+                  // We will execute this function when user clicks on the OK button
+                  function (evt, value) {
+                    if (value) {
+                      // Remove the leading and trailing white spaces.
+                      value = value.trim();
+                      var name = getAppropriateLabel(treeInfo);
+                      setDebuggerTitle(panel, self.preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgAdmin.Browser);
+                    }
+                  },
+                  // We will execute this function when user clicks on the Cancel
+                  // button.  Do nothing just close it.
+                  function (evt) { evt.cancel = false; }
+                ).set({ 'title': gettext('Rename Panel') });
+              });
+            }
+
+            var _url = getSetArgsUrl(d, treeInfo);
+
+            api({
+              url: _url,
+              method: 'POST',
+              data: JSON.stringify(sqliteFuncArgsList),
+            })
+              .then(function () {/*This is intentional (SonarQube)*/ })
+              .catch((error) => {
+                setLoaderText('');
+                Notify.alert(
+                  gettext('Error occured: '),
+                  gettext(error.response.data)
+                );
+              });
+            /* Close the debugger modal dialog */
+            props.closeModal();
+            setLoaderText('');
+          })
+          .catch(function (error) {
+            setLoaderText('');
+            Notify.alert(
+              gettext('Debugger Target Initialization Error'),
+              gettext(error.response.data)
+            );
+          });
+
+      }
+      else {
+        // If the debugging is started again then we should only set the
+        // arguments and start the listener again
+        baseUrl = url_for('debugger.start_listener', {
+          'trans_id': transId,
         });
 
-    }
-    else {
-      // If the debugging is started again then we should only set the
-      // arguments and start the listener again
-      baseUrl = url_for('debugger.start_listener', {
-        'trans_id': transId,
-      });
-
-      api({
-        url: baseUrl,
-        method: 'POST',
-        data: JSON.stringify(argsValueList),
-      })
-        .then(function () {/*This is intentional (SonarQube)*/ })
-        .catch(function (error) {
-          Notify.alert(
-            gettext('Debugger Listener Startup Error'),
-            gettext(error.response.data)
-          );
+        api({
+          url: baseUrl,
+          method: 'POST',
+          data: JSON.stringify(argsValueList),
+        })
+          .then(function () {/*This is intentional (SonarQube)*/ })
+          .catch(function (error) {
+            Notify.alert(
+              gettext('Debugger Listener Startup Error'),
+              gettext(error.response.data)
+            );
+          });
+        setLoaderText('');
+        // Set the new input arguments given by the user during debugging
+        var _Url = url_for('debugger.set_arguments', {
+          'sid': debuggerInfo.server_id,
+          'did': debuggerInfo.database_id,
+          'scid': debuggerInfo.schema_id,
+          'func_id': debuggerInfo.function_id,
         });
+        api({
+          url: _Url,
+          method: 'POST',
+          data: JSON.stringify(sqliteFuncArgsList),
+        })
+          .then(function () {/*This is intentional (SonarQube)*/ })
+          .catch(function (error) {
+            setLoaderText('');
+            Notify.alert(
+              gettext('Debugger Listener Startup Set Arguments Error'),
+              gettext(error.response.data)
+            );
+          });
+      }
+    } catch (err) {
       setLoaderText('');
-      // Set the new input arguments given by the user during debugging
-      var _Url = url_for('debugger.set_arguments', {
-        'sid': debuggerInfo.server_id,
-        'did': debuggerInfo.database_id,
-        'scid': debuggerInfo.schema_id,
-        'func_id': debuggerInfo.function_id,
-      });
-      api({
-        url: _Url,
-        method: 'POST',
-        data: JSON.stringify(sqliteFuncArgsList),
-      })
-        .then(function () {/*This is intentional (SonarQube)*/ })
-        .catch(function (error) {
-          setLoaderText('');
-          Notify.alert(
-            gettext('Debugger Listener Startup Set Arguments Error'),
-            gettext(error.response.data)
-          );
-        });
+      Notify.alert(
+        gettext('Debugger Error'),
+        gettext(err.message)
+      );
     }
-
 
   }
 
@@ -878,20 +887,20 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               onDataChange={(isChanged, changedData) => {
                 let isValid = false;
                 let skipStep = false;
-                if('_sessData' in debuggerArgsSchema.current) {
+                if ('_sessData' in debuggerArgsSchema.current) {
                   isValid = true;
-                  debuggerArgsSchema.current._sessData.aregsCollection.forEach((data)=> {
+                  debuggerArgsSchema.current._sessData.aregsCollection.forEach((data) => {
 
-                    if(skipStep) {return;}
+                    if (skipStep) { return; }
 
-                    if((data.is_null || data.use_default || data?.value?.toString()?.length > 0) && isValid) {
+                    if ((data.is_null || data.use_default || data?.value?.toString()?.length > 0) && isValid) {
                       isValid = true;
                     } else {
                       isValid = false;
                       skipStep = true;
                     }
 
-                    if(!data.isValid) {
+                    if (!data.isValid) {
                       isValid = false;
                       skipStep = true;
                     }

@@ -1836,6 +1836,9 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
             # handle the Array list sent from the client
             array_string = ''
+            if 'value' in data[i]:
+                array_string = data[i]['value']
+
             if 'is_array_value' in data[i] and 'value' in data[i] and data[i][
                     'is_array_value']:
                 array_string = get_array_string(data, i)
