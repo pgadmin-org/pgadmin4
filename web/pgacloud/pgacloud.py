@@ -13,6 +13,7 @@ import argparse
 import os
 import sys
 
+
 def load_providers():
     """ Loads all the providers """
     providers = {}
