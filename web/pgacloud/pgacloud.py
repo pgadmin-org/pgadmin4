@@ -11,7 +11,7 @@
 
 import argparse
 import os
-
+import sys
 
 def load_providers():
     """ Loads all the providers """
@@ -19,7 +19,7 @@ def load_providers():
 
     path = os.path.dirname(os.path.realpath(__file__))
     modules = os.listdir(path + '/providers')
-
+    sys.path.append(path)
     for filename in modules:
         filename = path + '/providers/' + filename
 
