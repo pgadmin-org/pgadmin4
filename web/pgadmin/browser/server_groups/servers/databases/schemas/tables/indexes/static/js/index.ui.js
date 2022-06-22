@@ -321,10 +321,11 @@ export default class IndexSchema extends BaseUISchema {
               };
             });
           };
-          if(state.amname != actionObj.oldState.amname) {
+          if((state.amname != actionObj.oldState.amname) && state.columns.length > 0) {
             return new Promise((resolve)=>{
               Notify.confirm(
-                gettext('Changing access method will clear columns collection'),
+                gettext('Warning'),
+                gettext('Changing access method will clear columns collection. Do you want to continue?'),
                 function () {
                   setColumns(resolve);
                 },

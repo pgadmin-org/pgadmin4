@@ -32,4 +32,5 @@ Bug fixes
   | `Issue #7441 <https://redmine.postgresql.org/issues/7441>`_ -  Ensure that the Query Editor should be focused when switching between query tool tabs.
   | `Issue #7443 <https://redmine.postgresql.org/issues/7443>`_ -  Fixed and issue where 'Use spaces' not working in the query tool.
   | `Issue #7453 <https://redmine.postgresql.org/issues/7453>`_ -  Fixed an issue where the Database restriction is not working.
+  | `Issue #7460 <https://redmine.postgresql.org/issues/7460>`_ -  Fixed an issue where pgAdmin stuck while creating a new index.
   | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Skip the history records if the JSON info can't be parsed instead of showing 'No history'.
