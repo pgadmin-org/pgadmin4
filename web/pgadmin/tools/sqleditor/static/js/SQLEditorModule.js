@@ -397,6 +397,7 @@ export default class SQLEditor {
             pgAdmin.Browser.preference_version(pgWindow.pgAdmin.Browser.preference_version());
             pgAdmin.Browser.triggerPreferencesChange('browser');
             pgAdmin.Browser.triggerPreferencesChange('sqleditor');
+            pgAdmin.Browser.triggerPreferencesChange('graphs');
           }
         }
       }, 1000);

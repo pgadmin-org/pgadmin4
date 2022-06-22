@@ -28,6 +28,7 @@ import moment from 'moment';
 import ConfirmSaveContent from '../dialogs/ConfirmSaveContent';
 import { makeStyles } from '@material-ui/styles';
 import EmptyPanelMessage from '../../../../../../static/js/components/EmptyPanelMessage';
+import { GraphVisualiser } from './GraphVisualiser';
 
 export class ResultSetUtils {
   constructor(api, transId, isQueryTool=true) {
@@ -919,6 +920,10 @@ export function ResultSet() {
     rsu.current.transId = queryToolCtx.params.trans_id;
   }, [queryToolCtx.params.trans_id]);
 
+  useEffect(()=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.RESET_GRAPH_VISUALISER, columns);
+  }, [columns]);
+
   const fetchMoreRows = async (all=false, callback)=>{
     if(queryData.has_more_rows) {
       setIsLoadingMore(true);
@@ -1258,6 +1263,22 @@ export function ResultSet() {
     }
     setRows(newRows);
   };
+
+  useEffect(()=>{
+    const showGraphVisualiser = async ()=>{
+      LayoutHelper.openTab(queryToolCtx.docker, {
+        id: PANELS.GRAPH_VISUALISER,
+        title: gettext('Graph Visualiser'),
+        content: <GraphVisualiser initColumns={columns}  />,
+        closable: true,
+      }, PANELS.MESSAGES, 'after-tab', true);
+    };
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_GRAPH_VISUALISER, showGraphVisualiser);
+    return ()=>{
+      eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_GRAPH_VISUALISER, showGraphVisualiser);
+    };
+  }, [queryToolCtx.docker, columns]);
 
   const rowKeyGetter = React.useCallback((row)=>row[rsu.current.clientPK]);
   return (

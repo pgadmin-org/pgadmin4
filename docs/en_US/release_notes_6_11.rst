@@ -14,6 +14,7 @@ New features
   | `Issue #7178 <https://redmine.postgresql.org/issues/7178>`_ -  Added capability to deploy PostgreSQL servers on Microsoft Azure.
   | `Issue #7332 <https://redmine.postgresql.org/issues/7332>`_ -  Added support for passing password using Docker Secret to Docker images.
   | `Issue #7351 <https://redmine.postgresql.org/issues/7351>`_ -  Added the option 'Show template databases?' to display template databases regardless of the setting of 'Show system objects?'.
+  | `Issue #7485 <https://redmine.postgresql.org/issues/7485>`_ -  Added support for visualise the graph using a Line chart in the query tool.
 
 Housekeeping
 ************

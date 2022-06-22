@@ -723,6 +723,25 @@ WHERE db.datname = current_database()""")
 
         return True, cur
 
+    def reset_cursor_at(self, position):
+        """
+        This function is used to reset the cursor at the given position
+        """
+        cur = self.__async_cursor
+        if not cur:
+            current_app.logger.log(
+                25,
+                'Cursor not found in reset_cursor_at method')
+
+        try:
+            cur.scroll(position, mode='absolute')
+        except psycopg2.Error:
+            # bypassing the error as cursor tried to scroll on the
+            # specified position, but end of records found
+            current_app.logger.log(
+                25,
+                'Failed to reset cursor in reset_cursor_at method')
+
     def escape_params_sqlascii(self, params):
         # The data is unescaped using string_typecasters when selected
         # We need to esacpe the data so that it does not fail when

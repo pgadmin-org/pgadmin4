@@ -21,7 +21,8 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS, \
+    PREF_LABEL_REFRESH_RATES
 
 from config import PG_DEFAULT_DRIVER
 
@@ -73,7 +74,7 @@ class DashboardModule(PgAdminModule):
         """
         help_string = gettext('The number of seconds between graph samples.')
 
-        # Register options for the PG and PPAS help paths
+        # Register options for Dashboards
         self.dashboard_preference = Preferences(
             'dashboards', gettext('Dashboards')
         )
@@ -82,7 +83,7 @@ class DashboardModule(PgAdminModule):
             'dashboards', 'session_stats_refresh',
             gettext("Session statistics refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
@@ -90,7 +91,7 @@ class DashboardModule(PgAdminModule):
             'dashboards', 'tps_stats_refresh',
             gettext("Transaction throughput refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
@@ -98,7 +99,7 @@ class DashboardModule(PgAdminModule):
             'dashboards', 'ti_stats_refresh',
             gettext("Tuples in refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
@@ -106,7 +107,7 @@ class DashboardModule(PgAdminModule):
             'dashboards', 'to_stats_refresh',
             gettext("Tuples out refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
@@ -114,7 +115,7 @@ class DashboardModule(PgAdminModule):
             'dashboards', 'bio_stats_refresh',
             gettext("Block I/O statistics refresh rate"), 'integer',
             1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
@@ -134,23 +135,6 @@ class DashboardModule(PgAdminModule):
                              'will be displayed on dashboards.')
         )
 
-        self.graph_data_points = self.dashboard_preference.register(
-            'display', 'graph_data_points',
-            gettext("Show graph data points?"), 'boolean', False,
-            category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, data points will be '
-                             'visible on graph lines.')
-        )
-
-        self.graph_mouse_track = self.dashboard_preference.register(
-            'display', 'graph_mouse_track',
-            gettext("Show mouse hover tooltip?"), 'boolean', True,
-            category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, tooltip will appear on mouse '
-                             'hover on the graph lines giving the data point '
-                             'details')
-        )
-
         self.long_running_query_threshold = self.dashboard_preference.register(
             'display', 'long_running_query_threshold',
             gettext('Long running query thresholds'), 'threshold',
@@ -158,6 +142,36 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('Set the warning and alert threshold value to '
                              'highlight the long-running queries on the '
                              'dashboard.')
+        )
+
+        # Register options for Graphs
+        self.graphs_preference = Preferences(
+            'graphs', gettext('Graphs')
+        )
+
+        self.graph_data_points = self.graphs_preference.register(
+            'graphs', 'graph_data_points',
+            gettext("Show graph data points?"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, data points will be '
+                             'visible on graph lines.')
+        )
+
+        self.use_diff_point_style = self.graphs_preference.register(
+            'graphs', 'use_diff_point_style',
+            gettext("Use different data point styles?"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, data points will be visible '
+                             'in a different style on each graph lines.')
+        )
+
+        self.graph_mouse_track = self.graphs_preference.register(
+            'graphs', 'graph_mouse_track',
+            gettext("Show mouse hover tooltip?"), 'boolean', True,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, tooltip will appear on mouse '
+                             'hover on the graph lines giving the data point '
+                             'details')
         )
 
     def get_exposed_url_endpoints(self):

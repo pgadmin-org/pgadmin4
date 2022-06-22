@@ -105,6 +105,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.poll',
             'sqleditor.fetch',
             'sqleditor.fetch_all',
+            'sqleditor.fetch_all_from_start',
             'sqleditor.save',
             'sqleditor.inclusive_filter',
             'sqleditor.exclusive_filter',
@@ -1084,6 +1085,49 @@ def fetch(trans_id, fetch_all=None):
             'rows_fetched_to': rows_fetched_to
         },
         encoding=conn.python_encoding
+    )
+
+
+@blueprint.route(
+    '/fetch_all_from_start/<int:trans_id>', methods=["GET"],
+    endpoint='fetch_all_from_start'
+)
+@login_required
+def fetch_all_from_start(trans_id):
+    """
+    This function is used to fetch all the records from start and reset
+    the cursor back to it's previous position.
+    """
+    # Check the transaction and connection status
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        return make_json_response(success=0, errormsg=error_msg,
+                                  info='DATAGRID_TRANSACTION_REQUIRED',
+                                  status=404)
+
+    if status and conn is not None and session_obj is not None:
+        # Reset the cursor to start to fetch all the records.
+        conn.reset_cursor_at(0)
+
+        status, result = conn.async_fetchmany_2darray(-1)
+        if not status:
+            status = 'Error'
+        else:
+            status = 'Success'
+
+        # Reset the cursor back to it's actual position
+        conn.reset_cursor_at(trans_obj.get_fetched_row_cnt())
+    else:
+        status = 'NotConnected'
+        result = error_msg
+
+    return make_json_response(
+        data={
+            'status': status,
+            'result': result
+        }
     )
 
 

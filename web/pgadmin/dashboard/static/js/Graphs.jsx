@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useRef, useState, useReducer, useCallback, useMemo } from 'react';
-import {LineChart} from 'sources/chartjs';
+import { LineChart, DATA_POINT_STYLE, DATA_POINT_SIZE } from 'sources/chartjs';
 import {ChartContainer, DashboardRowCol, DashboardRow} from './Dashboard';
 import url_for from 'sources/url_for';
 import axios from 'axios';
@@ -17,10 +17,9 @@ import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 
 export const X_AXIS_LENGTH = 75;
-export const POINT_SIZE = 2;
 
 /* Transform the labels data to suit ChartJS */
-export function transformData(labels, refreshRate) {
+export function transformData(labels, refreshRate, use_diff_point_style) {
   const colors = ['#00BCD4', '#9CCC65', '#E64A19'];
   let datasets = Object.keys(labels).map((label, i)=>{
     return {
@@ -28,7 +27,8 @@ export function transformData(labels, refreshRate) {
       data: labels[label] || [],
       borderColor: colors[i],
       backgroundColor: colors[i],
-      pointHitRadius: POINT_SIZE,
+      pointHitRadius: DATA_POINT_SIZE,
+      pointStyle: use_diff_point_style ? DATA_POINT_STYLE[i] : 'circle'
     };
   }) || [];
 
@@ -225,11 +225,11 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
       <div data-testid='graph-poll-delay' className='d-none'>{pollDelay}</div>
       {chartDrawnOnce &&
         <GraphsWrapper
-          sessionStats={transformData(sessionStats, preferences['session_stats_refresh'])}
-          tpsStats={transformData(tpsStats, preferences['tps_stats_refresh'])}
-          tiStats={transformData(tiStats, preferences['ti_stats_refresh'])}
-          toStats={transformData(toStats, preferences['to_stats_refresh'])}
-          bioStats={transformData(bioStats, preferences['bio_stats_refresh'])}
+          sessionStats={transformData(sessionStats, preferences['session_stats_refresh'], preferences['use_diff_point_style'])}
+          tpsStats={transformData(tpsStats, preferences['tps_stats_refresh'], preferences['use_diff_point_style'])}
+          tiStats={transformData(tiStats, preferences['ti_stats_refresh'], preferences['use_diff_point_style'])}
+          toStats={transformData(toStats, preferences['to_stats_refresh'], preferences['use_diff_point_style'])}
+          bioStats={transformData(bioStats, preferences['bio_stats_refresh'], preferences['use_diff_point_style'])}
           errorMsg={errorMsg}
           showTooltip={preferences['graph_mouse_track']}
           showDataPoints={preferences['graph_data_points']}
@@ -261,10 +261,9 @@ export function GraphsWrapper(props) {
   const toStatsLegendRef = useRef();
   const bioStatsLegendRef = useRef();
   const options = useMemo(()=>({
-    normalized: true,
     elements: {
       point: {
-        radius: props.showDataPoints ? POINT_SIZE : 0,
+        radius: props.showDataPoints ? DATA_POINT_SIZE : 0,
       },
     },
     plugins: {

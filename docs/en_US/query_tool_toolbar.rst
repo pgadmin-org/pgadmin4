@@ -191,6 +191,8 @@ Data Editing Options
    |                      | a query has been executed and there are results in the data grid. You can specify the CSV/TXT     |                |
    |                      | settings in the Preference Dialogue under SQL Editor -> CSV/TXT output.                           |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   | Graph Visualiser     | Use the Graph Visualiser button to generate graphs of the query results.                          |                |
+   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Status Bar
 **********

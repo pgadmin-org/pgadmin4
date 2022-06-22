@@ -131,12 +131,25 @@ The Dashboards Node
 
 Expand the *Dashboards* node to specify your dashboard display preferences.
 
-.. image:: images/preferences_dashboard_graphs.png
-    :alt: Preferences dialog dashboard graph options
+.. image:: images/preferences_dashboard_display.png
+    :alt: Preferences dialog dashboard display options
     :align: center
 
-Use the fields on the *Graphs* panel to specify your display preferences for
-the graphs on the *Dashboard* tab:
+* Set the warning and alert threshold value to highlight the long-running
+  queries on the dashboard.
+
+* When the *Show activity?* switch is set to *True*, activity tables will be
+  displayed on dashboards.
+
+* When the *Show graphs?* switch is set to *True*, graphs will be displayed on
+  dashboards.
+
+.. image:: images/preferences_dashboard_refresh.png
+    :alt: Preferences dialog dashboard refresh options
+    :align: center
+
+Use the fields on the *Refresh rates* panel to specify your refersh rates
+preferences for the graphs on the *Dashboard* tab:
 
 * Use the *Block I/O statistics refresh rate* field to specify the number of
   seconds between block I/O statistic samples displayed in graphs.
@@ -153,24 +166,6 @@ the graphs on the *Dashboard* tab:
 * Use the *Tuples out refresh rate* field to specify the number of seconds
   between tuples-out samples displayed in graphs.
 
-.. image:: images/preferences_dashboard_display.png
-    :alt: Preferences dialog dashboard display options
-    :align: center
-
-* Set the warning and alert threshold value to highlight the long-running
-  queries on the dashboard.
-
-* When the *Show activity?* switch is set to *True*, activity tables will be
-  displayed on dashboards.
-
-* When the *Show graph data points?* switch is set to *True*, data points will
-  be visible on graph lines.
-
-* When the *Show graphs?* switch is set to *True*, graphs will be displayed on
-  dashboards.
-
-* When the *Show mouse hover tooltip?* switch is set to *True*, a tooltip will
-  appear on mouse hover on the graph lines giving the data point details.
 
 
 The Debugger Node
@@ -196,6 +191,24 @@ ERD Tool window navigation:
 .. image:: images/preferences_erd_keyboard_shortcuts.png
     :alt: Preferences dialog erd keyboard shortcuts section
     :align: center
+
+The Graphs Node
+***************
+
+Expand the *Graphs* node to specify your Graphs display preferences.
+
+.. image:: images/preferences_dashboard_graphs.png
+    :alt: Preferences dialog dashboard graph options
+    :align: center
+
+* When the *Show graph data points?* switch is set to *True*, data points will
+  be visible on graph lines.
+
+* When the *Show mouse hover tooltip?* switch is set to *True*, a tooltip will
+  appear on mouse hover on the graph lines giving the data point details.
+
+* When the *Use different data point styles?* switch is set to *True*,
+  data points will be visible in a different style on each graph lines.
 
 The Miscellaneous Node
 **********************

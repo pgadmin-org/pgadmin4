@@ -27,13 +27,16 @@ export function getPanelView(
   panelType
 ) {
   let item = !_.isNull(tree)? tree.selected(): null,
+    nodeData, node, treeNodeInfo, preferences, graphPref, dashPref;
 
-    nodeData, node, treeNodeInfo, preferences;
   if (item){
     nodeData = tree.itemData(item);
     node = nodeData && pgBrowser.Nodes[nodeData._type];
     treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
-    preferences = pgBrowser.get_preferences_for_module('dashboards');
+    dashPref = pgBrowser.get_preferences_for_module('dashboards');
+    graphPref = pgBrowser.get_preferences_for_module('graphs');
+    preferences = _.merge(dashPref, graphPref);
+
   }
   if (panelType == 'dashboard') {
     ReactDOM.render(

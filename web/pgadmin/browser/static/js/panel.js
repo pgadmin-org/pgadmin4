@@ -131,8 +131,18 @@ define(
                 );
               }
 
-              // Rerender the dashboard panel when preference value 'show graph' gets changed.
+              // Re-render the dashboard panel when preference value 'show graph' gets changed.
               pgBrowser.onPreferencesChange('dashboards', function() {
+                getPanelView(
+                  pgBrowser.tree,
+                  $container[0],
+                  pgBrowser,
+                  myPanel._type
+                );
+              });
+
+              // Re-render the dashboard panel when preference value gets changed.
+              pgBrowser.onPreferencesChange('graphs', function() {
                 getPanelView(
                   pgBrowser.tree,
                   $container[0],
@@ -147,7 +157,7 @@ define(
                 });
 
               pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
-                
+
                 if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,

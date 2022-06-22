@@ -106,6 +106,45 @@ fully qualified with schema. Double quotes will be added if required.
 For functions and procedures, the function name along with parameter names will
 be pasted in the Query Tool.
 
+Query History Panel
+*******************
+
+Use the *Query History* tab to review activity for the current session:
+
+.. image:: images/query_output_history.png
+    :alt: Query tool history panel
+    :align: center
+
+The Query History tab displays information about recent commands:
+
+* The date and time that a query was invoked.
+* The text of the query.
+* The number of rows returned by the query.
+* The amount of time it took the server to process the query and return a
+  result set.
+* Messages returned by the server (not noted on the *Messages* tab).
+* The source of the query (indicated by icons corresponding to the toolbar).
+
+You can show or hide the queries generated internally by pgAdmin (during
+'View/Edit Data' or 'Save Data' operations).
+
+You can remove a single query by selecting it and clicking on the *Remove*
+button. If you would like to remove all of the histories from the
+*Query History* tab, then click on the *Remove All* button.
+
+By using the *Copy* button, you can copy a particular query to the clipboard,
+and with the *Copy to Query Editor* button, you can copy a specific query to
+the Query Editor tab. During this operation, all existing content in the
+Query Editor is erased.
+
+Query History is maintained across sessions for each database on a per-user
+basis when running in Query Tool mode. In View/Edit Data mode, history is not
+retained. By default, the last 20 queries are stored for each database. This
+can be adjusted in ``config_local.py`` or ``config_system.py`` (see the
+:ref:`config.py <config_py>` documentation) by overriding the
+`MAX_QUERY_HIST_STORED` value. See the :ref:`Deployment <deployment>` section
+for more information.
+
 The Data Output Panel
 *********************
 
@@ -288,44 +327,71 @@ particular channel.
     :alt: Query tool notifications panel
     :align: center
 
-Query History Panel
-*******************
+Graph Visualiser Panel
+**********************
 
-Use the *Query History* tab to review activity for the current session:
+Click the Graph Visualiser button in the toolbar to generate the *Graphs* of
+the query results. The graph visualiser currently supports only Line Charts,
+but more charts (Bar, Stacked Bar, Pie...) will be added soon.
 
-.. image:: images/query_output_history.png
-    :alt: Query tool history panel
+.. image:: images/query_graph_visualiser_panel.png
+    :alt: Query tool graph visualiser panel
     :align: center
 
-The Query History tab displays information about recent commands:
+* X Axis
 
-* The date and time that a query was invoked.
-* The text of the query.
-* The number of rows returned by the query.
-* The amount of time it took the server to process the query and return a
-  result set.
-* Messages returned by the server (not noted on the *Messages* tab).
-* The source of the query (indicated by icons corresponding to the toolbar).
+Choose the column whose value you wish to display on X-axis from the *X Axis*
+dropdown. Select the *<Row Number>* option to use the number of rows as labels
+on the X-axis.
 
-You can show or hide the queries generated internally by pgAdmin (during
-'View/Edit Data' or 'Save Data' operations).
+.. image:: images/query_graph_xaxis.png
+    :alt: Query tool graph visualiser xaxis
+    :align: center
 
-You can remove a single query by selecting it and clicking on the *Remove*
-button. If you would like to remove all of the histories from the
-*Query History* tab, then click on the *Remove All* button.
+* Y Axis
 
-By using the *Copy* button, you can copy a particular query to the clipboard,
-and with the *Copy to Query Editor* button, you can copy a specific query to
-the Query Editor tab. During this operation, all existing content in the
-Query Editor is erased.
+Choose the columns whose value you wish to display on Y-axis from the *Y Axis*
+dropdown. Users can choose multiple columns. Choose the *<Select All>* option
+from the drop-down menu to select all the columns.
 
-Query History is maintained across sessions for each database on a per-user
-basis when running in Query Tool mode. In View/Edit Data mode, history is not
-retained. By default, the last 20 queries are stored for each database. This
-can be adjusted in ``config_local.py`` or ``config_system.py`` (see the
-:ref:`config.py <config_py>` documentation) by overriding the
-`MAX_QUERY_HIST_STORED` value. See the :ref:`Deployment <deployment>` section
-for more information.
+.. image:: images/query_graph_yaxis.png
+    :alt: Query tool graph visualiser yaxis
+    :align: center
+
+* Graph Type
+
+Choose the type of the graph that you would like to generate. Currently only
+*Line Charts* option is there, but more charts will be added soon.
+
+.. image:: images/query_graph_type.png
+    :alt: Query tool graph visualiser graph type
+    :align: center
+
+* Download and Zoom button
+
+Zooming is performed by clicking and selecting an area over the chart with the
+mouse. The *Zoom to original* button will bring you back to the original zoom
+level.
+
+Click the *Download* button on the button bar to download the chart.
+
+.. image:: images/query_graph_toolbar.png
+    :alt: Query tool graph visualiser toolbar
+    :align: center
+
+Line Chart
+==========
+
+The *Line Chart* can be generated by selecting the X-axis and the Y-axis and
+clicking on the 'Generate' button. Below is an example of a chart of employee
+names and their salaries.
+
+.. image:: images/query_line_chart.png
+    :alt: Query tool graph visualiser line chart
+    :align: center
+
+Set *Use different data point styles?* option to true in the :ref:`preferences`,
+to show data points in a different style on each graph lines.
 
 Connection Status
 *****************
@@ -382,6 +448,6 @@ The server will prompt you for confirmation to delete the macro.
 
 To execute a macro, simply select the appropriate shortcut keys, or select it from the *Macros* menu.
 
-.. image:: images/query_tool_macros_execution.png
+.. image:: images/query_output_data.png
    :alt: Query Tool Macros Execution
    :align: center

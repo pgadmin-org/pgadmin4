@@ -879,7 +879,7 @@ export const InputSelect = forwardRef(({
   const onChangeOption = useCallback((selectVal) => {
     if (_.isArray(selectVal)) {
       // Check if select all option is selected
-      if (!_.isUndefined(selectVal.find(x => x.label === 'Select All'))) {
+      if (!_.isUndefined(selectVal.find(x => x.label === '<Select All>'))) {
         selectVal = filteredOptions;
       }
       /* If multi select options need to be in some format by UI, use formatter */
@@ -905,7 +905,7 @@ export const InputSelect = forwardRef(({
     openMenuOnClick: !readonly,
     onChange: onChangeOption,
     isLoading: isLoading,
-    options: controlProps.allowSelectAll ? [{ label: gettext('Select All'), value: '*' }, ...filteredOptions] : filteredOptions,
+    options: controlProps.allowSelectAll ? [{ label: gettext('<Select All>'), value: '*' }, ...filteredOptions] : filteredOptions,
     value: realValue,
     menuPortalTarget: document.body,
     styles: styles,

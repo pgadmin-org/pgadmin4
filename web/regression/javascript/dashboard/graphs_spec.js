@@ -2,26 +2,29 @@ import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import {mount} from 'enzyme';
 import '../helper/enzyme.helper';
+import { DATA_POINT_SIZE } from 'sources/chartjs';
 
-import Graphs, {GraphsWrapper, X_AXIS_LENGTH, POINT_SIZE, transformData,
+import Graphs, {GraphsWrapper, X_AXIS_LENGTH, transformData,
   getStatsUrl, statsReducer} from '../../../pgadmin/dashboard/static/js/Graphs';
 
 describe('Graphs.js', ()=>{
   it('transformData', ()=>{
-    expect(transformData({'Label1': [], 'Label2': []}, 1)).toEqual({
+    expect(transformData({'Label1': [], 'Label2': []}, 1, false)).toEqual({
       labels: [...Array(X_AXIS_LENGTH).keys()],
       datasets: [{
         label: 'Label1',
         data: [],
         borderColor: '#00BCD4',
         backgroundColor: '#00BCD4',
-        pointHitRadius: POINT_SIZE,
+        pointHitRadius: DATA_POINT_SIZE,
+        pointStyle: 'circle',
       },{
         label: 'Label2',
         data: [],
         borderColor: '#9CCC65',
         backgroundColor: '#9CCC65',
-        pointHitRadius: POINT_SIZE,
+        pointHitRadius: DATA_POINT_SIZE,
+        pointStyle: 'circle',
       }],
       refreshRate: 1,
     });

@@ -14,6 +14,7 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import PlaylistAddRoundedIcon from '@material-ui/icons/PlaylistAddRounded';
 import FileCopyRoundedIcon from '@material-ui/icons/FileCopyRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import TimelineRoundedIcon from '@material-ui/icons/TimelineRounded';
 import { PasteIcon, SaveDataIcon } from '../../../../../../static/js/components/ExternalIcon';
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import {QUERY_TOOL_EVENTS} from '../QueryToolConstants';
@@ -81,6 +82,9 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
   }, []);
   const downloadResult = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS);
+  }, []);
+  const showGraphVisualiser = useCallback(()=>{
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_GRAPH_VISUALISER);
   }, []);
 
   const openMenu = useCallback((e)=>{
@@ -157,6 +161,10 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
           <PgIconButton title={gettext('Save results to file')} icon={<GetAppRoundedIcon />}
             onClick={downloadResult} shortcut={queryToolPref.download_results}
             disabled={buttonsDisabled['save-result']} />
+        </PgButtonGroup>
+        <PgButtonGroup size="small">
+          <PgIconButton title={gettext('Graph Visualiser')} icon={<TimelineRoundedIcon />}
+            onClick={showGraphVisualiser} disabled={buttonsDisabled['save-result']} />
         </PgButtonGroup>
       </Box>
       <PgMenu

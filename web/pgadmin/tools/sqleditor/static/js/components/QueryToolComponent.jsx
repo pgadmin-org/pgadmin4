@@ -84,7 +84,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   const containerRef = React.useRef(null);
   const [qtState, _setQtState] = useState({
     preferences: {
-      browser: {}, sqleditor: {},
+      browser: {}, sqleditor: {}, graphs: {}, misc: {},
     },
     is_new_tab: window.location == window.parent?.location,
     current_file: null,
@@ -217,6 +217,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     setQtState({preferences: {
       browser: pgWindow.pgAdmin.Browser.get_preferences_for_module('browser'),
       sqleditor: pgWindow.pgAdmin.Browser.get_preferences_for_module('sqleditor'),
+      graphs: pgWindow.pgAdmin.Browser.get_preferences_for_module('graphs'),
+      misc: pgWindow.pgAdmin.Browser.get_preferences_for_module('misc'),
     }});
   }, []);
 
@@ -309,6 +311,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
     reflectPreferences();
     pgWindow.pgAdmin.Browser.onPreferencesChange('sqleditor', function() {
+      reflectPreferences();
+    });
+    pgWindow.pgAdmin.Browser.onPreferencesChange('graphs', function() {
       reflectPreferences();
     });
 

@@ -68,6 +68,7 @@ export const QUERY_TOOL_EVENTS = {
 
   RESET_LAYOUT: 'RESET_LAYOUT',
   FORCE_CLOSE_PANEL: 'FORCE_CLOSE_PANEL',
+  RESET_GRAPH_VISUALISER: 'RESET_GRAPH_VISUALISER',
 };
 
 export const CONNECTION_STATUS = {
@@ -95,4 +96,5 @@ export const PANELS = {
   GEOMETRY: 'id-geometry',
   NOTIFICATIONS: 'id-notifications',
   HISTORY: 'id-history',
+  GRAPH_VISUALISER: 'id-graph-visualiser',
 };
