@@ -1384,7 +1384,7 @@ def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=50):
                 raise WebDriverException(exception_msg)
 
 
-def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
+def get_remote_webdriver(hub_url, browser, browser_ver, test_name, url_client):
     """
     This functions returns remote web-driver instance created in selenoid
     machine.
@@ -1421,6 +1421,8 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
     elif browser == 'chrome':
         options = Options()
         options.add_argument("--window-size=1280,1024")
+        options.add_argument(
+            '--unsafely-treat-insecure-origin-as-secure=' + url_client)
         desired_capabilities["browserName"] = "chrome"
         driver_local = webdriver.Remote(
             command_executor=hub_url,

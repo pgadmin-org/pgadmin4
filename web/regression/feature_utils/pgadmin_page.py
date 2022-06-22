@@ -39,6 +39,7 @@ class PgadminPage:
 
     # pgAdmin related methods
     def login_to_app(self, user_detail):
+        self.driver.switch_to.default_content()
         if not (self.check_if_element_exist_by_xpath(
                 '//a[@id="navbar-user"]', 1)):
             user_edt_box_el = self.driver.find_element_by_name('email')
@@ -253,11 +254,14 @@ class PgadminPage:
                 css_selector_of_option)
             if menu_option.get_attribute('data-checked') == 'false':
                 while retry > 0:
-                    menu_option.click()
-                    time.sleep(0.2)
-                    if menu_option.get_attribute('data-checked') == 'true':
-                        break
-                    else:
+                    try:
+                        menu_option.click()
+                        time.sleep(0.2)
+                        if menu_option.get_attribute('data-checked') == 'true':
+                            break
+                        else:
+                            retry -= 1
+                    except Exception:
                         retry -= 1
 
         if option == 'auto_commit':
@@ -618,6 +622,7 @@ class PgadminPage:
             database_node = \
                 self.check_if_element_exists_with_scroll(database_node_xpath)
             if database_node:
+                database_node.click()
                 self.driver.execute_script(
                     self.js_executor_scrollintoview_arg, database_node)
                 if self.check_if_element_exist_by_xpath(

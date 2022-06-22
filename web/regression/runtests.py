@@ -601,7 +601,8 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
                         test_utils.get_remote_webdriver(hub_url,
                                                         name_of_browser,
                                                         version_of_browser,
-                                                        ser['name'])
+                                                        ser['name'],
+                                                        url_client)
                     # Launch client url in browser
                     test_utils.launch_url_in_browser(
                         driver_object, url_client, timeout=60)
@@ -659,7 +660,8 @@ def run_sequential_tests(url_client, servers_details, sequential_tests_lists,
         driver_object = test_utils.get_remote_webdriver(hub_url,
                                                         name_of_browser,
                                                         version_of_browser,
-                                                        "Sequential_Tests")
+                                                        "Sequential_Tests",
+                                                        url_client)
 
         # Launch client url in browser
         test_utils.launch_url_in_browser(driver_object, url_client)

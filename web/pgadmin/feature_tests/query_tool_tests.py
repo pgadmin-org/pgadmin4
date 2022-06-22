@@ -118,9 +118,9 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # this will set focus to correct iframe.
         self.page.fill_codemirror_area_with('')
 
-        explain_op = self.page.find_by_css_selector(
-            QueryToolLocators.btn_explain_options_dropdown)
-        explain_op.click()
+        self.page.retry_click(
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_verbose,
@@ -261,16 +261,14 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        explain_op = self.page.find_by_css_selector(
-            QueryToolLocators.btn_explain_options_dropdown)
-        explain_op.click()
+        self.page.retry_click(
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_verbose,
                    QueryToolLocators.btn_explain_costs):
             self.page.find_by_css_selector(op).click()
-
-        explain_op.click()
 
         self.page.find_by_css_selector(
             QueryToolLocators.btn_explain).click()
@@ -299,16 +297,14 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        explain_op = self.page.find_by_css_selector(
-            QueryToolLocators.btn_explain_options_dropdown)
-        explain_op.click()
+        self.page.retry_click(
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_buffers,
                    QueryToolLocators.btn_explain_timing):
             self.page.find_by_css_selector(op).click()
-
-        explain_op.click()
 
         self.page.find_by_css_selector(
             QueryToolLocators.btn_explain_analyze).click()
@@ -685,9 +681,10 @@ SELECT 1, pg_sleep(300)"""
 
         self.page.fill_codemirror_area_with(
             "SELECT count(*) FROM pg_catalog.pg_class;")
-        explain_op = self.page.find_by_css_selector(
-            QueryToolLocators.btn_explain_options_dropdown)
-        explain_op.click()
+
+        self.page.retry_click(
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
+            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
 
         # disable Explain options and only enable COST option
         for op in (QueryToolLocators.btn_explain_verbose,
@@ -702,9 +699,7 @@ SELECT 1, pg_sleep(300)"""
             QueryToolLocators.btn_explain_costs)
         cost_btn.click()
 
-        # close explain options
-        explain_op.click()
-
+        # close explain options not required
         self.page.find_by_css_selector(
             QueryToolLocators.btn_explain_analyze).click()
 
