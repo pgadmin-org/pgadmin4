@@ -1089,11 +1089,11 @@ def fetch(trans_id, fetch_all=None):
 
 
 @blueprint.route(
-    '/fetch_all_from_start/<int:trans_id>', methods=["GET"],
+    '/fetch_all_from_start/<int:trans_id>/<int:limit>', methods=["GET"],
     endpoint='fetch_all_from_start'
 )
 @login_required
-def fetch_all_from_start(trans_id):
+def fetch_all_from_start(trans_id, limit=-1):
     """
     This function is used to fetch all the records from start and reset
     the cursor back to it's previous position.
@@ -1111,7 +1111,7 @@ def fetch_all_from_start(trans_id):
         # Reset the cursor to start to fetch all the records.
         conn.reset_cursor_at(0)
 
-        status, result = conn.async_fetchmany_2darray(-1)
+        status, result = conn.async_fetchmany_2darray(limit)
         if not status:
             status = 'Error'
         else:

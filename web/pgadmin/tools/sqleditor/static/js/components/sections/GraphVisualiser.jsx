@@ -69,12 +69,16 @@ function GenerateGraph({graphType, graphData, ...props}) {
   let showDataPoints = queryToolCtx.preferences.graphs['graph_data_points'];
   let useDiffPointStyle = queryToolCtx.preferences.graphs['use_diff_point_style'];
   let showToolTip = queryToolCtx.preferences.graphs['graph_mouse_track'];
+  let lineBorderWidth = queryToolCtx.preferences.graphs['graph_line_border_width'];
 
   // Below options are used by chartjs while rendering the graph
   const options = useMemo(()=>({
     elements: {
       point: {
         radius: showDataPoints ? DATA_POINT_SIZE : 0,
+      },
+      line: {
+        borderWidth: lineBorderWidth,
       },
     },
     plugins: {
@@ -100,7 +104,7 @@ function GenerateGraph({graphType, graphData, ...props}) {
             borderWidth: 1,
             backgroundColor: 'rgba(54, 162, 235, 0.3)'
           },
-          mode: 'xy',
+          mode: 'x',
         },
       }
     },
@@ -249,12 +253,16 @@ export function GraphVisualiser({initColumns}) {
   const onGenerate = async ()=>{
     setLoaderText(gettext('Fetching all the records...'));
 
+    onResetZoom();
+
     let url = url_for('sqleditor.fetch_all_from_start', {
-      'trans_id': queryToolCtx.params.trans_id
+      'trans_id': queryToolCtx.params.trans_id,
+      'limit': queryToolCtx.preferences.sqleditor.row_limit
     });
 
     let res = await queryToolCtx.api.get(url);
 
+    setLoaderText(gettext('Rendering data points...'));
     // Set the Graph Data
     setGraphData(
       getGraphDataSet(res.data.data.result, columns, xaxis, yaxis, queryToolCtx)
@@ -265,7 +273,7 @@ export function GraphVisualiser({initColumns}) {
 
   // Reset the zoom to normal
   const onResetZoom = ()=> {
-    chartObjRef.current.resetZoom();
+    chartObjRef?.current?.resetZoom();
   };
 
   // Download button callback

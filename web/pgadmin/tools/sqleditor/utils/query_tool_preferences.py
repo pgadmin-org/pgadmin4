@@ -12,7 +12,7 @@ from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS,\
     PREF_LABEL_EDITOR, PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID,\
-    PREF_LABEL_SQL_FORMATTING
+    PREF_LABEL_SQL_FORMATTING, PREF_LABEL_GRAPH_VISUALISER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields, \
     ACCESSKEY_FIELDS as accesskey_fields
 
@@ -805,4 +805,14 @@ def register_query_tool_preferences(self):
             'Specifies whether or not to insert spaces instead of tabs '
             'when the tab key or auto-indent are used.'
         )
+    )
+
+    self.row_limit = self.preference.register(
+        'graph_visualiser', 'row_limit',
+        gettext("Row Limit"), 'integer',
+        10000, min_val=1, category_label=PREF_LABEL_GRAPH_VISUALISER,
+        help_str=gettext('This setting specifies the maximum number of rows '
+                         'that will be plotted on a chart. Increasing this '
+                         'limit may impact performance if charts are plotted '
+                         'with very high numbers of rows.')
     )

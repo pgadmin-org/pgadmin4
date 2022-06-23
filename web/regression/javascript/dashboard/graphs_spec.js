@@ -109,6 +109,7 @@ describe('Graphs.js', ()=>{
         show_graphs: true,
         graph_data_points: true,
         graph_mouse_track: true,
+        graph_line_border_width: 2
       };
 
       graphComp = mount(<Graphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} />);
@@ -137,6 +138,7 @@ describe('Graphs.js', ()=>{
         show_graphs: true,
         graph_data_points: true,
         graph_mouse_track: true,
+        graph_line_border_width: 2
       };
       graphComp.setProps({preferences: dashboardPref});
       let found = graphComp.find('[data-testid="graph-poll-delay"]');

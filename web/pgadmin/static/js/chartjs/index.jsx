@@ -47,7 +47,6 @@ const defaultOptions = {
   elements: {
     line: {
       tension: 0,
-      borderWidth: 2,
       fill: false,
     },
   },
@@ -66,7 +65,6 @@ const defaultOptions = {
       },
     },
     y: {
-      min: 0,
       ticks: {
         callback: function(label) {
           if (Math.floor(label) === label) {

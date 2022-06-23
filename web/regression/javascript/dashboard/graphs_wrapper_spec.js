@@ -34,6 +34,7 @@ describe('<GraphsWrapper /> component', ()=>{
       errorMsg={null}
       showTooltip={true}
       showDataPoints={true}
+      lineBorderWidth={2}
       isDatabase={false} />);
   });
 

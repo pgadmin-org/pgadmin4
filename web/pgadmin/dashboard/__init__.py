@@ -174,6 +174,14 @@ class DashboardModule(PgAdminModule):
                              'details')
         )
 
+        self.graph_line_border_width = self.graphs_preference.register(
+            'graphs', 'graph_line_border_width',
+            gettext("Chart line width"), 'integer',
+            1, min_val=1, max_val=10,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('Set the width of the lines on the line chart.')
+        )
+
     def get_exposed_url_endpoints(self):
         """
         Returns:

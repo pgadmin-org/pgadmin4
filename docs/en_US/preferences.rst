@@ -201,6 +201,9 @@ Expand the *Graphs* node to specify your Graphs display preferences.
     :alt: Preferences dialog dashboard graph options
     :align: center
 
+* Use the *Chart line width* field to specify the width of the lines on the
+  line chart.
+
 * When the *Show graph data points?* switch is set to *True*, data points will
   be visible on graph lines.
 
@@ -368,6 +371,16 @@ a graphical EXPLAIN.
 
 * When the *Verbose output?* switch is set to *True*, graphical explain details
   will include extended information about the query execution plan.
+
+.. image:: images/preferences_graph_visualiser.png
+    :alt: Preferences dialog sqleditor graph visualiser section
+    :align: center
+
+Use the fields on the *Graph Visualiser* panel to specify the settings
+related to graphs.
+
+* Use the *Row Limit* field to specify the maximum number of rows that will
+  be plotted on a chart.
 
 .. image:: images/preferences_sql_options.png
     :alt: Preferences dialog sqleditor options section

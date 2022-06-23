@@ -233,6 +233,7 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
           errorMsg={errorMsg}
           showTooltip={preferences['graph_mouse_track']}
           showDataPoints={preferences['graph_data_points']}
+          lineBorderWidth={preferences['graph_line_border_width']}
           isDatabase={did > 0}
         />
       }
@@ -265,6 +266,9 @@ export function GraphsWrapper(props) {
       point: {
         radius: props.showDataPoints ? DATA_POINT_SIZE : 0,
       },
+      line: {
+        borderWidth: props.lineBorderWidth,
+      },
     },
     plugins: {
       legend: {
@@ -289,8 +293,11 @@ export function GraphsWrapper(props) {
       x: {
         reverse: true,
       },
+      y: {
+        min: 0,
+      }
     },
-  }), [props.showTooltip, props.showDataPoints]);
+  }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
   const updateOptions = useMemo(()=>({duration: 0}), []);
 
   const onInitCallback = useCallback(
@@ -353,5 +360,6 @@ GraphsWrapper.propTypes = {
   errorMsg: PropTypes.string,
   showTooltip: PropTypes.bool.isRequired,
   showDataPoints: PropTypes.bool.isRequired,
+  lineBorderWidth: PropTypes.number.isRequired,
   isDatabase: PropTypes.bool.isRequired,
 };
