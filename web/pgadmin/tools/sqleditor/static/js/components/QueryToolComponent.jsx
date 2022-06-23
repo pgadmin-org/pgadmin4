@@ -346,6 +346,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   }, []);
 
   useEffect(()=>{
+    const closeConn = ()=>{
+      api.delete(
+        url_for('sqleditor.close', {
+          'trans_id': qtState.params.trans_id,
+        })
+      );
+    };
+    window.addEventListener('unload', closeConn);
+
     const pushHistory = (h)=>{
       api.post(
         url_for('sqleditor.add_query_history', {
@@ -355,7 +364,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       ).catch((error)=>{console.error(error);});
     };
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
-    return ()=>{eventBus.current.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);};
+    return ()=>{
+      eventBus.current.deregisterListener(QUERY_TOOL_EVENTS.PUSH_HISTORY, pushHistory);
+      window.removeEventListener('unload', closeConn);
+    };
   }, [qtState.params.trans_id]);
 
 

@@ -42,21 +42,6 @@
                 window.pgAdmin.Tools.SQLEditor.loadComponent(
                     document.getElementById('sqleditor-container'), {{ params|safe }});
 
-                if(window.opener) {
-                    $(window).on('unload', function(ev) {
-                        $.ajax({
-                            method: 'DELETE',
-                            url: '{{close_url}}'
-                        });
-                    });
-                } else {
-                    $(window).on('beforeunload', function(ev) {
-                        $.ajax({
-                            method: 'DELETE',
-                            url: '{{close_url}}'
-                        });
-                    });
-                }
             }, function() {
                 console.log(arguments);
             });

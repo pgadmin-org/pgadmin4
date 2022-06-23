@@ -288,16 +288,6 @@ export default class SQLEditor {
     panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, _.unescape(panel_title));
     queryToolPanel.focus();
 
-    // Listen on the panel closed event.
-    if (queryToolPanel.isVisible()) {
-      queryToolPanel.on(wcDocker.EVENT.CLOSED, function() {
-        $.ajax({
-          url: closeUrl,
-          method: 'DELETE',
-        });
-      });
-    }
-
     queryToolPanel.on(wcDocker.EVENT.VISIBILITY_CHANGED, function() {
       queryToolPanel.trigger(wcDocker.EVENT.RESIZED);
     });
