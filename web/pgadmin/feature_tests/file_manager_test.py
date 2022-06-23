@@ -100,8 +100,8 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)))
 
-        table = self.page.driver.find_element_by_css_selector(
-            QueryToolLocators.select_file_content_css)
+        table = self.page.driver.find_element(
+            By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)
 
         retry_count = 0
         while retry_count < 5:

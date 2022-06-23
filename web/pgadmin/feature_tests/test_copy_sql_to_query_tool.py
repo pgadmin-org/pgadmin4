@@ -128,7 +128,6 @@ class CopySQLFeatureTest(BaseFeatureTest):
         sql_editor = self.page.find_by_xpath(
             NavMenuLocators.specified_preference_tree_node.format(
                 specified_preference_tree_node_name))
-        print(sql_editor)
         sql_editor.click()
         if self.page.find_by_xpath(
             NavMenuLocators.specified_pref_node_exp_status.
@@ -139,7 +138,6 @@ class CopySQLFeatureTest(BaseFeatureTest):
         option_node = self.page.find_by_xpath(
             "//*[@id='treeContainer']//div//span[text()="
             "'Results grid']//preceding::span[text()='Options']")
-        print(option_node)
         # self.page.check_if_element_exists_with_scroll(option_node)
         self.page.driver.execute_script("arguments[0].scrollIntoView(false)",
                                         option_node)

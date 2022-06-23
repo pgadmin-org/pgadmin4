@@ -357,8 +357,11 @@ def create_debug_function(server, db_name, function_name="test_func"):
         old_isolation_level = connection.isolation_level
         connection.set_isolation_level(0)
         pg_cursor = connection.cursor()
+        try:
+            pg_cursor.execute('''CREATE EXTENSION pldbgapi;''')
+        except Exception as e:
+            pass
         pg_cursor.execute('''
-            CREATE EXTENSION pldbgapi;
             CREATE OR REPLACE FUNCTION public."%s"()
               RETURNS text
                 LANGUAGE 'plpgsql'

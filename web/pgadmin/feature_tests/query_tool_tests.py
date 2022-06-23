@@ -41,10 +41,10 @@ class QueryToolFeatureTest(BaseFeatureTest):
                                        self.test_db)
         self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
-        self._reset_options()
         self.wait = WebDriverWait(self.page.driver, 10)
 
     def runTest(self):
+        self._reset_options()
         skip_warning = "Skipped."
         # on demand result set on scrolling.
         print("\nOn demand query result... ",
@@ -260,10 +260,11 @@ SELECT generate_series(1, {}) as id1, 'dummy' as id2""".format(
 SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
-
-        self.page.retry_click(
+        time.sleep(0.5)
+        explain_op_btn_click = self.page.retry_click(
             (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
             (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
+        self.assertTrue(explain_op_btn_click, 'Explain Op button click failed')
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_verbose,
@@ -297,9 +298,10 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        self.page.retry_click(
+        explain_op_btn_click = self.page.retry_click(
             (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
             (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
+        self.assertTrue(explain_op_btn_click, 'Explain Op button click failed')
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_buffers,

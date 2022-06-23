@@ -288,13 +288,17 @@ class Azure:
             _credential = InteractiveBrowserCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                cache_persistence_options=TokenCachePersistenceOptions(),
+                cache_persistence_options=TokenCachePersistenceOptions(
+                    allow_unencrypted_storage=True
+                ),
                 authentication_record=deserialized_auth_record)
         else:
             _credential = InteractiveBrowserCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                cache_persistence_options=TokenCachePersistenceOptions())
+                cache_persistence_options=TokenCachePersistenceOptions(
+                    allow_unencrypted_storage=True)
+            )
         return _credential
 
     def _get_azure_client(self, type):

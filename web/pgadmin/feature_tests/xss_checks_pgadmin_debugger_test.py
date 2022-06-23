@@ -66,13 +66,13 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         function_node.click()
 
     def _debug_function(self):
-        self.page.driver.find_element_by_link_text("Object").click()
+        self.page.driver.find_element(By.LINK_TEXT, "Object").click()
         ActionChains(
             self.page.driver
         ).move_to_element(
-            self.page.driver.find_element_by_link_text("Debugging")
+            self.page.driver.find_element(By.LINK_TEXT, "Debugging")
         ).perform()
-        self.page.driver.find_element_by_link_text("Debug").click()
+        self.page.driver.find_element(By.LINK_TEXT, "Debug").click()
 
         # We need to check if debugger plugin is installed or not
         try:
@@ -103,14 +103,14 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             )
         else:
             self.page.driver.switch_to.frame(
-                self.page.driver.find_element_by_tag_name('iframe')
+                self.page.driver.find_element(By.TAG_NAME, 'iframe')
             )
 
             wait.until(EC.presence_of_element_located(
                 (By.XPATH, "//span[contains(.,'Hello, pgAdmin4')]"))
             )
             self.page.click_element(
-                self.page.driver.find_elements_by_xpath("//button")[2]
+                self.page.driver.find_elements(By.XPATH, "//button")[2]
             )
 
             wait.until(EC.presence_of_element_located(

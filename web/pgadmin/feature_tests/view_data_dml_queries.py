@@ -231,8 +231,10 @@ CREATE TABLE public.nonintpkey
                 ActionChains(self.driver).send_keys(value). \
                     send_keys(Keys.ENTER).perform()
         elif cell_type in ['text', 'text[]', 'boolean[]']:
-            text_area_ele = self.page.find_by_css_selector(
-                QueryToolLocators.row_editor_text_area_css)
+            text_area_ele = WebDriverWait(self.driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR,
+                     QueryToolLocators.row_editor_text_area_css)))
             text_area_ele.clear()
             text_area_ele.click()
             text_area_ele.send_keys(value)
@@ -273,12 +275,12 @@ CREATE TABLE public.nonintpkey
                 ActionChains(self.driver).click(checkbox_el).perform()
 
     def _view_data_grid(self, table_name):
-        self.page.driver.find_element_by_link_text("Object").click()
+        self.page.driver.find_element(By.LINK_TEXT, "Object").click()
         ActionChains(
             self.page.driver
         ).move_to_element(
-            self.page.driver.find_element_by_link_text(
-                NavMenuLocators.view_data_link_text)
+            self.page.driver.find_element(
+                By.LINK_TEXT, NavMenuLocators.view_data_link_text)
         ).perform()
         self.page.find_by_partial_link_text("All Rows").click()
 
@@ -327,7 +329,7 @@ CREATE TABLE public.nonintpkey
             # rowindex starts with 2 and 1st colindex is rownum
             cell_xpath = CheckForViewDataTest\
                 ._get_cell_xpath(str(idx + 1), row + 1)
-            time.sleep(0.2)
+            time.sleep(0.5)
             self._update_cell(cell_xpath, data[str(idx)])
         self.page.find_by_css_selector(
             QueryToolLocators.btn_save_data).click()

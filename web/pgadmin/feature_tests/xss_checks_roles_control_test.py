@@ -69,8 +69,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         role_node.click()
 
     def _check_role_membership_control(self):
-        self.page.driver.find_element_by_link_text(
-            NavMenuLocators.object_menu_link_text).click()
+        self.page.driver.find_element(
+            By.LINK_TEXT, NavMenuLocators.object_menu_link_text).click()
         property_object = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.properties_obj_css)))
         property_object.click()

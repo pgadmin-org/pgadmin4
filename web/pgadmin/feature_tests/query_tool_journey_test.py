@@ -18,6 +18,7 @@ from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import QueryToolLocators
 import time
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class QueryToolJourneyTest(BaseFeatureTest):
@@ -98,7 +99,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_copies_rows(self):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to.frame(
-            self.page.driver.find_element_by_tag_name("iframe"))
+            self.page.driver.find_element(By.TAG_NAME, "iframe"))
 
         # row index starts with 2
         select_row = self.page.find_by_css_selector(
@@ -112,7 +113,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to.frame(
-            self.page.driver.find_element_by_tag_name("iframe"))
+            self.page.driver.find_element(By.TAG_NAME, "iframe"))
 
         scratch_pad_ele = self.page.find_by_css_selector(
             QueryToolLocators.scratch_pad_css)
@@ -127,7 +128,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_copies_columns(self):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to.frame(
-            self.page.driver.find_element_by_tag_name("iframe"))
+            self.page.driver.find_element(By.TAG_NAME, "iframe"))
 
         column_header = self.page.find_by_css_selector(
             QueryToolLocators.output_column_header_css.format('some_column'))
@@ -151,7 +152,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_history_tab(self):
         self.page.driver.switch_to.default_content()
         self.page.driver.switch_to.frame(
-            self.page.driver.find_element_by_tag_name("iframe"))
+            self.page.driver.find_element(By.TAG_NAME, "iframe"))
         self.page.clear_query_tool()
 
         editor_input = self.page.find_by_css_selector(
@@ -400,8 +401,11 @@ class QueryToolJourneyTest(BaseFeatureTest):
         ActionChains(self.driver).double_click(cell_el).perform()
         ActionChains(self.driver).send_keys(value). \
             send_keys(Keys.ENTER).perform()
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_save_data).click()
+
+        save_btn = WebDriverWait(self.driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, QueryToolLocators.btn_save_data)))
+        save_btn.click()
 
     def _insert_data_into_test_editable_table(self):
         self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
@@ -472,7 +476,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         ActionChains(self.driver).double_click(cell_el).perform()
         ActionChains(self.driver).send_keys(new_value). \
             send_keys(Keys.ENTER).perform()
-
+        time.sleep(0.5)
         # Check if the value was updated
         # Finding element again to avoid stale element reference exception
         cell_el = self.page.\
