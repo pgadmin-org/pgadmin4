@@ -35,3 +35,4 @@ Bug fixes
   | `Issue #7460 <https://redmine.postgresql.org/issues/7460>`_ -  Fixed an issue where pgAdmin stuck while creating a new index.
   | `Issue #7461 <https://redmine.postgresql.org/issues/7461>`_ -  Fixed an issue where the connection wasn't being closed when the user switched to a new connection and closed the query tool.
   | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Skip the history records if the JSON info can't be parsed instead of showing 'No history'.
+  | `Issue #7502 <https://redmine.postgresql.org/issues/7502>`_ -  Fixed an issue where an error message is displayed when creating the new database.

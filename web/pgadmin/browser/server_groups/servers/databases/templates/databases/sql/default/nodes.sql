@@ -13,7 +13,8 @@ db.oid = {{ did|qtLiteral }}::OID
 {% if did %}AND{% endif %}
 db.datname in ({{db_restrictions}})
 {% elif not did%}
-db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
+    {% if db_restrictions %} AND {%endif%}
+    db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
 {% endif %}
 
 ORDER BY datname;

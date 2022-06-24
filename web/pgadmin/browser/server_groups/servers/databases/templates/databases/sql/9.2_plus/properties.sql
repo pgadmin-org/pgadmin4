@@ -36,17 +36,20 @@ FROM pg_catalog.pg_database db
     LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (
         db.oid=descr.objoid AND descr.classoid='pg_database'::regclass
     )
-WHERE {% if did %}
-db.oid = {{ did|qtLiteral }}::OID
+WHERE
+{% if did %}
+    db.oid = {{ did|qtLiteral }}::OID
+{% else %}
+    {% if name %}
+        db.datname = {{ name|qtLiteral }}::text
+    {% endif %}
 {% endif %}
+
 {% if db_restrictions %}
-
-{% if did %}AND{% endif %}
-db.datname in ({{db_restrictions}})
-{% elif not did%}
-db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
+    {% if did or name %}AND{% endif %}
+    db.datname in ({{db_restrictions}})
+{% elif not did and not name%}
+    db.oid > {{ last_system_oid }}::OID OR db.datname IN ('postgres', 'edb')
 {% endif %}
-
-AND db.datistemplate in (false, {{show_system_objects}})
 
 ORDER BY datname;
