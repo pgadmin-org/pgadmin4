@@ -24,6 +24,8 @@ import { Rnd } from 'react-rnd';
 import { ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
 
 const ModalContext = React.createContext({});
+const MIN_HEIGHT = 190;
+const MIN_WIDTH = 500;
 
 export function useModal() {
   return React.useContext(ModalContext);
@@ -167,19 +169,22 @@ function PaperComponent(props) {
     return props.isfullscreen == 'true' ? { x: 0, y: 0 } : dialogPosition && { x: dialogPosition.x, y: dialogPosition.y };
   };
 
+  const y_position =  props.height ? (window.innerHeight/2) - (props.height/2) : (window.innerHeight/2) - (MIN_HEIGHT/2);
+  const x_position =  props.width ? (window.innerWidth/2) - (props.width/2) : (window.innerWidth/2) - (MIN_WIDTH/2);
+
   return (
     props.isresizeable == 'true' ?
       <Rnd
         size={props.isfullscreen == 'true' && { width: '100%', height: '100%' }}
         className={clsx(classes.dialog, props.isfullscreen == 'true' ? classes.fullScreen : '')}
         default={{
-          x: 300,
-          y: 100,
+          x: x_position,
+          y: y_position,
           ...(props.width && { width: props.width }),
           ...(props.height && { height: props.height }),
         }}
-        {...(props.width && { minWidth: 500 })}
-        {...(props.width && { minHeight: 190 })}
+        {...(props.width && { minWidth: MIN_WIDTH })}
+        {...(props.height && { minHeight: MIN_HEIGHT })}
         bounds="window"
         enableResizing={setEnableResizing()}
         position={setConditionalPosition()}
