@@ -64,11 +64,15 @@ boto3                                                            1.20.54        
 botocore                                                         1.23.54          Apache License 2.0                   https://github.com/boto/botocore
 urllib3                                                          1.26.9           MIT                                  https://urllib3.readthedocs.io/
 Werkzeug                                                         2.0.3            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
+azure-mgmt-rdbms                                                 10.1.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
+azure-mgmt-resource                                              21.0.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
+azure-mgmt-subscription                                          3.0.0            MIT License                          https://github.com/Azure/azure-sdk-for-python
+azure-identity                                                   1.9.0            MIT License                          https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity
 
 NOTE: This report was generated using Python 3.10. Full information may not be
 shown for Python modules that are not required with this version.
 
-41 dependencies listed.
+45 dependencies listed.
 
 Javascript Dependencies
 =======================
@@ -119,8 +123,8 @@ Name                                                             Version        
 @babel/plugin-transform-react-pure-annotations                   7.16.7           MIT                                  https://github.com/babel/babel.git
 @babel/preset-react                                              7.13.13          MIT                                  https://github.com/babel/babel.git
 @babel/runtime                                                   7.16.0           MIT                                  https://github.com/babel/babel.git
-@babel/runtime                                                   7.17.8           MIT                                  https://github.com/babel/babel.git
 @babel/runtime                                                   7.17.0           MIT                                  https://github.com/babel/babel.git
+@babel/runtime                                                   7.17.8           MIT                                  https://github.com/babel/babel.git
 @babel/template                                                  7.16.7           MIT                                  https://github.com/babel/babel.git
 @babel/template                                                  7.14.5           MIT                                  https://github.com/babel/babel.git
 @babel/traverse                                                  7.17.0           MIT                                  https://github.com/babel/babel.git
@@ -129,17 +133,14 @@ Name                                                             Version        
 @babel/types                                                     7.15.4           MIT                                  https://github.com/babel/babel.git
 @date-io/core                                                    1.3.13           MIT                                  https://github.com/dmtrKovalenko/date-io
 @date-io/date-fns                                                1.3.13           MIT                                  https://github.com/dmtrKovalenko/date-io
-@emotion/cache                                                   11.7.1           MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/cache
 @emotion/cache                                                   11.5.0           MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/cache
 @emotion/hash                                                    0.8.0            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/hash
-@emotion/is-prop-valid                                           1.1.2            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/is-prop-valid
 @emotion/is-prop-valid                                           0.8.8            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/is-prop-valid
 @emotion/memoize                                                 0.7.5            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/memoize
 @emotion/memoize                                                 0.7.4            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/memoize
 @emotion/react                                                   11.5.0           MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/react
 @emotion/serialize                                               1.0.2            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/serialize
 @emotion/sheet                                                   1.0.3            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/sheet
-@emotion/sheet                                                   1.1.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/sheet
 @emotion/stylis                                                  0.8.5            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/stylis
 @emotion/unitless                                                0.7.5            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/unitless
 @emotion/utils                                                   1.0.0            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/utils
@@ -153,18 +154,9 @@ Name                                                             Version        
 @material-ui/system                                              4.12.1           MIT                                  https://github.com/mui-org/material-ui.git
 @material-ui/types                                               5.1.0            MIT                                  https://github.com/mui-org/material-ui.git
 @material-ui/utils                                               4.11.2           MIT                                  https://github.com/mui-org/material-ui.git
-@mui/base                                                        5.0.0-alpha.74   MIT                                  https://github.com/mui/material-ui.git
-@mui/icons-material                                              5.5.1            MIT                                  https://github.com/mui/material-ui.git
-@mui/material                                                    5.5.3            MIT                                  https://github.com/mui/material-ui.git
-@mui/private-theming                                             5.5.3            MIT                                  https://github.com/mui/material-ui.git
-@mui/styled-engine                                               5.5.2            MIT                                  https://github.com/mui/material-ui.git
-@mui/system                                                      5.5.3            MIT                                  https://github.com/mui/material-ui.git
-@mui/types                                                       7.1.3            MIT                                  https://github.com/mui/material-ui.git
-@mui/utils                                                       5.5.3            MIT                                  https://github.com/mui/material-ui.git
 @nodelib/fs.scandir                                              2.1.5            MIT                                  https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir
 @nodelib/fs.stat                                                 2.0.5            MIT                                  https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat
 @nodelib/fs.walk                                                 1.2.8            MIT                                  https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk
-@popperjs/core                                                   2.11.4           MIT                                  https://github.com/popperjs/popper-core.git
 @popperjs/core                                                   2.10.2           MIT                                  https://github.com/popperjs/popper-core.git
 @projectstorm/geometry                                           6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-canvas-core                                  6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
@@ -187,9 +179,7 @@ Name                                                             Version        
 @types/react                                                     16.14.10         MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/react                                                     16.14.20         MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/react-dom                                                 16.9.14          MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/react-is                                                  17.0.3           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/react-transition-group                                    4.4.1            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/react-transition-group                                    4.4.4            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/scheduler                                                 0.16.2           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/styled-jsx                                                2.2.9            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 ajv                                                              8.9.0            MIT                                  https://github.com/ajv-validator/ajv.git
@@ -236,16 +226,14 @@ camelcase-keys                                                   7.0.2          
 camelize                                                         1.0.0            MIT                                  git://github.com/substack/camelize.git
 caniuse-api                                                      3.0.0            MIT                                  https://github.com/nyalab/caniuse-api.git
 chalk                                                            2.4.2            MIT                                  https://github.com/chalk/chalk.git
-chart.js                                                         2.9.4            MIT                                  https://github.com/chartjs/Chart.js.git
-chartjs-color                                                    2.4.1            MIT                                  https://github.com/chartjs/chartjs-color.git
-chartjs-color-string                                             0.6.0            MIT                                  https://github.com/chartjs/chartjs-color-string.git
+chart.js                                                         3.8.0            MIT                                  https://github.com/chartjs/Chart.js.git
+chartjs-plugin-zoom                                              1.2.1            MIT                                  https://github.com/chartjs/chartjs-plugin-zoom.git
 classnames                                                       2.3.1            MIT                                  https://github.com/JedWatson/classnames.git
 closest                                                          0.0.1            MIT                                  https://github.com/ForbesLindesay/closest.git
 clsx                                                             1.1.1            MIT                                  https://github.com/lukeed/clsx.git
 codemirror                                                       5.63.3           MIT                                  https://github.com/codemirror/CodeMirror.git
 color-convert                                                    1.9.3            MIT                                  https://github.com/Qix-/color-convert.git
 color-name                                                       1.1.3            MIT                                  git@github.com:dfcreative/color-name.git
-color-name                                                       1.1.4            MIT                                  git@github.com:colorjs/color-name.git
 colord                                                           2.9.1            MIT                                  https://github.com/omgovich/colord.git
 commander                                                        7.2.0            MIT                                  https://github.com/tj/commander.js.git
 concat-map                                                       0.0.1            MIT                                  git://github.com/substack/node-concat-map.git
@@ -265,7 +253,6 @@ cssnano-utils                                                    2.0.1          
 csso                                                             4.2.0            MIT                                  https://github.com/css/csso.git
 csstype                                                          2.6.18           MIT                                  https://github.com/frenic/csstype
 csstype                                                          3.0.9            MIT                                  https://github.com/frenic/csstype
-csstype                                                          3.0.11           MIT                                  https://github.com/frenic/csstype
 dagre                                                            0.8.5            MIT                                  https://github.com/dagrejs/dagre.git
 date-fns                                                         2.25.0           MIT                                  https://github.com/date-fns/date-fns
 debug                                                            4.3.2            MIT                                  git://github.com/visionmedia/debug.git
@@ -299,6 +286,7 @@ gensync                                                          1.0.0-beta.2   
 globals                                                          11.12.0          MIT                                  https://github.com/sindresorhus/globals.git
 globby                                                           12.2.0           MIT                                  https://github.com/sindresorhus/globby.git
 graphlib                                                         2.1.8            MIT                                  https://github.com/dagrejs/graphlib.git
+hammerjs                                                         2.0.8            MIT                                  git://github.com/hammerjs/hammer.js.git
 hard-rejection                                                   2.1.0            MIT                                  https://github.com/sindresorhus/hard-rejection.git
 has                                                              1.0.3            MIT                                  git://github.com/tarruda/has.git
 has-cors                                                         1.1.0            MIT                                  git://github.com/component/has-cors.git
@@ -386,7 +374,7 @@ nanopop                                                          2.1.0          
 node-releases                                                    2.0.1            MIT                                  https://github.com/chicoxyzzy/node-releases.git
 normalize-url                                                    6.1.0            MIT                                  https://github.com/sindresorhus/normalize-url.git
 notificar                                                        1.0.1            MIT                                  git+https://github.com/neeksandhu/notificar.git
-notistack                                                        2.0.5            MIT                                  git+https://github.com/iamhosseindhv/notistack.git
+notistack                                                        1.0.10           MIT                                  git+https://github.com/iamhosseindhv/notistack.git
 object-assign                                                    4.1.1            MIT                                  https://github.com/sindresorhus/object-assign.git
 p-limit                                                          3.1.0            MIT                                  https://github.com/sindresorhus/p-limit.git
 p-locate                                                         5.0.0            MIT                                  https://github.com/sindresorhus/p-locate.git
@@ -453,6 +441,7 @@ rc-util                                                          5.17.0         
 re-resizable                                                     6.9.1            MIT                                  https://github.com/bokuweb/react-resizable-box.git
 react                                                            16.14.0          MIT                                  git+https://github.com/facebook/react.git
 react                                                            17.0.2           MIT                                  https://github.com/facebook/react.git
+react-aspen                                                      1.2.0            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-aspen                                                      1.1.1            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-checkbox-tree                                              1.7.2            MIT                                  https://github.com/jakezatecky/react-checkbox-tree
 react-data-grid                                                  7.0.0-beta.12    MIT                                  https://github.com/adazzle/react-data-grid.git
@@ -501,7 +490,6 @@ strip-comments                                                   2.0.1          
 strip-indent                                                     4.0.0            MIT                                  https://github.com/sindresorhus/strip-indent.git
 styled-components                                                5.3.3            MIT                                  git+https://github.com/styled-components/styled-components.git
 stylehacks                                                       5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
-stylis                                                           4.0.13           MIT                                  https://github.com/thysultan/stylis.js
 stylis                                                           4.0.10           MIT                                  https://github.com/thysultan/stylis.js
 supports-color                                                   5.5.0            MIT                                  https://github.com/chalk/supports-color.git
 supports-color                                                   7.2.0            MIT                                  https://github.com/chalk/supports-color.git
@@ -610,5 +598,5 @@ tablesorter                                                      2.31.3         
 tslib                                                            2.3.0            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 
-534 dependencies listed.
+518 dependencies listed.
 
