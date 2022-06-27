@@ -14,13 +14,15 @@ from azure.mgmt.rdbms.postgresql_flexibleservers import \
 from azure.mgmt.rdbms.postgresql_flexibleservers.models import Sku, SkuTier, \
     CreateMode, Storage, Server, FirewallRule, HighAvailability
 from azure.identity import AzureCliCredential, InteractiveBrowserCredential, \
-    AuthenticationRecord, TokenCachePersistenceOptions
+    AuthenticationRecord
 from azure.mgmt.resource import ResourceManagementClient
 from azure.core.exceptions import ResourceNotFoundError
 from providers._abstract import AbsProvider
 import os
 from utils.io import debug, error, output
 from utils.misc import get_my_ip, get_random_id
+from pgadmin.misc.cloud.azure.azure_cache import load_persistent_cache, \
+    TokenCachePersistenceOptions
 
 
 class AzureProvider(AbsProvider):
@@ -36,6 +38,7 @@ class AzureProvider(AbsProvider):
         self._credentials = None
         self._authentication_record_json = None
         self._cli_credentials = None
+        self.azure_cred_cache_name = None
 
         # Get the credentials
         if 'AUTHENTICATION_RECORD_JSON' in os.environ:
@@ -54,6 +57,9 @@ class AzureProvider(AbsProvider):
 
         if 'AZURE_DATABASE_PASSWORD' in os.environ:
             self._database_pass = os.environ['AZURE_DATABASE_PASSWORD']
+
+        if 'AZURE_CRED_CACHE_NAME' in os.environ:
+            self.azure_cred_cache_name = os.environ['AZURE_CRED_CACHE_NAME']
 
     def init_args(self, parsers):
         """ Create the command line parser for this provider """
@@ -162,16 +168,19 @@ class AzureProvider(AbsProvider):
             _credential = InteractiveBrowserCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                cache_persistence_options=TokenCachePersistenceOptions(
-                    allow_unencrypted_storage=True
-                ),
+                _cache=load_persistent_cache(
+                    TokenCachePersistenceOptions(
+                        name=self.azure_cred_cache_name,
+                        allow_unencrypted_storage=True)),
                 authentication_record=deserialized_auth_record)
         else:
             _credential = InteractiveBrowserCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                cache_persistence_options=TokenCachePersistenceOptions(
-                    allow_unencrypted_storage=True)
+                _cache=load_persistent_cache(
+                    TokenCachePersistenceOptions(
+                        name=self.azure_cred_cache_name,
+                        allow_unencrypted_storage=True))
             )
         return _credential
 
@@ -185,14 +194,10 @@ class AzureProvider(AbsProvider):
         if type in self._clients:
             return self._clients[type]
 
-        if type == 'postgresql':
-            client = PostgreSQLManagementClient(self._credentials,
-                                                self._subscription_id)
-        elif type == 'resource':
-            client = ResourceManagementClient(self._credentials,
-                                              self._subscription_id)
-
-        self._clients[type] = client
+        self._clients['postgresql'] = PostgreSQLManagementClient(
+            self._credentials, self._subscription_id)
+        self._clients['resource'] = ResourceManagementClient(
+            self._credentials, self._subscription_id)
 
         return self._clients[type]
 

@@ -112,6 +112,22 @@ def create_app_data_directory(config):
                 config.APP_VERSION))
         exit(1)
 
+    # Create Azure Credential Cache directory (if not present).
+    try:
+        _create_directory_if_not_exists(config.AZURE_CREDENTIAL_CACHE_DIR)
+    except PermissionError as e:
+        print(FAILED_CREATE_DIR.format(config.AZURE_CREDENTIAL_CACHE_DIR, e))
+        print(
+            "HINT   : Create the directory {}, ensure it is writable by\n"
+            "'{}', and try again, or, create a config_local.py file\n"
+            " and override the AZURE_CREDENTIAL_CACHE_DIR setting per\n"
+            " https://www.pgadmin.org/docs/pgadmin4/{}/config_py.html".
+            format(
+                config.AZURE_CREDENTIAL_CACHE_DIR,
+                getpass.getuser(),
+                config.APP_VERSION))
+        exit(1)
+
     # Create Kerberos Credential Cache directory (if not present).
     if config.SERVER_MODE and KERBEROS in config.AUTHENTICATION_SOURCES:
         try:

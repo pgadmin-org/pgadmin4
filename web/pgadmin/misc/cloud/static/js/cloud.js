@@ -125,7 +125,7 @@ define('pgadmin.misc.cloud', [
             hooks: {
               // Triggered when the dialog is closed
               onclose: function () {
-                if(event.target instanceof Object){
+                if(event.target instanceof Object && event.target.className == 'ajs-close'){
                   const axiosApi = getApiInstance();
                   let _url = url_for('cloud.clear_cloud_session');
                   axiosApi.post(_url)

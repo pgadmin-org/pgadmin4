@@ -8,6 +8,9 @@
 # ##########################################################################
 
 # Azure implementation
+import random
+
+import config
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
@@ -15,12 +18,16 @@ from pgadmin.utils import PgAdminModule
 from flask_security import login_required
 import simplejson as json
 from flask import session, current_app, request
+from flask_login import current_user
 from config import root
+from .azure_cache import load_persistent_cache, TokenCachePersistenceOptions
+import os
+
 
 from azure.mgmt.rdbms.postgresql_flexibleservers import \
     PostgreSQLManagementClient
-from azure.identity import AzureCliCredential, InteractiveBrowserCredential, \
-    TokenCachePersistenceOptions, AuthenticationRecord
+from azure.identity import AzureCliCredential, InteractiveBrowserCredential,\
+    AuthenticationRecord
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.subscription import SubscriptionClient
 from azure.mgmt.rdbms.postgresql_flexibleservers.models import \
@@ -239,6 +246,8 @@ class Azure:
         self.subscription_id = None
         self._availability_zone = None
         self._available_capabilities_list = []
+        self.cache_name = None
+        self.cache_name = current_user.username + "_msal.cache"
 
     ##########################################################################
     # Azure Helper functions
@@ -250,6 +259,7 @@ class Azure:
         :return: True if valid credentials else false
         """
         status, identity = self._get_azure_credentials()
+        session['azure']['azure_cache_file_name'] = self.cache_name
         error = ''
         if not status:
             error = identity
@@ -288,16 +298,18 @@ class Azure:
             _credential = InteractiveBrowserCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                cache_persistence_options=TokenCachePersistenceOptions(
-                    allow_unencrypted_storage=True
-                ),
+                _cache=load_persistent_cache(
+                    TokenCachePersistenceOptions(
+                        name=self.cache_name,
+                        allow_unencrypted_storage=True)),
                 authentication_record=deserialized_auth_record)
         else:
             _credential = InteractiveBrowserCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                cache_persistence_options=TokenCachePersistenceOptions(
-                    allow_unencrypted_storage=True)
+                _cache=load_persistent_cache(TokenCachePersistenceOptions(
+                    name=self.cache_name,
+                    allow_unencrypted_storage=True))
             )
         return _credential
 
@@ -672,6 +684,7 @@ def deploy_on_azure(data):
         azure = session['azure']['azure_obj']
         env['AZURE_SUBSCRIPTION_ID'] = azure.subscription_id
         env['AUTH_TYPE'] = data['secret']['auth_type']
+        env['AZURE_CRED_CACHE_NAME'] = azure.cache_name
         if azure.authentication_record_json is not None:
             env['AUTHENTICATION_RECORD_JSON'] = \
                 azure.authentication_record_json
@@ -684,14 +697,20 @@ def deploy_on_azure(data):
         p.set_env_variables(None, env=env)
         p.update_server_id(p.id, sid)
         p.start()
-        del session['azure']['azure_obj']
         return True, {'label': _label, 'sid': sid}
     except Exception as e:
         current_app.logger.exception(e)
         return False, str(e)
+    finally:
+        del session['azure']['azure_obj']
 
 
 def clear_azure_session():
     """Clear session data."""
     if 'azure' in session:
+        file_name = session['azure']['azure_cache_file_name']
+        file = config.AZURE_CREDENTIAL_CACHE_DIR + '/' + file_name
+        # Delete cache file if exists
+        if os.path.exists(file):
+            os.remove(file)
         session.pop('azure')

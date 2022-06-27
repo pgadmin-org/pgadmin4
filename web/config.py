@@ -690,6 +690,12 @@ KRB_AUTO_CREATE_USER = True
 
 KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
 
+#############################################################################
+# Create local directory to store azure credential cache
+#############################################################################
+
+AZURE_CREDENTIAL_CACHE_DIR = os.path.join(DATA_DIR, 'azurecredentialcache')
+
 ##########################################################################
 # OAuth2 Configuration
 ##########################################################################
