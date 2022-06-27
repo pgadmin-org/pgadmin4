@@ -1219,7 +1219,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
             <Layout
               getLayoutInstance={(obj) => docker.current = obj}
               defaultLayout={defaultLayout}
-              layoutId="SQLEditor/Layout"
+              layoutId="Debugger/Layout"
               savedLayout={savedLayout}
             />
           </Box>
