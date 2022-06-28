@@ -246,8 +246,8 @@ class Azure:
         self.subscription_id = None
         self._availability_zone = None
         self._available_capabilities_list = []
-        self.cache_name = None
         self.cache_name = current_user.username + "_msal.cache"
+        self.azure_cache_location = config.AZURE_CREDENTIAL_CACHE_DIR + '/'
 
     ##########################################################################
     # Azure Helper functions
@@ -685,6 +685,7 @@ def deploy_on_azure(data):
         env['AZURE_SUBSCRIPTION_ID'] = azure.subscription_id
         env['AUTH_TYPE'] = data['secret']['auth_type']
         env['AZURE_CRED_CACHE_NAME'] = azure.cache_name
+        env['AZURE_CRED_CACHE_LOCATION'] = azure.azure_cache_location
         if azure.authentication_record_json is not None:
             env['AUTHENTICATION_RECORD_JSON'] = \
                 azure.authentication_record_json

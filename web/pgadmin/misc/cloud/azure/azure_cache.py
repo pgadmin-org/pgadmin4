@@ -59,6 +59,7 @@ class TokenCachePersistenceOptions(object):
         self.allow_unencrypted_storage = \
             kwargs.get("allow_unencrypted_storage", False)
         self.name = kwargs.get("name", "msal.cache")
+        self.cache_location = kwargs.get("cache_location", None)
 
 
 def load_persistent_cache(options):
@@ -68,13 +69,14 @@ def load_persistent_cache(options):
     persistence = _get_persistence(
         allow_unencrypted=options.allow_unencrypted_storage,
         account_name="MSALCache",
-        cache_name=options.name
+        cache_name=options.name,
+        cache_location=options.cache_location
     )
     return msal_extensions.PersistedTokenCache(persistence)
 
 
-def _get_persistence(allow_unencrypted, account_name, cache_name):
-    # type: (bool, str, str) -> msal_extensions.persistence.BasePersistence
+def _get_persistence(
+        allow_unencrypted, account_name, cache_name, cache_location):
     """Get an msal_extensions persistence instance for the current platform.
 
     On Windows the cache is a file protected by the Data Protection API.
@@ -88,18 +90,19 @@ def _get_persistence(allow_unencrypted, account_name, cache_name):
         current environment
     """
     import msal_extensions
-    cache_location = \
-        os.path.join(config.AZURE_CREDENTIAL_CACHE_DIR, cache_name)
+    if cache_location is None:
+        cache_location = config.AZURE_CREDENTIAL_CACHE_DIR + '/'
+    cache_file_path = os.path.join(cache_location, cache_name)
 
     if sys.platform.startswith("win") and "LOCALAPPDATA" in os.environ:
         return \
-            msal_extensions.FilePersistenceWithDataProtection(cache_location)
+            msal_extensions.FilePersistenceWithDataProtection(cache_file_path)
 
     if sys.platform.startswith("darwin"):
         # the cache uses this file's modified timestamp
         # to decide whether to reload
         return msal_extensions.KeychainPersistence(
-            cache_location,
+            cache_file_path,
             "Microsoft.Developer.IdentityService",
             account_name)
 
@@ -130,7 +133,7 @@ def _get_persistence(allow_unencrypted, account_name, cache_name):
                     " instead of raising this exception."
                 )
                 six.raise_from(error, ex)
-        return msal_extensions.FilePersistence(cache_location)
+        return msal_extensions.FilePersistence(cache_file_path)
 
     raise NotImplementedError("A persistent cache is not "
                               "available in this environment.")

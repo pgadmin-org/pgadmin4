@@ -253,6 +253,10 @@ export function GraphVisualiser({initColumns}) {
   const onGenerate = async ()=>{
     setLoaderText(gettext('Fetching all the records...'));
 
+    if (graphData?.datasets?.length > 0) {
+      onResetZoom();
+    }
+
     let url = url_for('sqleditor.fetch_all_from_start', {
       'trans_id': queryToolCtx.params.trans_id,
       'limit': queryToolCtx.preferences.sqleditor.row_limit
@@ -266,7 +270,6 @@ export function GraphVisualiser({initColumns}) {
       getGraphDataSet(res.data.data.result, columns, xaxis, yaxis, queryToolCtx)
     );
 
-    onResetZoom();
     setLoaderText('');
   };
 

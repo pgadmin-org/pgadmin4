@@ -21,6 +21,10 @@ from providers._abstract import AbsProvider
 import os
 from utils.io import debug, error, output
 from utils.misc import get_my_ip, get_random_id
+import sys
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+root = os.path.dirname(os.path.dirname(CURRENT_PATH))
+sys.path.insert(0, root)
 from pgadmin.misc.cloud.azure.azure_cache import load_persistent_cache, \
     TokenCachePersistenceOptions
 
@@ -59,7 +63,11 @@ class AzureProvider(AbsProvider):
             self._database_pass = os.environ['AZURE_DATABASE_PASSWORD']
 
         if 'AZURE_CRED_CACHE_NAME' in os.environ:
-            self.azure_cred_cache_name = os.environ['AZURE_CRED_CACHE_NAME']
+            self._azure_cred_cache_name = os.environ['AZURE_CRED_CACHE_NAME']
+
+        if 'AZURE_CRED_CACHE_LOCATION' in os.environ:
+            self._azure_cred_cache_location = \
+                os.environ['AZURE_CRED_CACHE_LOCATION']
 
     def init_args(self, parsers):
         """ Create the command line parser for this provider """
@@ -170,8 +178,9 @@ class AzureProvider(AbsProvider):
                 timeout=180,
                 _cache=load_persistent_cache(
                     TokenCachePersistenceOptions(
-                        name=self.azure_cred_cache_name,
-                        allow_unencrypted_storage=True)),
+                        name=self._azure_cred_cache_name,
+                        allow_unencrypted_storage=True,
+                        cache_location=self._azure_cred_cache_location)),
                 authentication_record=deserialized_auth_record)
         else:
             _credential = InteractiveBrowserCredential(
@@ -179,8 +188,9 @@ class AzureProvider(AbsProvider):
                 timeout=180,
                 _cache=load_persistent_cache(
                     TokenCachePersistenceOptions(
-                        name=self.azure_cred_cache_name,
-                        allow_unencrypted_storage=True))
+                        name=self._azure_cred_cache_name,
+                        allow_unencrypted_storage=True,
+                        cache_location=self._azure_cred_cache_location))
             )
         return _credential
 
