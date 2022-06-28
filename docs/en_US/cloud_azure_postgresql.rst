@@ -23,15 +23,15 @@ browser or Azure CLI. Azure CLI will use the currently logged in identity
 through the Azure CLI on the local machine. Interactive Browser will
 open a browser window to authenticate a user interactively.
 
-Use the *Azure tenant* id to speicify Azure tenant ID against which user
-is aunthenticated.
+Use the *Azure tenant* id to specify Azure tenant ID against which user
+is authenticated.
 
 Clicking the *Click here to authenticate yourself to Microsoft Azure*
 button, user will be redirected to the Microsoft Azure authentication page in a
 new browser tab if the Interactive Browser option is selected.
 Azure CLI authentication can be used only in Desktop mode.
 
-Once authentication is comepleted, click on the next button to proceed.
+Once authentication is completed, click on the next button to proceed.
 
 .. image:: images/cloud_azure_instance.png
     :alt: Cloud Deployment
@@ -52,10 +52,10 @@ details.
 * Select the location to deploy PostgreSQL instance from *Location*
   options.
 
-* Select the availablity zone in specified region to deploy PostgreSQL
+* Select the availability zone in specified region to deploy PostgreSQL
   instance from *Availability zone* options.
 
-* Use *Database version* options to speicify PostgreSQL database vetsion.
+* Use *Database version* options to specify PostgreSQL database version.
 
 * Use the *Instance class* field to allocate the computational, network, and
   memory capacity required by planned workload of this DB instance.

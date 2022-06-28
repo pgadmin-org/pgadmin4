@@ -27,6 +27,7 @@ from pgadmin.misc.cloud.biganimal import deploy_on_biganimal,\
     clear_biganimal_session
 from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
 from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
+import config
 
 # set template path for sql scripts
 MODULE_NAME = 'cloud'
@@ -135,7 +136,11 @@ def deploy_on_cloud():
     elif data['cloud'] == 'biganimal':
         status, resp = deploy_on_biganimal(data)
     elif data['cloud'] == 'azure':
-        status, resp = deploy_on_azure(data)
+        if config.SERVER_MODE:
+            status = False
+            resp = gettext('Invalid Operation for Server mode.')
+        else:
+            status, resp = deploy_on_azure(data)
     else:
         status = False
         resp = gettext('No cloud implementation.')
