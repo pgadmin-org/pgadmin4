@@ -102,6 +102,7 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
   };
 
   const destroyChart = function() {
+    chartObj.current?.resetZoom?.();
     chartObj.current && chartObj.current.destroy();
   };
 
