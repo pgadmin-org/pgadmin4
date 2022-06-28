@@ -419,6 +419,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         setQtState({
           current_file: fileName,
         });
+        isDirtyRef.current = false;
         setPanelTitle(panel, fileName, {...qtState, current_file: fileName});
       }
     };

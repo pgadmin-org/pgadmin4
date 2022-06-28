@@ -282,7 +282,6 @@ export default function Query() {
         checkTrojanSource(res.data);
         lastSavedText.current = res.data;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, isDirty());
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
