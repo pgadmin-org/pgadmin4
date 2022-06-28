@@ -10,6 +10,8 @@ To deploy a PostgreSQL server on the Azure cloud, follow the below steps.
     :alt: Cloud Deployment
     :align: center
 
+**Note:** This feature is currently available in Desktop mode only.
+
 Once you launch the tool, select the Azure PostgreSQL option.
 Click on the *Next* button to proceed further.
 
@@ -18,7 +20,7 @@ Click on the *Next* button to proceed further.
     :alt: Cloud Deployment
     :align: center
 
-In the step-2:Credentials, select authentication method either interactive
+In the Credentials dialog, select authentication method either interactive
 browser or Azure CLI. Azure CLI will use the currently logged in identity
 through the Azure CLI on the local machine. Interactive Browser will
 open a browser window to authenticate a user interactively.
