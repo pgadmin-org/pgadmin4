@@ -18,6 +18,7 @@ let startPageUrl = null;
 let serverCheckUrl = null;
 
 let serverPort = 5050;
+let appStartTime = (new Date()).getTime();
 
 let docsURLSubStrings = ['www.enterprisedb.com', 'www.postgresql.org', 'www.pgadmin.org', 'help/help'];
 
@@ -84,12 +85,15 @@ function startDesktopMode() {
   misc.writeServerLog('--------------------------------------------------------\n');
 
   // Spawn the process to start pgAdmin4 server.
+  let spawnStartTime = (new Date).getTime();
   pgadminServerProcess = spawn(path.resolve(pythonPath), ['-s', path.resolve(pgadminFile)]);
   pgadminServerProcess.on('error', function(err) {
     // Log the error into the log file if process failed to launch
     misc.writeServerLog('Failed to launch pgAdmin4. Error:');
     misc.writeServerLog(err);
   });
+  let spawnEndTime = (new Date).getTime();
+  misc.writeServerLog('Total spawn time to start the pgAdmin4 server: ' + (spawnEndTime - spawnStartTime)/1000 + ' Sec');
 
   pgadminServerProcess.stdout.setEncoding('utf8');
   pgadminServerProcess.stdout.on('data', (chunk) => {
@@ -149,6 +153,7 @@ function startDesktopMode() {
   let pingInProgress = false;
 
   // ping pgAdmin server every 1 second.
+  let pingStartTime = (new Date).getTime();
   let intervalID = setInterval(function() {
     // If ping request is already send and response is not
     // received no need to send another request.
@@ -162,6 +167,12 @@ function startDesktopMode() {
       misc.setProcessObject(pgadminServerProcess);
 
       clearInterval(intervalID);
+      let appEndTime = (new Date).getTime();
+      misc.writeServerLog('------------------------------------------');
+      misc.writeServerLog('Total time taken to ping pgAdmin4 server: ' + (appEndTime - pingStartTime)/1000 + ' Sec');
+      misc.writeServerLog('------------------------------------------');
+      misc.writeServerLog('Total launch time of pgAdmin4: ' + (appEndTime - appStartTime)/1000 + ' Sec');
+      misc.writeServerLog('------------------------------------------');
       launchPgAdminWindow();
     }).catch(() => {
       pingInProgress = false;
@@ -195,7 +206,7 @@ function startDesktopMode() {
     });
 
     pingInProgress = true;
-  }, 1000);
+  }, 250);
 }
 
 // This function is used to hide the splash screen and create/launch
