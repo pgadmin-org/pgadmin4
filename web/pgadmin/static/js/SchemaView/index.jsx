@@ -22,7 +22,6 @@ import diffArray from 'diff-arrays-of-objects';
 import _ from 'lodash';
 
 import {FormFooterMessage, MESSAGE_TYPE } from 'sources/components/FormComponents';
-import Theme from 'sources/Theme';
 import { PrimaryButton, DefaultButton, PgIconButton } from 'sources/components/Buttons';
 import Loader from 'sources/components/Loader';
 import { minMaxValidator, numberValidator, integerValidator, emptyValidator, checkUniqueCol, isEmptyString} from '../validators';
@@ -979,19 +978,15 @@ export default function SchemaView({formType, ...props}) {
   /* Switch the view based on formType */
   if(formType === 'tab') {
     return (
-      <Theme>
-        <ErrorBoundary>
-          <SchemaPropertiesView {...props}/>
-        </ErrorBoundary>
-      </Theme>
+      <ErrorBoundary>
+        <SchemaPropertiesView {...props}/>
+      </ErrorBoundary>
     );
   }
   return (
-    <Theme>
-      <ErrorBoundary>
-        <SchemaDialogView {...props}/>
-      </ErrorBoundary>
-    </Theme>
+    <ErrorBoundary>
+      <SchemaDialogView {...props}/>
+    </ErrorBoundary>
   );
 }
 

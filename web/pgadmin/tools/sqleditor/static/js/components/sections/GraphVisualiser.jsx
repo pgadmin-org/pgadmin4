@@ -10,7 +10,6 @@
 import _ from 'lodash';
 import React, { useContext, useState, useMemo, useEffect } from 'react';
 import gettext from 'sources/gettext';
-import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
 import url_for from 'sources/url_for';
 import Loader from 'sources/components/Loader';
@@ -324,54 +323,52 @@ export function GraphVisualiser({initColumns}) {
   };
 
   return (
-    <Theme>
-      <Box className={classes.mainContainer}>
-        <Loader message={loaderText} />
-        <Box className={classes.topContainer}>
+    <Box className={classes.mainContainer}>
+      <Loader message={loaderText} />
+      <Box className={classes.topContainer}>
+        <Box className={classes.displayFlex}>
           <Box className={classes.displayFlex}>
-            <Box className={classes.displayFlex}>
-              <span className={classes.spanLabel}>{gettext('X Axis')}</span>
-              <InputSelect className={classes.selectCtrl} options={xAxisOptions}
-                onChange={(v)=>setXAxis(v)} value={xaxis} optionsReloadBasis={optionsReload}/>
-            </Box>
-            <Box className={classes.displayFlex} marginLeft="auto">
-              <span className={classes.spanLabel} >{gettext('Graph Type')}</span>
-              <InputSelect className={classes.selectCtrl} controlProps={{allowClear: false}}
-                options={[
-                  {label: gettext('Line Chart'), value: 'L'},
-                  {label: gettext('Stacked Line Chart'), value: 'SL'},
-                  {label: gettext('Bar Chart'), value: 'B'},
-                  {label: gettext('Stacked Bar Chart'), value: 'SB'},
-                ]} onChange={(v)=>setGraphType(v)} value={graphType} />
-            </Box>
-            <DefaultButton onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
-              disabled={ _.isEmpty(xaxis) || yaxis.length <= 0 }>
-              {gettext('Generate')}
-            </DefaultButton>
+            <span className={classes.spanLabel}>{gettext('X Axis')}</span>
+            <InputSelect className={classes.selectCtrl} options={xAxisOptions}
+              onChange={(v)=>setXAxis(v)} value={xaxis} optionsReloadBasis={optionsReload}/>
           </Box>
-          <Box className={classes.displayFlex}>
-            <span className={classes.spanLabel}>{gettext('Y Axis')}</span>
-            <InputSelect className={classes.selectCtrl} controlProps={{'multiple': true, allowSelectAll: true}}
-              options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yaxis} optionsReloadBasis={optionsReload}/>
+          <Box className={classes.displayFlex} marginLeft="auto">
+            <span className={classes.spanLabel} >{gettext('Graph Type')}</span>
+            <InputSelect className={classes.selectCtrl} controlProps={{allowClear: false}}
+              options={[
+                {label: gettext('Line Chart'), value: 'L'},
+                {label: gettext('Stacked Line Chart'), value: 'SL'},
+                {label: gettext('Bar Chart'), value: 'B'},
+                {label: gettext('Stacked Bar Chart'), value: 'SB'},
+              ]} onChange={(v)=>setGraphType(v)} value={graphType} />
           </Box>
+          <DefaultButton onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
+            disabled={ _.isEmpty(xaxis) || yaxis.length <= 0 }>
+            {gettext('Generate')}
+          </DefaultButton>
         </Box>
-        <Box display="flex" marginLeft="3px" marginTop="3px">
-          <PgButtonGroup size="small">
-            <PgIconButton title={gettext('Zoom to original')} icon={<ZoomOutMapIcon style={{height: '1.2rem'}}/>}
-              onClick={()=>onResetZoom()} disabled={ graphData.datasets.length <= 0 }/>
-            <PgIconButton title={gettext('Download')} icon={<SaveAltIcon style={{height: '1.2rem'}}/>}
-              onClick={onDownloadGraph} disabled={ graphData.datasets.length <= 0 }/>
-          </PgButtonGroup>
-        </Box>
-        <Box ref={contentRef} className={classes.graphContainer}>
-          <Box style={{height:`${graphHeight}px`}}>
-            {useMemo(()=> <GenerateGraph graphType={graphType} graphData={graphData} onInit={(chartObj)=> {
-              chartObjRef.current = chartObj;
-            }} plugins={plugin}/>, [graphDataKey])}
-          </Box>
+        <Box className={classes.displayFlex}>
+          <span className={classes.spanLabel}>{gettext('Y Axis')}</span>
+          <InputSelect className={classes.selectCtrl} controlProps={{'multiple': true, allowSelectAll: true}}
+            options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yaxis} optionsReloadBasis={optionsReload}/>
         </Box>
       </Box>
-    </Theme>
+      <Box display="flex" marginLeft="3px" marginTop="3px">
+        <PgButtonGroup size="small">
+          <PgIconButton title={gettext('Zoom to original')} icon={<ZoomOutMapIcon style={{height: '1.2rem'}}/>}
+            onClick={()=>onResetZoom()} disabled={ graphData.datasets.length <= 0 }/>
+          <PgIconButton title={gettext('Download')} icon={<SaveAltIcon style={{height: '1.2rem'}}/>}
+            onClick={onDownloadGraph} disabled={ graphData.datasets.length <= 0 }/>
+        </PgButtonGroup>
+      </Box>
+      <Box ref={contentRef} className={classes.graphContainer}>
+        <Box style={{height:`${graphHeight}px`}}>
+          {useMemo(()=> <GenerateGraph graphType={graphType} graphData={graphData} onInit={(chartObj)=> {
+            chartObjRef.current = chartObj;
+          }} plugins={plugin}/>, [graphDataKey])}
+        </Box>
+      </Box>
+    </Box>
   );
 }
 GraphVisualiser.propTypes = {

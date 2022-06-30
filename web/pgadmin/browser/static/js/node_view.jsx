@@ -18,6 +18,7 @@ import { generateNodeUrl } from './node_ajax';
 import Notify from '../../../static/js/helpers/Notifier';
 import gettext from 'sources/gettext';
 import 'wcdocker';
+import Theme from '../../../static/js/Theme';
 
 /* The entry point for rendering React based view in properties, called in node.js */
 export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, formType, container, containerPanel, onEdit, onSave) {
@@ -204,24 +205,26 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
 
   /* Fire at will, mount the DOM */
   ReactDOM.render(
-    <SchemaView
-      formType={formType}
-      getInitData={initData}
-      schema={schema}
-      viewHelperProps={viewHelperProps}
-      onSave={onSaveClick}
-      onClose={()=>containerPanel.close()}
-      onHelp={onHelp}
-      onEdit={onEdit}
-      onDataChange={(dataChanged)=>{
-        isDirty = dataChanged;
-      }}
-      confirmOnCloseReset={confirmOnCloseReset}
-      hasSQL={nodeObj.hasSQL && (actionType === 'create' || actionType === 'edit')}
-      getSQLValue={getSQLValue}
-      disableSqlHelp={nodeObj.sqlAlterHelp == '' && nodeObj.sqlCreateHelp == '' && !nodeObj.epasHelp}
-      disableDialogHelp={nodeObj.dialogHelp == undefined || nodeObj.dialogHelp == ''}
-    />, container);
+    <Theme>
+      <SchemaView
+        formType={formType}
+        getInitData={initData}
+        schema={schema}
+        viewHelperProps={viewHelperProps}
+        onSave={onSaveClick}
+        onClose={()=>containerPanel.close()}
+        onHelp={onHelp}
+        onEdit={onEdit}
+        onDataChange={(dataChanged)=>{
+          isDirty = dataChanged;
+        }}
+        confirmOnCloseReset={confirmOnCloseReset}
+        hasSQL={nodeObj.hasSQL && (actionType === 'create' || actionType === 'edit')}
+        getSQLValue={getSQLValue}
+        disableSqlHelp={nodeObj.sqlAlterHelp == '' && nodeObj.sqlCreateHelp == '' && !nodeObj.epasHelp}
+        disableDialogHelp={nodeObj.dialogHelp == undefined || nodeObj.dialogHelp == ''}
+      />
+    </Theme>, container);
 }
 
 /* When switching from normal node to collection node, clean up the React mounted DOM */
