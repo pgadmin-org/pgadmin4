@@ -21,8 +21,8 @@ import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import { InputSelect } from '../../../../../../static/js/components/FormComponents';
 import { DefaultButton, PgButtonGroup, PgIconButton} from '../../../../../../static/js/components/Buttons';
-import { LineChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
-  CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH} from 'sources/chartjs';
+import { LineChart, BarChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
+  CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, ConvertHexToRGBA} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
 import { LayoutHelper } from '../../../../../../static/js/helpers/Layout';
@@ -72,20 +72,12 @@ function GenerateGraph({graphType, graphData, ...props}) {
   let lineBorderWidth = queryToolCtx.preferences.graphs['graph_line_border_width'];
 
   // Below options are used by chartjs while rendering the graph
-  const options = useMemo(()=>({
-    elements: {
-      point: {
-        radius: showDataPoints ? DATA_POINT_SIZE : 0,
-      },
-      line: {
-        borderWidth: lineBorderWidth,
-      },
-    },
+  const defaultOptions = useMemo(()=>({
     plugins: {
       legend: {
         display: true,
         labels: {
-          usePointStyle: (showDataPoints && useDiffPointStyle) ? true : false
+          usePointStyle: false,
         },
       },
       tooltip: {
@@ -94,35 +86,57 @@ function GenerateGraph({graphType, graphData, ...props}) {
       zoom: {
         pan: {
           enabled: true,
-          mode: 'x',
-          modifierKey: 'ctrl',
         },
         zoom: {
           drag: {
             enabled: true,
-            borderColor: 'rgb(54, 162, 235)',
-            borderWidth: 1,
-            backgroundColor: 'rgba(54, 162, 235, 0.3)'
-          },
-          mode: 'x',
+          }
         },
       }
     },
     scales: {
       x: {
         display: true,
+        stacked: false,
         ticks: {
           display: true,
         },
       },
+      y: {
+        stacked: false,
+      },
     },
+  }));
+
+  const lineChartOptions = useMemo(()=>({
+    elements: {
+      point: {
+        radius: showDataPoints ? DATA_POINT_SIZE : 0,
+      },
+      line: {
+        borderWidth: lineBorderWidth,
+        fill: '-1',
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+          usePointStyle: (showDataPoints && useDiffPointStyle) ? true : false
+        },
+      },
+    }
   }));
 
   if (_.isEmpty(graphData.datasets))
     return null;
 
-  if (graphType == 'L') {
-    return <LineChart options={options} data={graphData} {...props}/>;
+  if (graphType == 'L' || graphType == 'SL') {
+    let options = _.merge(defaultOptions, lineChartOptions);
+    return <LineChart options={options} data={graphData} stacked={graphType == 'SL'}
+      {...props}/>;
+  } else if (graphType == 'B' || graphType == 'SB') {
+    return <BarChart options={defaultOptions} data={graphData} stacked={graphType == 'SB'}
+      {...props}/>;
   } else {
     return null;
   }
@@ -133,7 +147,7 @@ GenerateGraph.propTypes = {
 };
 
 // This function is used to get the data set for the X axis and Y axis
-function getGraphDataSet(rows, columns, xaxis, yaxis, queryToolCtx) {
+function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx) {
   // Function is used to the find the position of the column
   function getColumnPosition(colName) {
     return _.find(columns, (c)=>(c.name==colName))?.pos;
@@ -167,14 +181,24 @@ function getGraphDataSet(rows, columns, xaxis, yaxis, queryToolCtx) {
       }
       styleIndex = styleIndex + 1;
 
+      if (graphType !== 'L' && graphType !== 'SL') {
+        return {
+          label: colName,
+          data: rows.map((r)=>r[colPosition]),
+          backgroundColor: color,
+          borderColor:color
+        };
+      }
+
       return {
         label: colName,
         data: rows.map((r)=>r[colPosition]),
-        backgroundColor: color,
+        backgroundColor: graphType == 'SL' ? ConvertHexToRGBA(color, 30) : color,
         borderColor:color,
         pointHitRadius: DATA_POINT_SIZE,
         pointHoverRadius: 5,
-        pointStyle: queryToolCtx.preferences.graphs['use_diff_point_style'] ? DATA_POINT_STYLE[styleIndex] : 'circle'
+        pointStyle: queryToolCtx.preferences.graphs['use_diff_point_style'] ? DATA_POINT_STYLE[styleIndex] : 'circle',
+        fill: graphType == 'L' ? false : 'origin',
       };
     }),
   };
@@ -189,7 +213,7 @@ export function GraphVisualiser({initColumns}) {
   const [graphType, setGraphType] = useState('L');
   const [xaxis, setXAxis] = useState(null);
   const [yaxis, setYAxis] = useState([]);
-  const [graphData, setGraphData] = useState({'datasets': []});
+  const [[graphData, graphDataKey], setGraphData] = useState([{'datasets': []}, 0]);
   const [loaderText, setLoaderText] = useState('');
   const [columns, setColumns] = useState(initColumns);
   const [graphHeight, setGraphHeight] = useState();
@@ -237,7 +261,7 @@ export function GraphVisualiser({initColumns}) {
     contentResizeObserver.observe(contentRef.current);
 
     const resetGraphVisualiser = (newColumns)=>{
-      setGraphData({'datasets': []});
+      setGraphData([{'datasets': []}, 0]);
       setXAxis(null);
       setYAxis([]);
       setColumns(newColumns);
@@ -267,7 +291,7 @@ export function GraphVisualiser({initColumns}) {
     setLoaderText(gettext('Rendering data points...'));
     // Set the Graph Data
     setGraphData(
-      getGraphDataSet(res.data.data.result, columns, xaxis, yaxis, queryToolCtx)
+      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xaxis, yaxis, queryToolCtx), prev[1] + 1]
     );
 
     setLoaderText('');
@@ -315,7 +339,9 @@ export function GraphVisualiser({initColumns}) {
               <InputSelect className={classes.selectCtrl} controlProps={{allowClear: false}}
                 options={[
                   {label: gettext('Line Chart'), value: 'L'},
-                  {label: gettext('<More charts coming soon>'), value: 'L'}
+                  {label: gettext('Stacked Line Chart'), value: 'SL'},
+                  {label: gettext('Bar Chart'), value: 'B'},
+                  {label: gettext('Stacked Bar Chart'), value: 'SB'},
                 ]} onChange={(v)=>setGraphType(v)} value={graphType} />
             </Box>
             <DefaultButton onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
@@ -339,9 +365,9 @@ export function GraphVisualiser({initColumns}) {
         </Box>
         <Box ref={contentRef} className={classes.graphContainer}>
           <Box style={{height:`${graphHeight}px`}}>
-            <GenerateGraph graphType={graphType} graphData={graphData} onInit={(chartObj)=> {
+            {useMemo(()=> <GenerateGraph graphType={graphType} graphData={graphData} onInit={(chartObj)=> {
               chartObjRef.current = chartObj;
-            }} plugins={plugin}/>
+            }} plugins={plugin}/>, [graphDataKey])}
           </Box>
         </Box>
       </Box>

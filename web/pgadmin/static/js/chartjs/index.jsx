@@ -21,14 +21,14 @@ export const CHART_THEME_COLORS = {
     '#DD4477', '#66AA00', '#B82E2E', '#316395', '#994499', '#22AA99',
     '#AAAA11', '#6633CC', '#E67300', '#8B0707', '#651067', '#329262',
     '#5574A6', '#3B3EAC', '#B77322', '#16D620', '#B91383', '#F4359E'],
-  'dark': ['#70E000', '#FF477E', '#7DC9F1', '#2EC4B6', '#52B788', '#2A9D8F',
-    '#E4E487', '#DB7C74', '#8AC926', '#979DAC', '#FF8FA3', '#7371FC', '#B388EB',
-    '#D4A276', '#FB5607', '#EEA236', '#FFEE32', '#EDC531', '#D4D700', '#FFFB69',
-    '#7FCC5C', '#50B0F0', '#3A86FF', '#00B4D8'],
-  'high_contrast': ['#00B4D8', '#2EC4B6', '#45D48A', '#50B0F0', '#52B788',
-    '#70E000', '#7DC9F1', '#7FCC5C', '#8AC926', '#979DAC', '#B388EB',
-    '#D4A276', '#D4D700', '#DEFF00', '#E4E487', '#EDC531', '#EEA236', '#F8845F',
-    '#FB4BF6', '#FF6C49', '#FF8FA3', '#FFEE32', '#FFFB69', '#FFFFFF']
+  'dark': ['#7371FC', '#3A86FF', '#979DAC', '#D4A276', '#2A9D8F', '#FFEE32',
+    '#70E000', '#FF477E', '#7DC9F1', '#52B788', '#E4E487', '#2EC4B6',
+    '#DB7C74', '#8AC926', '#FF8FA3', '#B388EB', '#FB5607', '#EEA236',
+    '#EDC531', '#D4D700', '#FFFB69', '#7FCC5C', '#50B0F0', '#00B4D8'],
+  'high_contrast': ['#FF6C49', '#00B4D8', '#45D48A', '#FFFB69', '#B388EB',
+    '#D4A276', '#2EC4B6', '#7DC9F1', '#50B0F0', '#52B788', '#70E000',
+    '#7FCC5C', '#8AC926', '#979DAC', '#D4D700', '#DEFF00', '#E4E487',
+    '#EDC531', '#EEA236', '#F8845F', '#FB4BF6', '#FF8FA3', '#FFEE32', '#FFFFFF']
 };
 
 const defaultOptions = {
@@ -78,6 +78,35 @@ const defaultOptions = {
         zeroLineColor: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
         color: getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
       },
+    },
+  },
+  plugins: {
+    zoom: {
+      pan: {
+        enabled: false,
+        mode: 'x',
+        modifierKey: 'ctrl',
+      },
+      zoom: {
+        drag: {
+          enabled: false,
+          borderColor: 'rgb(54, 162, 235)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(54, 162, 235, 0.3)'
+        },
+        mode: 'x',
+      },
+    }
+  }
+};
+
+const stackedOptions = {
+  scales: {
+    x: {
+      stacked: true,
+    },
+    y: {
+      stacked: true,
     },
   }
 };
@@ -150,8 +179,35 @@ BaseChart.propTypes = {
   plugins: PropTypes.object,
 };
 
-export function LineChart(props) {
+export function LineChart({stacked, options, ...props}) {
+  // if stacked true then merge the stacked specific options.
+  options = stacked ? _.merge(options, stackedOptions) : options;
   return (
-    <BaseChart {...props} type='line'/>
+    <BaseChart {...props} options={options} type='line'/>
   );
+}
+LineChart.propTypes = {
+  options: PropTypes.object,
+  stacked: PropTypes.bool
+};
+
+export function BarChart({stacked, options, ...props}) {
+  // if stacked true then merge the stacked specific options.
+  options = stacked ? _.merge(options, stackedOptions) : options;
+  return (
+    <BaseChart {...props} options={options} type='bar'/>
+  );
+}
+BarChart.propTypes = {
+  options: PropTypes.object,
+  stacked: PropTypes.bool
+};
+
+export function ConvertHexToRGBA(hex, opacity) {
+  const tempHex = hex.replace('#', '');
+  const r = parseInt(tempHex.substring(0, 2), 16);
+  const g = parseInt(tempHex.substring(2, 4), 16);
+  const b = parseInt(tempHex.substring(4, 6), 16);
+
+  return `rgba(${r},${g},${b},${opacity / 100})`;
 }
