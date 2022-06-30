@@ -35,27 +35,9 @@ class ImportExportServersModule(PgAdminModule):
     class ImportExportServersModule(PgAdminModule)
 
         A module class for import which is derived from PgAdminModule.
-
-    Methods:
-    -------
-    * get_own_javascripts(self)
-      - Method is used to load the required javascript files for import module
     """
 
     LABEL = _('Import/Export Servers')
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.import_export_servers', 'js/import_export_servers']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('import_export_servers.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def get_exposed_url_endpoints(self):
         """

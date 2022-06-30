@@ -96,6 +96,15 @@ class ForeignServerModule(CollectionNodeModule):
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .user_mappings import blueprint as module
+        self.submodules.append(module)
+        super(ForeignServerModule, self).register(app, options)
+
 
 blueprint = ForeignServerModule(__name__)
 

@@ -41,17 +41,6 @@ class RestoreModule(PgAdminModule):
 
     LABEL = _('Restore')
 
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.restore',
-            'path': url_for('restore.index') + 'restore',
-            'when': None
-        }]
-
     def get_exposed_url_endpoints(self):
         """
         Returns:

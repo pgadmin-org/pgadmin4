@@ -95,6 +95,15 @@ class ForeignDataWrapperModule(CollectionNodeModule):
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .foreign_servers import blueprint as module
+        self.submodules.append(module)
+        super(ForeignDataWrapperModule, self).register(app, options)
+
 
 blueprint = ForeignDataWrapperModule(__name__)
 

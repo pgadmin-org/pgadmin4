@@ -118,17 +118,36 @@ class TableModule(SchemaChildModule):
 
         return snippets
 
-    def get_own_javascripts(self):
-        scripts = SchemaChildModule.get_own_javascripts(self)
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .columns import blueprint as module
+        self.submodules.append(module)
 
-        scripts.append({
-            'name': 'pgadmin.browser.table.partition.utils',
-            'path': url_for('browser.index') +
-                    'table/static/js/partition.utils',
-            'when': 'database', 'is_template': False
-        })
+        from .compound_triggers import blueprint as module
+        self.submodules.append(module)
 
-        return scripts
+        from .constraints import blueprint as module
+        self.submodules.append(module)
+
+        from .indexes import blueprint as module
+        self.submodules.append(module)
+
+        from .partitions import blueprint as module
+        self.submodules.append(module)
+
+        from .row_security_policies import blueprint as module
+        self.submodules.append(module)
+
+        from .rules import blueprint as module
+        self.submodules.append(module)
+
+        from .triggers import blueprint as module
+        self.submodules.append(module)
+
+        super(TableModule, self).register(app, options)
 
 
 blueprint = TableModule(__name__)

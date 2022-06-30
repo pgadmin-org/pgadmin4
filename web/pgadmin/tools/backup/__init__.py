@@ -44,17 +44,6 @@ class BackupModule(PgAdminModule):
 
     LABEL = _('Backup')
 
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.backup',
-            'path': url_for('backup.index') + 'backup',
-            'when': None
-        }]
-
     def show_system_objects(self):
         """
         return system preference objects

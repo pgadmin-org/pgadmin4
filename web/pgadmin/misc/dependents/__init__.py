@@ -16,12 +16,7 @@ MODULE_NAME = 'dependents'
 
 
 class DependentsModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.browser.dependents',
-            'path': url_for('dependents.static', filename='js/dependents'),
-            'when': None
-        }]
+    pass
 
 
 # Initialise the module

@@ -83,6 +83,28 @@ class ConstraintsModule(CollectionNodeModule):
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .check_constraint import blueprint as module
+        self.submodules.append(module)
+
+        from .exclusion_constraint import blueprint as module
+        self.submodules.append(module)
+
+        from .foreign_key import blueprint as module
+        self.submodules.append(module)
+
+        from .index_constraint import primary_key_blueprint as module
+        self.submodules.append(module)
+
+        from .index_constraint import unique_constraint_blueprint as module
+        self.submodules.append(module)
+
+        super(ConstraintsModule, self).register(app, options)
+
 
 blueprint = ConstraintsModule(__name__)
 

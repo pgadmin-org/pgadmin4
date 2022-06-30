@@ -22,13 +22,7 @@ class StatisticsModule(PgAdminModule):
     This module will render the statistics of the browser nodes on selection
     when statistics panel is active.
     """
-
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.browser.object_statistics',
-            'path': url_for('statistics.static', filename='js/statistics'),
-            'when': None
-        }]
+    pass
 
 
 # Initialise the module

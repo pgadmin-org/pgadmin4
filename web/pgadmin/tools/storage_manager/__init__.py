@@ -30,23 +30,6 @@ class StorageManagerModule(PgAdminModule):
 
     LABEL = _('Storage Manager')
 
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.storage_manager', 'js/storage_manager']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('storage_manager.index') + script,
-                'when': None
-            })
-
-        return scripts
-
 
 blueprint = StorageManagerModule(MODULE_NAME, __name__)
 

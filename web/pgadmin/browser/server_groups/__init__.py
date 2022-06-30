@@ -123,6 +123,15 @@ class ServerGroupModule(BrowserPluginModule):
         """
         pass
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .servers import blueprint as module
+        self.submodules.append(module)
+        super(BrowserPluginModule, self).register(app, options)
+
 
 class ServerGroupMenuItem(MenuItem):
     def __init__(self, **kwargs):

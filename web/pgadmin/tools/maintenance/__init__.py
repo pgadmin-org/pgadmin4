@@ -32,29 +32,8 @@ class MaintenanceModule(PgAdminModule):
 
         A module class for maintenance tools of vacuum which is derived from
         PgAdminModule.
-
-    Methods:
-    -------
-    * get_own_javascripts()
-      - Method is used to load the required javascript files for maintenance
-        tool module
-    * get_own_stylesheets()
-      - Returns the list of CSS file used by Maintenance module
     """
     LABEL = _('Maintenance')
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.maintenance', 'js/maintenance']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('maintenance.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def get_own_stylesheets(self):
         """

@@ -122,12 +122,8 @@ class PartitionsModule(CollectionNodeModule):
         sub-modules of table node under partition table node.
         """
 
-        self.submodules = list(app.find_submodules(self.import_name))
+        self.submodules = []
         super(CollectionNodeModule, self).register(app, options)
-
-        for module in self.submodules:
-            module.parentmodules.append(self)
-            app.register_blueprint(module)
 
         # Now add sub modules of table node to partition table node.
         # Exclude 'partition' module for now to avoid cyclic import issue.

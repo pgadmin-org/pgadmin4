@@ -59,33 +59,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         """
         return True
 
-    def get_own_javascripts(self):
-        scripts = []
-
-        if self.module_use_template_javascript:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for('browser.index'
-                                ) + '%s/module' % self.node_type,
-                'when': self.script_load,
-                'is_template': True
-            }])
-        else:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for(
-                    '%s.static' % self.name,
-                    filename=('js/%s' % self.node_type)
-                ),
-                'when': self.script_load,
-                'is_template': False
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
-
     def generate_browser_node(
             self, node_id, parent_id, label, icon, **kwargs
     ):

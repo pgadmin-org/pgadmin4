@@ -45,13 +45,6 @@ class SchemaDiffModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.schema_diff',
-            'path': url_for('schema_diff.index') + "schema_diff",
-            'when': None
-        }]
-
     def get_panels(self):
         return []
 

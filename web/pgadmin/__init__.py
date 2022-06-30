@@ -713,7 +713,8 @@ def create_app(app_name=None):
     ##########################################################################
     # Load plugin modules
     ##########################################################################
-    for module in app.find_submodules('pgadmin'):
+    from .submodules import get_submodules
+    for module in get_submodules():
         app.logger.info('Registering blueprint module: %s' % module)
         if app.blueprints.get(module.name) is None:
             app.register_blueprint(module)

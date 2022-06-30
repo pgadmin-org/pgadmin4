@@ -28,13 +28,6 @@ MODULE_NAME = 'settings'
 
 
 class SettingsModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.settings',
-            'path': url_for('settings.index') + 'settings',
-            'when': None
-        }]
-
     def get_own_menuitems(self):
         return {
             'file_items': [

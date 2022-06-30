@@ -76,6 +76,18 @@ class PackageModule(SchemaChildModule):
         """
         return database.DatabaseModule.node_type
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .edbfuncs import blueprint as module
+        self.submodules.append(module)
+
+        from .edbvars import blueprint as module
+        self.submodules.append(module)
+        super(PackageModule, self).register(app, options)
+
 
 blueprint = PackageModule(__name__)
 

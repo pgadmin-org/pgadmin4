@@ -103,6 +103,73 @@ class SchemaModule(CollectionNodeModule):
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .aggregates import blueprint as module
+        self.submodules.append(module)
+
+        from .catalog_objects import blueprint as module
+        self.submodules.append(module)
+
+        from .collations import blueprint as module
+        self.submodules.append(module)
+
+        from .domains import blueprint as module
+        self.submodules.append(module)
+
+        from .foreign_tables import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_configurations import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_dictionaries import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_parsers import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_templates import blueprint as module
+        self.submodules.append(module)
+
+        from .functions import blueprint as module
+        self.submodules.append(module)
+
+        from .functions import trigger_function_blueprint as module
+        self.submodules.append(module)
+
+        from .functions import procedure_blueprint as module
+        self.submodules.append(module)
+
+        from .operators import blueprint as module
+        self.submodules.append(module)
+
+        from .packages import blueprint as module
+        self.submodules.append(module)
+
+        from .sequences import blueprint as module
+        self.submodules.append(module)
+
+        from .synonyms import blueprint as module
+        self.submodules.append(module)
+
+        from .tables import blueprint as module
+        self.submodules.append(module)
+
+        from .types import blueprint as module
+        self.submodules.append(module)
+
+        from .views import view_blueprint as module
+        self.submodules.append(module)
+
+        from .views import mview_blueprint as module
+        self.submodules.append(module)
+
+        super(SchemaModule, self).register(app, options)
+
 
 class CatalogModule(SchemaModule):
     """
@@ -113,6 +180,13 @@ class CatalogModule(SchemaModule):
 
     _NODE_TYPE = 'catalog'
     _COLLECTION_LABEL = gettext("Catalogs")
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        super(SchemaModule, self).register(app, options)
 
 
 schema_blueprint = SchemaModule(__name__)

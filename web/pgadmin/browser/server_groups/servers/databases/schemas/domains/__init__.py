@@ -71,6 +71,15 @@ class DomainModule(SchemaChildModule):
         """
         return databases.DatabaseModule.node_type
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .domain_constraints import blueprint as module
+        self.submodules.append(module)
+        super(DomainModule, self).register(app, options)
+
 
 blueprint = DomainModule(__name__)
 

@@ -41,13 +41,6 @@ class AboutModule(PgAdminModule):
             ]
         }
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.about',
-            'path': url_for('about.index') + 'about',
-            'when': None
-        }]
-
     def get_exposed_url_endpoints(self):
         return ['about.index']
 

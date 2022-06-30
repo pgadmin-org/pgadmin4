@@ -111,6 +111,19 @@ SELECT EXISTS(
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .schedules import blueprint as module
+        self.submodules.append(module)
+
+        from .steps import blueprint as module
+        self.submodules.append(module)
+
+        super(JobModule, self).register(app, options)
+
 
 blueprint = JobModule(__name__)
 

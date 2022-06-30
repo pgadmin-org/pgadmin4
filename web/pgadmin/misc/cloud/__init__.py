@@ -51,24 +51,6 @@ class CloudModule(PgAdminModule):
         stylesheets = []
         return stylesheets
 
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        scripts = []
-        scripts.append({
-            'name': 'pgadmin.misc.cloud',
-            'path': url_for('cloud.index') + 'cloud',
-            'when': None
-        })
-        scripts.append({
-            'name': 'pgadmin.browser.wizard',
-            'path': url_for('browser.static', filename='js/wizard'),
-            'when': None
-        })
-        return scripts
-
     def get_exposed_url_endpoints(self):
         """
         Returns:
@@ -79,6 +61,22 @@ class CloudModule(PgAdminModule):
                 'cloud.update_cloud_process',
                 'cloud.get_host_ip',
                 'cloud.clear_cloud_session']
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        super(CloudModule, self).register(app, options)
+
+        from .azure import blueprint as module
+        app.register_blueprint(module)
+
+        from .biganimal import blueprint as module
+        app.register_blueprint(module)
+
+        from .rds import blueprint as module
+        app.register_blueprint(module)
 
 
 # Create blueprint for CloudModule class

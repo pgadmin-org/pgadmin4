@@ -47,13 +47,6 @@ class ERDModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.erd',
-            'path': url_for('erd.index') + "erd",
-            'when': None
-        }]
-
     def get_panels(self):
         return []
 

@@ -29,22 +29,6 @@ MODULE_NAME = 'misc'
 class MiscModule(PgAdminModule):
     LABEL = gettext('Miscellaneous')
 
-    def get_own_javascripts(self):
-        return [
-            {
-                'name': 'pgadmin.misc.explain',
-                'path': url_for('misc.index') + 'explain/explain',
-                'preloaded': False
-            }, {
-                'name': 'snap.svg',
-                'path': url_for(
-                    'misc.static', filename='explain/vendor/snap.svg/' + (
-                        'snap.svg' if config.DEBUG else 'snap.svg-min'
-                    )),
-                'preloaded': False
-            }
-        ]
-
     def get_own_stylesheets(self):
         stylesheets = []
         return stylesheets
@@ -109,6 +93,34 @@ class MiscModule(PgAdminModule):
         """
         return ['misc.ping', 'misc.index', 'misc.cleanup',
                 'misc.validate_binary_path']
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .bgprocess import blueprint as module
+        self.submodules.append(module)
+
+        from .cloud import blueprint as module
+        self.submodules.append(module)
+
+        from .dependencies import blueprint as module
+        self.submodules.append(module)
+
+        from .dependents import blueprint as module
+        self.submodules.append(module)
+
+        from .file_manager import blueprint as module
+        self.submodules.append(module)
+
+        from .sql import blueprint as module
+        self.submodules.append(module)
+
+        from .statistics import blueprint as module
+        self.submodules.append(module)
+
+        super(MiscModule, self).register(app, options)
 
 
 # Initialise the module

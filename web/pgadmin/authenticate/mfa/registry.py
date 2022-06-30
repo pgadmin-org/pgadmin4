@@ -22,8 +22,31 @@ class: MultiFactorAuthRegistry
 
 An registry factory for the multi-factor authentication methods.
 """
+
+
+@classmethod
+def load_modules(cls, app=None):
+    submodules = []
+    from . import authenticator as module
+    submodules.append(module)
+
+    from . import email as module
+    submodules.append(module)
+
+    from . import utils as module
+    submodules.append(module)
+
+    from . import views as module
+    submodules.append(module)
+
+    for module in submodules:
+        if "init_app" in module.__dict__.keys():
+            module.__dict__["init_app"](app)
+
+
 MultiFactorAuthRegistry = create_registry_metaclass(
-    'MultiFactorAuthRegistry', __package__, decorate_as_module=True
+    'MultiFactorAuthRegistry', __package__, load_modules=load_modules,
+    decorate_as_module=True
 )
 
 

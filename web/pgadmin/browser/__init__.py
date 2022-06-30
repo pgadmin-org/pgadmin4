@@ -102,103 +102,6 @@ class BrowserModule(PgAdminModule):
             stylesheets.append(url_for(endpoint, filename=filename))
         return stylesheets
 
-    def get_own_javascripts(self):
-        scripts = list()
-        scripts.append({
-            'name': 'alertify',
-            'path': url_for(
-                'static',
-                filename='vendor/alertifyjs/alertify' if current_app.debug
-                else 'vendor/alertifyjs/alertify.min'
-            ),
-            'exports': 'alertify',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jqueryui.position',
-            'path': url_for(
-                'static',
-                filename='vendor/jQuery-contextMenu/jquery.ui.position' if
-                current_app.debug else
-                'vendor/jQuery-contextMenu/jquery.ui.position.min'
-            ),
-            'deps': ['jquery'],
-            'exports': 'jQuery.ui.position',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.contextmenu',
-            'path': url_for(
-                'static',
-                filename='vendor/jQuery-contextMenu/jquery.contextMenu' if
-                current_app.debug else
-                'vendor/jQuery-contextMenu/jquery.contextMenu.min'
-            ),
-            'deps': ['jquery', 'jqueryui.position'],
-            'exports': 'jQuery.contextMenu',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'wcdocker',
-            'path': url_for(
-                'static',
-                filename='vendor/wcDocker/wcDocker' if current_app.debug
-                else 'vendor/wcDocker/wcDocker.min'
-            ),
-            'deps': ['jquery.contextmenu'],
-            'exports': '',
-            'preloaded': True
-        })
-
-        scripts.append({
-            'name': 'pgadmin.browser.datamodel',
-            'path': url_for(BROWSER_STATIC, filename='js/datamodel'),
-            'preloaded': True
-        })
-
-        for name, script in [
-            [PGADMIN_BROWSER, 'js/browser'],
-            ['pgadmin.browser.endpoints', 'js/endpoints'],
-            ['pgadmin.browser.error', 'js/error'],
-            ['pgadmin.browser.constants', 'js/constants']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for(BROWSER_INDEX) + script,
-                'preloaded': True
-            })
-
-        for name, script in [
-            ['pgadmin.browser.node', 'js/node'],
-            ['pgadmin.browser.messages', 'js/messages'],
-            ['pgadmin.browser.collection', 'js/collection']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for(BROWSER_INDEX) + script,
-                'preloaded': True,
-                'deps': ['pgadmin.browser.datamodel']
-            })
-
-        for name, end in [
-            ['pgadmin.browser.menu', 'js/menu'],
-            ['pgadmin.browser.panel', 'js/panel'],
-            ['pgadmin.browser.frame', 'js/frame']
-        ]:
-            scripts.append({
-                'name': name, 'path': url_for(BROWSER_STATIC, filename=end),
-                'preloaded': True})
-
-        scripts.append({
-            'name': 'pgadmin.browser.node.ui',
-            'path': url_for(BROWSER_STATIC, filename='js/node.ui'),
-            'when': 'server_group'
-        })
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-        return scripts
-
     def get_own_menuitems(self):
         menus = {
             'file_items': [
@@ -311,6 +214,15 @@ class BrowserModule(PgAdminModule):
                 'browser.lock_layout',
                 'browser.signal_runtime']
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .server_groups import blueprint as module
+        self.submodules.append(module)
+        super(BrowserModule, self).register(app, options)
+
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
@@ -376,51 +288,6 @@ class BrowserPluginModule(PgAdminModule):
         module.
         """
         return False
-
-    def get_own_javascripts(self):
-        """
-        Returns the list of javascripts information used by the module.
-
-        Each javascripts information must contain name, path of the script.
-
-        The name must be unique for each module, hence - in order to refer them
-        properly, we do use 'pgadmin.node.<type>' as norm.
-
-        That can also refer to when to load the script.
-
-        i.e.
-        We may not need to load the javascript of table node, when we're
-        not yet connected to a server, and no database is loaded. Hence - it
-        make sense to load them when a database is loaded.
-
-        We may also add 'deps', which also refers to the list of javascripts,
-        it may depends on.
-        """
-        scripts = []
-
-        if self.module_use_template_javascript:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for(BROWSER_INDEX
-                                ) + '%s/module' % self.node_type,
-                'when': self.script_load,
-                'is_template': True
-            }])
-        else:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for(
-                    '%s.static' % self.name,
-                    filename=('js/%s' % self.node_type)
-                ),
-                'when': self.script_load,
-                'is_template': False
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
 
     def generate_browser_node(
         self, node_id, parent_id, label, icon, inode, node_type, **kwargs
@@ -507,14 +374,6 @@ class BrowserPluginModule(PgAdminModule):
         Defines the url path prefix for this submodule.
         """
         return self.browser_url_prefix + self.node_type
-
-    @property
-    def javascripts(self):
-        """
-        Override the javascript of PgAdminModule, so that - we don't return
-        javascripts from the get_own_javascripts itself.
-        """
-        return []
 
     @property
     def label(self):

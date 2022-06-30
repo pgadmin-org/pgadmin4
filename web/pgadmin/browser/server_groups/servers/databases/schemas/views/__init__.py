@@ -130,6 +130,25 @@ class ViewModule(SchemaChildModule):
 
         return snippets
 
+    def register(self, app, options):
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.columns import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.indexes import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.triggers import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.rules import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.compound_triggers import blueprint as module
+        self.submodules.append(module)
+
+        super(ViewModule, self).register(app, options)
+
 
 class Message(IProcessDesc):
     def __init__(self, _sid, _data, _query):

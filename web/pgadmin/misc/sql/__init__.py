@@ -20,13 +20,6 @@ MODULE_NAME = 'sql'
 
 
 class SQLModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.browser.object_sql',
-            'path': url_for('sql.static', filename='js/sql'),
-            'when': None
-        }]
-
     def get_exposed_url_endpoints(self):
         """
         Returns:

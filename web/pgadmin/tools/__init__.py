@@ -21,33 +21,54 @@ MODULE_NAME = 'tools'
 
 
 class ToolsModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'translations',
-            'path': url_for('tools.index') + "translations",
-            'when': None
-        }, {
-            'name': 'pgadmin-sqlfoldcode',
-            'path': url_for(
-                'static',
-                filename='js/codemirror/addon/fold/pgadmin-sqlfoldcode'
-            ),
-            'when': 'debugger'
-        }, {
-            'name': 'slick.pgadmin.editors',
-            'path': url_for(
-                'static',
-                filename='js/slickgrid/slick.pgadmin.editors'
-            ),
-            'when': 'debugger'
-        }, {
-            'name': 'slick.pgadmin.formatters',
-            'path': url_for(
-                'static',
-                filename='js/slickgrid/slick.pgadmin.formatters'
-            ),
-            'when': 'debugger'
-        }]
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        super(PgAdminModule, self).register(app, options)
+
+        from .backup import blueprint as module
+        app.register_blueprint(module)
+
+        from .debugger import blueprint as module
+        app.register_blueprint(module)
+
+        from .erd import blueprint as module
+        app.register_blueprint(module)
+
+        from .grant_wizard import blueprint as module
+        app.register_blueprint(module)
+
+        from .import_export import blueprint as module
+        app.register_blueprint(module)
+
+        from .import_export_servers import blueprint as module
+        app.register_blueprint(module)
+
+        from .maintenance import blueprint as module
+        app.register_blueprint(module)
+
+        from .psql import blueprint as module
+        app.register_blueprint(module)
+
+        from .restore import blueprint as module
+        app.register_blueprint(module)
+
+        from .schema_diff import blueprint as module
+        app.register_blueprint(module)
+
+        from .search_objects import blueprint as module
+        app.register_blueprint(module)
+
+        from .sqleditor import blueprint as module
+        app.register_blueprint(module)
+
+        from .storage_manager import blueprint as module
+        app.register_blueprint(module)
+
+        from .user_management import blueprint as module
+        app.register_blueprint(module)
 
 
 # Initialise the module

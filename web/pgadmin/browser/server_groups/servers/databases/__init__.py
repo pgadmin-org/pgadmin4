@@ -95,6 +95,40 @@ class DatabaseModule(CollectionNodeModule):
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .casts import blueprint as module
+        self.submodules.append(module)
+
+        from .event_triggers import blueprint as module
+        self.submodules.append(module)
+
+        from .extensions import blueprint as module
+        self.submodules.append(module)
+
+        from .foreign_data_wrappers import blueprint as module
+        self.submodules.append(module)
+
+        from .languages import blueprint as module
+        self.submodules.append(module)
+
+        from .publications import blueprint as module
+        self.submodules.append(module)
+
+        from .schemas import schema_blueprint as module
+        self.submodules.append(module)
+
+        from .schemas import catalog_blueprint as module
+        self.submodules.append(module)
+
+        from .subscriptions import blueprint as module
+        self.submodules.append(module)
+
+        super(DatabaseModule, self).register(app, options)
+
 
 blueprint = DatabaseModule(__name__)
 

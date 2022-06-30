@@ -46,22 +46,6 @@ class UserManagementModule(PgAdminModule):
 
     LABEL = _('Users')
 
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.user_management',
-            'path': url_for('user_management.index') + 'user_management',
-            'when': None
-        }, {
-            'name': 'pgadmin.user_management.current_user',
-            'path': url_for('user_management.index') + 'current_user',
-            'when': None,
-            'is_template': True
-        }]
-
     def show_system_objects(self):
         """
         return system preference objects

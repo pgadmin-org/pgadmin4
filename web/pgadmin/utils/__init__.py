@@ -68,8 +68,6 @@ class PgAdminModule(Blueprint):
         sub-modules at once.
         """
 
-        self.submodules = list(app.find_submodules(self.import_name))
-
         super(PgAdminModule, self).register(app, options)
 
         for module in self.submodules:
@@ -93,14 +91,6 @@ class PgAdminModule(Blueprint):
                 messages needed by the submodules.
         """
         return dict()
-
-    def get_own_javascripts(self):
-        """
-        Returns:
-            list: the javascripts used by this module, not including
-                any script needed by the submodules.
-        """
-        return []
 
     def get_own_menuitems(self):
         """
@@ -138,13 +128,6 @@ class PgAdminModule(Blueprint):
         for module in self.submodules:
             res.update(module.messages)
         return res
-
-    @property
-    def javascripts(self):
-        javascripts = self.get_own_javascripts()
-        for module in self.submodules:
-            javascripts.extend(module.javascripts)
-        return javascripts
 
     @property
     def menu_items(self):

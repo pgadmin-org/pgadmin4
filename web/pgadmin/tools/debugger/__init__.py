@@ -53,30 +53,8 @@ class DebuggerModule(PgAdminModule):
     class DebuggerModule(PgAdminModule)
 
         A module class for debugger which is derived from PgAdminModule.
-
-    Methods:
-    -------
-    * get_own_javascripts(self)
-      - Method is used to load the required javascript files for debugger
-      module
-
     """
     LABEL = gettext("Debugger")
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.debugger', 'js/index'],
-            ['pgadmin.tools.debugger.controller', 'js/debugger'],
-            ['pgadmin.tools.debugger.ui', 'js/debugger_ui'],
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('debugger.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def register_preferences(self):
         self.preference.register(

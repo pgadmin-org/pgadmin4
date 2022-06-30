@@ -55,13 +55,6 @@ class PSQLModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.psql',
-            'path': url_for('psql.index') + "psql",
-            'when': None
-        }]
-
     def get_panels(self):
         return []
 

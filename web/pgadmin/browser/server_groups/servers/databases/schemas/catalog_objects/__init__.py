@@ -80,6 +80,16 @@ class CatalogObjectModule(SchemaChildModule):
         """
         return database.DatabaseModule.node_type
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        super(CatalogObjectModule, self).register(app, options)
+
+        from .columns import blueprint as module
+        app.register_blueprint(module)
+
 
 blueprint = CatalogObjectModule(__name__)
 

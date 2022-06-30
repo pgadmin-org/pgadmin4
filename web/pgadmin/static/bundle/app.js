@@ -24,7 +24,7 @@ define('app', [
       }
       else if (module && module.Init && typeof module.Init == 'function') {
         try {
-          module.init();
+          module.Init();
         }
         catch (e) {
           console.warn(e.stack || e);

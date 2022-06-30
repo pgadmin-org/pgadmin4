@@ -283,30 +283,6 @@ class ServerModule(sg.ServerGroupPluginModule):
 
         return snippets
 
-    def get_own_javascripts(self):
-        scripts = []
-
-        scripts.extend([{
-            'name': 'pgadmin.browser.server.privilege',
-            'path': url_for('%s.static' % self.name, filename='js/privilege'),
-            'when': self.node_type,
-            'is_template': False,
-            'deps': ['pgadmin.browser.node.ui']
-        }, {
-            'name': 'pgadmin.browser.server.variable',
-            'path': url_for('%s.static' % self.name, filename='js/variable'),
-            'when': self.node_type,
-            'is_template': False
-        }, {
-            'name': 'pgadmin.server.supported_servers',
-            'path': url_for('browser.index') + 'server/supported_servers',
-            'is_template': True,
-            'when': self.node_type
-        }])
-        scripts.extend(sg.ServerGroupPluginModule.get_own_javascripts(self))
-
-        return scripts
-
     def register(self, app, options):
         """
         Override the default register function to automagically register
@@ -317,6 +293,23 @@ class ServerModule(sg.ServerGroupPluginModule):
         app.jinja_env.filters['qtIdent'] = driver.qtIdent
         app.jinja_env.filters['qtTypeIdent'] = driver.qtTypeIdent
         app.jinja_env.filters['hasAny'] = has_any
+
+        from .ppas import PPAS
+
+        from .databases import blueprint as module
+        self.submodules.append(module)
+
+        from .pgagent import blueprint as module
+        self.submodules.append(module)
+
+        from .resource_groups import blueprint as module
+        self.submodules.append(module)
+
+        from .roles import blueprint as module
+        self.submodules.append(module)
+
+        from .tablespaces import blueprint as module
+        self.submodules.append(module)
 
         super(ServerModule, self).register(app, options)
 
