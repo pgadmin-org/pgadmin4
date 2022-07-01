@@ -985,7 +985,7 @@ def start_debugger_listener(trans_id):
     # If user again start the same debug function with different arguments
     # then we need to save that values to session variable and database.
     if request.method == 'POST':
-        data = json.loads(request.values['data'], encoding='utf-8')
+        data = json.loads(request.data, encoding='utf-8')
         if data:
             de_inst.function_data['args_value'] = data
             de_inst.update_session()

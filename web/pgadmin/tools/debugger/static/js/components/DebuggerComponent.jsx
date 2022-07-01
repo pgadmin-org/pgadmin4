@@ -31,6 +31,7 @@ import { ToolBar } from './ToolBar';
 import { Stack } from './Stack';
 import { Results } from './Results';
 import { LocalVariablesAndParams } from './LocalVariablesAndParams';
+import DebuggerArgumentComponent from './DebuggerArgumentComponent';
 
 export const DebuggerContext = React.createContext();
 export const DebuggerEventsContext = React.createContext();
@@ -524,7 +525,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
           // Restarting debugging in the same transaction do not work
           // We will give same behaviour as pgAdmin3 and disable all buttons
-          enableToolbarButtons(MENUS.CONTINUE);
+          disableToolbarButtons();
 
           // Set the Alertify message to inform the user that execution
           // is completed.
@@ -571,7 +572,26 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
         listener.
         */
         if (res.data.data.result.require_input) {
-          params.funcArgsInstance.show(res.data.data.result, restart_dbg);
+          let t = pgAdmin.Browser.tree,
+            i = t.selected(),
+            d = i ? t.itemData(i) : undefined;
+
+          let treeInfo = t.getTreeNodeHierarchy(i);
+
+          if (d) {
+            let isEdbProc = d._type == 'edbproc';
+            modal.showModal(gettext('Debugger'), (closeModal) => {
+              return <DebuggerArgumentComponent
+                closeModal={closeModal}
+                debuggerInfo={res.data.data.result}
+                restartDebug={restart_dbg}
+                isEdbProc={isEdbProc}
+                transId={params.transId.toString()}
+                pgData={d}
+                pgTreeInfo={treeInfo}
+              ></DebuggerArgumentComponent>;
+            }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md });
+          }
         } else {
           // Debugging of void function is started again so we need to start
           // the listener again
@@ -612,7 +632,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     // If debugging is stopped by user then do not enable
     // continue/restart button
     if (!params.directDebugger.is_user_aborted_debugging) {
-      enableToolbarButtons(MENUS.CONTINUE);
+      enableToolbarButtons();
       params.directDebugger.is_user_aborted_debugging = false;
     }
 
@@ -620,7 +640,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     params.directDebugger.is_polling_required = false;
   };
 
-  const updateResultAnsMessages = (res) => {
+  const updateResultAndMessages = (res) => {
     if (res.data.data.result != null) {
       setActiveLine(-1);
       // Call function to update results information and set result panel focus
@@ -640,6 +660,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       // "Continue/Start" button because user can still
       // start the same execution again.
       disableToolbarButtons();
+      enableToolbarButtons(MENUS.START);
 
       // Stop further pooling
       params.directDebugger.is_polling_required = false;
@@ -706,11 +727,12 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
                 // "Continue/Start" button because user can still
                 // start the same execution again.
                 disableToolbarButtons();
+                enableToolbarButtons(MENUS.START);
 
                 // Stop further polling
                 params.directDebugger.is_polling_required = false;
               } else {
-                updateResultAnsMessages(res);
+                updateResultAndMessages(res);
               }
             } else if (res.data.data.status === 'Busy') {
               // If status is Busy then poll the result by recursive call to

@@ -47,8 +47,8 @@ export const MENUS = {
   STEPINTO: 'step-into',
   STEPOVER: 'step-over',
   STOP: 'stop',
-  CONTINUE: 'continue',
-  CLEAR_ALL_BREAKPOINT: 'clear-al-breakpoint',
+  START: 'start',
+  CLEAR_ALL_BREAKPOINT: 'clear-all-breakpoint',
   TOGGLE_BREAKPOINT: 'toggle-breakpoint'
 };
 

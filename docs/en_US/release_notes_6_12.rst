@@ -18,3 +18,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #7517 <https://redmine.postgresql.org/issues/7517>`_ -  Enable the start debugging button once execution is completed.

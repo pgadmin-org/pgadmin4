@@ -18,9 +18,17 @@ import DebuggerArgumentComponent from './components/DebuggerArgumentComponent';
 export default class FunctionArguments {
 
   show(debugInfo, restartDebug, isEdbProc, transId) {
+    var t = pgAdmin.Browser.tree,
+      i = t.selected(),
+      d = i ? t.itemData(i) : undefined;
+
+    if (!d)
+      return;
+
+    let treeInfo = t.getTreeNodeHierarchy(i);
     // Render Debugger argument component
     Notify.showModal(gettext('Debugger'), (closeModal) => {
-      return <DebuggerArgumentComponent closeModal={closeModal} debuggerInfo={debugInfo} restartDebug={restartDebug} isEdbProc={isEdbProc} transId={transId}></DebuggerArgumentComponent>;
+      return <DebuggerArgumentComponent closeModal={closeModal} debuggerInfo={debugInfo} restartDebug={restartDebug} isEdbProc={isEdbProc} transId={transId} pgTreeInfo={treeInfo} pgData={d}></DebuggerArgumentComponent>;
     }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md });
   }
 }

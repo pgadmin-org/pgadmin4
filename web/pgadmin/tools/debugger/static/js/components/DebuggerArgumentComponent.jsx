@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) =>
 );
 
 
-export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, isEdbProc, transId, ...props }) {
+export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, isEdbProc, transId, pgTreeInfo, pgData, ...props }) {
   const classes = useStyles();
   const debuggerArgsSchema = useRef(new DebuggerArgumentSchema());
   const api = getApiInstance();
@@ -85,16 +85,13 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     var _Url = null;
 
     if (restartDebug == 0) {
-      var t = pgAdmin.Browser.tree,
-        i = t.selected(),
-        d = i ? t.itemData(i) : undefined;
 
-      if (!d)
+      if (!pgData)
         return;
 
-      var treeInfo = t.getTreeNodeHierarchy(i);
+      var treeInfo = pgTreeInfo;
 
-      if (d._type == 'function') {
+      if (pgData._type == 'function') {
         // Get the existing function parameters available from sqlite database
         _Url = url_for('debugger.get_arguments', {
           'sid': treeInfo.server._id,
@@ -102,7 +99,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           'scid': treeInfo.schema._id,
           'func_id': treeInfo.function._id,
         });
-      } else if (d._type == 'procedure') {
+      } else if (pgData._type == 'procedure') {
         // Get the existing function parameters available from sqlite database
         _Url = url_for('debugger.get_arguments', {
           'sid': treeInfo.server._id,
@@ -110,7 +107,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           'scid': treeInfo.schema._id,
           'func_id': treeInfo.procedure._id,
         });
-      } else if (d._type == 'edbfunc') {
+      } else if (pgData._type == 'edbfunc') {
         // Get the existing function parameters available from sqlite database
         _Url = url_for('debugger.get_arguments', {
           'sid': treeInfo.server._id,
@@ -118,7 +115,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           'scid': treeInfo.schema._id,
           'func_id': treeInfo.edbfunc._id,
         });
-      } else if (d._type == 'edbproc') {
+      } else if (pgData._type == 'edbproc') {
         // Get the existing function parameters available from sqlite database
         _Url = url_for('debugger.get_arguments', {
           'sid': treeInfo.server._id,
@@ -452,18 +449,16 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     let base_url = null;
 
     if (restartDebug == 0) {
-      let selectedItem = pgAdmin.Browser.tree.selected();
-      let itemData = pgAdmin.Browser.tree.itemData(selectedItem);
-      if (!itemData)
+      if (!pgData)
         return;
 
-      let treeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(selectedItem);
+      let treeInfo = pgTreeInfo;
 
       base_url = url_for('debugger.clear_arguments', {
         'sid': treeInfo.server._id,
         'did': treeInfo.database._id,
         'scid': treeInfo.schema._id,
-        'func_id': itemData._id,
+        'func_id': pgData._id,
       });
     } else {
       base_url = url_for('debugger.clear_arguments', {
@@ -587,7 +582,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         'is_null': arg.is_null ? 1 : 0,
         'is_expression': arg.expr ? 1 : 0,
         'use_default': arg.use_default ? 1 : 0,
-        'value': debuggerInfo.value,
+        'value': arg.value,
         'is_array_value': arg?.isArrayType,
       });
     }
@@ -675,43 +670,27 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     return baseUrl;
   }
 
-  function getSelectedNodeData() {
-    var treeInfo, d;
-    if (restartDebug == 0) {
-      var t = pgAdmin.Browser.tree,
-        i = t.selected();
-
-      d = i ? t.itemData(i) : undefined;
-
-      if (!d)
-        return;
-
-      treeInfo = t.getTreeNodeHierarchy(i);
-    }
-    return [treeInfo, d];
-  }
-
   function startDebugging() {
     var self = this;
     setLoaderText('Starting debugger.');
     try {
       /* Initialize the target once the debug button is clicked and create asynchronous connection
         and unique transaction ID If the debugging is started again then treeInfo is already stored. */
-      var [treeInfo, d] = getSelectedNodeData();
-      if (!d) return;
+      var treeInfo = pgTreeInfo;
+      if (!pgData) return;
 
       var argsValueList = [];
       var sqliteFuncArgsList = [];
       var intCount = 0;
 
-      let argsList = []; //debuggerFinalArgs.current?.changed ? [] : debuggerArgsData.current.aregsCollection;
+      let argsList = [];
       let argSet = [];
 
       setDebuggingArgs(argsList, argSet);
 
       argsList.forEach(arg => {
         checkArgsVal(arg, argsValueList);
-        setSqliteFuncArgs(d, treeInfo, arg, intCount, sqliteFuncArgsList);
+        setSqliteFuncArgs(pgData, treeInfo, arg, intCount, sqliteFuncArgsList);
         intCount = intCount + 1;
       });
 
@@ -719,7 +698,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
       /* If debugging is not started again then we should initialize the target otherwise not */
       if (restartDebug == 0) {
-        baseUrl = checkTypeAndGetUrl(d, treeInfo);
+        baseUrl = checkTypeAndGetUrl(pgData, treeInfo);
 
         api({
           url: baseUrl,
@@ -791,7 +770,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               });
             }
 
-            var _url = getSetArgsUrl(d, treeInfo);
+            var _url = getSetArgsUrl(pgData, treeInfo);
 
             api({
               url: _url,
@@ -831,8 +810,12 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           method: 'POST',
           data: JSON.stringify(argsValueList),
         })
-          .then(function () {/*This is intentional (SonarQube)*/ })
+          .then(function () {
+            /* Close the debugger modal dialog */
+            props.closeModal();
+          })
           .catch(function (error) {
+            props.closeModal();
             Notify.alert(
               gettext('Debugger Listener Startup Error'),
               gettext(error.response.data)
@@ -851,7 +834,9 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           method: 'POST',
           data: JSON.stringify(sqliteFuncArgsList),
         })
-          .then(function () {/*This is intentional (SonarQube)*/ })
+          .then(function () {
+            /*This is intentional (SonarQube)*/
+          })
           .catch(function (error) {
             setLoaderText('');
             Notify.alert(
@@ -942,5 +927,7 @@ DebuggerArgumentComponent.propTypes = {
   isEdbProc: PropTypes.bool,
   transId: PropTypes.string,
   closeModal: PropTypes.func,
+  pgTreeInfo: PropTypes.object,
+  pgData: PropTypes.object,
 };
 
