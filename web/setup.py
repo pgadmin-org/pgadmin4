@@ -86,12 +86,10 @@ def load_servers(args):
         load_database_servers(args.load_servers, None, load_user, True)
 
 
-def setup_db():
+def setup_db(app):
     """Setup the configuration database."""
 
     create_app_data_directory(config)
-
-    app = create_app()
 
     print("pgAdmin 4 - Application Initialisation")
     print("======================================\n")
@@ -193,4 +191,5 @@ if __name__ == '__main__':
         except Exception as e:
             print(str(e))
     else:
-        setup_db()
+        app = create_app()
+        setup_db(app)

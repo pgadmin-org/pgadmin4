@@ -13,7 +13,7 @@ to start a web server."""
 
 
 import sys
-
+import setup
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
@@ -82,14 +82,6 @@ class ReverseProxied(object):
 ##########################################################################
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
-# Check if the database exists. If it does not, create it.
-if not os.path.isfile(config.SQLITE_PATH):
-    setup_py = os.path.join(
-        os.path.dirname(os.path.realpath(u_encode(__file__, fs_encoding))),
-        'setup.py'
-    )
-    exec(open(file_quote(setup_py), 'r').read())
-
 
 ##########################################################################
 # Create the app and configure it. It is created outside main so that
@@ -98,6 +90,10 @@ if not os.path.isfile(config.SQLITE_PATH):
 app = create_app()
 app.debug = False
 app.config['sessions'] = dict()
+
+# Check if the database exists. If it does not, create it.
+if not os.path.isfile(config.SQLITE_PATH):
+    setup.setup_db(app)
 
 if config.SERVER_MODE:
     app.wsgi_app = ReverseProxied(app.wsgi_app)
