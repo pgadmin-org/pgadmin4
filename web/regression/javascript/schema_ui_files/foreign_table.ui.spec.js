@@ -14,6 +14,7 @@ import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import ForeignTableSchema, { ColumnSchema, CheckConstraintSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -263,22 +264,24 @@ describe('ForeignTableColumnSchema', ()=>{
 
     let initData = ()=>Promise.resolve({typlen: 1, inheritedid: 1, inheritedfrom: 'public'});
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={defaultSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={defaultSchemaObj}
+        getInitData={initData}
+        viewHelperProps={{
+          mode: 'edit',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onEdit={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+      />
+    </Theme> );
   });
 
 
@@ -311,22 +314,24 @@ describe('ForeignTableColumnSchema', ()=>{
 
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={defaultSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onEdit={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={defaultSchemaObj}
+        getInitData={initData}
+        viewHelperProps={{
+          mode: 'edit',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onEdit={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+      />
+    </Theme>);
   });
 
 });

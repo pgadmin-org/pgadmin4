@@ -15,6 +15,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import {DebuggerArgumentSchema} from '../../../pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui';
 import {genericBeforeEach} from '../genericFunctions';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 describe('DebuggerArgs', () => {
   let mount;
@@ -35,16 +36,18 @@ describe('DebuggerArgs', () => {
   });
 
   it('create', () => {
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onDataChange={() => {/*This is intentional (SonarQube)*/}}
-      showFooter={false}
-      isTabView={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={schemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onDataChange={() => {/*This is intentional (SonarQube)*/}}
+        showFooter={false}
+        isTabView={false}
+      />
+    </Theme> );
   });
 });
 

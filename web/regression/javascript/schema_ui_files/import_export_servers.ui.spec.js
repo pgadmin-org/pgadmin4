@@ -13,6 +13,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import ImportExportSelectionSchema from '../../../pgadmin/tools/import_export_servers/static/js/import_export_selection.ui';
 import {genericBeforeEach} from '../genericFunctions';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 describe('ImportExportServers', () => {
   let mount;
@@ -33,30 +34,34 @@ describe('ImportExportServers', () => {
   });
 
   it('import', () => {
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onDataChange={() => {/*This is intentional (SonarQube)*/}}
-      showFooter={false}
-      isTabView={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={schemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onDataChange={() => {/*This is intentional (SonarQube)*/}}
+        showFooter={false}
+        isTabView={false}
+      />
+    </Theme>);
   });
 
   it('export', () => {
     schemaObj = new ImportExportSelectionSchema(
       {imp_exp: 'e', filename: 'test.json'});
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onDataChange={() => {/*This is intentional (SonarQube)*/}}
-      showFooter={false}
-      isTabView={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={schemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onDataChange={() => {/*This is intentional (SonarQube)*/}}
+        showFooter={false}
+        isTabView={false}
+      />
+    </Theme>);
   });
 });

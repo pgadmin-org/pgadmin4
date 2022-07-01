@@ -17,6 +17,7 @@ import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import * as legacyConnector from 'sources/helpers/legacyConnector';
 import Notify from '../../../pgadmin/static/js/helpers/Notifier';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 const initData = {
   id: 1,
@@ -83,23 +84,25 @@ describe('SchemaView', ()=>{
       getSQLValue=jasmine.createSpy('onEdit').and.returnValue(Promise.resolve('select 1;')),
       ctrlMount = (props)=>{
         ctrl?.unmount();
-        ctrl = mount(<SchemaView
-          formType='dialog'
-          schema={getSchema()}
-          viewHelperProps={{
-            mode: 'create',
-          }}
-          onSave={onSave}
-          onClose={onClose}
-          onHelp={onHelp}
-          onEdit={onEdit}
-          onDataChange={onDataChange}
-          confirmOnCloseReset={true}
-          hasSQL={true}
-          getSQLValue={getSQLValue}
-          disableSqlHelp={false}
-          {...props}
-        />);
+        ctrl = mount(<Theme>
+          <SchemaView
+            formType='dialog'
+            schema={getSchema()}
+            viewHelperProps={{
+              mode: 'create',
+            }}
+            onSave={onSave}
+            onClose={onClose}
+            onHelp={onHelp}
+            onEdit={onEdit}
+            onDataChange={onDataChange}
+            confirmOnCloseReset={true}
+            hasSQL={true}
+            getSQLValue={getSQLValue}
+            disableSqlHelp={false}
+            {...props}
+          />
+        </Theme>);
       },
       simulateValidData = ()=>{
         ctrl.find('MappedFormControl[id="field1"]').find('input').simulate('change', {target: {value: 'val1'}});
@@ -473,22 +476,24 @@ describe('SchemaView', ()=>{
     let ctrl;
     beforeEach(()=>{
       ctrl?.unmount();
-      ctrl = mount(<SchemaView
-        formType='dialog'
-        schema={getSchemaAllTypes()}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{/*This is intentional (SonarQube)*/}}
-        onClose={()=>{/*This is intentional (SonarQube)*/}}
-        onHelp={()=>{/*This is intentional (SonarQube)*/}}
-        onEdit={()=>{/*This is intentional (SonarQube)*/}}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        confirmOnCloseReset={false}
-        hasSQL={true}
-        getSQLValue={()=>'select 1;'}
-        disableSqlHelp={false}
-      />);
+      ctrl = mount(<Theme>
+        <SchemaView
+          formType='dialog'
+          schema={getSchemaAllTypes()}
+          viewHelperProps={{
+            mode: 'create',
+          }}
+          onSave={()=>{/*This is intentional (SonarQube)*/}}
+          onClose={()=>{/*This is intentional (SonarQube)*/}}
+          onHelp={()=>{/*This is intentional (SonarQube)*/}}
+          onEdit={()=>{/*This is intentional (SonarQube)*/}}
+          onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+          confirmOnCloseReset={false}
+          hasSQL={true}
+          getSQLValue={()=>'select 1;'}
+          disableSqlHelp={false}
+        />
+      </Theme>);
     });
 
     it('init', ()=>{
@@ -506,17 +511,19 @@ describe('SchemaView', ()=>{
       ctrl = null;
 
     beforeEach(()=>{
-      ctrl = mount(<SchemaView
-        formType='tab'
-        schema={getSchema()}
-        getInitData={getInitData}
-        viewHelperProps={{
-          mode: 'properties',
-        }}
-        onHelp={onHelp}
-        disableSqlHelp={false}
-        onEdit={onEdit}
-      />);
+      ctrl = mount(<Theme>
+        <SchemaView
+          formType='tab'
+          schema={getSchema()}
+          getInitData={getInitData}
+          viewHelperProps={{
+            mode: 'properties',
+          }}
+          onHelp={onHelp}
+          disableSqlHelp={false}
+          onEdit={onEdit}
+        />
+      </Theme>);
     });
 
     it('init', (done)=>{

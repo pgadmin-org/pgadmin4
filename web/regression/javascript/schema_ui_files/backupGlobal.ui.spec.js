@@ -12,6 +12,7 @@ import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BackupGlobalSchema, {getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backupGlobal.ui';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 
 describe('BackupGlobalSchema', ()=>{
@@ -31,21 +32,23 @@ describe('BackupGlobalSchema', ()=>{
   );
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={backupGlobalSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={backupGlobalSchemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+        disableDialogHelp={false}
+      />
+    </Theme>);
   });
 });
 

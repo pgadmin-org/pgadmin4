@@ -10,6 +10,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SchemaView from '../../../../../../static/js/SchemaView';
+import Theme from '../../../../../../static/js/Theme';
 
 export default class DialogWrapper {
   constructor(dialogContainerSelector, dialogTitle, typeOfDialog, alertify, serverInfo) {
@@ -84,22 +85,24 @@ export default class DialogWrapper {
   createDialog(container) {
     let self = this;
     ReactDOM.render(
-      <SchemaView
-        formType={'dialog'}
-        getInitData={()=>Promise.resolve({})}
-        schema={this.dialogSchema}
-        viewHelperProps={{
-          mode: 'create',
-          keepCid: true,
-          serverInfo: this.serverInfo,
-        }}
-        onSave={this.onSaveClick.bind(this)}
-        onClose={()=>self.close()}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        hasSQL={false}
-        disableSqlHelp={true}
-        disableDialogHelp={true}
-      />, container);
+      <Theme>
+        <SchemaView
+          formType={'dialog'}
+          getInitData={()=>Promise.resolve({})}
+          schema={this.dialogSchema}
+          viewHelperProps={{
+            mode: 'create',
+            keepCid: true,
+            serverInfo: this.serverInfo,
+          }}
+          onSave={this.onSaveClick.bind(this)}
+          onClose={()=>self.close()}
+          onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+          hasSQL={false}
+          disableSqlHelp={true}
+          disableDialogHelp={true}
+        />
+      </Theme>, container);
   }
 
   cleanupDialog(container) {

@@ -13,6 +13,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 
 describe('BackupSchema', ()=>{
@@ -41,21 +42,23 @@ describe('BackupSchema', ()=>{
   );
 
   it('create object backup', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={backupSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={backupSchemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+        disableDialogHelp={false}
+      />
+    </Theme>);
   });
 
 
@@ -76,21 +79,23 @@ describe('BackupSchema', ()=>{
   );
 
   it('create server backup', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={backupServerSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{/*This is intentional (SonarQube)*/}}
-      onClose={()=>{/*This is intentional (SonarQube)*/}}
-      onHelp={()=>{/*This is intentional (SonarQube)*/}}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={backupServerSchemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+        disableDialogHelp={false}
+      />
+    </Theme>);
   });
 });
 
