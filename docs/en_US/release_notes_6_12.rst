@@ -20,3 +20,4 @@ Bug fixes
 *********
 
   | `Issue #7517 <https://redmine.postgresql.org/issues/7517>`_ -  Enable the start debugging button once execution is completed.
+  | `Issue #7523 <https://redmine.postgresql.org/issues/7517>`_ -  Fixed typo error for Statistics on the table header.

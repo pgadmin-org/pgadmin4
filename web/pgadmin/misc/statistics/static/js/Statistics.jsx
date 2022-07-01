@@ -105,7 +105,7 @@ function getColumn(data, singleLineStatistics) {
   } else {
     columns = [
       {
-        Header: 'Statictics',
+        Header: gettext('Statistics'),
         accessor: 'name',
         sortble: true,
         resizable: true,
