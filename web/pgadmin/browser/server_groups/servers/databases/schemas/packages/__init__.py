@@ -84,6 +84,9 @@ class PackageModule(SchemaChildModule):
         from .edbfuncs import blueprint as module
         self.submodules.append(module)
 
+        from .edbfuncs import procedure_blueprint as module
+        self.submodules.append(module)
+
         from .edbvars import blueprint as module
         self.submodules.append(module)
         super(PackageModule, self).register(app, options)
