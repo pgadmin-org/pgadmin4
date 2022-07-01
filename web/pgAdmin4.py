@@ -82,6 +82,10 @@ class ReverseProxied(object):
 ##########################################################################
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
+# Check if the database exists. If it does not, create it.
+setup_db_required = False
+if not os.path.isfile(config.SQLITE_PATH):
+    setup_db_required = True
 
 ##########################################################################
 # Create the app and configure it. It is created outside main so that
@@ -91,8 +95,7 @@ app = create_app()
 app.debug = False
 app.config['sessions'] = dict()
 
-# Check if the database exists. If it does not, create it.
-if not os.path.isfile(config.SQLITE_PATH):
+if setup_db_required:
     setup.setup_db(app)
 
 if config.SERVER_MODE:

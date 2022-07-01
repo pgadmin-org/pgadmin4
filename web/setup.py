@@ -14,6 +14,7 @@ import argparse
 import os
 import sys
 import builtins
+import config
 
 # Grab the SERVER_MODE if it's been set by the runtime
 if 'SERVER_MODE' in globals():
@@ -31,6 +32,7 @@ from pgadmin.model import db, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
     load_database_servers
+from pgadmin.setup import db_upgrade, create_app_data_directory
 
 
 def dump_servers(args):
@@ -139,10 +141,6 @@ def clear_servers():
 
 if __name__ == '__main__':
     # Configuration settings
-    import config
-    from pgadmin.model import SCHEMA_VERSION
-    from pgadmin.setup import db_upgrade, create_app_data_directory
-
     parser = argparse.ArgumentParser(description='Setup the pgAdmin config DB')
 
     exp_group = parser.add_argument_group('Dump server config')
@@ -172,7 +170,7 @@ if __name__ == '__main__':
 
     args, extra = parser.parse_known_args()
 
-    config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
+    config.SETTINGS_SCHEMA_VERSION = CURRENT_SCHEMA_VERSION
     if "PGADMIN_TESTING_MODE" in os.environ and \
             os.environ["PGADMIN_TESTING_MODE"] == "1":
         config.SQLITE_PATH = config.TEST_SQLITE_PATH
