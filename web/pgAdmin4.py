@@ -43,6 +43,7 @@ from pgadmin.utils.constants import INTERNAL
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
 
+
 ##########################################################################
 # Support reverse proxying
 ##########################################################################
