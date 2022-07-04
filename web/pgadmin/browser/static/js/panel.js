@@ -273,6 +273,15 @@ define(
             );
           }
         }
+        if (eventName == 'panelClosed' && selectedPanel._type == 'dashboard') {
+          getPanelView(
+            pgBrowser.tree,
+            $container[0],
+            pgBrowser,
+            this._type,
+            false
+          );
+        }
       }
 
     });

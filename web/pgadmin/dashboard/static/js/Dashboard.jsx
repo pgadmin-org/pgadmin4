@@ -797,7 +797,7 @@ export default function Dashboard({
                 preferences={preferences}
                 sid={sid}
                 did={did}
-                pageVisible={true}
+                pageVisible={props.panelVisible}
               ></Graphs>
             )}
             {!_.isUndefined(preferences) && preferences.show_activity && (
@@ -887,6 +887,7 @@ Dashboard.propTypes = {
   row: PropTypes.object,
   serverConnected: PropTypes.bool,
   dbConnected: PropTypes.bool,
+  panelVisible: PropTypes.bool,
 };
 
 export function ChartContainer(props) {

@@ -24,7 +24,8 @@ export function getPanelView(
   tree,
   container,
   pgBrowser,
-  panelType
+  panelType,
+  panelVisible = true
 ) {
   let item = !_.isNull(tree)? tree.selected(): null,
     nodeData, node, treeNodeInfo, preferences, graphPref, dashPref;
@@ -52,6 +53,7 @@ export function getPanelView(
           sid={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['server']) ? treeNodeInfo['server']._id : ''}
           serverConnected={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['server']) ? treeNodeInfo.server.connected: false}
           dbConnected={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['database']) ? treeNodeInfo.database.connected: false}
+          panelVisible={panelVisible}
         />
       </Theme>,
       container
