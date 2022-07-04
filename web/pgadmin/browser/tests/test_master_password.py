@@ -25,30 +25,20 @@ class MasterPasswordTestCase(BaseTestGenerator):
         # This testcase validates invalid confirmation password
         ('TestCase for Create master password dialog', dict(
             password="",
-            content=(
-                "Set Master Password",
-                [
-                    "Please set a master password for pgAdmin.",
-                    "This will be used to secure and later unlock saved "
-                    "passwords and other credentials."
-                ]
-            )
+            errmsg=None,
+            is_error=False
         )),
         ('TestCase for Setting Master Password', dict(
             password="masterpasstest",
             check_if_set=True,
+            errmsg=None,
+            is_error=False
         )),
         ('TestCase for Resetting Master Password', dict(
             reset=True,
             password="",
-            content=(
-                "Set Master Password",
-                [
-                    "Please set a master password for pgAdmin.",
-                    "This will be used to secure and later unlock saved "
-                    "passwords and other credentials."
-                ]
-            )
+            errmsg=None,
+            is_error=False
         )),
     ]
 
@@ -89,13 +79,6 @@ class MasterPasswordTestCase(BaseTestGenerator):
                     data=json.dumps(req_data),
                 )
                 self.assertEqual(response.status_code, 200)
-
-                if hasattr(self, 'content'):
-                    self.assertEqual(response.json['data']['title'],
-                                     self.content[0])
-
-                    for text in self.content[1]:
-                        self.assertIn(text, response.json['data']['content'])
 
                 if hasattr(self, 'check_if_set'):
                     response = self.tester.get(

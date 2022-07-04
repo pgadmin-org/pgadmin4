@@ -743,30 +743,11 @@ def get_nodes():
 
 
 def form_master_password_response(existing=True, present=False, errmsg=None):
-    content_new = (
-        gettext("Set Master Password"),
-        "<br/>".join([
-            gettext("Please set a master password for pgAdmin."),
-            gettext("This will be used to secure and later unlock saved "
-                    "passwords and other credentials.")])
-    )
-    content_existing = (
-        gettext("Unlock Saved Passwords"),
-        "<br/>".join([
-            gettext("Please enter your master password."),
-            gettext("This is required to unlock saved passwords and "
-                    "reconnect to the database server(s).")])
-    )
-
     return make_json_response(data={
         'present': present,
-        'title': content_existing[0] if existing else content_new[0],
-        'content': render_template(
-            'browser/master_password.html',
-            content_text=content_existing[1] if existing else content_new[1],
-            errmsg=errmsg
-        ),
-        'reset': existing
+        'reset': existing,
+        'errmsg': errmsg,
+        'is_error': True if errmsg else False
     })
 
 
@@ -814,11 +795,15 @@ def set_master_password():
 
     data = None
 
-    if hasattr(request.data, 'decode'):
-        data = request.data.decode('utf-8')
+    if request.form:
+        data = request.form
+    elif request.data:
+        data = request.data
+        if hasattr(request.data, 'decode'):
+            data = request.data.decode('utf-8')
 
-    if data != '':
-        data = json.loads(data)
+        if data != '':
+            data = json.loads(data)
 
     # Master password is not applicable for server mode
     # Enable master password if oauth is used
@@ -828,7 +813,7 @@ def set_master_password():
             and config.MASTER_PASSWORD_REQUIRED:
         # if master pass is set previously
         if current_user.masterpass_check is not None and \
-            data.get('button_click') and \
+            data.get('submit_password', False) and \
                 not validate_master_password(data.get('password')):
             return form_master_password_response(
                 existing=True,
@@ -864,7 +849,7 @@ def set_master_password():
             )
         elif not get_crypt_key()[1]:
             error_message = None
-            if data.get('button_click') and data.get('password') == '':
+            if data.get('submit_password') and data.get('password') == '':
                 # If user attempted to enter a blank password, then throw error
                 error_message = gettext("Master password cannot be empty")
             return form_master_password_response(

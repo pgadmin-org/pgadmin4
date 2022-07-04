@@ -9,6 +9,7 @@
 
 import { generateNodeUrl } from './node_ajax';
 import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
+import { checkMasterPassword } from './password_dialogs';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
@@ -569,101 +570,6 @@ define('pgadmin.browser', [
         Notify.alert(error);
       });
     },
-    init_master_password: function() {
-      let self = this;
-      // Master password dialog
-      if (!Alertify.dlgMasterPass) {
-        Alertify.dialog('dlgMasterPass', function factory() {
-          return {
-            main: function(title, message, reset) {
-              this.set('title', title);
-              this.message = message;
-              this.reset = reset;
-            },
-            build: function() {
-              Alertify.pgDialogBuild.apply(this);
-            },
-            setup:function() {
-              return {
-                buttons:[{
-                  text: '',
-                  className: 'btn btn-primary-icon pull-left fa fa-question pg-alertify-icon-button',
-                  attrs: {
-                    name: 'dialog_help',
-                    type: 'button',
-                    label: gettext('Master password'),
-                    url: url_for('help.static', {
-                      'filename': 'master_password.html',
-                    }),
-                  },
-                },{
-                  text: gettext('Reset Master Password'), className: 'btn btn-secondary fa fa-trash-alt pg-alertify-button pull-left',
-                },{
-                  text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                  key: 27,
-                },{
-                  text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-                }],
-                focus: {element: '#password', select: true},
-                options: {
-                  modal: true, resizable: false, maximizable: false, pinnable: false,
-                },
-              };
-            },
-            prepare:function() {
-              let _self = this;
-              _self.setContent(_self.message);
-              /* Reset button hide */
-              if(!_self.reset) {
-                $(_self.__internal.buttons[1].element).addClass('d-none');
-              } else {
-                $(_self.__internal.buttons[1].element).removeClass('d-none');
-              }
-            },
-            callback: function(event) {
-              let parentDialog = this;
-
-              if (event.index == 3) {
-                /* OK Button */
-                self.set_master_password(
-                  $('#frmMasterPassword #password').val(),
-                  true,parentDialog.set_callback,
-                );
-              } else if(event.index == 2) {
-                /* Cancel button */
-                self.masterpass_callback_queue = [];
-                self.cancel_callback();
-              } else if(event.index == 1) {
-                /* Reset Button */
-                event.cancel = true;
-
-                Notify.confirm(gettext('Reset Master Password'),
-                  gettext('This will remove all the saved passwords. This will also remove established connections to '
-                    + 'the server and you may need to reconnect again. Do you wish to continue?'),
-                  function() {
-                    /* If user clicks Yes */
-                    self.reset_master_password();
-                    parentDialog.close();
-                    return true;
-                  },
-                  function() {/* If user clicks No */ return true;}
-                );
-              } else if(event.index == 0) {
-                /* help Button */
-                event.cancel = true;
-                self.showHelp(
-                  event.button.element.name,
-                  event.button.element.getAttribute('url'),
-                  null, null
-                );
-                return;
-              }
-            },
-          };
-        });
-      }
-    },
-
     check_master_password: function(on_resp_callback) {
       $.ajax({
         url: url_for('browser.check_master_password'),
@@ -697,40 +603,21 @@ define('pgadmin.browser', [
       });
     },
 
-    set_master_password: function(password='', button_click=false,
+    set_master_password: function(password='',
       set_callback=()=>{/*This is intentional (SonarQube)*/},
       cancel_callback=()=>{/*This is intentional (SonarQube)*/}) {
       let data=null, self = this;
 
-      data = JSON.stringify({
+      // data = JSON.stringify({
+      //   'password': password,
+      // });
+      data = {
         'password': password,
-        'button_click': button_click,
-      });
+      };
 
       self.masterpass_callback_queue.push(set_callback);
-      self.cancel_callback = cancel_callback;
-
-      $.ajax({
-        url: url_for('browser.set_master_password'),
-        type: 'POST',
-        data: data,
-        dataType: 'json',
-        contentType: 'application/json',
-      }).done((res)=> {
-        if(!res.data.present) {
-          self.init_master_password();
-          Alertify.dlgMasterPass(res.data.title, res.data.content, res.data.reset);
-        } else {
-          setTimeout(()=>{
-            while(self.masterpass_callback_queue.length > 0) {
-              let callback = self.masterpass_callback_queue.shift();
-              callback();
-            }
-          }, 500);
-        }
-      }).fail(function(xhr, status, error) {
-        Notify.pgRespErrorNotify(xhr, error);
-      });
+      // Check master passowrd.
+      checkMasterPassword(data, self.masterpass_callback_queue, cancel_callback);
     },
 
     bind_beforeunload: function() {

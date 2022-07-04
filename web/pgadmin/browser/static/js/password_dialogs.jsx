@@ -13,7 +13,11 @@ import pgAdmin from 'sources/pgadmin';
 import ConnectServerContent from './ConnectServerContent';
 import Theme from 'sources/Theme';
 import url_for from 'sources/url_for';
+import gettext from 'sources/gettext';
+
 import getApiInstance from '../../../static/js/api_instance';
+import MasterPasswordContent from './MasterPassowrdContent';
+import Notify from '../../../static/js/helpers/Notifier';
 
 function setNewSize(panel, width, height) {
   // Add height of the header
@@ -130,3 +134,92 @@ export function showSchemaDiffServerPassword() {
       />
     </Theme>, j[0]);
 }
+
+function masterPassCallbacks(masterpass_callback_queue) {
+  while(masterpass_callback_queue.length > 0) {
+    let callback = masterpass_callback_queue.shift();
+    callback();
+  }
+}
+
+export function checkMasterPassword(data, masterpass_callback_queue, cancel_callback) {
+  const api = getApiInstance();
+  api.post(url_for('browser.set_master_password'), data).then((res)=> {
+    if(!res.data.data.present) {
+      showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback);
+    } else {
+      masterPassCallbacks(masterpass_callback_queue);
+    }
+  }).catch(function(xhr, status, error) {
+    Notify.pgRespErrorNotify(xhr, error);
+  });
+}
+// This functions is used to show the master password dialog.
+export function showMasterPassword(isPWDPresent, errmsg=null, masterpass_callback_queue, cancel_callback) {
+  const api = getApiInstance();
+  var pgBrowser = pgAdmin.Browser;
+
+  // Register dialog panel
+  pgBrowser.Node.registerUtilityPanel();
+  var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+    j = panel.$container.find('.obj_properties').first();
+  
+  let title =  isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
+  panel.title(title);
+
+  ReactDOM.render(
+    <Theme>
+      <MasterPasswordContent
+        isPWDPresent= {isPWDPresent}
+        data={{'errmsg': errmsg}}
+        setHeight={(containerHeight) => {
+          setNewSize(panel, pgBrowser.stdW.md, containerHeight);
+        }}
+        closeModal={() => {
+          panel.close();
+        }}
+        onResetPassowrd={()=>{
+          Notify.confirm(gettext('Reset Master Password'),
+            gettext('This will remove all the saved passwords. This will also remove established connections to '
+            + 'the server and you may need to reconnect again. Do you wish to continue?'),
+            function() {
+              var _url = url_for('browser.reset_master_password');
+
+              api.delete(_url)
+                .then(() => {
+                  panel.close();
+                  showMasterPassword(false, null, masterpass_callback_queue, cancel_callback);
+                })
+                .catch((err) => {
+                  Notify.error(err.message);
+                });
+              return true;
+            },
+            function() {/* If user clicks No */ return true;}
+          );
+        }}
+        onCancel={()=>{
+          cancel_callback?.();
+        }}
+        onOK={(formData) => {
+          panel.close();
+          checkMasterPassword(formData, masterpass_callback_queue, cancel_callback);
+          // var _url = url_for('browser.set_master_password');
+
+          // api.post(_url, formData)
+          //   .then(res => {
+          //     panel.close();
+          //     if(res.data.data.is_error) {
+          //       showMasterPassword(true, res.data.data.errmsg, masterpass_callback_queue, cancel_callback);
+          //     } else {
+          //       masterPassCallbacks(masterpass_callback_queue);
+          //     }
+          //   })
+          //   .catch((err) => {
+          //     Notify.error(err.message);
+          //   });
+        }}
+      />
+    </Theme>, j[0]);
+}
+
