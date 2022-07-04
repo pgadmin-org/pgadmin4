@@ -15,13 +15,13 @@ import {DebuggerContext, DebuggerEventsContext} from '../../../pgadmin/tools/deb
 
 export default function MockDebuggerComponent({value, eventsvalue, children}) {
   return (
-    <DebuggerContext.Provider value={value}>
-      <DebuggerEventsContext.Provider value={eventsvalue}>
-        <Theme>
+    <Theme>
+      <DebuggerContext.Provider value={value}>
+        <DebuggerEventsContext.Provider value={eventsvalue}>
           {children}
-        </Theme>
-      </DebuggerEventsContext.Provider>
-    </DebuggerContext.Provider>
+        </DebuggerEventsContext.Provider>
+      </DebuggerContext.Provider>
+    </Theme>
   );
 }
 

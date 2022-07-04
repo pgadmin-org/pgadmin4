@@ -14,6 +14,7 @@ import getApiInstance from 'sources/api_instance';
 import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import 'wcdocker';
+import Theme from '../../../static/js/Theme';
 
 /* The entry point for rendering React based view in properties, called in node.js */
 export function getUtilityView(schema, treeNodeInfo, actionType, formType, container, containerPanel,
@@ -80,22 +81,24 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
 
   /* Fire at will, mount the DOM */
   ReactDOM.render(
-    <SchemaView
-      formType={formType}
-      schema={_schema}
-      viewHelperProps={viewHelperProps}
-      customSaveBtnName={saveBtnName}
-      customSaveBtnIconType={saveBtnIcon}
-      onSave={onSaveClick}
-      onClose={()=>containerPanel.close()}
-      onHelp={onHelp}
-      onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-      confirmOnCloseReset={confirmOnReset}
-      hasSQL={false}
-      isTabView={isTabView}
-      disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}
-      disableDialogHelp={helpUrl == undefined || helpUrl == ''}
-    />, container);
+    <Theme>
+      <SchemaView
+        formType={formType}
+        schema={_schema}
+        viewHelperProps={viewHelperProps}
+        customSaveBtnName={saveBtnName}
+        customSaveBtnIconType={saveBtnIcon}
+        onSave={onSaveClick}
+        onClose={()=>containerPanel.close()}
+        onHelp={onHelp}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={confirmOnReset}
+        hasSQL={false}
+        isTabView={isTabView}
+        disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}
+        disableDialogHelp={helpUrl == undefined || helpUrl == ''}
+      />
+    </Theme>, container);
 }
 
 /* When switching from normal node to collection node, clean up the React mounted DOM */

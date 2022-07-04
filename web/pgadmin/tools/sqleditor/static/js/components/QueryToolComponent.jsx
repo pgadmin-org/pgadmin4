@@ -16,7 +16,6 @@ import { ResultSet } from './sections/ResultSet';
 import { StatusBar } from './sections/StatusBar';
 import { MainToolBar } from './sections/MainToolBar';
 import { Messages } from './sections/Messages';
-import Theme from 'sources/Theme';
 import getApiInstance, {parseApiError} from '../../../../../static/js/api_instance';
 import url_for from 'sources/url_for';
 import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS } from './QueryToolConstants';
@@ -699,35 +698,33 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     <QueryToolContext.Provider value={queryToolContextValue}>
       <QueryToolConnectionContext.Provider value={queryToolConnContextValue}>
         <QueryToolEventsContext.Provider value={eventBus.current}>
-          <Theme>
-            <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
-              <ConnectionBar
-                connected={qtState.connected}
-                connecting={qtState.obtaining_conn}
-                connectionStatus={qtState.connection_status}
-                connectionStatusMsg={qtState.connection_status_msg}
-                connectionList={qtState.connection_list}
-                onConnectionChange={(connectionData)=>updateQueryToolConnection(connectionData)}
-                onNewConnClick={onNewConnClick}
-                onNewQueryToolClick={onNewQueryToolClick}
-                onResetLayout={onResetLayout}
-                docker={docker.current}
-              />
-              {React.useMemo(()=>(
-                <MainToolBar
-                  containerRef={containerRef}
-                  onManageMacros={onManageMacros}
-                  onFilterClick={onFilterClick}
-                />), [containerRef.current, onManageMacros, onFilterClick])}
-              <Layout
-                getLayoutInstance={(obj)=>docker.current=obj}
-                defaultLayout={defaultLayout}
-                layoutId="SQLEditor/Layout"
-                savedLayout={params.layout}
-              />
-              <StatusBar />
-            </Box>
-          </Theme>
+          <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
+            <ConnectionBar
+              connected={qtState.connected}
+              connecting={qtState.obtaining_conn}
+              connectionStatus={qtState.connection_status}
+              connectionStatusMsg={qtState.connection_status_msg}
+              connectionList={qtState.connection_list}
+              onConnectionChange={(connectionData)=>updateQueryToolConnection(connectionData)}
+              onNewConnClick={onNewConnClick}
+              onNewQueryToolClick={onNewQueryToolClick}
+              onResetLayout={onResetLayout}
+              docker={docker.current}
+            />
+            {React.useMemo(()=>(
+              <MainToolBar
+                containerRef={containerRef}
+                onManageMacros={onManageMacros}
+                onFilterClick={onFilterClick}
+              />), [containerRef.current, onManageMacros, onFilterClick])}
+            <Layout
+              getLayoutInstance={(obj)=>docker.current=obj}
+              defaultLayout={defaultLayout}
+              layoutId="SQLEditor/Layout"
+              savedLayout={params.layout}
+            />
+            <StatusBar />
+          </Box>
         </QueryToolEventsContext.Provider>
       </QueryToolConnectionContext.Provider>
     </QueryToolContext.Provider>

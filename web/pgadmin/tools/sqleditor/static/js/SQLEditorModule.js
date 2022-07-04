@@ -27,6 +27,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
+import Theme from '../../../../static/js/Theme';
 
 
 export function setPanelTitle(queryToolPanel, panelTitle) {
@@ -406,9 +407,11 @@ export default class SQLEditor {
     });
     this.setupPreferencesWorker();
     ReactDOM.render(
-      <ModalProvider>
-        <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} panel={panel} selectedNodeInfo={selectedNodeInfo}/>
-      </ModalProvider>,
+      <Theme>
+        <ModalProvider>
+          <QueryToolComponent params={params} pgWindow={pgWindow} pgAdmin={pgAdmin} panel={panel} selectedNodeInfo={selectedNodeInfo}/>
+        </ModalProvider>
+      </Theme>,
       container
     );
   }

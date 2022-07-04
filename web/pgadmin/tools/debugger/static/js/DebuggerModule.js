@@ -27,6 +27,7 @@ import { getFunctionId, getProcedureId, getAppropriateLabel, setDebuggerTitle } 
 import FunctionArguments from './debugger_ui';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import DebuggerComponent from './components/DebuggerComponent';
+import Theme from '../../../../static/js/Theme';
 
 export default class Debugger {
   static instance;
@@ -684,13 +685,15 @@ export default class Debugger {
     });
 
     ReactDOM.render(
-      <ModalProvider>
-        <DebuggerComponent pgAdmin={pgWindow.pgAdmin} selectedNodeInfo={selectedNodeInfo} panel={panel}  layout={layout} params={{
-          transId: trans_id,
-          directDebugger: this,
-          funcArgsInstance: this.funcArgs
-        }} />
-      </ModalProvider>,
+      <Theme>
+        <ModalProvider>
+          <DebuggerComponent pgAdmin={pgWindow.pgAdmin} selectedNodeInfo={selectedNodeInfo} panel={panel}  layout={layout} params={{
+            transId: trans_id,
+            directDebugger: this,
+            funcArgsInstance: this.funcArgs
+          }} />
+        </ModalProvider>
+      </Theme>,
       container
     );
   }

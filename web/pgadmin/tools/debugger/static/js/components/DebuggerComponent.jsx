@@ -17,7 +17,6 @@ import Loader from 'sources/components/Loader';
 
 import Layout, { LayoutHelper } from '../../../../../static/js/helpers/Layout';
 import EventBus from '../../../../../static/js/helpers/EventBus';
-import Theme from '../../../../../static/js/Theme';
 import getApiInstance from '../../../../../static/js/api_instance';
 import Notify from '../../../../../static/js/helpers/Notifier';
 
@@ -153,7 +152,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
           if(panel) {
             panel.close();
           }
-          
+
         });
       }
     } catch (e) {
@@ -1232,20 +1231,18 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   return (
     <DebuggerContext.Provider value={DebuggerContextValue}>
       <DebuggerEventsContext.Provider value={eventBus.current}>
-        <Theme>
-          <Loader message={loaderText} />
-          <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
-            <ToolBar
-              containerRef={containerRef}
-            />
-            <Layout
-              getLayoutInstance={(obj) => docker.current = obj}
-              defaultLayout={defaultLayout}
-              layoutId="Debugger/Layout"
-              savedLayout={savedLayout}
-            />
-          </Box>
-        </Theme>
+        <Loader message={loaderText} />
+        <Box width="100%" height="100%" display="flex" flexDirection="column" flexGrow="1" tabIndex="0" ref={containerRef}>
+          <ToolBar
+            containerRef={containerRef}
+          />
+          <Layout
+            getLayoutInstance={(obj) => docker.current = obj}
+            defaultLayout={defaultLayout}
+            layoutId="Debugger/Layout"
+            savedLayout={savedLayout}
+          />
+        </Box>
       </DebuggerEventsContext.Provider>
     </DebuggerContext.Provider>
   );

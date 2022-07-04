@@ -27,6 +27,7 @@ import DebuggerComponent from '../../../pgadmin/tools/debugger/static/js/compone
 import FunctionArguments from '../../../pgadmin/tools/debugger/static/js/debugger_ui';
 import Debugger from '../../../pgadmin/tools/debugger/static/js/DebuggerModule';
 import {TreeFake} from '../tree/tree_fake';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 
 describe('Debugger Component', () => {
@@ -266,14 +267,16 @@ describe('Debugger Component', () => {
     networkMock.onGet(url_for('debugger.execute_query', {'trans_id': params.transId, 'query_type': 'get_stack_info'})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':'Success','result':[{'level':0,'targetname':'_test()','func':3138947,'linenumber':9,'args':''}]}});
     networkMock.onGet(url_for('debugger.poll_result', {'trans_id': params.transId})).reply(200, {'success':0,'errormsg':'','info':'','result':null,'data':{'status':'Success','result':[{'pldbg_wait_for_target':28298}]}});
     let ctrl = mount(
-      <DebuggerComponent
-        pgAdmin={pgAdmin}
-        panel={document.getElementById('debugger-main-container')}
-        selectedNodeInfo={nodeInfo}
-        layout={''}
-        params={params}
-      >
-      </DebuggerComponent>
+      <Theme>
+        <DebuggerComponent
+          pgAdmin={pgAdmin}
+          panel={document.getElementById('debugger-main-container')}
+          selectedNodeInfo={nodeInfo}
+          layout={''}
+          params={params}
+        >
+        </DebuggerComponent>
+      </Theme>
     );
 
     ctrl.find('PgIconButton[data-test="debugger-contiue"]').props().onClick();
