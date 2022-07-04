@@ -13,7 +13,6 @@ to start a web server."""
 
 
 import sys
-import setup
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
@@ -37,13 +36,12 @@ else:
     builtins.SERVER_MODE = None
 
 import config
+import setup
 from pgadmin import create_app, socketio
-from pgadmin.utils import u_encode, fs_encoding, file_quote
 from pgadmin.utils.constants import INTERNAL
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
 from pgadmin.model import SCHEMA_VERSION
-
 
 ##########################################################################
 # Support reverse proxying
