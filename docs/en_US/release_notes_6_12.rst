@@ -10,6 +10,7 @@ New features
 ************
 
   | `Issue #7486 <https://redmine.postgresql.org/issues/7486>`_ -  Added support for visualizing the graphs using Stacked Line, Bar, and Stacked Bar charts in the query tool.
+  | `Issue #7487 <https://redmine.postgresql.org/issues/7487>`_ -  Added support for visualise the graph using a Pie chart in the query tool.
 
 Housekeeping
 ************

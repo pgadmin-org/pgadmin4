@@ -20,7 +20,7 @@ import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import { InputSelect } from '../../../../../../static/js/components/FormComponents';
 import { DefaultButton, PgButtonGroup, PgIconButton} from '../../../../../../static/js/components/Buttons';
-import { LineChart, BarChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
+import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
   CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, ConvertHexToRGBA} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
@@ -136,7 +136,10 @@ function GenerateGraph({graphType, graphData, ...props}) {
   } else if (graphType == 'B' || graphType == 'SB') {
     return <BarChart options={defaultOptions} data={graphData} stacked={graphType == 'SB'}
       {...props}/>;
-  } else {
+  } else if (graphType == 'P') {
+    return <PieChart data={graphData} {...props}/>;
+  }
+  else {
     return null;
   }
 }
@@ -145,7 +148,47 @@ GenerateGraph.propTypes = {
   graphData: PropTypes.object,
 };
 
-// This function is used to get the data set for the X axis and Y axis
+// This function is used to get the dataset for Line Chart and Stacked Line Chart.
+function getLineChartData(graphType, rows, colName, colPosition, color, colorIndex, styleIndex, queryToolCtx) {
+  return {
+    label: colName,
+    data: rows.map((r)=>r[colPosition]),
+    backgroundColor: graphType == 'SL' ? ConvertHexToRGBA(color, 30) : color,
+    borderColor:color,
+    pointHitRadius: DATA_POINT_SIZE,
+    pointHoverRadius: 5,
+    pointStyle: queryToolCtx.preferences.graphs['use_diff_point_style'] ? DATA_POINT_STYLE[styleIndex] : 'circle',
+    fill: graphType == 'L' ? false : 'origin',
+  };
+}
+
+// This function is used to get the dataset for Bar Chart and Stacked Bar Chart.
+function getBarChartData(rows, colName, colPosition, color) {
+  return {
+    label: colName,
+    data: rows.map((r)=>r[colPosition]),
+    backgroundColor: color,
+    borderColor:color
+  };
+}
+
+// This function is used to get the dataset for Pie Chart.
+function getPieChartData(rows, colName, colPosition, queryToolCtx) {
+  let rowCount = -1;
+  return {
+    label: colName,
+    data: rows.map((r)=>r[colPosition]),
+    backgroundColor: rows.map(()=> {
+      if (rowCount >= (CHART_THEME_COLORS_LENGTH - 1)) {
+        rowCount = -1;
+      }
+      rowCount = rowCount + 1;
+      return CHART_THEME_COLORS[queryToolCtx.preferences.misc.theme][rowCount];
+    }),
+  };
+}
+
+// This function is used to get the graph data set for the X axis and Y axis
 function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx) {
   // Function is used to the find the position of the column
   function getColumnPosition(colName) {
@@ -180,25 +223,14 @@ function getGraphDataSet(graphType, rows, columns, xaxis, yaxis, queryToolCtx) {
       }
       styleIndex = styleIndex + 1;
 
-      if (graphType !== 'L' && graphType !== 'SL') {
-        return {
-          label: colName,
-          data: rows.map((r)=>r[colPosition]),
-          backgroundColor: color,
-          borderColor:color
-        };
+      if (graphType === 'P') {
+        return getPieChartData(rows, colName, colPosition, queryToolCtx);
+      } else if (graphType === 'B' || graphType === 'SB') {
+        return getBarChartData(rows, colName, colPosition, color);
+      } else if (graphType === 'L' || graphType === 'SL') {
+        return getLineChartData(graphType, rows, colName, colPosition, color,
+          colorIndex, styleIndex, queryToolCtx);
       }
-
-      return {
-        label: colName,
-        data: rows.map((r)=>r[colPosition]),
-        backgroundColor: graphType == 'SL' ? ConvertHexToRGBA(color, 30) : color,
-        borderColor:color,
-        pointHitRadius: DATA_POINT_SIZE,
-        pointHoverRadius: 5,
-        pointStyle: queryToolCtx.preferences.graphs['use_diff_point_style'] ? DATA_POINT_STYLE[styleIndex] : 'circle',
-        fill: graphType == 'L' ? false : 'origin',
-      };
     }),
   };
 }
@@ -253,7 +285,7 @@ export function GraphVisualiser({initColumns}) {
       clearTimeout(timeoutId);
       if(LayoutHelper.isTabVisible(queryToolCtx.docker, PANELS.GRAPH_VISUALISER)) {
         timeoutId = setTimeout(function () {
-          setGraphHeight(contentRef.current.offsetHeight);
+          setGraphHeight(contentRef.current.offsetHeight - 8);
         }, 300);
       }
     });
@@ -271,6 +303,13 @@ export function GraphVisualiser({initColumns}) {
       eventBus.deregisterListener(QUERY_TOOL_EVENTS.RESET_GRAPH_VISUALISER, resetGraphVisualiser);
     };
   }, []);
+
+  // Reset the Y axis if graph type is Pie Chart.
+  useEffect(()=>{
+    if (graphType === 'P') {
+      setYAxis('');
+    }
+  }, [graphType]);
 
   // Generate button callback
   const onGenerate = async ()=>{
@@ -290,7 +329,7 @@ export function GraphVisualiser({initColumns}) {
     setLoaderText(gettext('Rendering data points...'));
     // Set the Graph Data
     setGraphData(
-      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xaxis, yaxis, queryToolCtx), prev[1] + 1]
+      (prev)=> [getGraphDataSet(graphType, res.data.data.result, columns, xaxis, _.isArray(yaxis) ? yaxis : [yaxis] , queryToolCtx), prev[1] + 1]
     );
 
     setLoaderText('');
@@ -328,7 +367,7 @@ export function GraphVisualiser({initColumns}) {
       <Box className={classes.topContainer}>
         <Box className={classes.displayFlex}>
           <Box className={classes.displayFlex}>
-            <span className={classes.spanLabel}>{gettext('X Axis')}</span>
+            <span className={classes.spanLabel}>{graphType != 'P' ? gettext('X Axis') : gettext('Label')}</span>
             <InputSelect className={classes.selectCtrl} options={xAxisOptions}
               onChange={(v)=>setXAxis(v)} value={xaxis} optionsReloadBasis={optionsReload}/>
           </Box>
@@ -340,6 +379,7 @@ export function GraphVisualiser({initColumns}) {
                 {label: gettext('Stacked Line Chart'), value: 'SL'},
                 {label: gettext('Bar Chart'), value: 'B'},
                 {label: gettext('Stacked Bar Chart'), value: 'SB'},
+                {label: gettext('Pie Chart'), value: 'P'},
               ]} onChange={(v)=>setGraphType(v)} value={graphType} />
           </Box>
           <DefaultButton onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
@@ -348,8 +388,8 @@ export function GraphVisualiser({initColumns}) {
           </DefaultButton>
         </Box>
         <Box className={classes.displayFlex}>
-          <span className={classes.spanLabel}>{gettext('Y Axis')}</span>
-          <InputSelect className={classes.selectCtrl} controlProps={{'multiple': true, allowSelectAll: true}}
+          <span className={classes.spanLabel}>{graphType != 'P' ? gettext('Y Axis') : gettext('Value')}</span>
+          <InputSelect className={classes.selectCtrl} controlProps={{'multiple': graphType != 'P', allowSelectAll: graphType != 'P'}}
             options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yaxis} optionsReloadBasis={optionsReload}/>
         </Box>
       </Box>

@@ -100,21 +100,9 @@ const defaultOptions = {
   }
 };
 
-const stackedOptions = {
-  scales: {
-    x: {
-      stacked: true,
-    },
-    y: {
-      stacked: true,
-    },
-  }
-};
-
 export default function BaseChart({type='line', id, options, data, redraw=false, plugins={}, ...props}) {
   const chartRef = React.useRef();
   const chartObj = React.useRef();
-  let optionsMerged = _.merge(defaultOptions, options);
 
   const initChart = function() {
     Chart.register(...registerables);
@@ -125,7 +113,7 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
       type: type,
       data: data,
       plugins: [plugins],
-      options: optionsMerged,
+      options: options,
     });
     props.onInit && props.onInit(chartObj.current);
   };
@@ -149,7 +137,7 @@ export default function BaseChart({type='line', id, options, data, redraw=false,
           ...data.datasets[i],
         };
       }
-      chartObj.current.options = optionsMerged;
+      chartObj.current.options = options;
       chartObj.current.update(props.updateOptions || {});
       props.onUpdate && props.onUpdate(chartObj.current);
     }
@@ -179,11 +167,22 @@ BaseChart.propTypes = {
   plugins: PropTypes.object,
 };
 
+const stackedOptions = {
+  scales: {
+    x: {
+      stacked: true,
+    },
+    y: {
+      stacked: true,
+    },
+  }
+};
+
 export function LineChart({stacked, options, ...props}) {
   // if stacked true then merge the stacked specific options.
-  options = stacked ? _.merge(options, stackedOptions) : options;
+  let optionsMerged = _.merge(defaultOptions, options, stacked ? stackedOptions : {});
   return (
-    <BaseChart {...props} options={options} type='line'/>
+    <BaseChart {...props} options={optionsMerged} type='line'/>
   );
 }
 LineChart.propTypes = {
@@ -193,14 +192,28 @@ LineChart.propTypes = {
 
 export function BarChart({stacked, options, ...props}) {
   // if stacked true then merge the stacked specific options.
-  options = stacked ? _.merge(options, stackedOptions) : options;
+  let optionsMerged = _.merge(defaultOptions, options, stacked ? stackedOptions : {});
   return (
-    <BaseChart {...props} options={options} type='bar'/>
+    <BaseChart {...props} options={optionsMerged} type='bar'/>
   );
 }
 BarChart.propTypes = {
   options: PropTypes.object,
   stacked: PropTypes.bool
+};
+
+export function PieChart({options, ...props}) {
+  let optionsMerged = _.merge({
+    responsive: true,
+    maintainAspectRatio: false,
+    normalized: true
+  }, options);
+  return (
+    <BaseChart {...props} options={optionsMerged} type='pie'/>
+  );
+}
+PieChart.propTypes = {
+  options: PropTypes.object
 };
 
 export function ConvertHexToRGBA(hex, opacity) {
