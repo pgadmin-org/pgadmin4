@@ -97,12 +97,14 @@ function GenerateGraph({graphType, graphData, ...props}) {
       x: {
         display: true,
         stacked: false,
+        offset: true,
         ticks: {
           display: true,
         },
       },
       y: {
         stacked: false,
+        beginAtZero: true,
       },
     },
   }));
@@ -123,6 +125,11 @@ function GenerateGraph({graphType, graphData, ...props}) {
           usePointStyle: (showDataPoints && useDiffPointStyle) ? true : false
         },
       },
+    },
+    scales: {
+      x: {
+        offset: false
+      }
     }
   }));
 
