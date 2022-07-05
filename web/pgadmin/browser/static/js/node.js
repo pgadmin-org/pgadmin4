@@ -514,12 +514,15 @@ define('pgadmin.browser.node', [
         new_height = height;
       }
 
+      let x = (body.offsetWidth - new_width) / 2;
+      let y = (body.offsetHeight - new_height) / 4;
+
       var new_panel = dockerObject.addPanel(
         'utility_props', window.wcDocker.DOCK.FLOAT, undefined, {
           w: new_width,
           h: new_height,
-          x: (screen.width < 700 ? '2%' : '25%'),
-          y: (screen.height < 500 ? '2%' : '25%'),
+          x: (x),
+          y: (y),
         }
       );
       /*set movable false to prevent dialog from docking,
