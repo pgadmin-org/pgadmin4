@@ -21,7 +21,7 @@ import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import { InputSelect } from '../../../../../../static/js/components/FormComponents';
 import { DefaultButton, PgButtonGroup, PgIconButton} from '../../../../../../static/js/components/Buttons';
 import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
-  CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, ConvertHexToRGBA} from 'sources/chartjs';
+  CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, LightenDarkenColor} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
 import { LayoutHelper } from '../../../../../../static/js/helpers/Layout';
@@ -160,7 +160,7 @@ function getLineChartData(graphType, rows, colName, colPosition, color, colorInd
   return {
     label: colName,
     data: rows.map((r)=>r[colPosition]),
-    backgroundColor: graphType == 'SL' ? ConvertHexToRGBA(color, 30) : color,
+    backgroundColor: graphType == 'SL' ? LightenDarkenColor(color, 135) : color,
     borderColor:color,
     pointHitRadius: DATA_POINT_SIZE,
     pointHoverRadius: 5,
@@ -300,8 +300,25 @@ export function GraphVisualiser({initColumns}) {
 
     const resetGraphVisualiser = (newColumns)=>{
       setGraphData([{'datasets': []}, 0]);
-      setXAxis(null);
-      setYAxis([]);
+      // Check the previously selected X axis column is exist in the list of
+      // new columns. If exists then set that as it is.
+      setXAxis((prevXAxis)=>{
+        if (prevXAxis === '<Row Number>') {
+          return prevXAxis;
+        } else if (newColumns.map((c)=>c.name).includes(prevXAxis)) {
+          return prevXAxis;
+        }
+        return null;
+      });
+
+      // Check the previously selected Y axis columns are exist in the list of
+      // new columns. If exists then set all those columns as it is.
+      setYAxis((prevYAxis)=>{
+        return newColumns.map((c)=>c.name).filter((colName)=>{
+          return prevYAxis.includes(colName);
+        });
+      });
+
       setColumns(newColumns);
     };
 
