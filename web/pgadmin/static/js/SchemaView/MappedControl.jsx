@@ -224,8 +224,20 @@ export const MappedFormControl = (props) => {
     newProps.type = typeProps;
   }
 
+  let origOnClick = newProps.onClick;
+  newProps.onClick = ()=>{
+    origOnClick?.();
+    /* Consider on click as change for button.
+    Just increase state val by 1 to inform the deps and self depChange */
+    newProps.onChange?.((newProps.state[props.id]||0)+1);
+  };
+
   /* Filter out garbage props if any using ALLOWED_PROPS_FIELD */
   return <MappedFormControlBase {..._.pick(newProps, _.union(ALLOWED_PROPS_FIELD_COMMON, ALLOWED_PROPS_FIELD_FORM))} />;
+};
+
+MappedFormControl.propTypes = {
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 };
 
 export const MappedCellControl = (props) => {

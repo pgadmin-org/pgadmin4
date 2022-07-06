@@ -53,7 +53,28 @@ export function AzureCredentials(props) {
           .catch((error) => {
             _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while verification Microsoft Azure: ${error.response.data.errormsg}`)]);
             reject(false);
-          });});
+          });
+        });
+      },
+      getAuthCode:()=>{
+        let _url_get_azure_verification_codes = url_for('azure.get_azure_verification_codes');
+        const axiosApi = getApiInstance();
+        return new Promise((resolve, reject)=>{
+          const interval = setInterval(()=>{
+            axiosApi.get(_url_get_azure_verification_codes)
+              .then((res)=>{
+                if (res.data.success){
+                  clearInterval(interval);
+                  window.open(res.data.data.verification_uri, 'azure_authentication');
+                  resolve(res);
+                }
+              })
+              .catch((error)=>{
+                clearInterval(interval);
+                reject(error);
+              });
+          }, 1000);
+        });
       }
     });
     setCloudDBCredInstance(azureCloudDBCredSchema);

@@ -10,8 +10,6 @@ To deploy a PostgreSQL server on the Azure cloud, follow the below steps.
     :alt: Cloud Deployment
     :align: center
 
-**Note:** This feature is currently available in Desktop mode only.
-
 Once you launch the tool, select the Azure PostgreSQL option.
 Click on the *Next* button to proceed further.
 

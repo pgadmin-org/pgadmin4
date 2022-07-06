@@ -8,12 +8,11 @@
 ##########################################################################
 
 """ Azure PostgreSQL provider """
-
 from azure.mgmt.rdbms.postgresql_flexibleservers import \
     PostgreSQLManagementClient
 from azure.mgmt.rdbms.postgresql_flexibleservers.models import Sku, SkuTier, \
     CreateMode, Storage, Server, FirewallRule, HighAvailability
-from azure.identity import AzureCliCredential, InteractiveBrowserCredential, \
+from azure.identity import AzureCliCredential, DeviceCodeCredential, \
     AuthenticationRecord
 from azure.mgmt.resource import ResourceManagementClient
 from azure.core.exceptions import ResourceNotFoundError
@@ -37,12 +36,13 @@ class AzureProvider(AbsProvider):
         self._client_secret = None
         self._subscription_id = None
         self._default_region = None
-        self._use_interactive_browser_credential = False
+        self._interactive_browser_credential = False
         self._available_capabilities = None
         self._credentials = None
         self._authentication_record_json = None
         self._cli_credentials = None
-        self.azure_cred_cache_name = None
+        self._azure_cred_cache_name = None
+        self._azure_cred_cache_location = None
 
         # Get the credentials
         if 'AUTHENTICATION_RECORD_JSON' in os.environ:
@@ -56,7 +56,7 @@ class AzureProvider(AbsProvider):
             self._tenant_id = os.environ['AZURE_TENANT_ID']
 
         if 'AUTH_TYPE' in os.environ:
-            self._use_interactive_browser_credential = False \
+            self._interactive_browser_credential = False \
                 if os.environ['AUTH_TYPE'] == 'azure_cli_credential' else True
 
         if 'AZURE_DATABASE_PASSWORD' in os.environ:
@@ -150,49 +150,48 @@ class AzureProvider(AbsProvider):
     ##########################################################################
     def _get_azure_credentials(self):
         try:
-            if self._use_interactive_browser_credential:
-                if self._authentication_record_json is None:
-                    _credentials = self._azure_interactive_browser_credential()
-                    _auth_record_ = _credentials.authenticate()
-                    self._authentication_record_json = \
-                        _auth_record_.serialize()
-                else:
-                    deserialized_auth_record = AuthenticationRecord.\
-                        deserialize(self._authentication_record_json)
-                    _credentials = \
-                        self._azure_interactive_browser_credential(
-                            deserialized_auth_record)
+            if self._interactive_browser_credential:
+                _credentials = self._azure_interactive_auth()
             else:
-                if self._cli_credentials is None:
-                    self._cli_credentials = AzureCliCredential()
-                _credentials = self._cli_credentials
+                _credentials = self._azure_cli_auth()
         except Exception as e:
             return False, str(e)
         return True, _credentials
 
-    def _azure_interactive_browser_credential(
-            self, deserialized_auth_record=None):
-        if deserialized_auth_record:
-            _credential = InteractiveBrowserCredential(
+    def _azure_cli_auth(self):
+        if self._cli_credentials is None:
+            self._cli_credentials = AzureCliCredential()
+        return self._cli_credentials
+
+    def _azure_interactive_auth(self):
+        if self._authentication_record_json is None:
+            _interactive_credential = DeviceCodeCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                _cache=load_persistent_cache(
-                    TokenCachePersistenceOptions(
-                        name=self._azure_cred_cache_name,
-                        allow_unencrypted_storage=True,
-                        cache_location=self._azure_cred_cache_location)),
-                authentication_record=deserialized_auth_record)
-        else:
-            _credential = InteractiveBrowserCredential(
-                tenant_id=self._tenant_id,
-                timeout=180,
-                _cache=load_persistent_cache(
-                    TokenCachePersistenceOptions(
-                        name=self._azure_cred_cache_name,
-                        allow_unencrypted_storage=True,
-                        cache_location=self._azure_cred_cache_location))
+                prompt_callback=None,
+                _cache=load_persistent_cache(TokenCachePersistenceOptions(
+                    name=self._azure_cred_cache_name,
+                    allow_unencrypted_storage=True,
+                    cache_location=self._azure_cred_cache_location)
+                )
             )
-        return _credential
+            _auth_record = _interactive_credential.authenticate()
+            self._authentication_record_json = _auth_record.serialize()
+        else:
+            deserialized_auth_record = AuthenticationRecord.deserialize(
+                self._authentication_record_json)
+            _interactive_credential = DeviceCodeCredential(
+                tenant_id=self._tenant_id,
+                timeout=180,
+                prompt_callback=None,
+                _cache=load_persistent_cache(TokenCachePersistenceOptions(
+                    name=self._azure_cred_cache_name,
+                    allow_unencrypted_storage=True,
+                    cache_location=self._azure_cred_cache_location)
+                ),
+                authentication_record=deserialized_auth_record
+            )
+        return _interactive_credential
 
     def _get_azure_client(self, type):
         """ Create/cache/return an Azure client object """

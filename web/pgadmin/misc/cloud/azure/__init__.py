@@ -8,9 +8,8 @@
 # ##########################################################################
 
 # Azure implementation
-import random
-
 import config
+import random
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
@@ -26,7 +25,7 @@ import os
 
 from azure.mgmt.rdbms.postgresql_flexibleservers import \
     PostgreSQLManagementClient
-from azure.identity import AzureCliCredential, InteractiveBrowserCredential,\
+from azure.identity import AzureCliCredential, DeviceCodeCredential,\
     AuthenticationRecord
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.subscription import SubscriptionClient
@@ -57,7 +56,8 @@ class AzurePostgresqlModule(PgAdminModule):
                 'azure.db_versions',
                 'azure.instance_types',
                 'azure.availability_zones',
-                'azure.storage_types']
+                'azure.storage_types',
+                'azure.get_azure_verification_codes']
 
 
 blueprint = AzurePostgresqlModule(MODULE_NAME, __name__,
@@ -99,6 +99,20 @@ def verify_credentials():
         if not status and 'double check your tenant name' in error:
             error = 'Authentication failed.Please double check tenant id.'
     return make_json_response(success=status, errormsg=error)
+
+
+@blueprint.route('/get_azure_verification_codes/',
+                 methods=['GET'], endpoint='get_azure_verification_codes')
+@login_required
+def get_azure_verification_codes():
+    """Get azure code for authentication."""
+    azure_auth_code = None
+    status = False
+    if 'azure' in session and 'azure_auth_code' in session['azure']:
+        azure_auth_code = session['azure']['azure_auth_code']
+        status = True
+    return make_json_response(success=status,
+                              data=azure_auth_code)
 
 
 @blueprint.route('/check_cluster_name_availability/',
@@ -237,8 +251,7 @@ class Azure:
         self._clients = {}
         self._tenant_id = tenant_id
         self._session_token = session_token
-        self._use_interactive_browser_credential = \
-            interactive_browser_credential
+        self._use_interactive_credential = interactive_browser_credential
         self.authentication_record_json = None
         self._cli_credentials = None
         self._credentials = None
@@ -246,72 +259,74 @@ class Azure:
         self.subscription_id = None
         self._availability_zone = None
         self._available_capabilities_list = []
-        self.cache_name = current_user.username + "_msal.cache"
+        self.azure_cache_name = current_user.username \
+            + str(random.randint(1, 9999)) + "_msal.cache"
         self.azure_cache_location = config.AZURE_CREDENTIAL_CACHE_DIR + '/'
 
     ##########################################################################
     # Azure Helper functions
     ##########################################################################
-
     def validate_azure_credentials(self):
         """
         Validates azure credentials
         :return: True if valid credentials else false
         """
         status, identity = self._get_azure_credentials()
-        session['azure']['azure_cache_file_name'] = self.cache_name
+        session['azure']['azure_cache_file_name'] = self.azure_cache_name
         error = ''
         if not status:
             error = identity
         return status, error
 
     def _get_azure_credentials(self):
-        """
-        Gets azure credentials depending on
-        self._use_interactive_browser_credential
-        :return:
-        """
         try:
-            if self._use_interactive_browser_credential:
-                if self.authentication_record_json is None:
-                    _credentials = self._azure_interactive_browser_credential()
-                    _auth_record_ = _credentials.authenticate()
-                    self.authentication_record_json = _auth_record_.serialize()
-                else:
-                    deserialized_auth_record = AuthenticationRecord. \
-                        deserialize(self.authentication_record_json)
-                    _credentials = \
-                        self._azure_interactive_browser_credential(
-                            deserialized_auth_record)
+            if self._use_interactive_credential:
+                _credentials = self._azure_interactive_auth()
             else:
-                if self._cli_credentials is None:
-                    self._cli_credentials = AzureCliCredential()
-                    self.list_subscriptions()
-                _credentials = self._cli_credentials
+                _credentials = self._azure_cli_auth()
         except Exception as e:
             return False, str(e)
         return True, _credentials
 
-    def _azure_interactive_browser_credential(
-            self, deserialized_auth_record=None):
-        if deserialized_auth_record:
-            _credential = InteractiveBrowserCredential(
+    def _azure_cli_auth(self):
+        if self._cli_credentials is None:
+            self._cli_credentials = AzureCliCredential()
+            self.list_subscriptions()
+        return self._cli_credentials
+
+    @staticmethod
+    def _azure_interactive_auth_prompt_callback(
+            verification_uri, user_code, expires_at):
+        azure_auth_code = {'verification_uri': verification_uri,
+                           'user_code': user_code,
+                           'expires_at': expires_at}
+        session['azure']['azure_auth_code'] = azure_auth_code
+
+    def _azure_interactive_auth(self):
+        if self.authentication_record_json is None:
+            _interactive_credential = DeviceCodeCredential(
                 tenant_id=self._tenant_id,
                 timeout=180,
-                _cache=load_persistent_cache(
-                    TokenCachePersistenceOptions(
-                        name=self.cache_name,
-                        allow_unencrypted_storage=True)),
-                authentication_record=deserialized_auth_record)
-        else:
-            _credential = InteractiveBrowserCredential(
-                tenant_id=self._tenant_id,
-                timeout=180,
+                prompt_callback=self._azure_interactive_auth_prompt_callback,
                 _cache=load_persistent_cache(TokenCachePersistenceOptions(
-                    name=self.cache_name,
-                    allow_unencrypted_storage=True))
+                    name=self.azure_cache_name, allow_unencrypted_storage=True)
+                )
             )
-        return _credential
+            _auth_record = _interactive_credential.authenticate()
+            self.authentication_record_json = _auth_record.serialize()
+        else:
+            deserialized_auth_record = AuthenticationRecord.deserialize(
+                self.authentication_record_json)
+            _interactive_credential = DeviceCodeCredential(
+                tenant_id=self._tenant_id,
+                timeout=180,
+                prompt_callback=self._azure_interactive_auth_prompt_callback,
+                _cache=load_persistent_cache(TokenCachePersistenceOptions(
+                    name=self.azure_cache_name, allow_unencrypted_storage=True)
+                ),
+                authentication_record=deserialized_auth_record
+            )
+        return _interactive_credential
 
     def _get_azure_client(self, type):
         """ Create/cache/return an Azure client object """
@@ -684,7 +699,7 @@ def deploy_on_azure(data):
         azure = session['azure']['azure_obj']
         env['AZURE_SUBSCRIPTION_ID'] = azure.subscription_id
         env['AUTH_TYPE'] = data['secret']['auth_type']
-        env['AZURE_CRED_CACHE_NAME'] = azure.cache_name
+        env['AZURE_CRED_CACHE_NAME'] = azure.azure_cache_name
         env['AZURE_CRED_CACHE_LOCATION'] = azure.azure_cache_location
         if azure.authentication_record_json is not None:
             env['AUTHENTICATION_RECORD_JSON'] = \
@@ -698,6 +713,14 @@ def deploy_on_azure(data):
         p.set_env_variables(None, env=env)
         p.update_server_id(p.id, sid)
         p.start()
+
+        # add pid: cache file dict in session['azure_cache_files_list']
+        if 'azure_cache_files_list' in session and \
+                session['azure_cache_files_list'] is not None:
+            session['azure_cache_files_list'][p.id] = azure.azure_cache_name
+        else:
+            session['azure_cache_files_list'] = {p.id: azure.azure_cache_name}
+
         return True, {'label': _label, 'sid': sid}
     except Exception as e:
         current_app.logger.exception(e)
@@ -706,12 +729,30 @@ def deploy_on_azure(data):
         del session['azure']['azure_obj']
 
 
-def clear_azure_session():
+def clear_azure_session(pid=None):
     """Clear session data."""
+    cache_file_to_delete = None
+    if 'azure_cache_files_list' in session and \
+            pid in session['azure_cache_files_list']:
+        cache_file_to_delete = session['azure_cache_files_list'][pid]
+        delete_azure_cache(cache_file_to_delete)
+        del session['azure_cache_files_list'][pid]
+
     if 'azure' in session:
-        file_name = session['azure']['azure_cache_file_name']
-        file = config.AZURE_CREDENTIAL_CACHE_DIR + '/' + file_name
-        # Delete cache file if exists
-        if os.path.exists(file):
-            os.remove(file)
+        if cache_file_to_delete is None and \
+                'azure_cache_file_name' in session['azure']:
+            cache_file_to_delete = session['azure']['azure_cache_file_name']
+            delete_azure_cache(cache_file_to_delete)
         session.pop('azure')
+
+
+def delete_azure_cache(file_name):
+    """
+    Delete specified file from azure cache directory
+    :param file_name:
+    :return:
+    """
+    file = config.AZURE_CREDENTIAL_CACHE_DIR + '/' + file_name
+    # Delete cache file if exists
+    if os.path.exists(file):
+        os.remove(file)

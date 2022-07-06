@@ -1118,12 +1118,13 @@ PlainString.propTypes = {
   value: PropTypes.any,
 };
 
-export function FormNote({ text, className }) {
+export function FormNote({ text, className, controlProps }) {
   const classes = useStyles();
+  /* If raw, then remove the styles and icon */
   return (
     <Box className={className}>
-      <Paper elevation={0} className={classes.noteRoot}>
-        <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>
+      <Paper elevation={0} className={controlProps?.raw ? '' : classes.noteRoot}>
+        {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
         <Box>{HTMLReactParse(text || '')}</Box>
       </Paper>
     </Box>
@@ -1132,6 +1133,7 @@ export function FormNote({ text, className }) {
 FormNote.propTypes = {
   text: PropTypes.string,
   className: CustomPropTypes.className,
+  controlProps: PropTypes.object,
 };
 
 const useStylesFormFooter = makeStyles((theme) => ({

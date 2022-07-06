@@ -134,11 +134,7 @@ def deploy_on_cloud():
     elif data['cloud'] == 'biganimal':
         status, resp = deploy_on_biganimal(data)
     elif data['cloud'] == 'azure':
-        if config.SERVER_MODE:
-            status = False
-            resp = gettext('Invalid Operation for Server mode.')
-        else:
-            status, resp = deploy_on_azure(data)
+        status, resp = deploy_on_azure(data)
     else:
         status = False
         resp = gettext('No cloud implementation.')
@@ -172,6 +168,7 @@ def deploy_on_cloud():
 def update_server(data):
     """Update Server."""
     server_data = data
+    pid = data['instance']['pid']
     server = Server.query.filter_by(
         user_id=current_user.id,
         id=server_data['instance']['sid']
@@ -204,16 +201,16 @@ def update_server(data):
         _server['status'] = False
     else:
         _server['status'] = True
-    clear_cloud_session()
+    clear_cloud_session(pid)
 
     return True, _server
 
 
-def clear_cloud_session():
+def clear_cloud_session(pid=None):
     """Clear cloud sessions."""
     clear_aws_session()
     clear_biganimal_session()
-    clear_azure_session()
+    clear_azure_session(pid)
 
 
 @blueprint.route(

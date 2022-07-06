@@ -494,20 +494,22 @@ function SchemaDialogView({
 
   useEffect(()=>{
     if(sessData.__deferred__?.length > 0) {
+      let items = sessData.__deferred__;
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE,
       });
 
-      let item = sessData.__deferred__[0];
-      item.promise.then((resFunc)=>{
-        sessDispatch({
-          type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
-          path: item.action.path,
-          depChange: item.action.depChange,
-          listener: {
-            ...item.listener,
-            callback: resFunc,
-          },
+      items.forEach((item)=>{
+        item.promise.then((resFunc)=>{
+          sessDispatch({
+            type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
+            path: item.action.path,
+            depChange: item.action.depChange,
+            listener: {
+              ...item.listener,
+              callback: resFunc,
+            },
+          });
         });
       });
     }

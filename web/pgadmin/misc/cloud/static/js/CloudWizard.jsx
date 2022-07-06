@@ -325,10 +325,9 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
     setErrMsg([]);
   });
 
-  let cloud_providers = [{label: 'Amazon RDS', value: 'rds', icon: <AWSIcon className={classes.icon} />}, {label: 'EDB BigAnimal', value: 'biganimal', icon: <BigAnimalIcon className={classes.icon} />}];
-  if (pgAdmin.server_mode == 'False'){
-    cloud_providers.push({'label': 'Azure PostgreSQL', value: 'azure', icon: <AzureIcon className={classes.icon} /> });
-  }
+  let cloud_providers = [{label: 'Amazon RDS', value: 'rds', icon: <AWSIcon className={classes.icon} />},
+    {label: 'EDB BigAnimal', value: 'biganimal', icon: <BigAnimalIcon className={classes.icon} />},
+    {'label': 'Azure PostgreSQL', value: 'azure', icon: <AzureIcon className={classes.icon} /> }];
 
   return (
     <CloudWizardEventsContext.Provider value={eventBus.current}>
@@ -367,7 +366,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
               </Box>}
             </Box>
             {cloudProvider == 'rds' && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
-            <Box>
+            <Box flexGrow={1}>
               {cloudProvider == 'azure' && <AzureCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setAzureCredData={setAzureCredData}/>}
             </Box>
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />

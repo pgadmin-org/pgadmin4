@@ -507,6 +507,7 @@ class BatchProcess(object):
         err = 0
         cloud_server_id = 0
         cloud_instance = ''
+        pid = self.id
 
         enc = sys.getdefaultencoding()
         if enc == 'ascii':
@@ -519,7 +520,7 @@ class BatchProcess(object):
             self.stderr, stderr, err, ctime, _process.exit_code, enc
         )
 
-        from pgadmin.misc.cloud import update_server
+        from pgadmin.misc.cloud import update_server, clear_cloud_session
         if out_completed and not _process.exit_code:
             for value in stdout:
                 if 'instance' in value[1] and value[1] != '':
@@ -530,12 +531,16 @@ class BatchProcess(object):
                         'instance' in cloud_instance:
                     cloud_instance['instance']['sid'] = cloud_server_id
                     cloud_instance['instance']['status'] = True
+                    cloud_instance['instance']['pid'] = pid
                     return update_server(cloud_instance)
         elif err_completed and _process.exit_code > 0:
             cloud_instance = {'instance': {}}
             cloud_instance['instance']['sid'] = _process.server_id
             cloud_instance['instance']['status'] = False
+            cloud_instance['instance']['pid'] = pid
             return update_server(cloud_instance)
+        else:
+            clear_cloud_session(pid)
         return True, {}
 
     def status(self, out=0, err=0):

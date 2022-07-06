@@ -23,4 +23,5 @@ Bug fixes
 
   | `Issue #7517 <https://redmine.postgresql.org/issues/7517>`_ -  Enable the start debugging button once execution is completed.
   | `Issue #7518 <https://redmine.postgresql.org/issues/7518>`_ -  Ensure that dashboard graph API is not called after the panel has been closed.
-  | `Issue #7523 <https://redmine.postgresql.org/issues/7517>`_ -  Fixed typo error for Statistics on the table header.
+  | `Issue #7522 <https://redmine.postgresql.org/issues/7522>`_ -  Added support for Azure PostgreSQL deployment in server mode.
+  | `Issue #7523 <https://redmine.postgresql.org/issues/7523>`_ -  Fixed typo error for Statistics on the table header.

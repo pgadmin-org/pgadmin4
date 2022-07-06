@@ -21,6 +21,9 @@ class AzureCredSchema extends BaseUISchema {
       auth_type: 'interactive_browser_credential',
       azure_tenant_id: '',
       azure_subscription_id: '',
+      is_authenticating: false,
+      is_authenticated: false,
+      auth_code: '',
       ...initValues,
     });
 
@@ -97,30 +100,83 @@ class AzureCredSchema extends BaseUISchema {
         id: 'auth_btn',
         mode: ['create'],
         deps: ['auth_type', 'azure_tenant_id'],
+        type: 'button',
         btnName: gettext('Click here to authenticate yourself to Microsoft Azure'),
-        type: (state) => {
-          return {
-            type: 'button',
-            onClick: () => {
-              obj.fieldOptions.authenticateAzure(state.auth_type, state.azure_tenant_id).then((res)=>{state._disabled_auth_btn= res;});
-            },
-          };
-        },
         helpMessage: gettext(
           'After clicking the button above you will be redirected to the Microsoft Azure authentication page in a new browser tab if the Interactive Browser option is selected.'
         ),
         depChange: (state, source)=> {
-          if(source[0] == 'auth_type' || source[0] == 'azure_tenant_id'){
-            state._disabled_auth_btn = false;
+          if(source == 'auth_type' || source == 'azure_tenant_id'){
+            return {is_authenticated: false, auth_code: ''};
           }
+          if(source == 'auth_btn') {
+            return {is_authenticating: true};
+          }
+        },
+        deferredDepChange: (state, source)=>{
+          return new Promise((resolve, reject)=>{
+            /* button clicked */
+            if(source == 'auth_btn') {
+              obj.fieldOptions.authenticateAzure(state.auth_type, state.azure_tenant_id)
+                .then(()=>{
+                  resolve(()=>({
+                    is_authenticated: true,
+                    is_authenticating: false,
+                    auth_code: ''
+                  }));
+                })
+                .catch((err)=>{
+                  reject(err);
+                });
+            }
+          });
         },
         disabled: (state)=> {
           if(state.auth_type == 'interactive_browser_credential' && state.azure_tenant_id == ''){
             return true;
           }
-          return state._disabled_auth_btn;
+          return state.is_authenticating || state.is_authenticated;
         },
       },
+      {
+        id: 'is_authenticating',
+        visible: false,
+        type: '',
+        deps:['auth_btn'],
+        deferredDepChange: (state, source)=>{
+          return new Promise((resolve, reject)=>{
+            if(source == 'auth_btn' && state.auth_type == 'interactive_browser_credential' && state.is_authenticating ) {
+              obj.fieldOptions.getAuthCode()
+                .then((res)=>{
+                  resolve(()=>{
+                    return {
+                      is_authenticating: false,
+                      auth_code: res.data.data.user_code,
+                    };
+                  });
+                })
+                .catch((err)=>{
+                  reject(err);
+                });
+            }
+          });
+        },
+      },
+      {
+        id: 'auth_code',
+        mode: ['create'],
+        deps: ['auth_btn'],
+        type: (state)=>({
+          type: 'note',
+          text: `To complete the authenticatation, use a web browser to open the page https://microsoft.com/devicelogin and enter the code : <strong>${state.auth_code}</strong>`,
+        }),
+        visible: (state)=>{
+          return Boolean(state.auth_code);
+        },
+        controlProps: {
+          raw: true,
+        }
+      }
     ];
   }
 }
