@@ -243,32 +243,32 @@ function launchPgAdminWindow() {
     // set up handler for new-win-policy event.
     // Set the width and height for the new window.
     pgadminWindow.on('new-win-policy', function(frame, url, policy) {
-        if(!frame) {
-          let openDocsInBrowser = misc.ConfigureStore.get('openDocsInBrowser', true);
-          let isDocURL = false;
-          docsURLSubStrings.forEach(function(key) {
-            if(url.indexOf(key) >= 0) {
-              isDocURL = true;
-            }
-          });
-
-          if (openDocsInBrowser && isDocURL) {
-            // Do not open the window
-            policy.ignore();
-            // Open URL in the external browser.
-            nw.Shell.openExternal(url);
-          } else {
-            policy.setNewWindowManifest({
-                'icon': '../../assets/pgAdmin4.png',
-                'frame': true,
-                'position': 'center',
-                'min_width': 640,
-                'min_height': 480,
-                'width': pgadminWindow.width,
-                'height': pgadminWindow.height,
-            });
+      if(!frame) {
+        let openDocsInBrowser = misc.ConfigureStore.get('openDocsInBrowser', true);
+        let isDocURL = false;
+        docsURLSubStrings.forEach(function(key) {
+          if(url.indexOf(key) >= 0) {
+            isDocURL = true;
           }
+        });
+
+        if (openDocsInBrowser && isDocURL) {
+          // Do not open the window
+          policy.ignore();
+          // Open URL in the external browser.
+          nw.Shell.openExternal(url);
+        } else {
+          policy.setNewWindowManifest({
+            'icon': '../../assets/pgAdmin4.png',
+            'frame': true,
+            'position': 'center',
+            'min_width': 640,
+            'min_height': 480,
+            'width': pgadminWindow.width,
+            'height': pgadminWindow.height,
+          });
         }
+      }
     });
 
     pgadminWindow.on('loaded', function() {
@@ -299,6 +299,24 @@ function launchPgAdminWindow() {
 // Get the gui object of NW.js
 let gui = require('nw.gui');
 let splashWindow = gui.Window.get();
+
+// Enable dragging on the splash screen.
+let isDragging = false;
+let dragOrigin = {x:0, y:0};
+document.mouseleave = ()=> isDragging = false;
+document.onmouseup = ()=> isDragging = false;
+
+document.onmousedown = (e)=> {
+  isDragging = true;
+  dragOrigin.x = e.x;
+  dragOrigin.y = e.y;
+};
+
+document.onmousemove = (e)=> {
+  if (isDragging) {
+    splashWindow.moveTo(e.screenX - dragOrigin.x, e.screenY - dragOrigin.y);
+  }
+};
 
 // Always clear the cache before starting the application.
 nw.App.clearCache();

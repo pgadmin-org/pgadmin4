@@ -296,7 +296,7 @@ const setZoomLevelForAllWindows = () => {
     for (let arr_val of winArray) {
       arr_val.zoomLevel = pgAdminWindowObject.zoomLevel;
     }
-  })
+  });
 };
 
 // This function used to zoom in the pgAdmin window.
