@@ -18,6 +18,8 @@ import { Box } from '@material-ui/core';
 import ShowChartRoundedIcon from '@material-ui/icons/ShowChartRounded';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import ExpandLessRoundedIcon from '@material-ui/icons/ExpandLessRounded';
+import ExpandMoreRoundedIcon from '@material-ui/icons/ExpandMoreRounded';
 import { InputSelect } from '../../../../../../static/js/components/FormComponents';
 import { DefaultButton, PgButtonGroup, PgIconButton} from '../../../../../../static/js/components/Buttons';
 import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
@@ -55,10 +57,15 @@ const useStyles = makeStyles((theme)=>({
   },
   spanLabel: {
     alignSelf: 'center',
-    marginRight: '4px',
+    minWidth: '5%',
+    whiteSpace: 'nowrap',
   },
   selectCtrl: {
     minWidth: '200px',
+  },
+  axisSelectCtrl: {
+    minWidth: '200px',
+    marginTop: '2px',
   },
 }));
 
@@ -255,6 +262,7 @@ export function GraphVisualiser({initColumns}) {
   const [loaderText, setLoaderText] = useState('');
   const [columns, setColumns] = useState(initColumns);
   const [graphHeight, setGraphHeight] = useState();
+  const [expandedState, setExpandedState] = useState(true);
 
 
   // Create X axis options for drop down.
@@ -390,32 +398,41 @@ export function GraphVisualiser({initColumns}) {
       <Loader message={loaderText} />
       <Box className={classes.topContainer}>
         <Box className={classes.displayFlex}>
-          <Box className={classes.displayFlex}>
-            <span className={classes.spanLabel}>{graphType != 'P' ? gettext('X Axis') : gettext('Label')}</span>
-            <InputSelect className={classes.selectCtrl} options={xAxisOptions}
-              onChange={(v)=>setXAxis(v)} value={xaxis} optionsReloadBasis={optionsReload}/>
-          </Box>
-          <Box className={classes.displayFlex} marginLeft="auto">
-            <span className={classes.spanLabel} >{gettext('Graph Type')}</span>
-            <InputSelect className={classes.selectCtrl} controlProps={{allowClear: false}}
-              options={[
-                {label: gettext('Line Chart'), value: 'L'},
-                {label: gettext('Stacked Line Chart'), value: 'SL'},
-                {label: gettext('Bar Chart'), value: 'B'},
-                {label: gettext('Stacked Bar Chart'), value: 'SB'},
-                {label: gettext('Pie Chart'), value: 'P'},
-              ]} onChange={(v)=>setGraphType(v)} value={graphType} />
-          </Box>
-          <DefaultButton onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
+          <span className={classes.spanLabel} >{gettext('Graph Type')}</span>
+          <InputSelect className={classes.selectCtrl} controlProps={{allowClear: false}}
+            options={[
+              {label: gettext('Line Chart'), value: 'L'},
+              {label: gettext('Stacked Line Chart'), value: 'SL'},
+              {label: gettext('Bar Chart'), value: 'B'},
+              {label: gettext('Stacked Bar Chart'), value: 'SB'},
+              {label: gettext('Pie Chart'), value: 'P'},
+            ]} onChange={(v)=>{
+              setGraphType(v);
+              if (graphType === 'P' || v === 'P') {
+                setExpandedState(true);
+              }
+            }} value={graphType} />
+          <DefaultButton style={{marginLeft: 'auto'}} onClick={onGenerate} startIcon={<ShowChartRoundedIcon />}
             disabled={ _.isEmpty(xaxis) || yaxis.length <= 0 }>
             {gettext('Generate')}
           </DefaultButton>
+          <PgIconButton title={expandedState ? gettext('Collapse') : gettext('Expand')}
+            icon={expandedState ? <ExpandLessRoundedIcon style={{height: '1.2rem'}}/> : <ExpandMoreRoundedIcon style={{height: '1.2rem'}}/>}
+            onClick={()=>{setExpandedState(!expandedState);}}/>
         </Box>
-        <Box className={classes.displayFlex}>
-          <span className={classes.spanLabel}>{graphType != 'P' ? gettext('Y Axis') : gettext('Value')}</span>
-          <InputSelect className={classes.selectCtrl} controlProps={{'multiple': graphType != 'P', allowSelectAll: graphType != 'P'}}
-            options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yaxis} optionsReloadBasis={optionsReload}/>
-        </Box>
+        { expandedState && <>
+          <Box className={classes.displayFlex}>
+            <span className={classes.spanLabel}>{graphType != 'P' ? gettext('X Axis') : gettext('Label')}</span>
+            <InputSelect className={classes.axisSelectCtrl} options={xAxisOptions}
+              onChange={(v)=>setXAxis(v)} value={xaxis} optionsReloadBasis={optionsReload}/>
+          </Box>
+          <Box className={classes.displayFlex}>
+            <span className={classes.spanLabel}>{graphType != 'P' ? gettext('Y Axis') : gettext('Value')}</span>
+            <InputSelect className={classes.axisSelectCtrl} controlProps={{'multiple': graphType != 'P', allowSelectAll: graphType != 'P'}}
+              options={yAxisOptions} onChange={(v)=>setYAxis(v)} value={yaxis} optionsReloadBasis={optionsReload}/>
+          </Box>
+        </>
+        }
       </Box>
       <Box display="flex" marginLeft="3px" marginTop="3px">
         <PgButtonGroup size="small">

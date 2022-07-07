@@ -338,6 +338,14 @@ Bar Charts, Stacked Bar Charts, and Pie Charts.
     :alt: Query tool graph visualiser panel
     :align: center
 
+* Graph Type
+
+Choose the type of the graph that you would like to generate.
+
+.. image:: images/query_graph_type.png
+    :alt: Query tool graph visualiser graph type
+    :align: center
+
 * X Axis
 
 Choose the column whose value you wish to display on X-axis from the *X Axis*
@@ -356,14 +364,6 @@ from the drop-down menu to select all the columns.
 
 .. image:: images/query_graph_yaxis.png
     :alt: Query tool graph visualiser yaxis
-    :align: center
-
-* Graph Type
-
-Choose the type of the graph that you would like to generate.
-
-.. image:: images/query_graph_type.png
-    :alt: Query tool graph visualiser graph type
     :align: center
 
 * Download and Zoom button
