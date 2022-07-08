@@ -118,9 +118,8 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # this will set focus to correct iframe.
         self.page.fill_codemirror_area_with('')
 
-        self.page.retry_click(
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
+        self.assertTrue(self.page.open_explain_options(),
+                        'Unable to open Explain Options dropdown')
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_verbose,
@@ -261,10 +260,8 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
         time.sleep(0.5)
-        explain_op_btn_click = self.page.retry_click(
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
-        self.assertTrue(explain_op_btn_click, 'Explain Op button click failed')
+        self.assertTrue(self.page.open_explain_options(),
+                        'Unable to open Explain Options dropdown')
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_verbose,
@@ -298,10 +295,8 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.fill_codemirror_area_with(query)
 
-        explain_op_btn_click = self.page.retry_click(
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
-        self.assertTrue(explain_op_btn_click, 'Explain Op button click failed')
+        self.assertTrue(self.page.open_explain_options(),
+                        'Unable to open Explain Options')
 
         # disable Explain options and auto rollback only if they are enabled.
         for op in (QueryToolLocators.btn_explain_buffers,
@@ -684,9 +679,8 @@ SELECT 1, pg_sleep(300)"""
         self.page.fill_codemirror_area_with(
             "SELECT count(*) FROM pg_catalog.pg_class;")
 
-        self.page.retry_click(
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_options_dropdown),
-            (By.CSS_SELECTOR, QueryToolLocators.btn_explain_verbose))
+        self.assertTrue(self.page.open_explain_options(),
+                        'Unable to open Explain Options')
 
         # disable Explain options and only enable COST option
         for op in (QueryToolLocators.btn_explain_verbose,

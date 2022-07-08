@@ -7,6 +7,7 @@
 #
 ##########################################################################
 from regression.feature_utils.locators import NavMenuLocators
+from selenium.webdriver.common.by import By
 
 
 def close_bgprocess_popup(tester):
@@ -16,31 +17,36 @@ def close_bgprocess_popup(tester):
     # In cases where backup div is not closed (sometime due to some error)
     try:
         tester.page.wait_for_element_to_disappear(
-            lambda x: tester.driver.find_element_by_xpath(
-                ".ajs-message.ajs-bg-bgprocess.ajs-visible"))
+            lambda x: tester.driver.find_element(
+                By.XPATH, ".ajs-message.ajs-bg-bgprocess.ajs-visible"))
     except Exception:
-        tester.driver.find_element_by_css_selector(
+        tester.driver.find_element(
+            By.CSS_SELECTOR,
             NavMenuLocators.process_watcher_error_close_xpath).click()
 
     # In cases where restore div is not closed (sometime due to some error)
     try:
         tester.page.wait_for_element_to_disappear(
-            lambda x: tester.driver.find_element_by_xpath(
+            lambda x: tester.driver.find_element(
+                By.XPATH,
                 "//div[@class='card-header bg-primary d-flex']/div"
                 "[contains(text(), 'Restoring backup')]"))
     except Exception:
-        tester.driver.find_element_by_css_selector(
+        tester.driver.find_element(
+            By.CSS_SELECTOR,
             NavMenuLocators.process_watcher_error_close_xpath).click()
 
     # In cases where maintenance window is not closed (sometime due to some
     # error)
     try:
         tester.page.wait_for_element_to_disappear(
-            lambda x: tester.driver.find_element_by_xpath(
+            lambda x: tester.driver.find_element(
+                By.XPATH,
                 "//div[@class='card-header bg-primary d-flex']/div"
                 "[contains(text(), 'Maintenance')]"))
     except Exception:
-        tester.driver.find_element_by_css_selector(
+        tester.driver.find_element(
+            By.CSS_SELECTOR,
             NavMenuLocators.process_watcher_error_close_xpath).click()
 
 

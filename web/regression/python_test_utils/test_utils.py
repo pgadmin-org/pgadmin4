@@ -359,7 +359,7 @@ def create_debug_function(server, db_name, function_name="test_func"):
         pg_cursor = connection.cursor()
         try:
             pg_cursor.execute('''CREATE EXTENSION pldbgapi;''')
-        except Exception as e:
+        except Exception:
             pass
         pg_cursor.execute('''
             CREATE OR REPLACE FUNCTION public."%s"()

@@ -10,6 +10,7 @@
 import json
 import os
 import time
+import traceback
 
 from selenium.webdriver import ActionChains
 from regression.python_test_utils import test_utils
@@ -119,22 +120,29 @@ CREATE TABLE public.nonintpkey
         connection.close()
 
     def runTest(self):
-        self.page.wait_for_spinner_to_disappear()
-        self.page.add_server(self.server)
-        self.page.expand_tables_node("Server", self.server['name'],
-                                     self.server['db_password'], self.test_db,
-                                     'public')
+        try:
+            self.page.wait_for_spinner_to_disappear()
+            self.page.add_server(self.server)
+            self.page.expand_tables_node("Server", self.server['name'],
+                                         self.server['db_password'],
+                                         self.test_db,
+                                         'public')
 
-        self._load_config_data('table_insert_update_cases')
-        data_local = config_data
-        # iterate on both tables
-        for cnt in (1, 2):
-            self._perform_test_for_table('defaults_{0}'.format(str(cnt)),
-                                         data_local)
-        # test nonint pkey table
-        self._load_config_data('table_insert_update_nonint')
-        data_local = config_data
-        self._perform_test_for_table('nonintpkey', data_local)
+            self._load_config_data('table_insert_update_cases')
+            data_local = config_data
+            # iterate on both tables
+            for cnt in (1, 2):
+                self._perform_test_for_table('defaults_{0}'.format(str(cnt)),
+                                             data_local)
+            # test nonint pkey table
+            self._load_config_data('table_insert_update_nonint')
+            data_local = config_data
+            self._perform_test_for_table('nonintpkey', data_local)
+        except Exception:
+            traceback.print_exc()
+            self.assertTrue(False, 'Exception occurred in run test '
+                                   'Validate Insert, Update operations in '
+                                   'View/Edit data with given test data')
 
     def after(self):
         self.page.remove_server(self.server)
@@ -218,6 +226,7 @@ CREATE TABLE public.nonintpkey
         cell_el = self.page.find_by_xpath(xpath)
         self.page.driver.execute_script("arguments[0].scrollIntoView(false)",
                                         cell_el)
+        cell_el.click()
         ActionChains(self.driver).move_to_element(cell_el).double_click(
             cell_el
         ).perform()
@@ -231,10 +240,20 @@ CREATE TABLE public.nonintpkey
                 ActionChains(self.driver).send_keys(value). \
                     send_keys(Keys.ENTER).perform()
         elif cell_type in ['text', 'text[]', 'boolean[]']:
-            text_area_ele = WebDriverWait(self.driver, 5).until(
-                EC.visibility_of_element_located(
-                    (By.CSS_SELECTOR,
-                     QueryToolLocators.row_editor_text_area_css)))
+            retry = 2
+            text_area_ele = None
+            while retry > 0:
+                try:
+                    text_area_ele = WebDriverWait(self.driver, 2).until(
+                        EC.visibility_of_element_located(
+                            (By.CSS_SELECTOR,
+                             QueryToolLocators.row_editor_text_area_css)))
+                    retry = 0
+                except Exception:
+                    ActionChains(self.driver).move_to_element(cell_el).\
+                        double_click(cell_el).perform()
+                    retry -= 1
+            self.assertIsNotNone(text_area_ele, 'Text editor did not open.')
             text_area_ele.clear()
             text_area_ele.click()
             text_area_ele.send_keys(value)
@@ -242,8 +261,6 @@ CREATE TABLE public.nonintpkey
             self.page.find_by_css_selector(
                 QueryToolLocators.text_editor_ok_btn_css).click()
         elif cell_type in ['json', 'jsonb']:
-            jsoneditor_area_ele = self.page.find_by_css_selector(
-                QueryToolLocators.json_editor_text_area_css)
             platform = 'mac'
             if "platform" in self.driver.capabilities:
                 platform = (self.driver.capabilities["platform"]).lower()
@@ -359,7 +376,6 @@ CREATE TABLE public.nonintpkey
             "document.querySelector('.rdg').scrollLeft=0"
         )
 
-        xpath = QueryToolLocators.output_row_xpath.format(2)
         scroll_on_arg_for_js = "arguments[0].scrollIntoView(false)"
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()

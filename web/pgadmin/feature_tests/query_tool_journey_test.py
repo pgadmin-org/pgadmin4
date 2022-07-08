@@ -9,6 +9,7 @@
 
 import sys
 import random
+import traceback
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -65,36 +66,42 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.wait = WebDriverWait(self.page.driver, 10)
 
     def runTest(self):
-        self._navigate_to_query_tool()
-        self.page.execute_query(
-            "SELECT * FROM %s ORDER BY value " % self.test_table_name)
+        try:
+            self._navigate_to_query_tool()
+            self.page.execute_query(
+                "SELECT * FROM %s ORDER BY value " % self.test_table_name)
 
-        print("Copy rows...", file=sys.stderr, end="")
-        self._test_copies_rows()
-        print(" OK.", file=sys.stderr)
+            print("Copy rows...", file=sys.stderr, end="")
+            self._test_copies_rows()
+            print(" OK.", file=sys.stderr)
 
-        print("Copy columns...", file=sys.stderr, end="")
-        self._test_copies_columns()
-        print(" OK.", file=sys.stderr)
+            print("Copy columns...", file=sys.stderr, end="")
+            self._test_copies_columns()
+            print(" OK.", file=sys.stderr)
 
-        print("History tab...", file=sys.stderr, end="")
-        self._test_history_tab()
-        print(" OK.", file=sys.stderr)
+            print("History tab...", file=sys.stderr, end="")
+            self._test_history_tab()
+            print(" OK.", file=sys.stderr)
 
-        self._insert_data_into_test_editable_table()
+            self._insert_data_into_test_editable_table()
 
-        print("History query source icons and generated queries toggle...",
-              file=sys.stderr, end="")
-        self._test_query_sources_and_generated_queries()
-        print(" OK.", file=sys.stderr)
+            print("History query source icons and generated queries toggle...",
+                  file=sys.stderr, end="")
+            self._test_query_sources_and_generated_queries()
+            print(" OK.", file=sys.stderr)
 
-        print("Updatable result sets...", file=sys.stderr, end="")
-        self._test_updatable_resultset()
-        print(" OK.", file=sys.stderr)
+            print("Updatable result sets...", file=sys.stderr, end="")
+            self._test_updatable_resultset()
+            print(" OK.", file=sys.stderr)
 
-        print("Is editable column header icons...", file=sys.stderr, end="")
-        self._test_is_editable_columns_icons()
-        print(" OK.", file=sys.stderr)
+            print("Is editable column header icons...",
+                  file=sys.stderr, end="")
+            self._test_is_editable_columns_icons()
+            print(" OK.", file=sys.stderr)
+        except Exception as e:
+            traceback.print_exc()
+            self.assertTrue(False, 'Exception occurred in run test Tests the '
+                                   'path through the query tool data' + str(e))
 
     def _test_copies_rows(self):
         self.page.driver.switch_to.default_content()
@@ -346,27 +353,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         self._commit_transaction()
         self.page.wait_for_spinner_to_disappear()
-
-        # Turn on autocommit
-        # self.page.check_execute_option("auto_commit")
-        # query_options = self.page.find_by_css_selector(
-        #     QueryToolLocators.btn_query_dropdown)
-        # query_options.click()
-        # retry = 3
-        # while retry > 0:
-        #     query_options = self.page.find_by_css_selector(
-        #         QueryToolLocators.btn_query_dropdown)
-        #     query_options.click()
-        #     expanded = query_options.get_attribute("aria-expanded")
-        #     if expanded == "false":
-        #         print("query option not yet expanded clicking commit again",
-        #               file=sys.stderr)
-        #         self._commit_transaction()
-        #         time.sleep(0.5)
-        #         query_options.click()
-        #         break
-        #     else:
-        #         retry -= 1
         self.page.check_execute_option("auto_commit")
 
     def _check_history_queries_and_icons(self, history_queries, history_icons):
@@ -396,16 +382,24 @@ class QueryToolJourneyTest(BaseFeatureTest):
         """
             Updates a numeric cell in the first row of the resultset
         """
-        cell_el = self.page.find_by_css_selector(
-            QueryToolLocators.output_row_col.format(2, 3))
-        ActionChains(self.driver).double_click(cell_el).perform()
-        ActionChains(self.driver).send_keys(value). \
-            send_keys(Keys.ENTER).perform()
-
-        save_btn = WebDriverWait(self.driver, 5).until(
-            EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, QueryToolLocators.btn_save_data)))
-        save_btn.click()
+        retry = 3
+        while retry > 0:
+            cell_el = self.page.find_by_css_selector(
+                QueryToolLocators.output_row_col.format(2, 3))
+            cell_el.click()
+            time.sleep(0.2)
+            ActionChains(self.driver).double_click(cell_el).perform()
+            ActionChains(self.driver).send_keys(value). \
+                send_keys(Keys.ENTER).perform()
+            try:
+                save_btn = WebDriverWait(self.driver, 2).until(
+                    EC.element_to_be_clickable(
+                        (By.CSS_SELECTOR, QueryToolLocators.btn_save_data)))
+                save_btn.click()
+                break
+            except Exception:
+                print('Exception occurred')
+                retry -= 1
 
     def _insert_data_into_test_editable_table(self):
         self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
@@ -473,6 +467,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         cell_value = int(cell_el.text)
         new_value = cell_value + 1
         # Try to update value
+        cell_el.click()
         ActionChains(self.driver).double_click(cell_el).perform()
         ActionChains(self.driver).send_keys(new_value). \
             send_keys(Keys.ENTER).perform()

@@ -243,71 +243,82 @@ class PgadminPage:
     def check_execute_option(self, option):
         """"This function will check auto commit or auto roll back based on
         user input. If button is already checked, no action will be taken"""
-        menu_btn = self.driver.find_element(
-            By.CSS_SELECTOR, QueryToolLocators.btn_query_dropdown)
-        if menu_btn.get_attribute('data-state') == "closed":
-            menu_btn.click()
-
-        def update_execute_option_setting(css_selector_of_option):
-            retry = 3
-            menu_option = self.driver.find_element(By.CSS_SELECTOR,
-                                                   css_selector_of_option)
-            if menu_option.get_attribute('data-checked') == 'false':
-                while retry > 0:
-                    try:
-                        menu_option.click()
-                        time.sleep(0.2)
-                        if menu_option.get_attribute('data-checked') == 'true':
-                            break
-                        else:
-                            retry -= 1
-                    except Exception:
-                        retry -= 1
-
         if option == 'auto_commit':
-            update_execute_option_setting(
-                QueryToolLocators.btn_auto_commit)
+            self._update_execute_option_setting(
+                QueryToolLocators.btn_auto_commit, True)
         if option == 'auto_rollback':
-            update_execute_option_setting(
-                QueryToolLocators.btn_auto_rollback)
+            self._update_execute_option_setting(
+                QueryToolLocators.btn_auto_rollback, True)
 
-        if menu_btn.get_attribute('data-state') == "open":
-            menu_btn.click()
+    def _update_drop_down_options(self, css_selector_of_option, is_selected):
+        is_selected = 'true' if is_selected else 'false'
+        retry = 3
+        option_set_as_required = False
+        menu_option = self.driver.find_element(By.CSS_SELECTOR,
+                                               css_selector_of_option)
+        while retry > 0:
+            if menu_option.get_attribute('data-checked') == is_selected:
+                # Nothing to do
+                option_set_as_required = True
+                break
+            else:
+                menu_option.click()
+                time.sleep(0.2)
+                if menu_option.get_attribute('data-checked') == is_selected:
+                    option_set_as_required = True
+                    break
+                else:
+                    retry -= 1
+        return option_set_as_required
+
+    def _open_query_tool_bar_drop_down(self, css_selector_of_dd):
+        menu_drop_down_opened = False
+        retry = 5
+        while retry > 0:
+            dd_btn = self.driver.find_element(
+                By.CSS_SELECTOR, css_selector_of_dd)
+            if dd_btn.get_attribute('data-state') == "closed":
+                dd_btn.click()
+                time.sleep(0.2)
+                if dd_btn.get_attribute('data-state') == "open":
+                    menu_drop_down_opened = True
+                    retry = 0
+                else:
+                    retry -= 1
+                    self.driver.find_element(
+                        By.CSS_SELECTOR, "button[data-label='Macros']").click()
+                    dd_btn = self.driver.find_element(
+                        By.CSS_SELECTOR, css_selector_of_dd)
+                    action = ActionChains(self.driver)
+                    action.move_to_element(dd_btn).perform()
+                    action.click(dd_btn).perform()
+            else:
+                menu_drop_down_opened = True
+                retry = 0
+        return menu_drop_down_opened
+
+    def _update_execute_option_setting(self,
+                                       css_selector_of_option, is_selected):
+        if self._open_query_tool_bar_drop_down(
+                QueryToolLocators.btn_query_dropdown):
+            return self._update_drop_down_options(
+                css_selector_of_option, is_selected)
+        else:
+            return False
 
     def uncheck_execute_option(self, option):
         """"This function will uncheck auto commit or auto roll back based on
         user input. If button is already unchecked, no action will be taken"""
-        menu = self.driver.find_element(
-            By.CSS_SELECTOR,
-            QueryToolLocators.query_tool_menu.format('Execute Options Menu'))
-
-        if menu.get_attribute('data-state') == "closed":
-            self.driver.find_element(
-                By.CSS_SELECTOR, QueryToolLocators.btn_query_dropdown).click()
-
-        def update_execute_option_setting(css_selector_of_option):
-            retry = 3
-            menu_option = self.driver.find_element(
-                By.CSS_SELECTOR, css_selector_of_option)
-            if menu_option.get_attribute('data-checked') == 'true':
-                while retry > 0:
-                    menu_option.click()
-                    time.sleep(0.2)
-                    if menu_option.get_attribute('data-checked') == 'false':
-                        break
-                    else:
-                        retry -= 1
-
         if option == 'auto_commit':
-            update_execute_option_setting(
-                QueryToolLocators.btn_auto_commit)
+            return self._update_execute_option_setting(
+                QueryToolLocators.btn_auto_commit, False)
         if option == 'auto_rollback':
-            update_execute_option_setting(
-                QueryToolLocators.btn_auto_rollback)
+            return self._update_execute_option_setting(
+                QueryToolLocators.btn_auto_rollback, False)
 
-        if menu.get_attribute('data-state') == "open":
-            self.driver.find_element(
-                By.CSS_SELECTOR, QueryToolLocators.btn_query_dropdown).click()
+    def open_explain_options(self):
+        return self._open_query_tool_bar_drop_down(
+            QueryToolLocators.btn_explain_options_dropdown)
 
     def close_data_grid(self):
         self.driver.switch_to.default_content()
@@ -332,54 +343,6 @@ class PgadminPage:
         else:
             print("%s Server is not removed", server_config['name'],
                   file=sys.stderr)
-
-    # TODO - Not used to be deleted
-    def select_tree_item(self, tree_item_text):
-        item = self.find_by_xpath(
-            "//*[@id='tree']//*[contains(text(), '" + tree_item_text +
-            "')]/parent::span[@class='aciTreeItem']")
-        self.driver.execute_script(self.js_executor_scrollintoview_arg, item)
-        # unexpected exception like element overlapping, click attempts more
-        # than one time
-        attempts = 3
-        while attempts > 0:
-            try:
-                item.click()
-                break
-            except Exception as e:
-                attempts -= 1
-                time.sleep(.4)
-                if attempts == 0:
-                    raise e
-
-    # TODO - Not used to be deleted
-    def click_a_tree_node(self, element_name, list_of_element):
-        """It will click a tree node eg. server, schema, table name etc
-        will take server name and list of element where this node lies"""
-        operation_status = False
-        elements = list_of_element = self.find_by_xpath_list(
-            list_of_element)
-        if len(elements) > 0:
-            index_of_element = self.get_index_of_element(
-                elements, element_name)
-            if index_of_element >= 0:
-                self.driver.execute_script(
-                    self.js_executor_scrollintoview_arg,
-                    list_of_element[index_of_element])
-                self.wait_for_elements_to_appear(
-                    self.driver, list_of_element[index_of_element])
-                time.sleep(1)
-                list_of_element[index_of_element].click()
-                operation_status = True
-            else:
-                print("{ERROR} - The required element with name: " + str(
-                    element_name) +
-                    " is not found in function click_a_tree_node, "
-                    "so click operation is not performed")
-        else:
-            print("{ERROR} - The element list passed to function "
-                  "click_a_tree_node seems empty")
-        return operation_status
 
     def click_to_expand_tree_node(self, tree_node_web_element,
                                   tree_node_exp_check_xpath):
@@ -1197,20 +1160,6 @@ class PgadminPage:
         return self.wait_for_elements(
             lambda driver: driver.find_elements(By.XPATH, xpath))
 
-    # TODO Not used any where to be removed
-    def get_index_of_element(self, element_list, target_string):
-        """it will return index of an element from provided element list"""
-        index_of_required_server = -1
-        if len(element_list) > 0:
-            for index, element in enumerate(element_list):
-                if element.text.startswith(target_string) and (
-                        target_string in element.text):
-                    index_of_required_server = index
-                    break
-        else:
-            print("There seems no record in the provided element list")
-        return index_of_required_server
-
     def set_switch_box_status(self, switch_box, required_status):
         """it will change switch box status to required one. Two elements
         of the switch boxes are to be provided i) button which is needed to
@@ -1271,7 +1220,7 @@ class PgadminPage:
                 WebDriverWait(self.driver, 10).until(
                     EC.visibility_of_element_located(verify_locator))
                 click_status = True
-            except Exception as e:
+            except Exception:
                 attempt += 1
         return click_status
 
