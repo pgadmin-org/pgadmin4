@@ -19,7 +19,7 @@ the restore point to add* to provide a descriptive name for the restore point.
 
 For more information about using a restore point as a recovery target, please
 see the
-`PostgreSQL documentation <https://www.postgresql.org/docs/current/recovery-target-settings.html#RECOVERY-TARGET-NAME>`_.
+`PostgreSQL documentation <https://www.postgresql.org/docs/current/runtime-config-wal.html#RUNTIME-CONFIG-WAL-RECOVERY-TARGET>`_.
 
 * Click the *OK* button to save the restore point.
 * Click the *Cancel* button to exit without saving work.

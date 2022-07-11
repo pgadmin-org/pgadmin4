@@ -17,6 +17,8 @@ import gettext from 'sources/gettext';
 
 import getApiInstance from '../../../static/js/api_instance';
 import MasterPasswordContent from './MasterPassowrdContent';
+import ChangePasswordContent from './ChangePassowrdContent';
+import NamedRestoreContent from './NamedRestoreContent';
 import Notify from '../../../static/js/helpers/Notifier';
 
 function setNewSize(panel, width, height) {
@@ -154,6 +156,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
     Notify.pgRespErrorNotify(xhr, error);
   });
 }
+
 // This functions is used to show the master password dialog.
 export function showMasterPassword(isPWDPresent, errmsg=null, masterpass_callback_queue, cancel_callback) {
   const api = getApiInstance();
@@ -204,22 +207,98 @@ export function showMasterPassword(isPWDPresent, errmsg=null, masterpass_callbac
         onOK={(formData) => {
           panel.close();
           checkMasterPassword(formData, masterpass_callback_queue, cancel_callback);
-          // var _url = url_for('browser.set_master_password');
-
-          // api.post(_url, formData)
-          //   .then(res => {
-          //     panel.close();
-          //     if(res.data.data.is_error) {
-          //       showMasterPassword(true, res.data.data.errmsg, masterpass_callback_queue, cancel_callback);
-          //     } else {
-          //       masterPassCallbacks(masterpass_callback_queue);
-          //     }
-          //   })
-          //   .catch((err) => {
-          //     Notify.error(err.message);
-          //   });
         }}
       />
     </Theme>, j[0]);
 }
 
+export function showChangeServerPassword() {
+  var pgBrowser = pgAdmin.Browser,
+    title = arguments[0],
+    nodeData = arguments[1],
+    nodeObj = arguments[2],
+    itemNodeData = arguments[3],
+    isPgPassFileUsed = arguments[4];
+
+  // Register dialog panel
+  pgBrowser.Node.registerUtilityPanel();
+  var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+    j = panel.$container.find('.obj_properties').first();
+  panel.title(title);
+
+  ReactDOM.render(
+    <Theme>
+      <ChangePasswordContent
+        onClose={()=>{
+          panel.close();
+        }}
+        onSave={(isNew, data)=>{
+          return new Promise((resolve, reject)=>{
+            const api = getApiInstance();
+            var _url = nodeObj.generate_url(itemNodeData, 'change_password', nodeData, true);
+
+            api.post(_url, data)
+              .then(({data: respData})=>{
+                Notify.success(respData.info);
+                // Notify user to update pgpass file
+                if(isPgPassFileUsed) {
+                  Notify.alert(
+                    gettext('Change Password'),
+                    gettext('Please make sure to disconnect the server'
+                    + ' and update the new password in the pgpass file'
+                      + ' before performing any other operation')
+                  );
+                }
+
+                resolve(respData.data);
+                panel.close();
+              })
+              .catch((error)=>{
+                reject(error);
+              });
+          });
+        }}
+        userName={nodeData.user.name}
+        isPgpassFileUsed={isPgPassFileUsed}
+      />
+    </Theme>, j[0]);
+}
+
+export function showNamedRestorePoint() {
+  var pgBrowser = pgAdmin.Browser,
+    title = arguments[0],
+    nodeData = arguments[1],
+    nodeObj = arguments[2],
+    itemNodeData = arguments[3];
+
+  // Register dialog panel
+  pgBrowser.Node.registerUtilityPanel();
+  var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+    j = panel.$container.find('.obj_properties').first();
+  panel.title(title);
+
+  ReactDOM.render(
+    <Theme>
+      <NamedRestoreContent
+        setHeight={(containerHeight)=>{
+          setNewSize(panel, pgBrowser.stdW.md, containerHeight);
+        }}
+        closeModal={()=>{
+          panel.close();
+        }}
+        onOK={(formData)=>{
+          const api = getApiInstance();
+          var _url = nodeObj.generate_url(itemNodeData, 'restore_point', nodeData, true);
+
+          api.post(_url, formData)
+            .then(res=>{
+              panel.close();
+              Notify.success(res.data.data.result);
+            })
+            .catch(function(xhr, status, error) {
+              Notify.pgRespErrorNotify(xhr, error);
+            });
+        }}
+      />
+    </Theme>, j[0]);
+}

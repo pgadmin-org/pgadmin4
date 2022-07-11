@@ -10,18 +10,17 @@
 import { getNodeListById } from '../../../../static/js/node_ajax';
 import ServerSchema from './server.ui';
 import Notify from '../../../../../static/js/helpers/Notifier';
-import { showServerPassword } from '../../../../static/js/password_dialogs';
+import { showServerPassword, showChangeServerPassword, showNamedRestorePoint } from '../../../../static/js/password_dialogs';
 
 define('pgadmin.node.server', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.user_management.current_user',
-  'pgadmin.alertifyjs', 'pgadmin.backform',
   'pgadmin.authenticate.kerberos',
   'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser,
-  current_user, Alertify, Backform, Kerberos,
+  gettext, url_for, $, _, pgAdmin, pgBrowser,
+  current_user, Kerberos,
 ) {
 
   if (!pgBrowser.Nodes['server']) {
@@ -377,34 +376,7 @@ define('pgadmin.node.server', [
           if (!d)
             return false;
 
-          Alertify.prompt(
-            gettext('Enter the name of the restore point to add'), '',
-            // We will execute this function when user clicks on the OK button
-            function(evt, value) {
-              // If user has provided a value, send it to the server
-              if(!_.isUndefined(value) && !_.isNull(value) && value !== ''
-                && String(value).replace(/^\s+|\s+$/g, '') !== '') {
-                $.ajax({
-                  url: obj.generate_url(i, 'restore_point', d, true),
-                  method:'POST',
-                  data:{ 'value': JSON.stringify(value) },
-                })
-                  .done(function(res) {
-                    Notify.success(res.data.result, 10000);
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  });
-              } else {
-                evt.cancel = true;
-                Notify.error(gettext('Please enter a valid name.'), 10000);
-              }
-            },
-            // We will execute this function when user clicks on the Cancel
-            // button.  Do nothing just close it.
-            function(evt) { evt.cancel = false; }
-          ).set({'title': gettext('Restore point name')});
+          showNamedRestorePoint(gettext('Restore point name'), d, obj, i);
         },
 
         /* Change password */
@@ -414,162 +386,10 @@ define('pgadmin.node.server', [
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i  ? t.itemData(i) : undefined,
-            url = obj.generate_url(i, 'change_password', d, true),
             is_pgpass_file_used = false,
             check_pgpass_url = obj.generate_url(i, 'check_pgpass', d, true);
 
           if (d) {
-            if(!Alertify.changeServerPassword) {
-              var newPasswordModel = Backbone.Model.extend({
-                  defaults: {
-                    user_name: undefined,
-                    password: undefined,
-                    newPassword: undefined,
-                    confirmPassword: undefined,
-                  },
-                  validate: function() {
-                    return null;
-                  },
-                }),
-                passwordChangeFields = [{
-                  name: 'user_name', label: gettext('User'),
-                  type: 'text', readonly: true, control: 'input',
-                },{
-                  name: 'password', label: gettext('Current Password'),
-                  type: 'password', disabled: function() { return is_pgpass_file_used; },
-                  control: 'input', required: true,
-                },{
-                  name: 'newPassword', label: gettext('New Password'),
-                  type: 'password', disabled: false, control: 'input',
-                  required: true,
-                },{
-                  name: 'confirmPassword', label: gettext('Confirm Password'),
-                  type: 'password', disabled: false, control: 'input',
-                  required: true,
-                }];
-
-
-              Alertify.dialog('changeServerPassword' ,function factory() {
-                return {
-                  main: function(params) {
-                    var title = gettext('Change Password');
-                    this.set('title', title);
-                    this.user_name = params.user.name;
-                  },
-                  setup:function() {
-                    return {
-                      buttons: [{
-                        text: gettext('Cancel'), key: 27,
-                        className: 'btn btn-secondary fa fa-times pg-alertify-button', attrs: {name: 'cancel'},
-                      },{
-                        text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-                        attrs: {name:'submit'},
-                      }],
-                      // Set options for dialog
-                      options: {
-                        padding : !1,
-                        overflow: !1,
-                        modal:false,
-                        resizable: true,
-                        maximizable: true,
-                        pinnable: false,
-                        closableByDimmer: false,
-                      },
-                    };
-                  },
-                  hooks: {
-                    // triggered when the dialog is closed
-                    onclose: function() {
-                      if (this.view) {
-                        this.view.remove({data: true, internal: true, silent: true});
-                      }
-                    },
-                  },
-                  prepare: function() {
-                    var self = this;
-                    // Disable Ok button until user provides input
-                    this.__internal.buttons[1].element.disabled = true;
-
-                    var $container = $('<div class=\'change_password\'></div>'),
-                      newpasswordmodel = new newPasswordModel(
-                        {'user_name': self.user_name}
-                      ),
-                      view = this.view = new Backform.Form({
-                        el: $container,
-                        model: newpasswordmodel,
-                        fields: passwordChangeFields,
-                      });
-
-                    view.render();
-
-                    this.elements.content.appendChild($container.get(0));
-
-                    // Listen to model & if filename is provided then enable Backup button
-                    this.view.model.on('change', function() {
-                      var that = this,
-                        password = this.get('password'),
-                        newPassword = this.get('newPassword'),
-                        confirmPassword = this.get('confirmPassword');
-
-                      // Only check password field if pgpass file is not available
-                      if ((!is_pgpass_file_used &&
-                        (_.isUndefined(password) || _.isNull(password) || password == '')) ||
-                          _.isUndefined(newPassword) || _.isNull(newPassword) || newPassword == '' ||
-                          _.isUndefined(confirmPassword) || _.isNull(confirmPassword) || confirmPassword == '') {
-                        self.__internal.buttons[1].element.disabled = true;
-                      } else if (newPassword != confirmPassword) {
-                        self.__internal.buttons[1].element.disabled = true;
-
-                        this.errorTimeout && clearTimeout(this.errorTimeout);
-                        this.errorTimeout = setTimeout(function() {
-                          that.errorModel.set('confirmPassword', gettext('Passwords do not match.'));
-                        } ,400);
-                      }else {
-                        that.errorModel.clear();
-                        self.__internal.buttons[1].element.disabled = false;
-                      }
-                    });
-                  },
-                  // Callback functions when click on the buttons of the Alertify dialogs
-                  callback: function(e) {
-                    if (e.button.element.name == 'submit') {
-                      var self = this,
-                        alertArgs =  this.view.model.toJSON();
-
-                      e.cancel = true;
-
-                      $.ajax({
-                        url: url,
-                        method:'POST',
-                        data:{'data': JSON.stringify(alertArgs) },
-                      })
-                        .done(function(res) {
-                          if (res.success) {
-                          // Notify user to update pgpass file
-                            if(is_pgpass_file_used) {
-                              Notify.alert(
-                                gettext('Change Password'),
-                                gettext('Please make sure to disconnect the server'
-                                + ' and update the new password in the pgpass file'
-                                  + ' before performing any other operation')
-                              );
-                            }
-
-                            Notify.success(res.info);
-                            self.close();
-                          } else {
-                            Notify.error(res.errormsg);
-                          }
-                        })
-                        .fail(function(xhr, status, error) {
-                          Notify.pgRespErrorNotify(xhr, error);
-                        });
-                    }
-                  },
-                };
-              });
-            }
-
             // Call to check if server is using pgpass file or not
             $.ajax({
               url: check_pgpass_url,
@@ -579,7 +399,7 @@ define('pgadmin.node.server', [
                 if (res.success && res.data.is_pgpass) {
                   is_pgpass_file_used = true;
                 }
-                Alertify.changeServerPassword(d).resizeTo('40%','52%');
+                showChangeServerPassword(gettext('Change Password'), d, obj, i, is_pgpass_file_used);
               })
               .fail(function(xhr, status, error) {
                 Notify.pgRespErrorNotify(xhr, error);

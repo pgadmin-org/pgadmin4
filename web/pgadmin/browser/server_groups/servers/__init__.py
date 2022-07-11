@@ -1615,9 +1615,10 @@ class ServerNode(PGChildNodeView):
             sid: Server id
         """
         try:
-            if request.form and request.form['data']:
-                data = json.loads(request.form['data'], encoding='utf-8')
-            else:
+            data = None
+            if request.form:
+                data = request.form
+            elif request.data:
                 data = json.loads(request.data, encoding='utf-8')
 
             crypt_key = get_crypt_key()[1]

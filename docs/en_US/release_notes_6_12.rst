@@ -15,8 +15,10 @@ New features
 Housekeeping
 ************
 
+  | `Issue #7341 <https://redmine.postgresql.org/issues/7341>`_ -  Port change password dialog to React.
   | `Issue #7342 <https://redmine.postgresql.org/issues/7342>`_ -  Port Master Password dialog to React.
   | `Issue #7492 <https://redmine.postgresql.org/issues/7492>`_ -  Removing dynamic module loading and replacing it with static loading.
+  | `Issue #7546 <https://redmine.postgresql.org/issues/7546>`_ -  Port named restore point dialog to React.
 
 Bug fixes
 *********

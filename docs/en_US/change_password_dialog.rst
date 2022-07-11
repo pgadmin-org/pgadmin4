@@ -36,5 +36,8 @@ Use the *Change Password* dialog to change your password:
 * Enter the desired password for in the *New Password* field.
 * Re-enter the new password in the *Confirm Password* field.
 
-Click the *OK* button to change your password; click *Cancel* to exit the dialog
-without changing your password.
+Click the *Save* button to change your password.
+
+Click the *Close* button to exit without changing your password.
+
+Click the *Reset* button to reset the values.
