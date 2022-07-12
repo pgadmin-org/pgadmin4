@@ -9,6 +9,7 @@
 
 import json
 import os
+import sys
 import time
 import traceback
 
@@ -161,9 +162,6 @@ CREATE TABLE public.nonintpkey
         config_data = config_data_json[config_key]
 
     def _perform_test_for_table(self, table_name, config_data_local):
-        # self.page.click_a_tree_node(
-        #     table_name,
-        #     TreeAreaLocators.sub_nodes_of_tables_node)
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(table_name))
         table_node.click()
@@ -220,76 +218,129 @@ CREATE TABLE public.nonintpkey
         Returns: None
 
         """
-        self.wait.until(EC.visibility_of_element_located(
-            (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
-        )
-        cell_el = self.page.find_by_xpath(xpath)
-        self.page.driver.execute_script("arguments[0].scrollIntoView(false)",
-                                        cell_el)
-        cell_el.click()
-        ActionChains(self.driver).move_to_element(cell_el).double_click(
-            cell_el
-        ).perform()
-        cell_type = data[2]
-        value = data[0]
+        retry = 2
+        while retry > 0:
+            self.wait.until(EC.visibility_of_element_located(
+                (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
+            )
+            cell_el = self.page.find_by_xpath(xpath)
+            self.page.driver.execute_script(
+                "arguments[0].scrollIntoView(false)", cell_el)
+            ActionChains(self.driver).move_to_element(cell_el).\
+                double_click(cell_el).perform()
+            cell_type = data[2]
+            value = data[0]
 
-        if cell_type in ['int', 'int[]']:
+            if cell_type in ['int', 'int[]'] and \
+                    self._update_numeric_cell(cell_el, value):
+                break
+            elif cell_type in ['text', 'text[]', 'boolean[]'] and \
+                    self._update_text_cell(cell_el, value):
+                break
+            elif cell_type in ['json', 'jsonb'] and \
+                    self._update_json_cell(cell_el, value):
+                retry = 0
+            elif cell_type in ['bool'] and \
+                    self._update_boolean_cell(cell_el, value):
+                retry = 0
+            else:
+                print('Unable to update cell in try ' + str(retry),
+                      file=sys.stderr)
+                retry -= 1
+
+    def _update_numeric_cell(self, cell_el, value):
+        try:
             if value == 'clear':
                 cell_el.find_element(By.CSS_SELECTOR, 'input').clear()
             else:
                 ActionChains(self.driver).send_keys(value). \
-                    send_keys(Keys.ENTER).perform()
-        elif cell_type in ['text', 'text[]', 'boolean[]']:
-            retry = 2
-            text_area_ele = None
-            while retry > 0:
-                try:
-                    text_area_ele = WebDriverWait(self.driver, 2).until(
-                        EC.visibility_of_element_located(
-                            (By.CSS_SELECTOR,
-                             QueryToolLocators.row_editor_text_area_css)))
-                    retry = 0
-                except Exception:
-                    ActionChains(self.driver).move_to_element(cell_el).\
-                        double_click(cell_el).perform()
-                    retry -= 1
-            self.assertIsNotNone(text_area_ele, 'Text editor did not open.')
-            text_area_ele.clear()
-            text_area_ele.click()
-            text_area_ele.send_keys(value)
-            # Click on editor's Save button
-            self.page.find_by_css_selector(
-                QueryToolLocators.text_editor_ok_btn_css).click()
-        elif cell_type in ['json', 'jsonb']:
-            platform = 'mac'
-            if "platform" in self.driver.capabilities:
-                platform = (self.driver.capabilities["platform"]).lower()
-            elif "platformName" in self.driver.capabilities:
-                platform = (self.driver.capabilities["platformName"]).lower()
-            if 'mac' in platform:
-                key_to_press = Keys.COMMAND
-            else:
-                key_to_press = Keys.CONTROL
-            actions = ActionChains(self.driver)
-            # actions.move_to_element(jsoneditor_area_ele).click().perform()
-            actions.key_down(key_to_press).send_keys('a').key_up(key_to_press)\
-                .send_keys(Keys.DELETE).perform()
-            actions.send_keys(value) .perform()
-            # Click on editor's Save button
-            self.page.find_by_css_selector(
-                QueryToolLocators.text_editor_ok_btn_css).click()
+                    send_keys(Keys.TAB).perform()
+            return True
+        except Exception:
+            print('Exception occurred while updating int cell',
+                  file=sys.stderr)
+            return False
+
+    def _update_text_cell(self, cell_el, value):
+        retry = 2
+        while retry > 0:
+            try:
+                text_area_ele = WebDriverWait(self.driver, 2).until(
+                    EC.visibility_of_element_located(
+                        (By.CSS_SELECTOR,
+                         QueryToolLocators.row_editor_text_area_css)))
+                text_area_ele.clear()
+                text_area_ele.click()
+                text_area_ele.send_keys(value)
+                # Click on editor's Save button
+                self.page.find_by_css_selector(
+                    QueryToolLocators.text_editor_ok_btn_css).click()
+                return True
+            except Exception:
+                print('Exception occurred while updating text cell',
+                      file=sys.stderr)
+                ActionChains(self.driver).move_to_element(cell_el). \
+                    double_click(cell_el).perform()
+                retry -= 1
+        return False
+
+    def _update_json_cell(self, cell_el, value):
+        platform = 'mac'
+        if "platform" in self.driver.capabilities:
+            platform = (self.driver.capabilities["platform"]).lower()
+        elif "platformName" in self.driver.capabilities:
+            platform = (self.driver.capabilities["platformName"]).lower()
+        if 'mac' in platform:
+            key_to_press = Keys.COMMAND
         else:
-            # Boolean editor test for to True click
-            checkbox_el = self.page.find_by_css_selector(
-                QueryToolLocators.row_editor_checkbox_css)
-            if data[1] == 'true':
-                checkbox_el.click()
-            # Boolean editor test for to False click
-            elif data[1] == 'false':
-                # Sets true
-                checkbox_el.click()
-                # Sets false
-                ActionChains(self.driver).click(checkbox_el).perform()
+            key_to_press = Keys.CONTROL
+        retry = 2
+        while retry > 0:
+            try:
+                WebDriverWait(self.driver, 2).until(
+                    EC.visibility_of_element_located(
+                        (By.CSS_SELECTOR,
+                         QueryToolLocators.json_editor_text_area_css)))
+                actions = ActionChains(self.driver)
+                actions.key_down(key_to_press).send_keys('a').\
+                    key_up(key_to_press).send_keys(Keys.DELETE).perform()
+                actions.send_keys(value).perform()
+                # Click on editor's Save button
+                self.page.find_by_css_selector(
+                    QueryToolLocators.text_editor_ok_btn_css).click()
+                return True
+            except Exception:
+                print('Exception occurred while updating json cell',
+                      file=sys.stderr)
+                ActionChains(self.driver).move_to_element(cell_el). \
+                    double_click(cell_el).perform()
+                retry -= 1
+        return False
+
+    def _update_boolean_cell(self, cell_el, value):
+        # Boolean editor test for to True click
+        retry = 2
+        while retry > 0:
+            try:
+                checkbox_el = self.page.find_by_css_selector(
+                    QueryToolLocators.row_editor_checkbox_css)
+                if value == 'true':
+                    checkbox_el.click()
+                # Boolean editor test for to False click
+                elif value == 'false':
+                    # Sets true
+                    checkbox_el.click()
+                    # Sets false
+                    ActionChains(self.driver).click(checkbox_el).perform()
+                    ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                return True
+            except Exception:
+                print('Exception occurred while updating boolean cell',
+                      file=sys.stderr)
+                ActionChains(self.driver).move_to_element(cell_el). \
+                    double_click(cell_el).perform()
+                retry -= 1
+        return False
 
     def _view_data_grid(self, table_name):
         self.page.driver.find_element(By.LINK_TEXT, "Object").click()

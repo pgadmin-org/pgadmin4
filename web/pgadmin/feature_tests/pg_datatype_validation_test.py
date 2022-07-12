@@ -81,67 +81,83 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         connection.close()
 
     def _update_preferences(self):
-        file_menu = self.page.find_by_css_selector(
-            NavMenuLocators.file_menu_css)
-        file_menu.click()
+        retry = 2
+        while retry > 0:
+            try:
+                file_menu = self.page.find_by_css_selector(
+                    NavMenuLocators.file_menu_css)
+                file_menu.click()
 
-        self.page.retry_click(
-            (By.CSS_SELECTOR, NavMenuLocators.preference_menu_item_css),
-            (By.XPATH, NavMenuLocators.specified_preference_tree_node
-             .format('Browser'))
-        )
+                self.page.retry_click(
+                    (By.CSS_SELECTOR,
+                     NavMenuLocators.preference_menu_item_css),
+                    (By.XPATH,
+                     NavMenuLocators.specified_preference_tree_node
+                     .format('Browser'))
+                )
 
-        wait = WebDriverWait(self.page.driver, 10)
+                wait = WebDriverWait(self.page.driver, 10)
 
-        browser_node = self.page.find_by_xpath(
-            NavMenuLocators.specified_preference_tree_node.format('Browser'))
-        if self.page.find_by_xpath(
-            NavMenuLocators.specified_pref_node_exp_status.
-                format('Browser')).get_attribute('aria-expanded') == 'false':
-            ActionChains(self.driver).double_click(browser_node).perform()
+                browser_node = self.page.find_by_xpath(
+                    NavMenuLocators.specified_preference_tree_node.
+                    format('Browser'))
+                if self.page.find_by_xpath(
+                    NavMenuLocators.specified_pref_node_exp_status.
+                        format('Browser')).\
+                        get_attribute('aria-expanded') == 'false':
+                    ActionChains(self.driver).\
+                        double_click(browser_node).perform()
 
-        self.page.retry_click(
-            (By.XPATH, NavMenuLocators.specified_sub_node_of_pref_tree_node.
-             format('Browser', 'Display')),
-            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
+                self.page.retry_click(
+                    (By.XPATH, NavMenuLocators.
+                     specified_sub_node_of_pref_tree_node.
+                     format('Browser', 'Display')),
+                    (By.XPATH,
+                     NavMenuLocators.show_system_objects_pref_label_xpath))
 
-        # Wait till the preference dialogue box is displayed by checking the
-        # visibility of Show System Object label
-        wait.until(EC.presence_of_element_located(
-            (By.XPATH, NavMenuLocators.show_system_objects_pref_label_xpath))
-        )
+                # Wait till the preference dialogue
+                # box is displayed by checking the
+                # visibility of Show System Object label
+                wait.until(EC.presence_of_element_located(
+                    (By.XPATH,
+                     NavMenuLocators.show_system_objects_pref_label_xpath))
+                )
 
-        maximize_button = self.page.find_by_xpath(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
+                maximize_button = self.page.find_by_xpath(
+                    NavMenuLocators.maximize_pref_dialogue_css)
+                maximize_button.click()
 
-        specified_preference_tree_node_name = 'Query Tool'
-        sql_editor = self.page.find_by_xpath(
-            NavMenuLocators.specified_preference_tree_node.
-            format(specified_preference_tree_node_name))
-        if self.page.find_by_xpath(
-            NavMenuLocators.specified_pref_node_exp_status.
-                format(specified_preference_tree_node_name)).\
-                get_attribute('aria-expanded') == 'false':
-            ActionChains(self.driver).double_click(sql_editor).perform()
+                specified_preference_tree_node_name = 'Query Tool'
+                sql_editor = self.page.find_by_xpath(
+                    NavMenuLocators.specified_preference_tree_node.
+                    format(specified_preference_tree_node_name))
+                if self.page.find_by_xpath(
+                    NavMenuLocators.specified_pref_node_exp_status.
+                        format(specified_preference_tree_node_name)).\
+                        get_attribute('aria-expanded') == 'false':
+                    ActionChains(self.driver).\
+                        double_click(sql_editor).perform()
 
-        option_node = \
-            self.page.find_by_xpath("//*[@id='treeContainer']"
-                                    "//div//span[text()='Editor']")
-        option_node.click()
+                option_node = \
+                    self.page.find_by_xpath("//*[@id='treeContainer']"
+                                            "//div//span[text()='Editor']")
+                option_node.click()
 
-        switch_box_element = self.page.find_by_xpath(
-            NavMenuLocators.insert_bracket_pair_switch_btn)
+                switch_box_element = self.page.find_by_xpath(
+                    NavMenuLocators.insert_bracket_pair_switch_btn)
 
-        switch_box_element.click()
+                switch_box_element.click()
 
-        maximize_button = self.page.find_by_xpath(
-            NavMenuLocators.maximize_pref_dialogue_css)
-        maximize_button.click()
-        time.sleep(0.5)
+                maximize_button = self.page.find_by_xpath(
+                    NavMenuLocators.maximize_pref_dialogue_css)
+                maximize_button.click()
+                time.sleep(0.5)
 
-        # save and close the preference dialog.
-        self.page.click_modal('Save', react_dialog=True)
+                # save and close the preference dialog.
+                self.page.click_modal('Save', react_dialog=True)
+                break
+            except Exception:
+                retry -= 1
 
     def _create_enum_type(self):
         query = """CREATE TYPE public.rainbow AS ENUM ('red', 'orange',

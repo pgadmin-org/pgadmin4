@@ -452,32 +452,37 @@ class QueryToolJourneyTest(BaseFeatureTest):
         # first column is rownum
         enumerated_should_be_editable = enumerate(cols_should_be_editable, 2)
 
-        import time
-        time.sleep(0.5)
         for column_index, should_be_editable in enumerated_should_be_editable:
             is_editable = self._check_cell_editable(column_index)
             self.assertEqual(is_editable, should_be_editable)
 
     def _check_cell_editable(self, cell_index):
         """Checks if a cell in the first row of the resultset is editable"""
-        cell_el = self.page.find_by_css_selector(
-            QueryToolLocators.output_row_col.format(2, cell_index))
-
-        # Get existing value
-        cell_value = int(cell_el.text)
-        new_value = cell_value + 1
-        # Try to update value
-        cell_el.click()
-        ActionChains(self.driver).double_click(cell_el).perform()
-        ActionChains(self.driver).send_keys(new_value). \
-            send_keys(Keys.ENTER).perform()
-        time.sleep(0.5)
-        # Check if the value was updated
-        # Finding element again to avoid stale element reference exception
-        cell_el = self.page.\
-            find_by_css_selector(QueryToolLocators.
-                                 output_row_col.format(2, cell_index))
-        return int(cell_el.text) == new_value
+        retry = 2
+        while retry > 0:
+            try:
+                cell_el = self.page.find_by_css_selector(
+                    QueryToolLocators.output_row_col.format(2, cell_index))
+                # Get existing value
+                cell_value = int(cell_el.text)
+                new_value = cell_value + 1
+                # Try to update value
+                ActionChains(self.driver).double_click(cell_el).perform()
+                ActionChains(self.driver).send_keys(new_value).perform()
+                ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                time.sleep(0.5)
+                # Check if the value was updated
+                # Finding element again to avoid stale element
+                # reference exception
+                cell_el = self.page. \
+                    find_by_css_selector(QueryToolLocators.
+                                         output_row_col.format(2, cell_index))
+                return int(cell_el.text) == new_value
+            except Exception as e:
+                print('Exception while reading cell value', file=sys.stderr)
+                retry -= 1
+                if retry == 0:
+                    raise Exception(e)
 
     def _check_can_add_row(self):
         return self.page.check_if_element_exist_by_xpath(

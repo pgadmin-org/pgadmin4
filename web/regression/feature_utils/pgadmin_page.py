@@ -354,14 +354,18 @@ class PgadminPage:
         """
         retry = 2
         while retry > 0:
-            webdriver.ActionChains(self.driver).double_click(
-                tree_node_web_element).perform()
-            if self.check_if_element_exist_by_xpath(tree_node_exp_check_xpath):
-                return True
-            elif retry == 1:
-                return False
-            else:
-                time.sleep(1)
+            try:
+                webdriver.ActionChains(self.driver).double_click(
+                    tree_node_web_element).perform()
+                if self.check_if_element_exist_by_xpath(
+                        tree_node_exp_check_xpath):
+                    return True
+                elif retry == 1:
+                    return False
+                else:
+                    time.sleep(1)
+                    retry -= 1
+            except Exception:
                 retry -= 1
 
     def expand_server_group_node(self, server_group_name):
@@ -418,6 +422,8 @@ class PgadminPage:
                     self.js_executor_scrollintoview_arg, server_node)
                 if self.check_if_element_exist_by_xpath(
                         server_node_exp_status_xpath, 2):
+                    # sleep for a while to expand tree completely
+                    time.sleep(0.4)
                     server_expanded = True
                 else:
                     server_expanded = self.click_expand_server_node(
