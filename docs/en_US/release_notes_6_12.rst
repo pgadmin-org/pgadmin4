@@ -26,5 +26,6 @@ Bug fixes
   | `Issue #7471 <https://redmine.postgresql.org/issues/7471>`_ -  Ensure that the splash screen can be moved.
   | `Issue #7517 <https://redmine.postgresql.org/issues/7517>`_ -  Enable the start debugging button once execution is completed.
   | `Issue #7518 <https://redmine.postgresql.org/issues/7518>`_ -  Ensure that dashboard graph API is not called after the panel has been closed.
+  | `Issue #7519 <https://redmine.postgresql.org/issues/7519>`_ -  Ensure that geometry should be shown for all the selected cells.
   | `Issue #7522 <https://redmine.postgresql.org/issues/7522>`_ -  Added support for Azure PostgreSQL deployment in server mode.
   | `Issue #7523 <https://redmine.postgresql.org/issues/7523>`_ -  Fixed typo error for Statistics on the table header.

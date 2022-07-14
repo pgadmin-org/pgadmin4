@@ -1085,6 +1085,14 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_DATA, triggerSaveData);
   }, [dataChangeStore, rows, columns]);
 
+  const getRangeIndexes = ()=>{
+    let startColumnIdx = Math.min(selectedRange.current.startColumnIdx, selectedRange.current.endColumnIdx);
+    let endColumnIdx = Math.max(selectedRange.current.startColumnIdx, selectedRange.current.endColumnIdx);
+    let startRowIdx = Math.min(selectedRange.current.startRowIdx, selectedRange.current.endRowIdx);
+    let endRowIdx = Math.max(selectedRange.current.startRowIdx, selectedRange.current.endRowIdx);
+    return [startColumnIdx, endColumnIdx, startRowIdx, endRowIdx];
+  };
+
   const copyDataFunc = (withHeaders=false)=>{
     const queryToolPref = queryToolCtx.preferences.sqleditor;
     let copyData = new CopyData({
@@ -1101,10 +1109,7 @@ export function ResultSet() {
       copyCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
       copyRows = _.map(rows, (r)=>_.pick(r, _.map(copyCols, (c)=>c.key)));
     } else if(selectedRange.current) {
-      let startColumnIdx = Math.min(selectedRange.current.startColumnIdx, selectedRange.current.endColumnIdx);
-      let endColumnIdx = Math.max(selectedRange.current.startColumnIdx, selectedRange.current.endColumnIdx);
-      let startRowIdx = Math.min(selectedRange.current.startRowIdx, selectedRange.current.endRowIdx);
-      let endRowIdx = Math.max(selectedRange.current.startRowIdx, selectedRange.current.endRowIdx);
+      let [startColumnIdx, endColumnIdx, startRowIdx, endRowIdx] = getRangeIndexes();
       copyCols = _.filter(columns, (_c, i)=>{
         /* Row num col is added by QueryDataGrid, index will be +1 */
         let idx = i+1;
@@ -1209,6 +1214,9 @@ export function ResultSet() {
       let selRowsData = rows;
       if(selectedRows.size != 0) {
         selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+      } else if(selectedRange.current) {
+        let [,, startRowIdx, endRowIdx] = getRangeIndexes();
+        selRowsData = rows.slice(startRowIdx, endRowIdx+1);
       } else if(selectedCell.current[0]) {
         selRowsData = [selectedCell.current[0]];
       }
