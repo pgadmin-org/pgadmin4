@@ -25,6 +25,7 @@ Bug fixes
 
   | `Issue #7471 <https://redmine.postgresql.org/issues/7471>`_ -  Ensure that the splash screen can be moved.
   | `Issue #7508 <https://redmine.postgresql.org/issues/7508>`_ -  Fixed an issue where comments on indexes are not displayed.
+  | `Issue #7512 <https://redmine.postgresql.org/issues/7512>`_ -  Ensure that notices should not disappear from the messages tab.
   | `Issue #7517 <https://redmine.postgresql.org/issues/7517>`_ -  Enable the start debugging button once execution is completed.
   | `Issue #7518 <https://redmine.postgresql.org/issues/7518>`_ -  Ensure that dashboard graph API is not called after the panel has been closed.
   | `Issue #7519 <https://redmine.postgresql.org/issues/7519>`_ -  Ensure that geometry should be shown for all the selected cells.

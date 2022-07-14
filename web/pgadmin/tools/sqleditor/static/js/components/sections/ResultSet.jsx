@@ -635,7 +635,7 @@ export class ResultSetUtils {
       if(!_.isNull(httpMessage.data.data.additional_messages)){
         tabMsg = httpMessage.data.data.additional_messages + '\n' + tabMsg;
       }
-      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, tabMsg);
+      this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, tabMsg, true);
       this.setClientPK(httpMessage.data.data.client_primary_key);
       let {result} = httpMessage.data.data;
       let data = {
