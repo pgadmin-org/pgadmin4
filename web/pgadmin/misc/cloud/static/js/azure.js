@@ -51,7 +51,7 @@ export function AzureCredentials(props) {
             }
           })
           .catch((error) => {
-            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while verification Microsoft Azure: ${error.response.data.errormsg}`)]);
+            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while verification Microsoft Azure: ${error}`)]);
             reject(false);
           });
         });

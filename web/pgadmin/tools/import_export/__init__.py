@@ -11,7 +11,7 @@
 
 import simplejson as json
 import os
-
+import copy
 from flask import url_for, Response, render_template, request, current_app
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
@@ -23,7 +23,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
 from pgadmin.utils.constants import MIMETYPE_APP_JS
-import config
+from pgadmin.settings import get_setting, store_setting
 
 MODULE_NAME = 'import_export'
 
@@ -42,7 +42,8 @@ class ImportExportModule(PgAdminModule):
         Returns:
             list: URL endpoints for backup module
         """
-        return ['import_export.create_job', 'import_export.utility_exists']
+        return ['import_export.create_job', 'import_export.utility_exists',
+                'import_export.get_settings']
 
 
 blueprint = ImportExportModule(MODULE_NAME, __name__)
@@ -238,6 +239,30 @@ def _get_required_column_list(data, driver, conn):
     return cols
 
 
+def _save_import_export_settings(settings):
+    [settings.pop(key) for key in ['icolumns', 'columns', 'database',
+                                   'schema', 'table', 'save_btn_icon']]
+    if settings['is_import']:
+        settings['import_file_name'] = settings['filename']
+    else:
+        settings['export_file_name'] = settings['filename']
+
+    # Get existing setting -
+    old_settings = get_setting('import_export_setting')
+    if old_settings and old_settings != 'null':
+        old_settings = json.loads(old_settings)
+        old_settings.update(settings)
+        settings = json.dumps(settings)
+    else:
+        if 'import_file_name' not in settings:
+            settings['import_file_name'] = ''
+        elif 'export_file_name' not in settings:
+            settings['export_file_name'] = ''
+        settings = json.dumps(settings)
+
+    store_setting('import_export_setting', settings)
+
+
 @blueprint.route('/job/<int:sid>', methods=['POST'], endpoint="create_job")
 @login_required
 def create_import_export_job(sid):
@@ -280,6 +305,8 @@ def create_import_export_job(sid):
             success=0,
             errormsg=ret_val
         )
+    # Copy request data to store
+    new_settings = copy.deepcopy(data)
 
     # Get the storage path from preference
     storage_dir = get_storage_directory()
@@ -303,6 +330,9 @@ def create_import_export_job(sid):
     # Get required and ignored column list
     icols = _get_ignored_column_list(data, driver, conn)
     cols = _get_required_column_list(data, driver, conn)
+
+    # Save the settings
+    _save_import_export_settings(new_settings)
 
     # Create the COPY FROM/TO  from template
     query = render_template(
@@ -357,6 +387,17 @@ def create_import_export_job(sid):
     return make_json_response(
         data={'job_id': jid, 'success': 1}
     )
+
+
+@blueprint.route('/get_settings/', methods=['GET'], endpoint='get_settings')
+@login_required
+def get_import_export_settings():
+    settings = get_setting('import_export_setting', None)
+    if settings is None:
+        return make_json_response(success=True, data={})
+    else:
+        data = json.loads(settings)
+        return make_json_response(success=True, data=data)
 
 
 @blueprint.route(

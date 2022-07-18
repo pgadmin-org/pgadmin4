@@ -15,6 +15,7 @@ import {getHelpUrl, getEPASHelpUrl} from 'pgadmin.help';
 import SchemaView from 'sources/SchemaView';
 import 'wcdocker';
 import Theme from '../../../static/js/Theme';
+import url_for from 'sources/url_for';
 
 /* The entry point for rendering React based view in properties, called in node.js */
 export function getUtilityView(schema, treeNodeInfo, actionType, formType, container, containerPanel,
@@ -77,6 +78,28 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
     inCatalog: inCatalog,
   };
 
+  let initData = ()=>new Promise((resolve, reject)=>{
+    if(actionType === 'create') {
+      resolve({});
+    }else{
+      api.get(url_for('import_export.get_settings'))
+        .then((res)=>{
+          resolve(res.data.data);
+        })
+        .catch((err)=>{
+          if(err.response){
+            console.error('error resp', err.response);
+          } else if(err.request){
+            console.error('error req', err.request);
+          } else if(err.message){
+            console.error('error msg', err.message);
+          }reject(err);
+
+        });
+    }
+
+  });
+
   let _schema = schema;
 
   /* Fire at will, mount the DOM */
@@ -84,6 +107,7 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
     <Theme>
       <SchemaView
         formType={formType}
+        getInitData={initData}
         schema={_schema}
         viewHelperProps={viewHelperProps}
         customSaveBtnName={saveBtnName}

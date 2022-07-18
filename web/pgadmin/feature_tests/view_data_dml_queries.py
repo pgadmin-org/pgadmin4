@@ -218,6 +218,8 @@ CREATE TABLE public.nonintpkey
         Returns: None
 
         """
+        cell_type = data[2]
+        value = data[0]
         retry = 2
         while retry > 0:
             self.wait.until(EC.visibility_of_element_located(
@@ -226,10 +228,8 @@ CREATE TABLE public.nonintpkey
             cell_el = self.page.find_by_xpath(xpath)
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", cell_el)
-            ActionChains(self.driver).move_to_element(cell_el).\
-                double_click(cell_el).perform()
-            cell_type = data[2]
-            value = data[0]
+            ActionChains(self.driver).move_to_element(cell_el).perform()
+            ActionChains(self.driver).double_click(cell_el).perform()
 
             if cell_type in ['int', 'int[]'] and \
                     self._update_numeric_cell(cell_el, value):
@@ -253,36 +253,34 @@ CREATE TABLE public.nonintpkey
             if value == 'clear':
                 cell_el.find_element(By.CSS_SELECTOR, 'input').clear()
             else:
-                ActionChains(self.driver).send_keys(value). \
-                    send_keys(Keys.TAB).perform()
+                ActionChains(self.driver).send_keys(value).perform()
+                ActionChains(self.driver).send_keys(Keys.TAB).perform()
             return True
         except Exception:
+            traceback.print_exc()
             print('Exception occurred while updating int cell',
                   file=sys.stderr)
             return False
 
     def _update_text_cell(self, cell_el, value):
-        retry = 2
-        while retry > 0:
-            try:
-                text_area_ele = WebDriverWait(self.driver, 2).until(
-                    EC.visibility_of_element_located(
-                        (By.CSS_SELECTOR,
-                         QueryToolLocators.row_editor_text_area_css)))
-                text_area_ele.clear()
-                text_area_ele.click()
-                text_area_ele.send_keys(value)
-                # Click on editor's Save button
-                self.page.find_by_css_selector(
-                    QueryToolLocators.text_editor_ok_btn_css).click()
-                return True
-            except Exception:
-                print('Exception occurred while updating text cell',
-                      file=sys.stderr)
-                ActionChains(self.driver).move_to_element(cell_el). \
-                    double_click(cell_el).perform()
-                retry -= 1
-        return False
+        try:
+            text_area_ele = WebDriverWait(self.driver, 2).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR,
+                     QueryToolLocators.row_editor_text_area_css)))
+            text_area_ele.clear()
+            time.sleep(0.3)
+            text_area_ele.click()
+            ActionChains(self.driver).send_keys(value).perform()
+            # Click on editor's Save button
+            self.page.find_by_css_selector(
+                QueryToolLocators.text_editor_ok_btn_css).click()
+            return True
+        except Exception:
+            traceback.print_exc()
+            print('Exception occurred while updating text cell ',
+                  file=sys.stderr)
+            return False
 
     def _update_json_cell(self, cell_el, value):
         platform = 'mac'
@@ -294,53 +292,45 @@ CREATE TABLE public.nonintpkey
             key_to_press = Keys.COMMAND
         else:
             key_to_press = Keys.CONTROL
-        retry = 2
-        while retry > 0:
-            try:
-                WebDriverWait(self.driver, 2).until(
-                    EC.visibility_of_element_located(
-                        (By.CSS_SELECTOR,
-                         QueryToolLocators.json_editor_text_area_css)))
-                actions = ActionChains(self.driver)
-                actions.key_down(key_to_press).send_keys('a').\
-                    key_up(key_to_press).send_keys(Keys.DELETE).perform()
-                actions.send_keys(value).perform()
-                # Click on editor's Save button
-                self.page.find_by_css_selector(
-                    QueryToolLocators.text_editor_ok_btn_css).click()
-                return True
-            except Exception:
-                print('Exception occurred while updating json cell',
-                      file=sys.stderr)
-                ActionChains(self.driver).move_to_element(cell_el). \
-                    double_click(cell_el).perform()
-                retry -= 1
-        return False
+        try:
+            WebDriverWait(self.driver, 2).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR,
+                     QueryToolLocators.json_editor_text_area_css)))
+            actions = ActionChains(self.driver)
+            actions.key_down(key_to_press).send_keys('a').\
+                key_up(key_to_press).send_keys(Keys.DELETE).perform()
+            actions.send_keys(value).perform()
+            # Click on editor's Save button
+            self.page.find_by_css_selector(
+                QueryToolLocators.text_editor_ok_btn_css).click()
+            return True
+        except Exception:
+            traceback.print_exc()
+            print('Exception occurred while updating json cell ',
+                  file=sys.stderr)
+            return False
 
     def _update_boolean_cell(self, cell_el, value):
         # Boolean editor test for to True click
-        retry = 2
-        while retry > 0:
-            try:
-                checkbox_el = self.page.find_by_css_selector(
-                    QueryToolLocators.row_editor_checkbox_css)
-                if value == 'true':
-                    checkbox_el.click()
-                # Boolean editor test for to False click
-                elif value == 'false':
-                    # Sets true
-                    checkbox_el.click()
-                    # Sets false
-                    ActionChains(self.driver).click(checkbox_el).perform()
-                    ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                return True
-            except Exception:
-                print('Exception occurred while updating boolean cell',
-                      file=sys.stderr)
-                ActionChains(self.driver).move_to_element(cell_el). \
-                    double_click(cell_el).perform()
-                retry -= 1
-        return False
+        try:
+            checkbox_el = self.page.find_by_css_selector(
+                QueryToolLocators.row_editor_checkbox_css)
+            if value == 'true':
+                checkbox_el.click()
+            # Boolean editor test for to False click
+            elif value == 'false':
+                # Sets true
+                checkbox_el.click()
+                # Sets false
+                ActionChains(self.driver).click(checkbox_el).perform()
+                ActionChains(self.driver).send_keys(Keys.TAB).perform()
+            return True
+        except Exception:
+            traceback.print_exc()
+            print('Exception occurred while updating boolean cell',
+                  file=sys.stderr)
+            return False
 
     def _view_data_grid(self, table_name):
         self.page.driver.find_element(By.LINK_TEXT, "Object").click()
@@ -395,9 +385,9 @@ CREATE TABLE public.nonintpkey
         items.sort(reverse=False)
         for idx in items:
             # rowindex starts with 2 and 1st colindex is rownum
+            time.sleep(0.5)
             cell_xpath = CheckForViewDataTest\
                 ._get_cell_xpath(str(idx + 1), row + 1)
-            time.sleep(0.5)
             self._update_cell(cell_xpath, data[str(idx)])
         self.page.find_by_css_selector(
             QueryToolLocators.btn_save_data).click()
@@ -450,7 +440,7 @@ CREATE TABLE public.nonintpkey
                 except Exception:
                     print("stale reference exception at id:", idx)
                     retry -= 1
-            time.sleep(0.4)
+                    time.sleep(0.4)
             self.assertEqual(element.text, config_check_data[str(idx)][1])
 
         # scroll browser back to the left

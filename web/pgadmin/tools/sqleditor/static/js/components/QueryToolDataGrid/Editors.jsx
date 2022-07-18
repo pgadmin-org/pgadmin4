@@ -131,7 +131,7 @@ function setEditorPosition(cellEle, editorEle) {
   let cellRect = cellEle.getBoundingClientRect();
   let position = {
     left: cellRect.left,
-    top: cellRect.top - editorEle.offsetHeight + 12,
+    top:  Math.max(cellRect.top - editorEle.offsetHeight + 12, 0)
   };
 
   if ((position.left + editorEle.offsetWidth + 10) > gridEle.offsetWidth) {

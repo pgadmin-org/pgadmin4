@@ -10,7 +10,7 @@
 import Notify from 'static/js/helpers/Notifier';
 import {getUtilityView} from '../../../../browser/static/js/utility_view';
 import getApiInstance from 'sources/api_instance';
-import ImportExportSchema, {getFileInfoSchema, getMiscellaneousSchema} from './import_export.ui';
+import ImportExportSchema from './import_export.ui';
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
 
 define([
@@ -62,17 +62,16 @@ define([
       let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
 
       return new ImportExportSchema(
-        ()=>getFileInfoSchema(
-          {encoding: ()=>getNodeAjaxOptions('get_encodings', pgBrowser.Nodes['database'], treeNodeInfo, itemNodeData, {cacheNode: 'database',cacheLevel: 'server'})}
-        ),
-        ()=>getMiscellaneousSchema(),
-        {columns: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, { cacheLevel: 'column'}, ()=>true, (res)=>{
-          let columnsList = [];
-          res.forEach(d => {
-            columnsList.push({label: d.label, value: d.value, image:'icon-column', selected: true});
-          });
-          return columnsList;
-        })}
+        {
+          encoding: ()=>getNodeAjaxOptions('get_encodings', pgBrowser.Nodes['database'], treeNodeInfo, itemNodeData, {cacheNode: 'database',cacheLevel: 'server'}),
+          columns: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, { cacheLevel: 'column'}, ()=>true, (res)=>{
+            let columnsList = [];
+            res.forEach(d => {
+              columnsList.push({label: d.label, value: d.value, image:'icon-column', selected: true});
+            });
+            return columnsList;
+          }),
+        }
       );
     },
 

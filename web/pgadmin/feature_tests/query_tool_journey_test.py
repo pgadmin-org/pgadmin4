@@ -461,24 +461,27 @@ class QueryToolJourneyTest(BaseFeatureTest):
         retry = 2
         while retry > 0:
             try:
-                cell_el = self.page.find_by_css_selector(
-                    QueryToolLocators.output_row_col.format(2, cell_index))
+                cell_el = self.page.find_by_xpath(
+                    QueryToolLocators.output_cell_xpath.format(2, cell_index))
                 # Get existing value
                 cell_value = int(cell_el.text)
                 new_value = cell_value + 1
                 # Try to update value
                 ActionChains(self.driver).double_click(cell_el).perform()
+                time.sleep(0.1)
                 ActionChains(self.driver).send_keys(new_value).perform()
+                time.sleep(0.1)
                 ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                time.sleep(0.5)
+                time.sleep(0.3)
                 # Check if the value was updated
                 # Finding element again to avoid stale element
                 # reference exception
                 cell_el = self.page. \
-                    find_by_css_selector(QueryToolLocators.
-                                         output_row_col.format(2, cell_index))
+                    find_by_xpath(QueryToolLocators.
+                                  output_cell_xpath.format(2, cell_index))
                 return int(cell_el.text) == new_value
             except Exception as e:
+                traceback.print_exc()
                 print('Exception while reading cell value', file=sys.stderr)
                 retry -= 1
                 if retry == 0:

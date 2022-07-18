@@ -564,10 +564,10 @@ class PgadminPage:
                 child_node_ele = self.check_if_element_exists_with_scroll(
                     server_child_node_xpath)
                 if not child_node_ele:
-                    databases_node = self.driver.find_element(
-                        By.XPATH,
-                        TreeAreaLocators.server_child_node(
-                            server_name, 'Databases'))
+                    databases_node_xpath = TreeAreaLocators.server_child_node(
+                        server_name, 'Databases')
+                    databases_node = self.check_if_element_exists_with_scroll(
+                        databases_node_xpath)
                     webdriver.ActionChains(self.driver).double_click(
                         databases_node).perform()
                     child_node_ele = self.check_if_element_exists_with_scroll(
