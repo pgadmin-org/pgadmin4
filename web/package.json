@@ -124,7 +124,7 @@
     "ip-address": "^7.1.0",
     "jquery": "^3.6.0",
     "jquery-contextmenu": "^2.9.2",
-    "jquery-ui": "^1.13.0",
+    "jquery-ui": "^1.13.2",
     "json-bignumber": "^1.0.1",
     "jsoneditor": "^9.5.4",
     "jsoneditor-react": "^3.1.1",
