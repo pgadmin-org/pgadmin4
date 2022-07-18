@@ -240,8 +240,10 @@ def _get_required_column_list(data, driver, conn):
 
 
 def _save_import_export_settings(settings):
-    [settings.pop(key) for key in ['icolumns', 'columns', 'database',
-                                   'schema', 'table', 'save_btn_icon']]
+    settings = {key: settings[key] for key in settings if key not in
+                ['icolumns', 'columns', 'database', 'schema', 'table',
+                 'save_btn_icon']}
+
     if settings['is_import']:
         settings['import_file_name'] = settings['filename']
     else:

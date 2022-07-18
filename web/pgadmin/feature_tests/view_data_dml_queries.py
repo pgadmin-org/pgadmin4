@@ -54,7 +54,7 @@ class CheckForViewDataTest(BaseFeatureTest):
          dict())
     ]
 
-    TIMEOUT_STRING = "Timed out waiting for div element to appear"
+    TIMEOUT_STRING = "5"
 
     # query for creating 'defaults_text' table
     defaults_query = """
@@ -220,7 +220,7 @@ CREATE TABLE public.nonintpkey
         """
         cell_type = data[2]
         value = data[0]
-        retry = 2
+        retry = 3
         while retry > 0:
             self.wait.until(EC.visibility_of_element_located(
                 (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
@@ -228,11 +228,12 @@ CREATE TABLE public.nonintpkey
             cell_el = self.page.find_by_xpath(xpath)
             self.page.driver.execute_script(
                 "arguments[0].scrollIntoView(false)", cell_el)
+            time.sleep(0.2)
             ActionChains(self.driver).move_to_element(cell_el).perform()
             ActionChains(self.driver).double_click(cell_el).perform()
 
             if cell_type in ['int', 'int[]'] and \
-                    self._update_numeric_cell(cell_el, value):
+                    self._update_numeric_cell(xpath, value):
                 break
             elif cell_type in ['text', 'text[]', 'boolean[]'] and \
                     self._update_text_cell(cell_el, value):
@@ -248,8 +249,9 @@ CREATE TABLE public.nonintpkey
                       file=sys.stderr)
                 retry -= 1
 
-    def _update_numeric_cell(self, cell_el, value):
+    def _update_numeric_cell(self, cell_el_xpath, value):
         try:
+            cell_el = self.page.find_by_xpath(cell_el_xpath)
             if value == 'clear':
                 cell_el.find_element(By.CSS_SELECTOR, 'input').clear()
             else:
@@ -264,7 +266,7 @@ CREATE TABLE public.nonintpkey
 
     def _update_text_cell(self, cell_el, value):
         try:
-            text_area_ele = WebDriverWait(self.driver, 2).until(
+            text_area_ele = WebDriverWait(self.driver, 3).until(
                 EC.visibility_of_element_located(
                     (By.CSS_SELECTOR,
                      QueryToolLocators.row_editor_text_area_css)))
@@ -293,7 +295,7 @@ CREATE TABLE public.nonintpkey
         else:
             key_to_press = Keys.CONTROL
         try:
-            WebDriverWait(self.driver, 2).until(
+            WebDriverWait(self.driver, 3).until(
                 EC.visibility_of_element_located(
                     (By.CSS_SELECTOR,
                      QueryToolLocators.json_editor_text_area_css)))
