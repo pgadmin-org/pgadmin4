@@ -678,6 +678,16 @@ def register_query_tool_preferences(self):
     )
 
     self.preference.register(
+        'auto_completion', 'autocomplete_on_key_press',
+        gettext("Autocomplete on key press"), 'boolean', True,
+        category_label=gettext('Auto completion'),
+        help_str=gettext('If set to True, autocomplete will be available on '
+                         'key press along with CTRL/CMD + Space. If set to '
+                         'False, autocomplete is only activated when CTRL/CMD '
+                         '+ Space is pressed.')
+    )
+
+    self.preference.register(
         'keyboard_shortcuts',
         'commit_transaction',
         gettext('Commit'),

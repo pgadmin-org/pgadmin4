@@ -61,6 +61,7 @@ MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
 sqleditor_close_session_lock = Lock()
+auto_complete_objects = dict()
 
 
 class SqlEditorModule(PgAdminModule):
@@ -559,6 +560,10 @@ def close(trans_id):
         trans_id: unique transaction id
     """
     with sqleditor_close_session_lock:
+        # delete the SQLAutoComplete object
+        if trans_id in auto_complete_objects:
+            del auto_complete_objects[trans_id]
+
         if 'gridData' not in session:
             return make_json_response(data={'status': True})
 
@@ -1746,10 +1751,13 @@ def auto_complete(trans_id):
     if status and conn is not None and \
             trans_obj is not None and session_obj is not None:
 
-        # Create object of SQLAutoComplete class and pass connection object
-        auto_complete_obj = SQLAutoComplete(
-            sid=trans_obj.sid, did=trans_obj.did, conn=conn)
+        if trans_id not in auto_complete_objects:
+            # Create object of SQLAutoComplete class and pass connection object
+            auto_complete_objects[trans_id] = \
+                SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
+                                conn=conn)
 
+        auto_complete_obj = auto_complete_objects[trans_id]
         # Get the auto completion suggestions.
         res = auto_complete_obj.get_completions(full_sql, text_before_cursor)
     else:

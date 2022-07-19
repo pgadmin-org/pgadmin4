@@ -290,6 +290,9 @@ preferences for the Query Editor tool.
 
 Use the fields on the *Auto Completion* panel to set the auto completion options.
 
+* When the *Autocomplete on key press* switch is set to *True* then autocomplete
+  will be available on key press along with CTRL/CMD + Space. If it is set to
+  *False* then autocomplete is only activated when CTRL/CMD + Space is pressed.
 * When the *Keywords in uppercase* switch is set to *True* then keywords are
   shown in upper case.
 

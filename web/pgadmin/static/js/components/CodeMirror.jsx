@@ -418,6 +418,17 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     Object.keys(events||{}).forEach((eventName)=>{
       editor.current.on(eventName, events[eventName]);
     });
+
+    // Register keyup event if autocomplete is true
+    let pref = pgWindow?.pgAdmin?.Browser?.get_preferences_for_module('sqleditor') || {};
+    if (autocomplete && pref.autocomplete_on_key_press) {
+      editor.current.on('keyup', (cm, event)=>{
+        if (!cm.state.completionActive && event.key != 'Enter' && event.key != 'Escape') {
+          OrigCodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
+        }
+      });
+    }
+
     editor.current.on('drop', handleDrop);
     editor.current.on('paste', handlePaste);
     initPreferences();

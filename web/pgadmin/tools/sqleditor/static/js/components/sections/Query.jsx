@@ -27,6 +27,7 @@ const useStyles = makeStyles(()=>({
 }));
 
 function registerAutocomplete(api, transId, onFailure) {
+  let timeoutId;
   OrigCodeMirror.registerHelper('hint', 'sql', function (editor) {
     var data = [],
       doc = editor.getDoc(),
@@ -49,7 +50,6 @@ function registerAutocomplete(api, transId, onFailure) {
          */
         hint_render: function (elt, data_arg, cur_arg) {
           var el = document.createElement('span');
-
           switch (cur_arg.type) {
           case 'database':
             el.className = 'sqleditor-hint pg-icon-' + cur_arg.type;
@@ -58,10 +58,14 @@ function registerAutocomplete(api, transId, onFailure) {
             el.className = 'sqleditor-hint icon-type';
             break;
           case 'keyword':
-            el.className = 'fa fa-key';
+            el.className = 'sqleditor-hint icon-key';
             break;
           case 'table alias':
-            el.className = 'fa fa-at';
+            el.className = 'sqleditor-hint icon-at';
+            break;
+          case 'join':
+          case 'fk join':
+            el.className = 'sqleditor-hint icon-join';
             break;
           default:
             el.className = 'sqleditor-hint icon-' + cur_arg.type;
@@ -87,73 +91,87 @@ function registerAutocomplete(api, transId, onFailure) {
     return {
       then: function (cb) {
         var self_local = this;
-        // Make ajax call to find the autocomplete data
-        api.post(self_local.url, JSON.stringify(self_local.data))
-          .then((res) => {
-            var result = [];
 
-            _.each(res.data.data.result, function (obj, key) {
-              result.push({
-                text: key,
-                type: obj.object_type,
-                render: self_local.hint_render,
+        /*
+         * Below logic find the start and end point
+         * to replace the selected auto complete suggestion.
+         */
+        var token = self_local.editor.getTokenAt(cur),
+          start, end, search;
+        if (token.end > cur.ch) {
+          token.end = cur.ch;
+          token.string = token.string.slice(0, cur.ch - token.start);
+        }
+
+        if (token.string.match(/^[.`\w@]\w*$/)) {
+          search = token.string;
+          start = token.start;
+          end = token.end;
+        } else {
+          start = end = cur.ch;
+          search = '';
+        }
+
+        /*
+         * Added 1 in the start position if search string
+         * started with "." or "`" else auto complete of code mirror
+         * will remove the "." when user select any suggestion.
+         */
+        if (search.charAt(0) == '.' || search.charAt(0) == '``')
+          start += 1;
+
+        cb({
+          list: [{
+            text: '',
+            render: (elt)=>{
+              var el = document.createElement('span');
+              el.className = 'sqleditor-hint icon-spinner';
+              el.appendChild(document.createTextNode(gettext('Loading...')));
+              elt.appendChild(el);
+            },
+          }, {text: ''}],
+          from: {
+            line: self_local.current_line,
+            ch: start,
+          },
+          to: {
+            line: self_local.current_line,
+            ch: end,
+          },
+        });
+
+        timeoutId && clearTimeout(timeoutId);
+        timeoutId = setTimeout(()=> {
+          timeoutId = null;
+          // Make ajax call to find the autocomplete data
+          api.post(self_local.url, JSON.stringify(self_local.data))
+            .then((res) => {
+              var result = [];
+
+              _.each(res.data.data.result, function (obj, key) {
+                result.push({
+                  text: key,
+                  type: obj.object_type,
+                  render: self_local.hint_render,
+                });
               });
+
+              cb({
+                list: result,
+                from: {
+                  line: self_local.current_line,
+                  ch: start,
+                },
+                to: {
+                  line: self_local.current_line,
+                  ch: end,
+                },
+              });
+            })
+            .catch((err) => {
+              onFailure?.(err);
             });
-
-            // Sort function to sort the suggestion's alphabetically.
-            result.sort(function (a, b) {
-              var textA = a.text.toLowerCase(),
-                textB = b.text.toLowerCase();
-              if (textA < textB) //sort string ascending
-                return -1;
-              if (textA > textB)
-                return 1;
-              return 0; //default return value (no sorting)
-            });
-
-            /*
-           * Below logic find the start and end point
-           * to replace the selected auto complete suggestion.
-           */
-            var token = self_local.editor.getTokenAt(cur),
-              start, end, search;
-            if (token.end > cur.ch) {
-              token.end = cur.ch;
-              token.string = token.string.slice(0, cur.ch - token.start);
-            }
-
-            if (token.string.match(/^[.`\w@]\w*$/)) {
-              search = token.string;
-              start = token.start;
-              end = token.end;
-            } else {
-              start = end = cur.ch;
-              search = '';
-            }
-
-            /*
-           * Added 1 in the start position if search string
-           * started with "." or "`" else auto complete of code mirror
-           * will remove the "." when user select any suggestion.
-           */
-            if (search.charAt(0) == '.' || search.charAt(0) == '``')
-              start += 1;
-
-            cb({
-              list: result,
-              from: {
-                line: self_local.current_line,
-                ch: start,
-              },
-              to: {
-                line: self_local.current_line,
-                ch: end,
-              },
-            });
-          })
-          .catch((err) => {
-            onFailure?.(err);
-          });
+        }, 300);
       }.bind(ctx),
     };
   });
