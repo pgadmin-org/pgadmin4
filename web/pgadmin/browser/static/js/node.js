@@ -551,7 +551,25 @@ define('pgadmin.browser.node', [
 
       }
     },
+    registerDockerPanel: function(docker, name, params) {
+      var w = docker || pgBrowser.docker,
+        p = w.findPanels(name);
 
+      if (p && p.length == 1)
+        return;
+
+      p = new pgBrowser.Panel({
+        name: name,
+        showTitle: true,
+        isCloseable: true,
+        isPrivate: true,
+        isLayoutMember: false,
+        canMaximise: true,
+        content: '<div class="obj_properties container-fluid h-100"></div>',
+        ...params,
+      });
+      p.load(w);
+    },
     registerUtilityPanel: function(docker) {
       var w = docker || pgBrowser.docker,
         p = w.findPanels('utility_props');

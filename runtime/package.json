@@ -7,6 +7,7 @@
   "license": "PostgreSQL",
   "chromium-args": "--disable-popup-blocking --disable-gpu",
   "user-agent": "Nwjs:%nwver-%osinfo-%chromium_ver",
+  "nodejs": true,
   "window": {
     "width": 750,
     "height": 600,

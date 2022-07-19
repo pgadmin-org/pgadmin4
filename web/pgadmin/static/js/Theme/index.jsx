@@ -125,6 +125,9 @@ basicSettings = createMuiTheme(basicSettings, {
       },
       adornedEnd: {
         paddingRight: basicSettings.spacing(0.75),
+      },
+      marginDense: {
+        height: '28px',
       }
     },
     MuiAccordion: {

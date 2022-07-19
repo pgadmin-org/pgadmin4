@@ -38,12 +38,11 @@ let pgAdmin = {
       app_version_int: 1234,
     },
   },
-  FileManager: {
-    init: jasmine.createSpy(),
-    show_dialog: jasmine.createSpy(),
-  },
   Tools: {
     SQLEditor: {},
+    FileManager: {
+      show: jasmine.createSpy(),
+    },
   }
 };
 
@@ -360,7 +359,7 @@ describe('ERD BodyWidget', ()=>{
 
   it('onLoadDiagram', ()=>{
     bodyInstance.onLoadDiagram();
-    expect(pgAdmin.FileManager.show_dialog).toHaveBeenCalled();
+    expect(pgAdmin.Tools.FileManager.show).toHaveBeenCalled();
   });
 
   it('openFile', (done)=>{
@@ -389,9 +388,10 @@ describe('ERD BodyWidget', ()=>{
       done();
     });
 
+    pgAdmin.Tools.FileManager.show.calls.reset();
     bodyInstance.onSaveDiagram(true);
-    expect(pgAdmin.FileManager.show_dialog).toHaveBeenCalledWith({
-      'supported_types': ['pgerd'],
+    expect(pgAdmin.Tools.FileManager.show.calls.argsFor(0)[0]).toEqual({
+      'supported_types': ['*','pgerd'],
       'dialog_type': 'create_file',
       'dialog_title': 'Save File',
       'btn_primary': 'Save',

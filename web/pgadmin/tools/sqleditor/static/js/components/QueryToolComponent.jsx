@@ -332,15 +332,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         }
       }
     });
-
-    pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', (fileName)=>{
-      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
-    }, pgAdmin);
-
-    pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:create_file', (fileName)=>{
-      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
-    }, pgAdmin);
-
     window.addEventListener('beforeunload', onBeforeUnload);
   }, []);
 
@@ -428,8 +419,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           'supported_types': ['*', 'sql'], // file types allowed
           'dialog_type': 'select_file', // open select file dialog
         };
-        pgAdmin.FileManager.init();
-        pgAdmin.FileManager.show_dialog(fileParams);
+        pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
+        }, null, modal);
       }],
       [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false)=>{
         if(!isSaveAs && qtState.current_file) {
@@ -441,8 +433,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             'dialog_title': 'Save File',
             'btn_primary': 'Save',
           };
-          pgAdmin.FileManager.init();
-          pgAdmin.FileManager.show_dialog(fileParams);
+          pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
+            eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE, fileName);
+          }, null, modal);
         }
       }],
       [QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileDone],

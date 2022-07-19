@@ -9,7 +9,7 @@
 import { Box, makeStyles } from '@material-ui/core';
 import _ from 'lodash';
 import React, {useState, useEffect, useContext, useRef, useLayoutEffect} from 'react';
-import ReactDataGrid, {Row, useRowSelection} from 'react-data-grid';
+import {Row, useRowSelection} from 'react-data-grid';
 import LockIcon from '@material-ui/icons/Lock';
 import EditIcon from '@material-ui/icons/Edit';
 import { QUERY_TOOL_EVENTS } from '../QueryToolConstants';
@@ -21,51 +21,12 @@ import MapIcon from '@material-ui/icons/Map';
 import { QueryToolEventsContext } from '../QueryToolComponent';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
+import PgReactDataGrid from '../../../../../../static/js/components/PgReactDataGrid';
 
 export const ROWNUM_KEY = '$_pgadmin_rownum_key_$';
 export const GRID_ROW_SELECT_KEY = '$_pgadmin_gridrowselect_key_$';
 
 const useStyles = makeStyles((theme)=>({
-  root: {
-    height: '100%',
-    color: theme.palette.text.primary,
-    backgroundColor: theme.otherVars.qtDatagridBg,
-    fontSize: '12px',
-    border: 'none',
-    '--rdg-selection-color': theme.palette.primary.main,
-    '& .rdg-cell': {
-      ...theme.mixins.panelBorder.right,
-      ...theme.mixins.panelBorder.bottom,
-      fontWeight: 'abc',
-      '&[aria-colindex="1"]': {
-        padding: 0,
-      },
-      '&[aria-selected=true]:not([role="columnheader"]):not([aria-colindex="1"])': {
-        outlineWidth: '1px',
-        outlineOffset: '-1px',
-        backgroundColor: theme.palette.primary.light,
-        color: theme.otherVars.qtDatagridSelectFg,
-      }
-    },
-    '& .rdg-header-row .rdg-cell': {
-      padding: 0,
-    },
-    '& .rdg-header-row': {
-      backgroundColor: theme.palette.background.default,
-      fontWeight: 'normal',
-    },
-    '& .rdg-row': {
-      backgroundColor: theme.palette.background.default,
-      '&[aria-selected=true]': {
-        backgroundColor: theme.palette.primary.light,
-        color: theme.otherVars.qtDatagridSelectFg,
-        '& .rdg-cell:nth-child(1)': {
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-        }
-      },
-    }
-  },
   columnHeader: {
     padding: '3px 6px',
     height: '100%',
@@ -408,11 +369,10 @@ export default function QueryToolDataGrid({columns, rows, totalRowCount, dataCha
 
   return (
     <DataGridExtrasContext.Provider value={{onSelectedCellChange, handleCopy}}>
-      <ReactDataGrid
+      <PgReactDataGrid
         id="datagrid"
         columns={readyColumns}
         rows={rows}
-        className={classes.root}
         headerRowHeight={40}
         rowHeight={25}
         mincolumnWidthBy={50}

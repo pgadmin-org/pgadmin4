@@ -212,6 +212,7 @@ module.exports = {
       'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js'),
       'pgadmin.tools.psql': path.join(__dirname, './pgadmin/tools/psql/static/js'),
       'pgadmin.tools.sqleditor': path.join(__dirname, './pgadmin/tools/sqleditor/static/js'),
+      'pgadmin.tools.file_manager': path.join(__dirname, './pgadmin/misc/file_manager/static/js'),
       'pgadmin.authenticate.kerberos': path.join(__dirname, './pgadmin/authenticate/static/js/kerberos'),
       'bundled_codemirror': path.join(__dirname, './pgadmin/static/bundle/codemirror'),
       'tools': path.join(__dirname, './pgadmin/tools/'),

@@ -10,7 +10,7 @@
 define([
   'sources/pgadmin', 'pgadmin.tools.erd/erd_tool', 'pgadmin.browser',
   'pgadmin.browser.server.privilege', 'pgadmin.node.database', 'pgadmin.node.primary_key',
-  'pgadmin.node.foreign_key', 'pgadmin.browser.datamodel', 'pgadmin.file_manager',
+  'pgadmin.node.foreign_key', 'pgadmin.browser.datamodel', 'pgadmin.tools.file_manager',
 ], function(
   pgAdmin, ERDToolModule
 ) {

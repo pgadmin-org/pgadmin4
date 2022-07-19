@@ -14,8 +14,6 @@ import pgAdmin from 'sources/pgadmin';
 import { FileType } from 'react-aspen';
 import { TreeNode } from './tree_nodes';
 
-import { isValidData } from 'sources/utils';
-
 function manageTreeEvents(event, eventName, item) {
   let d = item ? item._metadata.data : [];
   let node_metadata = item ? item._metadata : {};
@@ -594,6 +592,6 @@ export function findInTree(rootNode, path) {
   })(rootNode);
 }
 
-let isValidTreeNodeData = isValidData;
+let isValidTreeNodeData = (data) => (!_.isEmpty(data));
 
 export { isValidTreeNodeData };

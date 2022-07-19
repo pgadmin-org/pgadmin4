@@ -19,6 +19,7 @@ import OrigCodeMirror from 'bundled_codemirror';
 import Notifier from '../../../../../../static/js/helpers/Notifier';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { checkTrojanSource } from '../../../../../../static/js/utils';
+import { parseApiError } from '../../../../../../static/js/api_instance';
 
 const useStyles = makeStyles(()=>({
   sql: {
@@ -294,7 +295,7 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName)=>{
       queryToolCtx.api.post(url_for('sqleditor.load_file'), {
         'file_name': decodeURI(fileName),
-      }).then((res)=>{
+      }, {transformResponse: [(data) => { return data; }]}).then((res)=>{
         editor.current.setValue(res.data);
         //Check the file content for Trojan Source
         checkTrojanSource(res.data);
@@ -302,7 +303,7 @@ export default function Query() {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
+        Notifier.error(parseApiError(err));
       });
     });
 

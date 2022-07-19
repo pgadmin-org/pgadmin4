@@ -35,13 +35,13 @@ import * as DateFns from 'date-fns';
 
 import CodeMirror from './CodeMirror';
 import gettext from 'sources/gettext';
-import { showFileDialog } from '../helpers/legacyConnector';
 import _ from 'lodash';
 import { DefaultButton, PrimaryButton, PgIconButton } from './Buttons';
 import CustomPropTypes from '../custom_prop_types';
 import KeyboardShortcuts from './KeyboardShortcuts';
 import QueryThresholds from './QueryThresholds';
 import SelectThemes from './SelectThemes';
+import { showFileManager } from '../helpers/showFileManager';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -326,11 +326,10 @@ FormInputDateTimePicker.propTypes = {
 
 /* Use forwardRef to pass ref prop to OutlinedInput */
 export const InputText = forwardRef(({
-  cid, helpid, readonly, disabled, value, onChange, controlProps, type, ...props }, ref) => {
+  cid, helpid, readonly, disabled, value, onChange, controlProps, type, size, ...props }, ref) => {
 
   const maxlength = typeof(controlProps?.maxLength) != 'undefined' ? controlProps.maxLength : 255;
 
-  const classes = useStyles();
   const patterns = {
     'numeric': '^-?[0-9]\\d*\\.?\\d*$',
     'int': '^-?[0-9]\\d*$',
@@ -356,12 +355,17 @@ export const InputText = forwardRef(({
     finalValue = controlProps.formatter.fromRaw(finalValue);
   }
 
+  const filteredProps = _.pickBy(props, (_v, key)=>(
+    /* When used in ButtonGroup, following props should be skipped */
+    !['color', 'disableElevation', 'disableFocusRipple', 'disableRipple'].includes(key)
+  ));
+
   return (
     <OutlinedInput
       ref={ref}
       color="primary"
       fullWidth
-      className={classes.formInput}
+      margin={size == 'small' ? 'dense' : 'none'}
       inputProps={{
         id: cid,
         maxLength: controlProps?.multiline ? null : maxlength,
@@ -378,7 +382,7 @@ export const InputText = forwardRef(({
         ...(controlProps?.onKeyDown && { onKeyDown: controlProps.onKeyDown })
       }
       {...controlProps}
-      {...props}
+      {...filteredProps}
       {...(['numeric', 'int'].indexOf(type) > -1 ? { type: 'tel' } : { type: type })}
     />
   );
@@ -394,6 +398,7 @@ InputText.propTypes = {
   onChange: PropTypes.func,
   controlProps: PropTypes.object,
   type: PropTypes.string,
+  size: PropTypes.string,
 };
 
 export function FormInputText({ hasError, required, label, className, helpMessage, testcid, ...props }) {
@@ -412,7 +417,6 @@ FormInputText.propTypes = {
   testcid: PropTypes.string,
 };
 
-/* Using the existing file dialog functions using showFileDialog */
 export function InputFileSelect({ controlProps, onChange, disabled, readonly, isvalidate = false, hideBrowseButton=false,validate, ...props }) {
   const inpRef = useRef();
   let textControlProps = {};
@@ -420,15 +424,24 @@ export function InputFileSelect({ controlProps, onChange, disabled, readonly, is
     const {placeholder} = controlProps;
     textControlProps = {placeholder};
   }
-  const onFileSelect = (value) => {
-    onChange && onChange(decodeURI(value));
-    inpRef.current.focus();
+  const showFileDialog = ()=>{
+    let params = {
+      supported_types: controlProps.supportedTypes || [],
+      dialog_type: controlProps.dialogType || 'select_file',
+      dialog_title: controlProps.dialogTitle || '',
+      btn_primary: controlProps.btnPrimary || '',
+    };
+    showFileManager(params, (fileName)=>{
+      onChange && onChange(decodeURI(fileName));
+      inpRef.current.focus();
+    });
   };
+
   return (
     <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} controlProps={textControlProps} {...props} endAdornment={
       <>
         {!hideBrowseButton &&
-        <IconButton onClick={() => showFileDialog(controlProps, onFileSelect)}
+        <IconButton onClick={showFileDialog}
           disabled={disabled || readonly} aria-label={gettext('Select a file')}><FolderOpenRoundedIcon /></IconButton>
         }
         {isvalidate &&
@@ -1184,6 +1197,9 @@ const useStylesFormFooter = makeStyles((theme) => ({
   message: {
     marginLeft: theme.spacing(0.5),
   },
+  messageCenter: {
+    margin: 'auto',
+  },
   closeButton: {
     marginLeft: 'auto',
   },
@@ -1272,13 +1288,13 @@ FormInputSelectThemes.propTypes = {
 };
 
 
-export function NotifierMessage({ type = MESSAGE_TYPE.SUCCESS, message, closable = true, onClose = () => {/*This is intentional (SonarQube)*/ } }) {
+export function NotifierMessage({ type = MESSAGE_TYPE.SUCCESS, message, closable = true, showIcon=true, textCenter=false, onClose = () => {/*This is intentional (SonarQube)*/ } }) {
   const classes = useStylesFormFooter();
 
   return (
     <Box className={clsx(classes.container, classes[`container${type}`])}>
-      <FormIcon type={type} className={classes[`icon${type}`]} />
-      <Box className={classes.message}>{HTMLReactParse(message || '')}</Box>
+      {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
+      <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
       {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
         <FormIcon close={true} />
       </IconButton>}
@@ -1290,6 +1306,8 @@ NotifierMessage.propTypes = {
   type: PropTypes.oneOf(Object.values(MESSAGE_TYPE)).isRequired,
   message: PropTypes.string,
   closable: PropTypes.bool,
+  showIcon: PropTypes.bool,
+  textCenter: PropTypes.bool,
   onClose: PropTypes.func,
 };
 

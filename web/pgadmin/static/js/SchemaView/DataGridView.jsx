@@ -25,11 +25,11 @@ import _ from 'lodash';
 import gettext from 'sources/gettext';
 import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
 import FormView, { getFieldMetaData } from './FormView';
-import { confirmDeleteRow } from '../helpers/legacyConnector';
 import CustomPropTypes from 'sources/custom_prop_types';
 import { evalFunc } from 'sources/utils';
 import { DepListenerContext } from './DepListener';
 import { useIsMounted } from '../custom_hooks';
+import Notify from '../helpers/Notifier';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -303,15 +303,21 @@ export default function DataGridView({
             return (
               <PgIconButton data-test="delete-row" title={gettext('Delete row')} icon={<DeleteRoundedIcon fontSize="small" />}
                 onClick={()=>{
-                  confirmDeleteRow(()=>{
-                    /* Get the changes on dependent fields as well */
-                    dataDispatch({
-                      type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
-                      path: accessPath,
-                      value: row.index,
-                    });
-
-                  }, ()=>{/*This is intentional (SonarQube)*/}, props.customDeleteTitle, props.customDeleteMsg);
+                  Notify.confirm(
+                    props.customDeleteTitle || gettext('Delete Row'),
+                    props.customDeleteMsg || gettext('Are you sure you wish to delete this row?'),
+                    function() {
+                      dataDispatch({
+                        type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
+                        path: accessPath,
+                        value: row.index,
+                      });
+                      return true;
+                    },
+                    function() {
+                      return true;
+                    }
+                  );
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
           }

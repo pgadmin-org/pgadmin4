@@ -27,6 +27,7 @@ import 'wcdocker';
 import Theme from '../../../../../../static/js/Theme';
 import TableSchema from '../../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
+import { ModalContext } from '../../../../../../static/js/helpers/ModalProvider';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -61,6 +62,7 @@ export class KeyboardShortcutAction extends Action {
 
 /* The main body container for the ERD */
 export default class BodyWidget extends React.Component {
+  static contextType = ModalContext;
   constructor() {
     super();
     this.state = {
@@ -214,8 +216,6 @@ export default class BodyWidget extends React.Component {
       backgroundPosition: '0px 0px',
     });
 
-    this.props.pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:select_file', this.openFile, this);
-    this.props.pgAdmin.Browser.Events.on('pgadmin-storage:finish_btn:create_file', this.saveFile, this);
     this.props.pgAdmin.Browser.onPreferencesChange('erd', () => {
       this.setState({
         preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
@@ -468,11 +468,10 @@ export default class BodyWidget extends React.Component {
 
   onLoadDiagram() {
     var params = {
-      'supported_types': ['pgerd'], // file types allowed
+      'supported_types': ['*','pgerd'], // file types allowed
       'dialog_type': 'select_file', // open select file dialog
     };
-    this.props.pgAdmin.FileManager.init();
-    this.props.pgAdmin.FileManager.show_dialog(params);
+    this.props.pgAdmin.Tools.FileManager.show(params, this.openFile.bind(this), null, this.context);
   }
 
   openFile(fileName) {
@@ -501,13 +500,12 @@ export default class BodyWidget extends React.Component {
       this.saveFile(this.state.current_file);
     } else {
       var params = {
-        'supported_types': ['pgerd'],
+        'supported_types': ['*','pgerd'],
         'dialog_type': 'create_file',
         'dialog_title': 'Save File',
         'btn_primary': 'Save',
       };
-      this.props.pgAdmin.FileManager.init();
-      this.props.pgAdmin.FileManager.show_dialog(params);
+      this.props.pgAdmin.Tools.FileManager.show(params, this.saveFile.bind(this), null, this.context);
     }
   }
 

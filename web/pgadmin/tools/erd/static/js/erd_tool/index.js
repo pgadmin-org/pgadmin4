@@ -17,6 +17,9 @@ import Alertify from 'pgadmin.alertifyjs';
 import pgWindow from 'sources/window';
 import pgAdmin from 'sources/pgadmin';
 
+import ModalProvider from '../../../../../static/js/helpers/ModalProvider';
+import Theme from '../../../../../static/js/Theme';
+
 export default class ERDTool {
   constructor(container, params) {
     this.container = document.querySelector(container);
@@ -37,13 +40,17 @@ export default class ERDTool {
     });
 
     ReactDOM.render(
-      <BodyWidget
-        params={this.params}
-        getDialog={getDialog}
-        pgWindow={pgWindow}
-        pgAdmin={pgAdmin}
-        panel={panel}
-        alertify={Alertify} />,
+      <Theme>
+        <ModalProvider>
+          <BodyWidget
+            params={this.params}
+            getDialog={getDialog}
+            pgWindow={pgWindow}
+            pgAdmin={pgAdmin}
+            panel={panel}
+            alertify={Alertify} />
+        </ModalProvider>
+      </Theme>,
       this.container
     );
   }

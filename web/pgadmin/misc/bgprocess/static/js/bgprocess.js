@@ -9,7 +9,7 @@
 
 define('misc.bgprocess', [
   'sources/pgadmin', 'sources/gettext', 'sources/url_for', 'underscore',
-  'jquery', 'pgadmin.browser', 'alertify',
+  'jquery', 'pgadmin.browser', 'alertify', 'pgadmin.tools.file_manager',
 ], function(
   pgAdmin, gettext, url_for, _, $, pgBrowser, Alertify
 ) {
@@ -625,9 +625,7 @@ define('misc.bgprocess', [
 
         var self = this;
         if(self.current_storage_dir) {
-          pgBrowser.Events.trigger(
-            'pgadmin:tools:storage_manager', self.current_storage_dir
-          );
+          pgAdmin.Tools.FileManager.openStorageManager(self.current_storage_dir);
         }
       },
     });

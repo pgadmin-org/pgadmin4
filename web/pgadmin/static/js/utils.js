@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-import _ from 'underscore';
+import _ from 'lodash';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
 import 'wcdocker';
@@ -114,14 +114,6 @@ export function findAndSetFocus(container) {
     }
   }, 200);
 }
-
-let isValidData = (data) => (!_.isUndefined(data) && !_.isNull(data));
-let isFunction = (fn) => (_.isFunction(fn));
-let isString = (str) => (_.isString(str));
-
-export {
-  isValidData, isFunction, isString,
-};
 
 export function getEpoch(inp_date) {
   let date_obj = inp_date ? inp_date : new Date();
@@ -456,6 +448,10 @@ export function getBrowser() {
     tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
     return {name:'IE', version:(tem[1]||'')};
   }
+  if(ua.startsWith('Nwjs')) {
+    let nwjs = ua.split('-')[0]?.split(':');
+    return {name:nwjs[0], version: nwjs[1]};
+  }
 
   if(M[1]==='Chrome') {
     tem=ua.match(/\bOPR|Edge\/(\d+)/);
@@ -479,4 +475,22 @@ export function checkTrojanSource(content, isPasteEvent) {
     }
     Notify.alert(gettext('Trojan Source Warning'), msg);
   }
+}
+
+export function downloadBlob(blob, fileName) {
+  let urlCreator = window.URL || window.webkitURL,
+    downloadUrl = urlCreator.createObjectURL(blob),
+    link = document.createElement('a');
+
+  document.body.appendChild(link);
+
+  if (getBrowser() === 'IE' && window.navigator.msSaveBlob) {
+  // IE10+ : (has Blob, but not a[download] or URL)
+    window.navigator.msSaveBlob(blob, fileName);
+  } else {
+    link.setAttribute('href', downloadUrl);
+    link.setAttribute('download', fileName);
+    link.click();
+  }
+  document.body.removeChild(link);
 }

@@ -64,9 +64,6 @@ class ToolsModule(PgAdminModule):
         from .sqleditor import blueprint as module
         app.register_blueprint(module)
 
-        from .storage_manager import blueprint as module
-        app.register_blueprint(module)
-
         from .user_management import blueprint as module
         app.register_blueprint(module)
 

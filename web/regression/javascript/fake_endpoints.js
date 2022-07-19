@@ -28,5 +28,13 @@ define(function () {
     'erd.sql': '/erd/sql/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
     'erd.prequisite': '/erd/prequisite/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
     'erd.tables': '/erd/tables/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    'file_manager.init': '/file_manager/init',
+    'file_manager.filemanager': '/file_manager/init',
+    'file_manager.index': '/file_manager/',
+    'file_manager.delete_trans_id': '/file_manager/delete_trans_id/<int:trans_id>',
+    'file_manager.save_last_dir': '/file_manager/save_last_dir/<int:trans_id>',
+    'file_manager.save_file_dialog_view': '/file_manager/save_file_dialog_view/<int:trans_id>',
+    'file_manager.save_show_hidden_file_option': '/file_manager/save_show_hidden_file_option/<int:trans_id>',
+    'settings.save_file_format_setting': '/settings/save_file_format_setting/',
   };
 });

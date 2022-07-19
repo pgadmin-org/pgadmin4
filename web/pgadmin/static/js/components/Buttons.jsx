@@ -199,7 +199,7 @@ PgIconButton.propTypes = {
 export const PgButtonGroup = forwardRef(({children, ...props}, ref)=>{
   /* Tooltip does not work for disabled items */
   return (
-    <ButtonGroup disableElevation innerRef={ref} {...props}>
+    <ButtonGroup innerRef={ref} {...props}>
       {children}
     </ButtonGroup>
   );

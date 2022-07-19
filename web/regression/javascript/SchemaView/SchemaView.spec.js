@@ -15,7 +15,6 @@ import {TestSchema, TestSchemaAllTypes} from './TestSchema.ui';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import * as legacyConnector from 'sources/helpers/legacyConnector';
 import Notify from '../../../pgadmin/static/js/helpers/Notifier';
 import Theme from '../../../pgadmin/static/js/Theme';
 
@@ -191,18 +190,17 @@ describe('SchemaView', ()=>{
           simulateValidData();
 
           /* Press OK */
-          let confirmSpy = spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn)=>{
-            yesFn();
-          });
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
           ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
-          expect(confirmSpy.calls.argsFor(0)[2]).toBe('Custom delete title');
-          expect(confirmSpy.calls.argsFor(0)[3]).toBe('Custom delete message');
+          confirmSpy.calls.argsFor(0)[2]();
 
+          expect(confirmSpy.calls.argsFor(0)[0]).toBe('Custom delete title');
+          expect(confirmSpy.calls.argsFor(0)[1]).toBe('Custom delete message');
           /* Press Cancel */
-          spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn, cancelFn)=>{
-            cancelFn();
-          });
+          confirmSpy.calls.reset();
           ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+          confirmSpy.calls.argsFor(0)[3]();
+
           setTimeout(()=>{
             ctrlUpdate(done);
           }, 0);
@@ -297,7 +295,7 @@ describe('SchemaView', ()=>{
       }, 0);
     });
 
-    let onRestAction = (done, data)=> {
+    let onResetAction = (done, data)=> {
       ctrl.update();
       expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
       expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
@@ -316,7 +314,7 @@ describe('SchemaView', ()=>{
           /* Press OK */
           confirmSpy.calls.argsFor(0)[2]();
           setTimeout(()=>{
-            onRestAction(done, { id: undefined, field1: null, field2: null, fieldcoll: null });
+            onResetAction(done, { id: undefined, field1: null, field2: null, fieldcoll: null });
           }, 0);
         }, 0);
       });
@@ -390,7 +388,9 @@ describe('SchemaView', ()=>{
         ctrl.find('MappedCellControl[id="field5"]').at(2).find('input').simulate('change', {target: {value: 'rval53'}});
 
         /* Remove the 1st row */
+        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
         ctrl.find('DataTableRow').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+        confirmSpy.calls.argsFor(0)[2]();
 
         /* Edit the 2nd row which is first now*/
         ctrl.find('MappedCellControl[id="field5"]').at(0).find('input').simulate('change', {target: {value: 'rvalnew'}});
@@ -402,11 +402,6 @@ describe('SchemaView', ()=>{
           viewHelperProps: {
             mode: 'edit',
           }
-        });
-
-        /* Press OK */
-        spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn)=>{
-          yesFn();
         });
       });
       it('init', (done)=>{
@@ -463,9 +458,9 @@ describe('SchemaView', ()=>{
           let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
           ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
           /* Press OK */
-          confirmSpy.calls.argsFor(0)[2]();
+          confirmSpy.calls.mostRecent().args[2]();
           setTimeout(()=>{
-            onRestAction(done, {});
+            onResetAction(done, {});
           }, 0);
         }, 0);
       });

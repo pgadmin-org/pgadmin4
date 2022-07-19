@@ -22,7 +22,7 @@ import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import { Rnd } from 'react-rnd';
 import { ExpandDialogIcon, MinimizeDialogIcon } from '../components/ExternalIcon';
 
-const ModalContext = React.createContext({});
+export const ModalContext = React.createContext({});
 const MIN_HEIGHT = 190;
 const MIN_WIDTH = 500;
 

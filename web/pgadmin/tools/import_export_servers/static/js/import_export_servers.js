@@ -9,7 +9,6 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'pgadmin.file_manager';
 import gettext from 'sources/gettext';
 import Alertify from 'pgadmin.alertifyjs';
 import Theme from 'sources/Theme';

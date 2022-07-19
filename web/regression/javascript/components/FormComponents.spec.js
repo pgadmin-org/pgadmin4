@@ -28,10 +28,10 @@ import {FormInputText, FormInputFileSelect, FormInputSQL,
   FormInputColor,
   FormFooterMessage,
   MESSAGE_TYPE} from '../../../pgadmin/static/js/components/FormComponents';
-import * as legacyConnector from '../../../pgadmin/static/js/helpers/legacyConnector';
 import CodeMirror from '../../../pgadmin/static/js/components/CodeMirror';
 import { ToggleButton } from '@material-ui/lab';
 import { DefaultButton, PrimaryButton } from '../../../pgadmin/static/js/components/Buttons';
+import * as showFileManager from '../../../pgadmin/static/js/helpers/showFileManager';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('FormComponents', ()=>{
@@ -118,7 +118,7 @@ describe('FormComponents', ()=>{
     let ThemedFormInputFileSelect = withTheme(FormInputFileSelect), ctrl;
 
     beforeEach(()=>{
-      spyOn(legacyConnector, 'showFileDialog').and.callFake((controlProps, onFileSelect)=>{
+      spyOn(showFileManager, 'showFileManager').and.callFake((controlProps, onFileSelect)=>{
         onFileSelect('selected/file');
       });
       ctrl = mount(
