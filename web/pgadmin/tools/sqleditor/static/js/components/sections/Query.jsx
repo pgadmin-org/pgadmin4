@@ -29,12 +29,13 @@ const useStyles = makeStyles(()=>({
 
 function registerAutocomplete(api, transId, onFailure) {
   let timeoutId;
+  let loadingEle;
+  let autoCompleteList = [];
+  let prevSearch = null;
   OrigCodeMirror.registerHelper('hint', 'sql', function (editor) {
     var data = [],
       doc = editor.getDoc(),
       cur = doc.getCursor(),
-      // Get the current cursor position
-      current_cur = cur.ch,
       // function context
       ctx = {
         editor: editor,
@@ -78,20 +79,66 @@ function registerAutocomplete(api, transId, onFailure) {
       };
 
     data.push(doc.getValue());
-    // Get the text from start to the current cursor position.
-    data.push(
-      doc.getRange({
-        line: 0,
-        ch: 0,
-      }, {
-        line: ctx.current_line,
-        ch: current_cur,
-      })
-    );
+
+    // This function is used to show the loading element until response comes.
+    const showLoading = (editor)=>{
+      if (editor.getInputField().getAttribute('aria-activedescendant') != null) {
+        hideLoading();
+        return;
+      }
+
+      if(!loadingEle) {
+        var ownerDocument = editor.getInputField().ownerDocument;
+        loadingEle = ownerDocument.createElement('div');
+        loadingEle.className = 'CodeMirror-hints';
+        var iconEle = ownerDocument.createElement('div');
+        iconEle.className = 'icon-spinner';
+        iconEle.style.marginTop = '4px';
+        iconEle.style.marginLeft = '2px';
+
+        var spanEle = ownerDocument.createElement('span');
+        spanEle.innerText = gettext('Loading...');
+        spanEle.style.marginLeft = '17px';
+
+        iconEle.appendChild(spanEle);
+        loadingEle.appendChild(iconEle);
+        ownerDocument.body.appendChild(loadingEle);
+      }
+      var pos = editor.cursorCoords(true);
+      loadingEle.style.left = pos.left + 'px';
+      loadingEle.style.top = pos.bottom + 'px';
+      loadingEle.style.height = '25px';
+    };
+
+    // This function is used to hide the loading element.
+    const hideLoading = ()=>{
+      loadingEle?.parentNode?.removeChild(loadingEle);
+      loadingEle = null;
+    };
 
     return {
       then: function (cb) {
         var self_local = this;
+
+        // This function is used to filter the data and call the callback
+        // function with that filtered data.
+        function setAutoCompleteData() {
+          let filterData = autoCompleteList.filter((item)=>{
+            return item.text.toLowerCase().startsWith(search.toLowerCase());
+          });
+
+          cb({
+            list: filterData,
+            from: {
+              line: self_local.current_line,
+              ch: start,
+            },
+            to: {
+              line: self_local.current_line,
+              ch: end,
+            },
+          });
+        }
 
         /*
          * Below logic find the start and end point
@@ -118,28 +165,37 @@ function registerAutocomplete(api, transId, onFailure) {
          * started with "." or "`" else auto complete of code mirror
          * will remove the "." when user select any suggestion.
          */
-        if (search.charAt(0) == '.' || search.charAt(0) == '``')
+        if (search.charAt(0) == '.' || search.charAt(0) == '``') {
           start += 1;
+          search = search.slice(1);
+        }
 
-        cb({
-          list: [{
-            text: '',
-            render: (elt)=>{
-              var el = document.createElement('span');
-              el.className = 'sqleditor-hint icon-spinner';
-              el.appendChild(document.createTextNode(gettext('Loading...')));
-              elt.appendChild(el);
-            },
-          }, {text: ''}],
-          from: {
+        // Clear the auto complete list if previous token/search is blank or dot.
+        prevSearch = search;
+        if (prevSearch == '' || prevSearch == '.')
+          autoCompleteList = [];
+
+        // Get the text from start to the current cursor position.
+        self_local.data.push(
+          doc.getRange({
+            line: 0,
+            ch: 0,
+          }, {
             line: self_local.current_line,
-            ch: start,
-          },
-          to: {
-            line: self_local.current_line,
-            ch: end,
-          },
-        });
+            ch: token.start + 1,
+          })
+        );
+
+        // If search token is not empty and auto complete list have some data
+        // then no need to send the request to the backend to fetch the data.
+        // auto complete the data using already fetched list.
+        if (search != '' && autoCompleteList.length != 0) {
+          setAutoCompleteData();
+          return;
+        }
+
+        //Show loading indicator
+        showLoading(self_local.editor);
 
         timeoutId && clearTimeout(timeoutId);
         timeoutId = setTimeout(()=> {
@@ -147,6 +203,7 @@ function registerAutocomplete(api, transId, onFailure) {
           // Make ajax call to find the autocomplete data
           api.post(self_local.url, JSON.stringify(self_local.data))
             .then((res) => {
+              hideLoading();
               var result = [];
 
               _.each(res.data.data.result, function (obj, key) {
@@ -157,19 +214,11 @@ function registerAutocomplete(api, transId, onFailure) {
                 });
               });
 
-              cb({
-                list: result,
-                from: {
-                  line: self_local.current_line,
-                  ch: start,
-                },
-                to: {
-                  line: self_local.current_line,
-                  ch: end,
-                },
-              });
+              autoCompleteList = result;
+              setAutoCompleteData();
             })
             .catch((err) => {
+              hideLoading();
               onFailure?.(err);
             });
         }, 300);
