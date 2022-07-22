@@ -27,7 +27,7 @@ const useStyles = makeStyles(()=>({
   }
 }));
 
-function registerAutocomplete(api, transId, onFailure) {
+function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
   let timeoutId;
   let loadingEle;
   let autoCompleteList = [];
@@ -170,11 +170,16 @@ function registerAutocomplete(api, transId, onFailure) {
           search = search.slice(1);
         }
 
+        // Handled special case when autocomplete on keypress is off,
+        // the query is cleared, and retype some other words and press CTRL/CMD + Space.
+        if (!sqlEditorPref.autocomplete_on_key_press && start == 0)
+          autoCompleteList = [];
+
         // Clear the auto complete list if previous token/search is blank or dot.
-        prevSearch = search;
         if (prevSearch == '' || prevSearch == '.')
           autoCompleteList = [];
 
+        prevSearch = search;
         // Get the text from start to the current cursor position.
         self_local.data.push(
           doc.getRange({
@@ -459,9 +464,9 @@ export default function Query() {
   }, []);
 
   useEffect(()=>{
-    registerAutocomplete(queryToolCtx.api, queryToolCtx.params.trans_id, (err)=>{
-      eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
-    });
+    registerAutocomplete(queryToolCtx.api, queryToolCtx.params.trans_id, queryToolCtx.preferences.sqleditor,
+      (err)=>{eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);}
+    );
   }, [queryToolCtx.params.trans_id]);
 
   const isDirty = ()=>(queryToolCtx.params.is_query_tool && lastSavedText.current !== editor.current.getValue());
