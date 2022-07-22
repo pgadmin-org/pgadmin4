@@ -220,7 +220,7 @@ CREATE TABLE public.nonintpkey
         """
         cell_type = data[2]
         value = data[0]
-        retry = 3
+        retry = 4
         while retry > 0:
             self.wait.until(EC.visibility_of_element_located(
                 (By.XPATH, xpath)), CheckForViewDataTest.TIMEOUT_STRING
@@ -252,12 +252,17 @@ CREATE TABLE public.nonintpkey
     def _update_numeric_cell(self, cell_el_xpath, value):
         try:
             cell_el = self.page.find_by_xpath(cell_el_xpath)
-            if value == 'clear':
-                cell_el.find_element(By.CSS_SELECTOR, 'input').clear()
+            if cell_el.get_attribute('aria-selected') and \
+                    cell_el.text == '':
+                if value == 'clear':
+                    cell_el.find_element(By.CSS_SELECTOR, 'input').clear()
+                else:
+                    ActionChains(self.driver).send_keys(value).perform()
+                    ActionChains(self.driver).send_keys(Keys.TAB).perform()
+                return True
             else:
-                ActionChains(self.driver).send_keys(value).perform()
-                ActionChains(self.driver).send_keys(Keys.TAB).perform()
-            return True
+                print('Cell is NOT selected yet.', file=sys.stderr)
+                return False
         except Exception:
             traceback.print_exc()
             print('Exception occurred while updating int cell',
@@ -326,7 +331,6 @@ CREATE TABLE public.nonintpkey
                 checkbox_el.click()
                 # Sets false
                 ActionChains(self.driver).click(checkbox_el).perform()
-                ActionChains(self.driver).send_keys(Keys.TAB).perform()
             return True
         except Exception:
             traceback.print_exc()
@@ -387,7 +391,7 @@ CREATE TABLE public.nonintpkey
         items.sort(reverse=False)
         for idx in items:
             # rowindex starts with 2 and 1st colindex is rownum
-            time.sleep(0.5)
+            time.sleep(0.2)
             cell_xpath = CheckForViewDataTest\
                 ._get_cell_xpath(str(idx + 1), row + 1)
             self._update_cell(cell_xpath, data[str(idx)])

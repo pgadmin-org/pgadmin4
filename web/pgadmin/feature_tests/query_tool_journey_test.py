@@ -468,21 +468,27 @@ class QueryToolJourneyTest(BaseFeatureTest):
                 new_value = cell_value + 1
                 # Try to update value
                 ActionChains(self.driver).double_click(cell_el).perform()
-                time.sleep(0.1)
-                ActionChains(self.driver).send_keys(new_value).perform()
-                time.sleep(0.1)
-                ActionChains(self.driver).send_keys(Keys.TAB).perform()
-                time.sleep(0.3)
-                # Check if the value was updated
-                # Finding element again to avoid stale element
-                # reference exception
-                cell_el = self.page. \
-                    find_by_xpath(QueryToolLocators.
-                                  output_cell_xpath.format(2, cell_index))
-                return int(cell_el.text) == new_value
+                cell_el = self.page.find_by_xpath(
+                    QueryToolLocators.output_cell_xpath.format(2, cell_index))
+                if cell_el.get_attribute('aria-selected') and \
+                        cell_el.text == '':
+                    ActionChains(self.driver).send_keys(new_value).perform()
+                    ActionChains(self.driver).send_keys(Keys.ENTER).perform()
+                    # Check if the value was updated
+                    # Finding element again to avoid stale element
+                    # reference exception
+                    cell_el = self.page. \
+                        find_by_xpath(QueryToolLocators.
+                                      output_cell_xpath.format(2, cell_index))
+                    return int(cell_el.text) == new_value
+                else:
+                    print('Double click not succeeded in try- ' + str(
+                        retry), file=sys.stderr)
+                    retry -= 1
             except Exception as e:
                 traceback.print_exc()
-                print('Exception while reading cell value', file=sys.stderr)
+                print('Exception while reading cell value in try ' +
+                      str(retry), file=sys.stderr)
                 retry -= 1
                 if retry == 0:
                     raise Exception(e)
