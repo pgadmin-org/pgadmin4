@@ -2998,7 +2998,7 @@ ajv@^8.8.2:
 
 "alertifyjs@git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263":
   version "1.7.1"
-  resolved "git+ssh://git@github.com/EnterpriseDB/AlertifyJS.git#72c1d794f5b6d4ec13a68d123c08f19021afe263"
+  resolved "git+https://github.com/EnterpriseDB/AlertifyJS/#72c1d794f5b6d4ec13a68d123c08f19021afe263"
 
 alphanum-sort@^1.0.2:
   version "1.0.2"
@@ -8034,7 +8034,7 @@ performance-now@^2.1.0:
 
 "pgadmin4-tree@git+https://github.com/EnterpriseDB/pgadmin4-treeview/#07cc449e1d89ecc8cce3679d8cff5a35f1db67ee":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/EnterpriseDB/pgadmin4-treeview.git#07cc449e1d89ecc8cce3679d8cff5a35f1db67ee"
+  resolved "git+https://github.com/EnterpriseDB/pgadmin4-treeview/#07cc449e1d89ecc8cce3679d8cff5a35f1db67ee"
   dependencies:
     "@types/classnames" "^2.2.6"
     "@types/react" "^16.7.18"
@@ -8687,7 +8687,7 @@ react-checkbox-tree@^1.7.2:
 
 "react-data-grid@git+https://github.com/adityatoshniwal/react-data-grid.git/#8d9bc16ddd7c419acfbbd1c1cc2b70eb9f5b453c":
   version "7.0.0-beta.12"
-  resolved "git+ssh://git@github.com/adityatoshniwal/react-data-grid.git#8d9bc16ddd7c419acfbbd1c1cc2b70eb9f5b453c"
+  resolved "git+https://github.com/adityatoshniwal/react-data-grid.git/#8d9bc16ddd7c419acfbbd1c1cc2b70eb9f5b453c"
   dependencies:
     clsx "^1.1.1"
 
@@ -9441,7 +9441,7 @@ slice-ansi@^4.0.0:
 
 "slickgrid@git+https://github.com/6pac/SlickGrid.git#2.3.16":
   version "2.3.16"
-  resolved "git+ssh://git@github.com/6pac/SlickGrid.git#4f8c6f498d0b82391fdf382beb8ef114ed7408e7"
+  resolved "git+https://github.com/6pac/SlickGrid.git#4f8c6f498d0b82391fdf382beb8ef114ed7408e7"
   dependencies:
     jquery ">=1.8.0"
     jquery-ui ">=1.8.0"
@@ -10423,7 +10423,7 @@ watchpack@^2.2.0:
 
 "webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#40d025e0d86ee3cf058a52e01d2042113f134cdd":
   version "2.2.5"
-  resolved "git+ssh://git@github.com/EnterpriseDB/wcDocker.git#40d025e0d86ee3cf058a52e01d2042113f134cdd"
+  resolved "git+https://github.com/EnterpriseDB/wcDocker/#40d025e0d86ee3cf058a52e01d2042113f134cdd"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"
