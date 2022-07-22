@@ -195,6 +195,7 @@ aspen-core                                                       1.0.5          
 aspen-decorations                                                1.1.1            MIT                                  git+https://github.com/neeksandhu/aspen-decorations.git
 aspen-tree-model                                                 1.0.5            MIT                                  git+https://github.com/neeksandhu/aspen-tree-model.git
 async                                                            2.6.4            MIT                                  https://github.com/caolan/async.git
+attr-accept                                                      2.2.2            MIT                                  https://github.com/react-dropzone/attr-accept.git
 axios                                                            0.21.4           MIT                                  https://github.com/axios/axios.git
 babel-plugin-styled-components                                   1.13.3           MIT                                  https://github.com/styled-components/babel-plugin-styled-components.git
 babel-plugin-syntax-jsx                                          6.18.0           MIT                                  https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-jsx
@@ -239,6 +240,7 @@ commander                                                        7.2.0          
 concat-map                                                       0.0.1            MIT                                  git://github.com/substack/node-concat-map.git
 context-menu                                                     2.0.0            MIT                                  https://github.com/chipto/context-menu.git
 convert-source-map                                               1.8.0            MIT                                  git://github.com/thlorenz/convert-source-map.git
+convert-units                                                    2.3.4            MIT                                  git://github.com/ben-ng/convert-units.git
 core-js                                                          3.19.1           MIT                                  https://github.com/zloirock/core-js.git
 css-color-names                                                  1.0.1            MIT                                  git://github.com/bahamas10/css-color-names.git
 css-line-break                                                   2.0.1            MIT                                  git+ssh://git@github.com/niklasvh/css-line-break.git
@@ -255,8 +257,7 @@ csstype                                                          2.6.18         
 csstype                                                          3.0.9            MIT                                  https://github.com/frenic/csstype
 dagre                                                            0.8.5            MIT                                  https://github.com/dagrejs/dagre.git
 date-fns                                                         2.25.0           MIT                                  https://github.com/date-fns/date-fns
-debug                                                            4.3.2            MIT                                  git://github.com/visionmedia/debug.git
-debug                                                            4.3.3            MIT                                  git://github.com/debug-js/debug.git
+debug                                                            4.3.4            MIT                                  git://github.com/debug-js/debug.git
 decamelize                                                       5.0.1            MIT                                  https://github.com/sindresorhus/decamelize.git
 decamelize                                                       1.2.0            MIT                                  https://github.com/sindresorhus/decamelize.git
 decamelize-keys                                                  1.1.0            MIT                                  https://github.com/dsblv/decamelize-keys.git
@@ -266,7 +267,6 @@ dir-glob                                                         3.0.1          
 dom-align                                                        1.12.2           MIT                                  git@github.com:yiminghe/dom-align.git
 dom-helpers                                                      5.2.1            MIT                                  git+https://github.com/react-bootstrap/dom-helpers.git
 dom-serializer                                                   1.3.2            MIT                                  git://github.com/cheeriojs/dom-renderer.git
-dropzone                                                         5.9.3            MIT                                  https://github.com/dropzone/dropzone.git
 emojis-list                                                      3.0.0            MIT                                  git+https://github.com/kikobeats/emojis-list.git
 engine.io-client                                                 6.0.2            MIT                                  https://github.com/socketio/engine.io-client.git
 engine.io-parser                                                 5.0.3            MIT                                  git@github.com:socketio/engine.io-parser.git
@@ -277,6 +277,7 @@ fast-deep-equal                                                  3.1.3          
 fast-glob                                                        3.2.11           MIT                                  https://github.com/mrmlnc/fast-glob.git
 fast-json-stable-stringify                                       2.1.0            MIT                                  git://github.com/epoberezkin/fast-json-stable-stringify.git
 fast-memoize                                                     2.5.2            MIT                                  git+https://github.com/caiogondim/fast-memoize.git
+file-selector                                                    0.6.0            MIT                                  https://github.com/react-dropzone/file-selector.git
 filename-reserved-regex                                          2.0.0            MIT                                  https://github.com/sindresorhus/filename-reserved-regex.git
 fill-range                                                       7.0.1            MIT                                  https://github.com/jonschlinkert/fill-range.git
 find-up                                                          5.0.0            MIT                                  https://github.com/sindresorhus/find-up.git
@@ -315,7 +316,7 @@ is-unc-path                                                      1.0.0          
 javascript-natural-sort                                          0.7.1            MIT                                  https://github.com/Bill4Time/javascript-natural-sort.git
 jquery                                                           3.6.0            MIT                                  https://github.com/jquery/jquery.git
 jquery-contextmenu                                               2.9.2            MIT                                  git://github.com/swisnl/jQuery-contextMenu.git
-jquery-ui                                                        1.13.0           MIT                                  git://github.com/jquery/jquery-ui.git
+jquery-ui                                                        1.13.2           MIT                                  git://github.com/jquery/jquery-ui.git
 js-tokens                                                        4.0.0            MIT                                  https://github.com/lydell/js-tokens.git
 jsbn                                                             1.1.0            MIT                                  https://github.com/andyperlitch/jsbn.git
 jsesc                                                            2.5.2            MIT                                  https://github.com/mathiasbynens/jsesc.git
@@ -343,7 +344,26 @@ loader-utils                                                     2.0.2          
 loader-utils                                                     1.4.0            MIT                                  https://github.com/webpack/loader-utils.git
 locate-path                                                      6.0.0            MIT                                  https://github.com/sindresorhus/locate-path.git
 lodash                                                           4.17.21          MIT                                  https://github.com/lodash/lodash.git
+lodash._basebind                                                 2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._basecreate                                               2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._basecreatecallback                                       2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._basecreatewrapper                                        2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._createwrapper                                            2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._objecttypes                                              2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._renative                                                 2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._setbinddata                                              2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._shimkeys                                                 2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash._slice                                                    2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.bind                                                      2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.foreach                                                   2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.forown                                                    2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.identity                                                  2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.isfunction                                                2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.isobject                                                  2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.keys                                                      2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
 lodash.memoize                                                   4.1.2            MIT                                  https://github.com/lodash/lodash.git
+lodash.noop                                                      2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
+lodash.support                                                   2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
 lodash.uniq                                                      4.5.0            MIT                                  https://github.com/lodash/lodash.git
 loose-envify                                                     1.4.0            MIT                                  git://github.com/zertosh/loose-envify.git
 lunr                                                             0.7.2            MIT                                  https://github.com/olivernn/lunr.js.git
@@ -364,9 +384,8 @@ ml-array-min                                                     1.2.2          
 ml-array-rescale                                                 1.3.6            MIT                                  git+https://github.com/mljs/array.git
 ml-matrix                                                        6.8.0            MIT                                  https://github.com/mljs/matrix.git
 mobius1-selectr                                                  2.4.13           MIT                                  git+https://github.com/Mobius1/Selectr.git
-moment                                                           2.29.3           MIT                                  https://github.com/moment/moment.git
+moment                                                           2.29.4           MIT                                  https://github.com/moment/moment.git
 moment-timezone                                                  0.5.34           MIT                                  https://github.com/moment/moment-timezone.git
-moment-timezone                                                  0.5.33           MIT                                  https://github.com/moment/moment-timezone.git
 ms                                                               2.1.2            MIT                                  https://github.com/zeit/ms.git
 nanoid                                                           3.3.2            MIT                                  https://github.com/ai/nanoid.git
 nanoid                                                           3.2.0            MIT                                  https://github.com/ai/nanoid.git
@@ -425,6 +444,7 @@ postcss-svgo                                                     5.0.3          
 postcss-unique-selectors                                         5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-value-parser                                             4.1.0            MIT                                  https://github.com/TrySound/postcss-value-parser.git
 prop-types                                                       15.7.2           MIT                                  https://github.com/facebook/prop-types.git
+prop-types                                                       15.8.1           MIT                                  https://github.com/facebook/prop-types.git
 punycode                                                         2.1.1            MIT                                  https://github.com/bestiejs/punycode.js.git
 queue-microtask                                                  1.2.3            MIT                                  git://github.com/feross/queue-microtask.git
 quick-lru                                                        5.1.1            MIT                                  https://github.com/sindresorhus/quick-lru.git
@@ -449,6 +469,7 @@ react-dom                                                        16.14.0        
 react-dom                                                        17.0.2           MIT                                  https://github.com/facebook/react.git
 react-draggable                                                  4.4.4            MIT                                  https://github.com/react-grid-layout/react-draggable.git
 react-draggable                                                  4.4.3            MIT                                  https://github.com/mzabriskie/react-draggable.git
+react-dropzone                                                   14.2.1           MIT                                  https://github.com/react-dropzone/react-dropzone.git
 react-input-autosize                                             3.0.0            MIT                                  https://github.com/JedWatson/react-input-autosize.git
 react-is                                                         16.13.1          MIT                                  https://github.com/facebook/react.git
 react-is                                                         17.0.2           MIT                                  https://github.com/facebook/react.git
@@ -545,6 +566,7 @@ postcss-modules-scope                                            3.0.0          
 postcss-modules-values                                           4.0.0            ISC                                  git+https://github.com/css-modules/postcss-modules-values.git
 react-timer-hook                                                 3.0.5            ISC                                  git+https://github.com/amrlabib/react-timer-hook.git
 semver                                                           7.3.5            ISC                                  https://github.com/npm/node-semver
+semver                                                           7.3.7            ISC                                  https://github.com/npm/node-semver.git
 semver                                                           6.3.0            ISC                                  https://github.com/npm/node-semver
 vanilla-picker                                                   2.12.1           ISC                                  https://github.com/Sphinxxxx/vanilla-picker.git
 yallist                                                          4.0.0            ISC                                  git+https://github.com/isaacs/yallist.git
@@ -594,9 +616,9 @@ pako                                                             1.0.11         
 precond                                                          0.2.3            MIT*                                 https://github.com/MathieuTurcotte/node-precond.git
 webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 spdx-exceptions                                                  2.3.0            CC-BY-3.0                            https://github.com/kemitchell/spdx-exceptions.json.git
-tablesorter                                                      2.31.3           (MIT OR GPL-2.0)                     git://github.com/Mottie/tablesorter.git
+tslib                                                            2.4.0            0BSD                                 https://github.com/Microsoft/tslib.git
 tslib                                                            2.3.0            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 
-518 dependencies listed.
+540 dependencies listed.
 
