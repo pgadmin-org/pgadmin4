@@ -349,7 +349,12 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName)=>{
       queryToolCtx.api.post(url_for('sqleditor.load_file'), {
         'file_name': decodeURI(fileName),
-      }, {transformResponse: [(data) => { return data; }]}).then((res)=>{
+      }, {transformResponse: [(data, headers) => {
+        if(headers['content-type'].includes('application/json')) {
+          return JSON.parse(data);
+        }
+        return data;
+      }]}).then((res)=>{
         editor.current.setValue(res.data);
         //Check the file content for Trojan Source
         checkTrojanSource(res.data);

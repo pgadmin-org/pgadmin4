@@ -168,7 +168,7 @@ function PaperComponent(props) {
     return props.isfullscreen == 'true' ? { x: 0, y: 0 } : dialogPosition && { x: dialogPosition.x, y: dialogPosition.y };
   };
 
-  const y_position =  props.height ? (window.innerHeight/2) - (props.height/2) : (window.innerHeight/2) - (MIN_HEIGHT/2);
+  const y_position = window.innerHeight*0.02; // 2% of total height
   const x_position =  props.width ? (window.innerWidth/2) - (props.width/2) : (window.innerWidth/2) - (MIN_WIDTH/2);
 
   return (

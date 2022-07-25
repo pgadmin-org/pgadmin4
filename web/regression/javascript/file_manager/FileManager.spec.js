@@ -98,7 +98,6 @@ describe('FileManger', ()=>{
   beforeAll(()=>{
     mount = createMount();
     networkMock = new MockAdapter(axios);
-    networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
     networkMock.onPost(`/file_manager/filemanager/${transId}/`).reply(200, {data: {result: files}});
     networkMock.onPost(`/file_manager/save_file_dialog_view/${transId}`).reply(200, {});
     networkMock.onDelete(`/file_manager/delete_trans_id/${transId}`).reply(200, {});
@@ -130,14 +129,17 @@ describe('FileManger', ()=>{
       };
 
     it('init', (done)=>{
+      networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
       let ctrl = ctrlMount({});
       setTimeout(()=>{
+        ctrl.update();
+        ctrl.find('button[name="menu-options"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="List View"]').simulate('click');
         ctrl.update();
         expect(ctrl.find('ListView').length).toBe(1);
         expect(ctrl.find('GridView').length).toBe(0);
         expect(ctrl.find('InputText[data-label="file-path"]').prop('value')).toBe('/home/current');
         ctrl.find('button[name="menu-options"]').simulate('click');
-        ctrl.update();
         ctrl.find('Memo(MenuItem)[data-label="Grid View"]').simulate('click');
         setTimeout(()=>{
           ctrl.update();
