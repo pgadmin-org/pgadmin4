@@ -155,7 +155,7 @@ const dialogStyle = makeStyles((theme) => ({
   }
 }));
 
-function PaperComponent(props) {
+function PaperComponent({minHeight, minWidth, ...props}) {
   let classes = dialogStyle();
   let [dialogPosition, setDialogPosition] = useState(null);
   let resizeable = props.isresizeable == 'true' ? true : false;
@@ -182,8 +182,10 @@ function PaperComponent(props) {
           ...(props.width && { width: props.width }),
           ...(props.height && { height: props.height }),
         }}
-        {...(props.width && { minWidth: MIN_WIDTH })}
-        {...(props.height && { minHeight: MIN_HEIGHT })}
+        minWidth = { minWidth || MIN_WIDTH }
+        minHeight = { minHeight || MIN_HEIGHT }
+        // {...(props.width && { minWidth: MIN_WIDTH })}
+        // {...(props.height && { minHeight: MIN_HEIGHT })}
         bounds="window"
         enableResizing={setEnableResizing()}
         position={setConditionalPosition()}
@@ -215,6 +217,8 @@ PaperComponent.propTypes = {
   isresizeable: PropTypes.string,
   width: PropTypes.number,
   height: PropTypes.number,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
 };
 
 export const useModalStyles = makeStyles((theme) => ({
@@ -254,7 +258,7 @@ export const useModalStyles = makeStyles((theme) => ({
   }
 }));
 
-function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false }) {
+function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH }) {
   let useModalRef = useModal();
   const classes = useModalStyles();
   let closeModal = (_e, reason) => {
@@ -270,7 +274,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       open={true}
       onClose={closeModal}
       PaperComponent={PaperComponent}
-      PaperProps={{ 'isfullscreen': isfullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight }}
+      PaperProps={{ 'isfullscreen': isfullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
       fullScreen={isfullScreen}
       fullWidth={isFullWidth}
       disableBackdropClick
@@ -309,4 +313,6 @@ ModalContainer.propTypes = {
   dialogHeight: PropTypes.number,
   dialogWidth: PropTypes.number,
   onClose: PropTypes.func,
+  minWidth: PropTypes.number,
+  minHeight: PropTypes.number,
 };

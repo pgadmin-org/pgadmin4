@@ -9,12 +9,13 @@
 
 """A blueprint module implementing the about box."""
 
-from flask import Response, render_template, url_for, request
+from flask import Response, render_template, request
 from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.ajax import make_json_response
 import config
 import httpagentparser
 from pgadmin.model import User
@@ -66,6 +67,7 @@ def index():
     info['os_details'] = os_details
     info['config_db'] = config.SQLITE_PATH
     info['log_file'] = config.LOG_FILE
+    info['version'] = config.APP_VERSION
 
     if config.SERVER_MODE:
         info['app_mode'] = gettext('Server')
@@ -98,8 +100,9 @@ def index():
 
     info['settings'] = settings
 
-    return render_template(
-        MODULE_NAME + '/index.html', info=info, _=gettext
+    return make_json_response(
+        data=info,
+        status=200
     )
 
 

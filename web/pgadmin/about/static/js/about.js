@@ -7,85 +7,56 @@
 //
 //////////////////////////////////////////////////////////////
 
-define(
-  ['jquery', 'alertify', 'sources/pgadmin', 'sources/gettext',
-    'sources/url_for','sources/utils','pgadmin.user_management.current_user',
-  ],
-  function($, alertify, pgAdmin, gettext, url_for, commonUtils, current_user) {
-    pgAdmin = pgAdmin || window.pgAdmin || {};
+import React from 'react';
+import gettext from 'sources/gettext';
+import Notify from '../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
+import pgBrowser from 'top/browser/static/js/browser';
+import AboutComponent from './AboutComponent';
+import current_user from 'pgadmin.user_management.current_user';
 
-    /* Return back, this has been called more than once */
-    if (pgAdmin.About)
+class About {
+  static instance;
+
+  static getInstance(...args) {
+    if (!About.instance) {
+      About.instance = new About(...args);
+    }
+    return About.instance;
+  }
+
+  constructor(pgAdmin, pgBrowser) {
+    this.pgAdmin = pgAdmin;
+    this.pgBrowser = pgBrowser;
+  }
+
+  init() {
+    if (this.initialized)
       return;
+    this.initialized = true;
+  }
 
-    pgAdmin.About = {
-      about_show: function() {
-        if (!alertify.aboutDialog) {
-          alertify.dialog('aboutDialog', function factory() {
-            return {
-              main: function(title, message) {
-                this.set('title', title);
-                this.message = message;
-              },
-              setup: function() {
-                return {
-                  buttons:[{ text: gettext('OK'), key: 27,
-                    className: 'btn btn-primary fa fa-lg fa-check pg-alertify-button' }],
-                  options: {
-                    modal: false,
-                    resizable: true,
-                    maximizable: true,
-                    pinnable: false,
-                    closableByDimmer: false,
-                  },
-                };
-              },
-              build: function() {
-                alertify.pgDialogBuild.apply(this);
-              },
-              hooks:{
-                onshow:function(){
-                  var self = this;
-                  var container = $(this.elements.footer).find('button:not([disabled])');
-                  commonUtils.findAndSetFocus(container);
-                  $('#copy_textarea').on('click', function(){
-                    //Copy the server configuration details
-                    let textarea = document.getElementById('about-textarea');
-                    textarea.select();
-                    document.execCommand('copy');
-                    $('#copy_textarea').text('Copied');
-                  });
+  // This is a callback function to show about dialog.
+  about_show() {
+    let dlgHeight = 470,
+      dlgWidth = 750;
 
-                  $(this.elements.resizeHandle).on('click', function(){
-                    // Set the height of the Textarea
-                    var height = self.elements.dialog.scrollHeight - 300;
-                    if (height < 0)
-                      height = self.elements.dialog.scrollHeight - 150;
-                    $('#about-textarea').css({'height':height});
-                  });
-                },
-              },
-              prepare:function() {
-                this.setContent(this.message);
-              },
-            };
-          });
-        }
+    if(!current_user.is_admin && pgAdmin.server_mode) {
+      dlgWidth = pgAdmin.Browser.stdW.md;
+      dlgHeight = 300;
+    }
 
-        $.get(url_for('about.index'),
-          function(data) {
-            if(!current_user.is_admin && pgAdmin.server_mode){
-              alertify.aboutDialog(
-                gettext('About %s', pgAdmin.Browser.utils.app_name), data
-              ).resizeTo(pgAdmin.Browser.stdW.md, 300);
-            }else{
-              alertify.aboutDialog(
-                gettext('About %s', pgAdmin.Browser.utils.app_name), data
-              ).resizeTo(750, 470);
-            }
-          });
-      },
-    };
+    // Render About component
+    Notify.showModal(gettext('About %s', pgAdmin.Browser.utils.app_name), () => {
+      return <AboutComponent />;
+    }, { isFullScreen: false, isResizeable: true, showFullScreen: true, 
+      isFullWidth: true, dialogWidth: dlgWidth, dialogHeight: dlgHeight, minHeight: dlgHeight
+    });
+  }
+}
 
-    return pgAdmin.About;
-  });
+pgAdmin.About = About.getInstance(pgAdmin, pgBrowser);
+
+module.exports = {
+  About: About,
+};

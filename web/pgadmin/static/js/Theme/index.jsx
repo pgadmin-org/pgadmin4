@@ -122,6 +122,8 @@ basicSettings = createMuiTheme(basicSettings, {
       inputMultiline: {
         padding: basicSettings.spacing(0.75, 1.5),
         resize: 'vertical',
+        height: '100%',
+        boxSizing: 'border-box',
       },
       adornedEnd: {
         paddingRight: basicSettings.spacing(0.75),
