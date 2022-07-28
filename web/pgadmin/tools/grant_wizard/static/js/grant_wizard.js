@@ -14,15 +14,11 @@ import GrantWizard from './GrantWizard';
 
 // Grant Wizard
 define([
-  'sources/gettext', 'jquery', 'underscore',
-  'pgadmin.alertifyjs', 'pgadmin.browser',
+  'sources/gettext', 'pgadmin.browser',
   'tools/grant_wizard/static/js/menu_utils',
   'sources/nodes/supported_database_node',
-  'backgrid.select.all',
-  'backgrid.filter', 'pgadmin.browser.server.privilege',
-  'pgadmin.browser.wizard',
 ], function(
-  gettext, $, _, Alertify, pgBrowser, menuUtils, supportedNodes
+  gettext, pgBrowser, menuUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -79,83 +75,27 @@ define([
 
     // Callback to draw Wizard Dialog
     start_grant_wizard: function() {
+      let t = pgBrowser.tree,
+        i = t.selected(),
+        d = this.d = i ? t.itemData(i) : undefined,
+        info = this.info = pgBrowser.tree.getTreeNodeHierarchy(i);
 
-      // Declare Wizard dialog
-      if (!Alertify.grantWizardDialog) {
-        Alertify.dialog('grantWizardDialog', function factory() {
+      // Register dialog panel
+      pgBrowser.Node.registerUtilityPanel();
+      let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.lg, pgBrowser.stdH.lg),
+        j = panel.$container.find('.obj_properties').first();
+      panel.title(gettext('Grant Wizard'));
 
-          // Generate wizard main container
-          var $container = $('<div class=\'wizard_dlg\' id=\'grantWizardDlg\'></div>');
-          return {
-            main: function () {
-              /*This is intentional (SonarQube)*/
-            },
-            setup: function () {
-              return {
-                // Set options for dialog
-                options: {
-                  frameless: true,
-                  resizable: true,
-                  autoReset: false,
-                  maximizable: true,
-                  closable: true,
-                  closableByDimmer: false,
-                  modal: true,
-                  pinnable: false,
-                },
-              };
-            },
-            build: function () {
-              this.elements.content.appendChild($container.get(0));
-              Alertify.pgDialogBuild.apply(this);
-              var t = pgBrowser.tree,
-                i = t.selected(),
-                d = this.d = i ? t.itemData(i) : undefined,
-                info = this.info = pgBrowser.tree.getTreeNodeHierarchy(i);
+      let sid = info.server._id,
+        did = info.database._id;
 
-              var sid = info.server._id,
-                did = info.database._id;
-
-              setTimeout(function () {
-                if (document.getElementById('grantWizardDlg')) {
-                  ReactDOM.render(
-                    <Theme>
-                      <GrantWizard sid={sid} did={did} nodeInfo={info} nodeData={d} />
-                    </Theme>,
-                    document.getElementById('grantWizardDlg'));
-                  Alertify.grantWizardDialog().elements.modal.style.maxHeight=0;
-                  Alertify.grantWizardDialog().elements.modal.style.maxWidth='none';
-                  Alertify.grantWizardDialog().elements.modal.style.overflow='visible';
-                  Alertify.grantWizardDialog().elements.dimmer.style.display='none';
-                }
-              }, 10);
-
-            },
-            prepare: function () {
-              $container.empty().append('<div class=\'grant_wizard_container\'></div>');
-            },
-            hooks: {
-              // Triggered when the dialog is closed
-              onclose: function () {
-                // Clear the view and remove the react component.
-                return setTimeout((function () {
-                  ReactDOM.unmountComponentAtNode(document.getElementById('grantWizardDlg'));
-                  return Alertify.grantWizardDialog().destroy();
-                }), 500);
-              },
-            }
-          };
-        });
-      }
-      // Call Grant Wizard Dialog and set dimensions for wizard
-      Alertify.grantWizardDialog('').set({
-        onmaximize:function(){
-          Alertify.grantWizardDialog().elements.modal.style.maxHeight='initial';
-        },
-        onrestore:function(){
-          Alertify.grantWizardDialog().elements.modal.style.maxHeight=0;
-        },
-      }).resizeTo(pgBrowser.stdW.lg, pgBrowser.stdH.lg);
+      ReactDOM.render(
+        <Theme>
+          <GrantWizard sid={sid} did={did} nodeInfo={info} nodeData={d}
+            onClose={() => {
+              panel.close();
+            }}/>
+        </Theme>, j[0]);
     },
   };
 

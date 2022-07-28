@@ -21,7 +21,7 @@ import Loader from 'sources/components/Loader';
 import ImportExportSelectionSchema from './import_export_selection.ui';
 import CheckBoxTree from '../../../../static/js/components/CheckBoxTree';
 import getApiInstance from '../../../../static/js/api_instance';
-import Alertify from 'pgadmin.alertifyjs';
+import PropTypes from 'prop-types';
 import { commonTableStyles } from '../../../../static/js/Theme';
 import clsx from 'clsx';
 import Notify from '../../../../static/js/helpers/Notifier';
@@ -53,7 +53,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function ImportExportServers() {
+export default function ImportExportServers({onClose}) {
   const classes = useStyles();
   const tableClasses = commonTableStyles();
 
@@ -109,7 +109,7 @@ export default function ImportExportServers() {
         });
     }
 
-    Alertify.importExportWizardDialog().close();
+    onClose();
   };
 
   const disableNextCheck = (stepId) => {
@@ -265,3 +265,6 @@ export default function ImportExportServers() {
     </Box>
   );
 }
+ImportExportServers.propTypes = {
+  onClose: PropTypes.func
+};

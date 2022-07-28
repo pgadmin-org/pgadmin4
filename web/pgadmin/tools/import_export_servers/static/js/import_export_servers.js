@@ -10,10 +10,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import gettext from 'sources/gettext';
-import Alertify from 'pgadmin.alertifyjs';
 import Theme from 'sources/Theme';
 import ImportExportServers from './ImportExportServers';
-import $ from 'jquery';
+import pgBrowser from 'top/browser/static/js/browser';
 
 export default class ImportExportServersModule {
   static instance;
@@ -52,73 +51,18 @@ export default class ImportExportServersModule {
 
   // This is a callback function to show import/export servers when user click on menu item.
   showImportExportServers() {
-    // Declare Wizard dialog
-    if (!Alertify.importExportWizardDialog) {
-      Alertify.dialog('importExportWizardDialog', function factory() {
+    // Register dialog panel
+    pgBrowser.Node.registerUtilityPanel();
+    let panel = pgBrowser.Node.addUtilityPanel(880, 550),
+      j = panel.$container.find('.obj_properties').first();
+    panel.title(gettext('Import/Export Servers'));
 
-        // Generate wizard main container
-        var $container = $('<div class=\'wizard_dlg\' id=\'importExportServersDlg\'></div>');
-        return {
-          main: function () {
-            /*This is intentional (SonarQube)*/
-          },
-          setup: function () {
-            return {
-              // Set options for dialog
-              options: {
-                frameless: true,
-                resizable: true,
-                autoReset: false,
-                maximizable: true,
-                closable: true,
-                closableByDimmer: false,
-                modal: true,
-                pinnable: false,
-              },
-            };
-          },
-          build: function () {
-            this.elements.content.appendChild($container.get(0));
-            Alertify.pgDialogBuild.apply(this);
-
-            setTimeout(function () {
-              if (document.getElementById('importExportServersDlg')) {
-                ReactDOM.render(
-                  <Theme>
-                    <ImportExportServers />
-                  </Theme>,
-                  document.getElementById('importExportServersDlg'));
-                Alertify.importExportWizardDialog().elements.modal.style.maxHeight=0;
-                Alertify.importExportWizardDialog().elements.modal.style.maxWidth='none';
-                Alertify.importExportWizardDialog().elements.modal.style.overflow='visible';
-                Alertify.importExportWizardDialog().elements.dimmer.style.display='none';
-              }
-            }, 10);
-
-          },
-          prepare: function () {
-            $container.empty().append('<div class=\'import_export_servers_container\'></div>');
-          },
-          hooks: {
-            // Triggered when the dialog is closed
-            onclose: function () {
-              // Clear the view and remove the react component.
-              return setTimeout((function () {
-                ReactDOM.unmountComponentAtNode(document.getElementById('importExportServersDlg'));
-                return Alertify.importExportWizardDialog().destroy();
-              }), 500);
-            },
-          }
-        };
-      });
-    }
-    Alertify.importExportWizardDialog('').set({
-      onmaximize:function(){
-        Alertify.importExportWizardDialog().elements.modal.style.maxHeight='initial';
-      },
-      onrestore:function(){
-        Alertify.importExportWizardDialog().elements.modal.style.maxHeight=0;
-      },
-    }).resizeTo(880, 550);
+    ReactDOM.render(
+      <Theme>
+        <ImportExportServers
+          onClose={() => {
+            panel.close();
+          }}/>
+      </Theme>, j[0]);
   }
 }

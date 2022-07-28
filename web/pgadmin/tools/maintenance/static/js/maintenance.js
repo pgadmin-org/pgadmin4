@@ -85,7 +85,7 @@ define([
         }
       );
     },
-    saveCallBack: function(data, dialog) {
+    saveCallBack: function(data) {
       if(data.errormsg) {
         Notify.alert(
           gettext('Error'),
@@ -93,7 +93,7 @@ define([
         );
       } else {
         Notify.success(data.data.info);
-        pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+        pgBrowser.Events.trigger('pgadmin-bgprocess:created');
       }
     },
     setExtraParameters(treeInfo) {

@@ -59,5 +59,4 @@ export default class Preferences {
         }} closeModal={closeModal} />;
     }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: 900, dialogHeight: 550 });
   }
-
 }

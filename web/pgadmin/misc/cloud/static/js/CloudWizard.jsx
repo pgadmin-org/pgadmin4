@@ -16,7 +16,7 @@ import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import {FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import getApiInstance from '../../../../static/js/api_instance';
-import Alertify from 'pgadmin.alertifyjs';
+import Notifier from '../../../../static/js/helpers/Notifier';
 import PropTypes from 'prop-types';
 import pgAdmin from 'sources/pgadmin';
 import {ToggleButtons, FinalSummary} from './cloud_components';
@@ -62,7 +62,7 @@ const useStyles = makeStyles(() =>
 export const CloudWizardEventsContext = React.createContext();
 
 
-export default function CloudWizard({ nodeInfo, nodeData }) {
+export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
   const classes = useStyles();
 
   const eventBus = React.useRef(new EventBus());
@@ -112,7 +112,7 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
         }
       })
       .catch((error) => {
-        Alertify.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
+        Notifier.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
       });
   }, [cloudProvider]);
 
@@ -153,11 +153,11 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
     axiosApi.post(_url, post_data)
       .then((res) => {
         pgAdmin.Browser.Events.trigger('pgadmin:browser:tree:add', res.data.data.node, {'server_group': nodeInfo['server_group']});
-        pgAdmin.Browser.Events.trigger('pgadmin-bgprocess:created', Alertify.cloudWizardDialog());
-        Alertify.cloudWizardDialog().close();
+        pgAdmin.Browser.Events.trigger('pgadmin-bgprocess:created');
+        onClose();
       })
       .catch((error) => {
-        Alertify.error(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
+        Notifier.error(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
       });
   };
 
@@ -450,4 +450,5 @@ export default function CloudWizard({ nodeInfo, nodeData }) {
 CloudWizard.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
+  onClose: PropTypes.func
 };

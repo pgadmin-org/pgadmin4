@@ -90,14 +90,14 @@ define('tools.restore', [
         pgBrowser
       );
     },
-    saveCallBack: function(data, dialog) {
+    saveCallBack: function(data) {
       if(data.errormsg) {
         Notify.alert(
           gettext('Error'),
           gettext(data.errormsg)
         );
       } else {
-        pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+        pgBrowser.Events.trigger('pgadmin-bgprocess:created');
       }
     },
     setExtraParameters: function(treeInfo, nodeData) {

@@ -21,7 +21,6 @@ import { InputSQL, FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js
 import getApiInstance from '../../../../static/js/api_instance';
 import SchemaView from '../../../../static/js/SchemaView';
 import clsx from 'clsx';
-import Alertify from 'pgadmin.alertifyjs';
 import PropTypes from 'prop-types';
 import PrivilegeSchema from './privilege_schema.ui';
 import Notify from '../../../../static/js/helpers/Notifier';
@@ -59,7 +58,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
+export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
   const classes = useStyles();
   var columns = [
     {
@@ -224,7 +223,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData }) {
     api.post(_url, post_data)
       .then(() => {
         setLoaderText('');
-        Alertify.grantWizardDialog().close();
+        onClose();
       })
       .catch((error) => {
         setLoaderText('');
@@ -361,6 +360,7 @@ GrantWizard.propTypes = {
   did: PropTypes.number,
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
+  onClose: PropTypes.func
 };
 
 

@@ -202,7 +202,6 @@ var webpackShimConfig = {
     'pgadmin.browser.server.privilege': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/privilege'),
     'pgadmin.browser.server.variable': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/variable'),
     'pgadmin.browser.utils': '/browser/js/utils',
-    'pgadmin.browser.wizard': path.join(__dirname, './pgadmin/browser/static/js/wizard'),
     'pgadmin.dashboard': path.join(__dirname, './pgadmin/dashboard/static/js/Dashboard'),
     'pgadmin.help': path.join(__dirname, './pgadmin/help/static/js/help'),
     'pgadmin.misc.explain': path.join(__dirname, './pgadmin/misc/static/explain/js/explain'),
@@ -308,7 +307,7 @@ var webpackShimConfig = {
   // Define list of pgAdmin common libraries to bundle them separately
   // into commons JS from app.bundle.js
   pgLibs: [
-    'pgadmin.browser.wizard', 'pgadmin.browser.error', 'pgadmin.browser.server.privilege',
+    'pgadmin.browser.error', 'pgadmin.browser.server.privilege',
     'pgadmin.browser.server.variable', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
     'pgadmin.browser.datamodel', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
     'pgadmin.browser.frame', 'slick.pgadmin.editors', 'slick.pgadmin.formatters',

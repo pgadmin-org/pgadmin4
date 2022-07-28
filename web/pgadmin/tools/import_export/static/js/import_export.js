@@ -75,7 +75,7 @@ define([
       );
     },
 
-    importExportCallBack: function(data, dialog) {
+    importExportCallBack: function(data) {
       if(data.errormsg) {
         Notify.alert(
           gettext('Error'),
@@ -83,7 +83,7 @@ define([
         );
       } else {
         Notify.success(gettext('Import/Export job created.'));
-        pgBrowser.Events.trigger('pgadmin-bgprocess:created', dialog);
+        pgBrowser.Events.trigger('pgadmin-bgprocess:created');
       }
     },
 

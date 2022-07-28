@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) =>
     wizardBase: {
       height: '100%',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      backgroundColor: theme.palette.background.default
     },
     root: {
       display: 'flex',
@@ -172,7 +173,6 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
 
   return (
     <Box className={classes.wizardBase}>
-      <Box className={clsx('wizard-header')}>{props.title}</Box>
       <div className={clsx(classes.root, props?.rootClass)}>
         <div className={clsx(classes.wizard, className)}>
           <Box className={classes.leftPanel}>
