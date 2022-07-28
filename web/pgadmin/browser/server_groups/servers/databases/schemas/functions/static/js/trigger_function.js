@@ -96,7 +96,7 @@ define('pgadmin.node.trigger_function', [
             }),
             language: ()=>getNodeAjaxOptions('get_languages', this, treeNodeInfo, itemNodeData, {noCache: true}, (res) => {
               return _.reject(res, function(o) {
-                return o.label == 'sql' || o.label == 'edbspl';
+                return o.label == 'sql';
               });
             }),
             nodeInfo: treeNodeInfo

@@ -14,5 +14,5 @@ JOIN
 WHERE
     proisagg = FALSE
     AND typname IN ('trigger', 'event_trigger')
-    AND lanname NOT IN ('edbspl', 'sql', 'internal')
+    AND lanname NOT IN ('sql', 'internal')
     AND pr.proname = {{ name|qtLiteral }};

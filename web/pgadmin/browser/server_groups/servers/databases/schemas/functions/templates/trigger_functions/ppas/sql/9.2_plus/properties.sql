@@ -26,7 +26,7 @@ LEFT OUTER JOIN
 WHERE
     proisagg = FALSE
     AND typname IN ('trigger', 'event_trigger')
-    AND lanname NOT IN ('edbspl', 'sql', 'internal')
+    AND lanname NOT IN ('sql', 'internal')
 {% if fnid %}
     AND pr.oid = {{fnid}}::oid
 {% else %}

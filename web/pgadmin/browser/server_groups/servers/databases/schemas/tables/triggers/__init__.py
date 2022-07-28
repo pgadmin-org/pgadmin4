@@ -314,38 +314,36 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 return gone(
                     gettext("Could not find the specified trigger function"))
 
-            # For language EDB SPL we should not display any node.
-            if rset['rows'][0]['lanname'] != 'edbspl':
-                trigger_function_schema_oid = rset['rows'][0]['tfuncschoid']
+            trigger_function_schema_oid = rset['rows'][0]['tfuncschoid']
 
-                sql = render_template("/".join(
-                    [self.trigger_function_template_path, self._NODE_SQL]),
-                    scid=trigger_function_schema_oid,
-                    fnid=rset['rows'][0]['tfuncoid']
-                )
-                status, res = self.conn.execute_2darray(sql)
-                if not status:
-                    return internal_server_error(errormsg=rset)
+            sql = render_template("/".join(
+                [self.trigger_function_template_path, self._NODE_SQL]),
+                scid=trigger_function_schema_oid,
+                fnid=rset['rows'][0]['tfuncoid']
+            )
+            status, res = self.conn.execute_2darray(sql)
+            if not status:
+                return internal_server_error(errormsg=rset)
 
-                if len(res['rows']) == 0:
-                    return gone(gettext(
-                        "Could not find the specified trigger function"))
+            if len(res['rows']) == 0:
+                return gone(gettext(
+                    "Could not find the specified trigger function"))
 
-                row = res['rows'][0]
-                func_name = row['name']
-                # If trigger function is from another schema then we should
-                # display the name as schema qulified name.
-                if scid != trigger_function_schema_oid:
-                    func_name = \
-                        rset['rows'][0]['tfuncschema'] + '.' + row['name']
+            row = res['rows'][0]
+            func_name = row['name']
+            # If trigger function is from another schema then we should
+            # display the name as schema qulified name.
+            if scid != trigger_function_schema_oid:
+                func_name = \
+                    rset['rows'][0]['tfuncschema'] + '.' + row['name']
 
-                trigger_func = current_app.blueprints['NODE-trigger_function']
-                nodes.append(trigger_func.generate_browser_node(
-                    row['oid'], trigger_function_schema_oid,
-                    gettext(func_name),
-                    icon="icon-trigger_function", funcowner=row['funcowner'],
-                    language=row['lanname'], inode=False)
-                )
+            trigger_func = current_app.blueprints['NODE-trigger_function']
+            nodes.append(trigger_func.generate_browser_node(
+                row['oid'], trigger_function_schema_oid,
+                gettext(func_name),
+                icon="icon-trigger_function", funcowner=row['funcowner'],
+                language=row['lanname'], inode=False)
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

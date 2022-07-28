@@ -22,6 +22,6 @@ WHERE
         WHERE objid = pr.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
     AND typname IN ('trigger', 'event_trigger')
-    AND lanname NOT IN ('edbspl', 'sql', 'internal')
+    AND lanname NOT IN ('sql', 'internal')
 ORDER BY
     proname;

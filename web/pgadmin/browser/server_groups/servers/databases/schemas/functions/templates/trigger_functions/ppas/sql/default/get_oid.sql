@@ -13,5 +13,5 @@ JOIN
     AND nsp.nspname={{ nspname|qtLiteral }}
 WHERE
     proisagg = FALSE
-    AND typname = 'trigger' AND lanname != 'edbspl'
+    AND typname = 'trigger'
     AND pr.proname = {{ name|qtLiteral }};

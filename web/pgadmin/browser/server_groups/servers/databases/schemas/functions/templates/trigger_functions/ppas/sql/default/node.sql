@@ -17,6 +17,6 @@ WHERE
 {% if scid %}
     AND pronamespace = {{scid}}::oid
 {% endif %}
-    AND typname = 'trigger' AND lanname != 'edbspl'
+    AND typname = 'trigger'
 ORDER BY
     proname;

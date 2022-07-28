@@ -149,6 +149,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
       },  {
         id: 'lanname', label: gettext('Language'), cell: 'text',
         type: 'select', group: gettext('Definition'),
+        mode: ['create', 'properties', 'edit'],
         disabled: obj.isDisabled, readonly: obj.isReadonly,
         options: obj.fieldOptions.language,
         controlProps: {

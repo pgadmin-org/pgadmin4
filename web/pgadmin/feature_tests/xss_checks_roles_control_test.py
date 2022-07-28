@@ -60,9 +60,12 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                              "<h1>test</h1>")
 
     def _role_node_expandable(self, role):
-        self.page.expand_server_child_node("Server", self.server['name'],
-                                           self.server['db_password'],
-                                           'Login/Group Roles')
+        retry = 3
+        while retry > 0:
+            if self.page.expand_server_child_node(
+                    "Server", self.server['name'], self.server['db_password'],
+                    'Login/Group Roles'):
+                retry = 0
 
         role_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.role_node(role))

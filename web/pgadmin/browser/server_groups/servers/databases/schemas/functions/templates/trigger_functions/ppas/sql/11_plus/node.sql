@@ -21,6 +21,6 @@ WHERE
     AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
         WHERE objid = pr.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
-    AND typname IN ('trigger', 'event_trigger') AND lanname != 'edbspl'
+    AND typname IN ('trigger', 'event_trigger')
 ORDER BY
     proname;
