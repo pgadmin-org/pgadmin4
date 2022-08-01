@@ -30,7 +30,6 @@ const useStyles = makeStyles(()=>({
 function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
   let timeoutId;
   let loadingEle;
-  let autoCompleteList = [];
   let prevSearch = null;
   OrigCodeMirror.registerHelper('hint', 'sql', function (editor) {
     var data = [],
@@ -80,6 +79,9 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
 
     data.push(doc.getValue());
 
+    if (!editor.state.autoCompleteList)
+      editor.state.autoCompleteList = [];
+
     // This function is used to show the loading element until response comes.
     const showLoading = (editor)=>{
       if (editor.getInputField().getAttribute('aria-activedescendant') != null) {
@@ -123,7 +125,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
         // This function is used to filter the data and call the callback
         // function with that filtered data.
         function setAutoCompleteData() {
-          let filterData = autoCompleteList.filter((item)=>{
+          let filterData = self_local.editor.state.autoCompleteList.filter((item)=>{
             return item.text.toLowerCase().startsWith(search.toLowerCase());
           });
 
@@ -173,11 +175,11 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
         // Handled special case when autocomplete on keypress is off,
         // the query is cleared, and retype some other words and press CTRL/CMD + Space.
         if (!sqlEditorPref.autocomplete_on_key_press && start == 0)
-          autoCompleteList = [];
+          self_local.editor.state.autoCompleteList = [];
 
         // Clear the auto complete list if previous token/search is blank or dot.
         if (prevSearch == '' || prevSearch == '.')
-          autoCompleteList = [];
+          self_local.editor.state.autoCompleteList = [];
 
         prevSearch = search;
         // Get the text from start to the current cursor position.
@@ -194,7 +196,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
         // If search token is not empty and auto complete list have some data
         // then no need to send the request to the backend to fetch the data.
         // auto complete the data using already fetched list.
-        if (search != '' && autoCompleteList.length != 0) {
+        if (search != '' && self_local.editor.state.autoCompleteList.length != 0) {
           setAutoCompleteData();
           return;
         }
@@ -219,7 +221,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
                 });
               });
 
-              autoCompleteList = result;
+              self_local.editor.state.autoCompleteList = result;
               setAutoCompleteData();
             })
             .catch((err) => {
@@ -411,6 +413,9 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, (value, focus=true)=>{
       focus && editor.current?.focus();
       editor.current?.setValue(value);
+      if (value == '' && editor.current) {
+        editor.current.state.autoCompleteList = [];
+      }
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
