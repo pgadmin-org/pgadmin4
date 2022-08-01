@@ -263,7 +263,7 @@ class KerberosAuthentication(BaseAuthentication):
         del_creds = getattr(context, 'delegated_creds', None)
         if del_creds:
             deleg_creds = context.delegated_creds
-            del(deleg_creds)
+            del deleg_creds
 
     def __auto_create_user(self, username):
         """Add the kerberos user to the internal SQLite database."""

@@ -107,9 +107,9 @@ NODE_BLACKLIST = []
 # We only set SERVER_MODE if it's not already set. That's to allow the
 # runtime to force it to False.
 #
-# NOTE: If you change the value of SERVER_MODE or DATA_DIR in an included config
-#       file, you may also need to redefine any values below that are derived
-#       from it, notably various paths such as LOG_FILE, SQLITE_PATH,
+# NOTE: If you change the value of SERVER_MODE or DATA_DIR in an included
+#       config file, you may also need to redefine any values below that are
+#       derived from it, notably various paths such as LOG_FILE, SQLITE_PATH,
 #       SESSION_DB_PATH, STORAGE_DIR, KERBEROS_CCACHE_DIR, and
 #       AZURE_CREDENTIAL_CACHE_DIR
 
