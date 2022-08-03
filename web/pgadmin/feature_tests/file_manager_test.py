@@ -41,13 +41,15 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.wait = WebDriverWait(self.page.driver, 10)
         filename = self.server_information['type'] + \
             str(self.server_information['server_version'])
+        self.XSS_FILE = '/<img src=x ' + filename + '=alert("1")>.sql'
+
         if self.parallel_ui_tests:
-            self.XSS_FILE = '/<img src=x ' + filename + '=alert("1")>.sql'
+            xss_file_path = self.XSS_FILE
         else:
-            self.XSS_FILE = '/tmp/<img src=x ' + filename + '=alert("1")>.sql'
+            xss_file_path = '/tmp/' + self.XSS_FILE
         # Remove any previous file
-        if os.path.isfile(self.XSS_FILE):
-            os.remove(self.XSS_FILE)
+        if os.path.isfile(xss_file_path):
+            os.remove(xss_file_path)
 
     def after(self):
         self.page.close_query_tool(False)
@@ -77,25 +79,37 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
             .click()
         # Set the XSS value in input
         WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, ".change_file_types")))
-        self.page.find_by_css_selector('.change_file_types')
-        self.page.fill_input_by_css_selector(
-            QueryToolLocators.input_file_path_css, self.XSS_FILE)
+            (By.XPATH, QueryToolLocators.change_file_types_dd_xpath)))
         # Save the file
-        self.page.click_modal('Create')
+        if not self.parallel_ui_tests:
+            self.page.fill_input_by_css_selector(
+                QueryToolLocators.folder_path_css,
+                "/tmp/", input_keys=True, key_after_input=Keys.ENTER)
+            self.page.find_by_css_selector(
+                QueryToolLocators.folder_path_css).send_keys(Keys.ENTER)
+        input_file_path_ele = \
+            self.page.find_by_xpath(QueryToolLocators.save_file_path_xpath)
+        input_file_path_ele.send_keys(self.XSS_FILE)
+        self.page.click_modal('Save', True)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
     def _open_file_manager_and_check_xss_file(self):
         load_file = self.page.find_by_css_selector(
             QueryToolLocators.btn_load_file_css)
         load_file.click()
-        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, ".change_file_types")))
-        self.page.find_by_css_selector('.change_file_types')
+        WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
+            (By.XPATH, QueryToolLocators.change_file_types_dd_xpath)))
+        # Open the file
+        if not self.parallel_ui_tests:
+            self.page.fill_input_by_css_selector(
+                QueryToolLocators.folder_path_css,
+                "/tmp/", key_after_input=Keys.ENTER)
+            self.page.find_by_css_selector(
+                QueryToolLocators.folder_path_css).send_keys(Keys.ENTER)
+            time.sleep(2)
+
         self.page.fill_input_by_css_selector(
-            QueryToolLocators.input_file_path_css,
-            "/tmp", key_after_input=Keys.RETURN)
-        time.sleep(2)
+            QueryToolLocators.search_file_edit_box_css, self.XSS_FILE)
 
         self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)))
@@ -111,7 +125,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
             except (StaleElementReferenceException, TimeoutException):
                 retry_count += 1
 
-        self.page.click_modal('Cancel')
+        self.page.click_modal('Cancel', True)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         filename = self.server_information['type'] + \
             str(self.server_information['server_version'])
@@ -132,18 +146,17 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         load_file = self.page.find_by_css_selector(
             QueryToolLocators.btn_load_file_css)
         load_file.click()
-        self.page.find_by_css_selector("#contents th[data-column='0']")
-
-        # Added time.sleep so that the element to be clicked.
-        time.sleep(0.05)
+        WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
+            (By.XPATH, QueryToolLocators.change_file_types_dd_xpath)))
 
         # Intermittently facing issue on first click it is not successful
         # so tried couple of times.
         success = self.page.retry_click(
-            (By.XPATH,
-             "//th[@data-column='0']/div/span[text()='Name']"),
             (By.CSS_SELECTOR,
-             "#contents th[data-column='0'].tablesorter-headerAsc"))
+             "div [role='grid'] div[role='columnheader'][aria-colindex='1']"),
+            (By.CSS_SELECTOR,
+             "div [role='grid'] div[role='columnheader']"
+             "[aria-colindex='1'][aria-sort='ascending']"))
 
         if not success:
             raise RuntimeError("Unable to sort in ascending order while "
@@ -155,13 +168,14 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         # Intermittently facing issue on first click it is not successful
         # so tried couple of times.
         success = self.page.retry_click(
-            (By.XPATH,
-             "//th[@data-column='0']/div/span[text()='Name']"),
             (By.CSS_SELECTOR,
-             "#contents th[data-column='0'].tablesorter-headerDesc"))
+             "div [role='grid'] div[role='columnheader'][aria-colindex='1']"),
+            (By.CSS_SELECTOR,
+             "div [role='grid'] div[role='columnheader']"
+             "[aria-colindex='1'][aria-sort='descending']"))
 
         if not success:
             raise RuntimeError("Unable to sort in descending order while "
                                "clicked on 'Name' column")
 
-        self.page.click_modal('Cancel')
+        self.page.click_modal('Cancel', True)

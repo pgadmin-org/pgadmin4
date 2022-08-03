@@ -217,9 +217,19 @@ class QueryToolLocators:
 
     btn_execute_query_css = "button[data-label='Execute/Refresh']"
 
-    input_file_path_css = "input#file-input-path"
+    folder_path_css = \
+        "div[data-label='file-path'] input"
 
-    select_file_content_css = "table#contents"
+    search_file_edit_box_css = "div [data-label='search'] input"
+
+    save_file_path_xpath = \
+        "//span[text()='Save As']/following-sibling::div/input"
+
+    change_file_types_dd_xpath = \
+        "//span[text()='File Format']/following-sibling::div"
+
+    select_file_content_css = \
+        "div [role='grid'] div[aria-selected='true'] span"
 
     query_output_canvas_css = "#id-dataoutput .rdg"
 
