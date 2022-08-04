@@ -15,6 +15,7 @@ Housekeeping
 ************
 
   | `Issue #7567 <https://redmine.postgresql.org/issues/7567>`_ -  Port About dialog to React.
+  | `Issue #7595 <https://redmine.postgresql.org/issues/7595>`_ -  Update the container base image to Alpine 3.16 (with Python 3.10.5).
 
 Bug fixes
 *********

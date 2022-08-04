@@ -12,7 +12,7 @@
 # and clean up the web/ source code
 #########################################################################
 
-FROM alpine:3.15 AS app-builder
+FROM alpine:3.16 AS app-builder
 
 RUN apk add --no-cache \
     autoconf \
@@ -60,7 +60,7 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
 # Next, create the base environment for Python
 #########################################################################
 
-FROM alpine:3.15 as env-builder
+FROM alpine:3.16 as env-builder
 
 # Install dependencies
 COPY requirements.txt /
@@ -117,7 +117,7 @@ FROM postgres:12-alpine as pg12-builder
 FROM postgres:13-alpine as pg13-builder
 FROM postgres:14-alpine as pg14-builder
 
-FROM alpine:3.15 as tool-builder
+FROM alpine:3.16 as tool-builder
 
 # Copy the PG binaries
 COPY --from=pg10-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-10/
@@ -149,7 +149,7 @@ COPY --from=pg14-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-14/
 # Assemble everything into the final container.
 #########################################################################
 
-FROM alpine:3.15
+FROM alpine:3.16
 
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
@@ -196,7 +196,7 @@ RUN apk add \
     chown pgadmin:root /pgadmin4/config_distro.py && \
     chmod g=u /pgadmin4/config_distro.py && \
     chmod g=u /etc/passwd && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.9 && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.10 && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
