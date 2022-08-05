@@ -16,6 +16,15 @@ import url_for from 'sources/url_for';
 import getApiInstance from '../../../../static/js/api_instance';
 import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() =>
+  ({
+    formClass: {
+      overflow: 'auto',
+    }
+  }),
+);
 
 // AWS credentials
 export function AwsCredentials(props) {
@@ -56,6 +65,7 @@ AwsCredentials.propTypes = {
 // AWS Instance Details
 export function AwsInstanceDetails(props) {
   const [cloudInstanceDetailsInstance, setCloudInstanceDetailsInstance] = React.useState();
+  const classes = useStyles();
 
   React.useMemo(() => {
     const cloudDBInstanceSchema = new CloudInstanceDetailsSchema({
@@ -113,6 +123,7 @@ export function AwsInstanceDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setCloudInstanceDetails(changedData);
     }}
+    formClassName={classes.formClass}
   />;
 }
 AwsInstanceDetails.propTypes = {

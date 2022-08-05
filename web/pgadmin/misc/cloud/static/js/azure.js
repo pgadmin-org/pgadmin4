@@ -18,6 +18,16 @@ import getApiInstance from '../../../../static/js/api_instance';
 import { CloudWizardEventsContext } from './CloudWizard';
 import {MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import gettext from 'sources/gettext';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() =>
+  ({
+    formClass: {
+      overflow: 'auto',
+    }
+  }),
+);
+const classes = useStyles();
 
 // Azure credentials
 export function AzureCredentials(props) {
@@ -186,6 +196,7 @@ export function AzureInstanceDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setAzureInstanceData(changedData);
     }}
+    formClassName={classes.formClass}
   />;
 }
 AzureInstanceDetails.propTypes = {
@@ -225,6 +236,7 @@ export function AzureDatabaseDetails(props) {
     onDataChange={(isChanged, changedData) => {
       props.setAzureDatabaseData(changedData);
     }}
+    formClassName={classes.formClass}
   />;
 }
 AzureDatabaseDetails.propTypes = {

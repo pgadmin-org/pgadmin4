@@ -21,5 +21,6 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #7497 <https://redmine.postgresql.org/issues/7497>`_ -  Fixed an issue with the error message being displayed at the right place for Azure deployments.
   | `Issue #7563 <https://redmine.postgresql.org/issues/7563>`_ -  Fixed an issue where autocomplete is not working after clearing the query editor.
   | `Issue #7573 <https://redmine.postgresql.org/issues/7573>`_ -  Ensure that autocomplete does not appear when navigating code using arrow keys.
