@@ -10,7 +10,6 @@
 import datetime
 import json
 import sys
-import time
 
 
 def debug(message):

@@ -239,11 +239,11 @@ class AzureProvider(AbsProvider):
         except ResourceNotFoundError:
             pass
         except Exception as e:
-            error(args, e)
+            error(str(e))
 
         if svr is not None:
-            error(args, 'Azure Database for PostgreSQL instance {} already '
-                        'exists.'.format(args.name))
+            error('Azure Database for PostgreSQL instance {} already '
+                  'exists.'.format(args.name))
 
         db_password = self._database_pass if self._database_pass is not None \
             else args.db_password
@@ -273,7 +273,7 @@ class AzureProvider(AbsProvider):
                 )
             )
         except Exception as e:
-            error(e)
+            error(str(e))
 
         server = poller.result()
 
@@ -313,7 +313,7 @@ class AzureProvider(AbsProvider):
             firewall_rules.append(firewall_rule.__dict__)
         return firewall_rules
 
-    def _delete_azure_instance(self, args, name):
+    def _delete_azure_instance(self, args):
         """ Delete an Azure instance """
         # Obtain the management client object
         postgresql_client = self._get_azure_client('postgresql')
@@ -326,7 +326,7 @@ class AzureProvider(AbsProvider):
                 args.name
             )
         except Exception as e:
-            error(args, e)
+            error(str(e))
 
         poller.result()
 
@@ -353,7 +353,7 @@ class AzureProvider(AbsProvider):
 
     def cmd_delete_instance(self, args):
         """ Delete an Azure instance """
-        self._delete_azure_instance(args, args.name)
+        self._delete_azure_instance(args)
 
 
 def load():

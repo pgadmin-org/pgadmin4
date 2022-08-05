@@ -148,13 +148,13 @@ function getTableData(res, node) {
 }
 
 function createSingleLineStatistics(data, prettifyFields) {
-  var row = data['rows'][0],
+  let row = data['rows'][0],
     columns = data['columns'],
     res = [],
     name,
     value;
 
-  for (var idx in columns) {
+  for (let idx in columns) {
     name = columns[idx]['name'];
     if (row && row[name]) {
       value =
@@ -227,11 +227,11 @@ export default function Statistics({ nodeData, item, node, ...props }) {
             setLoaderText('');
 
             if (err?.response?.data?.info == 'CRYPTKEY_MISSING') {
-              Notify.pgNotifier('error', err.request, 'The master password is not set', function(msg) {
+              Notify.pgNotifier('error', err.request, 'The master password is not set', function(mesg) {
                 setTimeout(function() {
-                  if (msg == 'CRYPTKEY_SET') {
+                  if (mesg == 'CRYPTKEY_SET') {
                     setMsg('No statistics are available for the selected object.');
-                  } else if (msg == 'CRYPTKEY_NOT_SET') {
+                  } else if (mesg == 'CRYPTKEY_NOT_SET') {
                     setMsg(gettext('The master password is not set.'));
                   }
                 }, 100);

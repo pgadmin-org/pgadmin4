@@ -484,7 +484,7 @@ export function downloadBlob(blob, fileName) {
 
   document.body.appendChild(link);
 
-  if (getBrowser() === 'IE' && window.navigator.msSaveBlob) {
+  if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
   // IE10+ : (has Blob, but not a[download] or URL)
     window.navigator.msSaveBlob(blob, fileName);
   } else {

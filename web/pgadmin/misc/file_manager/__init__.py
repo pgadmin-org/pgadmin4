@@ -828,7 +828,7 @@ class Filemanager(object):
         path = old
         path = split_path(path)[0]  # extract path
 
-        if not path[-1] == '/':
+        if path[-1] != '/':
             path += '/'
 
         newname = new
@@ -838,8 +838,6 @@ class Filemanager(object):
         oldpath_sys = "{0}{1}".format(the_dir, old)
         newpath_sys = "{0}{1}".format(the_dir, newpath)
 
-        error_msg = gettext('Renamed successfully.')
-        code = 1
         try:
             os.rename(oldpath_sys, newpath_sys)
         except Exception as e:
@@ -865,8 +863,6 @@ class Filemanager(object):
 
         Filemanager.check_access_permission(the_dir, path)
 
-        err_msg = ''
-        code = 1
         try:
             if os.path.isdir(orig_path):
                 os.rmdir(orig_path)
@@ -886,8 +882,7 @@ class Filemanager(object):
             return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
         the_dir = self.dir if self.dir is not None else ''
-        err_msg = ''
-        code = 1
+
         try:
             path = req.form.get('currentpath')
 
@@ -930,7 +925,6 @@ class Filemanager(object):
         Checks whether given file exists or not
         """
         the_dir = self.dir if self.dir is not None else ''
-        err_msg = ''
         code = 1
 
         name = unquote(name)
@@ -1087,16 +1081,16 @@ class Filemanager(object):
             the_dir, "{}{}".format(path, path)
         )
 
-        name = os.path.basename(path)
+        filename = os.path.basename(path)
         if orig_path and len(orig_path) > 0:
             dir_path = os.path.dirname(orig_path)
         else:
             dir_path = os.path.dirname(path)
 
-        response = send_from_directory(dir_path, name,
+        response = send_from_directory(dir_path, filename,
                                        mimetype='application/octet-stream',
                                        as_attachment=True)
-        response.headers["filename"] = name
+        response.headers["filename"] = filename
 
         return response
 

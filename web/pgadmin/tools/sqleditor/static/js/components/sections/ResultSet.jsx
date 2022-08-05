@@ -253,7 +253,7 @@ export class ResultSetUtils {
 
   poll() {
     let delay = 1;
-    var seconds = parseInt((Date.now() - this.startTime.getTime()) / 1000);
+    let seconds = parseInt((Date.now() - this.startTime.getTime()) / 1000);
     // calculate & return fall back polling timeout
     if (seconds >= 10 && seconds < 30) {
       delay = 500;
@@ -389,7 +389,7 @@ export class ResultSetUtils {
 
         document.body.appendChild(link);
 
-        if (getBrowser() === 'IE' && window.navigator.msSaveBlob) {
+        if (getBrowser() == 'IE' && window.navigator.msSaveBlob) {
         // IE10+ : (has Blob, but not a[download] or URL)
           window.navigator.msSaveBlob(respBlob, fileName);
         } else {
@@ -539,7 +539,7 @@ export class ResultSetUtils {
 
     // Create columns
     data.colinfo.forEach(function(c) {
-      var isPK = false,
+      let isPK = false,
         isEditable = data.can_edit && (!self.isQueryTool || c.is_editable);
 
       // Check whether this column is a primary key

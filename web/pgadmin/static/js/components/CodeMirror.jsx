@@ -79,7 +79,7 @@ function parseQuery(query, useRegex=false, matchCase=false) {
 function getRegexFinder(query) {
   return (stream) => {
     query.lastIndex = stream.pos;
-    var match = query.exec(stream.string);
+    let match = query.exec(stream.string);
     if (match && match.index == stream.pos) {
       stream.pos += match[0].length || 1;
       return 'searching';
@@ -94,7 +94,7 @@ function getRegexFinder(query) {
 
 function getPlainStringFinder(query, matchCase) {
   return (stream) => {
-    var matchIndex = (matchCase ? stream.string :  stream.string.toLowerCase()).indexOf(query, stream.pos);
+    let matchIndex = (matchCase ? stream.string :  stream.string.toLowerCase()).indexOf(query, stream.pos);
     if(matchIndex == -1) {
       stream.skipToEnd();
     } else if(matchIndex == stream.pos) {
@@ -281,7 +281,7 @@ FindDialog.propTypes = {
 };
 
 function handleDrop(editor, e) {
-  var dropDetails = null;
+  let dropDetails = null;
   try {
     dropDetails = JSON.parse(e.dataTransfer.getData('text'));
 
@@ -298,7 +298,7 @@ function handleDrop(editor, e) {
     return;
   }
 
-  var cursor = editor.coordsChar({
+  let cursor = editor.coordsChar({
     left: e.x,
     top: e.y,
   });
@@ -324,7 +324,7 @@ function calcFontSize(fontSize) {
   return '1em';
 }
 
-function handlePaste(editor, e) {
+function handlePaste(_editor, e) {
   let copiedText = e.clipboardData.getData('text');
   checkTrojanSource(copiedText, true);
 }
@@ -423,7 +423,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     let pref = pgWindow?.pgAdmin?.Browser?.get_preferences_for_module('sqleditor') || {};
     if (autocomplete && pref.autocomplete_on_key_press) {
       editor.current.on('keyup', (cm, event)=>{
-        var pattern = new RegExp('^[ -~]{1}$');
+        let pattern = new RegExp('^[ -~]{1}$');
         if (!cm.state.completionActive && (event.key == 'Backspace' || pattern.test(event.key))) {
           OrigCodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
         }
