@@ -16,6 +16,7 @@ import SchemaView from 'sources/SchemaView';
 import 'wcdocker';
 import Theme from '../../../static/js/Theme';
 import url_for from 'sources/url_for';
+import { generateNodeUrl } from './node_ajax';
 
 /* The entry point for rendering React based view in properties, called in node.js */
 export function getUtilityView(schema, treeNodeInfo, actionType, formType, container, containerPanel,
@@ -33,6 +34,10 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
   /* button icons */
   const saveBtnIcon = extraData.save_btn_icon;
 
+  /* Node type & Noen obj*/
+  let nodeObj = extraData.nodeType? pgAdmin.Browser.Nodes[extraData.nodeType]: undefined;
+  let itemNodeData = extraData?.itemNodeData ? itemNodeData: undefined;
+
   /* on save button callback, promise required */
   const onSaveClick = (isNew, data)=>new Promise((resolve, reject)=>{
     return api({
@@ -48,6 +53,23 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
       reject(err);
     });
   });
+
+  /* Called when switched to SQL tab, promise required */
+  const getSQLValue = (isNew, changedData)=>{
+    const msqlUrl = extraData?.msqlurl ? extraData.msqlurl: generateNodeUrl.call(nodeObj, treeNodeInfo, 'msql', itemNodeData, !isNew, nodeObj.url_jump_after_node);
+    return new Promise((resolve, reject)=>{
+      api({
+        url: msqlUrl,
+        method: 'GET',
+        params: changedData,
+      }).then((res)=>{
+        resolve(res.data.data);
+      }).catch((err)=>{
+        onError(err);
+        reject(err);
+      });
+    });
+  };
 
   /* Callback for help button */
   const onHelp = (isSqlHelp=false)=>{
@@ -100,6 +122,15 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
 
   });
 
+  let onError = (err)=> {
+    if(err.response){
+      console.error('error resp', err.response);
+    } else if(err.request){
+      console.error('error req', err.request);
+    } else if(err.message){
+      console.error('error msg', err.message);
+    }
+  };
   let _schema = schema;
 
   /* Fire at will, mount the DOM */
@@ -117,7 +148,8 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
         onHelp={onHelp}
         onDataChange={()=>{/*This is intentional (SonarQube)*/}}
         confirmOnCloseReset={confirmOnReset}
-        hasSQL={false}
+        hasSQL={nodeObj?nodeObj.hasSQL:false && (actionType === 'create' || actionType === 'edit')}
+        getSQLValue={getSQLValue}
         isTabView={isTabView}
         disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}
         disableDialogHelp={helpUrl == undefined || helpUrl == ''}

@@ -27,7 +27,6 @@ const useStyles = makeStyles(() =>
     }
   }),
 );
-const classes = useStyles();
 
 // Azure credentials
 export function AzureCredentials(props) {
@@ -113,6 +112,7 @@ AzureCredentials.propTypes = {
 // Azure Instance
 export function AzureInstanceDetails(props) {
   const [azureInstanceSchema, setAzureInstanceSchema] = React.useState();
+  const classes = useStyles();
 
   React.useMemo(() => {
     const AzureSchema = new AzureClusterSchema({
@@ -213,6 +213,7 @@ AzureInstanceDetails.propTypes = {
 // Azure Database Details
 export function AzureDatabaseDetails(props) {
   const [azureDBInstance, setAzureDBInstance] = React.useState();
+  const classes = useStyles();
 
   React.useMemo(() => {
     const azureDBSchema = new AzureDatabaseSchema({
