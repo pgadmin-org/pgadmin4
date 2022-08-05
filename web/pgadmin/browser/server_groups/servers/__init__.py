@@ -967,7 +967,7 @@ class ServerNode(PGChildNodeView):
             'shared': server.shared if config.SERVER_MODE else None,
             'username': server.username,
             'gid': str(server.servergroup_id),
-            'group-name': sg.name,
+            'group-name': sg.name if (sg and sg.name) else gettext('Servers'),
             'comment': server.comment,
             'role': server.role,
             'connected': connected,

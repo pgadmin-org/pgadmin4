@@ -16,7 +16,7 @@ import url_for from 'sources/url_for';
 import _ from 'lodash';
 import { flattenSelectOptions } from '../../../../../../static/js/components/FormComponents';
 import PropTypes from 'prop-types';
-import ConnectServerContent from '../../../../../../browser/static/js/ConnectServerContent';
+import ConnectServerContent from '../../../../../../static/js/Dialogs/ConnectServerContent';
 
 class NewConnectionSchema extends BaseUISchema {
   constructor(api, params, connectServer) {

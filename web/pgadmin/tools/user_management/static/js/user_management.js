@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import Notify from '../../../../static/js/helpers/Notifier';
+import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
@@ -92,104 +93,6 @@ define([
       pgDialog.url_dialog(
         gettext('Change Password'), url, 'change_user_password.html',
       );
-    },
-
-    isPgaLoginRequired(xhr) {
-      /* If responseJSON is undefined then it could be object of
-       * axios(Promise HTTP) response, so we should check accordingly.
-       */
-      if (xhr.responseJSON === undefined && xhr.data !== undefined) {
-        return xhr.status === 401 && xhr.data &&
-                  xhr.data.info &&
-                  xhr.data.info === 'PGADMIN_LOGIN_REQUIRED';
-      }
-
-      return xhr.status === 401 && xhr.responseJSON &&
-                xhr.responseJSON.info &&
-                xhr.responseJSON.info === 'PGADMIN_LOGIN_REQUIRED';
-    },
-
-    // Callback to draw pgAdmin4 login dialog.
-    pgaLogin: function(url) {
-      var title = gettext('pgAdmin 4 login');
-      url = url || url_for('security.login');
-      if(!alertify.PgaLogin) {
-        alertify.dialog('PgaLogin' ,function factory() {
-          return {
-            main: function(alertTitle, alertUrl) {
-              this.set({
-                'title': alertTitle,
-                'url': alertUrl,
-              });
-            },
-            build: function() {
-              alertify.pgDialogBuild.apply(this);
-            },
-            settings:{
-              url: undefined,
-            },
-            setup:function() {
-              return {
-                buttons: [{
-                  text: gettext('Close'), key: 27,
-                  className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
-                  attrs:{name:'close', type:'button'},
-                }],
-                // Set options for dialog
-                options: {
-                  //disable both padding and overflow control.
-                  padding : !1,
-                  overflow: !1,
-                  modal: true,
-                  resizable: true,
-                  maximizable: true,
-                  pinnable: false,
-                  closableByDimmer: false,
-                  closable: false,
-                },
-              };
-            },
-            hooks: {
-              // Triggered when the dialog is closed
-              onclose: function() {
-                // Clear the view
-                return setTimeout((function() {
-                  return alertify.PgaLogin().destroy();
-                }));
-              },
-            },
-            prepare: function() {
-              // create the iframe element
-              var self = this,
-                iframe = document.createElement('iframe'),
-                frameUrl = this.setting('url');
-
-              iframe.onload = function() {
-                var doc = this.contentDocument || this.contentWindow.document;
-                if (doc.location.href.indexOf(frameUrl) == -1) {
-                  // login successful.
-
-                  this.contentWindow.stop();
-                  this.onload = null;
-
-                  // close the dialog.
-                  self.close();
-                  pgBrowser.Events.trigger('pgadmin:user:logged-in');
-                }
-              };
-
-              iframe.frameBorder = 'no';
-              iframe.width = '100%';
-              iframe.height = '100%';
-              iframe.src = frameUrl;
-              // add it to the dialog
-              self.elements.content.appendChild(iframe);
-            },
-          };
-        });
-      }
-
-      alertify.PgaLogin(title, url).resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
     },
 
     is_editable: function(m) {
@@ -551,191 +454,34 @@ define([
           },
 
           changeOwnership: function(res, uid) {
-            let self = this;
+            let self = this,
+              url = url_for('user_management.admin_users', {'uid': uid});
 
-            let ownershipSelect2Control = Backform.Select2Control.extend({
-              fetchData: function(){
-                let that = this;
-                let url = that.field.get('url');
+            const destroyUserManagement = ()=>{
+              alertify.UserManagement().destroy();
+            };
 
-                url = url_for(url, {'uid': uid});
-
-                $.ajax({
-                  url: url,
-                  headers: {
-                    'Cache-Control' : 'no-cache',
-                  },
-                }).done(function (res_data) {
-                  var transform = that.field.get('transform');
-                  if(res_data.data.status){
-                    let data = res_data.data.result.data;
-
-                    if (transform && _.isFunction(transform)) {
-                      that.field.set('options', transform.bind(that, data));
-                    } else {
-                      that.field.set('options', data);
-                    }
-                  } else {
-                    if (transform && _.isFunction(transform)) {
-                      that.field.set('options', transform.bind(that, []));
-                    } else {
-                      that.field.set('options', []);
-                    }
-                  }
-                  Backform.Select2Control.prototype.render.apply(that, arguments);
-                }).fail(function(e){
-                  let msg = '';
-                  if(e.status == 404) {
-                    msg = 'Unable to find url.';
-                  } else {
-                    msg = e.responseJSON.errormsg;
-                  }
-                  Notify.error(msg);
-                });
-              },
-              render: function() {
-                this.fetchData();
-                return Backform.Select2Control.prototype.render.apply(this, arguments);
-              },
-              onChange: function() {
-                Backform.Select2Control.prototype.onChange.apply(this, arguments);
-              },
-            });
-
-            let ownershipModel = pgBrowser.DataModel.extend({
-              schema: [
-                {
-                  id: 'note_text_ch_owner',
-                  control: Backform.NoteControl,
-                  text: 'Select the user that will take ownership of the shared servers created by <b>' + self.model.get('username') + '</b>. <b>' + res['data'].shared_servers + '</b> shared servers are currently owned by this user.',
-                  group: gettext('General'),
-                },
-                {
-                  id: 'user',
-                  name: 'user',
-                  label: gettext('User'),
-                  type: 'text',
-                  editable: true,
-                  select2: {
-                    allowClear: true,
-                    width: '100%',
-                    first_empty: true,
-                  },
-                  control: ownershipSelect2Control,
-                  url: 'user_management.admin_users',
-                  helpMessage: gettext('Note: If no user is selected, the shared servers will be deleted.'),
-                }],
-            });
-            // Change shared server ownership before deleting the admin user
-            if (!alertify.changeOwnershipDialog) {
-              alertify.dialog('changeOwnershipDialog', function factory() {
-                let $container = $('<div class=\'change-ownership\'></div>');
-                return {
-                  main: function(message) {
-                    this.msg = message;
-                  },
-                  build: function() {
-                    this.elements.content.appendChild($container.get(0));
-                    alertify.pgDialogBuild.apply(this);
-                  },
-                  setup: function(){
-                    return {
-                      buttons: [
-                        {
-                          text: gettext('Cancel'),
-                          key: 27,
-                          className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                          'data-btn-name': 'cancel',
-                        }, {
-                          text: gettext('OK'),
-                          key: 13,
-                          className: 'btn btn-primary fa fa-check pg-alertify-button',
-                          'data-btn-name': 'ok',
-                        },
-                      ],
-                      // Set options for dialog
-                      options: {
-                        title: 'Change ownership',
-                        //disable both padding and overflow control.
-                        padding: !1,
-                        overflow: !1,
-                        model: 0,
-                        resizable: true,
-                        maximizable: false,
-                        pinnable: false,
-                        closableByDimmer: false,
-                        modal: false,
-                        autoReset: false,
-                        closable: true,
-                      },
-                    };
-                  },
-                  prepare: function() {
-                    let that = this;
-                    $container.html('');
-
-                    that.ownershipModel = new ownershipModel();
-                    let fields = pgBackform.generateViewSchema(null, that.ownershipModel, 'create', null, null, true, null);
-
-                    let view = this.view = new pgBackform.Dialog({
-                      el: '<div></div>',
-                      model: that.ownershipModel,
-                      schema: fields,
-                    });
-                    //Render change ownership dialog.
-                    $container.append(view.render().$el[0]);
-                  },
-                  callback: function(e) {
-                    if(e.button['data-btn-name'] === 'ok') {
-                      e.cancel = true; // Do not close dialog
-                      let newOwnershipModel = this.ownershipModel.toJSON();
-                      if (newOwnershipModel.user == '' || newOwnershipModel.user == undefined) {
-                        Notify.confirm(
-                          gettext('Delete user?'),
-                          gettext('The shared servers owned by <b>'+ self.model.get('username') +'</b> will be deleted. Do you wish to continue?'),
-                          function() {
-
-                            self.model.destroy({
-                              wait: true,
-                              success: function() {
-                                Notify.success(gettext('User deleted.'));
-                                alertify.changeOwnershipDialog().destroy();
-                                alertify.UserManagement().destroy();
-                              },
-                              error: self.raiseError,
-                            });
-                            alertify.changeOwnershipDialog().destroy();
-                          },
-                          function() {
-                            return true;
-                          }
-                        );
-                      } else {
-                        self.changeOwner(newOwnershipModel.user, uid);
-                      }
-                    } else {
-                      alertify.changeOwnershipDialog().destroy();
-                    }
-                  },
-                };
-              });
-            }
-            alertify.changeOwnershipDialog('Change ownership').resizeTo(pgBrowser.stdW.md, pgBrowser.stdH.md);
-          },
-          changeOwner: function(user_id, old_user) {
             $.ajax({
-              url: url_for('user_management.change_owner'),
-              method: 'POST',
-              data:{'new_owner': user_id, 'old_owner': old_user},
-            })
-              .done(function(res) {
-                alertify.changeOwnershipDialog().destroy();
-                alertify.UserManagement().destroy();
-                Notify.success(gettext(res.info));
-              })
-              .fail(function() {
-                Notify.error(gettext('Unable to change owner.'));
-              });
+              url: url,
+              headers: {
+                'Cache-Control' : 'no-cache',
+              },
+            }).done(function (result) {
+              showChangeOwnership(gettext('Change ownership'),
+                result.data.result.data,
+                res['data'].shared_servers,
+                {uid: uid, name: self.model.get('username')},
+                destroyUserManagement
+              );
+            }).fail(function(e) {
+              let msg = '';
+              if(e.status == 404) {
+                msg = 'Unable to find url.';
+              } else {
+                msg = e.responseJSON.errormsg;
+              }
+              Notify.error(msg);
+            });
           },
           deleteUser: function() {
             let self = this;

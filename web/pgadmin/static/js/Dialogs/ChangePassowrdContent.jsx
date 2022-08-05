@@ -11,8 +11,8 @@ import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
-import BaseUISchema from '../../../static/js/SchemaView/base_schema.ui';
-import SchemaView from '../../../static/js/SchemaView';
+import BaseUISchema from '../SchemaView/base_schema.ui';
+import SchemaView from '../SchemaView';
 
 class ChangePasswordSchema extends BaseUISchema {
   constructor(user, isPgpassFileUsed) {
@@ -82,6 +82,7 @@ export default function ChangePasswordContent({onSave, onClose, userName, isPgpa
     viewHelperProps={{
       mode: 'create',
     }}
+    customSaveBtnName={'Change'}
     onSave={onSave}
     onClose={onClose}
     hasSQL={false}

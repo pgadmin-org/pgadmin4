@@ -12,7 +12,7 @@ import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import DatabaseSchema from './database.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
-import { showServerPassword } from '../../../../../static/js/password_dialogs';
+import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore',

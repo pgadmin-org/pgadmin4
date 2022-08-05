@@ -9,7 +9,7 @@
 
 import { generateNodeUrl } from './node_ajax';
 import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
-import { checkMasterPassword } from './password_dialogs';
+import { checkMasterPassword } from '../../../static/js/Dialogs/index';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',

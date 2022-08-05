@@ -19,7 +19,7 @@ import 'pgadmin.tools.sqleditor';
 import pgWindow from 'sources/window';
 import _ from 'underscore';
 import Notify from '../../../../static/js/helpers/Notifier';
-import { showSchemaDiffServerPassword } from '../../../../browser/static/js/password_dialogs';
+import { showSchemaDiffServerPassword } from '../../../../static/js/Dialogs/index';
 
 
 import { SchemaDiffSelect2Control, SchemaDiffHeaderView,

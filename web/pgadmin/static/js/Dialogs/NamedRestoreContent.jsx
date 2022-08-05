@@ -10,12 +10,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import gettext from 'sources/gettext';
 import { Box } from '@material-ui/core';
-import { DefaultButton, PrimaryButton } from '../../../static/js/components/Buttons';
+import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import PropTypes from 'prop-types';
-import { useModalStyles } from '../../../static/js/helpers/ModalProvider';
-import { InputText } from '../../../static/js/components/FormComponents';
+import { useModalStyles } from '../helpers/ModalProvider';
+import { InputText } from '../components/FormComponents';
 import { isEmptyString } from '../../../static/js/validators';
 
 export default function NamedRestoreContent({closeModal, onOK, setHeight}) {

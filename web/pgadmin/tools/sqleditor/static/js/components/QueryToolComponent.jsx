@@ -37,7 +37,7 @@ import PropTypes from 'prop-types';
 import { retrieveNodeName } from '../show_view_data';
 import 'wcdocker';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
-import ConnectServerContent from '../../../../../browser/static/js/ConnectServerContent';
+import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -362,10 +362,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
 
   const handleApiError = (error, handleParams)=>{
-    if(error.response && pgAdmin.Browser?.UserManagement?.isPgaLoginRequired(error.response)) {
-      return pgAdmin.Browser.UserManagement.pgaLogin();
-    }
-
     if(error.response?.status == 503 && error.response.data?.info == 'CONNECTION_LOST') {
       // We will display re-connect dialog, no need to display error message again
       modal.confirm(

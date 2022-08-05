@@ -496,9 +496,6 @@ def get_shared_servers(uid):
         return internal_server_error(errormsg=str(e))
 
 
-# @blueprint.route(
-#     '/admin_users', methods=['GET'], endpoint='admin_users'
-# )
 @blueprint.route(
     '/admin_users/<int:uid>', methods=['GET'], endpoint='admin_users'
 )

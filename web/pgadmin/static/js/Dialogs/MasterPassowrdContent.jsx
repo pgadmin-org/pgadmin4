@@ -18,9 +18,9 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import HelpIcon from '@material-ui/icons/Help';
 
-import { DefaultButton, PrimaryButton, PgIconButton } from '../../../static/js/components/Buttons';
-import { useModalStyles } from '../../../static/js/helpers/ModalProvider';
-import { FormFooterMessage, InputText, MESSAGE_TYPE } from '../../../static/js/components/FormComponents';
+import { DefaultButton, PrimaryButton, PgIconButton } from '../components/Buttons';
+import { useModalStyles } from '../helpers/ModalProvider';
+import { FormFooterMessage, InputText, MESSAGE_TYPE } from '../components/FormComponents';
 
 export default function MasterPasswordContent({ closeModal, onResetPassowrd, onOK, onCancel, setHeight, isPWDPresent, data}) {
   const classes = useModalStyles();

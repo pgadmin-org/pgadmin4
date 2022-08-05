@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import { Box, Dialog, DialogContent, DialogTitle, makeStyles, Paper } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { getEpoch } from 'sources/utils';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../components/Buttons';
@@ -296,7 +296,7 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
         </Box>
       </DialogTitle>
       <DialogContent height="100%">
-        {content(closeModal)}
+        {useMemo(()=>{ return content(closeModal); }, [])}
       </DialogContent>
     </Dialog>
   );
