@@ -11,7 +11,10 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
 {% if data.procost %}
     COST {{data.procost}}
 {% endif %}
-    {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %}{% endif %}{% if data.proisstrict %} STRICT{% endif %}{% if data.prosecdef %} SECURITY DEFINER{% endif %}{% if data.proiswindow %} WINDOW{% endif -%}
+    {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %}{% endif %}{% if data.proleakproof %} LEAKPROOF{% else %} NOT LEAKPROOF{% endif %}
+{% if data.proisstrict %} STRICT{% endif %}
+{% if data.prosecdef %} SECURITY DEFINER{% endif %}
+{% if data.proiswindow %} WINDOW{% endif %}
 {% if data.prorows and (data.prorows | int) > 0 %}
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
@@ -22,12 +25,12 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}()
 AS {% if data.lanname == 'c' %}
 {{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
 {% else %}
-$BODY${{ data.prosrc }}$BODY${% endif %};
+$BODY${{ data.prosrc }}$BODY${% endif -%};
 {% if data.funcowner %}
 
 ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args}})
     OWNER TO {{ conn|qtIdent(data.funcowner) }};
-{% endif %}
+{% endif -%}
 {% if data.acl %}
 {% for p in data.acl %}
 

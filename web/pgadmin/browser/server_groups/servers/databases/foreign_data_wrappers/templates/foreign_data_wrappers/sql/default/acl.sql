@@ -14,14 +14,8 @@ FROM
     WHERE fdw.oid = {{ fid|qtLiteral }}::OID
 {% endif %}
         ) acl,
-            (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable AS is_grantable,
-                    (d).privilege_type AS privilege_type
-            FROM (SELECT pg_catalog.aclexplode(fdwacl) as d FROM pg_catalog.pg_foreign_data_wrapper fdw1
-            {% if fid %}
-                    WHERE fdw1.oid = {{ fid|qtLiteral }}::OID ) a
-            {% endif %}
-            ) d
-    ) d
+        pg_catalog.aclexplode(fdwacl) d
+        ) d
     LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
     LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)
 GROUP BY g.rolname, gt.rolname

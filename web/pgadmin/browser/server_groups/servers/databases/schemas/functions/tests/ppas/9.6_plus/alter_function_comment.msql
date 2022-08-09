@@ -1,2 +1,0 @@
-COMMENT ON FUNCTION public."Function1_$%{}[]()&*^!@""'`\/#"(character varying)
-    IS 'Some comment';

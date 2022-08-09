@@ -1,6 +1,0 @@
-{
-    "datacl": {
-        "type": "MVIEW",
-        "acl": ["a", "r", "w", "d", "D", "x", "t"]
-    }
-}

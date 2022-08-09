@@ -194,7 +194,8 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 PG_DEFAULT_DRIVER
             ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'event_triggers/sql/9.3_plus'
+            self.template_path = 'event_triggers/sql/#{0}#'.format(
+                self.manager.version)
 
             self.datistemplate = False
             if (

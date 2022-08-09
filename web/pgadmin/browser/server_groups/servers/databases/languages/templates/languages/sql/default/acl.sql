@@ -12,11 +12,7 @@ FROM
             LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (lan.oid=descr.objoid AND descr.classoid='pg_language'::regclass)
         WHERE lan.oid = {{ lid|qtLiteral }}::OID
         ) acl,
-        (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable AS is_grantable,
-            (d).privilege_type AS privilege_type
-        FROM (SELECT pg_catalog.aclexplode(lanacl) as d FROM pg_catalog.pg_language lan1
-            WHERE lan1.oid = {{ lid|qtLiteral }}::OID ) a
-        ) d
+        pg_catalog.aclexplode(lanacl) d
     ) d
 LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
 LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)

@@ -1,5 +1,5 @@
 SELECT
-    ts.oid, spcname AS name, spcowner as owner
+    ts.oid AS oid, spcname AS name, spcowner as owner
 FROM
     pg_catalog.pg_tablespace ts
 {% if tsid %}

@@ -20,7 +20,7 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {# Default privileges on tables #}
 {% for defacl, type in [
     ('deftblacl', 'TABLES'), ('defseqacl', 'SEQUENCES'),
-    ('deffuncacl', 'FUNCTIONS')]
+    ('deffuncacl', 'FUNCTIONS'), ('deftypeacl', 'TYPES')]
 %}
 {% if data[defacl] %}{% set acl = data[defacl] %}
 {% for priv in acl %}

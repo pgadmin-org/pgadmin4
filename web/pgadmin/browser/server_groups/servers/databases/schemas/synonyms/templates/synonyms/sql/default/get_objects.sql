@@ -25,6 +25,19 @@ ORDER BY proname;
 SELECT synname AS name
     FROM pg_catalog.pg_synonym
 ORDER BY synname;
+{###########################################}
+{### If Target Type is Package ###}
+{###########################################}
+{% elif trgTyp == 'P' %}
+SELECT nspname AS name
+    FROM pg_catalog.pg_namespace
+WHERE nspparent IN (
+                    SELECT oid
+                        FROM pg_catalog.pg_namespace
+                    WHERE nspname = {{ trgSchema|qtLiteral }} LIMIT 1
+                   )
+      AND nspobjecttype = 0
+ORDER BY nspname;
 {% else %}
 {###################################################}
 {### If Target Type is Table/View/M.View/Sequnce ###}

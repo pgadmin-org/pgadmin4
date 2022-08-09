@@ -26,7 +26,6 @@ COMMENT ON FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
 {# ============= Create ACL for foreign data wrapper ============= #}
 {% if data.fdwacl %}
 {% for priv in data.fdwacl %}
-{{ PRIVILEGE.APPLY(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}
-{% endfor %}
+{{ PRIVILEGE.APPLY(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}{% endfor %}
 {% endif %}
 {% endif %}

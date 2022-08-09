@@ -15,5 +15,7 @@ CREATE DATABASE {{ conn|qtIdent(data.name) }}
 
     TABLESPACE = {{ conn|qtIdent(data.spcname) }}{% endif %}{% if data.datconnlimit %}
 
-    CONNECTION LIMIT = {{ data.datconnlimit }}{% endif %};
+    CONNECTION LIMIT = {{ data.datconnlimit }}{% endif %}
+
+    IS_TEMPLATE = {{ data.is_template }};
 {% endif %}

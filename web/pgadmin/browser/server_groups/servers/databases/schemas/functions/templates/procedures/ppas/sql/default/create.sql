@@ -2,6 +2,7 @@
 {% import 'macros/functions/privilege.macros' as PRIVILEGE %}
 {% import 'macros/functions/variable.macros' as VARIABLE %}
 {% set is_columns = [] %}
+{% set exclude_quoting = ['search_path'] %}
 {% if data %}
 {% if query_for == 'sql_panel' and func_def is defined %}
 CREATE OR REPLACE PROCEDURE {{func_def}}
@@ -10,14 +11,26 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} PROCEDURE {{ conn|qtIden
 ({% for p in data.arguments %}{% if p.argmode %}{{p.argmode}} {% endif %}{% if p.argname %}{{ conn|qtIdent(p.argname)}} {% endif %}{% if p.argtype %}{{ p.argtype }}{% endif %}{% if p.argdefval %} DEFAULT {{p.argdefval}}{% endif %}
 {% if not loop.last %}, {% endif %}
 {% endfor -%}
+){% endif %}
+
 {% endif %}
-)
+    {% if data.provolatile %}{% if data.provolatile == 'i' %}IMMUTABLE{% elif data.provolatile == 's' %}STABLE{% else %}VOLATILE{% endif %} {% endif %}{% if data.proleakproof %}LEAKPROOF {% endif %}
+{% if data.proisstrict %}STRICT {% endif %}
+{% if data.prosecdef %}SECURITY DEFINER{% endif %}
+{% if data.proparallel and (data.proparallel == 'r' or data.proparallel == 's' or data.proparallel == 'u') %}
+{% if data.proparallel == 'r' %} PARALLEL RESTRICTED{% elif data.proparallel == 's' %} PARALLEL SAFE {% elif data.proparallel == 'u' %} PARALLEL UNSAFE{% endif %}{% endif %}{% if data.procost %}
+
+    COST {{data.procost}}{% endif %}{% if data.prorows and (data.prorows | int) > 0 %}
+
+    ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
+
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
 {% endif %}
 
 AS {{ data.prosrc }};
 
 {% if data.funcowner %}
-ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}
     OWNER TO {{ conn|qtIdent(data.funcowner) }};
 {% endif -%}
 

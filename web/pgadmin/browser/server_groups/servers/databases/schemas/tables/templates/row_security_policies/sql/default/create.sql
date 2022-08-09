@@ -6,6 +6,9 @@
 {% endif %}
 CREATE POLICY {{ conn|qtIdent(data.name) }}
     ON {{conn|qtIdent(data.schema, data.table)}}
+{%if data.type %}
+    AS {{ data.type|upper }}
+{% endif %}
 {% if data.event %}
     FOR {{ data.event|upper }}
 {% endif %}

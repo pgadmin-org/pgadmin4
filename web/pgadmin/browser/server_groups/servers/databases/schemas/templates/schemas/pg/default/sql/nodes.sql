@@ -17,4 +17,10 @@ WHERE
     NOT (
 {{ CATALOGS.LIST('nsp') }}
     )
+
+    {% if schema_restrictions %}
+        AND
+        nsp.nspname in ({{schema_restrictions}})
+    {% endif %}
+
 ORDER BY nspname;

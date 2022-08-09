@@ -3,6 +3,28 @@
 {% import 'macros/privilege.macros' as PRIVILEGE %}
 {% import 'macros/default_privilege.macros' as DEFAULT_PRIVILEGE %}
 {% if data %}
+
+{# Change the default priviledges for the functions #}
+{% if data.deffuncacl %}
+{% if 'deleted' in data.deffuncacl %}
+{% for priv in data.deffuncacl.deleted %}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'FUNCTIONS', priv.grantee, priv.grantor) }}
+{% endfor %}
+{% endif %}
+{% if 'changed' in data.deffuncacl %}
+{% for priv in data.deffuncacl.changed %}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'FUNCTIONS', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endfor %}
+{% endif %}
+{% if 'added' in data.deffuncacl %}
+{% for priv in data.deffuncacl.added %}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
+{% endfor %}
+{% endif %}
+{% endif %}
+
+
 {# Change the variables/options #}
 {% if data.variables and data.variables|length > 0 %}
 {% set variables = data.variables %}
@@ -59,7 +81,7 @@
 {% if data.deftblacl %}
 {% if 'deleted' in data.deftblacl %}
 {% for priv in data.deftblacl.deleted %}
-{{ DEFAULT_PRIVILEGE.RESET(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'TABLES', priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.deftblacl %}
@@ -69,7 +91,7 @@
 {% endif %}
 {% if 'added' in data.deftblacl %}
 {% for priv in data.deftblacl.added %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'TABLES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% endif %}
@@ -79,41 +101,23 @@
 {% if data.defseqacl %}
 {% if 'deleted' in data.defseqacl %}
 {% for priv in data.defseqacl.deleted %}
-{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'SEQUENCES', priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'SEQUENCES', priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.defseqacl %}
 {% for priv in data.defseqacl.changed %}
 {{ DEFAULT_PRIVILEGE.RESETALL(conn, 'SEQUENCES', priv.grantee) }}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in data.defseqacl %}
 {% for priv in data.defseqacl.added %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.APPLY(conn, 'SEQUENCES', priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% endif %}
 
-{# Change the default priviledges for the functions #}
-{% if data.deffuncacl %}
-{% if 'deleted' in data.deffuncacl %}
-{% for priv in data.deffuncacl.deleted %}
-{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'FUNCTIONS', priv.grantee) }}
-{% endfor %}
-{% endif %}
-{% if 'changed' in data.deffuncacl %}
-{% for priv in data.deffuncacl.changed %}
-{{ DEFAULT_PRIVILEGE.RESETALL(conn, 'FUNCTIONS', priv.grantee) }}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant) }}
-{% endfor %}
-{% endif %}
-{% if 'added' in data.deffuncacl %}
-{% for priv in data.deffuncacl.added %}
-{{ DEFAULT_PRIVILEGE.APPLY(conn, 'FUNCTIONS', priv.grantee, priv.without_grant, priv.with_grant) }}
-{% endfor %}
-{% endif %}
-{% endif %}
+
 
 {% endif %}
 {# Change the security labels #}
@@ -135,4 +139,9 @@
 {% endfor %}
 {% endif %}
 {% endif %}
+{% endif %}
+
+{# Alter database to template DB or vice versa #}
+{% if data.is_template is defined %}
+ALTER DATABASE {{ conn|qtIdent(data.name) }} WITH IS_TEMPLATE = {{ data.is_template }};
 {% endif %}

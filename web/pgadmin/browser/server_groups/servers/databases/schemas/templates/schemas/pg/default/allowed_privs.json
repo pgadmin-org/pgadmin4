@@ -1,4 +1,4 @@
-{# List of allowed privileges for PostgreSQL 9.1 #}
+{# List of allowed privileges for PostgreSQL 9.2 or later #}
 {#
     Format for allowed privileges is:
     "acl_col": {
@@ -22,5 +22,9 @@
     "deffuncacl": {
         "type": "FUNCTION",
         "acl": ["X"]
+    },
+    "deftypeacl": {
+        "type": "TYPE",
+        "acl": ["U"]
     }
 }

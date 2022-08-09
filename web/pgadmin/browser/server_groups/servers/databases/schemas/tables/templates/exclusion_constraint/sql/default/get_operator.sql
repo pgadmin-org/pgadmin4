@@ -23,6 +23,7 @@ FROM pg_catalog.pg_operator op,
     {% if not show_sysobj %}
       AND nsp.nspname != 'information_schema'
     {% endif %}
+      UNION SELECT 'smallserial', 0
       UNION SELECT 'bigserial', 0
       UNION SELECT 'serial', 0) t1
       WHERE typname = {{type|qtLiteral}}) AS types

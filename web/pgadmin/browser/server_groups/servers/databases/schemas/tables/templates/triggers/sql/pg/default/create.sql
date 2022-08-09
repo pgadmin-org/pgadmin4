@@ -19,6 +19,10 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
     DEFERRABLE{% if data.tginitdeferred %} INITIALLY DEFERRED{% endif %}
 
 {% endif %}
+{% if data.tgoldtable or data.tgnewtable %}
+    REFERENCING{% if data.tgnewtable %} NEW TABLE AS {{ conn|qtIdent(data.tgnewtable) }}{% endif %}{% if data.tgoldtable %} OLD TABLE AS {{ conn|qtIdent(data.tgoldtable) }}{% endif %}
+
+{% endif %}
     FOR EACH{% if data.is_row_trigger %} ROW{% else %} STATEMENT{% endif %}
 {% if data.whenclause %}
 

@@ -27,6 +27,12 @@ SELECT
             FROM pg_catalog.pg_default_acl
         WHERE defaclobjtype = 'f' AND defaclnamespace = nsp.oid
     ), ', ')) AS funcacl,
+    {### Default ACL for Type ###}
+    (SELECT pg_catalog.array_to_string(ARRAY(
+        SELECT pg_catalog.array_to_string(defaclacl::text[], ', ')
+            FROM pg_catalog.pg_default_acl
+        WHERE defaclobjtype = 'T' AND defaclnamespace = nsp.oid
+    ), ', ')) AS typeacl,
     (SELECT pg_catalog.array_agg(provider || '=' || label) FROM pg_catalog.pg_seclabels sl1 WHERE sl1.objoid=nsp.oid) AS seclabels
 FROM
     pg_catalog.pg_namespace nsp
@@ -44,4 +50,8 @@ WHERE
     NOT (
 {{ CATALOGS.LIST('nsp') }}
     )
+    {% if schema_restrictions %}
+        AND
+        nsp.nspname in ({{schema_restrictions}})
+    {% endif %}
 ORDER BY 1, nspname;

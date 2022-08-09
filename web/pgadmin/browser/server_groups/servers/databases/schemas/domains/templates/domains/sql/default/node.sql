@@ -7,11 +7,15 @@ JOIN
     pg_catalog.pg_type b ON b.oid = d.typbasetype
 JOIN
     pg_catalog.pg_namespace bn ON bn.oid=d.typnamespace
-{% if scid %}
+{% if scid is defined %}
 WHERE
     d.typnamespace = {{scid}}::oid
 {% elif doid %}
 WHERE d.oid = {{doid}}::oid
+{% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = d.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
 ORDER BY
     d.typname;

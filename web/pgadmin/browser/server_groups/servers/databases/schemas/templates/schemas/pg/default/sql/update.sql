@@ -45,7 +45,7 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {# Change the default privileges #}
 {% for defacl, type in [
     ('deftblacl', 'TABLES'), ('defseqacl', 'SEQUENCES'),
-    ('deffuncacl', 'FUNCTIONS')]
+    ('deffuncacl', 'FUNCTIONS'), ('deftypeacl', 'TYPES')]
 %}
 {% if data[defacl] %}{% set acl = data[defacl] %}
 {% if 'deleted' in acl %}

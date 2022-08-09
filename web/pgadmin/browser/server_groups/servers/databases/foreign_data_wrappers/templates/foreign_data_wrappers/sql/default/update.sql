@@ -70,12 +70,13 @@ SET {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% e
 {% if data.fdwacl %}
 {% if 'deleted' in data.fdwacl %}
 {% for priv in data.fdwacl.deleted %}
-{{ PRIVILEGE.RESETALL(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name) }}{% endfor %}
+{{ PRIVILEGE.RESETALL(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name) }}
+{% endfor %}
 {% endif %}
 {% if 'changed' in data.fdwacl %}
 {% for priv in data.fdwacl.changed %}
 {{ PRIVILEGE.RESETALL(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name) }}
-{{ PRIVILEGE.APPLY(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name, priv.without_grant, priv.with_grant) }}{% endfor %}
+{{ PRIVILEGE.APPLY(conn, 'FOREIGN DATA WRAPPER', priv.grantee, data.name, priv.without_grant, priv.with_grant) }} {% endfor %}
 {% endif %}
 {% if 'added' in data.fdwacl %}
 {% for priv in data.fdwacl.added %}
