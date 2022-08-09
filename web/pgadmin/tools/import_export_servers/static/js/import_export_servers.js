@@ -24,11 +24,6 @@ export default class ImportExportServersModule {
     return ImportExportServersModule.instance;
   }
 
-  constructor(pgAdmin, pgBrowser) {
-    this.pgAdmin = pgAdmin;
-    this.pgBrowser = pgBrowser;
-  }
-
   init() {
     if (this.initialized)
       return;

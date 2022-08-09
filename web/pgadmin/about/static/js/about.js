@@ -11,7 +11,6 @@ import React from 'react';
 import gettext from 'sources/gettext';
 import Notify from '../../../static/js/helpers/Notifier';
 import pgAdmin from 'sources/pgadmin';
-import pgBrowser from 'top/browser/static/js/browser';
 import AboutComponent from './AboutComponent';
 import current_user from 'pgadmin.user_management.current_user';
 
@@ -23,11 +22,6 @@ class About {
       About.instance = new About(...args);
     }
     return About.instance;
-  }
-
-  constructor(pgAdmin, pgBrowser) {
-    this.pgAdmin = pgAdmin;
-    this.pgBrowser = pgBrowser;
   }
 
   init() {
@@ -55,7 +49,7 @@ class About {
   }
 }
 
-pgAdmin.About = About.getInstance(pgAdmin, pgBrowser);
+pgAdmin.About = About.getInstance();
 
 module.exports = {
   About: About,

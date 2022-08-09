@@ -1,6 +1,6 @@
-export function copyToClipboard(text) {
+export async function copyToClipboard(text) {
   try {
-    navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(text);
   } catch {
     /* Suppress error */
     console.error('Does not have clipboard acccess');

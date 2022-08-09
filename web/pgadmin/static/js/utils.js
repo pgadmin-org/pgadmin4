@@ -13,6 +13,7 @@ import gettext from 'sources/gettext';
 import 'wcdocker';
 import Notify from './helpers/Notifier';
 import { hasTrojanSource } from 'anti-trojan-source';
+import convert from 'convert-units';
 
 var wcDocker = window.wcDocker;
 
@@ -493,4 +494,30 @@ export function downloadBlob(blob, fileName) {
     link.click();
   }
   document.body.removeChild(link);
+}
+
+export function toPrettySize(rawSize) {
+  try {
+    let conVal = convert(rawSize).from('B').toBest();
+    conVal.val = Math.round(conVal.val * 100) / 100;
+    return `${conVal.val} ${conVal.unit}`;
+  }
+  catch {
+    return '';
+  }
+}
+
+export function compareSizeVals(val1, val2) {
+  const parseAndConvert = (val)=>{
+    try {
+      let [size, unit] = val.split(' ');
+      return convert(size).from(unit.toUpperCase()).to('B');
+    } catch {
+      return -1;
+    }
+  };
+  val1 = parseAndConvert(val1);
+  val2 = parseAndConvert(val2);
+  if(val1 > val2) return 1;
+  return (val1 < val2 ? -1 : 0);
 }

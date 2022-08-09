@@ -15,10 +15,11 @@ import PropTypes from 'prop-types';
 import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
-import sizePrettify from 'sources/size_prettify';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
+import { compareSizeVals, toPrettySize } from '../../../../static/js/utils';
+
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
     minHeight: '100%',
@@ -64,28 +65,7 @@ function getColumn(data, singleLineStatistics) {
             resizable: true,
             disableGlobalFilter: false,
             sortType: ((rowA, rowB, id) => {
-              let val1 = rowA.values[id];
-              let val2 = rowB.values[id];
-              const sizes = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-              sizes.some((t, i) => {
-                if (!_.isNull(rowA.values[id]) && typeof (rowA.values[id]) == 'string' && rowA.values[id].indexOf(t) > -1) {
-                  val1 = (parseInt(rowA.values[id]) * Math.pow(1024, i));
-                }
-
-                if (!_.isNull(rowB.values[id]) && typeof (rowB.values[id]) == 'string' && rowB.values[id].indexOf(t) > -1) {
-                  val2 = parseInt(rowB.values[id]) * Math.pow(1024, i);
-                }
-
-              });
-
-              if ((val1) > (val2) || _.isNull(val2)) {
-                return 1;
-              }
-              if ((val2) > (val1) || _.isNull(val1)) {
-                return -1;
-              }
-              return 0;
-
+              return compareSizeVals(rowA.values[id], rowB.values[id]);
             })
           };
         }else{
@@ -133,7 +113,7 @@ function getTableData(res, node) {
         // Prettify the field values
         if (!_.isEmpty(node.statsPrettifyFields)) {
           node.statsPrettifyFields.forEach((field) => {
-            row[field] = sizePrettify(row[field]);
+            row[field] = toPrettySize(row[field]);
           });
         }
         nodeStats.push({ ...row, icon: '' });
@@ -159,7 +139,7 @@ function createSingleLineStatistics(data, prettifyFields) {
     if (row && row[name]) {
       value =
         _.indexOf(prettifyFields, name) != -1
-          ? sizePrettify(row[name])
+          ? toPrettySize(row[name])
           : row[name];
     } else {
       value = null;
