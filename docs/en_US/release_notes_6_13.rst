@@ -27,3 +27,4 @@ Bug fixes
   | `Issue #7527 <https://redmine.postgresql.org/issues/7527>`_ -  Fixed API test cases for Postgres 14.4.
   | `Issue #7563 <https://redmine.postgresql.org/issues/7563>`_ -  Fixed an issue where autocomplete is not working after clearing the query editor.
   | `Issue #7573 <https://redmine.postgresql.org/issues/7573>`_ -  Ensure that autocomplete does not appear when navigating code using arrow keys.
+  | `Issue #7586 <https://redmine.postgresql.org/issues/7586>`_ -  Fixed an issue with rendering geometry when selecting a complete column.

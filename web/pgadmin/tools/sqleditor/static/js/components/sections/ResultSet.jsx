@@ -989,7 +989,7 @@ export function ResultSet() {
     try {
       /* Convert the added info to actual rows */
       let added = {...dataChangeStore.added};
-      Object.keys(added).map((clientPK)=>{
+      Object.keys(added).forEach((clientPK)=>{
         added[clientPK].data = _.find(rows, (r)=>rowKeyGetter(r)==clientPK);
       });
       let {data: respData} = await rsu.current.saveData({
@@ -1214,6 +1214,9 @@ export function ResultSet() {
       let selRowsData = rows;
       if(selectedRows.size != 0) {
         selRowsData = rows.filter((r)=>selectedRows.has(rowKeyGetter(r)));
+      } else if(selectedColumns.size > 0) {
+        let selectedCols = _.filter(columns, (_c, i)=>selectedColumns.has(i+1));
+        selRowsData = _.map(rows, (r)=>_.pick(r, _.map(selectedCols, (c)=>c.key)));
       } else if(selectedRange.current) {
         let [,, startRowIdx, endRowIdx] = getRangeIndexes();
         selRowsData = rows.slice(startRowIdx, endRowIdx+1);
@@ -1229,7 +1232,7 @@ export function ResultSet() {
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
-  }, [rows, columns, selectedRows.size]);
+  }, [rows, columns, selectedRows.size, selectedColumns.size]);
 
   const handleScroll = (e)=>{
     if (isLoadingMore || !rsu.current.isAtBottom(e)) return;
