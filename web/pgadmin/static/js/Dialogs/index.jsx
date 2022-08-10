@@ -21,16 +21,17 @@ import MasterPasswordContent from './MasterPasswordContent';
 import ChangePasswordContent from './ChangePasswordContent';
 import NamedRestoreContent from './NamedRestoreContent';
 import ChangeOwnershipContent from './ChangeOwnershipContent';
+import UrlDialogContent from './UrlDialogContent';
 
-function mountDialog(title, getDialogContent, docker=undefined) {
+function mountDialog(title, getDialogContent, docker=undefined, width, height) {
   // Register dialog panel
   var panel;
   if (docker) {
     pgAdmin.Browser.Node.registerUtilityPanel(docker);
-    panel = pgAdmin.Browser.Node.addUtilityPanel(pgAdmin.Browser.stdW.md, undefined, docker);
+    panel = pgAdmin.Browser.Node.addUtilityPanel(width||pgAdmin.Browser.stdW.md, height||undefined, docker);
   } else {
     pgAdmin.Browser.Node.registerUtilityPanel();
-    panel = pgAdmin.Browser.Node.addUtilityPanel(pgAdmin.Browser.stdW.md);
+    panel = pgAdmin.Browser.Node.addUtilityPanel(width||pgAdmin.Browser.stdW.md);
   }
 
   var j = panel.$container.find('.obj_properties').first();
@@ -54,7 +55,7 @@ function mountDialog(title, getDialogContent, docker=undefined) {
     panel._parent.__update();
   };
 
-  ReactDOM.render(getDialogContent(onClose, setNewSize), j[0]);
+  ReactDOM.render(getDialogContent(onClose, setNewSize, panel), j[0]);
 }
 
 // This functions is used to show the connect server password dialog.
@@ -346,4 +347,18 @@ export function showChangeOwnership() {
   },
   { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true,
     dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md});
+}
+
+export function showUrlDialog() {
+  let title = arguments[0],
+    url = arguments[1],
+    helpFile = arguments[2],
+    width = arguments[3],
+    height = arguments[4];
+
+  Notify.showModal(title, (onClose) => {
+    return <UrlDialogContent url={url} helpFile={helpFile} onClose={onClose} />;
+  },
+  { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true,
+    dialogWidth: width || pgAdmin.Browser.stdW.md, dialogHeight: height || pgAdmin.Browser.stdH.md});
 }

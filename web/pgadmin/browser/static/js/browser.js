@@ -22,7 +22,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
   'pgadmin.browser.runtime', 'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
-  'sources/codemirror/addon/fold/pgadmin-sqlfoldcode', 'pgadmin.browser.dialog',
+  'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state'
 ], function(
   gettext, url_for, require, $, _,

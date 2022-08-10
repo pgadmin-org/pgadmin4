@@ -8,16 +8,16 @@
 //////////////////////////////////////////////////////////////
 
 import Notify from '../../../../static/js/helpers/Notifier';
-import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
+import { showChangeOwnership, showUrlDialog } from '../../../../static/js/Dialogs/index';
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'pgadmin.alertifyjs',
   'pgadmin.browser', 'backbone', 'backgrid', 'backform', 'pgadmin.browser.node', 'pgadmin.backform',
   'pgadmin.user_management.current_user', 'sources/utils', 'pgadmin.browser.constants',
-  'pgadmin.browser.dialog','backgrid.select.all', 'backgrid.filter',
+  'backgrid.select.all', 'backgrid.filter',
 ], function(
   gettext, url_for, $, _, alertify, pgBrowser, Backbone, Backgrid, Backform,
-  pgNode, pgBackform, userInfo, commonUtils, pgConst, pgDialog,
+  pgNode, pgBackform, userInfo, commonUtils, pgConst,
 ) {
 
   // if module is already initialized, refer to that.
@@ -90,9 +90,11 @@ define([
 
     // Callback to draw change password Dialog.
     change_password: function(url) {
-      pgDialog.url_dialog(
-        gettext('Change Password'), url, 'change_user_password.html',
-      );
+      showUrlDialog(gettext('Change Password'), url, 'change_user_password.html', undefined, pgBrowser.stdH.lg);
+    },
+
+    show_mfa: function(url) {
+      showUrlDialog(gettext('Authentication'), url, 'mfa.html', 1200, 680);
     },
 
     is_editable: function(m) {

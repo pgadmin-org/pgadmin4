@@ -154,12 +154,9 @@ window.onload = function(e){
                     {% endif %}
                     {% if mfa_enabled is defined and mfa_enabled is true %}
                     <li>
-                        <a class="dropdown-item" href="#" role="menuitem"
-                           onclick="javascript:pgAdmin.ui.dialogs.url_dialog(
-                             '{{ _("Authentiction") }}',
-                             '{{ login_url("mfa.register", next_url="internal") }}',
-                             'mfa.html', '90%', '90%'
-                           );">{{ _('Two-Factor Authentication') }}</a>
+                        <a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.Browser.UserManagement.show_mfa(
+                          '{{ login_url("mfa.register", next_url="internal") }}'
+                        )">{{ _('Two-Factor Authentication') }}</a>
                     </li>
                     <li class="dropdown-divider"></li>
                     {% endif %}
