@@ -608,9 +608,6 @@ define('pgadmin.browser', [
       cancel_callback=()=>{/*This is intentional (SonarQube)*/}) {
       let data=null, self = this;
 
-      // data = JSON.stringify({
-      //   'password': password,
-      // });
       data = {
         'password': password,
       };

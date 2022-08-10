@@ -17,8 +17,8 @@ import gettext from 'sources/gettext';
 
 import getApiInstance from '../api_instance';
 import Notify from '../helpers/Notifier';
-import MasterPasswordContent from './MasterPassowrdContent';
-import ChangePasswordContent from './ChangePassowrdContent';
+import MasterPasswordContent from './MasterPasswordContent';
+import ChangePasswordContent from './ChangePasswordContent';
 import NamedRestoreContent from './NamedRestoreContent';
 import ChangeOwnershipContent from './ChangeOwnershipContent';
 
@@ -169,7 +169,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
 }
 
 // This functions is used to show the master password dialog.
-export function showMasterPassword(isPWDPresent, errmsg=null, masterpass_callback_queue, cancel_callback) {
+export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback) {
   const api = getApiInstance();
   let title =  isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
 

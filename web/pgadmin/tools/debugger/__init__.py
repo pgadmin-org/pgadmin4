@@ -1069,15 +1069,10 @@ def start_debugger_listener(trans_id):
                 debugger_args_values = copy.deepcopy(
                     de_inst.function_data['args_value'])
                 for arg in debugger_args_values:
-                    if arg['type'].endswith('[]'):
-                        if arg['value'] and arg['value'] != 'NULL':
-                            val_list = arg['value'][1:-1].split(',')
-                            debugger_args_data = []
-                            for _val in val_list:
-                                debugger_args_data.append({
-                                    'value': _val
-                                })
-                            arg['value'] = debugger_args_data
+                    if arg['type'].endswith('[]') and arg['value'] and arg[
+                            'value'] != 'NULL':
+                        val_list = arg['value'][1:-1].split(',')
+                        arg['value'] = get_debugger_arg_val(val_list)
 
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
@@ -1173,6 +1168,16 @@ def start_debugger_listener(trans_id):
         result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(data={'status': status, 'result': result})
+
+
+def get_debugger_arg_val(val_list):
+    """Get debugger arguments is list"""
+    debugger_args_data = []
+    for _val in val_list:
+        debugger_args_data.append({
+            'value': _val
+        })
+    return debugger_args_data
 
 
 @blueprint.route(
@@ -1483,6 +1488,17 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     )
 
 
+def get_debugger_template_path(de_inst):
+    # find the debugger version and execute the query accordingly
+    dbg_version = de_inst.debugger_data['debugger_version']
+    if dbg_version <= 2:
+        template_path = DEBUGGER_SQL_V1_PATH
+    else:
+        template_path = DEBUGGER_SQL_V3_PATH
+
+    return template_path
+
+
 @blueprint.route(
     '/clear_all_breakpoint/<int:trans_id>', methods=['POST'],
     endpoint='clear_all_breakpoint'
@@ -1514,41 +1530,41 @@ def clear_all_breakpoint(trans_id):
         conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = de_inst.debugger_data['debugger_version']
-    if dbg_version <= 2:
-        template_path = DEBUGGER_SQL_V1_PATH
-    else:
-        template_path = DEBUGGER_SQL_V3_PATH
+    template_path = get_debugger_template_path(de_inst)
 
     status = True
     result = ''
-    if conn.connected():
-        # get the data sent through post from client
-        if 'breakpoint_list' in json.loads(request.data):
-            line_numbers = []
-            if json.loads(request.data)['breakpoint_list'] is not None and \
-                    json.loads(request.data)['breakpoint_list'] != '':
-                line_numbers = json.loads(request.data)[
-                    'breakpoint_list'].split(",")
 
-            for line_no in line_numbers:
-                sql = render_template(
-                    "/".join([template_path, "clear_breakpoint.sql"]),
-                    session_id=de_inst.debugger_data['session_id'],
-                    foid=de_inst.debugger_data['function_id'],
-                    line_number=line_no
-                )
-
-                status, result = execute_dict_search_path(
-                    conn, sql, de_inst.debugger_data['search_path'])
-                if not status:
-                    return internal_server_error(errormsg=result)
-                result = result['rows']
-        else:
-            return make_json_response(data={'status': False})
-    else:
+    if not conn.connected():
         status = False
         result = SERVER_CONNECTION_CLOSED
+
+        return make_json_response(
+            data={'status': status, 'result': result}
+        )
+
+    if 'breakpoint_list' in json.loads(request.data):
+        line_numbers = []
+        if json.loads(request.data)['breakpoint_list'] is not None and \
+                json.loads(request.data)['breakpoint_list'] != '':
+            line_numbers = json.loads(request.data)[
+                'breakpoint_list'].split(",")
+
+        for line_no in line_numbers:
+            sql = render_template(
+                "/".join([template_path, "clear_breakpoint.sql"]),
+                session_id=de_inst.debugger_data['session_id'],
+                foid=de_inst.debugger_data['function_id'],
+                line_number=line_no
+            )
+
+            status, result = execute_dict_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=result)
+            result = result['rows']
+    else:
+        return make_json_response(data={'status': False})
 
     return make_json_response(
         data={'status': status, 'result': result}

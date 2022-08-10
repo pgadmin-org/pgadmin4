@@ -87,7 +87,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
           }} >
           </PgIconButton>
           {isPWDPresent &&
-            <DefaultButton data-test="reset-masterpassword" style={{ marginLeft: '0.5rem' }} startIcon={<DeleteForeverIcon />} 
+            <DefaultButton data-test="reset-masterpassword" style={{ marginLeft: '0.5rem' }} startIcon={<DeleteForeverIcon />}
               onClick={() => {onResetPassowrd?.();}} >
               {gettext('Reset Master Password')}
             </DefaultButton>
