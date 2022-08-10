@@ -21,7 +21,7 @@ sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)
 
 # Node repo
 echo "Setting up the NodeJS repo..."
-curl -sL https://deb.nodesource.com/setup_12.x | bash -
+curl -sL https://deb.nodesource.com/setup_16.x | bash -
 
 # Yarn repo
 echo "Setting up the Yarn repo..."
