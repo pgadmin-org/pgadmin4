@@ -6,7 +6,7 @@ set -e
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
+OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g')
 OS_ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
 
 # Stop creating pyc files.
@@ -16,7 +16,7 @@ export PYTHONDONTWRITEBYTECODE=1
 source pkg/linux/build-functions.sh
 
 # Assemble the "standard" installation footprint
-_setup_env $0 "debian"
+_setup_env "$0" "debian"
 _cleanup "deb"
 _setup_dirs
 _create_python_virtualenv "debian"
@@ -121,7 +121,7 @@ EOF
 fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERSION}_all.deb"
 
 # Get the libpq package
-pushd ${DISTROOT} 1> /dev/null
+pushd "${DISTROOT}" 1> /dev/null
 apt-get download libpq5
 popd 1> /dev/null
 

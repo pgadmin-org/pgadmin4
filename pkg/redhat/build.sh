@@ -6,7 +6,7 @@ set -e
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
+OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g')
 OS_ARCH=$(arch)
 
 # Make sure we get the right libpq
@@ -19,7 +19,7 @@ export PYTHONDONTWRITEBYTECODE=1
 source pkg/linux/build-functions.sh
 
 # Assemble the "standard" installation footprint
-_setup_env $0 "redhat"
+_setup_env "$0" "redhat"
 _cleanup "rpm"
 _setup_dirs
 _create_python_virtualenv "redhat"
