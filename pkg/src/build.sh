@@ -66,7 +66,7 @@ do
     echo Adding "${FILE}"
     # We use tar here to preserve the path, as Mac (for example) doesn't support cp --parents
     # shellcheck disable=SC2164
-    tar cf - "${FILE}" | (cd src-build/${TARBALL_NAME}; tar xf -)
+    tar cf - "${FILE}" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 done
 
 pushd web > /dev/null || exit

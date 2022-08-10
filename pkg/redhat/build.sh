@@ -16,6 +16,7 @@ export PATH=/usr/pgsql-14/bin:$PATH
 export PYTHONDONTWRITEBYTECODE=1
 
 # Common Linux build functions
+# shellcheck disable=SC1091
 source pkg/linux/build-functions.sh
 
 # Assemble the "standard" installation footprint
@@ -29,7 +30,7 @@ _copy_code
 
 # Get an RPM-compatible version number
 RPM_VERSION=${APP_RELEASE}.${APP_REVISION}
-if [ ! -z ${APP_SUFFIX} ]; then
+if [ -n "${APP_SUFFIX}" ]; then
     RPM_VERSION=${RPM_VERSION}_${APP_SUFFIX}
 fi
 
@@ -221,23 +222,23 @@ rpmbuild --define "pga_build_root ${BUILDROOT}" -bb "${BUILDROOT}/meta.spec"
 #
 # mod_wsgi for CentOS 7
 #
-if [ ${OS_VERSION} == 7 ]; then
-    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi-exports.patch" ${HOME}/rpmbuild/SOURCES
-    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi.conf" ${HOME}/rpmbuild/SOURCES
-    curl -o ${HOME}/rpmbuild/SOURCES/mod_wsgi-4.9.0.tar.gz https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.9.0
+if [ "${OS_VERSION}" == 7 ]; then
+    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi-exports.patch" "${HOME}/rpmbuild/SOURCES"
+    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi.conf" "${HOME}/rpmbuild/SOURCES"
+    curl -o "${HOME}/rpmbuild/SOURCES/mod_wsgi-4.9.0.tar.gz" https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.9.0
     rpmbuild -bb "${SOURCEDIR}/pkg/redhat/pgadmin4-python-mod_wsgi.spec"
 fi
 
 # Get the libpq we need
-yumdownloader -y --downloadonly --destdir=$DISTROOT postgresql14-libs
+yumdownloader -y --downloadonly --destdir="${DISTROOT}" postgresql14-libs
 
 #
 # Get the results!
 #
-cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-*${RPM_VERSION}-*.${OS_ARCH}.rpm "${DISTROOT}/"
-cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${RPM_VERSION}-*.noarch.rpm "${DISTROOT}/"
-if [ ${OS_VERSION} == 7 ]; then
-    cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.9.0-1.el7.x86_64.rpm "${DISTROOT}/"
+cp "${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-"*"${RPM_VERSION}-"*".${OS_ARCH}.rpm" "${DISTROOT}/"
+cp "${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-"*"${RPM_VERSION}-"*".noarch.rpm" "${DISTROOT}/"
+if [ "${OS_VERSION}" == 7 ]; then
+    cp "${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.9.0-1.el7.x86_64.rpm" "${DISTROOT}/"
 fi
 
 echo "Completed. RPMs created in ${DISTROOT}."

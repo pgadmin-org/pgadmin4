@@ -5,7 +5,7 @@ REPO_RPM_VERSION=2
 REPO_RPM_BUILD=1
 
 # Set the repo base directory
-if [ "x${PGADMIN_REPO_DIR}" == "x" ]; then
+if [ "${PGADMIN_REPO_DIR}" == "" ]; then
     echo "PGADMIN_REPO_DIR not set. Setting it to the default: https://ftp.postgresql.org/pub/pgadmin/pgadmin4/repos/yum"
     export PGADMIN_REPO_DIR=https://ftp.postgresql.org/pub/pgadmin/pgadmin4/repos/yum
 fi
@@ -14,12 +14,10 @@ fi
 set -e
 
 # Debugging shizz
-trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
-trap 'if [ $? -ne 0 ]; then echo "\"${last_command}\" command filed with exit code $?."; fi' EXIT
-
-OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
+trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
 # Common Linux build functions
+# shellcheck disable=SC1091
 source pkg/linux/build-functions.sh
 
 # Are we installing a package key?
@@ -36,14 +34,14 @@ fi
 # Create the Redhat packaging stuffs for the repo
 _create_repo_rpm() {
     DISTRO=$1
-    if [ ${DISTRO} == "redhat" ]; then
+    if [ "${DISTRO}" == "redhat" ]; then
         PLATFORM="rhel"
     else
         PLATFORM=${DISTRO}
     fi
 
     echo "Creating the repo package for ${DISTRO}..."
-    test -d ${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d || mkdir -p ${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d
+    test -d "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d" || mkdir -p "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d"
 
     cat << EOF > "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
 [pgAdmin4]
@@ -53,9 +51,11 @@ enabled=1
 EOF
 
     if [ ${INCLUDE_KEY} -eq 1 ]; then
-        echo repo_gpgcheck=1 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
-        echo gpgcheck=1 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
-        echo gpgkey=file:///etc/pki/rpm-gpg/PGADMIN_PKG_KEY >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
+        {
+            echo repo_gpgcheck=1
+            echo gpgcheck=1
+            echo gpgkey=file:///etc/pki/rpm-gpg/PGADMIN_PKG_KEY
+        } >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
     else
         echo gpgcheck=0 >> "${BUILDROOT}/${DISTRO}-repo/etc/yum.repos.d/pgadmin4.repo"
     fi
@@ -86,11 +86,11 @@ cp -rfa %{pga_build_root}/${DISTRO}-repo/* \${RPM_BUILD_ROOT}
 EOF
 
     if [ ${INCLUDE_KEY} -eq 1 ]; then
-        cat << EOF >> ${BUILDROOT}/${DISTRO}-repo.spec
+        cat << EOF >> "${BUILDROOT}/${DISTRO}-repo.spec"
 /etc/pki/rpm-gpg/PGADMIN_PKG_KEY
 EOF
-        test -d ${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg || mkdir -p ${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg
-        cp pkg/redhat/PGADMIN_PKG_KEY ${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg/
+        test -d "${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg" || mkdir -p "${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg"
+        cp pkg/redhat/PGADMIN_PKG_KEY "${BUILDROOT}/${DISTRO}-repo/etc/pki/rpm-gpg/"
     fi
 
     # Build the package
@@ -98,7 +98,7 @@ EOF
     rpmbuild --define "pga_build_root ${BUILDROOT}" -bb "${BUILDROOT}/${DISTRO}-repo.spec"
 }
 
-_setup_env $0 "redhat"
+_setup_env "$0" "redhat"
 _create_repo_rpm redhat
 _create_repo_rpm fedora
 
@@ -106,4 +106,4 @@ _create_repo_rpm fedora
 # Get the results!
 #
 test -d "${DISTROOT}/" || mkdir -p "${DISTROOT}/"
-cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*-repo-${REPO_RPM_VERSION}-${REPO_RPM_BUILD}.noarch.rpm "${DISTROOT}/"
+cp "${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-"*"-repo-${REPO_RPM_VERSION}-${REPO_RPM_BUILD}.noarch.rpm" "${DISTROOT}/"
