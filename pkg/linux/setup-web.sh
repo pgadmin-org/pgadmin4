@@ -20,7 +20,7 @@ IS_SUSE=0
 UNAME=$(uname -a)
 
 # Get the distro from the environment
-if [ "x${PGADMIN_PLATFORM_TYPE}" == "x" ]; then
+if [ "${PGADMIN_PLATFORM_TYPE}" == "" ]; then
     if [ -f /etc/redhat-release ]; then
         PLATFORM_TYPE=redhat
     elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "Debian" ]] || [ -f /etc/apt/sources.list ]; then
@@ -72,9 +72,7 @@ fi
 
 # Run setup script first:
 echo "Creating configuration database..."
-/usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py 
-
-if [ $? != 0 ]
+if ! /usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py;
 then
 	echo "Error setting up server mode. Please examine the output above."
 	exit 1
@@ -108,7 +106,7 @@ if [ ${IS_DEBIAN} == 1 ]; then
     if [ ${AUTOMATED} == 1 ]; then
 	      RESPONSE=Y
     else
-        read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
+        read -r -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
@@ -121,12 +119,11 @@ if [ ${IS_DEBIAN} == 1 ]; then
     esac
 fi
 
-ps cax | grep ${APACHE} > /dev/null
-if [ $? -eq 0 ]; then
+if pgrep ${APACHE} > /dev/null; then
     if [ ${AUTOMATED} == 1 ]; then
         RESPONSE=Y
     else
-        read -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
+        read -r -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
@@ -144,20 +141,18 @@ else
     if [ ${AUTOMATED} == 1 ]; then
         RESPONSE=Y
     else
-        read -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
+        read -r -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
         y|Y )
-            systemctl enable ${APACHE}
-            if [ $? != 0 ]; then
+            if ! systemctl enable ${APACHE}; then
                 echo "Error enabling ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully enabled."
             fi
 
-            systemctl start ${APACHE}
-            if [ $? != 0 ]; then
+            if ! systemctl start ${APACHE}; then
                 echo "Error starting ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully started."

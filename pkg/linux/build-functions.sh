@@ -15,7 +15,7 @@ _setup_env() {
     APP_NAME=$(grep "^APP_NAME" web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //' | sed 's/ //g' | tr '[:upper:]' '[:lower:]')
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
     APP_SUFFIX=$(grep "^APP_SUFFIX" web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g")
-    if [ ! -z ${APP_SUFFIX} ]; then
+    if [ -n "${APP_SUFFIX}" ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
 }
@@ -114,7 +114,7 @@ _create_python_virtualenv() {
 
     # Link the python<version> directory to python so that the private environment path is found by the application.
     if test -d "${DIR_PYMODULES_PATH}"; then
-        ln -s $(basename "${DIR_PYMODULES_PATH}") "${DIR_PYMODULES_PATH}/../python"
+        ln -s "$(basename "${DIR_PYMODULES_PATH}")" "${DIR_PYMODULES_PATH}/../python"
     fi
 }
 
@@ -193,7 +193,8 @@ _build_docs() {
     cd "${SOURCEDIR}/docs/en_US" || exit
     python3 build_code_snippet.py
     SYS_PYTHONPATH=$(/usr/bin/python3 -c "import sys; print(':'.join([p for p in sys.path if p]))")
-    if [ $1 == "redhat" ] && [ "${OS_VERSION}" == "7" ]; then
+    # shellcheck disable=SC2154
+    if [ "$1" == "redhat" ] && [ "${OS_VERSION}" == "7" ]; then
             PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 /usr/local/bin/sphinx-build . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
     else
         PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
