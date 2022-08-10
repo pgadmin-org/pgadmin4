@@ -12,7 +12,6 @@ _setup_env() {
     APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
     APP_NAME=`grep "^APP_NAME" web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //' | sed 's/ //g' | tr '[:upper:]' '[:lower:]'`
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
-    APP_SHORT_VERSION=`echo ${APP_LONG_VERSION} | cut -d . -f1,2`
     APP_SUFFIX=`grep "^APP_SUFFIX" web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
     if [ ! -z ${APP_SUFFIX} ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}

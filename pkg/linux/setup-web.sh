@@ -121,7 +121,7 @@ if [ ${IS_DEBIAN} == 1 ]; then
     esac
 fi
 
-APACHE_STATUS=`ps cax | grep ${APACHE}`
+ps cax | grep ${APACHE} > /dev/null
 if [ $? -eq 0 ]; then
     if [ ${AUTOMATED} == 1 ]; then
         RESPONSE=Y
@@ -131,7 +131,7 @@ if [ $? -eq 0 ]; then
 
     case ${RESPONSE} in
         y|Y )
-	          systemctl restart ${APACHE}
+            systemctl restart ${APACHE}
             if [ $? != 0 ]; then
                 echo "Error restarting ${APACHE}. Please check the systemd logs"
             else
