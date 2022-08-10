@@ -8,33 +8,33 @@ set -e -E
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-SCRIPT_DIR=$(cd `dirname $0` && pwd)
-SOURCE_DIR=$(realpath ${SCRIPT_DIR}/../..)
-BUILD_ROOT=$(realpath ${SCRIPT_DIR}/../..)/mac-build
-TEMP_DIR=$(realpath ${SCRIPT_DIR}/../..)/mac-temp
-DIST_ROOT=$(realpath ${SCRIPT_DIR}/../..)/dist
+export SCRIPT_DIR=$(cd `dirname $0` && pwd)
+export SOURCE_DIR=$(realpath ${SCRIPT_DIR}/../..)
+export BUILD_ROOT=$(realpath ${SCRIPT_DIR}/../..)/mac-build
+export TEMP_DIR=$(realpath ${SCRIPT_DIR}/../..)/mac-temp
+export DIST_ROOT=$(realpath ${SCRIPT_DIR}/../..)/dist
 
-CODESIGN=1
+export CODESIGN=1
 if [ ! -f ${SCRIPT_DIR}/codesign.conf ]; then
     echo
     echo "******************************************************************"
     echo "* pkg/mac/codesign.conf not found. NOT signing the binaries."
     echo "******************************************************************"
     echo
-    CODESIGN=0
+    export CODESIGN=0
     sleep 2
 else
     source ${SCRIPT_DIR}/codesign.conf
 fi
 
-NOTARIZE=1
+export NOTARIZE=1
 if [ ! -f ${SCRIPT_DIR}/notarization.conf ]; then
     echo
     echo "******************************************************************"
     echo "* pkg/mac/notarization.conf not found. NOT notarizing the package."
     echo "******************************************************************"
     echo
-    NOTARIZE=0
+    export NOTARIZE=0
     sleep 2
 else
     source ${SCRIPT_DIR}/notarization.conf

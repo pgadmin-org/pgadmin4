@@ -4,7 +4,6 @@ _setup_env() {
     APP_REVISION=`grep "^APP_REVISION" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g'`
     APP_NAME=`grep "^APP_NAME" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //'`
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
-    APP_SHORT_VERSION=`echo ${APP_LONG_VERSION} | cut -d . -f1,2`
     APP_SUFFIX=`grep "^APP_SUFFIX" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
     if [ ! -z ${APP_SUFFIX} ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
@@ -402,7 +401,6 @@ _notarize_pkg() {
     fi
 
     # Notarize the package. Try three times, to allow for upload issues
-    cmd_status=0
     for i in {1..3}; do
         echo "Uploading DMG for notarisation (attempt ${i} of 3)..."
         STATUS=$(xcrun altool --notarize-app \

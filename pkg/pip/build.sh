@@ -25,12 +25,10 @@ APP_RELEASE=`grep "^APP_RELEASE" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
 APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
 APP_NAME=`grep "^APP_NAME" web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //'`
 APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
-APP_SHORT_VERSION=`echo ${APP_LONG_VERSION} | cut -d . -f1,2`
 APP_SUFFIX=`grep "^APP_SUFFIX" web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
 if [ ! -z ${APP_SUFFIX} ]; then
     export APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
 fi
-TARBALL_NAME=`echo ${APP_NAME}-${APP_LONG_VERSION} | sed 's/ //g' | awk '{print tolower($0)}'`
 
 # Output basic details to show we're working
 echo Building tarballs for ${APP_NAME} version ${APP_LONG_VERSION}...
