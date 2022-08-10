@@ -8,7 +8,7 @@ set -e -E
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-SCRIPT_DIR=$(cd $(dirname "$0") && pwd)
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 export SCRIPT_DIR
 SOURCE_DIR=$(realpath "${SCRIPT_DIR}"/../..)
 export SOURCE_DIR
@@ -57,6 +57,7 @@ if [ "${PGADMIN_PYTHON_VERSION}" == "" ]; then
     export PGADMIN_PYTHON_VERSION=3.9.9
 fi
 
+# shellcheck disable=SC1091
 source "${SCRIPT_DIR}/build-functions.sh"
 
 _setup_env

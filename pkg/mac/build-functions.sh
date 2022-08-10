@@ -1,12 +1,12 @@
 # shellcheck shell=bash
 
 _setup_env() {
-    FUNCS_DIR=$(cd $(dirname "$0") && pwd)/../..
-    APP_RELEASE=$(grep "^APP_RELEASE" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g')
-    APP_REVISION=$(grep "^APP_REVISION" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g')
-    APP_NAME=$(grep "^APP_NAME" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //')
+    FUNCS_DIR=$(cd "$(dirname "$0")" && pwd)/../..
+    APP_RELEASE=$(grep "^APP_RELEASE" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed 's/ //g')
+    APP_REVISION=$(grep "^APP_REVISION" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed 's/ //g')
+    APP_NAME=$(grep "^APP_NAME" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //')
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
-    APP_SUFFIX=$(grep "^APP_SUFFIX" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g")
+    APP_SUFFIX=$(grep "^APP_SUFFIX" "${FUNCS_DIR}/web/config.py" | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g")
     if [ -n "${APP_SUFFIX}" ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
@@ -94,6 +94,7 @@ _create_python_env() {
 
     # Fixup shebangs
     cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin" || exit
+    # shellcheck disable=SC2016
     grep -RiIl 'mac-build' ./* | xargs sed -i '' 's/\/.*\/python3\./\$(dirname \"$0\")\/python3./g'
 
     # Remove some things we don't need
@@ -146,10 +147,10 @@ _fixup_imports() {
     local TODO TODO_OLD FW_RELPATH LIB LIB_BN
 
     echo "Fixing imports on the core appbundle..."
-    pushd "$1" > /dev/null
+    pushd "$1" > /dev/null || exit
 
     # Find all the files that may need tweaks
-    TODO=$(file $(find . -perm +0111 -type f) | \
+    TODO=$(file "$(find . -perm +0111 -type f)" | \
         grep -v "Frameworks/Python.framework" | \
         grep -v "Frameworks/nwjs" | \
         grep -E "Mach-O 64-bit" | \
@@ -157,7 +158,7 @@ _fixup_imports() {
         uniq)
 
     # Add anything in the site-packages Python directory
-    TODO+=$(file $(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f) | \
+    TODO+=$(file "$(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f)" | \
         grep -E "Mach-O 64-bit" | \
         awk -F ':| ' '{ORS=" "; print $1}' | \
         uniq)
@@ -249,7 +250,7 @@ _complete_bundle() {
     for FILE in "${BUNDLE_DIR}"/Contents/Resources/*.lproj/InfoPlist.strings; do
         sed -i '' 's/CFBundleGetInfoString =.*/CFBundleGetInfoString = "Copyright (C) 2013 - 2022, The pgAdmin Development Team";/g' "${FILE}"
         sed -i '' 's/NSHumanReadableCopyright =.*/NSHumanReadableCopyright = "Copyright (C) 2013 - 2022, The pgAdmin Development Team";/g' "${FILE}"
-        echo CFBundleDisplayName = \"${APP_NAME}\"\; >> "${FILE}"
+        echo CFBundleDisplayName = \""${APP_NAME}"\"\; >> "${FILE}"
     done
 
     # PkgInfo
@@ -334,15 +335,13 @@ _codesign_binaries() {
     done
 
     echo Signing "${BUNDLE_DIR}" libraries...
-    for i in $(find "${BUNDLE_DIR}" -type f -name "*.dylib*")
-    do
+    find "${BUNDLE_DIR}" -type f -name "*.dylib*" -exec \
         codesign --deep --force --verify --verbose --timestamp \
                  --options runtime \
                  --entitlements "${BUILD_ROOT}/entitlements.plist" \
                  -i org.pgadmin.pgadmin4 \
                  --sign "${DEVELOPER_ID}" \
-                 "$i"
-    done
+                 {} \;
 }
 
 _codesign_bundle() {
