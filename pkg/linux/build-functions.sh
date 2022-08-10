@@ -193,7 +193,7 @@ _build_docs() {
     cd "${SOURCEDIR}/docs/en_US" || exit
     python3 build_code_snippet.py
     SYS_PYTHONPATH=$(/usr/bin/python3 -c "import sys; print(':'.join([p for p in sys.path if p]))")
-    # shellcheck disable=SC2154
+    # shellcheck disable=SC2153
     if [ "$1" == "redhat" ] && [ "${OS_VERSION}" == "7" ]; then
             PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 /usr/local/bin/sphinx-build . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
     else

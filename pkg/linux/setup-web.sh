@@ -9,7 +9,7 @@ if [ "$EUID" -ne 0 ]
   exit 1
 fi
 
-if [[ "$#" -ne 0 ]] && ([[ "$#" -eq 1 ]] && [[ "$1" != "--yes" ]]); then
+if [[ "$#" -gt 1 ]] || { [[ "$#" -eq 1 ]] && [[ "$1" != "--yes" ]]; }; then
     echo "Usage: $0 [--yes]"
     exit 1
 fi
@@ -128,8 +128,7 @@ if pgrep ${APACHE} > /dev/null; then
 
     case ${RESPONSE} in
         y|Y )
-            systemctl restart ${APACHE}
-            if [ $? != 0 ]; then
+            if ! systemctl restart ${APACHE}; then
                 echo "Error restarting ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully restarted. You can now start using pgAdmin 4 in web mode at http://127.0.0.1/pgadmin4"
