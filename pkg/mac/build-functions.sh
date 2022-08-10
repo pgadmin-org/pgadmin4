@@ -1,22 +1,24 @@
+# shellcheck shell=bash
+
 _setup_env() {
-    FUNCS_DIR=$(cd `dirname $0` && pwd)/../..
-    APP_RELEASE=`grep "^APP_RELEASE" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g'`
-    APP_REVISION=`grep "^APP_REVISION" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g'`
-    APP_NAME=`grep "^APP_NAME" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //'`
+    FUNCS_DIR=$(cd $(dirname "$0") && pwd)/../..
+    APP_RELEASE=$(grep "^APP_RELEASE" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g')
+    APP_REVISION=$(grep "^APP_REVISION" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g')
+    APP_NAME=$(grep "^APP_NAME" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed "s/'//g" | sed 's/^ //')
     APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
-    APP_SUFFIX=`grep "^APP_SUFFIX" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g"`
-    if [ ! -z ${APP_SUFFIX} ]; then
+    APP_SUFFIX=$(grep "^APP_SUFFIX" ${FUNCS_DIR}/web/config.py | cut -d"=" -f2 | sed 's/ //g' | sed "s/'//g")
+    if [ -n "${APP_SUFFIX}" ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
     BUNDLE_DIR="${BUILD_ROOT}/${APP_NAME}.app"
-    DMG_NAME="${DIST_ROOT}/$(echo ${APP_NAME} | sed 's/ //g' | awk '{print tolower($0)}')-${APP_LONG_VERSION}.dmg"
+    DMG_NAME="${DIST_ROOT}"/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-"${APP_LONG_VERSION}.dmg"
 }
 
 _cleanup() {
     echo Cleaning up the old environment and app bundle...
     rm -rf "${BUILD_ROOT}"
     rm -rf "${TEMP_DIR}"
-    rm -f ${DIST_ROOT}/*.dmg
+    rm -f "${DIST_ROOT}"/*.dmg
 }
 
 _build_runtime() {
@@ -38,13 +40,13 @@ _build_runtime() {
     # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
     NW_VERSION="0.62.2"
 
-    pushd "${BUILD_ROOT}" > /dev/null
+    pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do
-            wget https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip && break
-            rm nwjs-v${NW_VERSION}-osx-x64.zip
+            wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip" && break
+            rm "nwjs-v${NW_VERSION}-osx-x64.zip"
         done
-        unzip nwjs-v${NW_VERSION}-osx-x64.zip
-    popd > /dev/null
+        unzip "nwjs-v${NW_VERSION}-osx-x64.zip"
+    popd > /dev/null || exit
     # WGET END
 
     # YARN:
@@ -76,7 +78,7 @@ _create_python_env() {
     PATH=$PATH:/usr/local/pgsql/bin python \
         "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" \
         --upgrade-pip \
-        --python-version ${PGADMIN_PYTHON_VERSION} \
+        --python-version "${PGADMIN_PYTHON_VERSION}" \
         --pip-requirements "${SOURCE_DIR}/requirements.txt" \
         --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
@@ -84,26 +86,26 @@ _create_python_env() {
     # so they get properly signed later
     OLD_IFS=${IFS}
     IFS=$'\n'
-    for i in $(find . -type f -name *.so -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | awk -F":" '{print $1}' | uniq)
+    for i in $(find . -type f -name '*.so' -exec file "{}" \; | grep -v "(for architecture" | grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | awk -F":" '{print $1}' | uniq)
     do
         chmod +x "${i}"
     done
     IFS=${OLD_IFS}
 
     # Fixup shebangs
-    cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin"
-    grep -RiIl 'mac-build' * | xargs sed -i '' 's/\/.*\/python3\./\$(dirname \"$0\")\/python3./g'
+    cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin" || exit
+    grep -RiIl 'mac-build' ./* | xargs sed -i '' 's/\/.*\/python3\./\$(dirname \"$0\")\/python3./g'
 
     # Remove some things we don't need
-    cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework"
+    cd "${BUNDLE_DIR}/Contents/Frameworks/Python.framework" || exit
     find . -name test -type d -print0 | xargs -0 rm -rf
     find . -name tkinter -type d -print0 | xargs -0 rm -rf
     find . -name turtle.py -type f -print0 | xargs -0 rm -rf
     find . -name turtledemo -type d -print0 | xargs -0 rm -rf
-    find . -name tcl* -type d -print0 | xargs -0 rm -rf
-    find . -name tk* -type d -print0 | xargs -0 rm -rf
-    find . -name tdbc* -type d -print0 | xargs -0 rm -rf
-    find . -name itcl* -type d -print0 | xargs -0 rm -rf
+    find . -name "tcl*" -type d -print0 | xargs -0 rm -rf
+    find . -name "tk*" -type d -print0 | xargs -0 rm -rf
+    find . -name "tdbc*" -type d -print0 | xargs -0 rm -rf
+    find . -name "itcl*" -type d -print0 | xargs -0 rm -rf
     rm -f Versions/Current/lib/Tk.*
     rm -f Versions/Current/lib/libtcl*.dylib
     rm -f Versions/Current/lib/libtk*.dylib
@@ -122,15 +124,16 @@ _build_docs() {
     # Create a temporary venv for the doc build, so we don't contaminate the one
     # that we're going to ship.
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m venv "${BUILD_ROOT}/venv"
+    # shellcheck disable=SC1091
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
     pip3 install -r "${SOURCE_DIR}/requirements.txt"
     pip3 install sphinx
 
-    cd "${SOURCE_DIR}"
+    cd "${SOURCE_DIR}" || exit
     make docs
 
-    cd "${SOURCE_DIR}/docs/en_US"
+    cd "${SOURCE_DIR}/docs/en_US" || exit
     test -d "${BUNDLE_DIR}/Contents/Resources/docs/en_US" || mkdir -p "${BUNDLE_DIR}/Contents/Resources/docs/en_US"
     cp -r _build/html "${BUNDLE_DIR}/Contents/Resources/docs/en_US/"
 
@@ -146,7 +149,7 @@ _fixup_imports() {
     pushd "$1" > /dev/null
 
     # Find all the files that may need tweaks
-    TODO=$(file `find . -perm +0111 -type f` | \
+    TODO=$(file $(find . -perm +0111 -type f) | \
         grep -v "Frameworks/Python.framework" | \
         grep -v "Frameworks/nwjs" | \
         grep -E "Mach-O 64-bit" | \
@@ -154,7 +157,7 @@ _fixup_imports() {
         uniq)
 
     # Add anything in the site-packages Python directory
-    TODO+=$(file `find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f` | \
+    TODO+=$(file $(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f) | \
         grep -E "Mach-O 64-bit" | \
         awk -F ':| ' '{ORS=" "; print $1}' | \
         uniq)
@@ -182,9 +185,9 @@ _fixup_imports() {
 
             # Find all libraries ${TODO_OBJ} depends on, but skip system libraries
             for LIB in $(
-                otool -L ${TODO_OBJ} | \
+                otool -L "${TODO_OBJ}" | \
                 sed -n 's|^.*[[:space:]]\([^[:space:]]*\.dylib\).*$|\1|p' | \
-                egrep -v '^(/usr/lib)|(/System)|@executable_path|@loader_path|/DLC/PIL/' \
+                grep -E -v '^(/usr/lib)|(/System)|@executable_path|@loader_path|/DLC/PIL/' \
             ); do
                 # Copy in any required dependencies
                 LIB_BN="$(basename "${LIB}")" ;
@@ -224,12 +227,12 @@ _fixup_imports() {
     done
 
     echo "Imports updated on the core appbundle."
-    popd > /dev/null
+    popd > /dev/null || exit
 }
 
 _complete_bundle() {
     echo "Completing the appbundle..."
-    cd ${SCRIPT_DIR}
+    cd "${SCRIPT_DIR}" || exit
 
     # Copy the binary utilities into place
     mkdir -p "${BUNDLE_DIR}/Contents/SharedSupport/"
@@ -265,39 +268,41 @@ _complete_bundle() {
         _fixup_imports "${BUNDLE_DIR}"
 
     # Build node modules
-    pushd "${SOURCE_DIR}/web" > /dev/null
+    pushd "${SOURCE_DIR}/web" > /dev/null || exit
         yarn install
         yarn run bundle
 
         curl https://curl.se/ca/cacert.pem -o cacert.pem -s
-    popd > /dev/null
+    popd > /dev/null || exit
 
     # copy the web directory to the bundle as it is required by runtime
     cp -r "${SOURCE_DIR}/web" "${BUNDLE_DIR}/Contents/Resources/"
-    cd "${BUNDLE_DIR}/Contents/Resources/web"
+    cd "${BUNDLE_DIR}/Contents/Resources/web" || exit
     rm -f pgadmin4.db config_local.*
     rm -rf karma.conf.js package.json node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
     find . -name "tests" -type d -print0 | xargs -0 rm -rf
     find . -name "feature_tests" -type d -print0 | xargs -0 rm -rf
     find . -name ".DS_Store" -print0 | xargs -0 rm -f
 
-    echo "SERVER_MODE = False" > config_distro.py
-    echo "HELP_PATH = '../../../docs/en_US/html/'" >> config_distro.py
-    echo "DEFAULT_BINARY_PATHS = {" >> config_distro.py
-    echo "    'pg':   '\$DIR/../../SharedSupport'," >> config_distro.py
-    echo "    'ppas': ''" >> config_distro.py
-    echo "}" >> config_distro.py
+    {
+        echo "SERVER_MODE = False"
+        echo "HELP_PATH = '../../../docs/en_US/html/'"
+        echo "DEFAULT_BINARY_PATHS = {"
+        echo "    'pg':   '\$DIR/../../SharedSupport',"
+        echo "    'ppas': ''"
+        echo "}"
+    } > config_distro.py
 
     # License files
-    cp -r ${SOURCE_DIR}/LICENSE "${BUNDLE_DIR}/Contents/"
-    cp -r ${SOURCE_DIR}/DEPENDENCIES "${BUNDLE_DIR}/Contents/"
+    cp -r "${SOURCE_DIR}/LICENSE" "${BUNDLE_DIR}/Contents/"
+    cp -r "${SOURCE_DIR}/DEPENDENCIES" "${BUNDLE_DIR}/Contents/"
 
     # Remove the .pyc files if any
     find "${BUNDLE_DIR}" -name "*.pyc" -print0 | xargs -0 rm -f
 }
 
 _codesign_binaries() {
-    if [ ${CODESIGN} -eq 0 ]; then
+    if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
 
@@ -308,10 +313,10 @@ _codesign_binaries() {
 
     # Create the entitlements file
     cp "${SCRIPT_DIR}/entitlements.plist.in" "${BUILD_ROOT}/entitlements.plist"
-    TEAM_ID=$(echo ${DEVELOPER_ID} | awk -F"[()]" '{print $2}')
+    TEAM_ID=$(echo "${DEVELOPER_ID}" | awk -F"[()]" '{print $2}')
     sed -i '' "s/%TEAMID%/${TEAM_ID}/g" "${BUILD_ROOT}/entitlements.plist"
 
-    echo Signing ${BUNDLE_DIR} binaries...
+    echo Signing "${BUNDLE_DIR}" binaries...
     IFS=$'\n'
     for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
                grep -v "(for architecture" | \
@@ -328,7 +333,7 @@ _codesign_binaries() {
                  "$i"
     done
 
-    echo Signing ${BUNDLE_DIR} libraries...
+    echo Signing "${BUNDLE_DIR}" libraries...
     for i in $(find "${BUNDLE_DIR}" -type f -name "*.dylib*")
     do
         codesign --deep --force --verify --verbose --timestamp \
@@ -341,12 +346,12 @@ _codesign_binaries() {
 }
 
 _codesign_bundle() {
-    if [ ${CODESIGN} -eq 0 ]; then
+    if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
 
     # Sign the .app
-    echo Signing ${BUNDLE_DIR}...
+    echo Signing "${BUNDLE_DIR}"...
     codesign --deep --force --verify --verbose --timestamp \
              --options runtime \
              --entitlements "${BUILD_ROOT}/entitlements.plist" \
@@ -357,7 +362,7 @@ _codesign_bundle() {
 
 _create_dmg() {
     # move to the directory where we want to create the DMG
-    test -d ${DIST_ROOT} || mkdir ${DIST_ROOT}
+    test -d "${DIST_ROOT}" || mkdir "${DIST_ROOT}"
 
     echo "Checking out create-dmg..."
     git clone https://github.com/create-dmg/create-dmg.git "${BUILD_ROOT}/create-dmg"
@@ -381,7 +386,7 @@ _create_dmg() {
 }
 
 _codesign_dmg() {
-    if [ ${CODESIGN} -eq 0 ]; then
+    if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
 
@@ -396,7 +401,7 @@ _codesign_dmg() {
 
 
 _notarize_pkg() {
-    if [ ${CODESIGN} -eq 0 ]; then
+    if [ "${CODESIGN}" -eq 0 ]; then
         return
     fi
 
@@ -405,10 +410,10 @@ _notarize_pkg() {
         echo "Uploading DMG for notarisation (attempt ${i} of 3)..."
         STATUS=$(xcrun altool --notarize-app \
                               -f "${DMG_NAME}" \
-                              --asc-provider ${DEVELOPER_NAME} \
+                              --asc-provider "${DEVELOPER_NAME}" \
                               --primary-bundle-id org.pgadmin.pgadmin4 \
-                              -u ${DEVELOPER_USER} \
-                              -p ${DEVELOPER_ASP} 2>&1)
+                              -u "${DEVELOPER_USER}" \
+                              -p "${DEVELOPER_ASP}" 2>&1)
         RETVAL=$?
 
         if [ ${RETVAL} != 0 ]; then
@@ -426,7 +431,7 @@ _notarize_pkg() {
     fi
 
     # Get the request ID
-    REQUEST_UUID=$(echo ${STATUS} | awk '/RequestUUID/ { print $NF; }')
+    REQUEST_UUID=$(echo "${STATUS}" | awk '/RequestUUID/ { print $NF; }')
     echo "Notarization request ID: ${REQUEST_UUID}"
 
     # Now we need to wait for the results. Try 60 times.
@@ -435,9 +440,9 @@ _notarize_pkg() {
         sleep 30
 
         echo "Requesting notarisation result (attempt ${i} of 60)..."
-        REQUEST_STATUS=$(xcrun altool --notarization-info ${REQUEST_UUID} \
-                                      --username ${DEVELOPER_USER} \
-                                      --password ${DEVELOPER_ASP} 2>&1 | \
+        REQUEST_STATUS=$(xcrun altool --notarization-info "${REQUEST_UUID}" \
+                                      --username "${DEVELOPER_USER}" \
+                                      --password "${DEVELOPER_ASP}" 2>&1 | \
                          awk -F ': ' '/Status:/ { print $2; }' )
 
         if [[ "${REQUEST_STATUS}" == "success" ]]; then
@@ -446,9 +451,9 @@ _notarize_pkg() {
     done
 
     # Print status information
-    xcrun altool --notarization-info ${REQUEST_UUID} \
-                 --username ${DEVELOPER_USER} \
-                 --password ${DEVELOPER_ASP}
+    xcrun altool --notarization-info "${REQUEST_UUID}" \
+                 --username "${DEVELOPER_USER}" \
+                 --password "${DEVELOPER_ASP}"
 
     if [[ "${REQUEST_STATUS}" != "success" ]]; then
           echo "Notarization failed."
@@ -457,10 +462,8 @@ _notarize_pkg() {
 
     # Staple the notarization
     echo "Stapling the notarization to the pgAdmin DMG..."
-    xcrun stapler staple "${DMG_NAME}"
-
-    if [ $? != 0 ]; then
-          echo "Stapling failed."
+    if ! xcrun stapler staple "${DMG_NAME}"; then
+        echo "Stapling failed."
         exit 1
     fi
 

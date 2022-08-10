@@ -8,14 +8,19 @@ set -e -E
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-export SCRIPT_DIR=$(cd `dirname $0` && pwd)
-export SOURCE_DIR=$(realpath ${SCRIPT_DIR}/../..)
-export BUILD_ROOT=$(realpath ${SCRIPT_DIR}/../..)/mac-build
-export TEMP_DIR=$(realpath ${SCRIPT_DIR}/../..)/mac-temp
-export DIST_ROOT=$(realpath ${SCRIPT_DIR}/../..)/dist
+SCRIPT_DIR=$(cd $(dirname "$0") && pwd)
+export SCRIPT_DIR
+SOURCE_DIR=$(realpath "${SCRIPT_DIR}"/../..)
+export SOURCE_DIR
+BUILD_ROOT=$(realpath "${SCRIPT_DIR}"/../..)/mac-build
+export BUILD_ROOT
+TEMP_DIR=$(realpath "${SCRIPT_DIR}"/../..)/mac-temp
+export TEMP_DIR
+DIST_ROOT=$(realpath "${SCRIPT_DIR}"/../..)/dist
+export DIST_ROOT
 
 export CODESIGN=1
-if [ ! -f ${SCRIPT_DIR}/codesign.conf ]; then
+if [ ! -f "${SCRIPT_DIR}/codesign.conf" ]; then
     echo
     echo "******************************************************************"
     echo "* pkg/mac/codesign.conf not found. NOT signing the binaries."
@@ -24,11 +29,12 @@ if [ ! -f ${SCRIPT_DIR}/codesign.conf ]; then
     export CODESIGN=0
     sleep 2
 else
-    source ${SCRIPT_DIR}/codesign.conf
+    # shellcheck disable=SC1091
+    source "${SCRIPT_DIR}/codesign.conf"
 fi
 
 export NOTARIZE=1
-if [ ! -f ${SCRIPT_DIR}/notarization.conf ]; then
+if [ ! -f "${SCRIPT_DIR}/notarization.conf" ]; then
     echo
     echo "******************************************************************"
     echo "* pkg/mac/notarization.conf not found. NOT notarizing the package."
@@ -37,20 +43,21 @@ if [ ! -f ${SCRIPT_DIR}/notarization.conf ]; then
     export NOTARIZE=0
     sleep 2
 else
-    source ${SCRIPT_DIR}/notarization.conf
+    # shellcheck disable=SC1091
+    source "${SCRIPT_DIR}/notarization.conf"
 fi
 
-if [ "x${PGADMIN_POSTGRES_DIR}" == "x" ]; then
+if [ "${PGADMIN_POSTGRES_DIR}" == "" ]; then
     echo "PGADMIN_POSTGRES_DIR not set. Setting it to the default: /usr/local/pgsql"
     export PGADMIN_POSTGRES_DIR=/usr/local/pgsql
 fi
 
-if [ "x${PGADMIN_PYTHON_VERSION}" == "x" ]; then
+if [ "${PGADMIN_PYTHON_VERSION}" == "" ]; then
     echo "PGADMIN_PYTHON_VERSION not set. Setting it to the default: 3.9.9"
     export PGADMIN_PYTHON_VERSION=3.9.9
 fi
 
-source ${SCRIPT_DIR}/build-functions.sh
+source "${SCRIPT_DIR}/build-functions.sh"
 
 _setup_env
 _cleanup
