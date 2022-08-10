@@ -316,6 +316,7 @@ _codesign_binaries() {
     IFS=$'\n'
     for i in $(find "${BUNDLE_DIR}" -type f -perm +111 -exec file "{}" \; | \
                grep -v "(for architecture" | \
+               grep -v -E "^- Mach-O" | \
                grep -E "Mach-O executable|Mach-O 64-bit executable|Mach-O 64-bit bundle|Mach-O 64-bit dynamically linked shared library" | \
                awk -F":" '{print $1}' | \
                uniq)
