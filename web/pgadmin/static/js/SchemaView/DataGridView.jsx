@@ -17,7 +17,7 @@ import AddIcon from '@material-ui/icons/AddOutlined';
 import { MappedCellControl } from './MappedControl';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
-import { useTable, useFlexLayout, useResizeColumns, useSortBy, useExpanded } from 'react-table';
+import { useTable, useFlexLayout, useResizeColumns, useSortBy, useExpanded, useGlobalFilter } from 'react-table';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -30,6 +30,7 @@ import { evalFunc } from 'sources/utils';
 import { DepListenerContext } from './DepListener';
 import { useIsMounted } from '../custom_hooks';
 import Notify from '../helpers/Notifier';
+import { InputText } from '../components/FormComponents';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -225,11 +226,26 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
     </div>, depsMap);
 }
 
-export function DataGridHeader({label, canAdd, onAddClick}) {
+export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTextChange}) {
   const classes = useStyles();
+  const [searchText, setSearchText] = useState('');
+
   return (
     <Box className={classes.gridHeader}>
+      { label &&
       <Box className={classes.gridHeaderText}>{label}</Box>
+      }
+      { canSearch &&
+        <Box className={classes.gridHeaderText} width={'100%'}>
+          <InputText value={searchText}
+            onChange={(value)=>{
+              onSearchTextChange(value);
+              setSearchText(value);
+            }}
+            placeholder={'Search'}>
+          </InputText>
+        </Box>
+      }
       <Box className={classes.gridControls}>
         {canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={onAddClick} icon={<AddIcon />} className={classes.gridControlsButton} />}
       </Box>
@@ -240,6 +256,8 @@ DataGridHeader.propTypes = {
   label: PropTypes.string,
   canAdd: PropTypes.bool,
   onAddClick: PropTypes.func,
+  canSearch: PropTypes.bool,
+  onSearchTextChange: PropTypes.func,
 };
 
 export default function DataGridView({
@@ -303,21 +321,27 @@ export default function DataGridView({
             return (
               <PgIconButton data-test="delete-row" title={gettext('Delete row')} icon={<DeleteRoundedIcon fontSize="small" />}
                 onClick={()=>{
-                  Notify.confirm(
-                    props.customDeleteTitle || gettext('Delete Row'),
-                    props.customDeleteMsg || gettext('Are you sure you wish to delete this row?'),
-                    function() {
-                      dataDispatch({
-                        type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
-                        path: accessPath,
-                        value: row.index,
-                      });
-                      return true;
-                    },
-                    function() {
-                      return true;
-                    }
-                  );
+                  const deleteRow = ()=> {
+                    dataDispatch({
+                      type: SCHEMA_STATE_ACTIONS.DELETE_ROW,
+                      path: accessPath,
+                      value: row.index,
+                    });
+                    return true;
+                  };
+
+                  if (props.onDelete){
+                    props.onDelete(row.original || {}, deleteRow);
+                  } else {
+                    Notify.confirm(
+                      props.customDeleteTitle || gettext('Delete Row'),
+                      props.customDeleteMsg || gettext('Are you sure you wish to delete this row?'),
+                      deleteRow,
+                      function() {
+                        return true;
+                      }
+                    );
+                  }
                 }} className={classes.gridRowButton} disabled={!canDeleteRow} />
             );
           }
@@ -425,6 +449,7 @@ export default function DataGridView({
   }), []);
 
   let tablePlugins = [
+    useGlobalFilter,
     useFlexLayout,
     useResizeColumns,
     useSortBy,
@@ -437,10 +462,11 @@ export default function DataGridView({
     headerGroups,
     rows,
     prepareRow,
+    setGlobalFilter,
   } = useTable(
     {
       columns,
-      data: value || [],
+      data: value,
       defaultColumn,
       manualSortBy: true,
       autoResetSortBy: false,
@@ -476,7 +502,12 @@ export default function DataGridView({
   return (
     <Box className={containerClassName}>
       <Box className={classes.grid}>
-        {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick} />}
+        {(props.label || props.canAdd) && <DataGridHeader label={props.label} canAdd={props.canAdd} onAddClick={onAddClick}
+          canSearch={props.canSearch}
+          onSearchTextChange={(value)=>{
+            setGlobalFilter(value || undefined);
+          }}
+        />}
         <div {...getTableProps()} className={classes.table}>
           <DataTableHeader headerGroups={headerGroups} />
           <div {...getTableBodyProps()} className={classes.tableContentWidth}>
@@ -524,4 +555,6 @@ DataGridView.propTypes = {
   ]),
   customDeleteTitle: PropTypes.string,
   customDeleteMsg: PropTypes.string,
+  canSearch: PropTypes.bool,
+  onDelete: PropTypes.func,
 };

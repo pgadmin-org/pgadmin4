@@ -15,6 +15,7 @@ Housekeeping
 ************
 
   | `Issue #7344 <https://redmine.postgresql.org/issues/7344>`_ -  Port Role Reassign dialog to React.
+  | `Issue #7345 <https://redmine.postgresql.org/issues/7345>`_ -  Port User Management dialog to React.
   | `Issue #7462 <https://redmine.postgresql.org/issues/7462>`_ -  Remove the SQL files for the unsupported versions of the database server.
   | `Issue #7567 <https://redmine.postgresql.org/issues/7567>`_ -  Port About dialog to React.
   | `Issue #7568 <https://redmine.postgresql.org/issues/7568>`_ -  Port change user password and 2FA dialog to React.

@@ -886,7 +886,7 @@ function SchemaPropertiesView({
             key={field.id}
             viewHelperProps={viewHelperProps}
             name={field.id}
-            value={origData[field.id]}
+            value={origData[field.id] || []}
             schema={field.schema}
             accessPath={[field.id]}
             formErr={{}}

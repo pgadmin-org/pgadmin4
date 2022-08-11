@@ -268,10 +268,10 @@ export default function FormView({
         }
 
         const props = {
-          key: field.id, value: value[field.id], viewHelperProps: viewHelperProps,
+          key: field.id, value: value[field.id] || [], viewHelperProps: viewHelperProps,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
           containerClassName: classes.controlRow, ...field, canAdd: canAdd, canEdit: canEdit, canDelete: canDelete,
-          visible: visible, canAddRow: canAddRow,
+          visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch
         };
 
         if(CustomControl) {

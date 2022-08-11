@@ -301,7 +301,7 @@ export function showChangeOwnership() {
     userList = arguments[1],
     noOfSharedServers = arguments[2],
     deletedUser = arguments[3],
-    destroyUserManagement = arguments[4];
+    deleteUserRow = arguments[4];
 
   // Render Preferences component
   Notify.showModal(title, (onClose) => {
@@ -314,24 +314,15 @@ export function showChangeOwnership() {
 
         return new Promise((resolve, reject)=>{
           if (data.newUser == '') {
-            api.delete(url_for('user_management.user', {uid: deletedUser['uid']}))
-              .then(() => {
-                Notify.success(gettext('User deleted.'));
-                onClose();
-                destroyUserManagement();
-                resolve();
-              })
-              .catch((err)=>{
-                Notify.error(err);
-                reject(err);
-              });
+            deleteUserRow();
+            onClose();
           } else {
-            let newData = {'new_owner': `${data.newUser}`, 'old_owner': `${deletedUser['uid']}`};
+            let newData = {'new_owner': `${data.newUser}`, 'old_owner': `${deletedUser['id']}`};
             api.post(url_for('user_management.change_owner'), newData)
               .then(({data: respData})=>{
                 Notify.success(gettext(respData.info));
                 onClose();
-                destroyUserManagement();
+                deleteUserRow();
                 resolve(respData.data);
               })
               .catch((err)=>{

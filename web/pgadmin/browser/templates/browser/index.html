@@ -144,7 +144,7 @@ window.onload = function(e){
                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                     {% if auth_only_internal %}
                     <li>
-                        <a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.Browser.UserManagement.change_password(
+                        <a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.UserManagement.change_password(
                           '{{ url_for('browser.change_password') }}'
                         )">
                             {{ _('Change Password') }}
@@ -154,14 +154,14 @@ window.onload = function(e){
                     {% endif %}
                     {% if mfa_enabled is defined and mfa_enabled is true %}
                     <li>
-                        <a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.Browser.UserManagement.show_mfa(
+                        <a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.UserManagement.show_mfa(
                           '{{ login_url("mfa.register", next_url="internal") }}'
                         )">{{ _('Two-Factor Authentication') }}</a>
                     </li>
                     <li class="dropdown-divider"></li>
                     {% endif %}
                     {% if is_admin %}
-                    <li><a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.Browser.UserManagement.show_users()">{{ _('Users') }}</a></li>
+                    <li><a class="dropdown-item" href="#" role="menuitem" onclick="pgAdmin.UserManagement.show_users()">{{ _('Users') }}</a></li>
                     <li class="dropdown-divider"></li>
                     {% endif %}
                     <li><a class="dropdown-item" role="menuitem" href="{{ logout_url }}">{{ _('Logout') }}</a></li>

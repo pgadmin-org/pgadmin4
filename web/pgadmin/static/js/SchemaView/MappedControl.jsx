@@ -155,7 +155,7 @@ function MappedCellControlBase({ cell, value, id, optionsLoaded, onCellChange, v
   case 'text':
     return <InputText name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'password':
-    return <InputText name={name} value={value} onChange={onTextChange} {...props}/>;
+    return <InputText name={name} value={value} onChange={onTextChange} {...props} type='password'/>;
   case 'select':
     return <InputSelect name={name} value={value} onChange={onTextChange} optionsLoaded={optionsLoadedRerender} {...props}/>;
   case 'switch':
