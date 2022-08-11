@@ -150,7 +150,7 @@ _fixup_imports() {
     pushd "$1" > /dev/null || exit
 
     # Find all the files that may need tweaks
-    TODO=$(file "$(find . -perm +0111 -type f)" | \
+    TODO=$(find . -perm +0111 -type f -exec file "{}" \; | \
         grep -v "Frameworks/Python.framework" | \
         grep -v "Frameworks/nwjs" | \
         grep -E "Mach-O 64-bit" | \
@@ -158,7 +158,7 @@ _fixup_imports() {
         uniq)
 
     # Add anything in the site-packages Python directory
-    TODO+=$(file "$(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f)" | \
+    TODO+=$(find ./Contents/Frameworks/Python.framework/Versions/Current/lib/python*/site-packages -perm +0111 -type f -exec file "{}" \; | \
         grep -E "Mach-O 64-bit" | \
         awk -F ':| ' '{ORS=" "; print $1}' | \
         uniq)
