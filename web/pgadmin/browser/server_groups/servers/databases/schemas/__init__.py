@@ -186,7 +186,7 @@ class CatalogModule(SchemaModule):
         Override the default register function to automagically register
         sub-modules at once.
         """
-        super(SchemaModule, self).register(app, options)
+        super(CatalogModule, self).register(app, options)
 
 
 schema_blueprint = SchemaModule(__name__)
