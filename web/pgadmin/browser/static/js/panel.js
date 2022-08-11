@@ -122,7 +122,7 @@ define(
                 that.resizedContainer.apply(myPanel);
               }
 
-              if (myPanel._type == 'dashboard') {
+              if (myPanel._type == 'dashboard' || myPanel._type == 'processes') {
                 getPanelView(
                   pgBrowser.tree,
                   $container[0],
@@ -263,8 +263,8 @@ define(
           .scene()
           .find('.pg-panel-content');
 
-        if (isPanelVisible && selectedPanel._type !== 'properties') {
-          if (eventName == 'panelVisibilityChanged' && selectedPanel._type !== 'properties') {
+        if (isPanelVisible && ['dashboard', 'statistics', 'dependencies', 'dependents', 'sql', 'processes'].includes(selectedPanel._type) ) {
+          if (eventName == 'panelVisibilityChanged') {
             getPanelView(
               pgBrowser.tree,
               $container[0],

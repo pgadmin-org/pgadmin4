@@ -371,7 +371,8 @@ export const InputText = forwardRef(({
         maxLength: controlProps?.multiline ? null : maxlength,
         'aria-describedby': helpid,
         ...(type ? { pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type] } : {}),
-        style: inputStyle || {}
+        style: inputStyle || {},
+        autoComplete: 'new-password',
       }}
       readOnly={Boolean(readonly)}
       disabled={Boolean(disabled)}
@@ -1167,6 +1168,7 @@ const useStylesFormFooter = makeStyles((theme) => ({
     padding: theme.spacing(0.5),
     display: 'flex',
     alignItems: 'center',
+    minHeight: '36px',
   },
   containerSuccess: {
     borderColor: theme.palette.success.main,
@@ -1290,11 +1292,13 @@ FormInputSelectThemes.propTypes = {
 };
 
 
-export function NotifierMessage({ type = MESSAGE_TYPE.SUCCESS, message, closable = true, showIcon=true, textCenter=false, onClose = () => {/*This is intentional (SonarQube)*/ } }) {
+export function NotifierMessage({
+  type = MESSAGE_TYPE.SUCCESS, message, style, closable = true, showIcon=true, textCenter=false,
+  onClose = () => {/*This is intentional (SonarQube)*/ }}) {
   const classes = useStylesFormFooter();
 
   return (
-    <Box className={clsx(classes.container, classes[`container${type}`])}>
+    <Box className={clsx(classes.container, classes[`container${type}`])} style={style}>
       {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
       <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
       {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
@@ -1311,6 +1315,7 @@ NotifierMessage.propTypes = {
   showIcon: PropTypes.bool,
   textCenter: PropTypes.bool,
   onClose: PropTypes.func,
+  style: PropTypes.object,
 };
 
 

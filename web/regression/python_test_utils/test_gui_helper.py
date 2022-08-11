@@ -6,48 +6,60 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
+import time
 from regression.feature_utils.locators import NavMenuLocators
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
 
-def close_bgprocess_popup(tester):
+def close_bgprocess_start_popup(tester):
     """
     Allows us to close the background process popup window
     """
-    # In cases where backup div is not closed (sometime due to some error)
-    try:
-        tester.page.wait_for_element_to_disappear(
-            lambda x: tester.driver.find_element(
-                By.XPATH, ".ajs-message.ajs-bg-bgprocess.ajs-visible"))
-    except Exception:
-        tester.driver.find_element(
-            By.CSS_SELECTOR,
-            NavMenuLocators.process_watcher_error_close_xpath).click()
+    tester.driver.find_element(
+        By.CSS_SELECTOR,
+        NavMenuLocators.process_start_close_selector).click()
 
-    # In cases where restore div is not closed (sometime due to some error)
-    try:
-        tester.page.wait_for_element_to_disappear(
-            lambda x: tester.driver.find_element(
-                By.XPATH,
-                "//div[@class='card-header bg-primary d-flex']/div"
-                "[contains(text(), 'Restoring backup')]"))
-    except Exception:
-        tester.driver.find_element(
-            By.CSS_SELECTOR,
-            NavMenuLocators.process_watcher_error_close_xpath).click()
 
-    # In cases where maintenance window is not closed (sometime due to some
-    # error)
-    try:
-        tester.page.wait_for_element_to_disappear(
-            lambda x: tester.driver.find_element(
-                By.XPATH,
-                "//div[@class='card-header bg-primary d-flex']/div"
-                "[contains(text(), 'Maintenance')]"))
-    except Exception:
-        tester.driver.find_element(
-            By.CSS_SELECTOR,
-            NavMenuLocators.process_watcher_error_close_xpath).click()
+def wait_for_process_start(tester):
+    tester.wait.until(EC.visibility_of_element_located(
+        (By.CSS_SELECTOR,
+         NavMenuLocators.process_start_close_selector)))
+    close_bgprocess_start_popup(tester)
+
+
+def wait_for_process_end(self):
+    """This will wait for process to complete dialogue status"""
+    attempts = 120
+    status = False
+    while attempts > 0:
+        try:
+            button = self.page.find_by_css_selector(
+                NavMenuLocators.process_end_close_selector)
+            status = True
+            button.click()
+            break
+        except Exception:
+            attempts -= 1
+            time.sleep(.5)
+    return status
+
+
+def open_process_details(tester):
+    status = wait_for_process_end(tester)
+    if not status:
+        raise RuntimeError("Process not completed")
+
+    tester.page.click_tab("Processes")
+    time.sleep(3)
+    tester.page.find_by_css_selector(
+        "div[data-test='processes'] "
+        "div[data-test='row-container']:nth-child(1) "
+        "div[role='row'] div[role='cell']:nth-child(3) button").click()
+
+    tester.page.wait_for_element_to_disappear(
+        lambda driver: driver.find_element(
+            By.CSS_SELECTOR, "span[data-test='loading-logs']"))
 
 
 def close_process_watcher(tester):

@@ -63,6 +63,9 @@ class Message(IProcessDesc):
     def get_server_name(self):
         s = get_server(self.sid)
 
+        if s is None:
+            return _("Not available")
+
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
         manager = driver.connection_manager(self.sid)
@@ -129,15 +132,13 @@ class Message(IProcessDesc):
         return res
 
     def details(self, cmd, args):
-
-        res = '<div>' + self.message
-        res += '</div><div class="py-1">'
-        res += _("Running Query:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(self.query)
-        res += '</div></div>'
-
-        return res
+        return {
+            "message": self.message,
+            "query": self.query,
+            "server": self.get_server_name(),
+            "object": self.data['database'],
+            "type": self.type_desc,
+        }
 
 
 @blueprint.route("/")
@@ -272,7 +273,7 @@ def create_maintenance_job(sid, did):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'status': True,
+        data={'job_id': jid, 'desc': p.desc.message, 'status': True,
               'info': _('Maintenance job created.')}
     )
 

@@ -1185,28 +1185,6 @@ def check_binary_path_or_skip_test(cls, utility_name):
             cls.skipTest(ret_val)
 
 
-def get_watcher_dialogue_status(self):
-    """This will get watcher dialogue status"""
-    import time
-    attempts = 120
-    status = None
-    while attempts > 0:
-        try:
-            status = self.page.find_by_css_selector(
-                ".pg-bg-status-text").text
-
-            if 'Failed' in status:
-                break
-            if status == 'Started' or status == 'Running...':
-                attempts -= 1
-                time.sleep(.5)
-            else:
-                break
-        except Exception:
-            attempts -= 1
-    return status
-
-
 def get_driver_version():
     version = getattr(psycopg2, '__version__', None)
     return version

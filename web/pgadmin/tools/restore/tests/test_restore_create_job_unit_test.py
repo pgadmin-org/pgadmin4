@@ -348,6 +348,8 @@ class RestoreCreateJobTest(BaseTestGenerator):
             return_value=True
         )
 
+        restore_message_mock.message = 'test'
+        batch_process_mock.return_value.desc = restore_message_mock
         export_password_env_mock.return_value = True
 
         server_response = server_utils.connect_server(self, self.server_id)

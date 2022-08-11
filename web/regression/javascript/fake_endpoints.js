@@ -36,5 +36,9 @@ define(function () {
     'file_manager.save_file_dialog_view': '/file_manager/save_file_dialog_view/<int:trans_id>',
     'file_manager.save_show_hidden_file_option': '/file_manager/save_show_hidden_file_option/<int:trans_id>',
     'settings.save_file_format_setting': '/settings/save_file_format_setting/',
+    'bgprocess.detailed_status': '/misc/bgprocess/<pid>/<int:out>/<int:err>/',
+    'bgprocess.list': '/misc/bgprocess/',
+    'bgprocess.stop_process': '/misc/bgprocess/stop/<pid>',
+    'bgprocess.acknowledge': '/misc/bgprocess/<pid>'
   };
 });

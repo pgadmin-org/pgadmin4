@@ -86,8 +86,10 @@ class NavMenuLocators:
         "//div[contains(@class,'wcFrameTitleBar')]" \
         "//div[contains(text(),'Process Watcher')]"
 
-    process_watcher_detailed_command_canvas_css = \
-        ".bg-process-details .bg-detailed-desc"
+    process_watcher_detailed_message_css = \
+        "div[data-test='process-details'] div[data-test='process-message']"
+    process_watcher_detailed_command_css = \
+        "div[data-test='process-details'] div[data-test='process-cmd']"
 
     process_watcher_close_button_xpath = \
         "//div[contains(@class,'wcFloating')]//" \
@@ -107,6 +109,10 @@ class NavMenuLocators:
 
     rcdock_tab = "div.dock-tab-btn[id$='{0}']"
 
+    process_start_close_selector = \
+        "div[data-test='process-popup-start'] button[data-label='Close']"
+    process_end_close_selector = \
+        "div[data-test='process-popup-end'] button[data-label='Close']"
     process_watcher_error_close_xpath = \
         ".btn.btn-sm-sq.btn-primary.pg-bg-close > i"
 

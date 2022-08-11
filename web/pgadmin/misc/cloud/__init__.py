@@ -130,11 +130,11 @@ def deploy_on_cloud():
 
     data = json.loads(request.data, encoding='utf-8')
     if data['cloud'] == 'rds':
-        status, resp = deploy_on_rds(data)
+        status, p, resp = deploy_on_rds(data)
     elif data['cloud'] == 'biganimal':
-        status, resp = deploy_on_biganimal(data)
+        status, p, resp = deploy_on_biganimal(data)
     elif data['cloud'] == 'azure':
-        status, resp = deploy_on_azure(data)
+        status, p, resp = deploy_on_azure(data)
     else:
         status = False
         resp = gettext('No cloud implementation.')
@@ -149,19 +149,22 @@ def deploy_on_cloud():
     # Return response
     return make_json_response(
         success=1,
-        data={'job_id': 1, 'node': {
-            '_id': resp['sid'],
-            '_pid': data['db_details']['gid'],
-            'connected': False,
-            '_type': 'server',
-            'icon': 'icon-server-cloud-deploy',
-            'id': 'server_{}'.format(resp['sid']),
-            'inode': True,
-            'label': resp['label'],
-            'server_type': 'pg',
-            'module': 'pgadmin.node.server',
-            'cloud_status': -1
-        }}
+        data={
+            'job_id': p.id,
+            'desc': p.desc.message,
+            'node': {
+                '_id': resp['sid'],
+                '_pid': data['db_details']['gid'],
+                'connected': False,
+                '_type': 'server',
+                'icon': 'icon-server-cloud-deploy',
+                'id': 'server_{}'.format(resp['sid']),
+                'inode': True,
+                'label': resp['label'],
+                'server_type': 'pg',
+                'module': 'pgadmin.node.server',
+                'cloud_status': -1
+            }}
     )
 
 

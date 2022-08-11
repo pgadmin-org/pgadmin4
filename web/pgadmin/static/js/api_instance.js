@@ -14,14 +14,13 @@ import axios from 'axios';
 /* Get the axios instance to call back end APIs.
 Do not import axios directly, instead use this */
 export default function getApiInstance(headers={}) {
-  const api = axios.create({
+  return axios.create({
     headers: {
       'Content-type': 'application/json',
       [pgAdmin.csrf_token_header]: pgAdmin.csrf_token,
       ...headers,
     }
   });
-  return api;
 }
 
 export function parseApiError(error) {

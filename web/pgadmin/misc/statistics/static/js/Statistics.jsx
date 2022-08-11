@@ -61,7 +61,7 @@ function getColumn(data, singleLineStatistics) {
           column = {
             Header: row.name,
             accessor: row.name,
-            sortble: true,
+            sortable: true,
             resizable: true,
             disableGlobalFilter: false,
             sortType: ((rowA, rowB, id) => {
@@ -72,7 +72,7 @@ function getColumn(data, singleLineStatistics) {
           column = {
             Header: row.name,
             accessor: row.name,
-            sortble: true,
+            sortable: true,
             resizable: true,
             disableGlobalFilter: false,
           };
@@ -87,14 +87,14 @@ function getColumn(data, singleLineStatistics) {
       {
         Header: gettext('Statistics'),
         accessor: 'name',
-        sortble: true,
+        sortable: true,
         resizable: true,
         disableGlobalFilter: false,
       },
       {
         Header: 'Value',
         accessor: 'value',
-        sortble: true,
+        sortable: true,
         resizable: true,
         disableGlobalFilter: false,
       },
@@ -165,14 +165,14 @@ export default function Statistics({ nodeData, item, node, ...props }) {
     {
       Header: 'Statictics',
       accessor: 'name',
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       Header: 'Value',
       accessor: 'value',
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },

@@ -70,7 +70,7 @@ def run_import_export_job(tester, job_id, expected_params, assert_in,
 
     io_file = None
     if 'details' in the_process:
-        io_det = the_process['details']
+        io_det = the_process['details']['message']
 
         temp_io_det = io_det.upper()
 
@@ -82,10 +82,10 @@ def run_import_export_job(tester, job_id, expected_params, assert_in,
 
     if expected_params['expected_cmd_opts']:
         for opt in expected_params['expected_cmd_opts']:
-            assert_in(opt, the_process['details'])
+            assert_in(opt, the_process['details']['cmd'])
     if expected_params['not_expected_cmd_opts']:
         for opt in expected_params['not_expected_cmd_opts']:
-            assert_not_in(opt, the_process['details'])
+            assert_not_in(opt, the_process['details']['cmd'])
 
     # Check the process details
     p_details = tester.get('/misc/bgprocess/{0}?_={1}'.format(

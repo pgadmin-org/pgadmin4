@@ -143,10 +143,10 @@ class RestoreJobTest(BaseTestGenerator):
 
         if self.expected_cmd_opts:
             for opt in self.expected_cmd_opts:
-                self.assertIn(opt, the_process['details'])
+                self.assertIn(opt, the_process['details']['cmd'])
         if self.not_expected_cmd_opts:
             for opt in self.not_expected_cmd_opts:
-                self.assertNotIn(opt, the_process['details'])
+                self.assertNotIn(opt, the_process['details']['cmd'])
 
         # Check the process details
         p_details = self.tester.get('/misc/bgprocess/{0}?_={1}'.format(

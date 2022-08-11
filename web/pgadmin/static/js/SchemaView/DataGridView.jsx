@@ -242,7 +242,7 @@ export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTe
               onSearchTextChange(value);
               setSearchText(value);
             }}
-            placeholder={'Search'}>
+            placeholder={gettext('Search')}>
           </InputText>
         </Box>
       }

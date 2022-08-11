@@ -56,9 +56,10 @@ blueprint = RestoreModule(
 
 
 class RestoreMessage(IProcessDesc):
-    def __init__(self, _sid, _bfile, *_args):
+    def __init__(self, _sid, _bfile, *_args, **_kwargs):
         self.sid = _sid
         self.bfile = _bfile
+        self.database = _kwargs['database'] if 'database' in _kwargs else None
         self.cmd = ''
 
         def cmd_arg(x):
@@ -75,10 +76,11 @@ class RestoreMessage(IProcessDesc):
             else:
                 self.cmd += cmd_arg(arg)
 
-    def get_server_details(self):
-
-        # Fetch the server details like hostname, port, roles etc
+    def get_server_name(self):
         s = get_server(self.sid)
+
+        if s is None:
+            return _("Not available")
 
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -87,42 +89,28 @@ class RestoreMessage(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
-        return s.name, host, port
+        s.name = html.safe_str(s.name)
+        host = html.safe_str(host)
+        port = html.safe_str(port)
+        return "{0} ({1}:{2})".format(s.name, host, port)
 
     @property
     def message(self):
-        name, host, port = self.get_server_details()
-
-        return _("Restoring backup on the server '{0}'").format(
-            "{0} ({1}:{2})".format(
-                html.safe_str(name),
-                html.safe_str(host),
-                html.safe_str(port)
-            ),
-        )
+        return _("Restoring backup on the server '{0}'")\
+            .format(self.get_server_name())
 
     @property
     def type_desc(self):
         return _("Restoring backup on the server")
 
     def details(self, cmd, args):
-        name, host, port = self.get_server_details()
-        res = '<div>'
-
-        res += html.safe_str(
-            _(
-                "Restoring backup on the server '{0}'..."
-            ).format(
-                "{0} ({1}:{2})".format(name, host, port)
-            )
-        )
-
-        res += '</div><div class="py-1">'
-        res += _("Running command:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(cmd + self.cmd)
-        res += '</div></div>'
-        return res
+        return {
+            "message": self.message,
+            "cmd": cmd + self.cmd,
+            "server": self.get_server_name(),
+            "object": getattr(self, 'database', ''),
+            "type": _("Restore"),
+        }
 
 
 @blueprint.route("/")
@@ -409,7 +397,8 @@ def create_restore_job(sid):
                 data['file'].encode('utf-8') if hasattr(
                     data['file'], 'encode'
                 ) else data['file'],
-                *args
+                *args,
+                database=data['database']
             ),
             cmd=utility, args=args
         )
@@ -434,7 +423,7 @@ def create_restore_job(sid):
         )
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'Success': 1}
+        data={'job_id': jid, 'desc': p.desc.message, 'Success': 1}
     )
 
 

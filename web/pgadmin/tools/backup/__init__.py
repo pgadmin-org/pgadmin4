@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
 """Implements Backup Utility"""
 
 import simplejson as json
@@ -103,8 +102,11 @@ class BackupMessage(IProcessDesc):
             else:
                 self.cmd += cmd_arg(arg)
 
-    def get_server_details(self):
+    def get_server_name(self):
         s = get_server(self.sid)
+
+        if s is None:
+            return _("Not available")
 
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -113,7 +115,10 @@ class BackupMessage(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
-        return s.name, host, port
+        s.name = html.safe_str(s.name)
+        host = html.safe_str(host)
+        port = html.safe_str(port)
+        return "{0} ({1}:{2})".format(s.name, host, port)
 
     @property
     def type_desc(self):
@@ -129,77 +134,45 @@ class BackupMessage(IProcessDesc):
 
     @property
     def message(self):
-        name, host, port = self.get_server_details()
-        name = html.safe_str(name)
-        host = html.safe_str(host)
-        port = html.safe_str(port)
+        server_name = self.get_server_name()
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
                 "Backing up an object on the server '{0}' "
                 "from database '{1}'"
-            ).format(self.args_str.format(name, host, port),
+            ).format(server_name,
                      html.safe_str(self.database)
                      )
         if self.backup_type == BACKUP.GLOBALS:
             return _("Backing up the global objects on "
                      "the server '{0}'").format(
-                self.args_str.format(
-                    name, host, port
-                )
+                server_name
             )
         elif self.backup_type == BACKUP.SERVER:
             return _("Backing up the server '{0}'").format(
-                self.args_str.format(
-                    name, host, port
-                )
+                server_name
             )
         else:
             # It should never reach here.
             return "Unknown Backup"
 
     def details(self, cmd, args):
-        name, host, port = self.get_server_details()
-
-        res = '<div>'
-
+        server_name = self.get_server_name()
+        backup_type = _("Backup")
         if self.backup_type == BACKUP.OBJECT:
-            msg = _(
-                "Backing up an object on the server '{0}' "
-                "from database '{1}'..."
-            ).format(
-                self.args_str.format(
-                    name, host, port
-                ),
-                self.database
-            )
-            res += html.safe_str(msg)
+            backup_type = _("Backup Object")
         elif self.backup_type == BACKUP.GLOBALS:
-            msg = _("Backing up the global objects on "
-                    "the server '{0}'...").format(
-                self.args_str.format(
-                    name, host, port
-                )
-            )
-            res += html.safe_str(msg)
+            backup_type = _("Backup Globals")
         elif self.backup_type == BACKUP.SERVER:
-            msg = _("Backing up the server '{0}'...").format(
-                self.args_str.format(
-                    name, host, port
-                )
-            )
-            res += html.safe_str(msg)
-        else:
-            # It should never reach here.
-            res += "Backup"
+            backup_type = _("Backup Server")
 
-        res += '</div><div class="py-1">'
-        res += _("Running command:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(cmd + self.cmd)
-        res += '</div></div>'
-
-        return res
+        return {
+            "message": self.message,
+            "cmd": cmd + self.cmd,
+            "server": server_name,
+            "object": self.database,
+            "type": backup_type,
+        }
 
 
 @blueprint.route("/")
@@ -487,7 +460,7 @@ def create_backup_objects_job(sid):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'Success': 1}
+        data={'job_id': jid, 'desc': p.desc.message, 'Success': 1}
     )
 
 

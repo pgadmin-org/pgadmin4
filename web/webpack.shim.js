@@ -179,7 +179,7 @@ var webpackShimConfig = {
     'pgadmin.about': path.join(__dirname, './pgadmin/about/static/js/about'),
     'pgadmin.authenticate.kerberos': path.join(__dirname, './pgadmin/authenticate/static/js/kerberos'),
     'pgadmin.browser': path.join(__dirname, './pgadmin/browser/static/js/browser'),
-    'pgadmin.browser.bgprocess': path.join(__dirname, './pgadmin/misc/bgprocess/static/js/bgprocess'),
+    'pgadmin.browser.bgprocessmanager': path.join(__dirname, './pgadmin/misc/bgprocess/static/js'),
     'pgadmin.browser.collection': path.join(__dirname, './pgadmin/browser/static/js/collection'),
     'pgadmin.browser.datamodel': path.join(__dirname, './pgadmin/browser/static/js/datamodel'),
     'pgadmin.browser.endpoints': '/browser/js/endpoints',

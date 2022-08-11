@@ -731,6 +731,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                                   self.class_params['username'],
                                   self.class_params['database']
                                   )
+
         mock_result = server_mock.query.filter_by.return_value
         mock_result.first.return_value = mock_obj
 
@@ -743,7 +744,8 @@ class BackupCreateJobTest(BaseTestGenerator):
         batch_process_mock.return_value.start = MagicMock(
             return_value=True
         )
-
+        backup_message_mock.message = 'test'
+        batch_process_mock.return_value.desc = backup_message_mock
         export_password_env_mock.return_value = True
 
         server_response = server_utils.connect_server(self, self.server_id)

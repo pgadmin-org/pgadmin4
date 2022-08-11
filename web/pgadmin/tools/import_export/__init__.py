@@ -90,28 +90,27 @@ class IEMessage(IProcessDesc):
             else:
                 self._cmd += cmd_arg(arg)
 
-    def get_server_details(self):
+    def get_server_name(self):
         # Fetch the server details like hostname, port, roles etc
         s = Server.query.filter_by(
             id=self.sid, user_id=current_user.id
         ).first()
 
-        return s.name, s.host, s.port
+        if s is None:
+            return _("Not available")
+        return html.safe_str("{0} ({1}:{2})".format(s.name, s.host, s.port))
 
     @property
     def message(self):
         # Fetch the server details like hostname, port, roles etc
-        name, host, port = self.get_server_details()
-
         return _(
             "Copying table data '{0}.{1}' on database '{2}' "
-            "and server ({3}:{4})"
+            "and server '{3}'"
         ).format(
             html.safe_str(self.schema),
             html.safe_str(self.table),
             html.safe_str(self.database),
-            html.safe_str(host),
-            html.safe_str(port)
+            self.get_server_name()
         )
 
     @property
@@ -121,30 +120,14 @@ class IEMessage(IProcessDesc):
 
     def details(self, cmd, args):
         # Fetch the server details like hostname, port, roles etc
-        name, host, port = self.get_server_details()
-
-        res = '<div>'
-        res += _(
-            "Copying table data '{0}.{1}' on database '{2}' "
-            "for the server '{3}'"
-        ).format(
-            html.safe_str(self.schema),
-            html.safe_str(self.table),
-            html.safe_str(self.database),
-            "{0} ({1}:{2})".format(
-                html.safe_str(name),
-                html.safe_str(host),
-                html.safe_str(port)
-            )
-        )
-
-        res += '</div><div class="py-1">'
-        res += _("Running command:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(self._cmd)
-        res += '</div></div>'
-
-        return res
+        return {
+            "message": self.message,
+            "cmd": self._cmd,
+            "server": self.get_server_name(),
+            "object": "{0}/{1}.{2}".format(self.database, self.schema,
+                                           self.table),
+            "type": _("Import Data") if self.is_import else _("Export Data")
+        }
 
 
 @blueprint.route("/")
@@ -387,7 +370,7 @@ def create_import_export_job(sid):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'success': 1}
+        data={'job_id': jid, 'desc': p.desc.message, 'success': 1}
     )
 
 

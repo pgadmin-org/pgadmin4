@@ -13,6 +13,7 @@ export function useInterval(callback, delay) {
     }
 
     if(delay > -1) {
+      tick();
       let id = setInterval(tick, delay);
       return () => clearInterval(id);
     }

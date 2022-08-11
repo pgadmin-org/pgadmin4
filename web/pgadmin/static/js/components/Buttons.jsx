@@ -81,6 +81,17 @@ const useStyles = makeStyles((theme)=>({
   },
   noBorder: {
     border: 0,
+    color: 'inherit',
+    backgroundColor: 'transparent',
+    '&:hover': {
+      border: 0,
+      color: 'inherit',
+      backgroundColor: 'inherit',
+      filter: 'brightness(85%)',
+    },
+    '&.Mui-disabled': {
+      border: 0,
+    },
   }
 }));
 

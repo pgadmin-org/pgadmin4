@@ -28,6 +28,8 @@ import _ from 'lodash';
 import gettext from 'sources/gettext';
 import SchemaView from '../SchemaView';
 import EmptyPanelMessage from './EmptyPanelMessage';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 /* eslint-disable react/display-name */
 const useStyles = makeStyles((theme) => ({
@@ -50,13 +52,9 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'hidden !important',
     overflow: 'overlay !important',
   },
-  customHeader:{
+  CustomHeader:{
     marginTop: '8px',
     marginLeft: '4px'
-  },
-  searchBox: {
-    display: 'flex',
-    background: theme.palette.background.default
   },
   warning: {
     backgroundColor: theme.palette.warning.main + '!important'
@@ -64,17 +62,8 @@ const useStyles = makeStyles((theme) => ({
   alert: {
     backgroundColor: theme.palette.error.main + '!important'
   },
-  searchPadding: {
-    flex: 2.5
-  },
   searchInput: {
-    flex: 1,
-    marginTop: 8,
-    borderLeft: 'none',
-    paddingLeft: 5,
-    marginRight: 8,
-    marginBottom: 8,
-
+    minWidth: '300px'
   },
   tableContainer: {
     overflowX: 'auto',
@@ -93,14 +82,18 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     height: '100%',
   },
-  pgTableHeadar: {
+  pgTableContainer: {
     display: 'flex',
     flexGrow: 1,
-    overflow: 'hidden !important',
-    height: '100% !important',
-    flexDirection: 'column'
+    overflow: 'hidden',
+    flexDirection: 'column',
+    height: '100%',
   },
-
+  pgTableHeader: {
+    display: 'flex',
+    background: theme.palette.background.default,
+    padding: '8px',
+  },
   tableRowContent:{
     display: 'flex',
     flexDirection: 'column',
@@ -134,10 +127,9 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
     padding: theme.spacing(1, 0.5),
     textAlign: 'left',
-    overflowY: 'auto',
-    overflowX: 'hidden',
     alignContent: 'center',
     backgroundColor: theme.otherVars.tableBg,
+    overflow: 'hidden',
     ...theme.mixins.panelBorder.bottom,
     ...theme.mixins.panelBorder.right,
     ...theme.mixins.panelBorder.top,
@@ -221,7 +213,7 @@ IndeterminateCheckbox.propTypes = {
 };
 
 const ROW_HEIGHT = 35;
-export default function PgTable({ columns, data, isSelectRow, caveTable=true, ...props }) {
+export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
   const [searchVal, setSearchVal] = React.useState('');
@@ -277,6 +269,9 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
       defaultColumn,
       isSelectRow,
       autoResetSortBy: false,
+      initialState: {
+        sortBy: sortOptions || [],
+      }
     },
     useGlobalFilter,
     useSortBy,
@@ -333,7 +328,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                   />
                 </div>
               ),
-              sortble: false,
+              sortable: false,
               width: 35,
               maxWidth: 35,
               minWidth: 0
@@ -403,7 +398,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
       }, [expandComplete]);
 
       return (
-        <div style={style} key={row.id} ref={rowRef}>
+        <div style={style} key={row.id} ref={rowRef} data-test="row-container">
           <div className={classes.tableRowContent}>
             <div {...row.getRowProps()} className={classes.tr}>
               {row.cells.map((cell) => {
@@ -421,7 +416,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                   classNames.push(classes.alert);
                 }
                 return (
-                  <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, row.original.icon && row.original.icon[cell.column.id], row.original.icon[cell.column.id] && classes.cellIcon)}
+                  <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, cell.column?.dataClassName, row.original.icon?.[cell.column.id], row.original.icon?.[cell.column.id] && classes.cellIcon)}
                     title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
                     {cell.render('Cell')}
                   </div>
@@ -430,13 +425,14 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
             </div>
             {!_.isUndefined(row) && row.isExpanded && (
               <Box key={row.id} className={classes.expandedForm}>
-                <SchemaView
+                {schema && <SchemaView
                   getInitData={()=>Promise.resolve({})}
                   viewHelperProps={{ mode: 'properties' }}
-                  schema={props.schema[row.id]}
+                  schema={schema[row.id]}
                   showFooter={false}
                   onDataChange={()=>{setExpandComplete(true);}}
-                />
+                />}
+                {ExpandedComponent && <ExpandedComponent row={row} onExpandComplete={()=>setExpandComplete(true)}/>}
               </Box>
             )}
           </div>
@@ -447,24 +443,30 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
   );
   // Render the UI for your table
   return (
-    <Box className={classes.pgTableHeadar}>
-      <Box className={classes.searchBox}>
-        {props.customHeader && (<Box className={classes.customHeader}> <props.customHeader /></Box>)}
-        <Box className={classes.searchPadding}></Box>
-        <InputText
-          placeholder={'Search'}
-          className={classes.searchInput}
-          value={searchVal}
-          onChange={(val) => {
-            setSearchVal(val);
-          }}
-        />
+    <Box className={classes.pgTableContainer} data-test={props['data-test']}>
+      <Box className={classes.pgTableHeader}>
+        {props.CustomHeader && (<Box className={classes.customHeader}> <props.CustomHeader /></Box>)}
+        <Box marginLeft="auto">
+          <InputText
+            placeholder={'Search'}
+            className={classes.searchInput}
+            value={searchVal}
+            onChange={(val) => {
+              setSearchVal(val);
+            }}
+          />
+        </Box>
       </Box>
       <div className={classes.tableContainer}>
         <div {...getTableProps({style:{minWidth: totalColumnsWidth}})} className={clsx(classes.table, caveTable ? classes.caveTable : '')}>
           <div>
             {headerGroups.map((headerGroup) => (
-              <div key={''} {...headerGroup.getHeaderGroupProps()}>
+              <div key={''} {...headerGroup.getHeaderGroupProps((column)=>({
+                style: {
+                  ...column.style,
+                  height: '40px',
+                }
+              }))}>
                 {headerGroup.headers.map((column) => (
                   <div
                     key={column.id}
@@ -472,14 +474,14 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                     className={clsx(classes.tableCellHeader, column.className)}
                   >
                     <div
-                      {...(column.sortble ? column.getSortByToggleProps() : {})}
+                      {...(column.sortable ? column.getSortByToggleProps() : {})}
                     >
                       {column.render('Header')}
                       <span>
                         {column.isSorted
                           ? column.isSortedDesc
-                            ? ' 🔽'
-                            : ' 🔼'
+                            ? <KeyboardArrowDownIcon style={{fontSize: '1.2rem'}} />
+                            : <KeyboardArrowUpIcon style={{fontSize: '1.2rem'}} />
                           : ''}
                       </span>
                     </div>
@@ -507,14 +509,13 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
                       height={height}
                       itemCount={rows.length}
                       itemSize={getRowHeight}
-                      sorted={props?.sortOptions}
                     >
                       {RenderRow}
                     </VariableSizeList>)}
                 </AutoSizer>
               </div>
             ) : (
-              <EmptyPanelMessage text={gettext('No record found')}/>
+              <EmptyPanelMessage text={gettext('No rows found')}/>
             )
           }
         </div>
@@ -526,7 +527,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, ..
 PgTable.propTypes = {
   stepId: PropTypes.number,
   height: PropTypes.number,
-  customHeader: PropTypes.func,
+  CustomHeader: PropTypes.func,
   className: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   caveTable: PropTypes.bool,
   fixedSizeList: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
@@ -544,8 +545,9 @@ PgTable.propTypes = {
   setSelectedRows: PropTypes.func,
   getSelectedRows: PropTypes.func,
   searchText: PropTypes.string,
-  type: PropTypes.string,
   sortOptions: PropTypes.array,
   schema: PropTypes.object,
-  rows: PropTypes.object
+  rows: PropTypes.object,
+  ExpandedComponent: PropTypes.node,
+  'data-test': PropTypes.string
 };

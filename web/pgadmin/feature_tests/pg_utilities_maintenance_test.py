@@ -9,6 +9,7 @@
 
 import random
 import os
+import time
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -73,7 +74,6 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         test_utils.create_database(self.server, self.database_name)
         test_utils.create_table(self.server, self.database_name,
                                 self.table_name)
-        test_gui_helper.close_bgprocess_popup(self)
         self.page.add_server(self.server)
         self.wait = WebDriverWait(self.page.driver, 20)
 
@@ -84,10 +84,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             lambda driver: driver.find_element(
                 By.XPATH, NavMenuLocators.maintenance_operation), 10)
 
-        # Wait for the backup status alertfier
-        self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR,
-             NavMenuLocators.bcg_process_status_alertifier_css)))
+        # Wait for the backup started alert
+        test_gui_helper.wait_for_process_start()
         self.verify_command()
 
     def _open_maintenance_dialogue(self):
@@ -122,35 +120,24 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             NavMenuLocators.maintenance_operation, 10)
 
     def verify_command(self):
-        status = test_utils.get_watcher_dialogue_status(self)
-        self.page.retry_click(
-            (By.CSS_SELECTOR,
-             NavMenuLocators.status_alertifier_more_btn_css),
-            (By.XPATH,
-             NavMenuLocators.process_watcher_alertfier))
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(
-                By.CSS_SELECTOR, ".loading-logs"))
+        test_gui_helper.open_process_details()
 
-        if status != "Successfully completed.":
-            self.assertEqual(status, "Successfully completed.")
-
+        message = self.page.find_by_css_selector(
+            NavMenuLocators.process_watcher_detailed_message_css).text
         command = self.page.find_by_css_selector(
-            NavMenuLocators.
-            process_watcher_detailed_command_canvas_css).text
+            NavMenuLocators.process_watcher_detailed_command_css).text
 
         vacuum_details = \
             "VACUUM (VERBOSE) on database '{0}' of server " \
             "{1} ({2}:{3})".format(self.database_name, self.server['name'],
                                    self.server['host'], self.server['port'])
         if self.test_level == 'database':
-            self.assertEqual(
-                command, vacuum_details + "\nRunning Query:\nVACUUM VERBOSE;")
+            self.assertEqual(message, vacuum_details)
+            self.assertEqual(command, "VACUUM VERBOSE;")
         elif self.is_xss_check and self.test_level == 'table':
             # Check for XSS in the dialog
             source_code = self.page.find_by_css_selector(
-                NavMenuLocators.
-                process_watcher_detailed_command_canvas_css
+                NavMenuLocators.process_watcher_detailed_command_css
             ).get_attribute('innerHTML')
             self.check_escaped_characters(
                 source_code,
@@ -158,15 +145,14 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                 'Maintenance detailed window'
             )
         else:
-            self.assertEqual(
-                command, vacuum_details + "\nRunning Query:\nVACUUM VERBOSE"
-                                          " public." + self.table_name + ";")
+            self.assertEqual(message, vacuum_details)
+            self.assertEqual(command, "VACUUM VERBOSE"
+                                      " public." + self.table_name + ";")
 
         test_gui_helper.close_process_watcher(self)
 
     def after(self):
         try:
-            test_gui_helper.close_bgprocess_popup(self)
             test_utils.delete_table(self.server, self.database_name,
                                     self.table_name)
             self.page.remove_server(self.server)

@@ -97,7 +97,7 @@ define('tools.restore', [
           gettext(data.errormsg)
         );
       } else {
-        pgBrowser.Events.trigger('pgadmin-bgprocess:created');
+        pgBrowser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
       }
     },
     setExtraParameters: function(treeInfo, nodeData) {

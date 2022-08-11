@@ -29,7 +29,7 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-from pgadmin.utils import html, does_utility_exist
+from pgadmin.utils import html, does_utility_exist, get_server
 from pgadmin.model import Server
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 
@@ -158,23 +158,7 @@ class Message(IProcessDesc):
 
     @property
     def message(self):
-        res = gettext("Refresh Materialized View")
-        opts = []
-        if not self.data['is_with_data']:
-            opts.append(gettext("With no data"))
-        else:
-            opts.append(gettext("With data"))
-        if self.data['is_concurrent']:
-            opts.append(gettext("Concurrently"))
-
-        return res + " ({0})".format(', '.join(str(x) for x in opts))
-
-    @property
-    def type_desc(self):
-        return gettext("Refresh Materialized View")
-
-    def details(self, cmd, args):
-        res = gettext("Refresh Materialized View ({0})")
+        msg = gettext("Refresh Materialized View ({0})")
         opts = []
         if not self.data['is_with_data']:
             opts.append(gettext("WITH NO DATA"))
@@ -184,17 +168,30 @@ class Message(IProcessDesc):
         if self.data['is_concurrent']:
             opts.append(gettext("CONCURRENTLY"))
 
-        res = res.format(', '.join(str(x) for x in opts))
+        msg = msg.format(', '.join(str(x) for x in opts))
+        return msg
 
-        res = '<div>' + html.safe_str(res)
+    @property
+    def type_desc(self):
+        return gettext("Refresh Materialized View")
 
-        res += '</div><div class="py-1">'
-        res += gettext("Running Query:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(self.query)
-        res += '</div></div>'
+    def get_server_name(self):
+        # Fetch the server details like hostname, port, roles etc
+        s = get_server(self.sid)
 
-        return res
+        if s is None:
+            return gettext("Not available")
+        return html.safe_str("{0} ({1}:{2})".format(s.name, s.host, s.port))
+
+    def details(self, cmd, args):
+        return {
+            "message": self.message,
+            "query": self.query,
+            "server": self.get_server_name(),
+            "object": "{0}/{1}".format(
+                self.data['database'], self.data.get('object', 'Unknown')),
+            "type": gettext("Refresh MView")
+        }
 
 
 class MViewModule(ViewModule):
@@ -2193,6 +2190,8 @@ class MViewNode(ViewNode, VacuumSettings):
                 is_concurrent=is_concurrent,
                 with_data=with_data
             )
+            data['object'] = "{0}.{1}".format(res['rows'][0]['schema'],
+                                              res['rows'][0]['name'])
 
             # Fetch the server details like hostname, port, roles etc
             server = Server.query.filter_by(
@@ -2273,6 +2272,7 @@ class MViewNode(ViewNode, VacuumSettings):
             return make_json_response(
                 data={
                     'job_id': jid,
+                    'desc': p.desc.message,
                     'status': True,
                     'info': gettext(
                         'Materialized view refresh job created.')

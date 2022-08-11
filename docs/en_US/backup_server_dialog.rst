@@ -122,24 +122,6 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
 Click the *Backup* button to build and execute a command based on your
 selections; click the *Cancel* button to exit without saving work.
 
-.. image:: images/backup_server_messages.png
-    :alt: Backup server success notification popup
-    :align: center
-
-Use the **Stop Process** button to stop the Backup process.
-
-If the backup is successful, a popup window will confirm success. Click *Click
-here for details* on the popup window to launch the *Process Watcher*. The
-*Process Watcher* logs all the activity associated with the backup and provides
-additional information for troubleshooting.
-
-.. image:: images/backup_server_process_watcher.png
-    :alt:  Backup server process watcher
-    :align: center
-
-If the backup is unsuccessful, review the error message returned by the
-*Process Watcher* to resolve any issue.
-
-.. note:: If you are running *pgAdmin* in *Server Mode* you can click on the |sm_icon| icon in the process watcher window to open the file location in the Storage Manager. You can use the :ref:`Storage Manager <storage_manager>` to download the backup file on the client machine .
-
-.. |sm_icon| image:: images/sm_icon.png
+pgAdmin will run the backup process in background. You can view all the background
+process with there running status and logs on the :ref:`Processes <processes>`
+tab

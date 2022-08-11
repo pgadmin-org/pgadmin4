@@ -664,7 +664,7 @@ export default function FileManager({params, closeModal, onOK, onCancel}) {
                 await openDir();
               }} icon={<SyncRoundedIcon />} disabled={showUploader} />
             </PgButtonGroup>
-            <InputText type="search" className={classes.inputSearch} data-label="search" placeholder='Search' value={search} onChange={setSearch} />
+            <InputText type="search" className={classes.inputSearch} data-label="search" placeholder={gettext('Search')} value={search} onChange={setSearch} />
             <PgButtonGroup size="small" style={{marginLeft: '4px'}}>
               {params.dialog_type == 'storage_dialog' &&
               <PgIconButton title={gettext('Download')} icon={<GetAppRoundedIcon />}

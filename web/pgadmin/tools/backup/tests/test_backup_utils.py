@@ -56,16 +56,16 @@ def run_backup_job(tester, job_id, expected_params, assert_in, assert_not_in,
 
     backup_file = None
     if 'details' in the_process:
-        backup_det = the_process['details']
-        backup_file = backup_det[int(backup_det.find('--file')) +
-                                 8:int(backup_det.find('--host')) - 2]
+        backup_cmd = the_process['details']['cmd']
+        backup_file = backup_cmd[int(backup_cmd.find('--file')) +
+                                 8:int(backup_cmd.find('--host')) - 2]
 
     if expected_params['expected_cmd_opts']:
         for opt in expected_params['expected_cmd_opts']:
-            assert_in(opt, the_process['details'])
+            assert_in(opt, the_process['details']['cmd'])
     if expected_params['not_expected_cmd_opts']:
         for opt in expected_params['not_expected_cmd_opts']:
-            assert_not_in(opt, the_process['details'])
+            assert_not_in(opt, the_process['details']['cmd'])
 
     # Check the process details
     p_details = tester.get('/misc/bgprocess/{0}?_={1}'.format(

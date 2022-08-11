@@ -39,7 +39,7 @@ class BGProcessModule(PgAdminModule):
         return [
             'bgprocess.status', 'bgprocess.detailed_status',
             'bgprocess.acknowledge', 'bgprocess.list',
-            'bgprocess.stop_process'
+            'bgprocess.stop_process', 'bgprocess.update_cloud_details',
         ]
 
 
@@ -95,8 +95,28 @@ def acknowledge(pid):
         Positive status
     """
     try:
+        BatchProcess.acknowledge(pid)
+        return success_return()
+    except LookupError as lerr:
+        return gone(errormsg=str(lerr))
+
+
+@blueprint.route('/update_cloud_details/<pid>', methods=['PUT'],
+                 endpoint='update_cloud_details')
+@login_required
+def update_cloud_details(pid):
+    """
+    Update the cloud details and get instance details
+
+    Args:
+        pid:  Process ID
+
+    Returns:
+        Positive status
+    """
+    try:
         process = BatchProcess(id=pid)
-        status, server = process.acknowledge(pid)
+        status, server = process.update_cloud_details()
         if status and len(server) > 0:
             return make_json_response(
                 success=1,

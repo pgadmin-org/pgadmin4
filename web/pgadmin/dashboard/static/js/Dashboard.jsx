@@ -143,7 +143,7 @@ export default function Dashboard({
     {
       accessor: 'name',
       Header: gettext('Name'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -153,7 +153,7 @@ export default function Dashboard({
     {
       accessor: 'category',
       Header: gettext('Category'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -161,7 +161,7 @@ export default function Dashboard({
     {
       accessor: 'setting',
       Header: gettext('Value'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -170,7 +170,7 @@ export default function Dashboard({
     {
       accessor: 'unit',
       Header: gettext('Unit'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -179,7 +179,7 @@ export default function Dashboard({
     {
       accessor: 'short_desc',
       Header: gettext('Description'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
@@ -189,7 +189,7 @@ export default function Dashboard({
     {
       accessor: 'terminate_query',
       Header: () => null,
-      sortble: true,
+      sortable: true,
       resizable: false,
       disableGlobalFilter: false,
       width: 35,
@@ -261,7 +261,7 @@ export default function Dashboard({
     {
       accessor: 'cancel_Query',
       Header: () => null,
-      sortble: true,
+      sortable: true,
       resizable: false,
       disableGlobalFilter: false,
       width: 35,
@@ -330,7 +330,7 @@ export default function Dashboard({
     {
       accessor: 'view_active_query',
       Header: () => null,
-      sortble: true,
+      sortable: true,
       resizable: false,
       disableGlobalFilter: false,
       width: 35,
@@ -374,7 +374,7 @@ export default function Dashboard({
     {
       accessor: 'pid',
       Header: gettext('PID'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -383,7 +383,7 @@ export default function Dashboard({
     {
       accessor: 'datname',
       Header: gettext('Database'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -393,7 +393,7 @@ export default function Dashboard({
     {
       accessor: 'usename',
       Header: gettext('User'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -402,7 +402,7 @@ export default function Dashboard({
     {
       accessor: 'application_name',
       Header: gettext('Application'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -410,7 +410,7 @@ export default function Dashboard({
     {
       accessor: 'client_addr',
       Header: gettext('Client'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -418,7 +418,7 @@ export default function Dashboard({
     {
       accessor: 'backend_start',
       Header: gettext('Backend start'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 100,
@@ -426,7 +426,7 @@ export default function Dashboard({
     {
       accessor: 'xact_start',
       Header: gettext('Transaction start'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -434,7 +434,7 @@ export default function Dashboard({
     {
       accessor: 'state',
       Header: gettext('State'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -444,7 +444,7 @@ export default function Dashboard({
     {
       accessor: 'waiting',
       Header: gettext('Waiting'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       isVisible: treeNodeInfo?.server?.version < 90600
@@ -452,14 +452,14 @@ export default function Dashboard({
     {
       accessor: 'wait_event',
       Header: gettext('Wait event'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       accessor: 'blocking_pids',
       Header: gettext('Blocking PIDs'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
@@ -469,7 +469,7 @@ export default function Dashboard({
     {
       accessor: 'pid',
       Header: gettext('PID'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -478,7 +478,7 @@ export default function Dashboard({
     {
       accessor: 'datname',
       Header: gettext('Database'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -488,7 +488,7 @@ export default function Dashboard({
     {
       accessor: 'locktype',
       Header: gettext('Lock type'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -497,14 +497,14 @@ export default function Dashboard({
     {
       accessor: 'relation',
       Header: gettext('Target relation'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       accessor: 'page',
       Header: gettext('Page'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -513,7 +513,7 @@ export default function Dashboard({
     {
       accessor: 'tuple',
       Header: gettext('Tuple'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -521,7 +521,7 @@ export default function Dashboard({
     {
       accessor: 'virtualxid',
       Header: gettext('vXID (target)'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -530,7 +530,7 @@ export default function Dashboard({
     {
       accessor: 'transactionid',
       Header: gettext('XID (target)'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -539,7 +539,7 @@ export default function Dashboard({
     {
       accessor: 'classid',
       Header: gettext('Class'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -548,7 +548,7 @@ export default function Dashboard({
     {
       accessor: 'objid',
       Header: gettext('Object ID'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -558,7 +558,7 @@ export default function Dashboard({
     {
       accessor: 'virtualtransaction',
       Header: gettext('vXID (owner)'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 50,
@@ -566,7 +566,7 @@ export default function Dashboard({
     {
       accessor: 'mode',
       Header: gettext('Mode'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
@@ -574,7 +574,7 @@ export default function Dashboard({
       id: 'granted',
       accessor: 'granted',
       Header: gettext('Granted?'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 30,
@@ -587,14 +587,14 @@ export default function Dashboard({
     {
       accessor: 'git',
       Header: gettext('Name'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       accessor: 'datname',
       Header: gettext('Database'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 26,
@@ -604,21 +604,21 @@ export default function Dashboard({
     {
       accessor: 'Owner',
       Header: gettext('Owner'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       accessor: 'transaction',
       Header: gettext('XID'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       accessor: 'prepared',
       Header: gettext('Prepared at'),
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },

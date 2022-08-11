@@ -65,21 +65,21 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
 
       Header: 'Object Type',
       accessor: 'object_type',
-      sortble: true,
+      sortable: true,
       resizable: false,
       disableGlobalFilter: true
     },
     {
       Header: 'Schema',
       accessor: 'nspname',
-      sortble: true,
+      sortable: true,
       resizable: false,
       disableGlobalFilter: true
     },
     {
       Header: 'Name',
       accessor: 'name_with_args',
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
       minWidth: 280
@@ -87,7 +87,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
     {
       Header: 'parameters',
       accessor: 'proargs',
-      sortble: false,
+      sortable: false,
       resizable: false,
       disableGlobalFilter: false,
       minWidth: 280,
@@ -96,7 +96,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
     {
       Header: 'Name',
       accessor: 'name',
-      sortble: false,
+      sortable: false,
       resizable: false,
       disableGlobalFilter: false,
       minWidth: 280,
@@ -105,7 +105,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
     {
       Header: 'ID',
       accessor: 'oid',
-      sortble: false,
+      sortable: false,
       resizable: false,
       disableGlobalFilter: false,
       minWidth: 280,

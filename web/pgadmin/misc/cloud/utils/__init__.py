@@ -14,6 +14,7 @@ from pgadmin.misc.bgprocess.processes import IProcessDesc
 from pgadmin.utils import html
 from pgadmin.model import db, Server
 from flask_babel import gettext
+from pgadmin.utils import get_server
 
 
 def get_my_ip():
@@ -79,13 +80,15 @@ class CloudProcessDesc(IProcessDesc):
             self.provider, self.instance_name))
 
     def details(self, cmd, args):
-        res = '<div>' + self.message
-        res += '</div><div class="py-1">'
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(self.cmd)
-        res += '</div></div>'
+        server = getattr(get_server(self.sid), 'name', "Not available")
 
-        return res
+        return {
+            "message": self.message,
+            "cmd": cmd,
+            "server": server,
+            "object": self.instance_name,
+            "type": self.provider,
+        }
 
     @property
     def type_desc(self):

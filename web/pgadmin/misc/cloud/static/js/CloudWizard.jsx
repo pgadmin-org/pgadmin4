@@ -153,7 +153,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
     axiosApi.post(_url, post_data)
       .then((res) => {
         pgAdmin.Browser.Events.trigger('pgadmin:browser:tree:add', res.data.data.node, {'server_group': nodeInfo['server_group']});
-        pgAdmin.Browser.Events.trigger('pgadmin-bgprocess:created');
+        pgAdmin.Browser.BgProcessManager.startProcess(res.data.data.job_id, res.data.data.desc);
         onClose();
       })
       .catch((error) => {

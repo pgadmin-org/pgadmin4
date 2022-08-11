@@ -45,18 +45,6 @@ switch to the *No* position; by default, status messages are included.
 When you've completed the dialog, click *OK* to start the background process;
 to exit the dialog without performing maintenance operations, click *Cancel*.
 
-pgAdmin will inform you when the background process completes:
-
-.. image:: images/maintenance_complete.png
-    :alt: Maintenance completion notification
-    :align: center
-
-Use the **Stop Process** button to stop the Maintenance process.
-
-Use the *Click here for details* link on the notification to open the *Process
-Watcher* and review detailed information about the execution of the command that
-performed the import or export:
-
-.. image:: images/maintenance_pw.png
-    :alt: Maintenance process watcher
-    :align: center
+pgAdmin will run the maintenance process in background. You can view all the background
+process with there running status and logs on the :ref:`Processes <processes>`
+tab

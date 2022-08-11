@@ -49,12 +49,13 @@ class RestoreMessageTest(BaseTestGenerator):
          ))
     ]
 
-    @patch('pgadmin.tools.restore.RestoreMessage.get_server_details')
-    def runTest(self, get_server_details_mock):
-        get_server_details_mock.return_value = \
-            self.class_params['name'],\
-            self.class_params['host'],\
-            self.class_params['port']
+    @patch('pgadmin.tools.restore.RestoreMessage.get_server_name')
+    def runTest(self, get_server_name_mock):
+        get_server_name_mock.return_value = "{0} ({1}:{2})" \
+            .format(
+                self.class_params['name'],
+                self.class_params['host'],
+                self.class_params['port'])
 
         restore_obj = RestoreMessage(
             self.class_params['sid'],
@@ -68,4 +69,4 @@ class RestoreMessageTest(BaseTestGenerator):
         # Check the command
         obj_details = restore_obj.details(self.class_params['cmd'],
                                           self.class_params['args'])
-        self.assertIn(self.expected_details_cmd, obj_details)
+        self.assertEqual(self.expected_details_cmd, obj_details['cmd'])

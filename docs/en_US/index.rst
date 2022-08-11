@@ -23,6 +23,7 @@ of database objects.
    management_basics
    backup_and_restore
    developer_tools
+   processes
    pgagent
    contributions
    release_notes

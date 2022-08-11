@@ -82,7 +82,7 @@ class UserManagementCollection extends BaseUISchema {
         deps: ['auth_source'],
         depChange: (state)=>{
           if (obj.isUserNameEnabled(state) && obj.isNew(state) && !isEmptyString(obj.username)) {
-            state.username = undefined;
+            return {username: undefined};
           }
         },
         editable: (state)=> {

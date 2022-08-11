@@ -101,7 +101,7 @@ class MaintenanceJobTest(BaseTestGenerator):
         self.assertTrue(the_process['exit_code'] in
                         self.expected_exit_code)
 
-        self.assertIn(self.expected_cmd, the_process['details'])
+        self.assertIn(self.expected_cmd, the_process['details']['query'])
 
         # Check the process details
         p_details = self.tester.get('/misc/bgprocess/{0}?_={1}'.format(

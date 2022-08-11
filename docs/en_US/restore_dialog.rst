@@ -143,17 +143,6 @@ command, click the *Restore* button to start the process, or click the *Cancel*
 button to exit without saving your work. A popup will confirm if the restore is
 successful.
 
-.. image:: images/restore_messages.png
-    :alt: Restore dialog notifications
-    :align: center
-
-Use the **Stop Process** button to stop the Restore process.
-
-Click *Click here for details* on the popup to launch the *Process Watcher*. The
-*Process Watcher* logs all the activity associated with the restore, and
-provides additional information for troubleshooting should the restore command
-encounter problems.
-
-.. image:: images/restore_process_watcher.png
-    :alt: Restore dialog process watcher
-    :align: center
+pgAdmin will run the restore process in background. You can view all the background
+process with there running status and logs on the :ref:`Processes <processes>`
+tab

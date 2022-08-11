@@ -177,6 +177,8 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
         batch_process_mock.return_value.start = MagicMock(
             return_value=True
         )
+        message_mock.message = 'test'
+        batch_process_mock.return_value.desc = message_mock
         export_password_env_mock.return_value = True
 
         server_response = server_utils.connect_server(self, self.server_id)

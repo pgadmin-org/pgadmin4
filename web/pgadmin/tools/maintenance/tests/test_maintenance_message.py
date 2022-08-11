@@ -128,4 +128,4 @@ class MaintenanceMessageTest(BaseTestGenerator):
 
         # Check the command
         obj_details = maintenance_obj.details(self.class_params['cmd'], None)
-        self.assertIn(self.expected_details_cmd, obj_details)
+        self.assertIn(self.expected_details_cmd, obj_details['query'])

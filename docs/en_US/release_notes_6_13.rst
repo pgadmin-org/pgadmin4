@@ -9,6 +9,7 @@ This release contains a number of bug fixes and new features since the release o
 New features
 ************
 
+  | `Issue #3709 <https://redmine.postgresql.org/issues/3709>`_ -  Added support to show all background processes in separate panel.
   | `Issue #7387 <https://redmine.postgresql.org/issues/7387>`_ -  Added support to create triggers from existing trigger functions in EPAS.
 
 Housekeeping
@@ -16,6 +17,7 @@ Housekeeping
 
   | `Issue #7344 <https://redmine.postgresql.org/issues/7344>`_ -  Port Role Reassign dialog to React.
   | `Issue #7345 <https://redmine.postgresql.org/issues/7345>`_ -  Port User Management dialog to React.
+  | `Issue #7404 <https://redmine.postgresql.org/issues/7404>`_ -  Port process watcher to React.
   | `Issue #7462 <https://redmine.postgresql.org/issues/7462>`_ -  Remove the SQL files for the unsupported versions of the database server.
   | `Issue #7567 <https://redmine.postgresql.org/issues/7567>`_ -  Port About dialog to React.
   | `Issue #7568 <https://redmine.postgresql.org/issues/7568>`_ -  Port change user password and 2FA dialog to React.

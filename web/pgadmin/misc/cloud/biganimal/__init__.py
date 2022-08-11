@@ -429,8 +429,8 @@ def deploy_on_biganimal(data):
         p.update_server_id(p.id, sid)
         p.start()
 
-        return True, {'label': _label, 'sid': sid}
+        return True, p, {'label': _label, 'sid': sid}
 
     except Exception as e:
         current_app.logger.exception(e)
-        return False, str(e)
+        return False, None, str(e)

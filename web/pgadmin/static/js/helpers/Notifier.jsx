@@ -92,7 +92,7 @@ const useModalStyles = makeStyles((theme)=>({
   },
   margin: {
     marginLeft: '0.25rem',
-  }
+  },
 }));
 function AlertContent({text, confirm, okLabel=gettext('OK'), cancelLabel=gettext('Cancel'), onOkClick, onCancelClick}) {
   const classes = useModalStyles();
@@ -144,11 +144,10 @@ var Notifier = {
     }
   },
   _callNotify(msg, type, autoHideDuration) {
-    if (!_.isNull(autoHideDuration)) {
-      this.notify(<NotifierMessage type={type} message={msg} closable={false} />, autoHideDuration);
-    } else {
-      this.notify(<NotifierMessage type={type} message={msg}/>, null);
-    }
+    this.notify(
+      <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={_.isNull(autoHideDuration) ? true : false} />,
+      autoHideDuration
+    );
   },
 
   pgRespErrorNotify(xhr, error, prefixMsg='') {

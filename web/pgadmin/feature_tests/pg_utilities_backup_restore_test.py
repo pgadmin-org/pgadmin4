@@ -61,7 +61,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         if not db_id:
             self.assertTrue(False, "Database {} is not "
                                    "created".format(self.database_name))
-        test_gui_helper.close_bgprocess_popup(self)
         self.page.add_server(self.server)
 
         self.wait = WebDriverWait(self.page.driver, 20)
@@ -74,36 +73,23 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         # Backup
         self.initiate_backup()
 
-        # Wait for the backup status alertfier
-        self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR,
-             NavMenuLocators.bcg_process_status_alertifier_css)))
-
-        status = test_utils.get_watcher_dialogue_status(self)
-
-        self.page.retry_click(
-            (By.CSS_SELECTOR,
-             NavMenuLocators.status_alertifier_more_btn_css),
-            (By.XPATH,
-             NavMenuLocators.process_watcher_alertfier))
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(
-                By.CSS_SELECTOR, ".loading-logs"), 15)
-
-        expected_backup_success_msg = "Successfully completed."
-        self.assertEqual(status, expected_backup_success_msg)
+        test_gui_helper.wait_for_process_start(self)
+        test_gui_helper.open_process_details(self)
 
         backup_file = None
         # Check for XSS in Backup details
         if self.is_xss_check:
             self._check_detailed_window_for_xss('Backup')
         else:
+            message = self.page.find_by_css_selector(
+                NavMenuLocators.process_watcher_detailed_message_css). \
+                text
             command = self.page.find_by_css_selector(
-                NavMenuLocators.process_watcher_detailed_command_canvas_css). \
+                NavMenuLocators.process_watcher_detailed_command_css). \
                 text
 
-            self.assertIn(self.server['name'], str(command))
-            self.assertIn("from database 'pg_utility_test_db'", str(command))
+            self.assertIn(self.server['name'], str(message))
+            self.assertIn("from database 'pg_utility_test_db'", str(message))
 
             # On windows a modified path may be shown so skip this test
             if os.name != 'nt':
@@ -120,32 +106,21 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         # Restore
         self.initiate_restore()
 
-        # Wait for the backup status alertfier
-        self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR,
-             NavMenuLocators.bcg_process_status_alertifier_css)))
-
-        status = test_utils.get_watcher_dialogue_status(self)
-
-        self.page.retry_click(
-            (By.CSS_SELECTOR,
-             NavMenuLocators.status_alertifier_more_btn_css),
-            (By.XPATH,
-             NavMenuLocators.process_watcher_alertfier))
-        self.page.wait_for_element_to_disappear(
-            lambda driver: driver.find_element(
-                By.CSS_SELECTOR, ".loading-logs"), 10)
-        self.assertEqual(status, expected_backup_success_msg)
+        test_gui_helper.wait_for_process_start(self)
+        test_gui_helper.open_process_details(self)
 
         # Check for XSS in Restore details
         if self.is_xss_check:
             self._check_detailed_window_for_xss('Restore')
         else:
+            message = self.page.find_by_css_selector(
+                NavMenuLocators.process_watcher_detailed_message_css). \
+                text
             command = self.page.find_by_css_selector(
-                NavMenuLocators.process_watcher_detailed_command_canvas_css). \
+                NavMenuLocators.process_watcher_detailed_command_css). \
                 text
 
-            self.assertIn(self.server['name'], str(command))
+            self.assertIn(self.server['name'], str(message))
             if os.name != 'nt':
                 self.assertIn("test_backup", str(command))
 
@@ -158,8 +133,6 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
     def after(self):
         try:
-            test_gui_helper.close_process_watcher(self)
-            test_gui_helper.close_bgprocess_popup(self)
             self.page.remove_server(self.server)
         except Exception:
             print("PGUtilitiesBackupFeatureTest - "
@@ -177,7 +150,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
     def _check_detailed_window_for_xss(self, tool_name):
         source_code = self.page.find_by_css_selector(
-            NavMenuLocators.process_watcher_detailed_command_canvas_css
+            NavMenuLocators.process_watcher_detailed_command_css
         ).get_attribute('innerHTML')
         self._check_escaped_characters(
             source_code,

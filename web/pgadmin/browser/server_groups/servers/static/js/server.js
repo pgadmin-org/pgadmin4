@@ -629,7 +629,7 @@ define('pgadmin.node.server', [
 
     var connect_to_server = function(obj, data, tree, item, reconnect) {
     // Open properties dialog in edit mode
-      var server_url = obj.generate_url(item, 'obj', data, true);
+      let server_url = obj.generate_url(item, 'obj', data, true);
       // Fetch the updated data
       $.get(server_url)
         .done(function(res) {
@@ -651,20 +651,7 @@ define('pgadmin.node.server', [
             }
           }
           else if (res.cloud_status == -1) {
-            $.ajax({
-              type: 'GET',
-              timeout: 30000,
-              url: url_for('cloud.update_cloud_process', {'sid': res.id}),
-              cache: false,
-              async: true,
-              contentType: 'application/json',
-            })
-              .done(function() {
-                pgAdmin.Browser.BackgroundProcessObsorver.update_process_list();
-              })
-              .fail(function() {
-                console.warn(arguments);
-              });
+            pgAdmin.Browser.BgProcessManager.recheckCloudServer(data._id);
           }
           return;
         }).always(function(){

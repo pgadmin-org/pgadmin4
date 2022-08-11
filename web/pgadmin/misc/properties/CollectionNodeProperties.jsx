@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'auto !important'
   },
   dropButton: {
-    marginRight: '5px !important'
+    marginRight: '8px !important'
   },
   readOnlySwitch: {
     opacity: 0.75,
@@ -99,14 +99,14 @@ export function CollectionNodeView({
     {
       Header: 'properties',
       accessor: 'Properties',
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
       Header: 'value',
       accessor: 'value',
-      sortble: true,
+      sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
@@ -209,7 +209,7 @@ export function CollectionNodeView({
               column = {
                 Header: field.label,
                 accessor: field.id,
-                sortble: true,
+                sortable: true,
                 resizable: true,
                 disableGlobalFilter: false,
                 minWidth: 0,
@@ -222,7 +222,7 @@ export function CollectionNodeView({
               column = {
                 Header: field.label,
                 accessor: field.id,
-                sortble: true,
+                sortable: true,
                 resizable: true,
                 disableGlobalFilter: false,
                 minWidth: 0,
@@ -236,7 +236,7 @@ export function CollectionNodeView({
           column = {
             Header: field,
             accessor: field,
-            sortble: true,
+            sortable: true,
             resizable: true,
             disableGlobalFilter: false,
             minWidth: 0,
@@ -267,7 +267,7 @@ export function CollectionNodeView({
     }
   }, [itemNodeData, node, item, reload]);
 
-  const customHeader = () => {
+  const CustomHeader = () => {
     return (
       <Box >
         <PgIconButton
@@ -308,7 +308,7 @@ export function CollectionNodeView({
           (
             <PgTable
               isSelectRow={!('catalog' in treeNodeInfo) && (itemNodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
-              customHeader={customHeader}
+              CustomHeader={CustomHeader}
               className={classes.autoResizer}
               columns={pgTableColumns}
               data={data}

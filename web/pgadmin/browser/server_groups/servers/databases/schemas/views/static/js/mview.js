@@ -203,9 +203,8 @@ define('pgadmin.node.mview', [
           })
             .done(function(refreshed_res) {
               if (refreshed_res.data && refreshed_res.data.status) {
-              //Do nothing as we are creating the job and exiting from the main dialog
-                Notify.success(refreshed_res.data.info);
-                pgBrowser.Events.trigger('pgadmin-bgprocess:created');
+                //Do nothing as we are creating the job and exiting from the main dialog
+                pgBrowser.BgProcessManager.startProcess(refreshed_res.data.job_id, refreshed_res.data.desc);
               } else {
                 Notify.alert(
                   gettext('Failed to create materialized view refresh job.'),

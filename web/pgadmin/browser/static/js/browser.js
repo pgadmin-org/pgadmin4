@@ -266,6 +266,19 @@ define('pgadmin.browser', [
         content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependents-container d-none"></div></div>',
         events: panelEvents,
       }),
+      // Background processes
+      'processes': new pgAdmin.Browser.Panel({
+        name: 'processes',
+        title: gettext('Processes'),
+        icon: '',
+        width: 500,
+        isCloseable: true,
+        isPrivate: false,
+        limit: 1,
+        canHide: true,
+        content: '<div class="negative-space p-2"><div class="pg-panel-processes-container d-none"></div></div>',
+        events: panelEvents,
+      }),
     },
     // We also support showing dashboards, HTML file, external URL
     frames: {},

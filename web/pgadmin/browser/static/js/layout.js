@@ -42,6 +42,8 @@ _.extend(pgBrowser, {
       'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
     docker.addPanel(
       'dependents', wcDocker.DOCK.STACKED, dashboardPanel);
+    docker.addPanel(
+      'processes', wcDocker.DOCK.STACKED, dashboardPanel);
   },
 
   save_current_layout: function(layout_id, docker) {

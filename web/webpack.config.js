@@ -473,7 +473,7 @@ module.exports = [{
           imports: [
             'pure|pgadmin.browser.quick_search',
             'pure|pgadmin.tools.user_management',
-            'pure|pgadmin.browser.bgprocess',
+            'pure|pgadmin.browser.bgprocessmanager',
             'pure|pgadmin.node.server_group',
             'pure|pgadmin.node.server',
             'pure|pgadmin.node.database',

@@ -82,8 +82,7 @@ define([
           gettext(data.errormsg)
         );
       } else {
-        Notify.success(gettext('Import/Export job created.'));
-        pgBrowser.Events.trigger('pgadmin-bgprocess:created');
+        pgBrowser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
       }
     },
 

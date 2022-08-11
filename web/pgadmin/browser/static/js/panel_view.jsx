@@ -17,6 +17,7 @@ import SQL from '../../../misc/sql/static/js/SQL';
 import Dashboard from '../../../dashboard/static/js/Dashboard';
 import _ from 'lodash';
 import { CollectionNodeView } from '../../../misc/properties/CollectionNodeProperties';
+import Processes from '../../../misc/bgprocess/static/js/Processes';
 
 
 /* The entry point for rendering React based view in properties, called in node.js */
@@ -127,6 +128,14 @@ export function getPanelView(
           did={((!_.isUndefined(treeNodeInfo)) && (!_.isUndefined(treeNodeInfo['database']))) ? treeNodeInfo['database']._id: 0}
           dbConnected={!_.isUndefined(treeNodeInfo) && !_.isUndefined(treeNodeInfo['database']) ? treeNodeInfo.database.connected: false}
         />
+      </Theme>,
+      container
+    );
+  }
+  if (panelType == 'processes') {
+    ReactDOM.render(
+      <Theme>
+        <Processes />
       </Theme>,
       container
     );
