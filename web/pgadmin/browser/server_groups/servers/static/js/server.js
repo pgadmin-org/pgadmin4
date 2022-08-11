@@ -636,7 +636,7 @@ define('pgadmin.node.server', [
           if (res.shared && _.isNull(res.username) && data.user_id != current_user.id) {
             if (!res.service) {
               pgAdmin.Browser.Node.callbacks.show_obj_properties.call(
-                pgAdmin.Browser.Nodes[tree.itemData(item)._type], {action: 'edit'}
+                pgAdmin.Browser.Nodes[tree.itemData(item)._type], {action: 'edit', 'item': item}
               );
               data.is_connecting = false;
               tree.unload(item);
