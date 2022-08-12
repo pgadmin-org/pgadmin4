@@ -9,9 +9,8 @@
 
 import config
 import string
-import random
+import secrets
 import os
-import re
 import getpass
 from pgadmin.utils.constants import ENTER_EMAIL_ADDRESS
 
@@ -22,7 +21,7 @@ def user_info_desktop():
     print("NOTE: Configuring authentication for DESKTOP mode.")
     email = config.DESKTOP_USER
     p1 = ''.join([
-        random.choice(string.ascii_letters + string.digits)
+        secrets.choice(string.ascii_letters + string.digits)
         for _ in range(32)
     ])
     return email, p1

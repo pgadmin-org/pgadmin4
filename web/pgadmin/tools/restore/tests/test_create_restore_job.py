@@ -8,7 +8,7 @@
 ##########################################################################
 
 import time
-import random
+import secrets
 import os
 
 import simplejson as json
@@ -120,7 +120,7 @@ class RestoreJobTest(BaseTestGenerator):
                 break
             # Check the process list
             response1 = self.tester.get('/misc/bgprocess/?_={0}'.format(
-                random.randint(1, 9999999)))
+                secrets.choice(range(1, 9999999))))
             self.assertEqual(response1.status_code, 200)
             process_list = json.loads(response1.data.decode('utf-8'))
 
@@ -150,14 +150,14 @@ class RestoreJobTest(BaseTestGenerator):
 
         # Check the process details
         p_details = self.tester.get('/misc/bgprocess/{0}?_={1}'.format(
-            job_id, random.randint(1, 9999999))
+            job_id, secrets.choice(range(1, 9999999)))
         )
         self.assertEqual(p_details.status_code, 200)
         json.loads(p_details.data.decode('utf-8'))
 
         p_details = self.tester.get(
             '/misc/bgprocess/{0}/{1}/{2}/?_={3}'.format(
-                job_id, 0, 0, random.randint(1, 9999999)
+                job_id, 0, 0, secrets.choice(range(1, 9999999))
             )
         )
         self.assertEqual(p_details.status_code, 200)
@@ -172,7 +172,7 @@ class RestoreJobTest(BaseTestGenerator):
 
             p_details = self.tester.get(
                 '/misc/bgprocess/{0}/{1}/{2}/?_={3}'.format(
-                    job_id, out, err, random.randint(1, 9999999))
+                    job_id, out, err, secrets.choice(range(1, 9999999)))
             )
             self.assertEqual(p_details.status_code, 200)
             p_details_data = json.loads(p_details.data.decode('utf-8'))

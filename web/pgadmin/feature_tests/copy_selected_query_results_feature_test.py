@@ -7,12 +7,10 @@
 #
 ##########################################################################
 
-import random
-import time
+import secrets
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.feature_utils.locators import QueryToolLocators
@@ -33,7 +31,8 @@ class CopySelectedQueryResultsFeatureTest(BaseFeatureTest):
 
         # Create test table with random name to avoid same name conflicts in
         # parallel execution
-        self.test_table_name = "test_table" + str(random.randint(1000, 3000))
+        self.test_table_name = "test_table" + \
+                               str(secrets.choice(range(1000, 3000)))
         self.page.add_server(self.server)
         test_utils.create_table(
             self.server, self.test_db, self.test_table_name)

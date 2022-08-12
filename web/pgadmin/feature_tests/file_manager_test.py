@@ -8,10 +8,9 @@
 ##########################################################################
 
 import os
-import random
-import string
 import sys
 import time
+import tempfile
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -41,12 +40,17 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         self.wait = WebDriverWait(self.page.driver, 10)
         filename = self.server_information['type'] + \
             str(self.server_information['server_version'])
-        self.XSS_FILE = '/<img src=x ' + filename + '=alert("1")>.sql'
+        self.XSS_FILE = '<img src=x ' + filename + '=alert("1")>.sql'
+        self.tmpDir = os.path.join(tempfile.gettempdir(), 'pga4_test')
+
+        # Create temp directory
+        if not os.path.exists(self.tmpDir):
+            os.makedirs(self.tmpDir)
 
         if self.parallel_ui_tests:
             xss_file_path = self.XSS_FILE
         else:
-            xss_file_path = '/tmp/' + self.XSS_FILE
+            xss_file_path = os.path.join(self.tmpDir, self.XSS_FILE)
         # Remove any previous file
         if os.path.isfile(xss_file_path):
             os.remove(xss_file_path)
@@ -83,8 +87,11 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         # Save the file
         if not self.parallel_ui_tests:
             self.page.fill_input_by_css_selector(
+                QueryToolLocators.folder_path_css, '',
+                key_after_input=Keys.ENTER)
+            self.page.fill_input_by_css_selector(
                 QueryToolLocators.folder_path_css,
-                "/tmp/", input_keys=True, key_after_input=Keys.ENTER)
+                self.tmpDir, input_keys=True, key_after_input=Keys.ENTER)
             self.page.find_by_css_selector(
                 QueryToolLocators.folder_path_css).send_keys(Keys.ENTER)
         input_file_path_ele = \
@@ -102,14 +109,18 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         # Open the file
         if not self.parallel_ui_tests:
             self.page.fill_input_by_css_selector(
+                QueryToolLocators.folder_path_css, '',
+                key_after_input=Keys.ENTER)
+            self.page.fill_input_by_css_selector(
                 QueryToolLocators.folder_path_css,
-                "/tmp/", key_after_input=Keys.ENTER)
+                self.tmpDir, key_after_input=Keys.ENTER)
             self.page.find_by_css_selector(
                 QueryToolLocators.folder_path_css).send_keys(Keys.ENTER)
             time.sleep(2)
 
         self.page.fill_input_by_css_selector(
-            QueryToolLocators.search_file_edit_box_css, self.XSS_FILE)
+            QueryToolLocators.search_file_edit_box_css, self.XSS_FILE,
+            input_keys=True)
 
         self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.select_file_content_css)))

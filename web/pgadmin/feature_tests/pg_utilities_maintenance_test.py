@@ -7,9 +7,8 @@
 #
 ##########################################################################
 
-import random
+import secrets
 import os
-import time
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -67,9 +66,10 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             self.server['sslmode']
         )
 
-        self.table_name = self.table_name + str(random.randint(100, 1000))
+        self.table_name = self.table_name + str(
+            secrets.choice(range(100, 1000)))
         self.database_name = \
-            self.database_name + str(random.randint(100, 1000))
+            self.database_name + str(secrets.choice(range(100, 1000)))
         test_utils.drop_database(connection, self.database_name)
         test_utils.create_database(self.server, self.database_name)
         test_utils.create_table(self.server, self.database_name,

@@ -11,7 +11,7 @@
 import os
 import pickle
 import re
-import random
+import secrets
 from urllib.parse import unquote
 from threading import Lock
 
@@ -203,7 +203,7 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
         filter_sql = request.args or request.form
 
     # Create asynchronous connection using random connection id.
-    conn_id = str(random.randint(1, 9999999))
+    conn_id = str(secrets.choice(range(1, 9999999)))
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         # default_conn is same connection which is created when user connect to
@@ -404,7 +404,7 @@ def _connect(conn, **kwargs):
 
 def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
     # Create asynchronous connection using random connection id.
-    conn_id = str(random.randint(1, 9999999))
+    conn_id = str(secrets.choice(range(1, 9999999)))
 
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
@@ -503,7 +503,7 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
                 req_args['recreate'] == '1'):
             connect = False
 
-        new_trans_id = str(random.randint(1, 9999999))
+        new_trans_id = str(secrets.choice(range(1, 9999999)))
         kwargs = {
             'user': data['user'],
             'role': data['role'] if 'role' in data else None,

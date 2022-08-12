@@ -10,13 +10,13 @@
 """ Implements Partitions Node """
 
 import re
-import random
+import secrets
 import simplejson as json
 import pgadmin.browser.server_groups.servers.databases.schemas as schema
 from flask import render_template, request, current_app
 from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
-    import DataTypeReader, VacuumSettings
+    import DataTypeReader
 from pgadmin.utils.ajax import internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.utils \
@@ -492,7 +492,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         # the partitioned(base) table.
         target_data['orig_name'] = target_data['name']
         target_data['name'] = 'temp_partitioned_{0}'.format(
-            random.randint(1, 9999999))
+            secrets.choice(range(1, 9999999)))
         # For PG/EPAS 11 and above when we copy the data from original
         # table to temporary table for schema diff, we will have to create
         # a default partition to prevent the data loss.
@@ -515,7 +515,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         # Create temporary name for partitions
         for item in source_data['partitions']:
             item['temp_partition_name'] = 'partition_{0}'.format(
-                random.randint(1, 9999999))
+                secrets.choice(range(1, 9999999)))
 
         partition_data['partitions'] = source_data['partitions']
 

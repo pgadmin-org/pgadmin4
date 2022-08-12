@@ -10,12 +10,11 @@
 """A blueprint module implementing the debugger"""
 
 import simplejson as json
-import random
+import secrets
 import re
 import copy
 
-from flask import url_for, Response, render_template, request, \
-    current_app
+from flask import render_template, request, current_app
 from flask_babel import gettext
 from flask_security import login_required
 from werkzeug.useragents import UserAgent
@@ -34,8 +33,8 @@ from pgadmin.model import db, DebuggerFunctionArguments
 from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
 from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
-    PREF_LABEL_KEYBOARD_SHORTCUTS, MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED
+from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
+    SERVER_CONNECTION_CLOSED
 from pgadmin.preferences import preferences
 
 MODULE_NAME = 'debugger'
@@ -778,7 +777,7 @@ def initialize_target(debug_type, trans_id, sid, did,
     """
 
     # Create asynchronous connection using random connection id.
-    conn_id = str(random.randint(1, 9999999))
+    conn_id = str(secrets.choice(range(1, 9999999)))
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did, conn_id=conn_id)
     data_obj = {}
@@ -1352,7 +1351,7 @@ def start_execution(trans_id, port_num):
         )
 
     # Create asynchronous connection using random connection id.
-    exe_conn_id = str(random.randint(1, 9999999))
+    exe_conn_id = str(secrets.choice(range(1, 9999999)))
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
             de_inst.debugger_data['server_id'])

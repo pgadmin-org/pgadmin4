@@ -12,9 +12,9 @@ functionality"""
 
 import json
 import os
-import random
+import secrets
 
-from flask import url_for, Response, render_template, request
+from flask import Response, render_template, request
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.utils import PgAdminModule
@@ -138,7 +138,8 @@ def load_servers():
                 if 'Servers' in data:
                     for server in data["Servers"]:
                         obj = data["Servers"][server]
-                        server_id = server + '_' + str(random.randint(1, 9999))
+                        server_id = server + '_' + str(
+                            secrets.choice(range(1, 9999)))
 
                         if obj['Group'] in groups:
                             groups[obj['Group']]['children'].append(

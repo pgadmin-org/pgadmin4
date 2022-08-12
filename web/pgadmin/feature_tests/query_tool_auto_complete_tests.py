@@ -8,7 +8,7 @@
 ##########################################################################
 
 import sys
-import random
+import secrets
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -37,22 +37,22 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         self.page.add_server(self.server)
 
         self.first_schema_name = "test_schema" + \
-                                 str(random.randint(1000, 2000))
+                                 str(secrets.choice(range(1000, 2000)))
         test_utils.create_schema(self.server, self.test_db,
                                  self.first_schema_name)
 
         self.second_schema_name = "comp_schema" + \
-                                  str(random.randint(2000, 3000))
+                                  str(secrets.choice(range(2000, 3000)))
         test_utils.create_schema(self.server, self.test_db,
                                  self.second_schema_name)
 
         self.first_table_name = "auto_comp_" + \
-                                str(random.randint(1000, 2000))
+                                str(secrets.choice(range(1000, 2000)))
         test_utils.create_table(self.server, self.test_db,
                                 self.first_table_name)
 
         self.second_table_name = "auto_comp_" + \
-                                 str(random.randint(2000, 3000))
+                                 str(secrets.choice(range(2000, 3000)))
         test_utils.create_table(self.server, self.test_db,
                                 self.second_table_name)
 

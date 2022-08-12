@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import random
+import secrets
 import time
 from regression.feature_utils.base_feature_test import BaseFeatureTest
 from regression.python_test_utils import test_utils
@@ -85,7 +85,8 @@ class CopySQLFeatureTest(BaseFeatureTest):
         return query_tool_result
 
     def _create_table(self):
-        self.test_table_name = "test_table" + str(random.randint(1000, 3000))
+        self.test_table_name = "test_table" + str(
+            secrets.choice(range(1000, 3000)))
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
         self.page.expand_tables_node("Server", self.server['name'],

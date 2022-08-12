@@ -9,7 +9,7 @@
 
 # Azure implementation
 import config
-import random
+import secrets
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
@@ -260,7 +260,7 @@ class Azure:
         self._availability_zone = None
         self._available_capabilities_list = []
         self.azure_cache_name = current_user.username \
-            + str(random.randint(1, 9999)) + "_msal.cache"
+            + str(secrets.choice(range(1, 9999))) + "_msal.cache"
         self.azure_cache_location = config.AZURE_CREDENTIAL_CACHE_DIR + '/'
 
     ##########################################################################

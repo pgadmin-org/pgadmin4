@@ -13,17 +13,16 @@ It is a wrapper around the actual psycopg2 driver, and connection
 object.
 """
 
-import random
+import secrets
 import select
 import datetime
 from collections import deque
 import psycopg2
-from flask import g, current_app, session
+from flask import g, current_app
 from flask_babel import gettext
 from flask_security import current_user
-from pgadmin.utils.crypto import decrypt, encrypt
+from pgadmin.utils.crypto import decrypt
 from psycopg2.extensions import encodings
-from os import environ
 
 import config
 from pgadmin.model import User
@@ -39,7 +38,6 @@ from .encoding import get_encoding, configure_driver_encodings
 from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
-from pgadmin.utils.constants import KERBEROS
 from pgadmin.utils.locker import ConnectionLocker
 
 _ = gettext
@@ -968,7 +966,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = secrets.choice(range(1, 9999999))
 
         dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
@@ -1042,7 +1040,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = secrets.choice(range(1, 9999999))
 
         encoding = self.python_encoding
 
@@ -1114,7 +1112,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = secrets.choice(range(1, 9999999))
 
         dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
@@ -1202,7 +1200,7 @@ WHERE db.datname = current_database()""")
         if not status:
             return False, str(cur)
 
-        query_id = random.randint(1, 9999999)
+        query_id = secrets.choice(range(1, 9999999))
         dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,
@@ -1261,7 +1259,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = secrets.choice(range(1, 9999999))
         dsn = self.conn.get_dsn_parameters()
         current_app.logger.log(
             25,

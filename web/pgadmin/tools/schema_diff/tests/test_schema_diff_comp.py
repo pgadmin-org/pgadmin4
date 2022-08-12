@@ -10,7 +10,7 @@
 import uuid
 import json
 import os
-import random
+import secrets
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
@@ -146,7 +146,7 @@ class SchemaDiffTestCase(BaseTestGenerator):
         response_data = self.compare()
 
         diff_file = os.path.join(self.sql_folder, 'diff_{0}.sql'.format(
-            str(random.randint(1, 99999))))
+            str(secrets.choice(range(1, 99999)))))
         file_obj = open(diff_file, 'a')
 
         for diff in response_data['data']:

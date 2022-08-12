@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import random
+import secrets
 import string
 import urllib3
 import ipaddress
@@ -39,4 +39,4 @@ def get_my_ip():
 def get_random_id():
     """ Return a random 10 byte string """
     letters = string.ascii_letters + string.digits
-    return ''.join(random.choice(letters) for _ in range(10))
+    return ''.join(secrets.choice(letters) for _ in range(10))

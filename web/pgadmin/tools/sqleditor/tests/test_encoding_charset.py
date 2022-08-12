@@ -14,7 +14,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression.python_test_utils import test_utils
 import json
 from pgadmin.utils import server_utils
-import random
+import secrets
 
 
 class TestEncodingCharset(BaseTestGenerator):
@@ -237,7 +237,7 @@ class TestEncodingCharset(BaseTestGenerator):
 
     def setUp(self):
         self.encode_db_name = 'encoding_' + self.db_encoding + \
-                              str(random.randint(10000, 65535))
+                              str(secrets.choice(range(10000, 65535)))
         self.encode_sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self.encode_sid)
@@ -261,7 +261,7 @@ class TestEncodingCharset(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        self.trans_id = str(random.randint(1, 9999999))
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'\
             .format(self.trans_id, test_utils.SERVER_GROUP, self.encode_sid,
                     self.encode_did)

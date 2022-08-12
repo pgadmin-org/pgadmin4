@@ -8,7 +8,7 @@
 ##########################################################################
 
 import sys
-import random
+import secrets
 import traceback
 
 from selenium.webdriver import ActionChains
@@ -42,14 +42,15 @@ class QueryToolJourneyTest(BaseFeatureTest):
     query_editor_tab_id = "id-query"
 
     def before(self):
-        self.test_table_name = "test_table" + str(random.randint(1000, 3000))
+        self.test_table_name = "test_table" + str(
+            secrets.choice(range(1000, 3000)))
         self.invalid_table_name = \
-            "table_that_doesnt_exist_" + str(random.randint(1000, 3000))
+            "table_that_doesnt_exist_" + str(secrets.choice(range(1000, 3000)))
         test_utils.create_table(
             self.server, self.test_db, self.test_table_name)
 
         self.test_editable_table_name = "test_editable_table" + \
-                                        str(random.randint(1000, 3000))
+                                        str(secrets.choice(range(1000, 3000)))
         create_sql = '''
                              CREATE TABLE "%s" (
                                  pk_column NUMERIC PRIMARY KEY,

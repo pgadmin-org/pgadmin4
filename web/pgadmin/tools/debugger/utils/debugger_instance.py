@@ -9,7 +9,7 @@
 
 from flask import session
 from threading import Lock
-import random
+import secrets
 
 debugger_sessions_lock = Lock()
 
@@ -17,7 +17,7 @@ debugger_sessions_lock = Lock()
 class DebuggerInstance(object):
     def __init__(self, trans_id=None):
         if trans_id is None:
-            self._trans_id = str(random.randint(1, 9999999))
+            self._trans_id = str(secrets.choice(range(1, 9999999)))
         else:
             self._trans_id = str(trans_id)
 

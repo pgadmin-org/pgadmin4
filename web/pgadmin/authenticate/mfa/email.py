@@ -28,12 +28,11 @@ def __generate_otp() -> str:
         str: A six-digits OTP for the current user
     """
     import time
-    import base64
     import codecs
-    import random
+    import secrets
 
     code = codecs.encode("{}{}{}".format(
-        time.time(), current_user.username, random.randint(1000, 9999)
+        time.time(), current_user.username, secrets.choice(range(1000, 9999))
     ).encode(), "hex")
 
     res = 0

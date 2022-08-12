@@ -8,13 +8,11 @@
 ##########################################################################
 
 import uuid
-import random
+import secrets
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
 from regression.test_setup import config_data
-from pgadmin.browser.server_groups.servers.databases.tests import utils as \
-    database_utils
 
 
 class ERDPanel(BaseTestGenerator):
@@ -26,7 +24,7 @@ class ERDPanel(BaseTestGenerator):
         self.sgid = config_data["server_group"]
 
     def runTest(self):
-        trans_id = random.randint(1, 9999999)
+        trans_id = secrets.choice(range(1, 9999999))
         url = '/erd/panel/{trans_id}?sgid={sgid}&sid={sid}&server_type=pg' \
               '&did={did}&gen=false'.\
             format(trans_id=trans_id, sgid=self.sgid, sid=self.sid,

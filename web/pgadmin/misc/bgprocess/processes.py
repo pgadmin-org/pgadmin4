@@ -171,11 +171,11 @@ class BatchProcess(object):
         )
 
         def random_number(size):
-            import random
+            import secrets
             import string
 
             return ''.join(
-                random.choice(
+                secrets.choice(
                     string.ascii_uppercase + string.digits
                 ) for _ in range(size)
             )

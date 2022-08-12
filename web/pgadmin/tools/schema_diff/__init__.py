@@ -10,7 +10,7 @@
 """A blueprint module implementing the schema_diff frame."""
 import simplejson as json
 import pickle
-import random
+import secrets
 import copy
 
 from flask import Response, session, url_for, request
@@ -200,7 +200,7 @@ def initialize():
     trans_id = None
     try:
         # Create a unique id for the transaction
-        trans_id = str(random.randint(1, 9999999))
+        trans_id = str(secrets.choice(range(1, 9999999)))
 
         if 'schemaDiff' not in session:
             schema_diff_data = dict()

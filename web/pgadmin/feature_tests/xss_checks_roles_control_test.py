@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import random
+import secrets
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -35,7 +35,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                     "Membership is not present in Postgres below PG v9.1")
 
         # create role
-        self.role = "test_role" + str(random.randint(10000, 65535))
+        self.role = "test_role" + str(secrets.choice(range(10000, 65535)))
 
         # Some test function is needed for debugger
         test_utils.create_role(self.server, "postgres",

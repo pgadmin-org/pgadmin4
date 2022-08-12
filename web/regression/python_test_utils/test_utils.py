@@ -16,7 +16,7 @@ import psycopg2
 import sqlite3
 import shutil
 from functools import partial
-import random
+import secrets
 import importlib
 
 from selenium.webdriver.support.wait import WebDriverWait
@@ -1740,7 +1740,7 @@ def create_users_for_parallel_tests(tester):
     @param tester: test client
     @return: uer details dict
     """
-    login_username = 'ui_test_user' + str(random.randint(1000, 9999)) +\
+    login_username = 'ui_test_user' + str(secrets.choice(range(1000, 9999))) +\
                      '@edb.com'
     user_details = {'login_username': login_username,
                     'login_password': 'adminedb'}

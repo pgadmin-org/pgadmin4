@@ -14,7 +14,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-import random
+import secrets
 
 
 class TestPollQueryTool(BaseTestGenerator):
@@ -76,7 +76,7 @@ NOTICE:  Hello, world!
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        self.trans_id = str(random.randint(1, 9999999))
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)

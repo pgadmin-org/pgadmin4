@@ -7,8 +7,7 @@
 #
 ##########################################################################
 
-import json
-import random
+import secrets
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -133,7 +132,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
 
     def setUp(self):
         self.test_table_name = "test_for_updatable_resultset" + \
-                               str(random.randint(1000, 9999))
+                               str(secrets.choice(range(1000, 9999)))
         self._initialize_database_connection()
         self._initialize_query_tool()
         self._initialize_urls()
@@ -202,7 +201,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
     def _initialize_query_tool(self):
-        self.trans_id = str(random.randint(1, 9999999))
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)

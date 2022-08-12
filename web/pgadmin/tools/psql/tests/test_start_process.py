@@ -35,9 +35,6 @@ class PSQLStartProcess(BaseTestGenerator):
         assert received[0]['name'] == 'connected'
         assert received[0]['args'][0]['sid'] != ''
 
-        import random
-        trans_id = random.randint(1, 9999999)
-
         data = {
             'sid': self.sid,
             'db': 'postgres',

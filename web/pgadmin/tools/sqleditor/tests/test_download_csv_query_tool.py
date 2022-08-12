@@ -15,7 +15,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression.python_test_utils import test_utils
 import json
 from pgadmin.utils import server_utils
-import random
+import secrets
 
 
 class TestDownloadCSV(BaseTestGenerator):
@@ -96,7 +96,8 @@ class TestDownloadCSV(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self._db_name = 'download_results_' + str(random.randint(10000, 65535))
+        self._db_name = 'download_results_' + str(
+            secrets.choice(range(10000, 65535)))
         self._sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self._sid)
@@ -133,7 +134,7 @@ class TestDownloadCSV(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        self.trans_id = str(random.randint(1, 9999999))
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = self.init_url.format(
             self.trans_id, test_utils.SERVER_GROUP, self._sid, self._did)
         response = self.tester.post(url)

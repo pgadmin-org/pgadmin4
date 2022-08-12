@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import random
+import secrets
 
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
@@ -37,7 +37,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
         # Some test function is needed for debugger
         self.function_name = "a_test_function" + \
-                             str(random.randint(10000, 65535))
+                             str(secrets.choice(range(10000, 65535)))
         test_utils.create_debug_function(
             self.server, self.test_db, self.function_name
         )

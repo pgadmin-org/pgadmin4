@@ -18,7 +18,7 @@ import signal
 import sys
 import traceback
 import json
-import random
+import secrets
 import threading
 import time
 import unittest
@@ -478,7 +478,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         # parallel execution on different platforms. This database will be
         # used across all feature tests.
         test_db_name = "acceptance_test_db" + \
-                       str(random.randint(10000, 65535))
+                       str(secrets.choice(range(10000, 65535)))
         connection = test_utils.get_db_connection(
             server_passed['db'],
             server_passed['username'],

@@ -9,7 +9,7 @@
 import os
 import subprocess
 import signal
-import random
+import secrets
 
 import time
 from selenium.common.exceptions import WebDriverException
@@ -26,7 +26,7 @@ class AppStarter:
 
     def start_app(self):
         """ This function start the subprocess to start pgAdmin app """
-        random_server_port = str(random.randint(10000, 65535))
+        random_server_port = str(secrets.choice(range(10000, 65535)))
         env = {
             "PGADMIN_INT_PORT": random_server_port,
             "SQLITE_PATH": str(self.app_config.TEST_SQLITE_PATH)

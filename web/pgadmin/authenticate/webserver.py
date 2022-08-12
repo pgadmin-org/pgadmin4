@@ -9,7 +9,7 @@
 
 """A blueprint module implementing the Webserver authentication."""
 
-import random
+import secrets
 import string
 import config
 from flask import request, current_app, session, Response, render_template, \
@@ -23,7 +23,6 @@ from pgadmin.utils.constants import WEBSERVER
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
 from flask_security.utils import logout_user
-from os import environ, path, remove
 
 
 class WebserverModule(PgAdminModule):
@@ -91,7 +90,7 @@ class WebserverAuthentication(BaseAuthentication):
                 "Webserver authenticate failed.")
 
         session['pass_enc_key'] = ''.join(
-            (random.choice(string.ascii_lowercase) for _ in range(10)))
+            (secrets.choice(string.ascii_lowercase) for _ in range(10)))
         useremail = request.environ.get('mail')
         if not useremail:
             useremail = ''

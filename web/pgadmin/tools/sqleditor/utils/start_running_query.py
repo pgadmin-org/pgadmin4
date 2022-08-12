@@ -10,7 +10,7 @@
 """Start executing the query in async mode."""
 
 import pickle
-import random
+import secrets
 
 from flask import Response
 from flask_babel import gettext
@@ -35,7 +35,7 @@ class StartRunningQuery:
     def __init__(self, blueprint_object, logger):
         self.http_session = None
         self.blueprint_object = blueprint_object
-        self.connection_id = str(random.randint(1, 9999999))
+        self.connection_id = str(secrets.choice(range(1, 9999999)))
         self.logger = logger
 
     def execute(self, sql, trans_id, http_session, connect=False):

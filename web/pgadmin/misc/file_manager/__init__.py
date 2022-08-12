@@ -11,7 +11,7 @@
 
 import os
 import os.path
-import random
+import secrets
 import string
 import time
 from urllib.parse import unquote
@@ -19,7 +19,6 @@ from sys import platform as _platform
 import config
 import codecs
 import pathlib
-from werkzeug.exceptions import InternalServerError
 
 import simplejson as json
 from flask import render_template, Response, session, request as req, \
@@ -434,7 +433,7 @@ class Filemanager(object):
         }
 
         # Create a unique id for the transaction
-        trans_id = str(random.randint(1, 9999999))
+        trans_id = str(secrets.choice(range(1, 9999999)))
 
         if 'fileManagerData' not in session:
             file_manager_data = dict()

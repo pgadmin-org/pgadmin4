@@ -8,8 +8,7 @@
 ##########################################################################
 
 import sys
-import random
-import time
+import secrets
 
 from regression.python_test_utils import test_utils
 from regression.feature_utils.base_feature_test import BaseFeatureTest
@@ -44,7 +43,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
     check_xss_chars_set2 = '&lt;script&gt;alert(1)&lt;/script&gt;'
 
     def before(self):
-        self.test_table_name = "<h1>X" + str(random.randint(1000, 3000))
+        self.test_table_name = "<h1>X" + str(secrets.choice(range(1000, 3000)))
 
         test_utils.create_type(
             self.server, self.test_db, self.test_type_name,
