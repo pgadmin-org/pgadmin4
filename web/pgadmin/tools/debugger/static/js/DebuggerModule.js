@@ -219,7 +219,7 @@ export default class Debugger {
 
   // It will check weather the function is actually debuggable or not with pre-required condition.
   canDebug(itemData, item, data) {
-    var t = this.pgBrowser.tree,
+    let t = this.pgBrowser.tree,
       i = item,
       d = itemData;
     // To iterate over tree to check parent node
@@ -233,14 +233,14 @@ export default class Debugger {
     }
 
     // Find the function is really available in database
-    var tree = this.pgBrowser.tree,
+    let tree = this.pgBrowser.tree,
       info = tree.selected(),
       d_ = info ? tree.itemData(info) : undefined;
 
     if (!d_)
       return false;
 
-    var treeInfo = tree.getTreeNodeHierarchy(info);
+    let treeInfo = tree.getTreeNodeHierarchy(info);
 
     // For indirect debugging user must be super user
     if (data && data.debug_type && data.debug_type == 'indirect' &&
@@ -248,7 +248,7 @@ export default class Debugger {
       return false;
 
     // Fetch object owner
-    var obj_owner = treeInfo.function && treeInfo.function.funcowner ||
+    let obj_owner = treeInfo.function && treeInfo.function.funcowner ||
       treeInfo.procedure && treeInfo.procedure.funcowner ||
       treeInfo.edbfunc && treeInfo.edbfunc.funcowner ||
       treeInfo.edbproc && treeInfo.edbproc.funcowner;
@@ -343,16 +343,22 @@ export default class Debugger {
     }
     return db_label;
   }
+  
+  getTreeNodeData(item) {
+    let t = this.pgBrowser.tree,
+      i = item || t.selected(),
+      d = i ? t.itemData(i) : undefined,
+      node = d && this.pgBrowser.Nodes[d._type];
+
+    return [t,i,d,node];
+  }
   /*
       Get the function information for the direct debugging to display the functions arguments and  other informations
       in the user input dialog
     */
   getFunctionInformation(args, item) {
-    var self = this,
-      t = this.pgBrowser.tree,
-      i = item || t.selected(),
-      d = i ? t.itemData(i) : undefined,
-      node = d && this.pgBrowser.Nodes[d._type],
+    let [t,i,d, node] = this.getTreeNodeData(item);
+    let self = this,
       tree_data = this.pgBrowser.tree.translateTreeNodeIdFromReactTree(i),
       db_data = this.pgBrowser.tree.findNode(tree_data[3]),
       dbNode = db_data.domNode;
@@ -360,9 +366,9 @@ export default class Debugger {
     if (!d)
       return;
 
-    var is_edb_proc = d._type == 'edbproc';
+    let is_edb_proc = d._type == 'edbproc';
 
-    var treeInfo = t.getTreeNodeHierarchy(i),
+    let treeInfo = t.getTreeNodeHierarchy(i),
       _url = this.generate_url('init', treeInfo, node);
 
     this.api({
@@ -378,13 +384,13 @@ export default class Debugger {
         /* Initialize the target and create asynchronous connection and unique transaction ID
         If there is no arguments to the functions then we should not ask for for function arguments and
         Directly open the panel */
-        var _t = this.pgBrowser.tree,
+        let _t = this.pgBrowser.tree,
           _i = _t.selected(),
           _d = _i ? _t.itemData(_i) : undefined;
 
-        var newTreeInfo = _t.getTreeNodeHierarchy(_i);
+        let newTreeInfo = _t.getTreeNodeHierarchy(_i);
 
-        var baseUrl = self.getUrl(_d, newTreeInfo, trans_id);
+        let baseUrl = self.getUrl(_d, newTreeInfo, trans_id);
 
         self.api({
           url: baseUrl,
@@ -392,14 +398,14 @@ export default class Debugger {
         })
           .then(function (result) {
 
-            var data = result.data.data;
+            let data = result.data.data;
 
-            var url = url_for('debugger.direct', {
+            let url = url_for('debugger.direct', {
               'trans_id': trans_id,
             });
 
-            var browser_preferences = self.pgBrowser.get_preferences_for_module('browser');
-            var open_new_tab = browser_preferences.new_browser_tab_open;
+            let browser_preferences = self.pgBrowser.get_preferences_for_module('browser');
+            let open_new_tab = browser_preferences.new_browser_tab_open;
             if (open_new_tab && open_new_tab.includes('debugger')) {
               window.open(url, '_blank');
               // Send the signal to runtime, so that proper zoom level will be set.
@@ -414,7 +420,7 @@ export default class Debugger {
                 });
 
               // Create the debugger panel as per the data received from user input dialog.
-              var dashboardPanel = self.pgBrowser.docker.findPanels(
+              let dashboardPanel = self.pgBrowser.docker.findPanels(
                   'properties'
                 ),
                 panel = self.pgBrowser.docker.addPanel(
@@ -428,13 +434,13 @@ export default class Debugger {
 
               db_label = self.checkDbNameChange(data, dbNode, newTreeInfo, db_label);
 
-              var label = getAppropriateLabel(newTreeInfo);
+              let label = getAppropriateLabel(newTreeInfo);
               setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, db_label, null, self.pgBrowser);
 
               panel.focus();
               // Register Panel Closed event
               panel.on(self.wcDocker.EVENT.CLOSED, function () {
-                var closeUrl = url_for('debugger.close', {
+                let closeUrl = url_for('debugger.close', {
                   'trans_id': trans_id,
                 });
                 self.api({
@@ -462,16 +468,13 @@ export default class Debugger {
   }
 
   checkFuncDebuggable(args, item) {
-    var self = this,
-      t = this.pgBrowser.tree,
-      i = item || t.selected(),
-      d = i ? t.itemData(i) : undefined,
-      node = d && this.pgBrowser.Nodes[d._type];
+    let [t,i,d, node] = this.getTreeNodeData(item);
+    let self = this;
 
     if (!d)
       return;
 
-    var treeInfo = t.getTreeNodeHierarchy(i),
+    let treeInfo = t.getTreeNodeHierarchy(i),
       _url = this.generate_url('init', treeInfo, node);
 
     self.api({

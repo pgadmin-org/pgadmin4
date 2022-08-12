@@ -243,6 +243,17 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     return myObj;
   }
 
+  function getFormattedArgsValues(argType, index, argData) {
+    let values = [];
+    if (argType[index].indexOf('[]') != -1 && argData['value'].length > 0) {
+      values = `{${argData['value']}}`;
+    } else {
+      values = argData['value'];
+    }
+
+    return values;
+  }
+
   function setFuncObj(funcArgsData, argMode, argType, argName, defValList, isUnnamedParam = false) {
     let index, values, funcObj = [];
     for (const argData of funcArgsData) {
@@ -251,13 +262,8 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         (argMode && argMode[index] == 'o' && !isEdbProc) && !isUnnamedParam) {
         continue;
       }
-
-      values = [];
-      if (argType[index].indexOf('[]') != -1 && argData['value'].length > 0) {
-        values = `{${argData['value']}}`;
-      } else {
-        values = argData['value'];
-      }
+      // Get formated values for argument.
+      values = getFormattedArgsValues(argType, index, argData);
 
       funcObj.push({
         'name': argName[index],

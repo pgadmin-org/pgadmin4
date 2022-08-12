@@ -90,6 +90,19 @@ export function LocalVariablesAndParams({ type }) {
     });
   };
 
+  const handelBlurEvent = (row) => {
+    let data = [{
+      name: row.name,
+      value: row.value,
+      type: row.type
+    }];
+    if (preValue.current[row.name] != row.value && !disableVarChange) {
+      preValue.current[row.name] = row.value;
+      changeLocalVarVal(data);
+    }
+
+  };
+
   return (
     <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
       <TableContainer className={classes.container}>
@@ -120,20 +133,9 @@ export function LocalVariablesAndParams({ type }) {
                       onFocus={() => {
                         preValue.current[row.name] = row.value;
                       }}
-                      onBlur={() => {
-                        let data = [{
-                          name: row.name,
-                          value: row.value,
-                          type: row.type
-                        }];
-                        if (preValue.current[row.name] != row.value && !disableVarChange) {
-                          preValue.current[row.name] = row.value;
-                          changeLocalVarVal(data);
-                        }
-
-                      }}
+                      onBlur={()=> {handelBlurEvent(row);}}
                     ></InputDateTimePicker>
-                    : 
+                    :
 
                     <InputText value={row.value} type={row.dtype}
                       disabled={disableVarChange}
@@ -143,26 +145,15 @@ export function LocalVariablesAndParams({ type }) {
                       onFocus={() => {
                         preValue.current[row.name] = row.value;
                       }}
-                      onBlur={() => {
-                        let data = [{
-                          name: row.name,
-                          value: row.value,
-                          type: row.type
-                        }];
-                        if (preValue.current[row.name] != row.value && !disableVarChange) {
-                          preValue.current[row.name] = row.value;
-                          changeLocalVarVal(data);
-                        }
-
-                      }}
+                      onBlur={()=> {handelBlurEvent(row);}}
                     ></InputText>}</td>
               </tr>
             ))}
             {
               variablesData.length == 0 &&
-                            <tr key={_.uniqueId('c')} className={classes.cell}>
-                              <td colSpan={3} >{gettext('No data found')}</td>
-                            </tr>
+              <tr key={_.uniqueId('c')} className={classes.cell}>
+                <td colSpan={3} >{gettext('No data found')}</td>
+              </tr>
             }
 
           </tbody>

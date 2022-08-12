@@ -61,7 +61,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const disableToolbarButtons = () => {
     eventBus.current.fireEvent(DEBUGGER_EVENTS.DISABLE_MENU);
-    eventBus.current.fireEvent(DEBUGGER_EVENTS.GET_TOOL_BAR_BUTTON_STATUS, {disabled: true});
+    eventBus.current.fireEvent(DEBUGGER_EVENTS.GET_TOOL_BAR_BUTTON_STATUS, { disabled: true });
   };
 
   const enableToolbarButtons = (key = null) => {
@@ -71,7 +71,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       eventBus.current.fireEvent(DEBUGGER_EVENTS.ENABLE_MENU);
     }
 
-    eventBus.current.fireEvent(DEBUGGER_EVENTS.GET_TOOL_BAR_BUTTON_STATUS, {disabled: false});
+    eventBus.current.fireEvent(DEBUGGER_EVENTS.GET_TOOL_BAR_BUTTON_STATUS, { disabled: false });
   };
 
   const reflectPreferences = useCallback(() => {
@@ -149,7 +149,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       var err = xhr.response.data;
       if (err.success == 0) {
         Notify.alert(gettext('Debugger Error'), err.errormsg, () => {
-          if(panel) {
+          if (panel) {
             panel.close();
           }
 
@@ -265,7 +265,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
           // set the return code to the code editor text area
           if (
             res.data.data.result[0].src != null &&
-                        res.data.data.result[0].linenumber != null
+            res.data.data.result[0].linenumber != null
           ) {
             editor.current.setValue(res.data.data.result[0].src);
 
@@ -592,28 +592,33 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
             }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: pgAdmin.Browser.stdW.md, dialogHeight: pgAdmin.Browser.stdH.md });
           }
         } else {
-          // Debugging of void function is started again so we need to start
-          // the listener again
-          var base_url = url_for('debugger.start_listener', {
-            'trans_id': params.transId,
-          });
-
-          api({
-            url: base_url,
-            method: 'GET',
-          })
-            .then(function () {
-              if (params.directDebugger.debug_type) {
-                pollEndExecutionResult(params.transId);
-              }
-            })
-            .catch(raisePollingError);
+          // This will start lister for void de
+          restartDebuggerListener();
         }
       })
       .catch(raiseJSONError);
   };
 
-  const pollEndExecuteError = (res ) => {
+  function restartDebuggerListener() {
+    // Debugging of void function is started again so we need to start
+    // the listener again
+    let base_url = url_for('debugger.start_listener', {
+      'trans_id': params.transId,
+    });
+
+    api({
+      url: base_url,
+      method: 'GET',
+    })
+      .then(function () {
+        if (params.directDebugger.debug_type) {
+          pollEndExecutionResult(params.transId);
+        }
+      })
+      .catch(raisePollingError);
+  }
+
+  const pollEndExecuteError = (res) => {
     params.directDebugger.direct_execution_completed = true;
     setActiveLine(-1);
 
@@ -755,7 +760,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   // This function will update messages tab
   const updateMessages = (msg) => {
-    if(msg) {
+    if (msg) {
       // Call function to update messages information
       eventBus.current.fireEvent(DEBUGGER_EVENTS.SET_MESSAGES, msg, true);
     }
@@ -766,7 +771,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
     //Check first if previous execution was completed or not
     if (params.directDebugger.direct_execution_completed &&
-            params.directDebugger.direct_execution_completed == params.directDebugger.polling_timeout_idle) {
+      params.directDebugger.direct_execution_completed == params.directDebugger.polling_timeout_idle) {
       restart(params.transId);
     } else {
       // Make ajax call to listen the database message
