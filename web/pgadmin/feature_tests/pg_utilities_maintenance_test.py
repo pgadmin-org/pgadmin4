@@ -85,7 +85,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                 By.XPATH, NavMenuLocators.maintenance_operation), 10)
 
         # Wait for the backup started alert
-        test_gui_helper.wait_for_process_start()
+        test_gui_helper.wait_for_process_start(self)
         self.verify_command()
 
     def _open_maintenance_dialogue(self):

@@ -181,7 +181,7 @@ export default function WelcomeDashboard({ pgBrowser }) {
                   <div className={classes.rowContent}>
                     <div className={classes.gettingStartedLink}>
                       <a
-                        href="http://www.postgresql.org/docs"
+                        href="https://www.postgresql.org/docs"
                         target="postgres_help"
                         className={classes.link}
                       >
@@ -205,7 +205,7 @@ export default function WelcomeDashboard({ pgBrowser }) {
                     </div>
                     <div className={classes.gettingStartedLink}>
                       <a
-                        href="http://planet.postgresql.org"
+                        href="https://planet.postgresql.org"
                         target="planet_website"
                         className={classes.link}
                       >
@@ -219,7 +219,7 @@ export default function WelcomeDashboard({ pgBrowser }) {
                     </div>
                     <div className={classes.gettingStartedLink}>
                       <a
-                        href="http://www.postgresql.org/community"
+                        href="https://www.postgresql.org/community"
                         target="postgres_website"
                         className={classes.link}
                       >
