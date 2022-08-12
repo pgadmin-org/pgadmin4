@@ -120,7 +120,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             NavMenuLocators.maintenance_operation, 10)
 
     def verify_command(self):
-        test_gui_helper.open_process_details()
+        test_gui_helper.open_process_details(self)
 
         message = self.page.find_by_css_selector(
             NavMenuLocators.process_watcher_detailed_message_css).text
