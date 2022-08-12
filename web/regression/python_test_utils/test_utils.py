@@ -1744,18 +1744,21 @@ def create_users_for_parallel_tests(tester):
                      '@edb.com'
     user_details = {'login_username': login_username,
                     'login_password': 'adminedb'}
-    response = tester.post(
-        '/user_management/user/',
-        data=json.dumps(dict(username=user_details['login_username'],
-                             email=user_details['login_username'],
-                             newPassword=user_details['login_password'],
-                             confirmPassword=user_details['login_password'],
-                             active=True,
-                             role="1"
-                             )),
-        follow_redirects=True)
-    user_id = json.loads(response.data.decode('utf-8'))['id']
-    user_details['user_id'] = user_id
+
+    user_data = dict()
+    user_data['added'] = [{'username': user_details['login_username'],
+                           'email': user_details['login_username'],
+                           'newPassword': user_details['login_password'],
+                           'confirmPassword': user_details['login_password'],
+                           'active': True,
+                           'role': "1"}]
+    tester.post('/user_management/save', data=json.dumps(user_data))
+
+    response = tester.get('/user_management/user/')
+    user_res = json.loads(response.data.decode('utf-8'))
+    for item in user_res:
+        if item['email'] == login_username:
+            user_details['user_id'] = item['id']
     return user_details
 
 
