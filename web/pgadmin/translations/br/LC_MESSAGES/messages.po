@@ -13822,7 +13822,7 @@ msgstr "Consulta retornada com sucesso em %s."
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:649
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
-msgstr "Executado com sucesso. "
+msgstr "Executado com sucesso. Tempo de execução total da consulta: %s."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:650
 #, python-format
