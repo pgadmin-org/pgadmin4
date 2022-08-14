@@ -188,6 +188,7 @@ export function getBigAnimalSummary(cloud, bigAnimalInstanceData, bigAnimalDatab
     createData('Database Type',  bigAnimalDatabaseData.database_type),
     createData('Database Version',  bigAnimalDatabaseData.postgres_version),
     createData('High Availability',  bigAnimalDatabaseData.high_availability),
+    createData('No of Standby Replicas',  bigAnimalDatabaseData.replicas),
   ];
 
   return [rows1, rows2, rows3, rows4];
@@ -209,6 +210,10 @@ export function validateBigAnimalStep3(cloudDBDetails, nodeInfo) {
   let isError = false;
   if (isEmptyString(cloudDBDetails.password) ||
   isEmptyString(cloudDBDetails.database_type) || isEmptyString(cloudDBDetails.postgres_version)) {
+    isError = true;
+  }
+
+  if(cloudDBDetails.high_availability == true && (isEmptyString(cloudDBDetails.replicas) || cloudDBDetails.replicas <= 0)) {
     isError = true;
   }
   if (isEmptyString(cloudDBDetails.gid)) cloudDBDetails.gid = nodeInfo['server_group']._id;

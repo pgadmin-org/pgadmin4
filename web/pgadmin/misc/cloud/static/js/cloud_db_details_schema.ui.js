@@ -467,6 +467,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
       database_type: '',
       postgres_version: '',
       high_availability: false,
+      replicas: 0,
       ...initValues
     });
 
@@ -487,7 +488,10 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
       setErrMsg('confirm_password', gettext('Password must be 12 characters or more.'));
       return true;
     }
-
+    if (data.high_availability == true && (isEmptyString(data.replicas) || data.replicas <= 0)) {
+      setErrMsg('replicas', gettext('Please select no. of stand by replicas.'));
+      return true;
+    }
     return false;
   }
 
@@ -592,6 +596,7 @@ class BigAnimalHighAvailSchema extends BaseUISchema {
     super({
       oid: undefined,
       high_availability: false,
+      replicas: 0,
       ...initValues
     });
 
@@ -610,13 +615,25 @@ class BigAnimalHighAvailSchema extends BaseUISchema {
       {
         id: 'high_availability_note', type: 'note',
         mode: ['create'],
-        text: gettext('High availability clusters are configured with one primary and two '
-        + 'replicas with synchronous streaming replication. Clusters are configured across availability zones in regions with availability zones.'),
+        text: gettext('High availability clusters are configured with one primary and up to two '
+        + 'stand by replicas. Clusters are configured across availability zones in regions with availability zones.'),
       },{
-        id: 'high_availability', label: gettext('High Availability'), type: 'switch',
-        mode: ['create'],
-        helpMessage: gettext('Turning on high availability means your number of CPUs will triple, as will your cost.'),
-      }
+        id: 'high_availability', label: gettext('High availability'), type: 'switch',
+        mode: ['create']
+      },{
+        id: 'replicas', label: gettext('Number of standby replicas'), type: 'select',
+        mode: ['create'], deps: ['high_availability'],
+        controlProps: { allowClear: false },
+        helpMessage: gettext('Adding standby replicas will increase your number of CPUs, as well as your cost.'),
+        options: [
+          {'label': gettext('1'), 'value': 1},
+          {'label': gettext('2'), 'value': 2},
+        ], noEmpty: true,
+        disabled: (state) => {
+          if (state.high_availability == true) return false;
+          return true;
+        }
+      },
     ];
   }
 }

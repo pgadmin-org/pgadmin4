@@ -36,7 +36,8 @@ details.
 
 * Use the *Region* field to select the region.
 
-* Use the *Database version* field to specify the PostgreSQL version to deploy.
+* Use the *Public IP range* field to specify the IP Address range for permitting the
+  inbound traffic. Leave it blank for 0.0.0.0/0
 
 * Use the *Instance type* field to select the instance type.
 
@@ -49,10 +50,7 @@ details.
 
 * Use the *Volume properties* field to specify the storage capacity.
 
-* Use the *Cloud type* field to specify the private or public network.
 
-* Use the *Public IP range* field to specify the IP Address range for permitting the
-  inbound traffic. Leave it blank for 0.0.0.0/0
 
 .. image:: images/cloud_biganimal_database.png
     :alt: Cloud Deployment Provider
@@ -73,6 +71,12 @@ Use the fields from the Database Details tab to specify the Instance details.
   authenticating with the server.
 
 * Use the *Confirm password* field to repeat the password.
+
+* Use the *High Availability* field to create the cluster with high availability, which creates a cluster
+  with one primary and up to two standby replicas in different availability zones.
+
+* Use the *Number of standby replicas* field to specify the standby replicas.
+
 
 .. image:: images/cloud_biganimal_review.png
     :alt: Cloud Deployment Provider

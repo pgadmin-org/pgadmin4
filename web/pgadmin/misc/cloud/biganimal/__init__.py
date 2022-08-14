@@ -27,6 +27,10 @@ from pgadmin.utils.constants import MIMETYPE_APP_JSON
 
 MODULE_NAME = 'biganimal'
 
+SINGLE_CLUSTER_ARCH = 'single'
+HA_CLUSTER_ARCH = 'ha'  # High Availability
+EHA_CLUSTER_ARCH = 'eha'  # Extreme High Availability
+
 
 class BigAnimalModule(PgAdminModule):
     """Cloud module to deploy on EDB BigAnimal"""
@@ -285,10 +289,12 @@ class BigAnimalProvider():
         if resp.status_code == 200 and resp.content:
             pg_types_resp = json.loads(resp.content)
             for value in pg_types_resp['pgTypesList']:
-                pg_types.append({
-                    'label': value['name'],
-                    'value': value['id']
-                })
+                # Extreme HA is in Beta, so avoid it
+                if len(value['supportedClusterArchitectureIds']) != 1:
+                    pg_types.append({
+                        'label': value['name'],
+                        'value': value['id']
+                    })
         return pg_types
 
     def get_postgres_versions(self):
@@ -366,9 +372,14 @@ def deploy_on_biganimal(data):
     _label = data['instance_details']['name']
     _private_network = '1' if str(data['instance_details']['cloud_type']
                                   ) == 'private' else '0'
-    _high_availability = '1' if data['db_details']['high_availability']\
-        else '0'
     _instance_size = data['instance_details']['instance_size'].split('||')[1]
+
+    cluster_arch = SINGLE_CLUSTER_ARCH
+    nodes = 1
+
+    if data['db_details']['high_availability']:
+        cluster_arch = HA_CLUSTER_ARCH
+        nodes = int(data['db_details']['replicas']) + nodes
 
     args = [_cmd_script,
             data['cloud'],
@@ -389,8 +400,10 @@ def deploy_on_biganimal(data):
             str(_instance_size),
             '--private-network',
             _private_network,
-            '--high-availability',
-            _high_availability
+            '--cluster-arch',
+            cluster_arch,
+            '--nodes',
+            str(nodes)
             ]
 
     if 'biganimal_public_ip' in data['instance_details']:
