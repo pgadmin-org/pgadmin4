@@ -16,7 +16,7 @@ import Theme from 'sources/Theme';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
-import getApiInstance from '../../../../static/js/api_instance';
+import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import authConstant from 'pgadmin.browser.constants';
 import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from '../../../../static/js/validators';
@@ -141,7 +141,7 @@ class UserManagementCollection extends BaseUISchema {
     let msg = undefined;
     let obj = this;
     if (obj.isUserNameEnabled(state) && isEmptyString(state.username)) {
-      msg = gettext('Username cannot be empty.');
+      msg = gettext('Username cannot be empty');
       setError('username', msg);
       return true;
     } else {
@@ -151,24 +151,41 @@ class UserManagementCollection extends BaseUISchema {
     if (state.auth_source == authConstant['INTERNAL']) {
       let email_filter = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
       if (isEmptyString(state.email)) {
-        msg = gettext('Email cannot be empty.');
+        msg = gettext('Email cannot be empty');
         setError('email', msg);
         return true;
       } else if (!email_filter.test(state.email)) {
-        msg = gettext('Invalid email address: %s.', state.email);
+        msg = gettext('Invalid email address: %s', state.email);
         setError('email', msg);
         return true;
       } else {
         setError('email', null);
       }
-      // TODO: Check for duplicate email address errmsg = gettext('The email address %s already exists.'
+
+      let isEmailFound = false;
+      if (obj.top?._sessData?.userManagement) {
+        for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
+          if (obj.top._sessData.userManagement[i]?.id && 
+            obj.top._sessData.userManagement[i].email == state.email) {
+            msg = gettext('Email address \'%s\' already exists', state.email);
+            setError('email', msg);
+            return true;
+          }
+        }
+      }
+
+      if (obj.isNew(state) && isEmailFound) {
+        msg = gettext('Email address \'%s\' already exists', state.email);
+        setError('email', msg);
+        return true;
+      }
 
       if (obj.isNew(state) && isEmptyString(state.newPassword)) {
-        msg = gettext('Password cannot be empty for user %s.', state.email);
+        msg = gettext('Password cannot be empty for user %s', state.email);
         setError('newPassword', msg);
         return true;
       } else if (state.newPassword?.length < 6) {
-        msg = gettext('Password must be at least 6 characters for user %s.', state.email);
+        msg = gettext('Password must be at least 6 characters for user %s', state.email);
         setError('newPassword', msg);
         return true;
       } else {
@@ -176,7 +193,7 @@ class UserManagementCollection extends BaseUISchema {
       }
 
       if (obj.isNew(state) && isEmptyString(state.confirmPassword)) {
-        msg = gettext('Confirm Password cannot be empty for user %s.', state.email);
+        msg = gettext('Confirm Password cannot be empty for user %s', state.email);
         setError('confirmPassword', msg);
         return true;
       } else {
@@ -184,7 +201,7 @@ class UserManagementCollection extends BaseUISchema {
       }
 
       if (state.newPassword !== state.confirmPassword) {
-        msg = gettext('Passwords do not match for user %s.', state.email);
+        msg = gettext('Passwords do not match for user %s', state.email);
         setError('confirmPassword', msg);
         return true;
       } else {
@@ -288,7 +305,7 @@ function UserManagementDialog({onClose}) {
           Notify.error(err);
         });
     } catch (error) {
-      Notify.error(error);
+      Notify.error(parseApiError(error));
     }
   }, []);
 
@@ -298,14 +315,14 @@ function UserManagementDialog({onClose}) {
         api.post(url_for('user_management.save'), changeData['userManagement'])
           .then(()=>{
             Notify.success('Users Saved Successfully');
+            resolve();
+            onClose();
           })
           .catch((err)=>{
-            Notify.error(err);
+            reject(err);
           });
-        resolve();
-        onClose();
       } catch (error) {
-        reject(error);
+        reject(parseApiError(error));
       }
     });
   };

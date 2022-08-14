@@ -452,7 +452,8 @@ def validate_user(data):
         if validate_email(data['email']):
             new_data['email'] = data['email']
         else:
-            raise InternalServerError(_("Invalid email address."))
+            raise InternalServerError(
+                _("Invalid email address {0}.").format(data['email']))
 
     if 'role' in data and data['role'] != "":
         new_data['roles'] = int(data['role'])
@@ -525,7 +526,7 @@ def create_user(data):
             new_data['roles'] = [Role.query.get(new_data['roles'])]
 
     except Exception as e:
-        return False, str(e)
+        return False, str(e.description)
 
     try:
         _create_new_user(new_data)
@@ -557,7 +558,7 @@ def update_user(uid, data):
         if 'roles' in new_data:
             new_data['roles'] = [Role.query.get(new_data['roles'])]
     except Exception as e:
-        return False, str(e)
+        return False, str(e.description)
 
     try:
         for k, v in new_data.items():
