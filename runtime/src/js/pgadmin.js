@@ -38,16 +38,6 @@ if (fs.existsSync('dev_config.json')) {
   }
 }
 
-// This function is used to create UUID
-function createUUID() {
-  let dt = new Date().getTime();
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    let r = (dt + Math.random()*16)%16 | 0;
-    dt = Math.floor(dt/16);
-    return (c==='x' ? r :(r&0x3|0x8)).toString(16);
-  });
-}
-
 // This functions is used to start the pgAdmin4 server by spawning a
 // separate process.
 function startDesktopMode() {
@@ -56,7 +46,7 @@ function startDesktopMode() {
   if (pgadminServerProcess != null)
     return;
 
-  let UUID = createUUID();
+  let UUID = crypto.randomUUID();
   // Set the environment variables so that pgAdmin 4 server
   // starts listening on the appropriate port.
   process.env.PGADMIN_INT_PORT = serverPort;

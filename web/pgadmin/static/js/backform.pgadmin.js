@@ -2534,7 +2534,7 @@ define([
       Backform.FieldsetControl.prototype.initialize.apply(
         this, arguments
       );
-      this.tabIndex = (opts.tabIndex || parseInt(Math.random() * 1000)) + 1;
+      this.tabIndex = (opts.tabIndex || parseInt(crypto.getRandomValues(new Uint8Array(1)))) + 1;
       if(opts.field.get('tabPanelExtraClasses')) {
         this.tabPanelExtraClasses = opts.field.get('tabPanelExtraClasses');
       }

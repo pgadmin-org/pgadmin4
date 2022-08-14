@@ -260,9 +260,11 @@ export function fully_qualify(pgBrowser, data, item) {
 }
 
 export function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  const intArray = new Uint32Array(1);
+  crypto.getRandomValues(intArray);
+
+  var range = max - min + 1;
+  return min + (intArray[0] % range);
 }
 
 export function titleize(i_str) {

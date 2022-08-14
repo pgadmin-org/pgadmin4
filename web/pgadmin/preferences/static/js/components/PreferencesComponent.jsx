@@ -178,7 +178,7 @@ export default function PreferencesComponent({ ...props }) {
       let preferencesTreeData = [];
       let preferencesValues = {};
       res.data.forEach(node => {
-        let id = Math.floor(Math.random() * 1000);
+        let id = crypto.getRandomValues(new Uint16Array(1));
         let tdata = {
           'id': id.toString(),
           'label': node.label,
@@ -200,7 +200,7 @@ export default function PreferencesComponent({ ...props }) {
         }
 
         node.children.forEach(subNode => {
-          let sid = Math.floor(Math.random() * 1000);
+          let sid = crypto.getRandomValues(new Uint16Array(1));
           let nodeData = {
             'id': sid.toString(),
             'label': subNode.label,
@@ -368,7 +368,7 @@ export default function PreferencesComponent({ ...props }) {
             firstElement = field;
           }
         });
-        setLoadTree(Math.floor(Math.random() * 1000));
+        setLoadTree(crypto.getRandomValues(new Uint16Array(1)));
         initTreeTimeout = setTimeout(() => {
           prefTreeInit.current = true;
           if(firstElement) {

@@ -427,7 +427,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
         setDebuggerArgs(funcArgsData, funcObj, myObj);
         debuggerArgsSchema.current = new DebuggerArgumentSchema();
-        setLoadArgs(Math.floor(Math.random() * 1000));
+        setLoadArgs(crypto.getRandomValues(new Uint16Array(1)));
       })
       .catch(() => {
         Notify.alert(
@@ -485,7 +485,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       setTimeout(() => {
         /* Reload the debugger arguments */
         setLoaderText('');
-        setLoadArgs(Math.floor(Math.random() * 1000));
+        setLoadArgs(crypto.getRandomValues(new Uint16Array(1)));
         /* Disable debug button */
         setIsDisableDebug(true);
       }, 100);
