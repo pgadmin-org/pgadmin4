@@ -400,6 +400,12 @@ def save():
     )
 
     try:
+        # Delete Users
+        if 'deleted' in data:
+            for item in data['deleted']:
+                status, res = delete_user(item['id'])
+                if not status:
+                    return internal_server_error(errormsg=res)
         # Create Users
         if 'added' in data:
             for item in data['added']:
@@ -410,13 +416,6 @@ def save():
         if 'changed' in data:
             for item in data['changed']:
                 status, res = update_user(item['id'], item)
-                if not status:
-                    return internal_server_error(errormsg=res)
-
-        # Delete Users
-        if 'deleted' in data:
-            for item in data['deleted']:
-                status, res = delete_user(item['id'])
                 if not status:
                     return internal_server_error(errormsg=res)
     except Exception as e:

@@ -131,8 +131,8 @@ export default function ModalProvider({ children }) {
   return (
     <ModalContext.Provider value={modalContext}>
       {children}
-      {modals.map((modalOptions, i) => (
-        <ModalContainer key={i} {...modalOptions} />
+      {modals.map((modalOptions) => (
+        <ModalContainer key={modalOptions.id} {...modalOptions} />
       ))}
     </ModalContext.Provider>
   );

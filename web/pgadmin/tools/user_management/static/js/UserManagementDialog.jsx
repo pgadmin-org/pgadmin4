@@ -149,6 +149,20 @@ class UserManagementCollection extends BaseUISchema {
       setError('username', null);
     }
 
+    if (state.auth_source != authConstant['INTERNAL']) {
+      if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
+        for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
+          if (obj.top._sessData.userManagement[i]?.id &&
+            obj.top._sessData.userManagement[i].username == state.username &&
+            obj.top._sessData.userManagement[i].auth_source == state.auth_source) {
+            msg = gettext('User name \'%s\' already exists', state.username);
+            setError('username', msg);
+            return true;
+          }
+        }
+      }
+    }
+
     if (state.auth_source == authConstant['INTERNAL']) {
       let email_filter = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
       if (isEmptyString(state.email)) {
