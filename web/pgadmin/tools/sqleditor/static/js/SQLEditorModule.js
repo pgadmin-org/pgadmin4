@@ -261,7 +261,7 @@ export default class SQLEditor {
           if(is_query_tool) {
             panel_titles = panelTitleFunc.getPanelTitle(pgBrowser, selected_item, value);
           } else {
-            panel_titles = showViewData.generateDatagridTitle(pgBrowser, selected_item, value);
+            panel_titles = showViewData.generateViewDataTitle(pgBrowser, selected_item, value);
           }
           // Set title to the selected tab.
           if (is_dirty_editor) {
