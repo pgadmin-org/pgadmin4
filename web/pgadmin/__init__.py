@@ -704,11 +704,11 @@ def create_app(app_name=None):
             except Exception as e:
                 current_app.logger.exception(e)
 
-        # remove key
-        current_app.keyManager.reset()
-
         _driver = get_driver(PG_DEFAULT_DRIVER)
         _driver.gc_own()
+
+        # remove key
+        current_app.keyManager.reset()
 
     ##########################################################################
     # Load plugin modules
