@@ -33,6 +33,7 @@ class UserManagementCollection extends BaseUISchema {
       role: '2',
       newPassword: undefined,
       confirmPassword: undefined,
+      locked: false,
       auth_source: authConstant['INTERNAL']
     });
 
@@ -131,7 +132,7 @@ class UserManagementCollection extends BaseUISchema {
       }, {
         id: 'locked', label: gettext('Locked'), cell: 'switch', width: 60, disableResizing: true,
         editable: (state)=> {
-          return obj.isEditable(state);
+          return state.locked;
         }
       }
     ];
@@ -162,22 +163,15 @@ class UserManagementCollection extends BaseUISchema {
         setError('email', null);
       }
 
-      let isEmailFound = false;
-      if (obj.top?._sessData?.userManagement) {
+      if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
         for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
-          if (obj.top._sessData.userManagement[i]?.id && 
+          if (obj.top._sessData.userManagement[i]?.id &&
             obj.top._sessData.userManagement[i].email == state.email) {
             msg = gettext('Email address \'%s\' already exists', state.email);
             setError('email', msg);
             return true;
           }
         }
-      }
-
-      if (obj.isNew(state) && isEmailFound) {
-        msg = gettext('Email address \'%s\' already exists', state.email);
-        setError('email', msg);
-        return true;
       }
 
       if (obj.isNew(state) && isEmptyString(state.newPassword)) {
