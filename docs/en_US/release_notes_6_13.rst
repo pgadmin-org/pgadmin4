@@ -23,6 +23,7 @@ Housekeeping
   | `Issue #7568 <https://redmine.postgresql.org/issues/7568>`_ -  Port change user password and 2FA dialog to React.
   | `Issue #7590 <https://redmine.postgresql.org/issues/7590>`_ -  Port change ownership dialog to React.
   | `Issue #7595 <https://redmine.postgresql.org/issues/7595>`_ -  Update the container base image to Alpine 3.16 (with Python 3.10.5).
+  | `Issue #7602 <https://redmine.postgresql.org/issues/7602>`_ -  Fixed improper parsing of HTTP requests in Pallets Werkzeug v2.1.0 and below (CVE-2022-29361).
 
 Bug fixes
 *********

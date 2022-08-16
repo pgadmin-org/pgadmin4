@@ -14,7 +14,7 @@ from flask import url_for, request
 from flask import render_template, current_app as app
 from flask_security import login_required
 from flask_babel import gettext
-from werkzeug.useragents import UserAgent
+from werkzeug.user_agent import UserAgent
 from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields
 from pgadmin.utils.ajax import make_json_response, bad_request, \

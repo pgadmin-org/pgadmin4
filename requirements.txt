@@ -49,7 +49,7 @@ Pillow==9.*; python_version >= '3.7'
 boto3==1.20.*
 botocore==1.23.*
 urllib3==1.26.*
-Werkzeug==2.0.3
+Werkzeug==2.1.1
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==21.0.0
 azure-mgmt-subscription==3.0.0

@@ -17,7 +17,7 @@ import copy
 from flask import render_template, request, current_app
 from flask_babel import gettext
 from flask_security import login_required
-from werkzeug.useragents import UserAgent
+from werkzeug.user_agent import UserAgent
 
 from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields, \
