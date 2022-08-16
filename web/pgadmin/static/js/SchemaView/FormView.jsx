@@ -40,8 +40,8 @@ const useStyles = makeStyles((theme)=>({
     height: 'unset',
   },
   errorMargin: {
-    /* Error footer margin */
-    marginBottom: '36px',
+    /* Error footer space */
+    paddingBottom: '36px',
   },
   sqlTabInput: {
     border: 0,
@@ -382,13 +382,13 @@ export default function FormView({
             </Tabs>
           </Box>
           {Object.keys(finalTabs).map((tabName, i)=>{
-            let contentClassName = null;
+            let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
             if(fullTabs.indexOf(tabName) == -1) {
-              contentClassName = clsx(classes.nestedControl, stateUtils.formErr.message ? classes.errorMargin : null);
+              contentClassName.push(classes.nestedControl);
             }
             return (
               <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-                className={contentClassName}>
+                className={clsx(contentClassName)}>
                 {finalTabs[tabName]}
               </TabPanel>
             );

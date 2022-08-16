@@ -86,14 +86,22 @@ export default function ProcessDetails({data}) {
   const [[outPos, errPos], setOutErrPos] = useState([0, 0]);
   const [exitCode, setExitCode] = useState(data.exit_code);
   const [timeTaken, setTimeTaken] = useState(data.execution_time);
+  const [stopping, setStopping] = useState(false);
 
   let notifyType = MESSAGE_TYPE.INFO;
   let notifyText = gettext('Not started');
 
-  const process_state = pgAdmin.Browser.BgProcessManager.evaluateProcessState({
+  let process_state = pgAdmin.Browser.BgProcessManager.evaluateProcessState({
     ...data,
     exit_code: exitCode,
   });
+
+  if(process_state == BgProcessManagerProcessState.PROCESS_STARTED && stopping) {
+    process_state = BgProcessManagerProcessState.PROCESS_TERMINATING;
+  }
+  if(process_state == BgProcessManagerProcessState.PROCESS_FAILED && stopping) {
+    process_state = BgProcessManagerProcessState.PROCESS_TERMINATED;
+  }
 
   if(process_state == BgProcessManagerProcessState.PROCESS_STARTED) {
     notifyText = gettext('Running...');
@@ -133,6 +141,11 @@ export default function ProcessDetails({data}) {
 
   }, completed ? -1 : 1000);
 
+  const onStopProcess = ()=>{
+    setStopping(true);
+    pgAdmin.Browser.BgProcessManager.stopProcess(data.id);
+  };
+
   const errRe = new RegExp(': (' + gettext('error') + '|' + gettext('fatal') + '):', 'i');
   return (
     <Box display="flex" flexDirection="column" className={classes.container} data-test="process-details">
@@ -153,7 +166,10 @@ export default function ProcessDetails({data}) {
             pgAdmin.Tools.FileManager.openStorageManager(data.current_storage_dir);
           }} style={{marginRight: '4px'}} />}
           <DefaultButton disabled={process_state != BgProcessManagerProcessState.PROCESS_STARTED || data.server_id != null}
-            startIcon={<HighlightOffRoundedIcon />} className={classes.terminateBtn}>Stop Process</DefaultButton></Box>
+            startIcon={<HighlightOffRoundedIcon />} className={classes.terminateBtn} onClick={onStopProcess}>
+              Stop Process
+          </DefaultButton>
+        </Box>
       </Box>
       <Box flexGrow={1} className={classes.logs}>
         {logs == null && <span data-test="loading-logs">{gettext('Loading process logs...')}</span>}

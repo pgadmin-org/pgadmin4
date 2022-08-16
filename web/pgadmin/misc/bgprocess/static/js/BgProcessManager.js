@@ -140,7 +140,7 @@ export default class BgProcessManager {
   stopProcess(jobId) {
     this.procList.find((p)=>p.id == jobId).process_state = BgProcessManagerProcessState.PROCESS_TERMINATING;
     this._eventManager.fireEvent(BgProcessManagerEvents.LIST_UPDATED);
-    this.api.put(url_for('bgprocess.stop_process', {
+    return this.api.put(url_for('bgprocess.stop_process', {
       pid: jobId,
     }))
       .then(()=>{

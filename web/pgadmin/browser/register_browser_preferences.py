@@ -133,6 +133,7 @@ def register_browser_preferences(self):
     self.table_row_count_threshold = self.preference.register(
         'processes', 'process_retain_days',
         gettext("Process details/logs retention days"), 'integer', 5,
+        min_val=1,
         category_label=gettext('Processes'),
         help_str=gettext(
             'After this many days, the process info and logs '

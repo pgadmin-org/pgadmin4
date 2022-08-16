@@ -56,7 +56,10 @@ function ProcessNotifyMessage({title, desc, onClose, onViewProcess, success=true
       <Box className={classes.containerBody}>
         <Box>{desc}</Box>
         <Box marginTop={'1rem'} display="flex">
-          <DefaultButton startIcon={<DescriptionOutlinedIcon />} onClick={onViewProcess}>View Processes</DefaultButton>
+          <DefaultButton startIcon={<DescriptionOutlinedIcon />} onClick={()=>{
+            onViewProcess();
+            onClose();
+          }}>View Processes</DefaultButton>
         </Box>
       </Box>
     </Box>

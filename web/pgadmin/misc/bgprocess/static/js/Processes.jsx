@@ -218,7 +218,7 @@ export default function Processes() {
       },
     },
     {
-      Header: gettext('Time Taken'),
+      Header: gettext('Time Taken (sec)'),
       accessor: 'execution_time',
       sortable: true,
       resizable: true,

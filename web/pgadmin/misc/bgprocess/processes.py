@@ -545,7 +545,8 @@ class BatchProcess(object):
                     cloud_instance['instance']['status'] = True
                     cloud_instance['instance']['pid'] = _pid
                     return update_server(cloud_instance)
-        elif err_completed and _process.exit_code > 0:
+        elif err_completed and _process.exit_code is not None and \
+                _process.exit_code > 0:
             cloud_instance = {'instance': {}}
             cloud_instance['instance']['sid'] = _process.server_id
             cloud_instance['instance']['status'] = False
