@@ -8,7 +8,8 @@
 #
 ###############################################################################
 
-Flask==2.1.*
+Flask==2.0.3; python_version <= '3.6'
+Flask==2.1.*; python_version >= '3.7'
 Flask-Gravatar==0.*
 Flask-Login==0.*
 Flask-Mail==0.*

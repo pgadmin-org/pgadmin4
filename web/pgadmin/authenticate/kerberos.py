@@ -178,7 +178,7 @@ class KerberosAuthentication(BaseAuthentication):
         headers = Headers()
         authorization = request.headers.get("Authorization", None)
         form_class = _security.login_form
-        req_json = request.get_json(force=True)
+        req_json = request.get_json(silent=True)
 
         if req_json:
             form = form_class(MultiDict(req_json))

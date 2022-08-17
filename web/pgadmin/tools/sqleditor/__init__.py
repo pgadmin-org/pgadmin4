@@ -1896,7 +1896,7 @@ def start_query_download_tool(trans_id):
             errormsg=TRANSACTION_STATUS_CHECK_FAILED
         )
 
-    data = request.values if request.values else request.get_json(force=True)
+    data = request.values if request.values else request.get_json(silent=True)
     if data is None:
         return make_json_response(
             status=410,
@@ -2435,7 +2435,7 @@ def clear_query_history(trans_id):
     status, error_msg, conn, trans_obj, session_ob = \
         check_transaction_status(trans_id)
 
-    filter = request.get_json(force=True)
+    filter = request.get_json(silent=True)
     return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db, filter)
 
 
