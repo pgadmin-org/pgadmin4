@@ -1,9 +1,11 @@
+import Notifier from './helpers/Notifier';
+
 export async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
-  } catch {
+  } catch(err) {
     /* Suppress error */
-    console.error('Does not have clipboard acccess');
+    Notifier.error('Does not have clipboard acccess');
   }
   localStorage.setItem('clipboard', text);
 }

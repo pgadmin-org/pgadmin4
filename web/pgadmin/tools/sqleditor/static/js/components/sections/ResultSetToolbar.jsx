@@ -123,6 +123,19 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_COPY_DATA, copyData);
   }, [checkedMenuItems['copy_with_headers']]);
 
+  const FIXED_PREF = {
+    copy: {
+      'control': true,
+      ctrl_is_meta: true,
+      'shift': false,
+      'alt': false,
+      'key': {
+        'key_code': 67,
+        'char': 'C',
+      },
+    },
+  };
+
   useKeyboardShortcuts([
     {
       shortcut: queryToolPref.save_data,
@@ -145,7 +158,7 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
           <PgIconButton title={gettext('Add row')} icon={<PlaylistAddRoundedIcon style={{height: 'unset'}}/>}
             accesskey={shortcut_key(queryToolPref.btn_add_row)} disabled={!canEdit} onClick={addRow} />
           <PgIconButton title={gettext('Copy')} icon={<FileCopyRoundedIcon />}
-            accesskey={shortcut_key(queryToolPref.btn_copy_row)} disabled={buttonsDisabled['copy-rows']} onClick={copyData} />
+            shortcut={FIXED_PREF.copy} disabled={buttonsDisabled['copy-rows']} onClick={copyData} />
           <PgIconButton title={gettext('Copy options')} icon={<KeyboardArrowDownIcon />} splitButton
             name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}

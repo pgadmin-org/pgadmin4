@@ -408,6 +408,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         isDirtyRef.current = false;
         setPanelTitle(panel, fileName, {...qtState, current_file: fileName});
       }
+      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
     };
     const events = [
       [QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, ()=>{
@@ -699,6 +700,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               onNewQueryToolClick={onNewQueryToolClick}
               onResetLayout={onResetLayout}
               docker={docker.current}
+              containerRef={containerRef}
             />
             {React.useMemo(()=>(
               <MainToolBar

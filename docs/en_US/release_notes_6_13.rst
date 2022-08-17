@@ -28,11 +28,14 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #7452 <https://redmine.postgresql.org/issues/7452>`_ -  Ensure that an error is thrown if clipboard access is not provided and change the copy rows shortcut.
   | `Issue #7497 <https://redmine.postgresql.org/issues/7497>`_ -  Fixed an issue with the error message being displayed at the right place for Azure deployments.
+  | `Issue #7521 <https://redmine.postgresql.org/issues/7521>`_ -  Fixed an issue where the Query Editor loses focus when saving a query (Alt+s).
   | `Issue #7527 <https://redmine.postgresql.org/issues/7527>`_ -  Fixed API test cases for Postgres 14.4.
   | `Issue #7540 <https://redmine.postgresql.org/issues/7540>`_ -  Ensure that rename panel should work on view/edit panels.
   | `Issue #7563 <https://redmine.postgresql.org/issues/7563>`_ -  Fixed an issue where autocomplete is not working after clearing the query editor.
   | `Issue #7573 <https://redmine.postgresql.org/issues/7573>`_ -  Ensure that autocomplete does not appear when navigating code using arrow keys.
+  | `Issue #7575 <https://redmine.postgresql.org/issues/7575>`_ -  Fixed an issue where Alt-Shift-Q didn't work after creating a new query.
   | `Issue #7586 <https://redmine.postgresql.org/issues/7586>`_ -  Fixed an issue with rendering geometry when selecting a complete column.
   | `Issue #7587 <https://redmine.postgresql.org/issues/7587>`_ -  Ensure that the children of information_schema and pg_catalog node should be displayed.
   | `Issue #7608 <https://redmine.postgresql.org/issues/7608>`_ -  Fixed an issue where the cloud deployment wizard creates the cluster with the High Availability even if that option is not selected.

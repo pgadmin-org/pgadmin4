@@ -522,19 +522,6 @@ def register_query_tool_preferences(self):
     )
 
     self.preference.register(
-        'keyboard_shortcuts', 'btn_copy_row',
-        gettext('Accesskey (Copy rows)'), 'keyboardshortcut',
-        {
-            'key': {
-                'key_code': 67,
-                'char': 'c'
-            }
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=accesskey_fields
-    )
-
-    self.preference.register(
         'keyboard_shortcuts', 'btn_paste_row',
         gettext('Accesskey (Paste rows)'), 'keyboardshortcut',
         {

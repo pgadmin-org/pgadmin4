@@ -240,6 +240,7 @@ export default function Query() {
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
   const layoutEvenBus = useContext(LayoutEventsContext);
+  const lastCursorPos = React.useRef();
   const lastSavedText = React.useRef('');
   const markedLine = React.useRef(0);
   const marker = React.useRef();
@@ -470,7 +471,16 @@ export default function Query() {
       }
     });
 
-    editor.current.focus();
+    const lastFocus = ()=>{
+      editor.current.focus();
+      if(lastCursorPos.current) {
+        editor.current.setCursor(lastCursorPos.current.line, lastCursorPos.current.ch);
+      }
+    };
+    eventBus.registerListener(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS, lastFocus);
+    setTimeout(()=>{
+      editor.current.focus();
+    }, 250);
   }, []);
 
   useEffect(()=>{
@@ -483,6 +493,7 @@ export default function Query() {
 
   const cursorActivity = useCallback((cmObj)=>{
     const c = cmObj.getCursor();
+    lastCursorPos.current = c;
     eventBus.fireEvent(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, [c.line+1, c.ch+1]);
   }, []);
 

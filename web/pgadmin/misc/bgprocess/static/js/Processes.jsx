@@ -21,6 +21,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import url_for from 'sources/url_for';
 import { Box } from '@material-ui/core';
+import { useMemo } from 'react';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -98,7 +99,7 @@ export default function Processes() {
   const [tableData, setTableData] = React.useState([]);
   const [selectedRows, setSelectedRows] = React.useState([]);
 
-  let columns = [
+  let columns = useMemo(()=>[
     {
       accessor: 'stop_process',
       Header: () => null,
@@ -224,7 +225,7 @@ export default function Processes() {
       resizable: true,
       disableGlobalFilter: true,
     },
-  ];
+  ], []);
 
   const updateList = ()=>{
     if(pgAdmin.Browser.BgProcessManager.procList) {

@@ -269,6 +269,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
       defaultColumn,
       isSelectRow,
       autoResetSortBy: false,
+      autoResetSelectedRows: false,
       initialState: {
         sortBy: sortOptions || [],
       }

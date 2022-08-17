@@ -22,6 +22,8 @@ import { PgMenu, PgMenuItem } from '../../../../../../static/js/components/Menu'
 import gettext from 'sources/gettext';
 import RotateLeftRoundedIcon from '@material-ui/icons/RotateLeftRounded';
 import PropTypes from 'prop-types';
+import { useKeyboardShortcuts } from '../../../../../../static/js/custom_hooks';
+import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -79,7 +81,7 @@ ConnectionStatusIcon.propTypes = {
 };
 
 export function ConnectionBar({connected, connecting, connectionStatus, connectionStatusMsg,
-  connectionList, onConnectionChange, onNewConnClick, onNewQueryToolClick, onResetLayout}) {
+  connectionList, onConnectionChange, onNewConnClick, onNewQueryToolClick, onResetLayout, containerRef}) {
   const classes = useStyles();
   const connMenuRef = React.useRef();
   const [connDropdownOpen, setConnDropdownOpen] = React.useState(false);
@@ -90,6 +92,15 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
     }
     e.keepOpen = false;
   };
+
+  useKeyboardShortcuts([
+    {
+      shortcut: queryToolCtx.preferences?.browser?.sub_menu_query_tool,
+      options: {
+        callback: onNewQueryToolClick
+      }
+    },
+  ], containerRef);
 
   const connTitle = React.useMemo(()=>_.find(connectionList, (c)=>c.is_selected)?.conn_title, [connectionList]);
   return (
@@ -111,7 +122,8 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
               </Box>
             </Tooltip>
           </DefaultButton>
-          <PgIconButton title={gettext('New query tool for current connection')} icon={<QueryToolIcon />} onClick={onNewQueryToolClick}/>
+          <PgIconButton title={gettext('New query tool for current connection')} icon={<QueryToolIcon />}
+            shortcut={queryToolCtx.preferences?.browser?.sub_menu_query_tool} onClick={onNewQueryToolClick}/>
         </PgButtonGroup>
         <PgButtonGroup size="small" variant="text" style={{marginLeft: 'auto'}}>
           <PgIconButton title={gettext('Reset layout')} icon={<RotateLeftRoundedIcon />} onClick={onResetLayout}/>
@@ -145,4 +157,5 @@ ConnectionBar.propTypes = {
   onNewConnClick: PropTypes.func,
   onNewQueryToolClick: PropTypes.func,
   onResetLayout: PropTypes.func,
+  containerRef: CustomPropTypes.ref,
 };
