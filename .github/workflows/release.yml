@@ -10,7 +10,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
     - id: meta
       uses: docker/metadata-action@v4
       with:
@@ -37,5 +36,8 @@ jobs:
     - uses: docker/build-push-action@v3
       with:
         push: true
+        file: Dockerfile.cli
         platforms: linux/amd64,linux/arm64
         tags: ${{ steps.meta.outputs.tags }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
