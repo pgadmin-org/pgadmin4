@@ -310,7 +310,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
           }
         })
         .catch((error) => {
-          setErrMsg([MESSAGE_TYPE.ERROR, gettext(`Error while verification EDB BigAnimal: ${error.response.data.errormsg}`)]);
+          setErrMsg([MESSAGE_TYPE.ERROR, gettext(`Error while verifying EDB BigAnimal: ${error.response.data.errormsg}`)]);
         });
     }, 1000);
 

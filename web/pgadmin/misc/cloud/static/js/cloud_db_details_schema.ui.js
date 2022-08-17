@@ -39,7 +39,7 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
       }, {
         id: 'public_ip', label: gettext('Public IP range'), type: 'text',
         mode: ['create'],
-        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated.'),
+        helpMessage: gettext('IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add multiple IP addresses/ranges separated with commas.'),
       }, {
         type: 'nested-fieldset', label: gettext('Version & Instance'),
         mode: ['create'],
@@ -161,7 +161,7 @@ class DatabaseSchema extends BaseUISchema {
     }, {
       id: 'db_password', label: gettext('Password'), type: 'password',
       mode: ['create'], noEmpty: true,
-      helpMessage: gettext('At least 8 printable ASCII characters. Can not contain any of the following: / \(slash\), \'\(single quote\), "\(double quote\) and @ \(at sign\).')
+      helpMessage: gettext('At least 8 printable ASCII characters. Cannot contain any of the following: / \(slash\), \'\(single quote\), "\(double quote\) and @ \(at sign\).')
     }, {
       id: 'db_confirm_password', label: gettext('Confirm password'),
       type: 'password',
@@ -489,7 +489,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
       return true;
     }
     if (data.high_availability == true && (isEmptyString(data.replicas) || data.replicas <= 0)) {
-      setErrMsg('replicas', gettext('Please select no. of stand by replicas.'));
+      setErrMsg('replicas', gettext('Please select number of stand by replicas.'));
       return true;
     }
     return false;
@@ -575,7 +575,7 @@ class BigAnimalClusterSchema extends BaseUISchema {
       },{
         id: 'biganimal_public_ip', label: gettext('Public IP range'), type: 'text',
         mode: ['create'],
-        helpMessage: gettext('IP Address range for permitting the inbound traffic. Ex: 127.0.0.1/32, add multiple ip addresses/ranges by comma separated. Leave it blank for 0.0.0.0/0'),
+        helpMessage: gettext('IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add multiple IP addresses/ranges separated with commas. Leave blank for 0.0.0.0/0'),
       },{
         type: 'nested-fieldset', label: gettext('Instance Type'),
         mode: ['create'], deps: ['region'],
@@ -616,7 +616,7 @@ class BigAnimalHighAvailSchema extends BaseUISchema {
         id: 'high_availability_note', type: 'note',
         mode: ['create'],
         text: gettext('High availability clusters are configured with one primary and up to two '
-        + 'stand by replicas. Clusters are configured across availability zones in regions with availability zones.'),
+        + 'standby replicas. Clusters are configured across availability zones in regions with availability zones.'),
       },{
         id: 'high_availability', label: gettext('High availability'), type: 'switch',
         mode: ['create']

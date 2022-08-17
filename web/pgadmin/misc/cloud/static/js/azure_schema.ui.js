@@ -44,7 +44,7 @@ class AzureCredSchema extends BaseUISchema {
       isError = true;
       setErrMsg(
         'azure_tenant_id',
-        gettext('Azure Tenant Id is required for Azure interactive authentication.')
+        gettext('Azure Tenant ID is required for Azure interactive authentication.')
       );
     }
     return isError;
@@ -427,7 +427,7 @@ class AzureDatabaseSchema extends BaseUISchema {
     if (data.db_username.length < 1 && data.db_username.length > 63 && !/^[A-Za-z0-9]*$/.test(data.db_username)) {
       setErrMsg(
         'db_username',
-        gettext('Admin username must be more than 1 character & less than 63 and must only contains characters and numbers.')
+        gettext('The Admin username must be between 1-63 characters long, and must only contain alphabetic characters and numbers.')
       );
       return true;
     }
@@ -435,7 +435,7 @@ class AzureDatabaseSchema extends BaseUISchema {
     if (
       ['azure_superuser', 'azure_pg_admin', 'admin', 'administrator', 'root', 'guest', 'public'].includes(data.db_username) ||
       data.db_username.startsWith('pg_')) {
-      setErrMsg('db_username', gettext('Specified Admin username is not allowed'));
+      setErrMsg('db_username', gettext('Specified Admin username is not allowed.'));
       return true;
     }
     return false;
@@ -487,7 +487,7 @@ class AzureDatabaseSchema extends BaseUISchema {
         mode: ['create'],
         noEmpty: true,
         helpMessage: gettext(
-          'The admin username must be 1-63 characters long and can only contain character, numbers and the underscore character. The username cannot be "azure_superuser", "azure_pg_admin", "admin", "administrator", "root", "guest", "public", or start with "pg_".'
+          'The admin username must be 1-63 characters long and can only contain characters, numbers and the underscore character. The username cannot be "azure_superuser", "azure_pg_admin", "admin", "administrator", "root", "guest", "public", or start with "pg_".'
         ),
       },
       {
@@ -524,7 +524,7 @@ class AzureNetworkSchema extends BaseUISchema {
         type: 'text',
         mode: ['create'],
         helpMessage: gettext(
-          'List of IP Addresses or range of IP Addresses (start IP Address - end IP address) from which inbound traffic should be accepted. Add multiple IP addresses/ranges separated with commas, for example: "192.168.0.50, 192.168.0.100 -  192.168.0.200"'
+          'List of IP addresses or range of IP addresses (start IP Address - end IP address) from which inbound traffic should be accepted. Add multiple IP addresses/ranges separated with commas, for example: "192.168.0.50, 192.168.0.100 -  192.168.0.200"'
         ),
       },
     ];
@@ -704,7 +704,7 @@ class AzureClusterSchema extends BaseUISchema {
       setErr('db_instance_class',gettext('Instance class cannot be empty.'));
       return true;
     }
-  }  
+  }
 
   validateNetworkDetails(data, setErr){
     if(isEmptyString(data.instance_type)){
@@ -725,7 +725,7 @@ class AzureClusterSchema extends BaseUISchema {
 
   validate(data, setErr) {
     if ( !isEmptyString(data.name) && (!/^[a-z0-9\-]*$/.test(data.name) || data.name.length < 3)) {
-      setErr('name',gettext('Name must be more than 2 characters or more & must only contain lowercase letters, numbers, and hyphens'));
+      setErr('name',gettext('Name must be more than 2 characters and must only contain lowercase letters, numbers, and hyphens'));
       return true;
     }
 

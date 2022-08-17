@@ -149,7 +149,7 @@ export function validateBigAnimal() {
         }
       })
       .catch((error) => {
-        reject(`Error while fetchng EDB BigAnimal verification uri: ${error.response.data.errormsg}`);
+        reject(`Error while fetching EDB BigAnimal verification URI: ${error.response.data.errormsg}`);
       });
   });
 }
@@ -188,7 +188,7 @@ export function getBigAnimalSummary(cloud, bigAnimalInstanceData, bigAnimalDatab
     createData('Database Type',  bigAnimalDatabaseData.database_type),
     createData('Database Version',  bigAnimalDatabaseData.postgres_version),
     createData('High Availability',  bigAnimalDatabaseData.high_availability),
-    createData('No of Standby Replicas',  bigAnimalDatabaseData.replicas),
+    createData('No. of Standby Replicas',  bigAnimalDatabaseData.replicas),
   ];
 
   return [rows1, rows2, rows3, rows4];
