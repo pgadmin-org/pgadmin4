@@ -10,7 +10,7 @@ WITH (
 )
 TABLESPACE pg_default
 AS
- SELECT 12
+ SELECT 12 AS col1
 WITH DATA;
 
 ALTER TABLE IF EXISTS public."testmview_$%{}[]()&*^!/@`#"
