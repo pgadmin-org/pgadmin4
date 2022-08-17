@@ -1,0 +1,13 @@
+###############################################################################
+#
+# IMPORTANT:
+#
+# If runtime or build time dependencies are changed in this file, the committer
+# *must* ensure the DEB and RPM package maintainers are informed as soon as
+# possible.
+#
+###############################################################################
+
+# markupsafe removed soft_unicode in 2.1.0 which resulted in import error
+# https://markupsafe.palletsprojects.com/en/2.1.x/changes/#version-2-1-0
+markupsafe==2.0.1

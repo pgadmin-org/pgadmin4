@@ -20,6 +20,7 @@ COPY web /pgadmin4/web
 
 # Install dependencies
 COPY requirements.txt /pgadmin4
+COPY constraints.txt /pgadmin4
 RUN rm -rf /pgadmin4/web/*.log \
            /pgadmin4/web/config_*.py \
            /pgadmin4/web/node_modules \
@@ -43,7 +44,7 @@ RUN apk add --no-cache \
         cargo \
         python3-dev && \
     python3 -m venv --system-site-packages --without-pip /venv && \
-    /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
+    /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt -c constraints.txt && \
     apk del --no-cache build-deps
 
 #########################################################################
