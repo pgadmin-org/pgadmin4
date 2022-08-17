@@ -99,7 +99,7 @@ export function statsReducer(state, action) {
 const chartsDefault = {
   'session_stats': {'Total': [], 'Active': [], 'Idle': []},
   'tps_stats': {'Transactions': [], 'Commits': [], 'Rollbacks': []},
-  'ti_stats': {'Inserts': [], 'Updates': [], 'Delete': []},
+  'ti_stats': {'Inserts': [], 'Updates': [], 'Deletes': []},
   'to_stats': {'Fetched': [], 'Returned': []},
   'bio_stats': {'Reads': [], 'Hits': []},
 };
