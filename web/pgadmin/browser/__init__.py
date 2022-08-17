@@ -931,9 +931,10 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
 
         has_error = False
         form_class = _security.change_password_form
+        req_json = request.get_json(force=True)
 
-        if request.json:
-            form = form_class(MultiDict(request.json))
+        if req_json:
+            form = form_class(MultiDict(req_json))
         else:
             form = form_class()
 
@@ -965,7 +966,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 )
                 has_error = True
 
-            if request.json is None and not has_error:
+            if request.get_json(force=True) is None and not has_error:
                 after_this_request(view_commit)
                 do_flash(*get_message('PASSWORD_CHANGE'))
 
@@ -980,7 +981,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 return redirect(get_url(_security.post_change_view) or
                                 get_url(_security.post_login_view))
 
-        if request.json and not has_error:
+        if request.get_json(force=True) and not has_error:
             form.user = current_user
             return default_render_json(form)
 
@@ -1017,9 +1018,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
         """View function that handles a forgotten password request."""
         has_error = False
         form_class = _security.forgot_password_form
+        req_json = request.get_json(force=True)
 
-        if request.json:
-            form = form_class(MultiDict(request.json))
+        if req_json:
+            form = form_class(MultiDict(req_json))
         else:
             form = form_class()
 
@@ -1066,11 +1068,11 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                           'danger')
                     has_error = True
 
-            if request.json is None and not has_error:
+            if request.get_json(force=True) is None and not has_error:
                 do_flash(*get_message('PASSWORD_RESET_REQUEST',
                                       email=form.user.email))
 
-        if request.json and not has_error:
+        if request.get_json(force=True) and not has_error:
             return default_render_json(form, include_user=False)
 
         return _security.render_template(

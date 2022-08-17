@@ -8,7 +8,7 @@
 #
 ###############################################################################
 
-Flask==2.*
+Flask==2.1.*
 Flask-Gravatar==0.*
 Flask-Login==0.*
 Flask-Mail==0.*
@@ -50,7 +50,7 @@ boto3==1.20.*
 botocore==1.23.*
 urllib3==1.26.*
 Werkzeug==2.0.3; python_version <= '3.6'
-Werkzeug==2.1.1; python_version >= '3.7'
+Werkzeug==2.1.2; python_version >= '3.7'
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==21.0.0
 azure-mgmt-subscription==3.0.0
