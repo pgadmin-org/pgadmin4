@@ -720,7 +720,7 @@ def deploy_on_azure(data):
             session['azure_cache_files_list'][p.id] = azure.azure_cache_name
         else:
             session['azure_cache_files_list'] = {p.id: azure.azure_cache_name}
-
+        del session['azure']['azure_cache_file_name']
         return True, p, {'label': _label, 'sid': sid}
     except Exception as e:
         current_app.logger.exception(e)

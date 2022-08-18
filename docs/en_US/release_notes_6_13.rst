@@ -43,3 +43,5 @@ Bug fixes
   | `Issue #7608 <https://redmine.postgresql.org/issues/7608>`_ -  Fixed an issue where the cloud deployment wizard creates the cluster with the High Availability even if that option is not selected.
   | `Issue #7611 <https://redmine.postgresql.org/issues/7611>`_ -  Ensure that schema diff maintains view ownership when view definitions are modified.
   | `Issue #7614 <https://redmine.postgresql.org/issues/7614>`_ -  Fixed crypt key is missing issue when logout from the pgAdmin.
+  | `Issue #7616 <https://redmine.postgresql.org/issues/7616>`_ -  Ensure that the next button should be disabled if the password did not match for Azure deployment.
+  | `Issue #7617 <https://redmine.postgresql.org/issues/7617>`_ -  Fixed an issue where Azure cloud deployment failed.

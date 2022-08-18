@@ -264,6 +264,11 @@ export function validateAzureStep3(cloudDBDetails, nodeInfo) {
   if (isEmptyString(cloudDBDetails.db_username) || isEmptyString(cloudDBDetails.db_password)) {
     isError = true;
   }
+
+  if (cloudDBDetails.db_password != cloudDBDetails.db_confirm_password ||  !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,128}$/.test(cloudDBDetails.db_confirm_password)) {
+    isError = true;
+  }
+
   if (isEmptyString(cloudDBDetails.gid)) cloudDBDetails.gid = nodeInfo['server_group']._id;
   return isError;
 }
