@@ -39,7 +39,7 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
-from pgadmin.browser.utils import underscore_unescape
+from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
@@ -286,7 +286,7 @@ def panel(trans_id):
 
     close_url = ''
     if request.form:
-        params['title'] = underscore_unescape(request.form['title'])
+        params['title'] = request.form['title']
         close_url = request.form['close_url']
         if 'sql_filter' in request.form:
             params['sql_filter'] = request.form['sql_filter']
@@ -317,16 +317,17 @@ def panel(trans_id):
             params['bgcolor'] = s.bgcolor
         params['fgcolor'] = s.fgcolor or 'black'
 
-    params['server_name'] = s.name
-    params['username'] = s.username
+    params['server_name'] = underscore_escape(s.name)
+    params['username'] = underscore_escape(s.username)
     params['layout'] = get_setting('SQLEditor/Layout')
     params['macros'] = get_user_macros()
     params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
+    params['database_name'] = underscore_escape(params['database_name'])
 
     return render_template(
         "sqleditor/index.html",
         close_url=close_url,
-        title=params['title'],
+        title=underscore_unescape(params['title']),
         params=json.dumps(params),
         requirejs=True,
         basejs=True,

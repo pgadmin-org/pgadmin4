@@ -84,7 +84,7 @@ class CloudProcessDesc(IProcessDesc):
 
         return {
             "message": self.message,
-            "cmd": cmd,
+            "cmd": self.cmd,
             "server": server,
             "object": self.instance_name,
             "type": self.provider,

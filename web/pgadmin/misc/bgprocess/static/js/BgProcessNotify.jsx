@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme)=>({
   },
   containerBody: {
     marginTop: '1rem',
+    overflowWrap: 'break-word',
   },
   containerSuccess: {
     borderColor: theme.palette.success.main,

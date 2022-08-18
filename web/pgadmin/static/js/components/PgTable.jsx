@@ -213,7 +213,7 @@ IndeterminateCheckbox.propTypes = {
 };
 
 const ROW_HEIGHT = 35;
-export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, ...props }) {
+export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, tableProps, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
   const [searchVal, setSearchVal] = React.useState('');
@@ -269,10 +269,10 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
       defaultColumn,
       isSelectRow,
       autoResetSortBy: false,
-      autoResetSelectedRows: false,
       initialState: {
         sortBy: sortOptions || [],
-      }
+      },
+      ...tableProps,
     },
     useGlobalFilter,
     useSortBy,
@@ -550,5 +550,6 @@ PgTable.propTypes = {
   schema: PropTypes.object,
   rows: PropTypes.object,
   ExpandedComponent: PropTypes.node,
+  tableProps: PropTypes.object,
   'data-test': PropTypes.string
 };

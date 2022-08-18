@@ -22,6 +22,7 @@ import HelpIcon from '@material-ui/icons/HelpRounded';
 import url_for from 'sources/url_for';
 import { Box } from '@material-ui/core';
 import { useMemo } from 'react';
+import Notifier from '../../../../static/js/helpers/Notifier';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -251,6 +252,12 @@ export default function Processes() {
         sortOptions={[{id: 'stime', desc: true}]}
         getSelectedRows={(rows)=>{setSelectedRows(rows);}}
         isSelectRow={true}
+        tableProps={{
+          autoResetSelectedRows: false,
+          getRowId: (row)=>{
+            return row.id;
+          }
+        }}
         CustomHeader={()=>{
           return (
             <Box>
@@ -260,7 +267,9 @@ export default function Processes() {
                 aria-label="Acknowledge and Remove"
                 title={gettext('Acknowledge and Remove')}
                 onClick={() => {
-                  pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
+                  Notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
+                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
+                  });
                 }}
                 disabled={selectedRows.length <= 0}
               ></PgIconButton>

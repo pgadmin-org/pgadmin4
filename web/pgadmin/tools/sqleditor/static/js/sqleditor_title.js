@@ -15,7 +15,7 @@ import { retrieveNameSpaceName, retrieveNodeName } from './show_view_data';
 const pgAdmin = pgWindow.pgAdmin;
 
 export function getDatabaseLabel(parentData) {
-  return parentData.database ? parentData.database.label
+  return parentData.database ? parentData.database._label
     : parentData.server?.db;
 }
 
@@ -74,7 +74,7 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
   var title_data = {
     'database': db_label,
     'username': parentData.server.user.name,
-    'server': parentData.server.label,
+    'server': parentData.server._label,
     'type': 'query_tool',
   };
 
@@ -132,7 +132,7 @@ export function generateTitle(title_placeholder, title_data) {
     title_placeholder = title_placeholder.replace('%DATABASE%', _.unescape(title_data.database));
   }
 
-  return _.escape(title_placeholder);
+  return title_placeholder;
 }
 
 /*

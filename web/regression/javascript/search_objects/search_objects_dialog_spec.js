@@ -82,6 +82,7 @@ describe('SearchObjectsDialog', () => {
                 _type: 'server',
                 user: {name: 'username'},
                 label: 'theserver',
+                _label: 'theserver',
               },
               children: [
                 {
@@ -90,6 +91,7 @@ describe('SearchObjectsDialog', () => {
                     _type: 'database',
                     _id: 11,
                     label: 'thedatabase',
+                    _label: 'thedatabase',
                   },
                 },
               ],
