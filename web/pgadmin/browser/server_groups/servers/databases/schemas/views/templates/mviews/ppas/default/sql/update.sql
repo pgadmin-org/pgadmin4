@@ -50,6 +50,11 @@ WITH(
  WITH {{ 'DATA' if o_data.with_data else 'NO DATA' }};
 
 {% endif %}
+{% if o_data.owner and not data.owner %}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
+  OWNER TO {{ conn|qtIdent(o_data.owner) }};
+
+{% endif %}
 {% if o_data.comment and not data.comment  %}
 COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
     IS {{ o_data.comment|qtLiteral }};

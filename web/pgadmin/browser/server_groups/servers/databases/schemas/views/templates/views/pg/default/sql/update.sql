@@ -6,16 +6,17 @@
 {% set view_schema = data.schema if data.schema else o_data.schema %}
 {% set def = data.definition.rstrip(';') if data.definition %}
 {% if data.name and data.name != o_data.name %}
-ALTER VIEW {{ conn|qtIdent(o_data.schema, o_data.name) }}
+ALTER VIEW IF EXISTS {{ conn|qtIdent(o_data.schema, o_data.name) }}
     RENAME TO {{ conn|qtIdent(data.name) }};
 {% endif %}
 {% if data.schema and data.schema != o_data.schema %}
-ALTER VIEW {{ conn|qtIdent(o_data.schema, view_name ) }}
+ALTER VIEW IF EXISTS {{ conn|qtIdent(o_data.schema, view_name ) }}
     SET SCHEMA {{ conn|qtIdent(data.schema) }};
 {% endif %}
 {% if def and def != o_data.definition.rstrip(';') %}
 {% if data.del_sql %}
 DROP VIEW {{ conn|qtIdent(view_schema, view_name) }};
+
 {% endif %}
 CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
@@ -23,20 +24,25 @@ CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
     AS
     {{ def }};
+{% if data.del_sql and data.owner is not defined %}
+
+ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
+    OWNER TO {{ conn|qtIdent(o_data.owner) }};
+{% endif %}
 {% else %}
 {% if (data.security_barrier is defined and data.security_barrier|lower !=  o_data.security_barrier|lower) %}
-ALTER VIEW {{ conn|qtIdent(view_schema, view_name) }}
+ALTER VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
     SET (security_barrier={{ data.security_barrier|lower }});
 {% endif %}
 {% if (data.check_option and data.check_option != o_data.check_option and data.check_option != 'no') %}
-ALTER VIEW {{ conn|qtIdent(view_schema, view_name) }}
+ALTER VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
     SET (check_option={{ data.check_option }});
 {% elif (data.check_option and data.check_option != o_data.check_option and data.check_option == 'no') %}
-ALTER VIEW {{ conn|qtIdent(view_schema, view_name) }} RESET (check_option);
+ALTER VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }} RESET (check_option);
 {% endif %}
 {% endif %}
 {% if data.owner and data.owner != o_data.owner %}
-ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
+ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
 {% endif %}
 {% set old_comment = o_data.comment|default('', true) %}

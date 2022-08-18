@@ -16,6 +16,7 @@ ALTER VIEW IF EXISTS {{ conn|qtIdent(o_data.schema, view_name ) }}
 {% if def and def != o_data.definition.rstrip(';') %}
 {% if data.del_sql %}
 DROP VIEW {{ conn|qtIdent(view_schema, view_name) }};
+
 {% endif %}
 CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
@@ -23,6 +24,11 @@ CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
     AS
     {{ def }};
+{% if data.del_sql and data.owner is not defined %}
+
+ALTER TABLE {{ conn|qtIdent(view_schema, view_name) }}
+    OWNER TO {{ conn|qtIdent(o_data.owner) }};
+{% endif %}
 {% else %}
 {% if (data.security_barrier is defined and data.security_barrier|lower !=  o_data.security_barrier|lower) %}
 ALTER VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}

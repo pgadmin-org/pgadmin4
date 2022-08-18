@@ -38,5 +38,8 @@ Bug fixes
   | `Issue #7575 <https://redmine.postgresql.org/issues/7575>`_ -  Fixed an issue where Alt-Shift-Q didn't work after creating a new query.
   | `Issue #7586 <https://redmine.postgresql.org/issues/7586>`_ -  Fixed an issue with rendering geometry when selecting a complete column.
   | `Issue #7587 <https://redmine.postgresql.org/issues/7587>`_ -  Ensure that the children of information_schema and pg_catalog node should be displayed.
+  | `Issue #7591 <https://redmine.postgresql.org/issues/7591>`_ -  Fixed column "none" does not exist issue, while comparing schema objects.
+  | `Issue #7596 <https://redmine.postgresql.org/issues/7596>`_ -  Fixed an issue where schema diff did not pick up the change in RLS policy.
   | `Issue #7608 <https://redmine.postgresql.org/issues/7608>`_ -  Fixed an issue where the cloud deployment wizard creates the cluster with the High Availability even if that option is not selected.
+  | `Issue #7611 <https://redmine.postgresql.org/issues/7611>`_ -  Ensure that schema diff maintains view ownership when view definitions are modified.
   | `Issue #7614 <https://redmine.postgresql.org/issues/7614>`_ -  Fixed crypt key is missing issue when logout from the pgAdmin.

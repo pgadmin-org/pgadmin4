@@ -616,7 +616,7 @@ class RowSecurityView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
             sql, name = row_security_policies_utils.get_sql(
-                self.conn, data=data, scid=scid, plid=oid,
+                self.conn, data=data, scid=scid, plid=oid, policy_table_id=tid,
                 schema=self.schema, table=self.table)
 
             sql = sql.strip('\n').strip(' ')
