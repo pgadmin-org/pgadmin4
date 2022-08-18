@@ -124,7 +124,7 @@ export default function Dashboard({
   ...props
 }) {
   const classes = useStyles();
-  let tabs = ['Sessions', 'Locks', 'Prepared Transactions'];
+  let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
   const [dashData, setdashData] = useState([]);
   const [msg, setMsg] = useState('');
   const [tabVal, setTabVal] = useState(0);
@@ -132,7 +132,7 @@ export default function Dashboard({
   const [schemaDict, setSchemaDict] = React.useState({});
 
   if (!did) {
-    tabs.push('Configuration');
+    tabs.push(gettext('Configuration'));
   }
   tabVal == 3 && did && setTabVal(0);
   const tabChanged = (e, tabVal) => {
@@ -242,7 +242,7 @@ export default function Dashboard({
                     .catch(function (error) {
                       Notify.alert(
                         gettext('Failed to retrieve data from the server.'),
-                        gettext(error.message)
+                        error.message
                       );
                     });
                 },
@@ -311,7 +311,7 @@ export default function Dashboard({
                     .catch(function (error) {
                       Notify.alert(
                         gettext('Failed to retrieve data from the server.'),
-                        gettext(error.message)
+                        error.message
                       );
                     });
                 },
@@ -857,7 +857,7 @@ export default function Dashboard({
       ) : sid && !props.serverConnected ? (
         <Box className={classes.dashboardPanel}>
           <div className={classes.emptyPanel}>
-            <EmptyPanelMessage text={gettext(msg)}/>
+            <EmptyPanelMessage text={msg}/>
           </div>
         </Box>
       ) : (

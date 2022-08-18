@@ -299,33 +299,33 @@ function createData(name, value) {
 // Summary section
 export function getAzureSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
   const rows1 = [
-    createData('Cloud', cloud),
-    createData('Subscription', cloudInstanceDetails.subscription),
-    createData('Resource group', cloudInstanceDetails.resource_group),
-    createData('Region', cloudInstanceDetails.region),
-    createData('Availability zone', cloudInstanceDetails.availability_zone),
+    createData(gettext('Cloud'), cloud),
+    createData(gettext('Subscription'), cloudInstanceDetails.subscription),
+    createData(gettext('Resource group'), cloudInstanceDetails.resource_group),
+    createData(gettext('Region'), cloudInstanceDetails.region),
+    createData(gettext('Availability zone'), cloudInstanceDetails.availability_zone),
   ];
 
   const rows2 = [
-    createData('PostgreSQL version', cloudInstanceDetails.db_version),
-    createData('Instance type', cloudInstanceDetails.instance_type),
+    createData(gettext('PostgreSQL version'), cloudInstanceDetails.db_version),
+    createData(gettext('Instance type'), cloudInstanceDetails.instance_type),
   ];
 
   const rows3 = [
-    createData('Allocated storage', cloudInstanceDetails.storage_size + ' GiB'),
+    createData(gettext('Allocated storage'), cloudInstanceDetails.storage_size + ' GiB'),
   ];
 
   const rows4 = [
-    createData('Username', cloudDBDetails.db_username),
-    createData('Password', 'xxxxxxx'),
+    createData(gettext('Username'), cloudDBDetails.db_username),
+    createData(gettext('Password'), 'xxxxxxx'),
   ];
 
   const rows5 = [
-    createData('Public IP', cloudInstanceDetails.public_ips),
+    createData(gettext('Public IP'), cloudInstanceDetails.public_ips),
   ];
 
   const rows6 = [
-    createData('High availability', cloudInstanceDetails.high_availability),
+    createData(gettext('High availability'), cloudInstanceDetails.high_availability),
   ];
 
   return [rows1, rows2, rows3, rows4, rows5, rows6];

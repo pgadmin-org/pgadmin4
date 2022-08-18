@@ -17,6 +17,7 @@ import getApiInstance from '../../../../static/js/api_instance';
 import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import gettext from 'sources/gettext';
 
 const useStyles = makeStyles(() =>
   ({
@@ -209,31 +210,31 @@ function createData(name, value) {
 
 export function getAWSSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
   const rows1 = [
-    createData('Cloud', cloud),
-    createData('Instance name', cloudInstanceDetails.name),
-    createData('Public IP', cloudInstanceDetails.public_ip),
+    createData(gettext('Cloud'), cloud),
+    createData(gettext('Instance name'), cloudInstanceDetails.name),
+    createData(gettext('Public IP'), cloudInstanceDetails.public_ip),
   ];
 
   const rows2 = [
-    createData('PostgreSQL version', cloudInstanceDetails.db_version),
-    createData('Instance type', cloudInstanceDetails.instance_type),
+    createData(gettext('PostgreSQL version'), cloudInstanceDetails.db_version),
+    createData(gettext('Instance type'), cloudInstanceDetails.instance_type),
   ];
 
   let _storage_type = getStorageType(cloudInstanceDetails);
 
   const rows3 = [
-    createData('Storage type', _storage_type[1]),
-    createData('Allocated storage', cloudInstanceDetails.storage_size + ' GiB'),
+    createData(gettext('Storage type'), _storage_type[1]),
+    createData(gettext('Allocated storage'), cloudInstanceDetails.storage_size + ' GiB'),
   ];
   if (_storage_type[0] !== undefined) {
-    rows3.push(createData('Provisioned IOPS', _storage_type[0]));
+    rows3.push(createData(gettext('Provisioned IOPS'), _storage_type[0]));
   }
 
   const rows4 = [
-    createData('Database name', cloudDBDetails.db_name),
-    createData('Username', cloudDBDetails.db_username),
-    createData('Password', 'xxxxxxx'),
-    createData('Port',  cloudDBDetails.db_port),
+    createData(gettext('Database name'), cloudDBDetails.db_name),
+    createData(gettext('Username'), cloudDBDetails.db_username),
+    createData(gettext('Password'), 'xxxxxxx'),
+    createData(gettext('Port'),  cloudDBDetails.db_port),
   ];
 
   return [rows1, rows2, rows3, rows4];

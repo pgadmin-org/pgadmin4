@@ -16,6 +16,7 @@ import url_for from 'sources/url_for';
 import getApiInstance from '../../../../static/js/api_instance';
 import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 const axiosApi = getApiInstance();
 
@@ -163,32 +164,32 @@ function createData(name, value) {
 
 export function getBigAnimalSummary(cloud, bigAnimalInstanceData, bigAnimalDatabaseData) {
   const rows1 = [
-    createData('Cloud', cloud),
-    createData('Instance name', bigAnimalInstanceData.name),
-    createData('Region', bigAnimalInstanceData.region),
-    createData('Cluster type', bigAnimalInstanceData.cloud_type),
-    createData('Public IPs', bigAnimalInstanceData.biganimal_public_ip),
+    createData(gettext('Cloud'), cloud),
+    createData(gettext('Instance name'), bigAnimalInstanceData.name),
+    createData(gettext('Region'), bigAnimalInstanceData.region),
+    createData(gettext('Cluster type'), bigAnimalInstanceData.cloud_type),
+    createData(gettext('Public IPs'), bigAnimalInstanceData.biganimal_public_ip),
   ];
 
   let instance_size = bigAnimalInstanceData.instance_size.split('||');
 
   const rows2 = [
-    createData('Instance type', bigAnimalInstanceData.instance_type),
-    createData('Instance series', bigAnimalInstanceData.instance_series),
-    createData('Instance size', instance_size[0]),
+    createData(gettext('Instance type'), bigAnimalInstanceData.instance_type),
+    createData(gettext('Instance series'), bigAnimalInstanceData.instance_series),
+    createData(gettext('Instance size'), instance_size[0]),
   ];
 
   const rows3 = [
-    createData('Volume type', bigAnimalInstanceData.volume_type),
-    createData('Volume properties', bigAnimalInstanceData.volume_properties),
+    createData(gettext('Volume type'), bigAnimalInstanceData.volume_type),
+    createData(gettext('Volume properties'), bigAnimalInstanceData.volume_properties),
   ];
 
   const rows4 = [
-    createData('Password', 'xxxxxxx'),
-    createData('Database Type',  bigAnimalDatabaseData.database_type),
-    createData('Database Version',  bigAnimalDatabaseData.postgres_version),
-    createData('High Availability',  bigAnimalDatabaseData.high_availability),
-    createData('No. of Standby Replicas',  bigAnimalDatabaseData.replicas),
+    createData(gettext('Password'), 'xxxxxxx'),
+    createData(gettext('Database Type'),  bigAnimalDatabaseData.database_type),
+    createData(gettext('Database Version'),  bigAnimalDatabaseData.postgres_version),
+    createData(gettext('High Availability'),  bigAnimalDatabaseData.high_availability),
+    createData(gettext('No. of Standby Replicas'),  bigAnimalDatabaseData.replicas),
   ];
 
   return [rows1, rows2, rows3, rows4];

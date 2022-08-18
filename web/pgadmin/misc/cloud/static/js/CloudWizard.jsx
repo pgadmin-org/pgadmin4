@@ -226,7 +226,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
   const onBeforeNext = (activeStep) => {
     return new Promise((resolve, reject)=>{
       if(activeStep == 1 && cloudProvider == 'rds') {
-        setErrMsg([MESSAGE_TYPE.INFO, 'Validating credentials...']);
+        setErrMsg([MESSAGE_TYPE.INFO, gettext('Validating credentials...')]);
         var _url = url_for('rds.verify_credentials');
         const post_data = {
           cloud: selectionVal,
@@ -243,12 +243,12 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
             }
           })
           .catch(() => {
-            setErrMsg([MESSAGE_TYPE.ERROR, 'Error while checking cloud credentials']);
+            setErrMsg([MESSAGE_TYPE.ERROR, gettext('Error while checking cloud credentials')]);
             reject();
           });
       } else if(activeStep == 0 && cloudProvider == 'biganimal') {
         if (!isEmptyString(verificationURI)) { resolve(); return; }
-        setErrMsg([MESSAGE_TYPE.INFO, 'Getting EDB BigAnimal verification URL...']);
+        setErrMsg([MESSAGE_TYPE.INFO, gettext('Getting EDB BigAnimal verification URL...')]);
         validateBigAnimal()
           .then((res) => {
             setVerificationURI(res);
@@ -261,7 +261,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
             reject();
           });
       } else if(activeStep == 2 && cloudProvider == 'azure'){
-        setErrMsg([MESSAGE_TYPE.INFO, 'Checking cluster name availability...']);
+        setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
         checkClusternameAvailbility(azureInstanceData.name)
           .then((res)=>{
             if (res.data && res.data.success == 0 ) {
@@ -287,7 +287,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
       'static', { 'filename': 'img/loading.gif'}
     );
 
-    setErrMsg([MESSAGE_TYPE.INFO, 'EDB BigAnimal authentication process is in progress...<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
+    setErrMsg([MESSAGE_TYPE.INFO, gettext('EDB BigAnimal authentication process is in progress...') + '<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
     window.open(verificationURI, 'edb_biganimal_authentication');
     let _url = url_for('biganimal.verification_ack') ;
     const myInterval = setInterval(() => {
@@ -325,9 +325,9 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
     setErrMsg([]);
   });
 
-  let cloud_providers = [{label: 'Amazon RDS', value: 'rds', icon: <AWSIcon className={classes.icon} />},
-    {label: 'EDB BigAnimal', value: 'biganimal', icon: <BigAnimalIcon className={classes.icon} />},
-    {'label': 'Azure PostgreSQL', value: 'azure', icon: <AzureIcon className={classes.icon} /> }];
+  let cloud_providers = [{label: gettext('Amazon RDS'), value: 'rds', icon: <AWSIcon className={classes.icon} />},
+    {label: gettext('EDB BigAnimal'), value: 'biganimal', icon: <BigAnimalIcon className={classes.icon} />},
+    {'label': gettext('Azure PostgreSQL'), value: 'azure', icon: <AzureIcon className={classes.icon} /> }];
 
   return (
     <CloudWizardEventsContext.Provider value={eventBus.current}>
