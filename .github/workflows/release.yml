@@ -18,6 +18,7 @@ jobs:
           public.ecr.aws/t3w2s2c9/pgadmin-schema-diff
         tags: |
           type=ref,event=tag
+          type=raw,value=latest
     - uses: docker/setup-qemu-action@v2
       with:
         platforms: amd64,arm64
