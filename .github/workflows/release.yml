@@ -5,6 +5,11 @@ on:
     tags:
       - 'cli-*.*.*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Image tag"
+        required: true
+        type: string
 
 jobs:
   release:
@@ -16,9 +21,11 @@ jobs:
         images: |
           supabase/pgadmin-schema-diff
           public.ecr.aws/t3w2s2c9/pgadmin-schema-diff
+        flavor: |
+          latest=false
         tags: |
           type=ref,event=tag
-          type=raw,value=latest
+          type=raw,value=${{ inputs.version }},enable=${{ github.event_name != 'push' }}
     - uses: docker/setup-qemu-action@v2
       with:
         platforms: amd64,arm64
