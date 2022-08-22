@@ -49,3 +49,4 @@ Bug fixes
   | `Issue #7617 <https://redmine.postgresql.org/issues/7617>`_ -  Fixed an issue where Azure cloud deployment failed.
   | `Issue #7625 <https://redmine.postgresql.org/issues/7625>`_ -  Fixed Spanish translations typo.
   | `Issue #7630 <https://redmine.postgresql.org/issues/7630>`_ -  Ensure that If the trigger function definition is changed, drop and recreate the trigger in the schema diff.
+  | `Issue #7632 <https://redmine.postgresql.org/issues/7632>`_ -  Fixed an issue where a user could not authenticate using Azure CLI on OSX.

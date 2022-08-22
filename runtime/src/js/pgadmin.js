@@ -70,6 +70,13 @@ function startDesktopMode() {
   misc.writeServerLog('pgAdmin Command: "' + command + '"');
   misc.writeServerLog('Environment: ');
   Object.keys(process.env).forEach(function(key) {
+    // Below code is included only for Mac OS as default path for azure CLI
+    // installation path is not included in PATH variable while spawning
+    // runtime environment.
+    if (platform() === 'darwin' && key === 'PATH') {
+      let updated_path = process.env[key] + ':/usr/local/bin';
+      process.env[key] = updated_path;
+    }
     misc.writeServerLog('  - ' + key + ': ' + process.env[key]);
   });
   misc.writeServerLog('--------------------------------------------------------\n');
