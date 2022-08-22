@@ -9276,8 +9276,8 @@ msgid ""
 "Please click <a class=\"alert-link\" href=\"{0}\" "
 "target=\"_new\">here</a> for more information."
 msgstr ""
-"Por favir clickar <a class=\"alert-link\" href=\"{0}\" "
-"target=\"_new\">aquí</a> para mas información."
+"Por favor, clickear <a class=\"alert-link\" href=\"{0}\" "
+"target=\"_new\">aquí</a> para más información."
 
 #: pgadmin/browser/templates/browser/js/messages.js:30
 msgid "Click here for details."
