@@ -351,7 +351,7 @@ function QueryHistoryDetails({entry}) {
         </Box>
         <Box marginTop="0.5rem">
           <Box>{gettext('Messages')}</Box>
-          <Box className={classes.fontSourceCode} fontSize="13px" whiteSpace="pre-wrap">{entry.message}</Box>
+          <Box className={classes.fontSourceCode} fontSize="13px" whiteSpace="pre-wrap">{_.isObject(entry.message) ? JSON.stringify(entry.message) : entry.message}</Box>
         </Box>
       </Box>
     </>

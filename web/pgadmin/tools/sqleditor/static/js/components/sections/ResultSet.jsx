@@ -303,6 +303,7 @@ export class ResultSetUtils {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, httpMessage.data.data.notifies);
       }
       if (ResultSetUtils.isQueryFinished(httpMessage)) {
+        this.setEndTime(new Date());
         msg = this.queryFinished(httpMessage, onResultsAvailable, onExplain);
       } else if (ResultSetUtils.isQueryStillRunning(httpMessage)) {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, httpMessage.data.data.transaction_status);
@@ -311,13 +312,17 @@ export class ResultSetUtils {
         }
         return Promise.resolve(this.pollForResult(onResultsAvailable, onExplain, onPollError));
       } else if (ResultSetUtils.isConnectionToServerLostWhilePolling(httpMessage)) {
+        this.setEndTime(new Date());
         msg = httpMessage.data.data.result;
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_END, gettext('Connection Error'), this.endTime);
       } else if (ResultSetUtils.isQueryCancelled(httpMessage)) {
-        msg = httpMessage.data.data.result || 'Execution Cancelled!';
-        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, httpMessage.data.data.result || 'Execution Cancelled!', true);
+        this.setEndTime(new Date());
+        msg = httpMessage.data.data.result || gettext('Execution Cancelled!');
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, httpMessage.data.data.result || gettext('Execution Cancelled!'), true);
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_END, gettext('Execution Cancelled'), this.endTime);
       }
       if(this.qtPref?.query_success_notification) {
         Notifier.success(msg);
@@ -567,6 +572,8 @@ export class ResultSetUtils {
         columnVal = true;
       } else if(columnVal == 'false') {
         columnVal = false;
+      } else if(col.has_default_val) {
+        columnVal = undefined;
       } else {
         columnVal = null;
       }
@@ -619,11 +626,9 @@ export class ResultSetUtils {
   }
 
   queryFinished(httpMessage, onResultsAvailable, onExplain) {
-    let endTime = new Date();
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END, true);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, httpMessage.data.data.transaction_status);
-    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_END, gettext('Query complete'), endTime);
-    this.setEndTime(endTime);
+    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.TASK_END, gettext('Query complete'), this.endTime);
 
     let retMsg, tabMsg;
     retMsg = tabMsg = gettext('Query returned successfully in %s.', this.queryRunTime());

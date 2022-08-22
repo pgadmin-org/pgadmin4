@@ -322,7 +322,8 @@ def panel(trans_id):
     params['layout'] = get_setting('SQLEditor/Layout')
     params['macros'] = get_user_macros()
     params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
-    params['database_name'] = underscore_escape(params['database_name'])
+    if 'database_name' in params:
+        params['database_name'] = underscore_escape(params['database_name'])
 
     return render_template(
         "sqleditor/index.html",

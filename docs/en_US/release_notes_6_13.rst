@@ -29,6 +29,7 @@ Bug fixes
 *********
 
   | `Issue #7452 <https://redmine.postgresql.org/issues/7452>`_ -  Ensure that an error is thrown if clipboard access is not provided and change the copy rows shortcut.
+  | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Fixed an issue where the History tab is getting blank and showing an error after some queries are executed.
   | `Issue #7497 <https://redmine.postgresql.org/issues/7497>`_ -  Fixed an issue with the error message being displayed at the right place for Azure deployments.
   | `Issue #7521 <https://redmine.postgresql.org/issues/7521>`_ -  Fixed an issue where the Query Editor loses focus when saving a query (Alt+s).
   | `Issue #7527 <https://redmine.postgresql.org/issues/7527>`_ -  Fixed API test cases for Postgres 14.4.
@@ -36,6 +37,7 @@ Bug fixes
   | `Issue #7563 <https://redmine.postgresql.org/issues/7563>`_ -  Fixed an issue where autocomplete is not working after clearing the query editor.
   | `Issue #7573 <https://redmine.postgresql.org/issues/7573>`_ -  Ensure that autocomplete does not appear when navigating code using arrow keys.
   | `Issue #7575 <https://redmine.postgresql.org/issues/7575>`_ -  Fixed an issue where Alt-Shift-Q didn't work after creating a new query.
+  | `Issue #7579 <https://redmine.postgresql.org/issues/7579>`_ -  Fixed an issue where copy and pasting a row in the results grid doesn't set the default for boolean.
   | `Issue #7586 <https://redmine.postgresql.org/issues/7586>`_ -  Fixed an issue with rendering geometry when selecting a complete column.
   | `Issue #7587 <https://redmine.postgresql.org/issues/7587>`_ -  Ensure that the children of information_schema and pg_catalog node should be displayed.
   | `Issue #7591 <https://redmine.postgresql.org/issues/7591>`_ -  Fixed column "none" does not exist issue, while comparing schema objects.
