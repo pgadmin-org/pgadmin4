@@ -472,7 +472,7 @@ function SchemaDialogView({
       if(message) {
         setFormErr({
           name: path,
-          message: message,
+          message: _.escape(message),
         });
       }
     });
@@ -642,7 +642,7 @@ function SchemaDialogView({
         console.error(err);
         setFormErr({
           name: 'apierror',
-          message: parseApiError(err),
+          message: _.escape(parseApiError(err)),
         });
       }).finally(()=>{
         if(checkIsMounted()) {

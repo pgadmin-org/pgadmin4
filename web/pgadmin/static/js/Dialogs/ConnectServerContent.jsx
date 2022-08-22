@@ -47,8 +47,8 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
   useEffect(()=>{
     setTimeout(()=>{
       firstEleRef.current && firstEleRef.current.focus();
-    }, 275);
-  }, []);
+    }, 350);
+  }, [firstEleRef.current]);
 
   useEffect(()=>{
     setHeight?.(containerRef.current?.offsetHeight);

@@ -49,8 +49,8 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
   useEffect(() => {
     setTimeout(() => {
       firstEleRef.current && firstEleRef.current.focus();
-    }, 275);
-  }, []);
+    }, 350);
+  }, [firstEleRef.current]);
 
   useEffect(() => {
     setHeight?.(containerRef.current?.offsetHeight);

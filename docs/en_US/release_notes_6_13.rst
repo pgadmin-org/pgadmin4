@@ -30,6 +30,7 @@ Bug fixes
 
   | `Issue #7452 <https://redmine.postgresql.org/issues/7452>`_ -  Ensure that an error is thrown if clipboard access is not provided and change the copy rows shortcut.
   | `Issue #7468 <https://redmine.postgresql.org/issues/7468>`_ -  Fixed an issue where the History tab is getting blank and showing an error after some queries are executed.
+  | `Issue #7481 <https://redmine.postgresql.org/issues/7481>`_ -  Fixed an issue where OWNED BY was incorrectly set to NONE when adding user privileges on the sequence.
   | `Issue #7497 <https://redmine.postgresql.org/issues/7497>`_ -  Fixed an issue with the error message being displayed at the right place for Azure deployments.
   | `Issue #7521 <https://redmine.postgresql.org/issues/7521>`_ -  Fixed an issue where the Query Editor loses focus when saving a query (Alt+s).
   | `Issue #7527 <https://redmine.postgresql.org/issues/7527>`_ -  Fixed API test cases for Postgres 14.4.
@@ -50,3 +51,4 @@ Bug fixes
   | `Issue #7625 <https://redmine.postgresql.org/issues/7625>`_ -  Fixed Spanish translations typo.
   | `Issue #7630 <https://redmine.postgresql.org/issues/7630>`_ -  Ensure that If the trigger function definition is changed, drop and recreate the trigger in the schema diff.
   | `Issue #7632 <https://redmine.postgresql.org/issues/7632>`_ -  Fixed an issue where a user could not authenticate using Azure CLI on OSX.
+  | `Issue #7633 <https://redmine.postgresql.org/issues/7633>`_ -  Ensure that the autofocus is on the input control for the master password and server password dialogs.
