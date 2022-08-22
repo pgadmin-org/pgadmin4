@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import jasmineEnzyme from 'jasmine-enzyme';
+import _ from 'lodash';
 import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
@@ -137,7 +138,7 @@ describe('SchemaView', ()=>{
       setTimeout(()=>{
         ctrl.update();
         /* Error should come for field1 as it is empty and noEmpty true */
-        expect(ctrl.find('FormFooterMessage').prop('message')).toBe('\'Field1\' cannot be empty.');
+        expect(ctrl.find('FormFooterMessage').prop('message')).toBe(_.escape('\'Field1\' cannot be empty.'));
         expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
         done();
       }, 0);
