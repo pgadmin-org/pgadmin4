@@ -479,6 +479,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
         editor.current.setOption('readOnly', false);
         editor.current.removeKeyMap('Tab');
         editor.current.removeKeyMap('Shift-Tab');
+        cmWrapper.current.classList.remove(classes.hideCursor);
       }
     }
   }, [readonly, disabled]);

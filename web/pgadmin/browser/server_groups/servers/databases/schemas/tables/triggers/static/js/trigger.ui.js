@@ -467,6 +467,11 @@ export default class TriggerSchema extends BaseUISchema {
         _.isUndefined(tfunction) ||
           tfunction !== 'Inline EDB-SPL');
       },
+      depChange: (state) => {
+        if (state.tfunction == null) {
+          return { prosrc: '' };
+        }
+      }
     },{
       id: 'is_sys_trigger', label: gettext('System trigger?'), cell: 'text',
       type: 'switch', disabled: obj.inSchemaWithModelCheck, mode: ['properties'],
