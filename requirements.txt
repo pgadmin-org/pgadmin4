@@ -20,7 +20,7 @@ Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==2.*
 Flask-Security-Too==4.1.*
-Flask-SocketIO>=5.0.1
+Flask-SocketIO<=5.2.0
 WTForms==3.*
 passlib==1.*
 pytz==2021.*

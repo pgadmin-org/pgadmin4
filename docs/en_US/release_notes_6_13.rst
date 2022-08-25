@@ -52,3 +52,4 @@ Bug fixes
   | `Issue #7630 <https://redmine.postgresql.org/issues/7630>`_ -  Ensure that If the trigger function definition is changed, drop and recreate the trigger in the schema diff.
   | `Issue #7632 <https://redmine.postgresql.org/issues/7632>`_ -  Fixed an issue where a user could not authenticate using Azure CLI on OSX.
   | `Issue #7633 <https://redmine.postgresql.org/issues/7633>`_ -  Ensure that the autofocus is on the input control for the master password and server password dialogs.
+  | `Issue #7641 <https://redmine.postgresql.org/issues/7641>`_ -  Pin Flask-SocketIO <= v5.2.0. The latest version does not support Werkzeug in production environments.
