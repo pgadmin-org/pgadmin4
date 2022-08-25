@@ -196,7 +196,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             {
               tabs: [
                 LayoutHelper.getPanel({
-                  id: PANELS.DATA_OUTPUT, title: gettext('Data output'), content: <ResultSet />,
+                  id: PANELS.DATA_OUTPUT, title: gettext('Data Output'), content: <ResultSet />,
                 }),
                 LayoutHelper.getPanel({
                   id: PANELS.MESSAGES, title: gettext('Messages'), content: <Messages />,
