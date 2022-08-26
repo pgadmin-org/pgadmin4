@@ -41,7 +41,7 @@ export default class ImportExportServersModule {
       icon: 'fa fa-shopping-cart',
     }];
 
-    this.pgBrowser.add_menus(menus);
+    pgBrowser.add_menus(menus);
   }
 
   // This is a callback function to show import/export servers when user click on menu item.
