@@ -20,7 +20,7 @@ import datetime
 import hmac
 import hashlib
 import os
-import random
+import secrets
 import string
 import time
 import config
@@ -41,7 +41,7 @@ from pgadmin.utils.ajax import make_json_response
 def _calc_hmac(body, secret):
     return base64.b64encode(
         hmac.new(
-            secret.encode(), body.encode(), hashlib.sha1
+            secret.encode(), body.encode(), hashlib.sha256
         ).digest()
     ).decode()
 
@@ -70,7 +70,8 @@ class ManagedSession(CallbackDict, SessionMixin):
         if not self.hmac_digest:
             population = string.ascii_lowercase + string.digits
 
-            self.randval = ''.join(random.sample(population, 20))
+            self.randval = ''.join(
+                secrets.choice(population) for i in range(20))
             self.hmac_digest = _calc_hmac(
                 '%s:%s' % (self.sid, self.randval), secret)
 
