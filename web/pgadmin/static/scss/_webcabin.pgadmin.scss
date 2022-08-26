@@ -194,7 +194,7 @@
 }
 
 .wcFrameEdgeN, .wcFrameEdgeS {
-  height: $splitter-hover-width/2 + 1;
+  height: math.div($splitter-hover-width, 2) + 1;
 }
 
 .wcFrameEdgeN {
@@ -206,7 +206,7 @@
 }
 
 .wcFrameEdgeW, .wcFrameEdgeE {
-  width: $splitter-hover-width/2 + 1;
+  width: math.div($splitter-hover-width, 2) + 1;
 }
 
 .wcFrameEdgeW {

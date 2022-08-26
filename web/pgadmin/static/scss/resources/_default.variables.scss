@@ -64,7 +64,7 @@ $font-family-base:      $font-family-primary;
 $body-color: $color-fg;
 $font-size-base: 0.875rem;
 $line-height-base: 1.5;
-$text-height-calc: $line-height-base*$font-size-base/1rem;
+$text-height-calc: math.div($line-height-base*$font-size-base, 1rem);
 $grid-gutter-width: 15px;
 $border-radius: 0.25rem;
 
