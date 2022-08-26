@@ -162,11 +162,11 @@ class RdsProvider(AbsProvider):
         ip = args.public_ip if args.public_ip else\
             '{}/32'.format(get_my_ip())
         port = args.db_port or 5432
-        IpRanges = []
+        ip_ranges = []
 
         ip = ip.split(',')
         for i in ip:
-            IpRanges.append({
+            ip_ranges.append({
                 'CidrIp': i,
                 'Description': 'pgcloud client {}'.format(i)
             })
@@ -180,7 +180,7 @@ class RdsProvider(AbsProvider):
                         'FromPort': port,
                         'ToPort': port,
                         'IpProtocol': 'tcp',
-                        'IpRanges': IpRanges
+                        'IpRanges': ip_ranges
                     },
                 ]
             )

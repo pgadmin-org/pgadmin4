@@ -104,7 +104,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             driver = get_driver(PG_DEFAULT_DRIVER)
-            did = kwargs['did']
+
             self.manager = driver.connection_manager(kwargs['sid'])
             if "conn_id" in kwargs:
                 self.conn = self.manager.connection(

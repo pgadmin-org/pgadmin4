@@ -503,7 +503,6 @@ class BatchProcess(object):
         """
         Parse the output to get the cloud instance details
         """
-        _server = {}
         _pid = self.id
 
         _process = Process.query.filter_by(

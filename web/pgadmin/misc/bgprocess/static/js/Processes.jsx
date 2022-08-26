@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -21,7 +21,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import url_for from 'sources/url_for';
 import { Box } from '@material-ui/core';
-import { useMemo } from 'react';
 import Notifier from '../../../../static/js/helpers/Notifier';
 
 

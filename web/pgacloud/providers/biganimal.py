@@ -83,11 +83,11 @@ class BigAnimalProvider(AbsProvider):
         try:
             private_network = True if args.private_network == '1' else False
             ip = args.public_ip if args.public_ip else '0.0.0.0/0'
-            IpRanges = []
+            ip_ranges = []
 
             ip = ip.split(',')
             for i in ip:
-                IpRanges.append([i, 'pgcloud client {}'.format(i)])
+                ip_ranges.append([i, 'pgcloud client {}'.format(i)])
 
             debug('Creating BigAnimal cluster: {}...'.format(args.name))
 
@@ -114,7 +114,7 @@ class BigAnimalProvider(AbsProvider):
             }
 
             if not private_network:
-                _data['allowIpRangeMap'] = IpRanges
+                _data['allowIpRangeMap'] = ip_ranges
 
             cluster_resp = requests.post(_url,
                                          headers=_headers,

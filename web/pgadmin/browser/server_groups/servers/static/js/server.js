@@ -653,7 +653,6 @@ define('pgadmin.node.server', [
           else if (res.cloud_status == -1) {
             pgAdmin.Browser.BgProcessManager.recheckCloudServer(data._id);
           }
-          return;
         }).always(function(){
           data.is_connecting = false;
         });
