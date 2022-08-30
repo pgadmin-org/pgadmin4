@@ -13,6 +13,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #7622 <https://redmine.postgresql.org/issues/7622>`_ -  Port search object dialog to React.
 
 Bug fixes
 *********

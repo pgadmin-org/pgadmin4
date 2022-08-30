@@ -56,7 +56,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         self.page.remove_server(self.server)
         test_utils.drop_role(self.server, "postgres",
                              self.role)
-        test_utils.drop_role(self.server, "postgres",self.xss_test_role)
+        test_utils.drop_role(self.server, "postgres", self.xss_test_role)
 
     def _role_node_expandable(self, role):
         retry = 3

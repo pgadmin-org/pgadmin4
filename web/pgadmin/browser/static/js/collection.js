@@ -124,8 +124,8 @@ define([
         }
       },
       show_search_objects: function() {
-        if(pgAdmin.SearchObjects) {
-          pgAdmin.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
+        if(pgAdmin.Tools.SearchObjects) {
+          pgAdmin.Tools.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
         }
       },
       show_psql_tool: function(args) {

@@ -12,7 +12,7 @@ import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import Theme from '../../../pgadmin/static/js/Theme';
-import { CustomRow, FileNameEditor, GridContextUtils } from '../../../pgadmin/misc/file_manager/static/js/components/ListView';
+import { FileNameEditor } from '../../../pgadmin/misc/file_manager/static/js/components/ListView';
 
 describe('ListView', ()=>{
   let mount;
@@ -72,38 +72,6 @@ describe('ListView', ()=>{
           expect(onCloseSpy).toHaveBeenCalled();
           done();
         });
-      }, 0);
-    });
-  });
-
-  describe('CustomRow', ()=>{
-    let row = {'Filename': 'test.sql', 'Size': '1KB'},
-      ctrlMount = (onItemSelect, onItemEnter)=>{
-        return mount(<Theme>
-          <GridContextUtils.Provider value={{onItemSelect, onItemEnter}}>
-            <CustomRow
-              row={row}
-              selectedCellIdx={0}
-              rowIdx={0}
-              inTest={true}
-            />
-          </GridContextUtils.Provider>
-        </Theme>);
-      };
-
-    it('init', (done)=>{
-      let onItemSelect = jasmine.createSpy('onItemSelect');
-      let onItemEnter = jasmine.createSpy('onItemEnter');
-      let ctrl = ctrlMount(onItemSelect, onItemEnter);
-      setTimeout(()=>{
-        ctrl.update();
-        ctrl.find('div[data-test="test-div"]').simulate('keydown', { code: 'Enter'});
-        setTimeout(()=>{
-          ctrl.update();
-          expect(onItemEnter).toHaveBeenCalled();
-          ctrl?.unmount();
-          done();
-        }, 0);
       }, 0);
     });
   });

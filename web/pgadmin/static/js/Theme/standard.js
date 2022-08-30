@@ -105,6 +105,7 @@ export default function(basicSettings) {
       qtDatagridSelectFg: '#222',
       cardHeaderBg: '#fff',
       emptySpaceBg: '#ebeef3',
+      textMuted: '#646B82',
       explain: {
         sev2: {
           color: '#222222',

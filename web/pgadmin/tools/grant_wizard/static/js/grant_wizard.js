@@ -93,6 +93,7 @@ define([
         <Theme>
           <GrantWizard sid={sid} did={did} nodeInfo={info} nodeData={d}
             onClose={() => {
+              ReactDOM.unmountComponentAtNode(j[0]);
               panel.close();
             }}/>
         </Theme>, j[0]);

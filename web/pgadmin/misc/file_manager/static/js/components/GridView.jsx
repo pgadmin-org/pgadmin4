@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import { Box, makeStyles } from '@material-ui/core';
 import React, {useState, useEffect, useRef, useLayoutEffect} from 'react';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -5,6 +13,7 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import LockRoundedIcon from '@material-ui/icons/LockRounded';
 import StorageRoundedIcon from '@material-ui/icons/StorageRounded';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 
 const useStyles = makeStyles((theme)=>({
@@ -128,7 +137,7 @@ export default function GridView({items, operation, onItemSelect, onItemEnter}) 
             onItemEnter={onItemEnter} onEditComplete={operation.idx==i ? onEditComplete : null} />)
         )}
       </ul>
-      {items.length == 0 && <Box textAlign="center" p={1}>No files/folders found</Box>}
+      {items.length == 0 && <Box textAlign="center" p={1}>{gettext('No files/folders found')}</Box>}
     </Box>
   );
 }

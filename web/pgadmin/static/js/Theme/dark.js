@@ -100,6 +100,7 @@ export default function(basicSettings) {
       cardHeaderBg: '#424242',
       colorFg: '#FFFFFF',
       emptySpaceBg: '#212121',
+      textMuted: '#8A8A8A'
     }
   });
 }

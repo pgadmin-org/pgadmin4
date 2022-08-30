@@ -208,7 +208,7 @@ define('pgadmin.browser.node', [
 
         // show search objects same as query tool
         pgAdmin.Browser.add_menus([{
-          name: 'search_objects', node: self.type, module: pgAdmin.SearchObjects,
+          name: 'search_objects', node: self.type, module: pgAdmin.Tools.SearchObjects,
           applies: ['context'], callback: 'show_search_objects',
           priority: 997, label: gettext('Search Objects...'),
           icon: 'fa fa-search', enable: enable,

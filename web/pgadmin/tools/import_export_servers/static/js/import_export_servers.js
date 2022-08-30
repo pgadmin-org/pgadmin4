@@ -56,6 +56,7 @@ export default class ImportExportServersModule {
       <Theme>
         <ImportExportServers
           onClose={() => {
+            ReactDOM.unmountComponentAtNode(j[0]);
             panel.close();
           }}/>
       </Theme>, j[0]);

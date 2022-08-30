@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) =>
       fontSize: '1.12rem !important',
     },
     footer: {
-      borderTop: '1px solid #dde0e6 !important',
+      borderTop: `1px solid ${theme.otherVars.inputBorderColor} !important`,
       padding: '0.5rem',
       display: 'flex',
       width: '100%',

@@ -1,14 +1,20 @@
-import { Box, makeStyles } from '@material-ui/core';
-import React, { useContext, useRef, useEffect } from 'react';
-import { Row } from 'react-data-grid';
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+import { makeStyles } from '@material-ui/core';
+import React, { useRef, useEffect } from 'react';
 import PgReactDataGrid from '../../../../../static/js/components/PgReactDataGrid';
 import FolderIcon from '@material-ui/icons/Folder';
 import StorageRoundedIcon from '@material-ui/icons/StorageRounded';
 import DescriptionIcon from '@material-ui/icons/Description';
 import LockRoundedIcon from '@material-ui/icons/LockRounded';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import PropTypes from 'prop-types';
+import gettext from 'sources/gettext';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -95,56 +101,6 @@ FileNameEditor.propTypes = {
   onRowChange: PropTypes.func,
   onClose: PropTypes.func,
 };
-
-function CutomSortIcon({sortDirection}) {
-  if(sortDirection == 'DESC') {
-    return <KeyboardArrowDownIcon style={{fontSize: '1.2rem'}} />;
-  } else if(sortDirection == 'ASC') {
-    return <KeyboardArrowUpIcon style={{fontSize: '1.2rem'}} />;
-  }
-  return <></>;
-}
-CutomSortIcon.propTypes = {
-  sortDirection: PropTypes.string,
-};
-
-export function CustomRow({inTest=false, ...props}) {
-  const gridUtils = useContext(GridContextUtils);
-  const handleKeyDown = (e)=>{
-    if(e.code == 'Tab' || e.code == 'ArrowRight' || e.code == 'ArrowLeft') {
-      e.stopPropagation();
-    }
-    if(e.code == 'Enter') {
-      gridUtils.onItemEnter(props.row);
-    }
-  };
-  const isRowSelected = props.selectedCellIdx >= 0;
-  useEffect(()=>{
-    if(isRowSelected) {
-      gridUtils.onItemSelect(props.rowIdx);
-    }
-  }, [props.selectedCellIdx]);
-  if(inTest) {
-    return <div data-test='test-div' tabIndex={0} onKeyDown={handleKeyDown}></div>;
-  }
-  const onRowClick = (...args)=>{
-    gridUtils.onItemClick?.(props.rowIdx);
-    props.onRowClick?.(...args);
-  };
-  return (
-    <Row {...props} onKeyDown={handleKeyDown} onRowClick={onRowClick} onRowDoubleClick={(row)=>gridUtils.onItemEnter(row)}
-      selectCell={(row, column)=>props.selectCell(row, column)} aria-selected={isRowSelected}/>
-  );
-}
-CustomRow.propTypes = {
-  inTest: PropTypes.bool,
-  row: PropTypes.object,
-  selectedCellIdx: PropTypes.number,
-  onRowClick: PropTypes.func,
-  rowIdx: PropTypes.number,
-  selectCell: PropTypes.func,
-};
-
 function FileNameFormatter({row}) {
   const classes = useStyles();
   let icon = <DescriptionIcon style={{fontSize: '1.2rem'}} />;
@@ -166,7 +122,7 @@ FileNameFormatter.propTypes = {
 const columns = [
   {
     key: 'Filename',
-    name: 'Name',
+    name: gettext('Name'),
     formatter: FileNameFormatter,
     editor: FileNameEditor,
     editorOptions: {
@@ -175,17 +131,17 @@ const columns = [
     }
   },{
     key: 'Properties.DateModified',
-    name: 'Date Modified',
+    name: gettext('Date Modified'),
     formatter: ({row})=><>{row.Properties?.['Date Modified']}</>
   },{
     key: 'Properties.Size',
-    name: 'Size',
+    name: gettext('Size'),
     formatter: ({row})=><>{row.file_type != 'dir' && row.Properties?.['Size']}</>
   }
 ];
 
 
-export default function ListView({items, operation, onItemSelect, onItemEnter, onItemClick, ...props}) {
+export default function ListView({items, operation, ...props}) {
   const classes = useStyles();
   const gridRef = useRef();
 
@@ -201,33 +157,27 @@ export default function ListView({items, operation, onItemSelect, onItemEnter, o
   }, [gridRef.current?.element]);
 
   return (
-    <GridContextUtils.Provider value={{onItemEnter, onItemSelect, onItemClick}}>
-      <PgReactDataGrid
-        gridRef={gridRef}
-        id="files"
-        className={classes.grid}
-        hasSelectColumn={false}
-        columns={columns}
-        rows={items}
-        defaultColumnOptions={{
-          sortable: true,
-          resizable: true
-        }}
-        headerRowHeight={28}
-        rowHeight={28}
-        mincolumnWidthBy={25}
-        enableCellSelect={false}
-        components={{
-          sortIcon: CutomSortIcon,
-          rowRenderer: CustomRow,
-          noRowsFallback: <Box textAlign="center" gridColumn="1/-1" p={1}>No files/folders found</Box>,
-        }}
-        onRowsChange={(rows)=>{
-          operation?.onComplete?.(rows[operation.idx], operation.idx);
-        }}
-        {...props}
-      />
-    </GridContextUtils.Provider>
+    <PgReactDataGrid
+      gridRef={gridRef}
+      id="files"
+      className={classes.grid}
+      hasSelectColumn={false}
+      columns={columns}
+      rows={items}
+      defaultColumnOptions={{
+        sortable: true,
+        resizable: true
+      }}
+      headerRowHeight={28}
+      rowHeight={28}
+      mincolumnWidthBy={25}
+      enableCellSelect={false}
+      noRowsText={gettext('No files/folders found')}
+      onRowsChange={(rows)=>{
+        operation?.onComplete?.(rows[operation.idx], operation.idx);
+      }}
+      {...props}
+    />
   );
 }
 ListView.propTypes = {
