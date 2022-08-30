@@ -556,6 +556,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
                 }, isNew)
               );
             }, ()=>{
+              /*This is intentional (SonarQube)*/
             });
           } else {
             selectConn(currSelectedConn, currConnected, false);

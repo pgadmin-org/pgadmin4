@@ -66,7 +66,7 @@ PolyLine.propTypes = {
 function Multitext({currentXpos, currentYpos, label, maxWidth}) {
   const theme = useTheme();
   let abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var xmlns = 'https://www.w3.org/2000/svg';
+  var xmlns = 'http://www.w3.org/2000/svg';
   var svgElem = document.createElementNS(xmlns, 'svg');
   svgElem.setAttributeNS(xmlns, 'height', '100%');
   svgElem.setAttributeNS(xmlns, 'width', '100%');
@@ -387,7 +387,7 @@ export default function Graphical({planData, ctx}) {
 
   const onDownloadClick = ()=>{
     downloadSvg(ReactDOMServer.renderToStaticMarkup(
-      <PlanSVG planData={planData} download={true} ctx={ctx} zoomFactor={INIT_ZOOM_FACTOR} onNodeClick={()=>{}}/>
+      <PlanSVG planData={planData} download={true} ctx={ctx} zoomFactor={INIT_ZOOM_FACTOR} onNodeClick={()=>{/*This is intentional (SonarQube)*/}}/>
     ), 'explain_plan_' + (new Date()).getTime() + '.svg');
   };
 

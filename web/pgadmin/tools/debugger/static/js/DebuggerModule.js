@@ -29,14 +29,14 @@ import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import DebuggerComponent from './components/DebuggerComponent';
 import Theme from '../../../../static/js/Theme';
 
-export default class Debugger {
+export default class DebuggerModule {
   static instance;
 
   static getInstance(...args) {
-    if (!Debugger.instance) {
-      Debugger.instance = new Debugger(...args);
+    if (!DebuggerModule.instance) {
+      DebuggerModule.instance = new DebuggerModule(...args);
     }
-    return Debugger.instance;
+    return DebuggerModule.instance;
   }
 
   constructor(pgAdmin, pgBrowser) {

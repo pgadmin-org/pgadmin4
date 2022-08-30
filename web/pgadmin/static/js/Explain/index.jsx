@@ -442,27 +442,25 @@ function parsePlanData(data, ctx) {
       'Triggers': [],
       'Summary': {},
     };
-    if (data && 'JIT' in data) {
+    if ('JIT' in data) {
       retPlan['Statistics']['JIT'] = retPlan['JIT'];
     }
-    if (data && 'Triggers' in data) {
+    if ('Triggers' in data) {
       retPlan['Statistics']['Triggers'] = retPlan['JITriggersT'];
     }
-    if(data) {
-      let summKeys = ['Planning Time', 'Execution Time'],
-        summary = {};
-
-      summKeys.forEach((key)=>{
-        if (key in data) {
-          summary[key] = data[key];
-        }
-      });
-
-      retPlan['Statistics']['Summary'] = summary;
-    }
-    if (data && 'Settings' in data) {
+    if ('Settings' in data) {
       retPlan['Statistics']['Settings'] = data['Settings'];
     }
+    let summKeys = ['Planning Time', 'Execution Time'],
+      summary = {};
+
+    summKeys.forEach((key)=>{
+      if (key in data) {
+        summary[key] = data[key];
+      }
+    });
+
+    retPlan['Statistics']['Summary'] = summary;
 
     parseExplainTableData(retPlan['Plan'], ctx);
   }

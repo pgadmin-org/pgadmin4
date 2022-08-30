@@ -386,7 +386,7 @@ UserManagementDialog.propTypes = {
   onClose: PropTypes.func
 };
 
-export default function showUserManagement() {
+export function showUserManagement() {
   pgAdmin.Browser.Node.registerUtilityPanel();
   let panel = pgAdmin.Browser.Node.addUtilityPanel(980, pgAdmin.Browser.stdH.md),
     j = panel.$container.find('.obj_properties').first();

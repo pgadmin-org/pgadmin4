@@ -115,8 +115,8 @@ export function getUtilityView(schema, treeNodeInfo, actionType, formType, conta
             console.error('error req', err.request);
           } else if(err.message){
             console.error('error msg', err.message);
-          }reject(err);
-
+          }
+          reject(err);
         });
     }
 

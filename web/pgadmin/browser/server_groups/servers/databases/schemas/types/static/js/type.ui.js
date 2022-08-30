@@ -16,13 +16,62 @@ import _ from 'underscore';
 import getApiInstance from 'sources/api_instance';
 import { isEmptyString } from 'sources/validators';
 
+function isTlengthEditable(state, options) {
+  // We will store type from selected from combobox
+  let of_type = state.type;
+  // iterating over all the types
+  _.each(options, function(o) {
+    // if type from selected from combobox matches in options
+    if ( of_type == o.value ) {
+      // if length is allowed for selected type
+      if(o.length)
+      {
+        // set the values in state
+        state.is_tlength = true;
+        state.min_val = o.min_val;
+        state.max_val = o.max_val;
+      } else {
+        // set the values in state
+        state.is_tlength = false;
+      }
+    }
+  });
+  return state.is_tlength;
+}
+
+function isPrecisionEditable(state, options) {
+  // We will store type from selected from combobox
+  let of_type = state.type;
+  // iterating over all the types
+  _.each(options, function(o) {
+    // if type from selected from combobox matches in options
+    if ( of_type == o.value ) {
+      // if precession is allowed for selected type
+      if(o.precision)
+      {
+        // set the values in model
+        state.is_precision = true;
+        state.min_val = o.min_val;
+        state.max_val = o.max_val;
+      } else {
+        // set the values in model
+        state.is_precision = false;
+      }
+    }
+  });
+  return state.is_precision;
+}
+
+function getTypes(nodeObj, treeNodeInfo, itemNodeData) {
+  return getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
+    cacheLevel: 'domain'
+  });
+}
 
 function getCompositeSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new CompositeSchema(
     {
-      types: () => getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
-        cacheLevel: 'domain'
-      }),
+      types: () => { return getTypes(nodeObj, treeNodeInfo, itemNodeData); },
       collations: () => getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData)
     }
   );
@@ -126,9 +175,7 @@ function getExternalSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new ExternalSchema(
     {
       externalFunctionsList: () => getNodeAjaxOptions('get_external_functions', nodeObj, treeNodeInfo, itemNodeData),
-      types: () => getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
-        cacheLevel: 'domain'
-      })
+      types: () => { return getTypes(nodeObj, treeNodeInfo, itemNodeData); },
     }, {
       node_info: treeNodeInfo
     }
@@ -138,9 +185,7 @@ function getExternalSchema(nodeObj, treeNodeInfo, itemNodeData) {
 function getDataTypeSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new DataTypeSchema(
     {
-      types: () => getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
-        cacheLevel: 'domain'
-      })
+      types: () => { return getTypes(nodeObj, treeNodeInfo, itemNodeData); }
     }
   );
 }
@@ -877,30 +922,9 @@ class CompositeSchema extends BaseUISchema {
           };
         }
       },
-      editable: (state) => {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if(obj.type_options) {
-          // iterating over all the types
-          _.each(obj.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-              // if length is allowed for selected type
-              if(o.length)
-              {
-                // set the values in state
-                state.is_tlength = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in state
-                state.is_tlength = false;
-              }
-            }
-          });
-        }
-        return state.is_tlength;
-      },
+      editable: (state)=>{
+        return isTlengthEditable(state, obj.type_options);
+      }
     }, {
       // Note: There are ambiguities in the PG catalogs and docs between
       // precision and scale. In the UI, we try to follow the docs as
@@ -911,28 +935,7 @@ class CompositeSchema extends BaseUISchema {
         return obj.onTypeChange(state, changeSource);
       },
       editable: (state) => {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if(obj.type_options) {
-          // iterating over all the types
-          _.each(obj.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-              // if precession is allowed for selected type
-              if(o.precision)
-              {
-                // set the values in state
-                state.is_precision = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in state
-                state.is_precision = false;
-              }
-            }
-          });
-        }
-        return state.is_precision;
+        return isPrecisionEditable(state, obj.type_options);
       },
     }, {
       id: 'collation', label: gettext('Collation'), type: 'text',
@@ -1106,28 +1109,9 @@ class DataTypeSchema extends BaseUISchema {
         }, 10);
         return flag;
       },
-      editable: function(state) {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if (state.type_options) {
-          // iterating over all the types
-          _.each(state.type_options, function (o) {
-          // if type from selected from combobox matches in options
-            if (of_type == o.value) {
-              // if length is allowed for selected type
-              if (o.length) {
-                // set the values in state
-                state.is_tlength = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in staet
-                state.is_tlength = false;
-              }
-            }
-          });
-        }
-        return state.is_tlength;
+      editable: (state)=>{
+        let options = state.type_options;
+        return isTlengthEditable(state, options);
       }
     },{
       // Note: There are ambiguities in the PG catalogs and docs between
@@ -1165,28 +1149,8 @@ class DataTypeSchema extends BaseUISchema {
         return flag;
       },
       editable: function(state) {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if(state.type_options) {
-          // iterating over all the types
-          _.each(state.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-              // if precession is allowed for selected type
-              if(o.precision)
-              {
-                // set the values in model
-                state.is_precision = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in model
-                state.is_precision = false;
-              }
-            }
-          });
-        }
-        return state.is_precision;
+        let options = state.type_options;
+        return isPrecisionEditable(state, options);
       },
     }];
   }
@@ -1236,8 +1200,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   schemaCheck(state) {
-    if(this.fieldOptions.node_info && 'schema' in this.fieldOptions.node_info)
-    {
+    if(this.fieldOptions.node_info && this.fieldOptions.node_info?.schema) {
       if(!state)
         return true;
       if (this.isNew(state)) {

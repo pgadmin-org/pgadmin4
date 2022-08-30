@@ -27,6 +27,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     ]
 
     role = ""
+    xss_test_role = "<h1>test</h1>"
 
     def before(self):
         with test_utils.Database(self.server) as (connection, _):
@@ -40,10 +41,9 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         # Some test function is needed for debugger
         test_utils.create_role(self.server, "postgres",
                                self.role)
-        test_utils.create_role(self.server, "postgres",
-                               "<h1>test</h1>")
+        test_utils.create_role(self.server, "postgres", self.xss_test_role)
         test_utils.grant_role(self.server, "postgres",
-                              self.role, "<h1>test</h1>")
+                              self.role, self.xss_test_role)
         self.wait = WebDriverWait(self.page.driver, 20)
 
     def runTest(self):
@@ -56,8 +56,7 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         self.page.remove_server(self.server)
         test_utils.drop_role(self.server, "postgres",
                              self.role)
-        test_utils.drop_role(self.server, "postgres",
-                             "<h1>test</h1>")
+        test_utils.drop_role(self.server, "postgres",self.xss_test_role)
 
     def _role_node_expandable(self, role):
         retry = 3

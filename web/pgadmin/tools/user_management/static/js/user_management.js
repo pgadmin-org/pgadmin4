@@ -10,7 +10,7 @@
 import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import { showUrlDialog } from '../../../../static/js/Dialogs/index';
-import showUserManagement from './UserManagementDialog';
+import { showUserManagement } from './UserManagementDialog';
 
 
 class UserManagement {
