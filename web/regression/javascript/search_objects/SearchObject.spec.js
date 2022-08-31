@@ -150,7 +150,7 @@ describe('SearchObjects', ()=>{
     };
 
     it('search', (done)=>{
-      let ctrl = ctrlMount({});
+      let ctrl = ctrlMount();
       setTimeout(()=>{
         ctrl.update();
         ctrl.find('InputText').find('input').simulate('change', {
@@ -166,7 +166,7 @@ describe('SearchObjects', ()=>{
     });
 
     it('search_on_enter', (done)=>{
-      let ctrl = ctrlMount({});
+      let ctrl = ctrlMount();
       setTimeout(()=>{
         ctrl.update();
         ctrl.find('InputText').find('input').simulate('change', {

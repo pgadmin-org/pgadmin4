@@ -677,8 +677,8 @@ class Filemanager(object):
         return files
 
     @staticmethod
-    def check_access_permission(in_dir, path):
-        if not config.SERVER_MODE:
+    def check_access_permission(in_dir, path, skip_permission_check=False):
+        if not config.SERVER_MODE or skip_permission_check:
             return
 
         in_dir = '' if in_dir is None else in_dir

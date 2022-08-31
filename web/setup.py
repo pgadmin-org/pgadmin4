@@ -59,7 +59,7 @@ def dump_servers(args):
     print('----------')
 
     app = create_app(config.APP_NAME + '-cli')
-    with app.app_context():
+    with app.test_request_context():
         dump_database_servers(args.dump_servers, args.servers, dump_user, True)
 
 
@@ -84,7 +84,7 @@ def load_servers(args):
     print('----------')
 
     app = create_app(config.APP_NAME + '-cli')
-    with app.app_context():
+    with app.test_request_context():
         load_database_servers(args.load_servers, None, load_user, True)
 
 

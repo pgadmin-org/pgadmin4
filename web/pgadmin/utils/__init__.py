@@ -443,7 +443,8 @@ def dump_database_servers(output_file, selected_servers,
 
     from pgadmin.misc.file_manager import Filemanager
     try:
-        Filemanager.check_access_permission(storage_manager_path, file_path)
+        Filemanager.check_access_permission(storage_manager_path, file_path,
+                                            from_setup)
     except Exception as e:
         return _handle_error(str(e), from_setup)
 
@@ -732,14 +733,14 @@ def _does_user_exist(user, from_setup):
     if isinstance(user, User):
         user = user.email
 
-    user = User.query.filter_by(email=user).first()
+    new_user = User.query.filter_by(email=user).first()
 
-    if user is None:
+    if new_user is None:
         print(USER_NOT_FOUND % user)
         if from_setup:
             sys.exit(1)
 
-    return user
+    return new_user
 
 
 def _handle_error(error_msg, from_setup):
