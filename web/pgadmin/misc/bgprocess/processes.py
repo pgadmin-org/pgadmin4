@@ -266,6 +266,8 @@ class BatchProcess(object):
             interpreter = self.get_windows_interpreter(paths)
         else:
             interpreter = sys.executable
+            if interpreter.endswith('uwsgi'):
+                interpreter = interpreter.split('uwsgi')[0] + 'python'
 
         return interpreter if interpreter else 'python'
 
@@ -335,7 +337,7 @@ class BatchProcess(object):
             else:
                 p = Popen(
                     cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
-                    preexec_fn=self.preexec_function, env=env
+                    start_new_session=True, env=env
                 )
 
         self.ecode = p.poll()
@@ -371,7 +373,7 @@ class BatchProcess(object):
         """
         p = Popen(
             cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
-            preexec_fn=self.preexec_function, env=env
+            start_new_session=True, env=env
         )
 
         output, errors = p.communicate()
