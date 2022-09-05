@@ -6,6 +6,12 @@ Release date: 2022-08-25
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v6.12.
 
+Supported Database Servers
+**************************
+**PostgreSQL**: 10, 11, 12, 13 and 14
+
+**EDB Advanced Server**: 10, 11, 12, 13 and 14
+
 New features
 ************
 
