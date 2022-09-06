@@ -28,3 +28,4 @@ Bug fixes
   | `Issue #7644 <https://redmine.postgresql.org/issues/7644>`_ -  Ensure that the dump servers functionality works from setup.py.
   | `Issue #7646 <https://redmine.postgresql.org/issues/7646>`_ -  Ensure that the Import/Export server menu option is visible.
   | `Issue #7648 <https://redmine.postgresql.org/issues/7648>`_ -  Fixed API test case for change password in the server mode.
+  | `Issue #7663 <https://redmine.postgresql.org/issues/7663>`_ -  Fixed ModuleNotFoundError when running setup.py to load/dump servers.

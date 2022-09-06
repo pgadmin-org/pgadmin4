@@ -13,6 +13,13 @@ and settings database."""
 import argparse
 import os
 import sys
+
+# We need to include the root directory in sys.path to ensure that we can
+# find everything we need when running in the standalone runtime.
+root = os.path.dirname(os.path.realpath(__file__))
+if sys.path[0] != root:
+    sys.path.insert(0, root)
+
 import builtins
 import config
 
@@ -21,12 +28,6 @@ if 'SERVER_MODE' in globals():
     builtins.SERVER_MODE = globals()['SERVER_MODE']
 else:
     builtins.SERVER_MODE = None
-
-# We need to include the root directory in sys.path to ensure that we can
-# find everything we need when running in the standalone runtime.
-root = os.path.dirname(os.path.realpath(__file__))
-if sys.path[0] != root:
-    sys.path.insert(0, root)
 
 from pgadmin.model import db, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
 from pgadmin import create_app
