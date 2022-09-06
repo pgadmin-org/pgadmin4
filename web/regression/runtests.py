@@ -315,22 +315,28 @@ def load_modules(arguments, exclude_pkgs):
     """
     from pgadmin.utils.route import TestsGeneratorRegistry
     # Load the test modules which are in given package(i.e. in arguments.pkg)
+    for_modules = []
+    if arguments['modules'] is not None:
+        for_modules = arguments['modules'].split(',')
+
     if arguments['pkg'] is None or arguments['pkg'] == "all":
-        TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'pgadmin', exclude_pkgs)
     elif arguments['pkg'] is not None and arguments['pkg'] == "resql":
-        for_modules = []
-        if arguments['modules'] is not None:
-            for_modules = arguments['modules'].split(',')
-
         # Load the reverse engineering sql test module
-        TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs,
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'pgadmin', exclude_pkgs,
                                                for_modules, is_resql_only=True)
+    elif arguments['pkg'] is not None and arguments['pkg'] == "feature_tests":
+        # Load the feature test module
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'regression.%s' %
+                                               arguments['pkg'],
+                                               exclude_pkgs,
+                                               for_modules)
     else:
-        for_modules = []
-        if arguments['modules'] is not None:
-            for_modules = arguments['modules'].split(',')
-
-        TestsGeneratorRegistry.load_generators('pgadmin.%s' %
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'pgadmin.%s' %
                                                arguments['pkg'],
                                                exclude_pkgs,
                                                for_modules)

@@ -58,7 +58,7 @@ class TestsGeneratorRegistry(ABCMeta):
         ABCMeta.__init__(self, name, bases, d)
 
     @classmethod
-    def load_generators(cls, pkg_root, exclude_pkgs, for_modules=[],
+    def load_generators(cls, pkg_args, pkg_root, exclude_pkgs, for_modules=[],
                         is_resql_only=False):
 
         cls.registry = dict()
@@ -70,6 +70,12 @@ class TestsGeneratorRegistry(ABCMeta):
         if 'resql' not in exclude_pkgs:
             # Append reverse engineered test case module
             all_modules.append('regression.re_sql.tests.test_resql')
+
+        if (pkg_args is None or pkg_args == "all") and \
+                'feature_tests' not in exclude_pkgs:
+            # Append feature tests module
+            all_modules += find_modules(
+                'regression.feature_tests', False, True)
 
         # If specific modules are to be tested, exclude others
         # for modules are handled differently for resql

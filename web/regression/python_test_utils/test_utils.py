@@ -1427,8 +1427,8 @@ def get_parallel_sequential_module_list(module_list):
     # list of files consisting tests that needs to be
     # executed sequentially
     sequential_tests_file = [
-        'pgadmin.feature_tests.pg_utilities_backup_restore_test',
-        'pgadmin.feature_tests.pg_utilities_maintenance_test']
+        'regression.feature_tests.pg_utilities_backup_restore_test',
+        'regression.feature_tests.pg_utilities_maintenance_test']
 
     #  list of tests can be executed in parallel
     parallel_tests = list(module_list)
