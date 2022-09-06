@@ -1,8 +1,8 @@
 import React from 'react';
-import { useModalStyles } from '../../../../../../static/js/helpers/ModalProvider';
+import { useModalStyles } from '../helpers/ModalProvider';
 import gettext from 'sources/gettext';
 import { Box } from '@material-ui/core';
-import { DefaultButton, PrimaryButton } from '../../../../../../static/js/components/Buttons';
+import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';

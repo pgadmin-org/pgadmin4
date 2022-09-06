@@ -6,7 +6,7 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import {KeyboardShortcutAction} from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
+import {KeyboardShortcutAction} from 'pgadmin.tools.erd/erd_tool/components/ERDTool';
 
 describe('KeyboardShortcutAction', ()=>{
   let keyAction = null;

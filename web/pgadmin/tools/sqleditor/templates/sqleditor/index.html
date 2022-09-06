@@ -15,13 +15,6 @@
     #sqleditor-container:not(:empty) + .pg-sp-container {
         display: none;
     }
-    {% if is_desktop_mode and is_linux %}
-    .alertify .ajs-dimmer,.alertify .ajs-modal{-webkit-transform: none;}
-    .alertify-notifier{-webkit-transform: none;}
-    .alertify-notifier .ajs-message{-webkit-transform: none;}
-    .alertify .ajs-dialog.ajs-shake{-webkit-animation-name: none;}
-    .sql-editor-busy-icon.fa-pulse{-webkit-animation: none;}
-    {% endif %}
 </style>
 <div id="sqleditor-container">
 <div class="pg-sp-container">

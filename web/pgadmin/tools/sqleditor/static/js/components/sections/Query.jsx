@@ -13,7 +13,7 @@ import CodeMirror from '../../../../../../static/js/components/CodeMirror';
 import {PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
 import { LayoutEventsContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
-import ConfirmSaveContent from '../dialogs/ConfirmSaveContent';
+import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
 import gettext from 'sources/gettext';
 import OrigCodeMirror from 'bundled_codemirror';
 import Notifier from '../../../../../../static/js/helpers/Notifier';

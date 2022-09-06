@@ -3,7 +3,8 @@ import React from 'react';
 import {mount} from 'enzyme';
 import '../../helper/enzyme.helper';
 
-import FloatingNote from 'pgadmin.tools.erd/erd_tool/ui_components/FloatingNote';
+import FloatingNote from 'pgadmin.tools.erd/erd_tool/components/FloatingNote';
+import Theme from '../../../../pgadmin/static/js/Theme';
 
 describe('ERD FloatingNote', ()=>{
 
@@ -24,15 +25,20 @@ describe('ERD FloatingNote', ()=>{
       },
     };
 
-    floatNote = mount(<FloatingNote open={false} onClose={onClose}
-      reference={null} noteNode={noteNode} appendTo={document.body} rows={8}/>);
+    floatNote = mount(
+      <Theme>
+        <FloatingNote
+          open={true} onClose={onClose} anchorEl={document.body} rows={8} noteNode={noteNode}
+        />
+      </Theme>);
 
     floatNote.find('textarea').simulate('change', {
       target: {
         value: 'the new note',
       },
     });
-    floatNote.find('button[data-label="OK"]').simulate('click');
+
+    floatNote.find('DefaultButton').simulate('click');
     expect(noteNode.setNote).toHaveBeenCalledWith('the new note');
     expect(onClose).toHaveBeenCalled();
   });

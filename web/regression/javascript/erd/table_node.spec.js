@@ -5,7 +5,7 @@ import '../helper/enzyme.helper';
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 
 import {TableNodeModel, TableNodeWidget} from 'pgadmin.tools.erd/erd_tool/nodes/TableNode';
-import { IconButton, DetailsToggleButton } from 'pgadmin.tools.erd/erd_tool/ui_components/ToolBar';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 
 describe('ERD TableNodeModel', ()=>{
@@ -211,63 +211,45 @@ describe('ERD TableNodeWidget', ()=>{
   });
 
   it('render', ()=>{
-    let nodeWidget = mount(<TableNodeWidget node={node}/>);
-    expect(nodeWidget.getDOMNode().className).toBe('table-node ');
-    expect(nodeWidget.find('.table-node .table-toolbar').length).toBe(1);
-    expect(nodeWidget.find('.table-node .table-schema').text()).toBe('erd');
-    expect(nodeWidget.find('.table-node .table-name').text()).toBe('table1');
-    expect(nodeWidget.find('.table-node .table-cols').length).toBe(1);
-    expect(nodeWidget.find(DetailsToggleButton).length).toBe(1);
-    expect(nodeWidget.find(IconButton).findWhere(n => n.prop('title')=='Check note').length).toBe(1);
-  });
-
-  it('node selected', ()=>{
-    spyOn(node, 'isSelected').and.returnValue(true);
-    let nodeWidget = mount(<TableNodeWidget node={node}/>);
-    expect(nodeWidget.getDOMNode().className).toBe('table-node selected');
+    let nodeWidget = mount(<Theme><TableNodeWidget node={node}/></Theme>);
+    expect(nodeWidget.find('DefaultButton[aria-label="Show Details"]').length).toBe(1);
+    expect(nodeWidget.find('DefaultButton[aria-label="Check Note"]').length).toBe(1);
+    expect(nodeWidget.find('div[data-test="schema-name"]').length).toBe(1);
+    expect(nodeWidget.find('div[data-test="table-name"]').length).toBe(1);
+    expect(nodeWidget.find('div[data-test="column-row"]').length).toBe(3);
   });
 
   it('remove note', ()=>{
     node.setNote('');
-    let nodeWidget = mount(<TableNodeWidget node={node}/>);
-    expect(nodeWidget.find(IconButton).findWhere(n => n.prop('title')=='Check note').length).toBe(0);
+    let nodeWidget = mount(<Theme><TableNodeWidget node={node}/></Theme>);
+    expect(nodeWidget.find('PgIconButton[aria-label="Check Note"]').length).toBe(0);
   });
 
   describe('generateColumn', ()=>{
     let nodeWidget = null;
 
     beforeEach(()=>{
-      nodeWidget = mount(<TableNodeWidget node={node}/>);
+      nodeWidget = mount(<Theme><TableNodeWidget node={node}/></Theme>);
     });
 
     it('count', ()=>{
-      expect(nodeWidget.find('.table-node .table-cols .col-row').length).toBe(3);
+      expect(nodeWidget.find('div[data-test="column-row"]').length).toBe(3);
     });
 
     it('column names', ()=>{
-      let cols = nodeWidget.find('.table-node .table-cols .col-row-data');
-      expect(cols.at(0).find('.col-name').text()).toBe('id');
-      expect(cols.at(1).find('.col-name').text()).toBe('amount');
-      expect(cols.at(2).find('.col-name').text()).toBe('desc');
+      let cols = nodeWidget.find('div[data-test="column-row"]');
+
+      expect(cols.at(0).find('span[data-test="column-name"]').text()).toBe('id');
+      expect(cols.at(1).find('span[data-test="column-name"]').text()).toBe('amount');
+      expect(cols.at(2).find('span[data-test="column-name"]').text()).toBe('desc');
     });
 
     it('data types', ()=>{
-      let cols = nodeWidget.find('.table-node .table-cols .col-row-data');
-      expect(cols.at(0).find('.col-datatype').text()).toBe('integer');
-      expect(cols.at(1).find('.col-datatype').text()).toBe('number(10,5)');
-      expect(cols.at(2).find('.col-datatype').text()).toBe('character varrying(50)');
-    });
+      let cols = nodeWidget.find('div[data-test="column-row"]');
 
-    it('show_details', (done)=>{
-      nodeWidget.setState({show_details: false});
-      expect(nodeWidget.find('.table-node .table-cols .col-row-data .col-datatype').length).toBe(0);
-
-      nodeWidget.instance().toggleShowDetails(jasmine.createSpyObj('event', ['preventDefault']));
-      /* Dummy set state to wait for toggleShowDetails -> setState to complete */
-      nodeWidget.setState({}, ()=>{
-        expect(nodeWidget.find('.table-node .table-cols .col-row-data .col-datatype').length).toBe(3);
-        done();
-      });
+      expect(cols.at(0).find('span[data-test="column-type"]').text()).toBe('integer');
+      expect(cols.at(1).find('span[data-test="column-type"]').text()).toBe('number(10,5)');
+      expect(cols.at(2).find('span[data-test="column-type"]').text()).toBe('character varrying(50)');
     });
   });
 });

@@ -8,10 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import Alertify from 'pgadmin.alertifyjs';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-
-import DialogWrapper from './DialogWrapper';
 import _ from 'lodash';
 
 class OneToManySchema extends BaseUISchema {
@@ -50,60 +47,27 @@ class OneToManySchema extends BaseUISchema {
   }
 }
 
-export default class OneToManyDialog {
-  constructor(pgBrowser) {
-    this.pgBrowser = pgBrowser;
-  }
+export function getOneToManyDialogSchema(attributes, tableNodesDict) {
+  let tablesData = [];
+  _.forEach(tableNodesDict, (node, uid)=>{
+    let [schema, name] = node.getSchemaTableName();
+    tablesData.push({value: uid, label: `(${schema}) ${name}`, image: 'icon-table'});
+  });
 
-  dialogName() {
-    return 'onetomany_dialog';
-  }
-
-  getUISchema(attributes, tableNodesDict) {
-    let tablesData = [];
-    _.forEach(tableNodesDict, (node, uid)=>{
-      let [schema, name] = node.getSchemaTableName();
-      tablesData.push({value: uid, label: `(${schema}) ${name}`, image: 'icon-table'});
-    });
-
-    return new OneToManySchema({
-      local_table_uid: tablesData,
-      local_column_attnum: tableNodesDict[attributes.local_table_uid].getColumns().map((col)=>{
+  return new OneToManySchema({
+    local_table_uid: tablesData,
+    local_column_attnum: tableNodesDict[attributes.local_table_uid].getColumns().map((col)=>{
+      return {
+        value: col.attnum, label: col.name, 'image': 'icon-column',
+      };
+    }),
+    referenced_table_uid: tablesData,
+    getRefColumns: (uid)=>{
+      return tableNodesDict[uid].getColumns().map((col)=>{
         return {
           value: col.attnum, label: col.name, 'image': 'icon-column',
         };
-      }),
-      referenced_table_uid: tablesData,
-      getRefColumns: (uid)=>{
-        return tableNodesDict[uid].getColumns().map((col)=>{
-          return {
-            value: col.attnum, label: col.name, 'image': 'icon-column',
-          };
-        });
-      },
-    }, attributes);
-  }
-
-  createOrGetDialog(title, sVersion) {
-    const dialogName = this.dialogName();
-
-    if (!Alertify[dialogName]) {
-      Alertify.dialog(dialogName, () => {
-        return new DialogWrapper(
-          `<div class="${dialogName}"></div>`,
-          title,
-          null,
-          Alertify,
-          sVersion
-        );
       });
-    }
-    return Alertify[dialogName];
-  }
-
-  show(title, attributes, tablesData, serverInfo, callback) {
-    let dialogTitle = title || gettext('Unknown');
-    const dialog = this.createOrGetDialog('onetomany_dialog', serverInfo);
-    dialog(dialogTitle, this.getUISchema(attributes, tablesData), callback).resizeTo(this.pgBrowser.stdW.sm, this.pgBrowser.stdH.md);
-  }
+    },
+  }, attributes);
 }

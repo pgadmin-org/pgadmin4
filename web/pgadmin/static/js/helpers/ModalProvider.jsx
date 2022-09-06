@@ -98,7 +98,7 @@ export default function ModalProvider({ children }) {
   const [modals, setModals] = React.useState([]);
 
   const showModal = (title, content, modalOptions) => {
-    let id = getEpoch().toString() + crypto.getRandomValues(new Uint8Array(1));
+    let id = getEpoch().toString() + crypto.getRandomValues(new Uint8Array(4));
     setModals((prev) => [...prev, {
       id: id,
       title: title,

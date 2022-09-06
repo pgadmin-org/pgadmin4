@@ -281,7 +281,6 @@ var webpackShimConfig = {
     'pgadmin.tools.schema_diff': path.join(__dirname, './pgadmin/tools/schema_diff/static/js/schema_diff'),
     'pgadmin.tools.schema_diff_ui': path.join(__dirname, './pgadmin/tools/schema_diff/static/js/schema_diff_ui'),
     'pgadmin.tools.search_objects': path.join(__dirname, './pgadmin/tools/search_objects/static/js'),
-    'pgadmin.tools.erd_module': path.join(__dirname, './pgadmin/tools/erd/static/js/erd_module'),
     'pgadmin.tools.erd': path.join(__dirname, './pgadmin/tools/erd/static/js'),
     'pgadmin.tools.psql_module': path.join(__dirname, './pgadmin/tools/psql/static/js/psql_module'),
     'pgadmin.tools.psql': path.join(__dirname, './pgadmin/tools/psql/static/js'),

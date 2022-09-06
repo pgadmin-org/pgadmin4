@@ -1,4 +1,3 @@
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import {mount} from 'enzyme';
 import '../../helper/enzyme.helper';
@@ -6,12 +5,14 @@ import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
 
 import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
-import * as erdModule from 'pgadmin.tools.erd/erd_module';
+import * as erdModule from 'pgadmin.tools.erd/ERDModule';
 import erdPref from './erd_preferences';
-import BodyWidget from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
+import ERDTool from 'pgadmin.tools.erd/erd_tool/components/ERDTool';
 import * as ERDSqlTool from 'tools/sqleditor/static/js/show_query_tool';
 import { FakeLink, FakeNode, FakePort } from '../fake_item';
 import Notify from '../../../../pgadmin/static/js/helpers/Notifier';
+import Theme from '../../../../pgadmin/static/js/Theme';
+import ModalProvider from '../../../../pgadmin/static/js/helpers/ModalProvider';
 
 
 let pgAdmin = {
@@ -50,18 +51,9 @@ let pgWindow = {
   pgAdmin: pgAdmin,
 };
 
-let alertify = jasmine.createSpyObj('alertify', {
-  'success': null,
-  'error': null,
-  'confirm': null,
-  'alert': {
-    'set': ()=>{/*This is intentional (SonarQube)*/},
-  },
-});
-
-let tableDialog = jasmine.createSpyObj('TableDialog', ['show']);
-let otmDialog = jasmine.createSpyObj('otmDialog', ['show']);
-let mtmDialog = jasmine.createSpyObj('mtmDialog', ['show']);
+let tableDialog = jasmine.createSpy('TableDialog');
+let otmDialog = jasmine.createSpy('otmDialog');
+let mtmDialog = jasmine.createSpy('mtmDialog');
 
 let getDialog = (dialogName)=>{
   switch(dialogName) {
@@ -71,7 +63,8 @@ let getDialog = (dialogName)=>{
   }
 };
 
-describe('ERD BodyWidget', ()=>{
+describe('ERDTool', ()=>{
+  let erd = null;
   let body = null;
   let bodyInstance = null;
   let networkMock = null;
@@ -129,36 +122,34 @@ describe('ERD BodyWidget', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    body = mount(<BodyWidget params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} getDialog={getDialog} alertify={alertify}/>);
+    erd = mount(
+      <Theme>
+        <ModalProvider>
+          <ERDTool params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} />
+        </ModalProvider>
+      </Theme>
+    );
+    body = erd.find('ERDTool');
     bodyInstance = body.instance();
+    spyOn(bodyInstance, 'getDialog').and.callFake(getDialog);
   });
 
   afterAll(() => {
     networkMock.restore();
-    if(body) {
-      body.unmount();
+    if(erd) {
+      erd.unmount();
     }
   });
 
   it('constructor', (done)=>{
-
-    expect(body.find('ToolBar').length).toBe(1);
-    expect(body.find('ConnectionBar').length).toBe(1);
-    expect(body.find('FloatingNote').length).toBe(1);
-    expect(body.find('.diagram-container Loader').length).toBe(1);
-    expect(body.find('.diagram-container CanvasWidget').length).toBe(1);
-
-    body.instance().setState({}, ()=>{
-      let instance = body.instance();
-
+    bodyInstance.setState({}, ()=>{
       setTimeout(()=>{
         expect(body.state()).toEqual(jasmine.objectContaining({
           server_version: serverVersion,
           preferences: erdPref,
         }));
-        expect(instance.diagram.getCache('colTypes')).toEqual(colTypes);
-        expect(instance.diagram.getCache('schemas')).toEqual(schemas);
+        expect(bodyInstance.diagram.getCache('colTypes')).toEqual(colTypes);
+        expect(bodyInstance.diagram.getCache('schemas')).toEqual(schemas);
         done();
       });
     });
@@ -237,17 +228,6 @@ describe('ERD BodyWidget', ()=>{
     });
   });
 
-  it('getDialog', ()=>{
-    bodyInstance.getDialog('table_dialog')();
-    expect(tableDialog.show).toHaveBeenCalled();
-
-    bodyInstance.getDialog('onetomany_dialog')();
-    expect(otmDialog.show).toHaveBeenCalled();
-
-    bodyInstance.getDialog('manytomany_dialog')();
-    expect(mtmDialog.show).toHaveBeenCalled();
-  });
-
   it('addEditTable', ()=>{
     let node1 = new FakeNode({'name': 'table1', schema: 'erd1', columns: [{name: 'col1', type: 'type1', attnum: 1}]}, 'id1');
     let node2 = new FakeNode({'name': 'table2', schema: 'erd2', columns: [{name: 'col2', type: 'type2', attnum: 2}]}, 'id2');
@@ -261,23 +241,23 @@ describe('ERD BodyWidget', ()=>{
     spyOn(bodyInstance.diagram, 'addLink');
     spyOn(bodyInstance.diagram, 'syncTableLinks');
     /* New */
-    tableDialog.show.calls.reset();
+    tableDialog.calls.reset();
     bodyInstance.addEditTable();
-    expect(tableDialog.show).toHaveBeenCalled();
+    expect(tableDialog).toHaveBeenCalled();
 
-    let saveCallback = tableDialog.show.calls.mostRecent().args[7];
+    let saveCallback = tableDialog.calls.mostRecent().args[3];
     let newData = {key: 'value'};
     saveCallback(newData);
     expect(bodyInstance.diagram.addNode).toHaveBeenCalledWith(newData);
 
     /* Existing */
-    tableDialog.show.calls.reset();
+    tableDialog.calls.reset();
     let node = new FakeNode({name: 'table1', schema: 'erd1'});
     spyOn(node, 'setData');
     bodyInstance.addEditTable(node);
-    expect(tableDialog.show).toHaveBeenCalled();
+    expect(tableDialog).toHaveBeenCalled();
 
-    saveCallback = tableDialog.show.calls.mostRecent().args[7];
+    saveCallback = tableDialog.calls.mostRecent().args[3];
     newData = {key: 'value'};
     saveCallback(newData);
     expect(node.setData).toHaveBeenCalledWith(newData);
@@ -435,11 +415,8 @@ describe('ERD BodyWidget', ()=>{
     spyOn(bodyInstance.diagram, 'addLink');
     spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
 
-    otmDialog.show.calls.reset();
     bodyInstance.onOneToManyClick();
-    expect(otmDialog.show).toHaveBeenCalled();
-
-    let saveCallback = otmDialog.show.calls.mostRecent().args[4];
+    let saveCallback = otmDialog.calls.mostRecent().args[2];
     let newData = {
       local_table_uid: 'id1',
       local_column_attnum: 1,
@@ -452,13 +429,6 @@ describe('ERD BodyWidget', ()=>{
 
   it('onManyToManyClick', ()=>{
     let node = new FakeNode({}, 'id1');
-    spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
-
-    mtmDialog.show.calls.reset();
-    bodyInstance.onManyToManyClick();
-    expect(mtmDialog.show).toHaveBeenCalled();
-
-    /* onSave */
     let node1 = new FakeNode({'name': 'table1', schema: 'erd1', columns: [{name: 'col1', type: 'type1', attnum: 1}]}, 'id1');
     let node2 = new FakeNode({'name': 'table2', schema: 'erd2', columns: [{name: 'col2', type: 'type2', attnum: 2}]}, 'id2');
     let nodesDict = {
@@ -469,8 +439,13 @@ describe('ERD BodyWidget', ()=>{
     spyOn(bodyInstance.diagram, 'getModel').and.returnValue({
       'getNodesDict': ()=>nodesDict,
     });
+    spyOn(bodyInstance.diagram, 'getSelectedNodes').and.returnValue([node]);
+
+    bodyInstance.onManyToManyClick();
+
+    /* onSave */
     spyOn(bodyInstance.diagram, 'addLink');
-    let saveCallback = mtmDialog.show.calls.mostRecent().args[4];
+    let saveCallback = mtmDialog.calls.mostRecent().args[2];
     let newData = {
       left_table_uid: 'id1',
       left_table_column_attnum: 1,

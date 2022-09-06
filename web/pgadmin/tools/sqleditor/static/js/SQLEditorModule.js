@@ -16,7 +16,6 @@ import $ from 'jquery';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
 import alertify from 'pgadmin.alertifyjs';
-var wcDocker = window.wcDocker;
 import pgWindow from 'sources/window';
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'pgadmin.browser';
@@ -29,6 +28,7 @@ import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
 
+const wcDocker = window.wcDocker;
 
 export function setPanelTitle(queryToolPanel, panelTitle) {
   queryToolPanel.title('<span title="'+panelTitle+'">'+panelTitle+'</span>');

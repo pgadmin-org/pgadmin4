@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import {
   RightAngleLinkModel,
   RightAngleLinkWidget,
@@ -19,6 +19,8 @@ import {
 import {Point} from '@projectstorm/geometry';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 
 export const OneToManyModel = {
   local_table_uid: undefined,
@@ -74,20 +76,42 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
   }
 }
 
+const useStyles = makeStyles((theme)=>({
+  svgLink: {
+    stroke: theme.palette.text.primary,
+  },
+  '@keyframes svgLinkSelected': {
+    'from': { strokeDashoffset: 24},
+    'to': { strokeDashoffset: 0 }
+  },
+  svgLinkSelected: {
+    strokeDasharray: '10, 2',
+    animation: '$svgLinkSelected 1s linear infinite'
+  },
+  svgLinkCircle: {
+    fill: theme.palette.text.primary,
+  },
+  svgLinkPath: {
+    pointerEvents: 'all',
+    cursor: 'move',
+  }
+}));
+
 const CustomLinkEndWidget = props => {
   const { point, rotation, tx, ty, type } = props;
+  const classes = useStyles();
 
   const svgForType = (itype) => {
     if(itype == 'many') {
       return (
         <>
-          <circle className="svg-link-ele svg-otom-circle" cx="0" cy="16" r={props.width*1.75} strokeWidth={props.width} />
-          <polyline className="svg-link-ele" points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
+          <circle className={clsx(classes.svgLink, classes.svgLinkCircle)} cx="0" cy="16" r={props.width*1.75} strokeWidth={props.width} />
+          <polyline className={classes.svgLink} points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
         </>
       );
     } else if (itype == 'one') {
       return (
-        <polyline className="svg-link-ele" points="-8,15 0,15 0,0 0,30 0,15 8,15" fill="none" strokeWidth={props.width} />
+        <polyline className={classes.svgLink} points="-8,15 0,15 0,0 0,30 0,15 8,15" fill="none" strokeWidth={props.width} />
       );
     }
   };
@@ -270,6 +294,29 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
   }
 }
 
+const LinkSegment = forwardRef(({model, selected, path, ...props}, ref)=>{
+  const classes = useStyles();
+  return (
+    <path
+      ref={ref}
+      className={clsx(classes.svgLink, classes.svgLinkPath, (selected ? classes.svgLinkSelected : ''))}
+      stroke={model.getOptions().color}
+      strokeWidth={model.getOptions().width}
+      selected={selected}
+      d={path}
+      {...props}
+    >
+    </path>
+  );
+});
+LinkSegment.displayName = 'LinkSegment';
+LinkSegment.propTypes = {
+  model: PropTypes.object,
+  selected: PropTypes.bool,
+  path: PropTypes.any,
+};
+
+
 export class OneToManyLinkFactory extends DefaultLinkFactory {
   constructor() {
     super('onetomany');
@@ -280,19 +327,10 @@ export class OneToManyLinkFactory extends DefaultLinkFactory {
   }
 
   generateReactWidget(event) {
-    return <OneToManyLinkWidget color='#fff' width={1} smooth={true} link={event.model} diagramEngine={this.engine} factory={this} />;
+    return <OneToManyLinkWidget width={1} smooth={true} link={event.model} diagramEngine={this.engine} factory={this} />;
   }
 
   generateLinkSegment(model, selected, path) {
-    return (
-      <path
-        className={'svg-link-ele path ' + (selected ? 'selected' : '')}
-        stroke={model.getOptions().color}
-        selected={selected}
-        strokeWidth={model.getOptions().width}
-        d={path}
-      >
-      </path>
-    );
+    return <LinkSegment model={model} selected={selected} path={path} />;
   }
 }

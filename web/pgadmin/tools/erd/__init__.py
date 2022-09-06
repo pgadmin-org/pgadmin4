@@ -399,8 +399,6 @@ def panel(trans_id):
     if 'gen' in params:
         params['gen'] = True if params['gen'] == 'true' else False
 
-    close_url = request.form['close_url']
-
     # We need client OS information to render correct Keyboard shortcuts
     user_agent = UserAgent(request.headers.get('User-Agent'))
 
@@ -439,7 +437,6 @@ def panel(trans_id):
     return render_template(
         "erd/index.html",
         title=underscore_unescape(params['title']),
-        close_url=close_url,
         requirejs=True,
         basejs=True,
         params=json.dumps(params),

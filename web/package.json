@@ -88,7 +88,6 @@
     "@projectstorm/react-diagrams": "^6.6.1",
     "@simonwep/pickr": "^1.5.1",
     "@szhsin/react-menu": "^2.2.0",
-    "@tippyjs/react": "^4.2.0",
     "@types/classnames": "^2.2.6",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",

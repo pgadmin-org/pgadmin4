@@ -508,7 +508,7 @@ export default function DataGridView({
             setGlobalFilter(value || undefined);
           }}
         />}
-        <div {...getTableProps()} className={classes.table}>
+        <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table}>
           <DataTableHeader headerGroups={headerGroups} />
           <div {...getTableBodyProps()} className={classes.tableContentWidth}>
             {rows.map((row, i) => {

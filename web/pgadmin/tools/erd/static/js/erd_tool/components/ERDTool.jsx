@@ -9,25 +9,29 @@
 
 import * as React from 'react';
 import { CanvasWidget, Action, InputType } from '@projectstorm/react-canvas-core';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import html2canvas from 'html2canvas';
 
 import ERDCore from '../ERDCore';
-import ToolBar, {IconButton, DetailsToggleButton, ButtonGroup} from './ToolBar';
 import ConnectionBar, { STATUS as CONNECT_STATUS } from './ConnectionBar';
-import Loader from './Loader';
 import FloatingNote from './FloatingNote';
-import {setPanelTitle} from '../../erd_module';
+import {setPanelTitle} from '../../ERDModule';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import {showERDSqlTool} from 'tools/sqleditor/static/js/show_query_tool';
 import 'wcdocker';
-import Theme from '../../../../../../static/js/Theme';
 import TableSchema from '../../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
 import { ModalContext } from '../../../../../../static/js/helpers/ModalProvider';
+import ERDDialogs from '../dialogs';
+import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
+import Loader from '../../../../../../static/js/components/Loader';
+import { MainToolBar } from './MainToolBar';
+import { Box, withStyles } from '@material-ui/core';
+import EventBus from '../../../../../../static/js/helpers/EventBus';
+import { ERD_EVENTS } from '../ERDConstants';
+import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -60,11 +64,41 @@ export class KeyboardShortcutAction extends Action {
   }
 }
 
+const getCanvasGrid = (theme)=>{
+  let erdCanvasBg = encodeURIComponent(theme.otherVars.erdCanvasBg);
+  let erdGridColor = encodeURIComponent(theme.otherVars.erdGridColor);
+
+  return `url("data:image/svg+xml, %3Csvg width='100%25' viewBox='0 0 45 45' style='background-color:${erdCanvasBg}' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='smallGrid' width='15' height='15' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 15 0 L 0 0 0 15' fill='none' stroke='${erdGridColor}' stroke-width='0.5'/%3E%3C/pattern%3E%3Cpattern id='grid' width='45' height='45' patternUnits='userSpaceOnUse'%3E%3Crect width='100' height='100' fill='url(%23smallGrid)'/%3E%3Cpath d='M 100 0 L 0 0 0 100' fill='none' stroke='${erdGridColor}' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)' /%3E%3C/svg%3E%0A")`;
+};
+
+const styles = ((theme)=>({
+  diagramContainer: {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    minHeight: 0,
+  },
+  diagramCanvas: {
+    width: '100%',
+    height: '100%',
+    color: theme.palette.text.primary,
+    fontFamily: 'sans-serif',
+    backgroundColor: theme.otherVars.erdCanvasBg,
+    backgroundImage: getCanvasGrid(theme),
+    cursor: 'unset',
+    flexGrow: 1,
+  },
+  html2canvasReset: {
+    backgroundImage: 'none !important',
+    overflow: 'auto !important',
+  }
+}));
+
 /* The main body container for the ERD */
-export default class BodyWidget extends React.Component {
+class ERDTool extends React.Component {
   static contextType = ModalContext;
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       conn_status: CONNECT_STATUS.DISCONNECTED,
       server_version: null,
@@ -89,11 +123,16 @@ export default class BodyWidget extends React.Component {
     /* Flag for checking if user has opted for save before close */
     this.closeOnSave = React.createRef();
     this.fileInputRef = React.createRef();
+    this.containerRef = React.createRef();
     this.diagramContainerRef = React.createRef();
     this.canvasEle = null;
     this.noteRefEle = null;
     this.noteNode = null;
     this.keyboardActionObj = null;
+    this.erdDialogs = new ERDDialogs(this.context);
+    this.apiObj = getApiInstance();
+
+    this.eventBus = new EventBus();
 
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
@@ -125,22 +164,29 @@ export default class BodyWidget extends React.Component {
             singleNodeSelected = true;
           }
         }
+        const anyItemSelected = this.diagram.getSelectedNodes().length > 0 || this.diagram.getSelectedLinks().length > 0;
         this.setState({
           single_node_selected: singleNodeSelected,
-          any_item_selected: this.diagram.getSelectedNodes().length > 0 || this.diagram.getSelectedLinks().length > 0,
+          any_item_selected: anyItemSelected,
         });
+        this.eventBus.fireEvent(ERD_EVENTS.SINGLE_NODE_SELECTED, singleNodeSelected);
+        this.eventBus.fireEvent(ERD_EVENTS.ANY_ITEM_SELECTED, anyItemSelected);
       },
       'linksSelectionChanged': ()=>{
+        const anyItemSelected = this.diagram.getSelectedNodes().length > 0 || this.diagram.getSelectedLinks().length > 0;
         this.setState({
           single_link_selected: this.diagram.getSelectedLinks().length == 1,
           any_item_selected: this.diagram.getSelectedNodes().length > 0 || this.diagram.getSelectedLinks().length > 0,
         });
+        this.eventBus.fireEvent(ERD_EVENTS.ANY_ITEM_SELECTED, anyItemSelected);
       },
       'linksUpdated': () => {
         this.setState({dirty: true});
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
       },
       'nodesUpdated': ()=>{
         this.setState({dirty: true});
+        this.eventBus.fireEvent(ERD_EVENTS.DIRTY, true);
       },
       'showNote': (event)=>{
         this.showNote(event.node);
@@ -154,53 +200,94 @@ export default class BodyWidget extends React.Component {
     });
   }
 
+  registerEvents() {
+    this.eventBus.registerListener(ERD_EVENTS.LOAD_DIAGRAM, this.onLoadDiagram);
+    this.eventBus.registerListener(ERD_EVENTS.SAVE_DIAGRAM, this.onSaveDiagram);
+    this.eventBus.registerListener(ERD_EVENTS.SHOW_SQL, this.onSQLClick);
+    this.eventBus.registerListener(ERD_EVENTS.DOWNLOAD_IMAGE, this.onImageClick);
+    this.eventBus.registerListener(ERD_EVENTS.ADD_NODE, this.onAddNewNode);
+    this.eventBus.registerListener(ERD_EVENTS.EDIT_NODE, this.onEditTable);
+    this.eventBus.registerListener(ERD_EVENTS.CLONE_NODE, this.onCloneNode);
+    this.eventBus.registerListener(ERD_EVENTS.DELETE_NODE, this.onDeleteNode);
+    this.eventBus.registerListener(ERD_EVENTS.SHOW_NOTE, this.onNoteClick);
+    this.eventBus.registerListener(ERD_EVENTS.ONE_TO_MANY, this.onOneToManyClick);
+    this.eventBus.registerListener(ERD_EVENTS.MANY_TO_MANY, this.onManyToManyClick);
+    this.eventBus.registerListener(ERD_EVENTS.AUTO_DISTRIBUTE, this.onAutoDistribute);
+    this.eventBus.registerListener(ERD_EVENTS.TOGGLE_DETAILS, this.onDetailsToggle);
+    this.eventBus.registerListener(ERD_EVENTS.ZOOM_FIT, this.diagram.zoomToFit);
+    this.eventBus.registerListener(ERD_EVENTS.ZOOM_IN, this.diagram.zoomIn);
+    this.eventBus.registerListener(ERD_EVENTS.ZOOM_OUT, this.diagram.zoomOut);
+  }
+
   registerKeyboardShortcuts() {
     /* First deregister to avoid double events */
     this.keyboardActionObj && this.diagram.deregisterKeyAction(this.keyboardActionObj);
 
     this.keyboardActionObj = new KeyboardShortcutAction([
-      [this.state.preferences.open_project, this.onLoadDiagram],
-      [this.state.preferences.save_project, this.onSaveDiagram],
-      [this.state.preferences.save_project_as, this.onSaveAsDiagram],
-      [this.state.preferences.generate_sql, this.onSQLClick],
-      [this.state.preferences.download_image, this.onImageClick],
-      [this.state.preferences.add_table, this.onAddNewNode],
-      [this.state.preferences.edit_table, this.onEditTable],
-      [this.state.preferences.clone_table, this.onCloneNode],
-      [this.state.preferences.drop_table, this.onDeleteNode],
-      [this.state.preferences.add_edit_note, this.onNoteClick],
-      [this.state.preferences.one_to_many, this.onOneToManyClick],
-      [this.state.preferences.many_to_many, this.onManyToManyClick],
-      [this.state.preferences.auto_align, this.onAutoDistribute],
-      [this.state.preferences.show_details, this.onDetailsToggle],
-      [this.state.preferences.zoom_to_fit, this.diagram.zoomToFit],
-      [this.state.preferences.zoom_in, this.diagram.zoomIn],
-      [this.state.preferences.zoom_out, this.diagram.zoomOut],
+      [this.state.preferences.open_project, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.LOAD_DIAGRAM);
+      }],
+      [this.state.preferences.save_project, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.SAVE_DIAGRAM);
+      }],
+      [this.state.preferences.save_project_as, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.SAVE_DIAGRAM, true);
+      }],
+      [this.state.preferences.generate_sql, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.SHOW_SQL);
+      }],
+      [this.state.preferences.download_image, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.DOWNLOAD_IMAGE);
+      }],
+      [this.state.preferences.add_table, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.ADD_NODE);
+      }],
+      [this.state.preferences.edit_table, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.EDIT_NODE);
+      }],
+      [this.state.preferences.clone_table, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.CLONE_NODE);
+      }],
+      [this.state.preferences.drop_table, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.DELETE_NODE);
+      }],
+      [this.state.preferences.add_edit_note, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.SHOW_NOTE);
+      }],
+      [this.state.preferences.one_to_many, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.ONE_TO_MANY);
+      }],
+      [this.state.preferences.many_to_many, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.MANY_TO_MANY);
+      }],
+      [this.state.preferences.auto_align, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.AUTO_DISTRIBUTE);
+      }],
+      [this.state.preferences.show_details, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.TOGGLE_DETAILS);
+      }],
+      [this.state.preferences.zoom_to_fit, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.ZOOM_FIT);
+      }],
+      [this.state.preferences.zoom_in, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.ZOOM_IN);
+      }],
+      [this.state.preferences.zoom_out, ()=>{
+        this.eventBus.fireEvent(ERD_EVENTS.ZOOM_OUT);
+      }],
     ]);
 
     this.diagram.registerKeyAction(this.keyboardActionObj);
   }
 
   handleAxiosCatch(err) {
-    if (err.response) {
-      // client received an error response (5xx, 4xx)
-      Notify.alert(
-        gettext('Error'),
-        `${err.response.statusText} - ${err.response.data.errormsg}`
-      );
-      console.error('response error', err.response);
-    } else if (err.request) {
-      // client never received a response, or request never left
-      Notify.alert(gettext('Error'), gettext('Client error') + ':' + err);
-      console.error('client eror', err);
-    } else {
-      Notify.alert(gettext('Error'), err.message);
-      console.error('other error', err);
-    }
+    console.error(err);
+    Notify.alert(gettext('Error'), parseApiError(err));
   }
 
   async componentDidMount() {
     this.setLoading(gettext('Preparing...'));
+    this.registerEvents();
 
     this.setState({
       preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
@@ -216,7 +303,7 @@ export default class BodyWidget extends React.Component {
       backgroundPosition: '0px 0px',
     });
 
-    this.props.pgAdmin.Browser.onPreferencesChange('erd', () => {
+    this.props.pgWindow.pgAdmin.Browser.onPreferencesChange('erd', () => {
       this.setState({
         preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
       }, ()=>this.registerKeyboardShortcuts());
@@ -230,6 +317,15 @@ export default class BodyWidget extends React.Component {
         return false;
       }
       return true;
+    });
+
+    window.addEventListener('unload', ()=>{
+      this.apiObj.delete(url_for('erd.close', {
+        trans_id: this.props.params.trans_id,
+        sgid: this.props.params.sgid,
+        sid: this.props.params.sid,
+        did: this.props.params.did
+      }));
     });
 
     let done = await this.initConnection();
@@ -257,52 +353,18 @@ export default class BodyWidget extends React.Component {
 
   confirmBeforeClose() {
     let bodyObj = this;
-    this.props.alertify.confirmSave || this.props.alertify.dialog('confirmSave', function() {
-      return {
-        main: function(title, message) {
-          this.setHeader(title);
-          this.setContent(message);
-        },
-        setup: function() {
-          return {
-            buttons: [{
-              text: gettext('Cancel'),
-              key: 27, // ESC
-              invokeOnClose: true,
-              className: 'btn btn-secondary fa fa-lg fa-times pg-alertify-button',
-            }, {
-              text: gettext('Don\'t save'),
-              className: 'btn btn-secondary fa fa-lg fa-trash-alt pg-alertify-button',
-            }, {
-              text: gettext('Save'),
-              className: 'btn btn-primary fa fa-lg fa-save pg-alertify-button',
-            }],
-            focus: {
-              element: 0,
-              select: false,
-            },
-            options: {
-              maximizable: false,
-              resizable: false,
-            },
-          };
-        },
-        callback: function(closeEvent) {
-          switch (closeEvent.index) {
-          case 0: // Cancel
-            //Do nothing.
-            break;
-          case 1: // Don't Save
-            bodyObj.closePanel();
-            break;
-          case 2: //Save
-            bodyObj.onSaveDiagram(false, true);
-            break;
-          }
-        },
-      };
-    });
-    this.props.alertify.confirmSave(gettext('Save changes?'), gettext('The diagram has changed. Do you want to save changes?'));
+    this.context.showModal(gettext('Save changes?'), (closeModal)=>(
+      <ConfirmSaveContent
+        closeModal={closeModal}
+        text={gettext('The diagram has changed. Do you want to save changes?')}
+        onDontSave={()=>{
+          bodyObj.closePanel();
+        }}
+        onSave={()=>{
+          bodyObj.onSaveDiagram(false, true);
+        }}
+      />
+    ));
     return false;
   }
 
@@ -318,15 +380,18 @@ export default class BodyWidget extends React.Component {
     };
     if(dialogName === 'table_dialog') {
       return (title, attributes, isNew, callback)=>{
-        this.props.getDialog(dialogName).show(
-          title, attributes, isNew, this.diagram.getModel().getNodesDict(), this.diagram.getCache('colTypes'), this.diagram.getCache('schemas'), serverInfo, callback
-        );
+        this.erdDialogs.showTableDialog({
+          title, attributes, isNew, tableNodes: this.diagram.getModel().getNodesDict(),
+          colTypes: this.diagram.getCache('colTypes'), schemas: this.diagram.getCache('schemas'),
+          serverInfo, callback
+        });
       };
     } else if(dialogName === 'onetomany_dialog' || dialogName === 'manytomany_dialog') {
       return (title, attributes, callback)=>{
-        this.props.getDialog(dialogName).show(
-          title, attributes, this.diagram.getModel().getNodesDict(), serverInfo, callback
-        );
+        this.erdDialogs.showRelationDialog(dialogName, {
+          title, attributes, tableNodes: this.diagram.getModel().getNodesDict(),
+          serverInfo, callback
+        });
       };
     }
   }
@@ -386,7 +451,7 @@ export default class BodyWidget extends React.Component {
         Notify.error(gettext('Cannot drop table from outside of the current database.'));
       } else {
         let dataPromise = new Promise((resolve, reject)=>{
-          axios.get(nodeDropData.objUrl)
+          this.apiObj.get(nodeDropData.objUrl)
             .then((res)=>{
               resolve(this.diagram.cloneTableData(TableSchema.getErdSupportedData(res.data)));
             })
@@ -467,7 +532,7 @@ export default class BodyWidget extends React.Component {
   }
 
   onLoadDiagram() {
-    var params = {
+    const params = {
       'supported_types': ['*','pgerd'], // file types allowed
       'dialog_type': 'select_file', // open select file dialog
     };
@@ -476,13 +541,14 @@ export default class BodyWidget extends React.Component {
 
   openFile(fileName) {
     this.setLoading(gettext('Loading project...'));
-    axios.post(url_for('sqleditor.load_file'), {
+    this.apiObj.post(url_for('sqleditor.load_file'), {
       'file_name': decodeURI(fileName),
     }).then((res)=>{
       this.setState({
         current_file: fileName,
         dirty: false,
       });
+      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
       this.setTitle(fileName);
       this.diagram.deserialize(res.data);
       this.diagram.clearSelection();
@@ -515,7 +581,7 @@ export default class BodyWidget extends React.Component {
 
   saveFile(fileName) {
     this.setLoading(gettext('Saving...'));
-    axios.post(url_for('sqleditor.save_file'), {
+    this.apiObj.post(url_for('sqleditor.save_file'), {
       'file_name': decodeURI(fileName),
       'file_content': JSON.stringify(this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)),
     }).then(()=>{
@@ -524,6 +590,7 @@ export default class BodyWidget extends React.Component {
         current_file: fileName,
         dirty: false,
       });
+      this.eventBus.fireEvent(ERD_EVENTS.DIRTY, false);
       this.setTitle(fileName);
       this.setLoading(null);
       if(this.closeOnSave) {
@@ -564,7 +631,7 @@ export default class BodyWidget extends React.Component {
     });
 
     this.setLoading(gettext('Preparing the SQL...'));
-    axios.post(url, this.diagram.serializeData())
+    this.apiObj.post(url, this.diagram.serializeData())
       .then((resp)=>{
         let sqlScript = resp.data.data;
         sqlScript = scriptHeader + 'BEGIN;\n' + sqlScript + '\nEND;';
@@ -579,7 +646,7 @@ export default class BodyWidget extends React.Component {
 
         let sqlId = `erd${this.props.params.trans_id}`;
         localStorage.setItem(sqlId, sqlScript);
-        showERDSqlTool(parentData, sqlId, this.props.params.title, this.props.pgWindow.pgAdmin.Tools.SQLEditor, this.props.alertify);
+        showERDSqlTool(parentData, sqlId, this.props.params.title, this.props.pgWindow.pgAdmin.Tools.SQLEditor);
       })
       .catch((error)=>{
         this.handleAxiosCatch(error);
@@ -617,7 +684,7 @@ export default class BodyWidget extends React.Component {
     });
 
     /* Change the styles for suiting html2canvas */
-    this.canvasEle.classList.add('html2canvas-reset');
+    this.canvasEle.classList.add(this.props.classes.html2canvasReset);
     this.canvasEle.style.width = this.canvasEle.scrollWidth + 'px';
     this.canvasEle.style.height = this.canvasEle.scrollHeight + 'px';
 
@@ -628,7 +695,8 @@ export default class BodyWidget extends React.Component {
         'color',
         'font-size',
         'stroke',
-        'font'
+        'font',
+        'display',
       ];
       let svgElems = Array.from(targetElem.getElementsByTagName('svg'));
       for (let svgEle of svgElems) {
@@ -638,6 +706,7 @@ export default class BodyWidget extends React.Component {
         let wrap = document.createElement('div');
         wrap.setAttribute('style', svgEle.getAttribute('style'));
         svgEle.setAttribute('style', null);
+        svgEle.style.display = 'block';
         svgEle.parentNode.insertBefore(wrap, svgEle);
         wrap.appendChild(svgEle);
         recurseElementChildren(svgEle);
@@ -679,7 +748,7 @@ export default class BodyWidget extends React.Component {
         allowTaint: true,
         backgroundColor: window.getComputedStyle(this.canvasEle).backgroundColor,
         onclone: (clonedEle)=>{
-          setSvgInlineStyles(clonedEle);
+          setSvgInlineStyles(clonedEle.body.querySelector('div[data-test="diagram-container"]'));
           return clonedEle;
         },
       }).then((canvas)=>{
@@ -697,7 +766,7 @@ export default class BodyWidget extends React.Component {
         Notify.alert(gettext('Error'), msg);
       }).then(()=>{
         /* Revert back to the original CSS styles */
-        this.canvasEle.classList.remove('html2canvas-reset');
+        this.canvasEle.classList.remove(this.props.classes.html2canvasReset);
         this.canvasEle.style.width = '';
         this.canvasEle.style.height = '';
         this.canvasEle.childNodes.forEach((ele)=>{
@@ -760,7 +829,7 @@ export default class BodyWidget extends React.Component {
     });
 
     try {
-      let response = await axios.post(initUrl);
+      let response = await this.apiObj.post(initUrl);
       this.setState({
         conn_status: CONNECT_STATUS.CONNECTED,
         server_version: response.data.data.serverVersion,
@@ -789,7 +858,7 @@ export default class BodyWidget extends React.Component {
     });
 
     try {
-      let response = await axios.get(url);
+      let response = await this.apiObj.get(url);
       let data = response.data.data;
       this.diagram.setCache('colTypes', data['col_types']);
       this.diagram.setCache('schemas', data['schemas']);
@@ -812,7 +881,7 @@ export default class BodyWidget extends React.Component {
     });
 
     try {
-      let response = await axios.get(url);
+      let response = await this.apiObj.get(url);
       this.diagram.deserializeData(response.data.data);
       return true;
     } catch (error) {
@@ -824,74 +893,27 @@ export default class BodyWidget extends React.Component {
   }
 
   render() {
+    this.erdDialogs.modal = this.context;
+
     return (
-      <Theme>
-        <ToolBar id="btn-toolbar">
-          <ButtonGroup>
-            <IconButton id="open-file" icon="fa fa-folder-open" onClick={this.onLoadDiagram} title={gettext('Load from file')}
-              shortcut={this.state.preferences.open_project}/>
-            <IconButton id="save-erd" icon="fa fa-save" onClick={()=>{this.onSaveDiagram();}} title={gettext('Save project')}
-              shortcut={this.state.preferences.save_project} disabled={!this.state.dirty}/>
-            <IconButton id="save-as-erd" icon="fa fa-share-square" onClick={this.onSaveAsDiagram} title={gettext('Save as')}
-              shortcut={this.state.preferences.save_project_as}/>
-          </ButtonGroup>
-          <ButtonGroup>
-            <IconButton id="save-sql" icon="fa fa-file-code" onClick={this.onSQLClick} title={gettext('Generate SQL')}
-              shortcut={this.state.preferences.generate_sql}/>
-            <IconButton id="save-image" icon="fa fa-file-image" onClick={this.onImageClick} title={gettext('Download image')}
-              shortcut={this.state.preferences.download_image}/>
-          </ButtonGroup>
-          <ButtonGroup>
-            <IconButton id="add-node" icon="fa fa-plus-square" onClick={this.onAddNewNode} title={gettext('Add table')}
-              shortcut={this.state.preferences.add_table}/>
-            <IconButton id="edit-node" icon="fa fa-pencil-alt" onClick={this.onEditTable} title={gettext('Edit table')}
-              shortcut={this.state.preferences.edit_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-            <IconButton id="clone-node" icon="fa fa-clone" onClick={this.onCloneNode} title={gettext('Clone table')}
-              shortcut={this.state.preferences.clone_table} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-            <IconButton id="delete-node" icon="fa fa-trash-alt" onClick={this.onDeleteNode} title={gettext('Drop table/link')}
-              shortcut={this.state.preferences.drop_table} disabled={!this.state.any_item_selected}/>
-          </ButtonGroup>
-          <ButtonGroup>
-            <IconButton id="add-onetomany" text="1M" onClick={this.onOneToManyClick} title={gettext('One-to-Many link')}
-              shortcut={this.state.preferences.one_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-            <IconButton id="add-manytomany" text="MM" onClick={this.onManyToManyClick} title={gettext('Many-to-Many link')}
-              shortcut={this.state.preferences.many_to_many} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-          </ButtonGroup>
-          <ButtonGroup>
-            <IconButton id="add-note" icon="fa fa-sticky-note" onClick={this.onNoteClick} title={gettext('Add/Edit note')}
-              shortcut={this.state.preferences.add_edit_note} disabled={!this.state.single_node_selected || this.state.single_link_selected}/>
-            <IconButton id="auto-align" icon="fa fa-magic" onClick={this.onAutoDistribute} title={gettext('Auto align')}
-              shortcut={this.state.preferences.auto_align} />
-            <DetailsToggleButton id="more-details" onClick={this.onDetailsToggle} showDetails={this.state.show_details}
-              shortcut={this.state.preferences.show_details} />
-          </ButtonGroup>
-          <ButtonGroup>
-            <IconButton id="zoom-to-fit" icon="fa fa-compress" onClick={this.diagram.zoomToFit} title={gettext('Zoom to fit')}
-              shortcut={this.state.preferences.zoom_to_fit}/>
-            <IconButton id="zoom-in" icon="fa fa-search-plus" onClick={this.diagram.zoomIn} title={gettext('Zoom in')}
-              shortcut={this.state.preferences.zoom_in}/>
-            <IconButton id="zoom-out" icon="fa fa-search-minus" onClick={this.diagram.zoomOut} title={gettext('Zoom out')}
-              shortcut={this.state.preferences.zoom_out}/>
-          </ButtonGroup>
-          <ButtonGroup>
-            <IconButton id="help" icon="fa fa-question" onClick={this.onHelpClick} title={gettext('Help')} />
-          </ButtonGroup>
-        </ToolBar>
-        <ConnectionBar statusId="btn-conn-status" status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
+      <Box ref={this.containerRef} height="100%">
+        <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
           fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
+        <MainToolBar containerRef={this.containerRef} preferences={this.state.preferences} connStatus={this.state.conn_status} params={this.props.params} eventBus={this.eventBus} />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
-          reference={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
-        <div className="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
+          anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
+        <div className={this.props.classes.diagramContainer} data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
           <Loader message={this.state.loading_msg} autoEllipsis={true}/>
-          <CanvasWidget className="diagram-canvas flex-grow-1" ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
+          <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
         </div>
-      </Theme>
+      </Box>
     );
   }
 }
 
+export default withStyles(styles)(ERDTool);
 
-BodyWidget.propTypes = {
+ERDTool.propTypes = {
   params:PropTypes.shape({
     trans_id: PropTypes.number.isRequired,
     sgid: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
@@ -903,9 +925,8 @@ BodyWidget.propTypes = {
     fgcolor: PropTypes.string,
     gen: PropTypes.bool.isRequired,
   }),
-  getDialog: PropTypes.func.isRequired,
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
-  alertify: PropTypes.object.isRequired,
   panel: PropTypes.object,
+  classes: PropTypes.object,
 };

@@ -106,6 +106,8 @@ export default function(basicSettings) {
       cardHeaderBg: '#fff',
       emptySpaceBg: '#ebeef3',
       textMuted: '#646B82',
+      erdCanvasBg: '#fff',
+      erdGridColor: '#bac1cd',
       explain: {
         sev2: {
           color: '#222222',

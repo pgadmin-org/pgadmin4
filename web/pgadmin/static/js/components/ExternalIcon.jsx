@@ -17,6 +17,8 @@ import Collapse from '../../img/fonticon/close_fullscreen.svg?svgr';
 import AWS from '../../img/aws.svg?svgr';
 import BigAnimal from '../../img/biganimal.svg?svgr';
 import Azure from '../../img/azure.svg?svgr';
+import SQLFileSvg from '../../img/sql_file.svg?svgr';
+import MagicSvg from '../../img/magic.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -76,3 +78,9 @@ BigAnimalIcon.propTypes = {style: PropTypes.object};
 
 export const AzureIcon = ({style})=><ExternalIcon Icon={Azure} style={{height: '1.4rem', ...style}} data-label="AzureIcon" />;
 AzureIcon.propTypes = {style: PropTypes.object};
+
+export const SQLFileIcon = ({style})=><ExternalIcon Icon={SQLFileSvg} style={{height: '1rem', ...style}} data-label="SQLFileIcon" />;
+SQLFileIcon.propTypes = {style: PropTypes.object};
+
+export const MagicIcon = ({style})=><ExternalIcon Icon={MagicSvg} style={{height: '1rem', ...style}} data-label="MagicIcon" />;
+MagicIcon.propTypes = {style: PropTypes.object};

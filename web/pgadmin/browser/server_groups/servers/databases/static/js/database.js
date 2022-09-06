@@ -279,7 +279,7 @@ define('pgadmin.node.database', [
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i ? t.itemData(i) : undefined;
-          pgBrowser.erd.showErdTool(d, i, true);
+          pgAdmin.Tools.ERD.showErdTool(d, i, true);
         },
 
         /* Connect the database (if not connected), before opening this node */
