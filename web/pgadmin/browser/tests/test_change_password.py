@@ -93,18 +93,32 @@ class ChangePasswordTestCase(BaseTestGenerator):
         # test case
         if 'valid_password' in dir(self):
             response = self.tester.post(
-                '/user_management/user/',
-                data=json.dumps(dict(
-                    username=self.username,
-                    email=self.username,
-                    newPassword=self.password,
-                    confirmPassword=self.password,
-                    active=True,
-                    role="2"
-                )),
+                '/user_management/save',
+                data=json.dumps({
+                    "added": [{
+                        "auth_source": "internal",
+                        "email": self.username,
+                        "role": "2",
+                        "active": True,
+                        "newPassword": self.password,
+                        "confirmPassword": self.password,
+                        "locked": False
+                    }]
+                }),
                 follow_redirects=True
             )
-            user_id = json.loads(response.data.decode('utf-8'))['id']
+            self.assertEqual(response.status_code, 200,
+                             'User creation is NOT successful')
+            # Get usr id
+            response = self.tester.get('/user_management/user/')
+            users = json.loads(response.data.decode('utf-8'))
+            user_id = None
+            for user in users:
+                if user['email'] == self.username:
+                    user_id = user['id']
+                    break
+            self.assertIsNotNone(user_id,
+                                 'User id for newly created user is None')
             # Logout the Administrator before login normal user
             self.tester.logout()
             response = self.tester.login(self.username, self.password, True)
@@ -115,8 +129,19 @@ class ChangePasswordTestCase(BaseTestGenerator):
             self.tester.logout()
             # Login the Administrator before deleting normal user
             test_utils.login_tester_account(self.tester)
-            response = self.tester.delete(
-                '/user_management/user/' + str(user_id),
+            response = self.tester.post(
+                '/user_management/save',
+                data=json.dumps({
+                    "deleted": [{
+                        "id": user_id,
+                        "active": True,
+                        "auth_source": "internal",
+                        "username": self.username,
+                        "email": self.username,
+                        "role": "2",
+                        "locked": False
+                    }]
+                }),
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)
