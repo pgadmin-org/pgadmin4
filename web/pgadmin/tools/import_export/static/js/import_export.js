@@ -64,7 +64,7 @@ define([
       return new ImportExportSchema(
         {
           encoding: ()=>getNodeAjaxOptions('get_encodings', pgBrowser.Nodes['database'], treeNodeInfo, itemNodeData, {cacheNode: 'database',cacheLevel: 'server'}),
-          columns: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, { cacheLevel: 'column'}, ()=>true, (res)=>{
+          columns: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, { cacheLevel: 'column', cacheNode: 'column'}, ()=>true, (res)=>{
             let columnsList = [];
             res.forEach(d => {
               columnsList.push({label: d.label, value: d.value, image:'icon-column', selected: true});

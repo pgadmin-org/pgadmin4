@@ -1079,6 +1079,12 @@ define('pgadmin.browser.node', [
         }
       },
       added: function(item, data) {
+        if (pgBrowser.tree.getData(item)._type.indexOf('coll-') !== -1){
+          setTimeout(function() {
+            let _item = pgAdmin.Browser.Nodes[pgBrowser.tree.getData(item).nodes[0]];
+            _item.clear_cache.apply(_item);
+          }, 0);
+        }
         pgBrowser.Events.trigger('pgadmin:browser:tree:expand-from-previous-tree-state',
           item);
         pgBrowser.Node.callbacks.change_server_background(item, data);
