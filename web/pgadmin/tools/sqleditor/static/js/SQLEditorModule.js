@@ -15,7 +15,6 @@ import * as commonUtils from 'sources/utils';
 import $ from 'jquery';
 import url_for from 'sources/url_for';
 import _ from 'lodash';
-import alertify from 'pgadmin.alertifyjs';
 import pgWindow from 'sources/window';
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'pgadmin.browser';
@@ -27,6 +26,7 @@ import ReactDOM from 'react-dom';
 import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
+import { showRenamePanel } from '../../../../static/js/Dialogs';
 
 const wcDocker = window.wcDocker;
 
@@ -242,38 +242,19 @@ export default class SQLEditor {
   }
 
   onPanelRename(queryToolPanel, panelData, is_query_tool) {
-    var temp_title = panelData.$titleText[0].textContent;
-    var is_dirty_editor = queryToolPanel.is_dirty_editor ? queryToolPanel.is_dirty_editor : false;
-    var title = queryToolPanel.is_dirty_editor ? panelData.$titleText[0].textContent.replace(/.$/, '') : temp_title;
-    alertify.prompt('', title,
-      // We will execute this function when user clicks on the OK button
-      function(evt, value) {
-        // Remove the leading and trailing white spaces.
-        value = value.trim();
-        if(value) {
-          var is_file = false;
-          if(panelData.$titleText[0].innerHTML.includes('File - ')) {
-            is_file = true;
-          }
-          var selected_item = pgBrowser.tree.selected();
-          var panel_titles = '';
 
-          if(is_query_tool) {
-            panel_titles = panelTitleFunc.getPanelTitle(pgBrowser, selected_item, value);
-          } else {
-            panel_titles = showViewData.generateViewDataTitle(pgBrowser, selected_item, value);
-          }
-          // Set title to the selected tab.
-          if (is_dirty_editor) {
-            panel_titles = panel_titles + ' *';
-          }
-          panelTitleFunc.setQueryToolDockerTitle(queryToolPanel, is_query_tool, _.unescape(panel_titles), is_file);
-        }
-      },
-      // We will execute this function when user clicks on the Cancel
-      // button.  Do nothing just close it.
-      function(evt) { evt.cancel = false; }
-    ).set({'title': gettext('Rename Panel')});
+    let preferences = pgBrowser.get_preferences_for_module('browser');
+    let temp_title = panelData.$titleText[0].textContent;
+    let is_dirty_editor = queryToolPanel.is_dirty_editor ? queryToolPanel.is_dirty_editor : false;
+    let title = queryToolPanel.is_dirty_editor ? panelData.$titleText[0].textContent.replace(/.$/, '') : temp_title;
+
+    let qtdata = {
+      is_query_tool: is_query_tool,
+      is_file: panelData.$titleText[0].innerHTML.includes('File - '),
+      is_dirty_editor: is_dirty_editor
+    };
+
+    showRenamePanel(title, preferences, queryToolPanel, 'querytool', qtdata);
   }
 
 

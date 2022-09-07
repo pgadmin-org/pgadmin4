@@ -7121,14 +7121,14 @@ jquery-contextmenu@^2.6.4, jquery-contextmenu@^2.9.2:
   dependencies:
     jquery "^3.5.0"
 
-jquery-ui@>=1.8.0, jquery-ui@^1.13.2:
+jquery-ui@^1.13.2:
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.13.2.tgz#de03580ae6604773602f8d786ad1abfb75232034"
   integrity sha512-wBZPnqWs5GaYJmo1Jj0k/mrSkzdQzKDwhXNtHKcBdAcKVxMM3KNYFq+iJ2i1rwiG53Z8M4mTn3Qxrm17uH1D4Q==
   dependencies:
     jquery ">=1.8.0 <4.0.0"
 
-"jquery@>=1.7.1 <4.0.0", jquery@>=1.8.0, "jquery@>=1.8.0 <4.0.0", jquery@^3.3.1, jquery@^3.5.0, jquery@^3.5.1, jquery@^3.6.0:
+"jquery@>=1.7.1 <4.0.0", "jquery@>=1.8.0 <4.0.0", jquery@^3.3.1, jquery@^3.5.0, jquery@^3.5.1, jquery@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
   integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
@@ -10364,13 +10364,6 @@ slice-ansi@^4.0.0:
     ansi-styles "^4.0.0"
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
-
-"slickgrid@git+https://github.com/6pac/SlickGrid.git#2.3.16":
-  version "2.3.16"
-  resolved "git+https://github.com/6pac/SlickGrid.git#4f8c6f498d0b82391fdf382beb8ef114ed7408e7"
-  dependencies:
-    jquery ">=1.8.0"
-    jquery-ui ">=1.8.0"
 
 smart-buffer@^4.2.0:
   version "4.2.0"

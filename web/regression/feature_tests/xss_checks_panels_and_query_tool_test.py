@@ -32,7 +32,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         2) Properties Tab (BackFrom)
         3) Dependents Tab (BackGrid)
         4) SQL Tab (Code Mirror)
-        5) Query Tool (SlickGrid)
+        5) Query Tool (Result Grid)
     """
 
     scenarios = [
@@ -189,7 +189,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_query_tool(self):
         print(
-            "\n\tChecking the SlickGrid cell for XSS vulnerabilities",
+            "\n\tChecking the Result Grid cell for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         self.page.fill_codemirror_area_with(
@@ -205,7 +205,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_escaped_characters(
             source_code,
             '&lt;img src="x" onerror="console.log(1)"&gt;',
-            "Query tool (SlickGrid)"
+            "Query tool (Result Grid)"
         )
 
     def _check_xss_in_query_tool_history(self):
@@ -255,7 +255,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_view_data(self):
         print(
-            "\n\tChecking the SlickGrid cell for XSS vulnerabilities",
+            "\n\tChecking the Result Grid cell for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
 
@@ -268,7 +268,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_escaped_characters(
             source_code,
             self.check_xss_chars_set2,
-            "View Data (SlickGrid)"
+            "View Data (Result Grid)"
         )
 
     def _check_xss_in_explain_module(self):

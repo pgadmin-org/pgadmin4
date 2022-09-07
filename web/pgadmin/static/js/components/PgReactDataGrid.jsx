@@ -128,7 +128,7 @@ CustomRow.propTypes = {
 };
 
 export default function PgReactDataGrid({gridRef, className, hasSelectColumn=true, onItemEnter, onItemSelect,
-  onItemClick, noRowsText, ...props}) {
+  onItemClick, noRowsText, noRowsIcon,...props}) {
   const classes = useStyles();
   let finalClassName = [classes.root];
   hasSelectColumn && finalClassName.push(classes.hasSelectColumn);
@@ -142,7 +142,7 @@ export default function PgReactDataGrid({gridRef, className, hasSelectColumn=tru
         components={{
           sortIcon: CutomSortIcon,
           rowRenderer: CustomRow,
-          noRowsFallback: <Box textAlign="center" gridColumn="1/-1" p={1}>{noRowsText || gettext('No rows found.')}</Box>,
+          noRowsFallback: <Box textAlign="center" gridColumn="1/-1" p={1}>{noRowsIcon}{noRowsText || gettext('No rows found.')}</Box>,
         }}
         {...props}
       />
@@ -158,5 +158,6 @@ PgReactDataGrid.propTypes = {
   onItemEnter: PropTypes.func,
   onItemSelect: PropTypes.func,
   onItemClick: PropTypes.func,
-  noRowsText: PropTypes.string
+  noRowsText: PropTypes.string,
+  noRowsIcon: PropTypes.elementType
 };

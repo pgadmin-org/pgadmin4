@@ -129,18 +129,7 @@ def panel(trans_id, editor_title):
         trans_id=trans_id,
         requirejs=True,
         basejs=True,
-        editor_title=editor_title
-    )
-
-
-@blueprint.route("/schema_diff.js")
-@login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template("schema_diff/js/schema_diff.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
+        editor_title=editor_title,
     )
 
 

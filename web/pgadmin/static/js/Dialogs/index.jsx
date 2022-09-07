@@ -22,6 +22,7 @@ import ChangePasswordContent from './ChangePasswordContent';
 import NamedRestoreContent from './NamedRestoreContent';
 import ChangeOwnershipContent from './ChangeOwnershipContent';
 import UrlDialogContent from './UrlDialogContent';
+import RenamePanelContent from './RenamePanelContent';
 
 function mountDialog(title, getDialogContent, docker=undefined, width, height) {
   // Register dialog panel
@@ -352,4 +353,30 @@ export function showUrlDialog() {
   },
   { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true,
     dialogWidth: width || pgAdmin.Browser.stdW.md, dialogHeight: height || pgAdmin.Browser.stdH.md});
+}
+
+export function showRenamePanel() {
+  let title = arguments[0],
+    preferences = arguments[1],
+    panel = arguments[2],
+    tabType= arguments[3],
+    data= arguments[4];
+
+  mountDialog(gettext(`Rename Panel ${_.escape(title)}`), (onClose, setNewSize)=> {
+    return <Theme>
+      <RenamePanelContent
+        setHeight={(containerHeight)=>{
+          setNewSize(pgAdmin.Browser.stdW.md, containerHeight);
+        }}
+        closeModal={()=>{
+          onClose();
+        }}
+        panel={panel}
+        tabType={tabType}
+        title={title}
+        data={data}
+        preferences={preferences}
+      />
+    </Theme>;
+  });
 }

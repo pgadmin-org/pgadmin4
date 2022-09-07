@@ -16,7 +16,6 @@ import gettext from 'sources/gettext';
 import { sprintf, registerDetachEvent } from 'sources/utils';
 import url_for from 'sources/url_for';
 import pgWindow from 'sources/window';
-import alertify from 'pgadmin.alertifyjs';
 import Kerberos from 'pgadmin.authenticate.kerberos';
 
 import { refresh_db_node } from 'tools/sqleditor/static/js/sqleditor_title';
@@ -28,6 +27,7 @@ import FunctionArguments from './debugger_ui';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import DebuggerComponent from './components/DebuggerComponent';
 import Theme from '../../../../static/js/Theme';
+import { showRenamePanel } from '../../../../static/js/Dialogs';
 
 export default class DebuggerModule {
   static instance;
@@ -713,20 +713,13 @@ export default class DebuggerModule {
   }
 
   panel_rename_event(panel_data, panel, treeInfo) {
-    alertify.prompt('', panel_data.$titleText[0].textContent,
-      // We will execute this function when user clicks on the OK button
-      function (evt, value) {
-        if (value) {
-          // Remove the leading and trailing white spaces.
-          value = value.trim();
-          let preferences = this.pgBrowser.get_preferences_for_module('browser');
-          var name = getAppropriateLabel(treeInfo);
-          setDebuggerTitle(panel, preferences, name, treeInfo.schema.label, treeInfo.database.label, value, this.pgBrowser);
-        }
-      },
-      // We will execute this function when user clicks on the Cancel
-      // button.  Do nothing just close it.
-      function (evt) { evt.cancel = false; }
-    ).set({ 'title': gettext('Rename Panel') });
+    let name = getAppropriateLabel(treeInfo);
+    let preferences = this.pgBrowser.get_preferences_for_module('browser');
+    let data = {
+      function_name: name,
+      schema_name: treeInfo.schema.label,
+      database_name: treeInfo.database.label
+    };
+    showRenamePanel(panel_data.$titleText[0].textContent, preferences, panel, 'debugger', data);
   }
 }

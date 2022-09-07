@@ -121,6 +121,13 @@ export default function(basicSettings) {
           color: '#FFFFFF',
           bg: '#880000'
         },
+      },
+      schemaDiff: {
+        diffRowColor: '#fff9c4',
+        sourceRowColor: '#ffebee',
+        targetRowColor: '#fbe3bf',
+        diffColorFg: '#222',
+        diffSelectFG: '#222'
       }
     }
   });

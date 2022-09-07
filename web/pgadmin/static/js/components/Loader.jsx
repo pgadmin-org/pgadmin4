@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme)=>({
   },
   message: {
     marginLeft: '0.5rem',
+    fontSize: '16px',
   }
 }));
 

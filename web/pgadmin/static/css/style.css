@@ -14,10 +14,6 @@
 @import 'node_modules/codemirror/addon/dialog/dialog.css';
 @import 'node_modules/codemirror/addon/scroll/simplescrollbars.css';
 
-@import 'node_modules/slickgrid/slick.grid.css';
-@import 'node_modules/slickgrid/slick-default-theme.css';
-@import 'node_modules/slickgrid/css/smoothness/jquery-ui-1.11.3.custom.css';
-
 @import '../vendor/backgrid/backgrid.css';
 @import '../vendor/backgrid/backgrid-select-all.css';
 

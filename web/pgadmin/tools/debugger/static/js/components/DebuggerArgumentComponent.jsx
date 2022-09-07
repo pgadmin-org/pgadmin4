@@ -22,7 +22,6 @@ import gettext from 'sources/gettext';
 import * as commonUtils from 'sources/utils';
 import pgAdmin from 'sources/pgadmin';
 import Loader from 'sources/components/Loader';
-import Alertify from 'pgadmin.alertifyjs';
 
 import SchemaView from '../../../../../static/js/SchemaView';
 import getApiInstance from '../../../../../static/js/api_instance';
@@ -31,7 +30,7 @@ import { getAppropriateLabel, setDebuggerTitle } from '../debugger_utils';
 import Notify from '../../../../../static/js/helpers/Notifier';
 import { DebuggerArgumentSchema } from './DebuggerArgs.ui';
 import { DEBUGGER_ARGS } from '../DebuggerConstants';
-
+import { showRenamePanel } from '../../../../../static/js/Dialogs';
 
 
 const useStyles = makeStyles((theme) =>
@@ -677,7 +676,6 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function startDebugging() {
-    var self = this;
     setLoaderText('Starting debugger.');
     try {
       /* Initialize the target once the debug button is clicked and create asynchronous connection
@@ -759,20 +757,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
               // Panel Rename event
               panel.on(wcDocker.EVENT.RENAME, function (panel_data) {
-                Alertify.prompt('', panel_data.$titleText[0].textContent,
-                  // We will execute this function when user clicks on the OK button
-                  function (evt, value) {
-                    if (value) {
-                      // Remove the leading and trailing white spaces.
-                      value = value.trim();
-                      var name = getAppropriateLabel(treeInfo);
-                      setDebuggerTitle(panel, self.preferences, name, treeInfo.schema.label, treeInfo.database.label, value, pgAdmin.Browser);
-                    }
-                  },
-                  // We will execute this function when user clicks on the Cancel
-                  // button.  Do nothing just close it.
-                  function (evt) { evt.cancel = false; }
-                ).set({ 'title': gettext('Rename Panel') });
+                panelRenameEvent(panel_data, panel, treeInfo);
               });
             }
 
@@ -859,6 +844,17 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       );
     }
 
+  }
+
+  function panelRenameEvent(panel_data, panel, treeInfo) {
+    let name = getAppropriateLabel(treeInfo);
+    let preferences = pgAdmin.Browser.get_preferences_for_module('browser');
+    let data = {
+      function_name: name,
+      schema_name: treeInfo.schema.label,
+      database_name: treeInfo.database.label
+    };
+    showRenamePanel(panel_data.$titleText[0].textContent, preferences, panel, 'debugger', data);
   }
 
   return (

@@ -18,7 +18,7 @@ define([
   pgAdmin.Browser.Frame = function(options) {
     var defaults = [
       'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
-      'isPrivate', 'url', 'icon', 'onCreate', 'isLayoutMember',
+      'isPrivate', 'url', 'icon', 'onCreate', 'isLayoutMember', 'isRenamable',
     ];
     _.extend(this, _.pick(options, defaults));
   };

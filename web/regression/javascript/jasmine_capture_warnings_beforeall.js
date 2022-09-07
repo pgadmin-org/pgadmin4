@@ -15,9 +15,10 @@ beforeAll(function () {
   jasmine.getEnv().allowRespy(true);
 
   window.addEventListener('error', e => {
+    console.log(e.message);
     if(e.message === 'ResizeObserver loop completed with undelivered notifications.' ||
         e.message === 'ResizeObserver loop limit exceeded') {
-      e.stopImmediatePropagation();
+      e.stopPropagation();
     }
   });
 });

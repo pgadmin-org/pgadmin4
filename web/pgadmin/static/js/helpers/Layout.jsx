@@ -67,6 +67,12 @@ const useStyles = makeStyles((theme)=>({
       '& .dock-tabpane': {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
+      },
+      '& #id-schema-diff': {
+        overflowY: 'auto'
+      },
+      '& #id-results': {
+        overflowY: 'auto'
       }
     },
     '& .dock-tab': {

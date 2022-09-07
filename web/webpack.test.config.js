@@ -13,7 +13,6 @@ const webpack = require('webpack');
 const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 
 const sourcesDir = path.resolve(__dirname, 'pgadmin/static');
-const nodeModulesDir = path.resolve(__dirname, 'node_modules');
 const regressionDir = path.resolve(__dirname, 'regression');
 
 module.exports = {
@@ -99,62 +98,6 @@ module.exports = {
         filename: 'img/[name].[ext]',
       },
       exclude: /vendor/,
-    }, {
-      test: /.*slickgrid[\\\/]+slick\.(?!core)*/,
-      use:[
-        {
-          loader: 'imports-loader',
-          options: {
-            type: 'commonjs',
-            imports: [
-              'pure|jquery.ui',
-              'pure|jquery.event.drag',
-              'pure|slickgrid',
-            ],
-          },
-        },
-      ],
-    }, {
-      test: /.*slickgrid\.plugins[\\\/]+slick\.cellrangeselector/,
-      use:[
-        {
-          loader: 'imports-loader',
-          options: {
-            type: 'commonjs',
-            imports: [
-              'pure|jquery.ui',
-              'pure|jquery.event.drag',
-              'pure|slickgrid',
-            ],
-          },
-        }, {
-          loader: 'exports-loader',
-          options: {
-            type: 'commonjs',
-            exports: 'single|Slick.CellRangeSelector',
-          },
-        },
-      ],
-    }, {
-      test: /.*slickgrid[\\\/]+slick\.core.*/,
-      use:[
-        {
-          loader: 'imports-loader',
-          options: {
-            type: 'commonjs',
-            imports: [
-              'pure|jquery.ui',
-              'pure|jquery.event.drag',
-            ],
-          },
-        }, {
-          loader: 'exports-loader',
-          options: {
-            type: 'commonjs',
-            exports: 'single|Slick',
-          },
-        },
-      ],
     },
     {
       test: /\.js$|\.jsx$/,
@@ -163,7 +106,7 @@ module.exports = {
         options: { esModules: true },
       },
       enforce: 'post',
-      exclude: /node_modules|slickgrid|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js$/,
+      exclude: /node_modules|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js$/,
     },
     ],
   },
@@ -175,8 +118,6 @@ module.exports = {
       'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
       'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker'),
       'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
-      'jquery.event.drag': path.join(__dirname, './node_modules/slickgrid/lib/jquery.event.drag-2.3.0'),
-      'jquery.ui': path.join(__dirname, './node_modules/slickgrid/lib/jquery-ui-1.11.3'),
       'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.min'),
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
       'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
@@ -192,9 +133,6 @@ module.exports = {
       'pgadmin.browser.messages': regressionDir + '/javascript/fake_messages',
       'pgadmin.server.supported_servers': regressionDir + '/javascript/fake_supported_servers',
       'pgadmin.browser.endpoints': regressionDir + '/javascript/fake_endpoints',
-      'slickgrid': nodeModulesDir + '/slickgrid/',
-      'slickgrid.plugins': nodeModulesDir + '/slickgrid/plugins/',
-      'slickgrid.grid': nodeModulesDir + '/slickgrid/slick.grid',
       'moment': path.join(__dirname, './node_modules/moment/moment'),
       'jsoneditor.min': path.join(__dirname, './node_modules/jsoneditor/dist/jsoneditor.min'),
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),

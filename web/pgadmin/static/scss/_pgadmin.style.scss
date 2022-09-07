@@ -833,18 +833,6 @@ body {
   font-size: inherit !important;
 }
 
-/* CSS for custom checkbox editor in SlickGrid */
-.multi-checkbox .check {
-  display: inline-block;
-  vertical-align: top;
-  width: 16px;
-  height: 16px;
-  border: 1px solid  $color-gray-dark;
-  margin: 3px;
-  text-align: center;
-  line-height: 16px;
-}
-
 .multi-checkbox .check.checked,
 .multi-checkbox .check.unchecked {
   background: $color-bg;

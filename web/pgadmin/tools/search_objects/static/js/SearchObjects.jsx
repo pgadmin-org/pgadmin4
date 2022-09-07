@@ -130,7 +130,7 @@ const finaliseData = (nodeData, datum)=> {
   datum.icon = 'icon-' + datum.type;
   /* finalise path */
   [datum.path, datum.id_path] = translateSearchObjectsPath(nodeData, datum.path, datum.catalog_level);
-  /* id is required by slickgrid dataview */
+  /* id is required by dataview */
   datum.id = datum.id_path ? datum.id_path.join('.') : _.uniqueId(datum.name);
 
   datum.other_info = datum.other_info ? _.escape(datum.other_info) : datum.other_info;

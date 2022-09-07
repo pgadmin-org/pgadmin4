@@ -101,6 +101,13 @@ export default function(basicSettings) {
       textMuted: '#8b9cad',
       erdCanvasBg: '#010B15',
       erdGridColor: '#1F2932',
+      schemaDiff: {
+        diffRowColor: '#CFC56E',
+        sourceRowColor: '#EE97A5',
+        targetRowColor: '#FFAD65',
+        diffColorFg: '#FFFFFF',
+        diffSelectFG: '#010B15'
+      }
     }
   });
 }

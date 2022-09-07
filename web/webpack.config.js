@@ -56,7 +56,7 @@ const providePlugin = new webpack.ProvidePlugin({
 // Reference: https://webpack.js.org/plugins/source-map-dev-tool-plugin/#components/sidebar/sidebar.jsx
 const sourceMapDevToolPlugin = new webpack.SourceMapDevToolPlugin({
   filename: '[name].js.map',
-  exclude: /(vendor|codemirror|slickgrid|pgadmin\.js|pgadmin.theme|pgadmin.static|style\.js|popper)/,
+  exclude: /(vendor|codemirror|pgadmin\.js|pgadmin.theme|pgadmin.static|style\.js|popper)/,
   columns: false,
 });
 
@@ -376,9 +376,8 @@ module.exports = [{
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
-    slickgrid: sourceDir + '/bundle/slickgrid.js',
     sqleditor: './pgadmin/tools/sqleditor/static/js/index.js',
-    schema_diff: './pgadmin/tools/schema_diff/static/js/schema_diff_hook.js',
+    schema_diff: './pgadmin/tools/schema_diff/static/js/index.js',
     erd_tool: './pgadmin/tools/erd/static/js/index.js',
     psql_tool: './pgadmin/tools/psql/static/js/index.js',
     debugger: './pgadmin/tools/debugger/static/js/index.js',
