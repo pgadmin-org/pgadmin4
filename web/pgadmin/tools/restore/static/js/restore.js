@@ -35,7 +35,7 @@ define('tools.restore', [
       this.initialized = true;
 
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      let menus = [{
         name: 'restore_object',
         module: this,
         applies: ['tools'],
@@ -101,7 +101,7 @@ define('tools.restore', [
       }
     },
     setExtraParameters: function(treeInfo, nodeData) {
-      var extraData = {};
+      let extraData = {};
       extraData['database'] = treeInfo.database._label;
 
       if('schema' in treeInfo) {
@@ -124,7 +124,7 @@ define('tools.restore', [
       });
     },
     restoreObjects: function(action, treeItem) {
-      var that = this,
+      let that = this,
         tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
         data = i ? tree.itemData(i) : undefined,
@@ -147,10 +147,10 @@ define('tools.restore', [
           return;
         }
         pgBrowser.Node.registerUtilityPanel();
-        var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+        let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
           j = panel.$container.find('.obj_properties').first();
 
-        var schema = that.getUISchema(treeItem);
+        let schema = that.getUISchema(treeItem);
         panel.title(gettext(`Restore (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
         panel.focus();
 
@@ -160,7 +160,7 @@ define('tools.restore', [
           }),
           extraData = that.setExtraParameters(treeNodeInfo, data);
 
-        var sqlHelpUrl = 'backup.html',
+        let sqlHelpUrl = 'backup.html',
           helpUrl = url_for('help.static', {
             'filename': 'restore_dialog.html',
           });

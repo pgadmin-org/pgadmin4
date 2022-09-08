@@ -147,18 +147,18 @@ function(
       callbacks: {
         /* Enable trigger(s) on table */
         enable_triggers_on_table: function(args) {
-          var params = {'is_enable_trigger': 'O'};
+          let params = {'is_enable_trigger': 'O'};
           this.callbacks.set_triggers.apply(this, [args, params]);
         },
         /* Disable trigger(s) on table */
         disable_triggers_on_table: function(args) {
-          var params = {'is_enable_trigger': 'D'};
+          let params = {'is_enable_trigger': 'D'};
           this.callbacks.set_triggers.apply(this, [args, params]);
         },
         set_triggers: function(args, params) {
           // This function will send request to enable or
           // disable triggers on table level
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -191,16 +191,16 @@ function(
         },
         /* Truncate table */
         truncate_table: function(args) {
-          var params = {'cascade': false };
+          let params = {'cascade': false };
           this.callbacks.truncate.apply(this, [args, params]);
         },
         /* Truncate table with cascade */
         truncate_table_cascade: function(args) {
-          var params = {'cascade': true };
+          let params = {'cascade': true };
           this.callbacks.truncate.apply(this, [args, params]);
         },
         truncate: function(args, params) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -213,7 +213,7 @@ function(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
             function () {
-              var data = d;
+              let data = d;
               $.ajax({
                 url: obj.generate_url(i, 'truncate' , d, true),
                 type:'PUT',
@@ -231,7 +231,7 @@ function(
           );
         },
         reset_table_stats: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -244,7 +244,7 @@ function(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function () {
-              var data = d;
+              let data = d;
               $.ajax({
                 url: obj.generate_url(i, 'reset' , d, true),
                 type:'DELETE',
@@ -261,7 +261,7 @@ function(
           );
         },
         detach_partition: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -281,7 +281,7 @@ function(
                 .done(function(res) {
                   if (res.success == 1) {
                     Notify.success(res.info);
-                    var n = t.next(i);
+                    let n = t.next(i);
                     if (!n) {
                       n = t.prev(i);
                       if (!n) {

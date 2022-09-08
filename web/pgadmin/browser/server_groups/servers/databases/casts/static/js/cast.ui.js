@@ -30,8 +30,8 @@ export default class CastSchema extends BaseUISchema {
   }
 
   getCastName(state) {
-    var srctype = state.srctyp;
-    var trgtype = state.trgtyp;
+    let srctype = state.srctyp;
+    let trgtype = state.trgtyp;
     if(srctype != undefined && srctype != '' &&
           trgtype != undefined && trgtype != '')
       return state.name = srctype+'->'+trgtype;

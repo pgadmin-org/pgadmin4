@@ -120,7 +120,7 @@ export function initializeToolbar(panel, wcDocker) {
     else if ('name' in data && data.name === gettext('Search objects'))
       pgAdmin.Tools.SearchObjects.show_search_objects('', pgAdmin.Browser.tree.selected());
     else if ('name' in data && data.name === gettext('PSQL Tool')){
-      var input = {},
+      let input = {},
         t = pgAdmin.Browser.tree,
         i = input.item || t.selected(),
         d = i  ? t.itemData(i) : undefined;

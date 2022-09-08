@@ -26,24 +26,24 @@ export default function (options) {
     Utils.Extend(ScrollDataAdapter, BaseAdapter);
 
     ScrollDataAdapter.prototype.query = function (params, callback) {
-      var data = [];
-      var self = this;
+      let data = [];
+      let self = this;
       if (!params.page) {
         params.page = 1;
       }
-      var pageSize = 20;
+      let pageSize = 20;
 
-      var $options = this.$element.children();
+      let $options = this.$element.children();
       $options.each(function () {
-        var $option = $(this);
+        let $option = $(this);
 
         if (!$option.is('option') && !$option.is('optgroup')) {
           return;
         }
 
-        var option = self.item($option);
+        let option = self.item($option);
 
-        var matches = self.matches(params, option);
+        let matches = self.matches(params, option);
 
         if (matches !== null) {
           data.push(matches);

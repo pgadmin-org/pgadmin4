@@ -71,14 +71,14 @@ export class DefaultArgumentSchema extends BaseUISchema {
   }
 
   isEditable() {
-    var node_info = this.node_info;
+    let node_info = this.node_info;
     if(node_info && 'catalog' in node_info) {
       return false;
     }
     return _.isUndefined(this.isNew) ? true : this.isNew();
   }
   isInCatalog(state){
-    var node_info = this.node_info;
+    let node_info = this.node_info;
     if(node_info && 'catalog' in node_info) {
       return false;
     }

@@ -44,7 +44,7 @@ export default class ImportExportSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [
       {
         id: 'is_import',

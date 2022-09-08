@@ -317,8 +317,8 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   function setUnnamedArgs(argType, argMode, useDefValue, defValList, myargname) {
     let myObj = [];
     for (let i = 0; i < argType.length; i++) {
+      let useDefValue = checkIsDefault(defValList[i]);
       if (debuggerInfo['proargmodes'] == null) {
-        useDefValue = checkIsDefault(defValList[i]);
         myObj.push({
           'name': myargname[i],
           'type': argType[i],
@@ -329,7 +329,6 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
       } else {
         if (argMode && (argMode[i] == 'i' || argMode[i] == 'b' ||
           (isEdbProc && argMode[i] == 'o'))) {
-          useDefValue = checkIsDefault(defValList[i]);
           myObj.push({
             'name': myargname[i],
             'type': argType[i],

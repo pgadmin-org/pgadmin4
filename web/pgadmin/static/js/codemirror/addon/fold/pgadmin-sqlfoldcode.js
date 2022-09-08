@@ -17,20 +17,21 @@
 })(function(CodeMirror) {
   'use strict';
 
-  var pgadminKeywordRangeFinder = function(cm, start, tokenSet) {
-    var line = start.line,
+  let pgadminKeywordRangeFinder = function(cm, start, tokenSet) {
+    let line = start.line,
       lineText = cm.getLine(line);
-    var at = lineText.length,
+    let at = lineText.length,
       startChar, tokenType;
 
-    let tokenSetNo = 0;
+    let tokenSetNo = 0,
+      startToken, endToken;
     let startTkn = tokenSet[tokenSetNo].start,
       endTkn = tokenSet[tokenSetNo].end;
     while (at > 0) {
-      var found = lineText.toUpperCase().lastIndexOf(startTkn, at);
+      let found = lineText.toUpperCase().lastIndexOf(startTkn, at);
       found = checkStartTokenFoundOnEndToken(found, lineText.toUpperCase(), endTkn, startTkn);
-      var startToken = startTkn;
-      var endToken = endTkn;
+      startToken = startTkn;
+      endToken = endTkn;
 
       if (found < start.ch) {
         /* If the start token is not found then search for the next set of token */
@@ -52,18 +53,18 @@
       at = found - 1;
     }
     if (startChar == null || lineText.toUpperCase().lastIndexOf(startToken) > startChar) return;
-    var count = 1,
+    let count = 1,
       lastLine = cm.lineCount(),
       end, endCh;
-    outer: for (var i = line + 1; i < lastLine; ++i) {
-      var text = cm.getLine(i).toUpperCase(),
+    outer: for (let i = line + 1; i < lastLine; ++i) {
+      let text = cm.getLine(i).toUpperCase(),
         pos = 0;
-      var whileloopvar = 0;
+      let whileloopvar = 0;
       while (whileloopvar < 1) {
-        var nextOpen = text.indexOf(startToken, pos);
+        let nextOpen = text.indexOf(startToken, pos);
         nextOpen = checkStartTokenFoundOnEndToken(nextOpen, text, endToken, startToken);
 
-        var nextClose = text.indexOf(endToken, pos);
+        let nextClose = text.indexOf(endToken, pos);
         if (nextOpen < 0) nextOpen = text.length;
         if (nextClose < 0) nextClose = text.length;
         pos = Math.min(nextOpen, nextClose);

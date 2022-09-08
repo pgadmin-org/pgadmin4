@@ -24,8 +24,7 @@ class BrowserToolBarLocators():
     filter_data_button_css = \
         ".wcFrameButton[title='Filtered Rows']:not(.disabled)"
 
-    filter_box_css = "//*[@id='0']/div[contains(text()," \
-                              "'Data Filter')]"
+    filter_box_css = "//*[@id='0']/div[contains(text(), Data Filter')]"
 
 
 class NavMenuLocators:

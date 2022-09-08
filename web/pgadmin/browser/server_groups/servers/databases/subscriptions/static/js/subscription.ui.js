@@ -258,7 +258,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslcert = state.sslcert;
+        let sslcert = state.sslcert;
         return !_.isUndefined(sslcert) && !_.isNull(sslcert);
       },
     },{
@@ -266,7 +266,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslkey = state.sslkey;
+        let sslkey = state.sslkey;
         return !_.isUndefined(sslkey) && !_.isNull(sslkey);
       },
     },{
@@ -274,7 +274,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslrootcert = state.sslrootcert;
+        let sslrootcert = state.sslrootcert;
         return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
       },
     },{
@@ -282,7 +282,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslcrl = state.sslcrl;
+        let sslcrl = state.sslcrl;
         return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
       },
     },{

@@ -106,7 +106,7 @@ define([
    *   specify the 'transform' function too, which will convert the fetched
    *   data to proper 'label', 'value' format.
    */
-  var NodeAjaxOptionsControl = Backform.NodeAjaxOptionsControl =
+  let NodeAjaxOptionsControl = Backform.NodeAjaxOptionsControl =
     Backform.Select2Control.extend({
       defaults: _.extend(Backform.Select2Control.prototype.defaults, {
         url: undefined,
@@ -127,7 +127,7 @@ define([
         /*
          * We're about to fetch the options required for this control.
          */
-        var self = this,
+        let self = this,
           url = self.field.get('url') || self.defaults.url,
           m = self.model.top || self.model,
           url_jump_after_node = self.field.get('url_jump_after_node') || null;
@@ -135,7 +135,7 @@ define([
         // Hmm - we found the url option.
         // That means - we needs to fetch the options from that node.
         if (url) {
-          var node = this.field.get('schema_node'),
+          let node = this.field.get('schema_node'),
             node_info = this.field.get('node_info'),
             with_id = this.field.get('url_with_id') || false,
             full_url = node.generate_url.apply(
@@ -158,7 +158,7 @@ define([
            * If yes - use that, and do not bother about fetching it again,
            * and use it.
            */
-          var data = cache_node.cache(node.type + '#' + url, node_info, cache_level);
+          let data = cache_node.cache(node.type + '#' + url, node_info, cache_level);
 
           if (this.field.get('version_compatible') &&
             (_.isUndefined(data) || _.isNull(data))) {
@@ -188,7 +188,7 @@ define([
           /*
            * Transform the data
            */
-          var transform = this.field.get('transform') || self.defaults.transform;
+          let transform = this.field.get('transform') || self.defaults.transform;
           if (transform && _.isFunction(transform)) {
             // We will transform the data later, when rendering.
             // It will allow us to generate different data based on the
@@ -201,12 +201,12 @@ define([
       },
     });
 
-  var formatNode = function(opt) {
+  let formatNode = function(opt) {
     if (!opt.id) {
       return opt.text;
     }
 
-    var optimage = $(opt.element).data('image');
+    let optimage = $(opt.element).data('image');
 
     if (!optimage) {
       return opt.text;
@@ -219,11 +219,11 @@ define([
     }
   };
 
-  var filterRows = function(self, filter, rows, node) {
-    var res = [];
+  let filterRows = function(self, filter, rows, node) {
+    let res = [];
     _.each(rows, function(r) {
       if (filter(r)) {
-        var l = (_.isFunction(node['node_label']) ?
+        let l = (_.isFunction(node['node_label']) ?
             (node['node_label']).apply(node, [r, self.model, self]) :
             r.label),
           image = (_.isFunction(node['node_image']) ?
@@ -243,13 +243,13 @@ define([
     return res;
   };
 
-  var NodeListByIdControl = Backform.NodeListByIdControl = NodeAjaxOptionsControl.extend({
+  let NodeListByIdControl = Backform.NodeListByIdControl = NodeAjaxOptionsControl.extend({
     controlClassName: 'pgadmin-node-select form-control',
     defaults: _.extend({}, NodeAjaxOptionsControl.prototype.defaults, {
       url: 'nodes',
       filter: undefined,
       transform: function(rows) {
-        var self = this,
+        let self = this,
           node = self.field.get('schema_node'),
           filter = self.field.get('filter') || function() {
             return true;
@@ -271,7 +271,7 @@ define([
   Backform.NodeListByNameControl = NodeListByIdControl.extend({
     defaults: _.extend({}, NodeListByIdControl.prototype.defaults, {
       transform: function(rows) {
-        var self = this,
+        let self = this,
           node = self.field.get('schema_node'),
           res = [],
           filter = self.field.get('filter') || function() {
@@ -282,7 +282,7 @@ define([
 
         _.each(rows, function(r) {
           if (filter(r)) {
-            var l = (_.isFunction(node['node_label']) ?
+            let l = (_.isFunction(node['node_label']) ?
                 (node['node_label']).apply(node, [r, self.model, self]) :
                 r.label),
               image = (_.isFunction(node['node_image']) ?
@@ -311,7 +311,7 @@ define([
     return this.each(function() {
       if (!this || !$(this.length))
         return;
-      var top, p = $(this),
+      let top, p = $(this),
         hasScrollbar = function(j) {
           if (j && j.length > 0) {
             return j.get(0).scrollHeight > j.height();
@@ -340,7 +340,7 @@ define([
       if (!this || !$(this.length))
         return;
 
-      var elem = $(this),
+      let elem = $(this),
         backgridDiv = $(this).offsetParent().parent(), // Backgrid div.subnode
         backgridDivTop = backgridDiv.offset().top,
         backgridDivHeight = backgridDiv.height(),
@@ -353,7 +353,7 @@ define([
       gridScroll = backformTab[0].offsetHeight - backgridDivTop;
 
       if (backgridDivHeight > gridScroll) {
-        var top = elem.get(0).offsetTop + elem.height();
+        let top = elem.get(0).offsetTop + elem.height();
         backformTab.find('.tab-content').scrollTop(top);
       }
       return true;
@@ -372,7 +372,7 @@ define([
    *   specify the 'transform' function too, which will convert the fetched
    *   data to proper 'label', 'value' format.
    */
-  var NodeAjaxOptionsCell = Backgrid.Extension.NodeAjaxOptionsCell = Backgrid.Extension.Select2Cell.extend({
+  let NodeAjaxOptionsCell = Backgrid.Extension.NodeAjaxOptionsCell = Backgrid.Extension.Select2Cell.extend({
     defaults: _.extend({}, Backgrid.Extension.Select2Cell.prototype.defaults, {
       url: undefined,
       transform: undefined,
@@ -395,14 +395,14 @@ define([
     initialize: function() {
       Backgrid.Extension.Select2Cell.prototype.initialize.apply(this, arguments);
 
-      var url = this.column.get('url') || this.defaults.url,
+      let url = this.column.get('url') || this.defaults.url,
         is_options_cached = _.has(this.column.attributes, 'options_cached'),
         options_cached = is_options_cached && this.column.get('options_cached');
       // Hmm - we found the url option.
       // That means - we needs to fetch the options from that node.
       if (url && !options_cached) {
 
-        var self = this,
+        let self = this,
           m = this.model,
           column = this.column,
           eventHandler = m.top || m,
@@ -430,7 +430,7 @@ define([
          * If yes - use that, and do not bother about fetching it again,
          * and use it.
          */
-        var data = cache_node.cache(node.type + '#' + url, node_info, cache_level);
+        let data = cache_node.cache(node.type + '#' + url, node_info, cache_level);
 
         if (column.get('version_compatible') &&
           (_.isUndefined(data) || _.isNull(data))) {
@@ -460,7 +460,7 @@ define([
         /*
          * Transform the data
          */
-        var transform = column.get('transform') || self.defaults.transform;
+        let transform = column.get('transform') || self.defaults.transform;
         if (transform && _.isFunction(transform)) {
           // We will transform the data later, when rendering.
           // It will allow us to generate different data based on the
@@ -477,8 +477,8 @@ define([
     },
   });
 
-  var transformFunc = function(rows, control) {
-    var self = control || this,
+  let transformFunc = function(rows, control) {
+    let self = control || this,
       node = self.column.get('schema_node'),
       filter = self.column.get('filter') || function() {
         return true;
@@ -537,7 +537,7 @@ define([
       },
     }),
     getValueFromDOM: function() {
-      var res = [];
+      let res = [];
 
       this.$el.find('select').find(':selected').each(function() {
         res.push($(this).attr('value'));

@@ -65,7 +65,7 @@ export default class BackupGlobalSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'file',
       label: gettext('Filename'),

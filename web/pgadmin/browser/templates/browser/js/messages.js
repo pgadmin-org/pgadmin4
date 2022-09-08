@@ -12,12 +12,12 @@ define(
   ['sources/gettext', 'sources/pgadmin'],
   function(gettext, pgAdmin) {
 
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   if (pgBrowser.messages)
     return pgBrowser.messages;
 
-  var messages = pgBrowser.messages = {
+  let messages = pgBrowser.messages = {
     'SERVER_LOST': gettext('Connection to the server has been lost.'),
     'CLICK_FOR_DETAILED_MSG': gettext('Click here for details.'),
     'GENERAL_CATEGORY': gettext('General'),

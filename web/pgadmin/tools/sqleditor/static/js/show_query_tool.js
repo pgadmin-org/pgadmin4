@@ -125,7 +125,7 @@ export function launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, 
 }
 
 export function _set_dynamic_tab(pgBrowser, value){
-  var sqleditor_panels = pgBrowser.docker.findPanels('frm_sqleditor');
+  let sqleditor_panels = pgBrowser.docker.findPanels('frm_sqleditor');
   const process = panel => {
     if(value) {
       $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
@@ -135,6 +135,6 @@ export function _set_dynamic_tab(pgBrowser, value){
   };
   sqleditor_panels.forEach(process);
 
-  var debugger_panels = pgBrowser.docker.findPanels('frm_debugger');
+  let debugger_panels = pgBrowser.docker.findPanels('frm_debugger');
   debugger_panels.forEach(process);
 }

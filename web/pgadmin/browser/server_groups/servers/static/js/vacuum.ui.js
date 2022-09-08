@@ -61,7 +61,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'autovacuum_custom', label: gettext('Custom auto-vacuum?'),
       group: gettext('Table'), mode: ['edit', 'create'], skipChange: true,

@@ -112,7 +112,7 @@ describe('dialogTabNavigator', function () {
 
 
   describe('navigateForward from fist tab to second tab', function () {
-    var navigateForwardResult;
+    let navigateForwardResult;
     beforeEach(() => {
       spyOn(tabNavigator, 'navigateForward').and.callThrough();
 
@@ -133,7 +133,7 @@ describe('dialogTabNavigator', function () {
 
 
   describe('navigateForward from last tab', function () {
-    var navigateForwardResult;
+    let navigateForwardResult;
     beforeEach(() => {
 
       // set second tab active
@@ -159,7 +159,7 @@ describe('dialogTabNavigator', function () {
   });
 
   describe('navigateBackward from second tab to first tab', function () {
-    var navigateBackwardResult;
+    let navigateBackwardResult;
     beforeEach(() => {
       // set second tab active
       dialog.find('ul.nav-tabs li a.active').removeClass('active');
@@ -184,7 +184,7 @@ describe('dialogTabNavigator', function () {
   });
 
   describe('navigateBackward from first tab', function () {
-    var navigateBackwardResult;
+    let navigateBackwardResult;
     beforeEach(() => {
       spyOn(tabNavigator, 'navigateBackward').and.callThrough();
 

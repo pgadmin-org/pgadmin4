@@ -22,10 +22,10 @@ define(['pgadmin.browser.endpoints'], function(endpoints) {
    */
   return function url_for(endpoint, substitutions) {
 
-    var rawURL = endpoints[endpoint];
+    let rawURL = endpoints[endpoint];
 
     // captures things of the form <path:substitutionName>
-    var substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g,
+    let substitutionGroupsRegExp = /([<])([^:^>]*:)?([^>]+)([>])/g,
       interpolated = rawURL;
 
     if (!rawURL)

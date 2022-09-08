@@ -47,7 +47,7 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
   }
 
   disableWithCheckField(state){
-    var event = state.event;
+    let event = state.event;
     if ((event == 'SELECT') || (event == 'DELETE')){
       state.withcheck = '';
       return true;

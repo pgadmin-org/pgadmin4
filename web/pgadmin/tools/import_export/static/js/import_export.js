@@ -22,7 +22,7 @@ define([
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
-  var pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
+  let pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
   const api = getApiInstance();
 
   // Return back, this has been called more than once
@@ -87,7 +87,7 @@ define([
     },
 
     setExtraParameters(treeInfo) {
-      var extraData = {};
+      let extraData = {};
       extraData['database'] = treeInfo.database._label;
       extraData['schema'] = treeInfo.schema._label;
       extraData['table'] = treeInfo.table._label;
@@ -99,11 +99,11 @@ define([
       Open the dialog for the import functionality
     */
     callback_import_export: function(args, item) {
-      var i = item || pgBrowser.tree.selected(),
+      let i = item || pgBrowser.tree.selected(),
         server_data = null;
 
       while (i) {
-        var node_data = pgBrowser.tree.itemData(i);
+        let node_data = pgBrowser.tree.itemData(i);
         if (node_data._type == 'server') {
           server_data = node_data;
           break;
@@ -121,14 +121,14 @@ define([
         return;
       }
 
-      var t = pgBrowser.tree;
+      let t = pgBrowser.tree;
       i = item || t.selected();
-      var d = i  ? t.itemData(i) : undefined;
+      let d = i  ? t.itemData(i) : undefined;
 
       if (!d)
         return;
 
-      var treeInfo = t && t.getTreeNodeHierarchy(i);
+      let treeInfo = t && t.getTreeNodeHierarchy(i);
 
       const baseUrlUtilitCheck = url_for('import_export.utility_exists', {
         'sid': server_data._id,
@@ -149,10 +149,10 @@ define([
           }else{
             // Open the dialog for the import/export module
             pgBrowser.Node.registerUtilityPanel();
-            var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
+            let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
               j = panel.$container.find('.obj_properties').first();
 
-            var schema = that.getUISchema(item);
+            let schema = that.getUISchema(item);
             panel.title(gettext('Import/Export data - table \'%s\'', treeInfo.table.label));
             panel.focus();
 

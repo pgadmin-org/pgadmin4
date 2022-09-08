@@ -198,7 +198,7 @@ export default class ColumnSchema extends BaseUISchema {
           return true;
         }
 
-        var name = state.name;
+        let name = state.name;
 
         if(!obj.inSchemaWithColumnCheck(state)
           && (_.isUndefined(name)  || _.isNull(name) || name == '')) {
@@ -387,11 +387,11 @@ export default class ColumnSchema extends BaseUISchema {
       type: 'text', group: gettext('Constraints'), deps: ['cltype', 'colconstype'],
       readonly: obj.inSchemaWithColumnCheck,
       disabled: function(state) {
-        var isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
+        let isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         isDisabled = isDisabled || state.colconstype != 'n';
         return isDisabled;
       }, depChange: (state)=>{
-        var isDisabled = false;
+        let isDisabled = false;
         if(!obj.inSchemaWithModelCheck(state)) {
           isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         }
@@ -424,7 +424,7 @@ export default class ColumnSchema extends BaseUISchema {
       cell: 'text',
       group: gettext('Constraints'),
       type: (state)=>{
-        var options = [
+        let options = [
           {'label': gettext('NONE'), 'value': 'n'},
           {'label': gettext('IDENTITY'), 'value': 'i'},
         ];
@@ -559,7 +559,7 @@ export default class ColumnSchema extends BaseUISchema {
   }
 
   validate(state, setError) {
-    var msg = undefined;
+    let msg = undefined;
 
     if (!_.isUndefined(state.cltype) && !isEmptyString(state.attlen)) {
       // Validation for Length field

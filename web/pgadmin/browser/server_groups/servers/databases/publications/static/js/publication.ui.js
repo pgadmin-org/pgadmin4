@@ -83,7 +83,7 @@ export default class PublicationSchema extends BaseUISchema {
   }
 
   isAllTable(state) {
-    var allTable = state.all_table;
+    let allTable = state.all_table;
     if(allTable){
       state.pubtable = '';
       return true;
@@ -92,7 +92,7 @@ export default class PublicationSchema extends BaseUISchema {
   }
 
   isTable(state) {
-    var allTable = state.all_table,
+    let allTable = state.all_table,
       table = state.pubtable;
     if(allTable){
       state.only_table = false;

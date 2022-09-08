@@ -102,7 +102,7 @@ define('pgadmin.node.compound_trigger', [
       callbacks: {
         /* Enable compound trigger */
         enable_compound_trigger: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -111,7 +111,7 @@ define('pgadmin.node.compound_trigger', [
           if (!d)
             return false;
 
-          var data = d;
+          let data = d;
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
@@ -140,7 +140,7 @@ define('pgadmin.node.compound_trigger', [
         },
         /* Disable compound trigger */
         disable_compound_trigger: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -149,7 +149,7 @@ define('pgadmin.node.compound_trigger', [
           if (!d)
             return false;
 
-          var data = d;
+          let data = d;
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
@@ -194,7 +194,7 @@ define('pgadmin.node.compound_trigger', [
         if (data && data.check == false)
           return true;
 
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         if (server && (server.server_type === 'pg' || server.version < 120000))
@@ -209,7 +209,7 @@ define('pgadmin.node.compound_trigger', [
       },
       // Check to whether trigger is disable ?
       canCreate_with_compound_trigger_enable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -219,7 +219,7 @@ define('pgadmin.node.compound_trigger', [
       },
       // Check to whether trigger is enable ?
       canCreate_with_compound_trigger_disable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

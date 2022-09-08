@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 define('pgadmin.browser.messages',['sources/pgadmin'], function(pgAdmin) {
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   if (pgBrowser.messages)
     return pgBrowser.messages;

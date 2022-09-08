@@ -314,7 +314,7 @@ export class PartitionsSchema extends BaseUISchema {
       editable: false, type: 'select', controlProps: {allowClear: false},
       group: 'Partition', deps: ['is_sub_partitioned'],
       options: function() {
-        var options = [{
+        let options = [{
           label: gettext('Range'), value: 'range',
         },{
           label: gettext('List'), value: 'list',
@@ -346,7 +346,7 @@ export class PartitionsSchema extends BaseUISchema {
         let columnsExist = false;
         let columns = obj.top.sessData.columns;
 
-        var maxRowCount = 1000;
+        let maxRowCount = 1000;
         if (state.sub_partition_type && state.sub_partition_type == 'list')
           maxRowCount = 1;
 

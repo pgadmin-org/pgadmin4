@@ -12,7 +12,7 @@ import Notify from '../helpers/Notifier';
 define(['sources/gettext'], function (gettext) {
   return {
     copyTextToClipboard: function (text) {
-      var textArea = document.createElement('textarea');
+      let textArea = document.createElement('textarea');
 
       //
       // *** This styling is an extra step which is likely not required. ***
@@ -54,7 +54,7 @@ define(['sources/gettext'], function (gettext) {
       textArea.textContent = text;
       textArea.select();
 
-      var copyTextToClipboardHandler = function(e) {
+      let copyTextToClipboardHandler = function(e) {
         /* Remove oncopy event listener from document as we add listener for
          * oncopy event on each copy operation.
          * Also we don't want this listener to be persistent; Otherwise it'll get
@@ -62,7 +62,7 @@ define(['sources/gettext'], function (gettext) {
          * this document.
          */
         document.removeEventListener('copy', copyTextToClipboardHandler);
-        var clipboardData = e.clipboardData || window.clipboardData;
+        let clipboardData = e.clipboardData || window.clipboardData;
 
         if (clipboardData) {
           clipboardData.setData('text', text);

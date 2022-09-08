@@ -276,7 +276,7 @@ export default class DebuggerModule {
   will dynamically generate the URL from the server_id, database_id, schema_id and function id.
   */
   generate_url(_url, treeInfo, node) {
-    var url = '{BASEURL}{URL}/{OBJTYPE}{REF}',
+    let url = '{BASEURL}{URL}/{OBJTYPE}{REF}',
       ref = '';
 
     _.each(
@@ -295,7 +295,7 @@ export default class DebuggerModule {
         ref = sprintf('%s/%s', ref, encodeURI(o._id));
       });
 
-    var args = {
+    let args = {
       'URL': _url,
       'BASEURL': url_for('debugger.index'),
       'REF': ref,
@@ -338,7 +338,7 @@ export default class DebuggerModule {
   checkDbNameChange(data, dbNode, newTreeInfo, db_label) {
     if (data && data.data_obj && data.data_obj.db_name != newTreeInfo.database.label) {
       db_label = data.data_obj.db_name;
-      var message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
+      let message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
       refresh_db_node(message, dbNode);
     }
     return db_label;
@@ -490,7 +490,7 @@ export default class DebuggerModule {
   }
 
   getGlobalUrl(d, treeInfo, trans_id) {
-    var baseUrl = null;
+    let baseUrl = null;
     if (d._type == 'function' || d._type == 'edbfunc') {
       baseUrl = url_for(
         'debugger.initialize_target_for_function', {
@@ -556,7 +556,7 @@ export default class DebuggerModule {
   updatedDbLabel(res, db_label, treeInfo, dbNode) {
     if (res.data.data.data_obj.db_name != treeInfo.database.label) {
       db_label = res.data.data.data_obj.db_name;
-      var message = gettext(`Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`);
+      let message = gettext(`Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`);
       refresh_db_node(message, dbNode);
     }
   }
@@ -564,8 +564,8 @@ export default class DebuggerModule {
   //Callback function when user start the indirect debugging ( Listen to another session to invoke the target )
   startGlobalDebugger(args, item, trans_id) {
     // Initialize the target and create asynchronous connection and unique transaction ID
-    var self = this;
-    var t = this.pgBrowser.tree,
+    let self = this;
+    let t = this.pgBrowser.tree,
       i = item || t.selected(),
       d = i ? t.itemData(i) : undefined,
       tree_data = this.pgBrowser.tree.translateTreeNodeIdFromReactTree(i),
@@ -575,19 +575,19 @@ export default class DebuggerModule {
     if (!d)
       return;
 
-    var treeInfo = t.getTreeNodeHierarchy(i);
-    var baseUrl = self.getGlobalUrl(d, treeInfo, trans_id);
+    let treeInfo = t.getTreeNodeHierarchy(i);
+    let baseUrl = self.getGlobalUrl(d, treeInfo, trans_id);
 
     self.api({
       url: baseUrl,
       method: 'GET',
     })
       .then(function (res) {
-        var url = url_for('debugger.direct', {
+        let url = url_for('debugger.direct', {
           'trans_id': res.data.data.debuggerTransId,
         });
-        var browser_preferences = self.pgBrowser.get_preferences_for_module('browser');
-        var open_new_tab = browser_preferences.new_browser_tab_open;
+        let browser_preferences = self.pgBrowser.get_preferences_for_module('browser');
+        let open_new_tab = browser_preferences.new_browser_tab_open;
         if (open_new_tab && open_new_tab.includes('debugger')) {
           window.open(url, '_blank');
           // Send the signal to runtime, so that proper zoom level will be set.
@@ -602,7 +602,7 @@ export default class DebuggerModule {
             });
 
           // Create the debugger panel as per the data received from user input dialog.
-          var dashboardPanel = self.pgBrowser.docker.findPanels(
+          let dashboardPanel = self.pgBrowser.docker.findPanels(
               'properties'
             ),
             panel = self.pgBrowser.docker.addPanel(
@@ -613,14 +613,14 @@ export default class DebuggerModule {
 
           self.updatedDbLabel(res, db_label, treeInfo, dbNode);
 
-          var label = getAppropriateLabel(treeInfo);
+          let label = getAppropriateLabel(treeInfo);
           setDebuggerTitle(panel, browser_preferences, label, db_label, db_label, null, self.pgBrowser);
 
           panel.focus();
 
           // Panel Closed event
           panel.on(self.wcDocker.EVENT.CLOSED, function () {
-            var closeUrl = url_for('debugger.close', {
+            let closeUrl = url_for('debugger.close', {
               'trans_id': res.data.data.debuggerTransId,
             });
             $.ajax({
@@ -640,7 +640,7 @@ export default class DebuggerModule {
 
   raiseError(xhr) {
     try {
-      var err = xhr.response.data;
+      let err = xhr.response.data;
       if (err.errormsg.search('Ticket expired') !== -1) {
         let fetchTicket = Kerberos.fetch_ticket();
         fetchTicket.then(
@@ -703,7 +703,7 @@ export default class DebuggerModule {
 
   onFail(xhr) {
     try {
-      var err = xhr.response.data;
+      let err = xhr.response.data;
       if (err.success == 0) {
         Notify.alert(gettext('Debugger Error'), err.errormsg);
       }

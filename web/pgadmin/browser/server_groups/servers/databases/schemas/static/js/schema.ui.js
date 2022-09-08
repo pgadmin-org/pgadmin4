@@ -94,7 +94,7 @@ export default class PGSchema extends BaseUISchema {
   }
 
   validate(state, setError) {
-    var errmsg = null;
+    let errmsg = null;
 
     // Validation of mandatory fields
     if (isEmptyString(state.name)) {

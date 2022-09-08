@@ -33,7 +33,7 @@ export default class Preferences {
       return;
     this.initialized = true;
     // Add Preferences in to file menu
-    var menus = [{
+    let menus = [{
       name: 'mnu_preferences',
       module: this,
       applies: ['file'],
@@ -49,7 +49,7 @@ export default class Preferences {
 
   // This is a callback function to show preferences.
   show() {
-    
+
     // Render Preferences component
     Notify.showModal(gettext('Preferences'), (closeModal) => {
       return <PreferencesComponent

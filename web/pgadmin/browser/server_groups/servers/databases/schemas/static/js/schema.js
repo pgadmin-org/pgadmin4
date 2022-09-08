@@ -26,12 +26,12 @@ define('pgadmin.node.schema', [
 
       initialize: function() {
         Backform.Control.prototype.initialize.apply(this, arguments);
-        var self = this,
+        let self = this,
           m = this.model,
           url = self.field.get('url');
 
         if (url && m.isNew()) {
-          var node = self.field.get('node'),
+          let node = self.field.get('node'),
             node_data = self.field.get('node_data'),
             node_info = self.field.get('node_info'),
             full_url = node.generate_url.apply(
@@ -79,7 +79,7 @@ define('pgadmin.node.schema', [
       },
 
       render: function() {
-        var self = this,
+        let self = this,
           attributes = self.field.attributes;
 
         // remove grid
@@ -91,7 +91,7 @@ define('pgadmin.node.schema', [
 
         self.$el.empty();
 
-        var gridHeader = _.template([
+        let gridHeader = _.template([
             '<div class="subnode-header">',
             '<% if (label && label != "") %> {',
             '    <span class="control-label col-sm-4"><%-label%></span>',
@@ -102,7 +102,7 @@ define('pgadmin.node.schema', [
           );
 
         // Initialize a new Grid instance
-        var grid = self.grid = new Backgrid.Grid({
+        let grid = self.grid = new Backgrid.Grid({
           columns: self.grid_columns,
           collection: self.model.get(self.field.get('name')),
           className: 'backgrid table table-bordered table-noouter-border table-hover',
@@ -119,7 +119,7 @@ define('pgadmin.node.schema', [
   // We will use this function in VacuumSettings Control
   // to convert data type on the fly
   Backform.cellFunction = function(model) {
-    var vartype = model.get('column_type');
+    let vartype = model.get('column_type');
 
     switch(vartype) {
     case 'integer':
@@ -146,7 +146,7 @@ define('pgadmin.node.schema', [
     },
 
     toJSON: function(){
-      var d = pgBrowser.Node.Model.prototype.toJSON.apply(this);
+      let d = pgBrowser.Node.Model.prototype.toJSON.apply(this);
       delete d.label;
       delete d.setting;
       delete d.column_type;
@@ -363,7 +363,7 @@ define('pgadmin.node.schema', [
         return pgBrowser.Nodes['database'].is_conn_allow.call(this, node);
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
-        var schemaObj = pgBrowser.Nodes['schema'];
+        let schemaObj = pgBrowser.Nodes['schema'];
         return new PGSchema(
           (privileges)=>getNodePrivilegeRoleSchema(schemaObj, treeNodeInfo, itemNodeData, privileges),
           {
@@ -393,7 +393,7 @@ define('pgadmin.node.schema', [
       Backgrid.Extension.DependentCell.prototype.initialize.apply(this, arguments);
     },
     dependentChanged: function () {
-      var model = this.model,
+      let model = this.model,
         column = this.column,
         editable = this.column.get('editable'),
         input = this.$el.find('input[type=checkbox]').first(),

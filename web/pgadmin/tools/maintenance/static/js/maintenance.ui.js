@@ -96,7 +96,7 @@ export default class MaintenanceSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [
       {
         id: 'op',
@@ -135,7 +135,7 @@ export default class MaintenanceSchema extends BaseUISchema {
         type: 'switch',
         label: gettext('Verbose Messages'),
         disabled: function(state) {
-          var nodeInfo = this.nodeInfo;
+          let nodeInfo = this.nodeInfo;
           if(state?.verbose) {
             if ('primary_key' in nodeInfo || 'unique_constraint' in nodeInfo ||
             'index' in nodeInfo) {

@@ -24,11 +24,11 @@ define(
 
     function getRowPrimaryKeyValuesToStage(selectedRows, primaryKeys, dataView, client_primary_key) {
       return _.reduce(selectedRows, function (primaryKeyValuesToStage, dataGridRowIndex) {
-        var gridRow = dataView.getItem(dataGridRowIndex);
+        let gridRow = dataView.getItem(dataGridRowIndex);
         if (isRowMissingPrimaryKeys(gridRow, primaryKeys)) {
           return primaryKeyValuesToStage;
         }
-        var tempPK = gridRow[client_primary_key];
+        let tempPK = gridRow[client_primary_key];
         primaryKeyValuesToStage[tempPK] = getSingleRowPrimaryKeyValueToStage(primaryKeys, gridRow);
         return primaryKeyValuesToStage;
       }, {});
@@ -47,7 +47,7 @@ define(
     }
 
     function getSingleRowPrimaryKeyValueToStage(primaryKeys, gridRow) {
-      var rowToStage = {};
+      let rowToStage = {};
       if (primaryKeys && primaryKeys.length) {
         _.each(_.keys(gridRow), function (columnNames) {
           if (_.contains(primaryKeys, columnNames))
@@ -58,12 +58,12 @@ define(
     }
 
     function getPrimaryKeysForSelectedRows(self, selectedRows) {
-      var dataView = self.grid.getData();
+      let dataView = self.grid.getData();
       return getRowPrimaryKeyValuesToStage(selectedRows, _.keys(self.keys), dataView, self.client_primary_key);
     }
 
     return function () {
-      var self = this;
+      let self = this;
 
       function setStagedRows(rowsToStage) {
         self.editor.handler.data_store.staged_rows = rowsToStage;
@@ -81,15 +81,15 @@ define(
           self.selection.getSelectedRanges());
       }
 
-      var selectedRanges = this.selection.getSelectedRanges();
+      let selectedRanges = this.selection.getSelectedRanges();
 
       if (selectedRanges.length > 0) {
         enableButton('#btn-copy-row');
       }
 
       if (areAllSelectionsEntireRows()) {
-        var selectedRows = RangeSelectionHelper.getIndexesOfCompleteRows(this.grid, this.selection.getSelectedRanges());
-        var stagedRows = getPrimaryKeysForSelectedRows(self, selectedRows);
+        let selectedRows = RangeSelectionHelper.getIndexesOfCompleteRows(this.grid, this.selection.getSelectedRanges());
+        let stagedRows = getPrimaryKeysForSelectedRows(self, selectedRows);
         setStagedRows(stagedRows);
         if (_.isEmpty(stagedRows)) {
           this.selection.setSelectedRows([]);

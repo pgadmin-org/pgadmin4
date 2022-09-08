@@ -19,7 +19,7 @@ define(['translations'], function (translations) {
    */
   return function gettext(text) {
 
-    var rawTranslation = translations[text] ? translations[text] : text;
+    let rawTranslation = translations[text] ? translations[text] : text;
 
     if(arguments.length == 1) {
       return rawTranslation;

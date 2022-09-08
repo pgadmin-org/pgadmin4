@@ -129,9 +129,9 @@ export default class ERDModule {
       </script>
     `;
 
-    var open_new_tab = this.pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
+    let open_new_tab = this.pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
     if (open_new_tab && open_new_tab.includes('erd_tool')) {
-      var newWin = window.open('', '_blank');
+      let newWin = window.open('', '_blank');
       newWin.document.write(erdToolForm);
       newWin.document.title = panelTitle;
       // Send the signal to runtime, so that proper zoom level will be set.
@@ -142,8 +142,8 @@ export default class ERDModule {
       /* On successfully initialization find the dashboard panel,
        * create new panel and add it to the dashboard panel.
        */
-      var propertiesPanel = this.pgBrowser.docker.findPanels('properties');
-      var erdToolPanel = this.pgBrowser.docker.addPanel('frm_erdtool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+      let propertiesPanel = this.pgBrowser.docker.findPanels('properties');
+      let erdToolPanel = this.pgBrowser.docker.addPanel('frm_erdtool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
       // Set panel title and icon
       setPanelTitle(erdToolPanel, 'Untitled');
@@ -152,7 +152,7 @@ export default class ERDModule {
 
       // Register detach event.
       registerDetachEvent(erdToolPanel);
-      var openErdToolURL = function(j) {
+      let openErdToolURL = function(j) {
         // add spinner element
         let $spinner_el =
           $(`<div class="pg-sp-container">
@@ -164,10 +164,10 @@ export default class ERDModule {
             </div>`).appendTo($(j).data('embeddedFrame').$container);
 
         let init_poller_id = setInterval(function() {
-          var frameInitialized = $(j).data('frameInitialized');
+          let frameInitialized = $(j).data('frameInitialized');
           if (frameInitialized) {
             clearInterval(init_poller_id);
-            var frame = $(j).data('embeddedFrame');
+            let frame = $(j).data('embeddedFrame');
             if (frame) {
               frame.onLoaded(()=>{
                 $spinner_el.remove();

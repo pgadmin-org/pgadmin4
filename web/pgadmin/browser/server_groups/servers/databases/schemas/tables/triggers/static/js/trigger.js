@@ -98,7 +98,7 @@ define('pgadmin.node.trigger', [
       callbacks: {
         /* Enable trigger */
         enable_trigger: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -107,7 +107,7 @@ define('pgadmin.node.trigger', [
           if (!d)
             return false;
 
-          var data = d;
+          let data = d;
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
@@ -136,7 +136,7 @@ define('pgadmin.node.trigger', [
         },
         /* Disable trigger */
         disable_trigger: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -145,7 +145,7 @@ define('pgadmin.node.trigger', [
           if (!d)
             return false;
 
-          var data = d;
+          let data = d;
           $.ajax({
             url: obj.generate_url(i, 'enable' , d, true),
             type:'PUT',
@@ -191,7 +191,7 @@ define('pgadmin.node.trigger', [
       canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether trigger is disable ?
       canCreate_with_trigger_enable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -201,7 +201,7 @@ define('pgadmin.node.trigger', [
       },
       // Check to whether trigger is enable ?
       canCreate_with_trigger_disable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

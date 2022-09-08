@@ -97,7 +97,7 @@ define('pgadmin.node.index', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
           s_version = t.getTreeNodeHierarchy(i).server.version;

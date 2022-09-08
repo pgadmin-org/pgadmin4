@@ -55,7 +55,7 @@ define([
       this.initialized = true;
 
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      let menus = [{
         name: 'backup_global',
         module: this,
         applies: ['tools'],
@@ -142,36 +142,36 @@ define([
     },
     startBackupGlobal: function(action, treeItem) {
       pgBrowser.Node.registerUtilityPanel();
-      var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md);
-      var tree = pgBrowser.tree,
+      let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md);
+      let tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
         data = i ? tree.itemData(i) : undefined,
         j = panel.$container.find('.obj_properties').first();
 
-      var schema = this.getGlobalUISchema(treeItem);
+      let schema = this.getGlobalUISchema(treeItem);
       panel.title('Backup Globals');
       panel.focus();
-      var typeOfDialog = 'globals';
-      var serverIdentifier = this.retrieveServerIdentifier();
+      let typeOfDialog = 'globals';
+      let serverIdentifier = this.retrieveServerIdentifier();
 
-      var extraData = this.setExtraParameters(typeOfDialog);
+      let extraData = this.setExtraParameters(typeOfDialog);
       this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
     },
     startBackupServer: function(action, treeItem) {
       pgBrowser.Node.registerUtilityPanel();
-      var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md);
-      var tree = pgBrowser.tree,
+      let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md);
+      let tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
         data = i ? tree.itemData(i) : undefined,
         j = panel.$container.find('.obj_properties').first();
 
-      var schema = this.getUISchema(treeItem, 'server');
+      let schema = this.getUISchema(treeItem, 'server');
       panel.title(gettext('Backup Server'));
       panel.focus();
-      var typeOfDialog = 'server';
-      var serverIdentifier = this.retrieveServerIdentifier();
+      let typeOfDialog = 'server';
+      let serverIdentifier = this.retrieveServerIdentifier();
 
-      var extraData = this.setExtraParameters(typeOfDialog);
+      let extraData = this.setExtraParameters(typeOfDialog);
       this.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
     },
     saveCallBack: function(data) {
@@ -202,8 +202,8 @@ define([
         const baseUrl = url_for(urlShortcut, {
           'sid': serverIdentifier,
         });
-        var sqlHelpUrl = 'backup.html';
-        var helpUrl = url_for('help.static', {
+        let sqlHelpUrl = 'backup.html';
+        let helpUrl = url_for('help.static', {
           'filename': this.getHelpFile(typeOfDialog),
         });
         getUtilityView(
@@ -212,8 +212,8 @@ define([
     },
     // Callback to draw Backup Dialog for objects
     backupObjects: function(action, treeItem) {
-      var that = this;
-      var tree = pgBrowser.tree,
+      let that = this;
+      let tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
         data = i ? tree.itemData(i) : undefined;
 
@@ -235,14 +235,14 @@ define([
         }
 
         pgBrowser.Node.registerUtilityPanel();
-        var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
+        let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
           j = panel.$container.find('.obj_properties').first();
 
-        var schema = that.getUISchema(treeItem,  'backup_objects');
+        let schema = that.getUISchema(treeItem,  'backup_objects');
         panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
         panel.focus();
 
-        var typeOfDialog = 'backup_objects',
+        let typeOfDialog = 'backup_objects',
           serverIdentifier = that.retrieveServerIdentifier(),
           extraData = that.setExtraParameters(typeOfDialog);
 
@@ -286,14 +286,14 @@ define([
     retrieveServerIdentifier() {
       const selectedNode = pgBrowser.tree.selected();
 
-      var node = pgBrowser.tree.findNodeByDomElement(selectedNode);
+      let node = pgBrowser.tree.findNodeByDomElement(selectedNode);
       const treeInfo = pgBrowser.tree.getTreeNodeHierarchy(node);
       return treeInfo.server._id;
     },
     setExtraParameters(typeOfDialog) {
-      var extraData = {};
+      let extraData = {};
       const selectedNode = pgBrowser.tree.selected();
-      var selectedTreeNode = pgBrowser.tree.findNodeByDomElement(selectedNode);
+      let selectedTreeNode = pgBrowser.tree.findNodeByDomElement(selectedNode);
       const treeInfo = pgBrowser.tree.getTreeNodeHierarchy(selectedTreeNode);
       if (typeOfDialog === 'backup_objects') {
 

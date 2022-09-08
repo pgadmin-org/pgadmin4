@@ -129,7 +129,7 @@ define('pgadmin.node.rule', [
       callbacks: {
         /* Enable rule */
         enable_rule: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -138,7 +138,7 @@ define('pgadmin.node.rule', [
           if (!d)
             return false;
 
-          var data = d;
+          let data = d;
           $.ajax({
             url: obj.generate_url(i, 'obj' , d, true),
             type:'PUT',
@@ -165,7 +165,7 @@ define('pgadmin.node.rule', [
         },
         /* Disable rule */
         disable_rule: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -174,7 +174,7 @@ define('pgadmin.node.rule', [
           if (!d)
             return false;
 
-          var data = d;
+          let data = d;
           $.ajax({
             url: obj.generate_url(i, 'obj' , d, true),
             type:'PUT',
@@ -216,7 +216,7 @@ define('pgadmin.node.rule', [
         if (data && data.check === false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData;
+        let t = pgBrowser.tree, i = item, d = itemData;
 
         // To iterate over tree to check parent node
         while (i) {
@@ -228,7 +228,7 @@ define('pgadmin.node.rule', [
           if ('coll-rule' == d._type) {
 
             //Check if we are not child of rule
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+            let prev_i = t.hasParent(i) ? t.parent(i) : null,
               prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
               prev_k = t.hasParent(prev_j) ? t.parent(prev_j) : null,
               prev_f = prev_k ? t.itemData(prev_k) : null;
@@ -240,9 +240,9 @@ define('pgadmin.node.rule', [
             then allow to create Rule
            */
           else if('view' == d._type || 'table' == d._type){
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null;
-            var prev_e = prev_j ? t.itemData(prev_j) : null;
+            let prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
+              prev_e = prev_j ? t.itemData(prev_j) : null;
             return (!_.isNull(prev_e) && prev_e._type == 'schema');
           }
           i = t.hasParent(i) ? t.parent(i) : null;
@@ -255,7 +255,7 @@ define('pgadmin.node.rule', [
       },
 
       canCreate_with_rule_enable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -265,7 +265,7 @@ define('pgadmin.node.rule', [
       },
       // Check to whether rule is enable ?
       canCreate_with_rule_disable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

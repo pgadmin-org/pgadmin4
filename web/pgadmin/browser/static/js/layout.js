@@ -17,7 +17,7 @@ import Notify from '../../../static/js/helpers/Notifier';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
 /* Add cache related methods and properties */
 _.extend(pgBrowser, {
@@ -29,8 +29,8 @@ _.extend(pgBrowser, {
 
   // Build the default layout
   buildDefaultLayout: function(docker) {
-    var browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
-    var dashboardPanel = docker.addPanel(
+    let browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
+    let dashboardPanel = docker.addPanel(
       'dashboard', wcDocker.DOCK.RIGHT, browserPanel);
     docker.addPanel('properties', wcDocker.DOCK.STACKED, dashboardPanel, {
       tabOrientation: wcDocker.TAB.TOP,
@@ -48,7 +48,7 @@ _.extend(pgBrowser, {
 
   save_current_layout: function(layout_id, docker) {
     if(docker) {
-      var layout = docker.save(),
+      let layout = docker.save(),
         settings = { setting: layout_id, value: layout };
       $.ajax({
         type: 'POST',
@@ -65,7 +65,7 @@ _.extend(pgBrowser, {
         docker.restore(layout);
         if(checkLayout) {
           // Check restore layout is restored pgAdmin 4 layout successfully if not then reset layout to default pgAdmin 4 layout.
-          var _panel = docker.findPanels('properties');
+          let _panel = docker.findPanels('properties');
           if(_panel.length == 0 && defaultLayoutCallback){
             // clear the wcDocker before reset layout.
             docker.clear();

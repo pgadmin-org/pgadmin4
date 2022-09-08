@@ -27,7 +27,7 @@ export function minMaxValidator(label, value, minValue, maxValue) {
 export function numberValidator(label, value) {
   if((_.isUndefined(value) || _.isNull(value) || String(value) === ''))
     return null;
-  var pattern = new RegExp('^-?[0-9]+(\.?[0-9]*)?$');
+  let pattern = new RegExp('^-?[0-9]+(\.?[0-9]*)?$');
   if (!pattern.test(value)) {
     return sprintf(pgAdmin.Browser.messages.MUST_BE_NUM, label);
   }
@@ -38,7 +38,7 @@ export function numberValidator(label, value) {
 export function integerValidator(label, value) {
   if((_.isUndefined(value) || _.isNull(value) || String(value) === ''))
     return null;
-  var pattern = new RegExp('^-?[0-9]*$');
+  let pattern = new RegExp('^-?[0-9]*$');
   if (!pattern.test(value)) {
     return sprintf(pgAdmin.Browser.messages.MUST_BE_INT, label);
   }

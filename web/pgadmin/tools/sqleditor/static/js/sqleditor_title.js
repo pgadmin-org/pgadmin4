@@ -43,7 +43,7 @@ export function getTitle(pgAdmin, browserPref, parentData=null, isConnTitle=fals
 }
 
 export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null, conn_title=false, db_label=null) {
-  var preferences = pgBrowser.get_preferences_for_module('browser');
+  let preferences = pgBrowser.get_preferences_for_module('browser');
   if(selected_item == null && parentData == null) {
     selected_item = pgBrowser.tree.selected();
   }
@@ -60,7 +60,7 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
     db_label = getDatabaseLabel(parentData);
   }
 
-  var qt_title_placeholder = '';
+  let qt_title_placeholder = '';
   if (!conn_title) {
     if (custom_title) {
       qt_title_placeholder = custom_title;
@@ -71,7 +71,7 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
     qt_title_placeholder = pgAdmin['qt_default_placeholder'];
   }
 
-  var title_data = {
+  let title_data = {
     'database': db_label,
     'username': parentData.server.user.name,
     'server': parentData.server._label,

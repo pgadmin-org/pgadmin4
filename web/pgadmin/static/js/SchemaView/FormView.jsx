@@ -165,7 +165,7 @@ export default function FormView({
   let isOnScreen = useOnScreen(formRef);
   if(isOnScreen) {
     /* Don't do it when the form is alredy visible */
-    if(onScreenTracker.current == false) {
+    if(!onScreenTracker.current) {
       /* Re-select the tab. If form is hidden then sometimes it is not selected */
       setTabValue(tabValue);
       onScreenTracker.current = true;

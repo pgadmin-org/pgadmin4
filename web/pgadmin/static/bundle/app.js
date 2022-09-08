@@ -10,9 +10,9 @@
 define('app', [
   'sources/pgadmin', 'bundled_browser',
 ], function(pgAdmin) {
-  var initializeModules = function(Object) {
-    for (var key in Object) {
-      var module = Object[key];
+  let initializeModules = function(Object) {
+    for (let key in Object) {
+      let module = Object[key];
 
       if (module && module.init && typeof module.init == 'function') {
         try {

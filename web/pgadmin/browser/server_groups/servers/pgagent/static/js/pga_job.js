@@ -110,7 +110,7 @@ define('pgadmin.node.pga_job', [
       }),
       /* Run pgagent job now */
       run_pga_job_now: function(args) {
-        var input = args || {},
+        let input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),

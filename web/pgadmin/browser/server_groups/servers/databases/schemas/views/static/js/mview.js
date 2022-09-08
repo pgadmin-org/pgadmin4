@@ -149,7 +149,7 @@ define('pgadmin.node.mview', [
       },
 
       refresh_mview: function(args) {
-        var input = args || {},
+        let input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
@@ -161,7 +161,7 @@ define('pgadmin.node.mview', [
 
         let j = i;
         while (j) {
-          var node_data = pgBrowser.tree.itemData(j);
+          let node_data = pgBrowser.tree.itemData(j);
           if (node_data._type == 'server') {
             server_data = node_data;
             break;
@@ -227,7 +227,7 @@ define('pgadmin.node.mview', [
       },
 
       is_version_supported: function(data, item) {
-        var t = pgAdmin.Browser.tree,
+        let t = pgAdmin.Browser.tree,
           i = item || t.selected(),
           info = t && t.getTreeNodeHierarchy(i),
           version = _.isUndefined(info) ? 0 : info.server.version;

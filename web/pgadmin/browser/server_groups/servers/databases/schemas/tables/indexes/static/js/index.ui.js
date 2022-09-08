@@ -126,7 +126,7 @@ export class ColumnSchema extends BaseUISchema {
                   * to access method selected by user if not selected
                   * send btree related op_class options
                   */
-                var amname = columnSchemaObj._top?._sessData ? columnSchemaObj._top?._sessData.amname : columnSchemaObj._top?._origData.amname;
+                let amname = columnSchemaObj._top?._sessData ? columnSchemaObj._top?._sessData.amname : columnSchemaObj._top?._origData.amname;
 
                 if(_.isUndefined(amname))
                   return options;
@@ -442,10 +442,10 @@ export default class IndexSchema extends BaseUISchema {
   }
 
   validate(state, setError) {
-    var msg;
+    let msg;
 
     // Checks if columns is empty
-    var cols = state.columns;
+    let cols = state.columns;
     if(_.isArray(cols) && cols.length == 0){
       msg = gettext('You must specify at least one column.');
       setError('columns', msg);

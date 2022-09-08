@@ -39,7 +39,7 @@
 define('pgadmin.browser.utils',
   ['sources/pgadmin'], function(pgAdmin) {
 
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   /* Add hooked-in panels by extensions */
   pgBrowser['panels_items'] = '{{ current_app.panels|tojson }}';
@@ -62,7 +62,7 @@ define('pgadmin.browser.utils',
   pgAdmin['enable_binary_path_browsing'] = '{{ current_app.config.get('ENABLE_BINARY_PATH_BROWSING') }}' == 'True';
 
   // Define list of nodes on which Query tool option doesn't appears
-  var unsupported_nodes = pgAdmin.unsupported_nodes = [
+  let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',
      'coll-role', 'role', 'coll-resource_group', 'resource_group',
      'coll-database'
@@ -96,7 +96,7 @@ define('pgadmin.browser.utils',
       //
       // First - register the menus from the other
       // modules/extensions.
-      var self = this;
+      let self = this;
       if (this.counter.total == this.counter.loaded) {
         {% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}
         obj.add_menus({{ MENU_ITEMS(key, current_app.menu_items['%s_items' % key.lower()])}});
@@ -110,7 +110,7 @@ define('pgadmin.browser.utils',
 
     // load the module right now
     load_module: function(name, path, c) {
-      var obj = this;
+      let obj = this;
       require([name],function(m) {
         try {
           // initialize the module (if 'init' function present).

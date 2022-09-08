@@ -14,18 +14,18 @@ import pgAdmin from 'sources/pgadmin';
 
 /* It generates the URL based on collection node selected */
 export function generateCollectionURL(item, type) {
-  var opURL = {
+  let opURL = {
     'properties': 'obj',
     'children': 'nodes',
     'drop': 'obj',
   };
   let nodeObj= this;
-  var collectionPickFunction = function (treeInfoValue, treeInfoKey) {
+  let collectionPickFunction = function (treeInfoValue, treeInfoKey) {
     return (treeInfoKey != nodeObj.type);
   };
-  var treeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(item);
-  var actionType = type in opURL ? opURL[type] : type;
-  var nodeType = type === 'properties' ? nodeObj.type : nodeObj.node;
+  let treeInfo = pgAdmin.Browser.tree.getTreeNodeHierarchy(item);
+  let actionType = type in opURL ? opURL[type] : type;
+  let nodeType = type === 'properties' ? nodeObj.type : nodeObj.node;
   return generate_url(
     pgAdmin.Browser.URL, treeInfo, actionType, nodeType,
     collectionPickFunction
@@ -69,7 +69,7 @@ export function generateNodeUrl(treeNodeInfo, actionType, itemNodeData, withId, 
     jump_after_priority = treeNodeInfo[jumpAfterNode].priority;
   }
 
-  var nodePickFunction = function(treeInfoValue) {
+  let nodePickFunction = function(treeInfoValue) {
     return (treeInfoValue.priority <= jump_after_priority || treeInfoValue.priority == priority);
   };
 
@@ -111,7 +111,7 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
       * If yes - use that, and do not bother about fetching it again,
       * and use it.
       */
-      var data = cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel);
+      let data = cacheNode.cache(nodeObj.type + '#' + url, treeNodeInfo, cacheLevel);
 
       if (_.isUndefined(data) || _.isNull(data)) {
         api.get(fullUrl, {
@@ -139,11 +139,11 @@ export function getNodeAjaxOptions(url, nodeObj, treeNodeInfo, itemNodeData, par
 export function getNodeListById(nodeObj, treeNodeInfo, itemNodeData, params={}, filter=()=>true) {
   /* Transform the result to add image details */
   const transform = (rows) => {
-    var res = [];
+    let res = [];
 
     _.each(rows, function(r) {
       if (filter(r)) {
-        var l = (_.isFunction(nodeObj['node_label']) ?
+        let l = (_.isFunction(nodeObj['node_label']) ?
             (nodeObj['node_label']).apply(nodeObj, [r]) :
             r.label),
           image = (_.isFunction(nodeObj['node_image']) ?
@@ -170,11 +170,11 @@ export function getNodeListByName(node, treeNodeInfo, itemNodeData, params={}, f
   let {includeItemKeys} = params;
   /* Transform the result to add image details */
   const transform = (rows) => {
-    var res = [];
+    let res = [];
 
     _.each(rows, function(r) {
       if (filter(r)) {
-        var l = (_.isFunction(nodeObj['node_label']) ?
+        let l = (_.isFunction(nodeObj['node_label']) ?
             (nodeObj['node_label']).apply(nodeObj, [r]) :
             r.label),
           image = (_.isFunction(nodeObj['node_image']) ?

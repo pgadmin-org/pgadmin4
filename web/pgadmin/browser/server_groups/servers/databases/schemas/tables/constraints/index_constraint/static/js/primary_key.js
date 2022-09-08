@@ -56,7 +56,7 @@ define('pgadmin.node.primary_key', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
           s_version = t.getTreeNodeHierarchy(i).server.version;
@@ -78,7 +78,7 @@ define('pgadmin.node.primary_key', [
             }
 
             // There should be only one primary key per table.
-            var children = t.children(arguments[1], false),
+            let children = t.children(arguments[1], false),
               primary_key_found = false;
 
             _.each(children, function(child){
@@ -128,7 +128,7 @@ define('pgadmin.node.primary_key', [
         },
 
         genResetColOptions: function() {
-          var self = this;
+          let self = this;
 
           setTimeout(function () {
             self.custom_options();
@@ -138,12 +138,12 @@ define('pgadmin.node.primary_key', [
 
         genCustomOptions: function() {
           // We will add all the columns entered by user in table model
-          var columns = this.model.top.get('columns'),
+          let columns = this.model.top.get('columns'),
             added_columns_from_tables = [];
 
           if (columns.length > 0) {
             _.each(columns.models, function(m) {
-              var col = m.get('name');
+              let col = m.get('name');
               if(!_.isUndefined(col) && !_.isNull(col)) {
                 added_columns_from_tables.push(
                   {label: col, value: col, image:'icon-column'}
@@ -186,7 +186,7 @@ define('pgadmin.node.primary_key', [
           id: 'comment', label: gettext('Comment'), cell: 'string',
           type: 'multiline', mode: ['properties', 'create', 'edit'],
           deps:['name'], disabled:function(m) {
-            var name = m.get('name');
+            let name = m.get('name');
             if (!(name && name != '')) {
               setTimeout(function(){
                 if(m.get('comment') && m.get('comment') !== '') {
@@ -206,12 +206,12 @@ define('pgadmin.node.primary_key', [
             initialize: function() {
               Backgrid.StringCell.prototype.initialize.apply(this, arguments);
 
-              var self = this,
+              let self = this,
                 collection = this.model.get('columns');
 
               // Do not listen for any event(s) for existing constraint.
               if (_.isUndefined(self.model.get('oid'))) {
-                var tableCols = self.model.top.get('columns');
+                let tableCols = self.model.top.get('columns');
                 self.listenTo(tableCols, 'remove' , self.removeColumn);
                 self.listenTo(tableCols, 'change:name', self.resetColOptions);
               }
@@ -223,7 +223,7 @@ define('pgadmin.node.primary_key', [
               self.listenTo(collection, 'remove', self.render);
             },
             removeColumn: function(m) {
-              var self = this,
+              let self = this,
                 removedCols = self.model.get('columns').where(
                   {column: m.get('name')}
                 );
@@ -233,9 +233,9 @@ define('pgadmin.node.primary_key', [
                 self.render();
               }, 10);
 
-              var key = 'primary_key';
+              let key = 'primary_key';
               setTimeout(function () {
-                var constraints = self.model.top.get(key),
+                let constraints = self.model.top.get(key),
                   removed = [];
                 constraints.each(function(constraint) {
                   if (constraint.get('columns').length == 0) {
@@ -247,7 +247,7 @@ define('pgadmin.node.primary_key', [
 
             },
             resetColOptions : function(m) {
-              var self = this,
+              let self = this,
                 updatedCols = self.model.get('columns').where(
                   {column: m.previous('name')}
                 );
@@ -275,7 +275,7 @@ define('pgadmin.node.primary_key', [
               return Backgrid.StringCell.prototype.render.apply(this, arguments);
             },
             remove: function() {
-              var tableCols = this.model.top.get('columns'),
+              let tableCols = this.model.top.get('columns'),
                 primary_key_col = this.model.get('columns');
 
               if (primary_key_col) {
@@ -303,7 +303,7 @@ define('pgadmin.node.primary_key', [
               }
             ),
             keyPathAccessor: function(obj, path) {
-              var res = obj;
+              let res = obj;
               if(_.isArray(res)) {
                 return _.map(res, function(o) { return o['column'];
                 });
@@ -319,12 +319,12 @@ define('pgadmin.node.primary_key', [
             initialize: function() {
               // Here we will decide if we need to call URL
               // Or fetch the data from parent columns collection
-              var self = this;
+              let self = this;
               if(this.model.handler) {
                 Backform.Select2Control.prototype.initialize.apply(this, arguments);
                 // Do not listen for any event(s) for existing constraint.
                 if (_.isUndefined(self.model.get('oid'))) {
-                  var tableCols = self.model.top.get('columns');
+                  let tableCols = self.model.top.get('columns');
                   self.listenTo(tableCols, 'remove' , self.resetColOptions);
                   self.listenTo(tableCols, 'change:name', self.resetColOptions);
                 }
@@ -344,7 +344,7 @@ define('pgadmin.node.primary_key', [
               this.genCustomOptions();
             },
             onChange: function() {
-              var self = this,
+              let self = this,
                 model = this.model,
                 attrArr = this.field.get('name').split('.'),
                 name = attrArr.shift(),
@@ -359,7 +359,7 @@ define('pgadmin.node.primary_key', [
                  * present in the collection.
                  */
               collection.each(function(m) {
-                var column = m.get('column'),
+                let column = m.get('column'),
                   idx = _.indexOf(vals, column);
 
                 if (idx > -1) {
@@ -374,7 +374,7 @@ define('pgadmin.node.primary_key', [
                  */
 
               _.each(vals, function(v) {
-                var m = new (self.field.get('model'))(
+                let m = new (self.field.get('model'))(
                   {column: v}, { silent: true,
                     top: self.model.top,
                     collection: collection,
@@ -395,7 +395,7 @@ define('pgadmin.node.primary_key', [
             },
             remove: function() {
               if(this.model.handler) {
-                var self = this,
+                let self = this,
                   tableCols = self.model.top.get('columns');
                 self.stopListening(tableCols, 'remove' , self.resetColOptions);
                 self.stopListening(tableCols, 'change:name' , self.resetColOptions);
@@ -408,9 +408,9 @@ define('pgadmin.node.primary_key', [
               }
             },
             render: function() {
-              var index = this.model.get('index');
+              let index = this.model.get('index');
               if(!_.isUndefined(index) && index != '') {
-                var col = this.model.get('columns');
+                let col = this.model.get('columns');
                 col.reset([], {silent: true});
               }
               return Backform.Select2Control.prototype.render.apply(this, arguments);
@@ -426,7 +426,7 @@ define('pgadmin.node.primary_key', [
             },
           }),
           transform : function(data){
-            var res = [];
+            let res = [];
             if (data && _.isArray(data)) {
               _.each(data, function(d) {
                 res.push({label: d.label, value: d.label, image:'icon-column'});
@@ -440,7 +440,7 @@ define('pgadmin.node.primary_key', [
           },
           disabled: function(m) {
             // Disable if index is selected.
-            var index = m.get('index');
+            let index = m.get('index');
             return !(_.isUndefined(index) || index == '');
           },
         },{
@@ -474,12 +474,12 @@ define('pgadmin.node.primary_key', [
             initialize: function() {
               // Here we will decide if we need to call URL
               // Or fetch the data from parent columns collection
-              var self = this;
+              let self = this;
               if(this.model.handler) {
                 Backform.Select2Control.prototype.initialize.apply(this, arguments);
                 // Do not listen for any event(s) for existing constraint.
                 if (_.isUndefined(self.model.get('oid'))) {
-                  var tableCols = self.model.top.get('columns');
+                  let tableCols = self.model.top.get('columns');
                   self.listenTo(tableCols, 'remove' , self.resetColOptions);
                   self.listenTo(tableCols, 'change:name', self.resetColOptions);
                 }
@@ -502,7 +502,7 @@ define('pgadmin.node.primary_key', [
           },
           disabled: function(m) {
             // Disable if index is selected.
-            var index = m.get('index');
+            let index = m.get('index');
             if(_.isUndefined(index) || index == '') {
               return false;
             } else {
@@ -525,7 +525,7 @@ define('pgadmin.node.primary_key', [
           disabled: function(m) {
             // Disable if index is selected.
             m = m.top || m;
-            var index = m.get('index');
+            let index = m.get('index');
             if(_.isUndefined(index) || index == '') {
               return false;
             } else {
@@ -564,7 +564,7 @@ define('pgadmin.node.primary_key', [
           type: 'int', group: gettext('Definition'), allowNull: true,
           disabled: function(m) {
             // Disable if index is selected.
-            var index = m.get('index');
+            let index = m.get('index');
             if(_.isUndefined(index) || index == '') {
               return false;
             } else {
@@ -582,7 +582,7 @@ define('pgadmin.node.primary_key', [
           },
           disabled: function(m) {
             // Disable if index is selected.
-            var index = m.get('index');
+            let index = m.get('index');
             if(_.isUndefined(index) || index == '') {
               return false;
             } else {
@@ -621,12 +621,12 @@ define('pgadmin.node.primary_key', [
             this.top.errorModel.clear();
           }
 
-          var columns = this.get('columns'),
+          let columns = this.get('columns'),
             index = this.get('index');
 
           if ((_.isUndefined(index) || String(index).replace(/^\s+|\s+$/g, '') == '') &&
             (_.isUndefined(columns) || _.isNull(columns) || columns.length < 1)) {
-            var msg = gettext('Please specify columns for %s.', gettext('Primary key'));
+            let msg = gettext('Please specify columns for %s.', gettext('Primary key'));
             this.errorModel.set('columns', msg);
             return msg;
           }

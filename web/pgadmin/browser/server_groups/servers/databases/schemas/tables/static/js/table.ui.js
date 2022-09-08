@@ -640,7 +640,7 @@ export default class TableSchema extends BaseUISchema {
       deps: ['typname', 'is_partitioned'],
       depChange: (state, source, topState, actionObj)=>{
         if(source[0] === 'columns') {
-          /* In ERD, attnum is an imp var for setting the links
+          /* In ERD, attnum is an imp let for setting the links
           Here, attnum is set to max avail value.
           */
           let columns = state.columns;
@@ -820,7 +820,7 @@ export default class TableSchema extends BaseUISchema {
       editable: false, type: 'select', controlProps: {allowClear: false},
       group: 'partition', deps: ['is_partitioned'],
       options: function() {
-        var options = [{
+        let options = [{
           label: gettext('Range'), value: 'range',
         },{
           label: gettext('List'), value: 'list',
@@ -858,7 +858,7 @@ export default class TableSchema extends BaseUISchema {
       canAddRow: function(state) {
         let columnsExist = false;
 
-        var maxRowCount = 1000;
+        let maxRowCount = 1000;
         if (state.partition_type && state.partition_type == 'list')
           maxRowCount = 1;
 

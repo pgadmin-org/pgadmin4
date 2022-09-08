@@ -23,7 +23,7 @@ export function getNodeVariableSchema(nodeObj, treeNodeInfo, itemNodeData, hasDa
   }
   return new VariableSchema(
     ()=>getNodeAjaxOptions('vopts', nodeObj, treeNodeInfo, itemNodeData, null, (vars)=>{
-      var res = [];
+      let res = [];
       _.each(vars, function(v) {
         res.push({
           'value': v.name,

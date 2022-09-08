@@ -19,8 +19,8 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
      * cellFunction for variable control.
      * This function returns cell class depending on vartype.
      */
-  var cellFunction = function(model) {
-    var self = this,
+  let cellFunction = function(model) {
+    let self = this,
       name = model.get('name'),
       availVariables = {};
 
@@ -30,7 +30,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
       }
     });
 
-    var variable = name ? availVariables[name]: undefined,
+    let variable = name ? availVariables[name]: undefined,
       value = model.get('value');
 
     switch(variable && variable.vartype) {
@@ -79,19 +79,19 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
        * This row will define behaviour or value column cell depending upon
        * variable name.
        */
-  var VariableRow = Backgrid.Row.extend({
+  let VariableRow = Backgrid.Row.extend({
     modelDuplicateClass: 'bg-model-duplicate',
 
     initialize: function () {
       Backgrid.Row.prototype.initialize.apply(this, arguments);
-      var self = this;
+      let self = this;
       self.model.on('change:name', function() {
         setTimeout(function() {
           self.columns.each(function(col) {
             if (col.get('name') == 'value') {
               // Reset old value
               self.model.set({'value': undefined}, {silent:true});
-              var idx = self.columns.indexOf(col),
+              let idx = self.columns.indexOf(col),
                 cf = col.get('cellFunction'),
                 cell = new (cf.apply(col, [self.model]))({
                   column: col,
@@ -122,7 +122,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
        *  VariableModel used to represent configuration parameters (variables tab)
        *  for database objects.
        **/
-  var VariableModel = pgNode.VariableModel = pgNode.Model.extend({
+  let VariableModel = pgNode.VariableModel = pgNode.Model.extend({
     keys: ['name'],
     defaults: {
       name: undefined,
@@ -142,7 +142,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
 
             // Immediately process options as we need them before render.
 
-            var opVals = _.clone(this.optionValues ||
+            let opVals = _.clone(this.optionValues ||
                 (_.isFunction(this.column.get('options')) ?
                   (this.column.get('options'))(this) :
                   this.column.get('options')));
@@ -153,7 +153,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
         url: 'vopts',
         select2: { allowClear: false },
         transform: function(vars, cell) {
-          var res = [],
+          let res = [],
             availVariables = {};
 
           _.each(vars, function(v) {
@@ -180,7 +180,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
         node: 'role', cell: Backgrid.Extension.NodeListByNameCell},
     ],
     toJSON: function() {
-      var d = Backbone.Model.prototype.toJSON.apply(this);
+      let d = Backbone.Model.prototype.toJSON.apply(this);
 
       // Remove not defined values from model values.
       // i.e.
@@ -196,7 +196,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
       return d;
     },
     validate: function() {
-      var msg = null;
+      let msg = null;
       if (_.isUndefined(this.get('name')) ||
           _.isNull(this.get('name')) ||
             String(this.get('name')).replace(/^\s+|\s+$/g, '') == '') {
@@ -228,7 +228,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
         hasRole: false,
 
         initialize: function(opts) {
-          var self = this,
+          let self = this,
             keys = ['name'];
 
           /*
@@ -266,7 +266,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
 
           self.availVariables = {};
 
-          var gridCols = ['name', 'value'];
+          let gridCols = ['name', 'value'];
 
           if (self.hasDatabase) {
             gridCols.push('database');
@@ -287,7 +287,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
          * Get the variable data for this node.
          */
         getVariables: function() {
-          var self = this,
+          let self = this,
             url = this.field.get('url'),
             m = self.model;
 
@@ -295,7 +295,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
             return;
 
           if (url && !m.isNew()) {
-            var node = self.field.get('node'),
+            let node = self.field.get('node'),
               node_data = self.field.get('node_data'),
               node_info = self.field.get('node_info'),
               full_url = node.generate_url.apply(
@@ -336,7 +336,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
 
         showGridControl: function(data) {
 
-          var self = this,
+          let self = this,
             titleTmpl = _.template([
               '<div class=\'subnode-header\'>',
               '<span class=\'control-label\'><%-label%></span>',
@@ -352,7 +352,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
             self.grid.remove();
           }
 
-          var gridSchema = _.clone(this.gridSchema);
+          let gridSchema = _.clone(this.gridSchema);
 
           _.each(gridSchema.columns, function(col) {
             if (col.name == 'value') {
@@ -372,7 +372,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
           // Change format of each of the data
           // Because - data coming from the server is in string format
           self.collection.each(function(model) {
-            var name = model.get('name'), val;
+            let name = model.get('name'), val;
 
             if (name in self.availVariables) {
               switch(self.availVariables[name].vartype) {
@@ -393,7 +393,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
           });
 
           // Initialize a new Grid instance
-          var grid = self.grid = new Backgrid.Grid({
+          let grid = self.grid = new Backgrid.Grid({
             columns: gridSchema.columns,
             collection: self.collection,
             row: VariableRow,
@@ -407,18 +407,18 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
           if (!(data.disabled || data.canAdd == false)) {
             $gridBody.find('button.add').first().on('click',(e) => {
               e.preventDefault();
-              var canAddRow = _.isFunction(data.canAddRow) ?
+              let canAddRow = _.isFunction(data.canAddRow) ?
                 data.canAddRow.apply(self, [self.model]) : true;
               if (canAddRow) {
 
-                var allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
+                let allowMultipleEmptyRows = !!self.field.get('allowMultipleEmptyRows');
 
                 // If allowMultipleEmptyRows is not set or is false then don't allow second new empty row.
                 // There should be only one empty row.
                 if (!allowMultipleEmptyRows && self.collection) {
-                  var isEmpty = false;
+                  let isEmpty = false;
                   self.collection.each(function(model) {
-                    var modelValues = [];
+                    let modelValues = [];
                     _.each(model.attributes, function(val) {
                       modelValues.push(val);
                     });
@@ -432,7 +432,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
                 }
 
                 $(grid.body.$el.find($('tr.new'))).removeClass('new');
-                var m = new (data.model) (null, {
+                let m = new (data.model) (null, {
                   silent: true,
                   handler: self.collection,
                   top: self.model.top || self.model,
@@ -441,7 +441,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
                 });
                 self.collection.add(m);
 
-                var idx = self.collection.indexOf(m),
+                let idx = self.collection.indexOf(m),
                   newRow = grid.body.rows[idx].$el;
 
                 newRow.addClass('new');
@@ -459,7 +459,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
         addVariable: function(ev) {
           ev.preventDefault();
 
-          var self = this,
+          let self = this,
             m = new (self.field.get('model'))(
               self.headerData.toJSON(), {
                 silent: true, top: self.collection.top,
@@ -469,14 +469,14 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
 
           coll.add(m);
 
-          var idx = coll.indexOf(m);
+          let idx = coll.indexOf(m);
 
           // idx may not be always > -1 because our UniqueColCollection may
           // remove 'm' if duplicate value found.
           if (idx > -1) {
             self.$grid.find('.new').removeClass('new');
 
-            var newRow = self.grid.body.rows[idx].$el;
+            let newRow = self.grid.body.rows[idx].$el;
 
             newRow.addClass('new');
             $(newRow).pgMakeVisible('backform-tab');

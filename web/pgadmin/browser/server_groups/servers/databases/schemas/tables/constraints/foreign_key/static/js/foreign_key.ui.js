@@ -325,7 +325,7 @@ export default class ForeignKeySchema extends BaseUISchema {
         controlProps: {
           formatter: {
             fromRaw: (rawValue)=>{
-              var cols = [],
+              let cols = [],
                 remoteCols = [];
               if (rawValue?.length > 0) {
                 rawValue.forEach((col)=>{

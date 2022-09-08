@@ -58,14 +58,14 @@ define('pgadmin.node.foreign_key', [
       },
       callbacks: {
         validate_foreign_key: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            var data = d;
+            let data = d;
             $.ajax({
               url: obj.generate_url(i, 'validate', d, true),
               type:'GET',
@@ -97,7 +97,7 @@ define('pgadmin.node.foreign_key', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
           s_version = t.getTreeNodeHierarchy(i).server.version;

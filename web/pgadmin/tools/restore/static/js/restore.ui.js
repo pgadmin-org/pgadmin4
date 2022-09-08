@@ -177,7 +177,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       disabled: false,
       group: gettext('Do not save'),
       visible: function() {
-        var serverInfo = obj.fieldOptions.nodeInfo.server;
+        let serverInfo = obj.fieldOptions.nodeInfo.server;
         return !_.isUndefined(serverInfo) && serverInfo.version >= 110000 ? true : false;
       },
     }];
@@ -367,7 +367,7 @@ export default class RestoreSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'format',
       label: gettext('Format'),

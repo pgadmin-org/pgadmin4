@@ -78,7 +78,7 @@ define('pgadmin.node.package', [
         if (data && data.check == false)
           return true;
 
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         if (server && server.server_type === 'pg')
@@ -92,7 +92,7 @@ define('pgadmin.node.package', [
         return true;
       },
       getSchema: (treeNodeInfo, itemNodeData) => {
-        var nodeObj = pgBrowser.Nodes['package'];
+        let nodeObj = pgBrowser.Nodes['package'];
         return new PackageSchema(
           (privileges)=>getNodePrivilegeRoleSchema(nodeObj, treeNodeInfo, itemNodeData, privileges),
           {

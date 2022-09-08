@@ -11,7 +11,7 @@
 //Configuration file contains requireJS like shim and paths used by webpack shim-loader
 const path = require('path');
 
-var webpackShimConfig = {
+let webpackShimConfig = {
   shim: {
     'moment': {
       exports: 'moment',
@@ -291,7 +291,7 @@ var webpackShimConfig = {
   ],
   // Checks whether JS module is npm module or not
   isExternal: function(module) {
-    var context = module.context;
+    let context = module.context;
     if (typeof context !== 'string') { return false; }
     return (context.indexOf('node_modules') !== -1 || context.indexOf('vendor') !== -1);
   },

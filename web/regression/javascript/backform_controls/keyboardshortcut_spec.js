@@ -84,7 +84,7 @@ define([
           'char': 'I',
         });
 
-        var val = $.extend(true, {}, model.get(field.get('name')));
+        let val = $.extend(true, {}, model.get(field.get('name')));
 
         model.set(field.get('name'),
           $.extend(true, val, {
@@ -124,7 +124,7 @@ define([
         expect(control.$el.find('input:checkbox[name="control"]')[0].checked).toBeTruthy();
         expect(control.innerModel.get('control')).toBeTruthy();
 
-        var val = $.extend(true, {}, model.get(field.get('name')));
+        let val = $.extend(true, {}, model.get(field.get('name')));
 
         model.set(field.get('name'),
           $.extend(true, val, {
@@ -161,7 +161,7 @@ define([
         expect(control.$el.find('input:checkbox[name="shift"]')[0].checked).toBeFalsy();
         expect(control.innerModel.get('shift')).toBeFalsy();
 
-        var val = $.extend(true, {}, model.get(field.get('name')));
+        let val = $.extend(true, {}, model.get(field.get('name')));
 
         model.set(field.get('name'),
           $.extend(true, val, {
@@ -198,7 +198,7 @@ define([
         expect(control.$el.find('input:checkbox[name="alt_option"]')[0].checked).toBeTruthy();
         expect(control.innerModel.get('alt_option')).toBeTruthy();
 
-        var val = $.extend(true, {}, model.get(field.get('name')));
+        let val = $.extend(true, {}, model.get(field.get('name')));
 
         model.set(field.get('name'),
           $.extend(true, val, {

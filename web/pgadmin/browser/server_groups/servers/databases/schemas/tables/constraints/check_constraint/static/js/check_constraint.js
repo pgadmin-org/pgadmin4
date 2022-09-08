@@ -62,14 +62,14 @@ define('pgadmin.node.check_constraint', [
       },
       callbacks: {
         validate_check_constraint: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            var data = d;
+            let data = d;
             $.ajax({
               url: obj.generate_url(i, 'validate', d, true),
               type:'GET',
@@ -103,7 +103,7 @@ define('pgadmin.node.check_constraint', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [];
         // To iterate over tree to check parent node
         while (i) {
           // If it is schema then allow user to c reate table

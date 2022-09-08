@@ -44,7 +44,7 @@ define('pgadmin.node.server', [
         if (_.isUndefined(this.get('label')) ||
           _.isNull(this.get('label')) ||
             String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
-          var errmsg = gettext('Security label must be specified.');
+          let errmsg = gettext('Security label must be specified.');
           this.errorModel.set('label', errmsg);
           return errmsg;
         }
@@ -59,7 +59,7 @@ define('pgadmin.node.server', [
       dialogHelp: url_for('help.static', {'filename': 'server_dialog.html'}),
       label: gettext('Server'),
       canDrop: function(node){
-        var serverOwner = node.user_id;
+        let serverOwner = node.user_id;
         if (serverOwner != current_user.id && !_.isUndefined(serverOwner))
           return false;
         return true;
@@ -178,7 +178,7 @@ define('pgadmin.node.server', [
         return (node && node.connected != true);
       },
       canCreate: function(node){
-        var serverOwner = node.user_id;
+        let serverOwner = node.user_id;
         if (serverOwner == current_user.id || _.isUndefined(serverOwner))
           return true;
         return false;
@@ -227,7 +227,7 @@ define('pgadmin.node.server', [
       callbacks: {
         /* Connect the server */
         connect_server: function(args){
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -240,7 +240,7 @@ define('pgadmin.node.server', [
         },
         /* Disconnect the server */
         disconnect_server: function(args, notify) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = 'item' in input ? input.item : t.selected(),
@@ -249,7 +249,7 @@ define('pgadmin.node.server', [
           if (d) {
             notify = notify || _.isUndefined(notify) || _.isNull(notify);
 
-            var disconnect = function() {
+            let disconnect = function() {
               $.ajax({
                 url: obj.generate_url(i, 'connect', d, true),
                 type:'DELETE',
@@ -332,7 +332,7 @@ define('pgadmin.node.server', [
         },
         /* Reload configuration */
         reload_configuration: function(args){
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -368,7 +368,7 @@ define('pgadmin.node.server', [
         },
         /* Add restore point */
         restore_point: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -382,7 +382,7 @@ define('pgadmin.node.server', [
 
         /* Change password */
         change_password: function(args){
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -426,7 +426,7 @@ define('pgadmin.node.server', [
 
         /* Pause WAL Replay */
         pause_wal_replay: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -451,7 +451,7 @@ define('pgadmin.node.server', [
 
         /* Resume WAL Replay */
         resume_wal_replay: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -476,7 +476,7 @@ define('pgadmin.node.server', [
 
         /* Cleat saved database server password */
         clear_saved_password: function(args){
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -513,7 +513,7 @@ define('pgadmin.node.server', [
 
         /* Reset stored ssh tunnel  password */
         clear_sshtunnel_password: function(args){
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -549,7 +549,7 @@ define('pgadmin.node.server', [
         },
         /* Open psql tool for server*/
         server_psql_tool: function(args) {
-          var input = args || {},
+          let input = args || {},
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i  ? t.itemData(i) : undefined;
@@ -567,7 +567,7 @@ define('pgadmin.node.server', [
       },
       connection_lost: function(i, resp) {
         if (pgBrowser.tree) {
-          var t = pgBrowser.tree,
+          let t = pgBrowser.tree,
             d = i && t.itemData(i),
             self = this;
 
@@ -580,7 +580,7 @@ define('pgadmin.node.server', [
             if (_.isUndefined(d.is_connecting) || !d.is_connecting) {
               d.is_connecting = true;
 
-              var disconnect = function(_sid) {
+              let disconnect = function(_sid) {
                 if (d._id == _sid) {
                   d.is_connecting = false;
                   // Stop listening to the connection cancellation event
@@ -628,7 +628,7 @@ define('pgadmin.node.server', [
       },
     });
 
-    var connect_to_server = function(obj, data, tree, item, reconnect) {
+    let connect_to_server = function(obj, data, tree, item, reconnect) {
     // Open properties dialog in edit mode
       let server_url = obj.generate_url(item, 'obj', data, true);
       // Fetch the updated data
@@ -658,7 +658,7 @@ define('pgadmin.node.server', [
           data.is_connecting = false;
         });
 
-      var wasConnected = reconnect || data.connected,
+      let wasConnected = reconnect || data.connected,
         onFailure = function(
           xhr, status, error, _node, _data, _tree, _item, _wasConnected
         ) {
@@ -714,7 +714,7 @@ define('pgadmin.node.server', [
             _.extend(_data, res.data);
             _data.is_connecting = false;
 
-            var serverInfo = pgBrowser.serverInfo =
+            let serverInfo = pgBrowser.serverInfo =
               pgBrowser.serverInfo || {};
             serverInfo[_data._id] = _.extend({}, _data);
 
@@ -763,7 +763,7 @@ define('pgadmin.node.server', [
           }
         };
 
-      var onCancel = function(_tree, _item, _data, _status) {
+      let onCancel = function(_tree, _item, _data, _status) {
         _data.is_connecting = false;
         _tree.unload(_item);
         _tree.setInode(_item);
@@ -793,7 +793,7 @@ define('pgadmin.node.server', [
       tree.setLeaf(item);
       tree.removeIcon(item);
       tree.addIcon(item, {icon: 'icon-server-connecting'});
-      var url = obj.generate_url(item, 'connect', data, true);
+      let url = obj.generate_url(item, 'connect', data, true);
       $.post(url)
         .done(function(res) {
           if (res.success == 1) {
@@ -811,8 +811,8 @@ define('pgadmin.node.server', [
           data.is_connecting = false;
         });
     };
-    var fetch_connection_status = function(obj, data, tree, item) {
-      var url = obj.generate_url(item, 'connect', data, true);
+    let fetch_connection_status = function(obj, data, tree, item) {
+      let url = obj.generate_url(item, 'connect', data, true);
 
       tree.setLeaf(item);
       tree.removeIcon(item);
@@ -828,7 +828,7 @@ define('pgadmin.node.server', [
             }
             _.extend(data, res.data);
 
-            var serverInfo = pgBrowser.serverInfo = pgBrowser.serverInfo || {};
+            let serverInfo = pgBrowser.serverInfo = pgBrowser.serverInfo || {};
             serverInfo[data._id] = _.extend({}, data);
 
             if(data.errmsg) {

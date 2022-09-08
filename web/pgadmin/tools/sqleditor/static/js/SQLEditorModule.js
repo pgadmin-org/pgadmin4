@@ -55,7 +55,7 @@ export default class SQLEditor {
   * otherwise disabled.
   */
   viewMenuEnabled(obj) {
-    var isEnabled = (() => {
+    let isEnabled = (() => {
       if (!_.isUndefined(obj) && !_.isNull(obj))
         return (_.indexOf(this.SUPPORTED_NODES, obj._type) !== -1 ? true : false);
       else
@@ -73,7 +73,7 @@ export default class SQLEditor {
   * otherwise enabled.
   */
   queryToolMenuEnabled(obj) {
-    var isEnabled = (() => {
+    let isEnabled = (() => {
       if (!_.isUndefined(obj) && !_.isNull(obj)) {
         if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
           if (obj._type == 'database' && obj.allowConn) {
@@ -116,7 +116,7 @@ export default class SQLEditor {
     });
 
     // Define the nodes on which the menus to be appear
-    var menus = [{
+    let menus = [{
       name: 'query_tool',
       module: this,
       applies: ['tools'],
@@ -192,7 +192,7 @@ export default class SQLEditor {
     pgBrowser.add_menus(menus);
 
     // Creating a new pgAdmin.Browser frame to show the data.
-    var frame = new pgAdmin.Browser.Frame({
+    let frame = new pgAdmin.Browser.Frame({
       name: 'frm_sqleditor',
       showTitle: true,
       isCloseable: true,
@@ -220,15 +220,15 @@ export default class SQLEditor {
   // This is a callback function to show query tool when user click on menu item.
   showQueryTool(url, treeIdentifier) {
     const transId = commonUtils.getRandomInt(1, 9999999);
-    var t = pgBrowser.tree,
+    let t = pgBrowser.tree,
       i = treeIdentifier || t.selected(),
       d = i ? t.itemData(i) : undefined;
 
     //Open query tool with create script if copy_sql_to_query_tool is true else open blank query tool
-    var preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
+    let preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
     if(preference.value && !d._type.includes('coll-') && (url === '' || url['applies'] === 'tools')){
-      var stype = d._type.toLowerCase();
-      var data = {
+      let stype = d._type.toLowerCase();
+      let data = {
         'script': stype,
         data_disabled: gettext('The selected tree node does not support this option.'),
       };
@@ -260,9 +260,9 @@ export default class SQLEditor {
 
   openQueryToolPanel(trans_id, is_query_tool, panel_title, closeUrl, queryToolForm) {
     let self = this;
-    var browser_preferences = pgBrowser.get_preferences_for_module('browser');
-    var propertiesPanel = pgBrowser.docker.findPanels('properties');
-    var queryToolPanel = pgBrowser.docker.addPanel('frm_sqleditor', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+    let browser_preferences = pgBrowser.get_preferences_for_module('browser');
+    let propertiesPanel = pgBrowser.docker.findPanels('properties');
+    let queryToolPanel = pgBrowser.docker.addPanel('frm_sqleditor', wcDocker.DOCK.STACKED, propertiesPanel[0]);
     queryToolPanel.trans_id = trans_id;
     showQueryTool._set_dynamic_tab(pgBrowser, browser_preferences['dynamic_tabs']);
 
@@ -281,7 +281,7 @@ export default class SQLEditor {
       self.onPanelRename(queryToolPanel, panelData, is_query_tool);
     });
 
-    var openQueryToolURL = function(j) {
+    let openQueryToolURL = function(j) {
       // add spinner element
       let $spinner_el =
         $(`<div class="pg-sp-container">
@@ -293,10 +293,10 @@ export default class SQLEditor {
           </div>`).appendTo($(j).data('embeddedFrame').$container);
 
       let init_poller_id = setInterval(function() {
-        var frameInitialized = $(j).data('frameInitialized');
+        let frameInitialized = $(j).data('frameInitialized');
         if (frameInitialized) {
           clearInterval(init_poller_id);
-          var frame = $(j).data('embeddedFrame');
+          let frame = $(j).data('embeddedFrame');
           if (frame) {
             frame.onLoaded(()=>{
               $spinner_el.remove();
@@ -336,10 +336,10 @@ export default class SQLEditor {
         </script>
       `;
 
-    var browser_preferences = pgBrowser.get_preferences_for_module('browser');
-    var open_new_tab = browser_preferences.new_browser_tab_open;
+    let browser_preferences = pgBrowser.get_preferences_for_module('browser');
+    let open_new_tab = browser_preferences.new_browser_tab_open;
     if (open_new_tab && open_new_tab.includes('qt')) {
-      var newWin = window.open('', '_blank');
+      let newWin = window.open('', '_blank');
       if(newWin) {
         newWin.document.write(queryToolForm);
         newWin.document.title = panel_title;

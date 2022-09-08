@@ -54,7 +54,7 @@ _.extend(pgBrowser, {
 
   /* Get all the preferences of a module */
   get_preferences_for_module: function(module) {
-    var self = this;
+    let self = this;
     let preferences = {};
     _.each(
       _.where(self.preferences_cache, {'module': module}),
@@ -69,14 +69,14 @@ _.extend(pgBrowser, {
 
   /* Get preference of an id, id is numeric */
   get_preference_for_id : function(id) {
-    var self = this;
+    let self = this;
     /* findWhere returns undefined if not found */
     return _.findWhere(self.preferences_cache, {'id': id});
   },
 
   // Get and cache the preferences
   cache_preferences: function (modulesChanged) {
-    var self = this,
+    let self = this,
       headers = {};
     headers[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
 

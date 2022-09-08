@@ -30,7 +30,7 @@ export default class ImportExportServersModule {
     this.initialized = true;
 
     // Define the nodes on which the menus to be appear
-    var menus = [{
+    let menus = [{
       name: 'import_export_servers',
       module: this,
       applies: ['tools'],

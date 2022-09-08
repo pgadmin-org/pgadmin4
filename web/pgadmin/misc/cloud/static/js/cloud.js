@@ -37,7 +37,7 @@ define('pgadmin.misc.cloud', [
       this.initialized = true;
 
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      let menus = [{
         name: 'register_and_deploy_cloud_instance',
         module: this,
         applies: ['object', 'context'],

@@ -10,7 +10,7 @@
 import {pgBrowser} from 'pgadmin.browser.layout';
 import 'wcdocker';
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
 describe('layout related functions test', function() {
   let menu_items = null;

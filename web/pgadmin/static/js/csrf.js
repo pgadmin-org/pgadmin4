@@ -19,7 +19,7 @@ export function setPGCSRFToken(header, token) {
 
   // Configure Backbone.sync to set CSRF-Token-header request header for
   // every requests except GET.
-  var origBackboneSync = Backbone.sync;
+  let origBackboneSync = Backbone.sync;
   Backbone.sync = function(method, model, options) {
     options.beforeSend = function(xhr) {
       xhr.setRequestHeader(header, token);
@@ -30,7 +30,7 @@ export function setPGCSRFToken(header, token) {
 
   // Configure Backbone.get to set 'X-CSRFToken' request header for
   // GET requests.
-  var origBackboneGet = Backbone.get;
+  let origBackboneGet = Backbone.get;
   Backbone.get = function(method, model, options) {
     options.beforeSend = function(xhr) {
       xhr.setRequestHeader(header, token);

@@ -241,7 +241,7 @@ export default class SequenceSchema extends BaseUISchema {
       }
     }
 
-    var min_lt = gettext('Minimum value must be less than maximum value.'),
+    let min_lt = gettext('Minimum value must be less than maximum value.'),
       start_lt = gettext('Start value cannot be less than minimum value.'),
       start_gt = gettext('Start value cannot be greater than maximum value.');
 

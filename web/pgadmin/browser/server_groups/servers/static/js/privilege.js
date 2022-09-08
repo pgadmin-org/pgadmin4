@@ -22,7 +22,7 @@ define(['sources/gettext', 'jquery', 'backbone',
    *   privilege      -> Has privilege? (true/false)
    *   with_grant     -> Has privilege with grant option (true/false)
    **/
-  var PrivilegeModel = pgNode.Model.extend({
+  let PrivilegeModel = pgNode.Model.extend({
     idAttribute: 'privilege_type',
     defaults: {
       privilege_type: undefined,
@@ -44,7 +44,7 @@ define(['sources/gettext', 'jquery', 'backbone',
    *  + grantor    - Grantor who has given this permission.
    *  + privileges - Privileges for that role.
    **/
-  var PrivilegeRoleModel = pgNode.PrivilegeRoleModel = pgNode.Model.extend({
+  let PrivilegeRoleModel = pgNode.PrivilegeRoleModel = pgNode.Model.extend({
     idAttribute: 'grantee',
     defaults: {
       grantee: undefined,
@@ -72,7 +72,7 @@ define(['sources/gettext', 'jquery', 'backbone',
         );
       },
       transform: function() {
-        var res =
+        let res =
           Backgrid.Extension.NodeListByNameCell.prototype.defaults.transform.apply(
             this, arguments
           );
@@ -81,7 +81,7 @@ define(['sources/gettext', 'jquery', 'backbone',
       },
       cell: Backgrid.Extension.NodeListByNameCell.extend({
         initialize: function(opts) {
-          var self = this,
+          let self = this,
             override_opts = true;
 
           // We would like to override the original options, because - we
@@ -105,8 +105,8 @@ define(['sources/gettext', 'jquery', 'backbone',
             );
           }
 
-          var rerender = function (m) {
-            var _self = this;
+          let rerender = function (m) {
+            let _self = this;
             if ('grantee' in m.changed && this.model.cid != m.cid) {
               setTimeout(
                 function() {
@@ -125,7 +125,7 @@ define(['sources/gettext', 'jquery', 'backbone',
         },
         // Remove all the selected roles (though- not mine).
         omit_selected_roles: function(opts, cell) {
-          var res = opts(cell),
+          let res = opts(cell),
             selected = {},
             model = cell.model,
             cid = model.cid,
@@ -140,7 +140,7 @@ define(['sources/gettext', 'jquery', 'backbone',
             curr_user = node_info.server.user.name;
 
           model.collection.each(function(m) {
-            var grantee = m.get('grantee');
+            let grantee = m.get('grantee');
 
             if (m.cid != cid && !_.isUndefined(grantee) &&
               curr_user == m.get('grantor')) {
@@ -194,7 +194,7 @@ define(['sources/gettext', 'jquery', 'backbone',
       /*
        * Define the collection of the privilege supported by this model
        */
-      var self = this,
+      let self = this,
         models = self.get('privileges'),
         privileges = this.get('privileges') || {};
 
@@ -210,7 +210,7 @@ define(['sources/gettext', 'jquery', 'backbone',
         this.set('privileges', privileges, {silent: true});
       }
 
-      var privs = {};
+      let privs = {};
       _.each(self.privileges, function(p) {
         privs[p] = {
           'privilege_type': p, 'privilege': false, 'with_grant': false,
@@ -234,7 +234,7 @@ define(['sources/gettext', 'jquery', 'backbone',
     },
 
     granteeChanged: function() {
-      var privileges = this.get('privileges'),
+      let privileges = this.get('privileges'),
         grantee = this.get('grantee');
 
       // Reset all with grant options if grantee is public.
@@ -247,7 +247,7 @@ define(['sources/gettext', 'jquery', 'backbone',
 
     toJSON: function() {
 
-      var privileges = [];
+      let privileges = [];
 
       if (this.attributes &&
         !this.attributes['privileges']) {
@@ -269,7 +269,7 @@ define(['sources/gettext', 'jquery', 'backbone',
     },
 
     validate: function() {
-      var  errmsg = null,
+      let  errmsg = null,
         msg;
 
       if (_.isUndefined(this.get('grantee'))) {
@@ -282,7 +282,7 @@ define(['sources/gettext', 'jquery', 'backbone',
 
       if (this.attributes &&
         this.attributes['privileges']) {
-        var anyPrivSelected = false;
+        let anyPrivSelected = false;
         this.attributes['privileges'].each(
           function(p) {
             if (p.get('privilege')) {
@@ -306,7 +306,7 @@ define(['sources/gettext', 'jquery', 'backbone',
   /**
    Custom cell editor for editing privileges.
    */
-  var PrivilegeCellEditor = Backgrid.Extension.PrivilegeCellEditor =
+  let PrivilegeCellEditor = Backgrid.Extension.PrivilegeCellEditor =
     Backgrid.CellEditor.extend({
       tagName: 'div',
 
@@ -358,16 +358,16 @@ define(['sources/gettext', 'jquery', 'backbone',
         this.$el.attr('tabindex', '1');
         this.$el.attr('target', this.elId);
 
-        var collection = this.model.get(this.column.get('name')),
+        let collection = this.model.get(this.column.get('name')),
           tbl = $('<table aria-label='+this.column.get('label')+'></table>').appendTo(this.$el),
           self = this,
           privilege = true, with_grant = true;
 
         // For each privilege generate html template.
         // List down all the Privilege model.
-        var checkbox_id = _.uniqueId();
+        let checkbox_id = _.uniqueId();
         collection.each(function(m) {
-          var d = m.toJSON();
+          let d = m.toJSON();
 
           privilege = (privilege && d.privilege);
           with_grant = (with_grant && privilege && d.with_grant);
@@ -423,7 +423,7 @@ define(['sources/gettext', 'jquery', 'backbone',
           /*
            * We're looking for checkboxes only.
            */
-          var $el = $(ev.target),
+          let $el = $(ev.target),
             privilege_type = $el.attr('privilege'),
             type = $el.attr('name'),
             checked = $el.prop('checked'),
@@ -439,7 +439,7 @@ define(['sources/gettext', 'jquery', 'backbone',
            * the checkbox for each privilege.
            */
           if (privilege_type == 'ALL') {
-            var allPrivilege, allWithGrant;
+            let allPrivilege, allWithGrant;
 
             $elGrant = $tr.find('input[name=with_grant]');
             $allPrivileges = $tbl.find(
@@ -513,7 +513,7 @@ define(['sources/gettext', 'jquery', 'backbone',
              * Particular privilege has been selected/deselected, which can be
              * identified using the privilege="X" attribute.
              */
-            var attrs = {};
+            let attrs = {};
 
             $tbl = $tr.closest('table');
             $allPrivileges = $tbl.find(
@@ -568,7 +568,7 @@ define(['sources/gettext', 'jquery', 'backbone',
           }
           this.model.trigger('change', this.model);
 
-          var anySelected = false,
+          let anySelected = false,
             msg = null;
 
           collection.each(function(m) {
@@ -603,13 +603,13 @@ define(['sources/gettext', 'jquery', 'backbone',
         /*
          * We lost the focus, it's time for us to exit the editor.
          */
-        var self = this,
+        let self = this,
           /*
            * Function to determine whether one dom element is descendant of another
            * dom element.
            */
           isDescendant = function (parent, child) {
-            var node = child.parentNode;
+            let node = child.parentNode;
             while (node != null) {
               if (node == parent) {
                 return true;
@@ -657,12 +657,12 @@ define(['sources/gettext', 'jquery', 'backbone',
            * if user clicks somewhere else then we will get tagName as 'BODY'
            * or 'WINDOW'
            */
-          var is_active_element = document.activeElement.tagName == 'DIV' ||
+          let is_active_element = document.activeElement.tagName == 'DIV' ||
             document.activeElement.tagName == 'BUTTON';
 
           if (is_active_element && self.$el[0] != document.activeElement &&
             !isDescendant(self.$el[0], document.activeElement)) {
-            var m = self.model;
+            let m = self.model;
             m.trigger('backgrid:edited', m, self.column, new Backgrid.Command(ev));
           }},10);
       },
@@ -672,7 +672,7 @@ define(['sources/gettext', 'jquery', 'backbone',
    * This will help us transform the privileges value in proper format to be
    * displayed in the cell.
    */
-  var PrivilegeCellFormatter = Backgrid.Extension.PrivilegeCellFormatter =
+  let PrivilegeCellFormatter = Backgrid.Extension.PrivilegeCellFormatter =
     function () {/*This is intentional (SonarQube)*/};
   _.extend(PrivilegeCellFormatter.prototype, {
     notation: {
@@ -694,7 +694,7 @@ define(['sources/gettext', 'jquery', 'backbone',
      * string for display.
      */
     fromRaw: function (rawData) {
-      var res = '';
+      let res = '';
 
       if (rawData instanceof Backbone.Collection) {
         rawData.each(function(m) {
@@ -719,7 +719,7 @@ define(['sources/gettext', 'jquery', 'backbone',
     editor: PrivilegeCellEditor,
 
     initialize: function () {
-      var self = this;
+      let self = this;
       Backgrid.Cell.prototype.initialize.apply(this, arguments);
 
       self.model.on('change:grantee', function() {
@@ -741,9 +741,9 @@ define(['sources/gettext', 'jquery', 'backbone',
     },
 
     saveOrCancel: function (e) {
-      var model = this.model;
-      var column = this.column;
-      var command = new Backgrid.Command(e);
+      let model = this.model;
+      let column = this.column;
+      let command = new Backgrid.Command(e);
 
       if (command.moveUp() || command.moveDown() || command.moveLeft() || command.moveRight() ||
         command.save()) {

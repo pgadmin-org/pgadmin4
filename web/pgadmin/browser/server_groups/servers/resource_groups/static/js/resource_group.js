@@ -57,7 +57,7 @@ define('pgadmin.node.resource_group', [
            * Resource Group only supported in PPAS 9.4 and above.
            */
           enable: function(node, item) {
-            var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+            let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
               server = treeData['server'];
             return server.connected && node.server_type === 'ppas' &&
               node.version >= 90400;

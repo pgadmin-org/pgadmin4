@@ -11,7 +11,7 @@ define(['sources/check_node_visibility'],
   function (checkNodeVisibility) {
     describe('checkNodeVisibility', function () {
 
-      var browser;
+      let browser;
 
       browser = jasmine.createSpyObj('browser', [
         'node_preference_data', 'get_preference']

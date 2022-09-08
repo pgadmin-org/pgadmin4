@@ -26,7 +26,7 @@ import 'codemirror/addon/comment/comment';
 import 'sources/codemirror/addon/fold/pgadmin-sqlfoldcode';
 import 'sources/codemirror/extension/centre_on_line';
 
-var cmds = CodeMirror.commands;
+let cmds = CodeMirror.commands;
 cmds.focusOut = function(){
   event.stopPropagation();
   document.activeElement.blur();

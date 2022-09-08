@@ -135,7 +135,7 @@ export default class DomainSchema extends BaseUISchema {
         readonly: function(state) {return !obj.isNew(state);},
         disabled: function(state) {
           // We will store type from selected from combobox
-          var of_type = state.basetype;
+          let of_type = state.basetype;
           if(obj.type_options) {
             // iterating over all the types
             _.each(obj.type_options, function(o) {
@@ -167,7 +167,7 @@ export default class DomainSchema extends BaseUISchema {
         readonly: function(state) {return !obj.isNew(state);},
         disabled: function(state) {
           // We will store type from selected from combobox
-          var of_type = state.basetype;
+          let of_type = state.basetype;
           if(obj.type_options) {
             // iterating over all the types
             _.each(obj.type_options, function(o) {

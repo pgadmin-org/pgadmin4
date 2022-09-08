@@ -10,7 +10,7 @@
 import {pgBrowser} from 'pgadmin.browser.preferences';
 import $ from 'jquery';
 
-var dummy_cache = [
+let dummy_cache = [
   {
     id: 1,
     mid: 1,
@@ -152,7 +152,7 @@ describe('preferences related functions test', function() {
       window.parent.$ = $;
       spyOn($.fn, 'on');
 
-      var eventHandler = jasmine.createSpy('eventHandler');
+      let eventHandler = jasmine.createSpy('eventHandler');
       pgBrowser.onPreferencesChange('somemodule', eventHandler);
       if($.fn.on.calls.mostRecent()) {
         expect($.fn.on.calls.mostRecent().args[0]).toEqual('prefchange:somemodule');

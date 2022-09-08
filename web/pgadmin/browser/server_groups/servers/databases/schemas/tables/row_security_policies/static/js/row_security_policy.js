@@ -88,7 +88,7 @@ define('pgadmin.node.row_security_policy', [
       },
       canCreate: function(itemData, item) {
 
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         // If node is under catalog then do not allow 'create' menu

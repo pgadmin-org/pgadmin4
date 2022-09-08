@@ -177,7 +177,7 @@ fs.readdirSync(all_themes_dir).map(function(curr_dir) {
 
 fs.writeFileSync(pgadminThemesJson, JSON.stringify(pgadminThemes, null, 4));
 
-var themeCssRules = function(theme_name) {
+let themeCssRules = function(theme_name) {
   return [{
     test: /\.svg$/,
     oneOf: [
@@ -286,7 +286,7 @@ var themeCssRules = function(theme_name) {
   }];
 };
 
-var getThemeWebpackConfig = function(theme_name) {
+let getThemeWebpackConfig = function(theme_name) {
   return {
     mode: envType,
     devtool: devToolVal,
@@ -360,7 +360,7 @@ var getThemeWebpackConfig = function(theme_name) {
   };
 };
 
-var pgadminThemesWebpack = [];
+let pgadminThemesWebpack = [];
 Object.keys(pgadminThemes).forEach((theme_name)=>{
   pgadminThemesWebpack.push(getThemeWebpackConfig(theme_name));
 });
@@ -406,7 +406,7 @@ module.exports = [{
     //
     // imports-loader: it adds dependent modules(use:imports-loader?module1)
     // at the beginning of module it is dependency of like:
-    // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
+    // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
@@ -461,7 +461,7 @@ module.exports = [{
     }, {
       // imports-loader: it adds dependent modules(use:imports-loader?module1)
       // at the beginning of module it is dependency of like:
-      // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
+      // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
       // It solves number of problems
       // Ref: http:/github.com/webpack-contrib/imports-loader/
       test: require.resolve('./pgadmin/tools/sqleditor/static/js/index'),

@@ -36,7 +36,7 @@ define([
       this.initialized = true;
 
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      let menus = [{
         name: 'grant_wizard_schema',
         module: this,
         applies: ['tools'],

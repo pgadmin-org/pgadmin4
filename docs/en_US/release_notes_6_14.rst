@@ -21,6 +21,7 @@ Housekeeping
 
   | `Issue #6133 <https://redmine.postgresql.org/issues/6133>`_ -  Port schema diff to React.
   | `Issue #7343 <https://redmine.postgresql.org/issues/7343>`_ -  Port the remaining components of the ERD Tool to React.
+  | `Issue #7619 <https://redmine.postgresql.org/issues/7619>`_ -  Remove Alertify from pgAdmin completely.
   | `Issue #7622 <https://redmine.postgresql.org/issues/7622>`_ -  Port search object dialog to React.
 
 Bug fixes

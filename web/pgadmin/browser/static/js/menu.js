@@ -16,8 +16,8 @@ define([
   pgAdmin.Browser = pgAdmin.Browser || {};
 
   // Individual menu-item class
-  var MenuItem = pgAdmin.Browser.MenuItem = function(opts) {
-    var menu_opts = [
+  let MenuItem = pgAdmin.Browser.MenuItem = function(opts) {
+    let menu_opts = [
         'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
         'category', 'target', 'url' /* Do not show icon in the menus, 'icon' */ , 'node',
         'checked', 'below', 'menu_items',
@@ -62,17 +62,17 @@ define([
         _.each(this.menu_items, function(submenu_item){
           submenu_item.generate(node, item);
         });
-        var create_submenu = pgAdmin.Browser.MenuGroup({
+        let create_submenu = pgAdmin.Browser.MenuGroup({
           'label': this.label,
           'id': this.name,
         }, this.menu_items);
         this.$el = create_submenu.$el;
       } else {
-        var data_disabled = null;
+        let data_disabled = null;
         if(this.data != undefined && this.data.data_disabled != undefined){
           data_disabled = this.data.data_disabled;
         }
-        var url = $('<a></a>', {
+        let url = $('<a></a>', {
           'id': this.name,
           'href': this.url,
           'target': this.target,
@@ -98,11 +98,11 @@ define([
 
         url.addClass((this.is_disabled ? ' disabled' : ''));
 
-        var textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
+        let textSpan = $('<span data-test="menu-item-text"></span>').text('  ' + this.label);
 
         url.append(textSpan);
 
-        var mnu_element = $('<li/>').append(url);
+        let mnu_element = $('<li/>').append(url);
         // Check if below parameter is defined and true then we need to add
         // separator.
         if (!_.isUndefined(this.below) && this.below === true) {
@@ -141,7 +141,7 @@ define([
      * This will be called when context-menu is clicked.
      */
     context_menu_callback: function(item) {
-      var o = this,
+      let o = this,
         cb;
 
       if (o.module['callbacks'] && (
@@ -219,7 +219,7 @@ define([
    */
 
   pgAdmin.Browser.MenuGroup = function(opts, items, prev, ctx) {
-    var template = _.template([
+    let template = _.template([
         '<% if (above) { %><li class="dropdown-divider"></li><% } %>',
         '<li class="dropdown-submenu" role="menuitem">',
         ' <a href="#" class="dropdown-item">',
@@ -254,7 +254,7 @@ define([
       return a.priority - b.priority;
     });
 
-    for (var idx in items) {
+    for (let idx in items) {
       m = items[idx];
       $menu.append(m.$el);
       if (!m.is_disabled) {
@@ -263,7 +263,7 @@ define([
       ctxId++;
     }
 
-    var is_disabled = (_.size(submenus) == 0);
+    let is_disabled = (_.size(submenus) == 0);
 
     return {
       $el: $el,
@@ -319,7 +319,7 @@ define([
       return;
     }
 
-    var groups = {
+    let groups = {
         'common': [],
       },
       common, idx = 0,
@@ -331,11 +331,11 @@ define([
             delete m.$el;
           }
           m.generate(d, item);
-          var group = groups[m.category || 'common'] =
+          let group = groups[m.category || 'common'] =
             groups[m.category || 'common'] || [];
           group.push(m);
         } else {
-          for (var key in m) {
+          for (let key in m) {
             update_menuitem(m[key]);
           }
         }
@@ -352,10 +352,10 @@ define([
     common = groups['common'];
     delete groups['common'];
 
-    var prev = true;
+    let prev = true;
 
-    for (var name in groups) {
-      var g = groups[name],
+    for (let name in groups) {
+      let g = groups[name],
         c = categories[name] || {
           'label': name,
           single: false,
@@ -384,14 +384,14 @@ define([
     common.sort(function(a, b) {
       return a.priority - b.priority;
     });
-    var len = _.size(common);
+    let len = _.size(common);
 
     for (idx in common) {
       item = common[idx];
 
       item.priority = (item.priority || 10);
       $mnu.append(item.$el);
-      var prefix = ctxId + '_' + item.priority + '_' + ctxIdx;
+      let prefix = ctxId + '_' + item.priority + '_' + ctxIdx;
 
       if (ctxIdx != 1 && item.above && !item.is_disabled) {
         // For creatign the seprator any string will do.
@@ -413,7 +413,7 @@ define([
 
   // MENU PUBLIC CLASS DEFINITION
   // ==============================
-  var Menu = function(element, options) {
+  let Menu = function(element, options) {
     this.$element = $(element);
     this.options = $.extend({}, Menu.DEFAULTS, options);
     this.isLoading = false;
@@ -422,15 +422,15 @@ define([
   Menu.DEFAULTS = {};
 
   Menu.prototype.toggle = function(ev) {
-    var $parent = this.$element.closest('.dropdown-item');
+    let $parent = this.$element.closest('.dropdown-item');
     if ($parent.hasClass('disabled')) {
       ev.preventDefault();
       return false;
     }
 
-    var d = this.$element.data('pgMenu');
+    let d = this.$element.data('pgMenu');
     if (d.cb) {
-      var cb = d.module && d.module['callbacks'] && d.module['callbacks'][d.cb] || d.module && d.module[d.cb];
+      let cb = d.module && d.module['callbacks'] && d.module['callbacks'][d.cb] || d.module && d.module[d.cb];
       if (cb) {
         cb.apply(d.module, [d.data, pgAdmin.Browser.tree.selected()]);
         ev.preventDefault();
@@ -446,9 +446,9 @@ define([
 
   function Plugin(option, ev) {
     return this.each(function() {
-      var $this = $(this);
-      var data = $this.data('pg.menu');
-      var options = typeof option == 'object' && option;
+      let $this = $(this);
+      let data = $this.data('pg.menu');
+      let options = typeof option == 'object' && option;
 
       if (!data) $this.data('pg.menu', (data = new Menu(this, options)));
 
@@ -456,7 +456,7 @@ define([
     });
   }
 
-  var old = $.fn.button;
+  let old = $.fn.button;
 
   $.fn.pgmenu = Plugin;
   $.fn.pgmenu.Constructor = Menu;
@@ -475,7 +475,7 @@ define([
 
   $(document)
     .on('click.pg.menu.data-api', '[data-toggle^="pg-menu"]', function(ev) {
-      var $menu = $(ev.target);
+      let $menu = $(ev.target);
       if (!$menu.hasClass('dropdown-item'))
         $menu = $menu.closest('.dropdown-item');
       Plugin.call($menu, 'toggle', ev);

@@ -30,8 +30,7 @@ let beforeActionForSchema = (tree, pgBrowser)=> {
     }],
   };
 
-  tree = TreeFake.build(hierarchy, pgBrowser);
-  pgBrowser.tree = tree;
+  pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
 };
 
 let beforeActionForCatalog = (tree, pgBrowser)=> {
@@ -51,8 +50,7 @@ let beforeActionForCatalog = (tree, pgBrowser)=> {
     }],
   };
 
-  tree = TreeFake.build(hierarchy, pgBrowser);
-  pgBrowser.tree = tree;
+  pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
 };
 
 describe('#childCreateMenuEnabled', () => {

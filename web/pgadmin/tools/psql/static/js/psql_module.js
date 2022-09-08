@@ -25,12 +25,12 @@ export function setPanelTitle(psqlToolPanel, panelTitle) {
   psqlToolPanel.title('<span title="'+panelTitle+'">'+panelTitle+'</span>');
 }
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
 export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) {
-  var pgBrowser = Browser;
-  var terminal = Terminal;
-  var parentData = null;
+  let pgBrowser = Browser;
+  let terminal = Terminal;
+  let parentData = null;
   /* Return back, this has been called more than once */
   if (pgBrowser.psql)
     return pgBrowser.psql;
@@ -42,7 +42,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       this.initialized = true;
       csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      let menus = [{
         name: 'psql',
         module: this,
         applies: ['tools'],
@@ -58,7 +58,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       }
 
       // Creating a new pgBrowser frame to show the data.
-      var psqlFrameType = new pgBrowser.Frame({
+      let psqlFrameType = new pgBrowser.Frame({
         name: 'frm_psqltool',
         showTitle: true,
         isCloseable: true,
@@ -66,7 +66,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         url: 'about:blank',
       });
 
-      var self = this;
+      let self = this;
       /* Cache may take time to load for the first time
        * Keep trying till available
        */
@@ -92,7 +92,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     */
     psqlToolEnabled: function(obj) {
 
-      var isEnabled = (() => {
+      let isEnabled = (() => {
         if (!_.isUndefined(obj) && !_.isNull(obj) && pgAdmin['enable_psql']) {
           if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
             if (obj._type == 'database' && obj.allowConn) {
@@ -140,15 +140,15 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
 
       const transId = getRandomInt(1, 9999999);
 
-      var panelTitle = '';
+      let panelTitle = '';
       // Set psql tab title as per prefrences setting.
-      var title_data = {
+      let title_data = {
         'database': parentData.database ? parentData.database.label : 'postgres' ,
         'username': parentData.server.user_name,
         'server': parentData.server.label,
         'type': 'psql_tool',
       };
-      var tab_title_placeholder = pgBrowser.get_preferences_for_module('browser').psql_tab_title_placeholder;
+      let tab_title_placeholder = pgBrowser.get_preferences_for_module('browser').psql_tab_title_placeholder;
       panelTitle = generateTitle(tab_title_placeholder, title_data);
 
       const [panelUrl, panelCloseUrl, db_label] = this.getPanelUrls(transId, panelTitle, parentData, gen);
@@ -164,17 +164,17 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
           document.getElementById("psqlToolForm").submit();
         </script>
       `;
-      var open_new_tab = pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
+      let open_new_tab = pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
       if (open_new_tab && open_new_tab.includes('psql_tool')) {
-        var newWin = window.open('', '_blank');
+        let newWin = window.open('', '_blank');
         newWin.document.write(psqlToolForm);
         newWin.document.title = panelTitle;
       } else {
         /* On successfully initialization find the properties panel,
          * create new panel and add it to the dashboard panel.
          */
-        var propertiesPanel = pgBrowser.docker.findPanels('properties');
-        var psqlToolPanel = pgBrowser.docker.addPanel('frm_psqltool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+        let propertiesPanel = pgBrowser.docker.findPanels('properties');
+        let psqlToolPanel = pgBrowser.docker.addPanel('frm_psqltool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
         registerDetachEvent(psqlToolPanel);
 
@@ -183,7 +183,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         psqlToolPanel.icon('fas fa-terminal psql-tab-style');
         psqlToolPanel.focus();
 
-        var openPSQLToolURL = function(j) {
+        let openPSQLToolURL = function(j) {
           // add spinner element
           let $spinner_el =
             $(`<div class="pg-sp-container">
@@ -195,10 +195,10 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
               </div>`).appendTo($(j).data('embeddedFrame').$container);
 
           let init_poller_id = setInterval(function() {
-            var frameInitialized = $(j).data('frameInitialized');
+            let frameInitialized = $(j).data('frameInitialized');
             if (frameInitialized) {
               clearInterval(init_poller_id);
-              var frame = $(j).data('embeddedFrame');
+              let frame = $(j).data('embeddedFrame');
               if (frame) {
                 frame.onLoaded(()=>{
                   $spinner_el.remove();
@@ -219,7 +219,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         trans_id: transId,
       });
       const misc_preferences = pgBrowser.get_preferences_for_module('misc');
-      var theme = misc_preferences.theme;
+      let theme = misc_preferences.theme;
 
       openUrl += `?sgid=${pData.server_group._id}`
         +`&sid=${pData.server._id}`
@@ -277,7 +277,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       return io('/pty', {pingTimeout: 120000, pingInterval: 25000});
     },
     set_theme: function(term) {
-      var theme = {
+      let theme = {
         background: getComputedStyle(document.documentElement).getPropertyValue('--psql-background'),
         foreground: getComputedStyle(document.documentElement).getPropertyValue('--psql-foreground'),
         cursor: getComputedStyle(document.documentElement).getPropertyValue('--psql-cursor'),
@@ -342,7 +342,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         navigator.permissions.query({ name: 'clipboard-read' }).then(function(result) {
           if(result.state === 'granted' || result.state === 'prompt') {
             navigator.clipboard.readText().then( clipText => {
-              var selected_text = clipText;
+              let selected_text = clipText;
               if (selected_text.length > 0) {
                 socket.emit('socket_input', {'input': selected_text, 'key_name': 'paste'});
               }
@@ -360,12 +360,12 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     check_db_name_change: function(db_name, o_db_name) {
       if (db_name != o_db_name) {
 
-        var selected_item = pgWindow.pgAdmin.Browser.tree.selected(),
+        let selected_item = pgWindow.pgAdmin.Browser.tree.selected(),
           tree_data = pgWindow.pgAdmin.Browser.tree.translateTreeNodeIdFromReactTree(selected_item),
           database_data = pgWindow.pgAdmin.Browser.tree.findNode(tree_data[3]),
           dbNode = database_data.domNode;
 
-        var message = `Current database has been moved or renamed to ${o_db_name}. Click on the OK button to refresh the database name, and reopen the psql again.`;
+        let message = `Current database has been moved or renamed to ${o_db_name}. Click on the OK button to refresh the database name, and reopen the psql again.`;
         refresh_db_node(message, dbNode);
       }
     },

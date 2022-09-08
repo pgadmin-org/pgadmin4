@@ -281,7 +281,7 @@ export default class PartitionTableSchema extends BaseUISchema {
       editable: false, type: 'select', controlProps: {allowClear: false},
       group: 'partition', deps: ['is_partitioned'],
       options: function() {
-        var options = [{
+        let options = [{
           label: gettext('Range'), value: 'range',
         },{
           label: gettext('List'), value: 'list',
@@ -318,7 +318,7 @@ export default class PartitionTableSchema extends BaseUISchema {
       canAddRow: function(state) {
         let columnsExist = false;
 
-        var maxRowCount = 1000;
+        let maxRowCount = 1000;
         if (state.partition_type && state.partition_type == 'list')
           maxRowCount = 1;
 

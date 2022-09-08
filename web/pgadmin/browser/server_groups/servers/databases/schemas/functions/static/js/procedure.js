@@ -77,7 +77,7 @@ define('pgadmin.node.procedure', [
         ]);
       },
       canCreateProc: function(itemData, item) {
-        var node_hierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let node_hierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
         // Do not provide Create option in catalog
         if ('catalog' in node_hierarchy)

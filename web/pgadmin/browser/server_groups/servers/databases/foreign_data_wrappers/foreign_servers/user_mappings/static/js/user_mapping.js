@@ -96,10 +96,10 @@ define('pgadmin.node.user_mapping', [
 
         // Default values!
         initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
+          let isNew = (_.size(attrs) === 0);
 
           if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
+            let userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
 
             this.set({'name': userInfo.name}, {silent: true});
           }
@@ -114,9 +114,9 @@ define('pgadmin.node.user_mapping', [
             mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
             disabled: function(m) { return !m.isNew(); },
             transform: function() {
-              var self = this,
+              let self = this,
                 node = self.field.get('schema_node');
-              var res =
+              let res =
               Backform.NodeListByNameControl.prototype.defaults.transform.apply(
                 this, arguments
               );

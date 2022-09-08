@@ -18,7 +18,7 @@ import DebuggerArgumentComponent from './components/DebuggerArgumentComponent';
 export default class FunctionArguments {
 
   show(debugInfo, restartDebug, isEdbProc, transId) {
-    var t = pgAdmin.Browser.tree,
+    let t = pgAdmin.Browser.tree,
       i = t.selected(),
       d = i ? t.itemData(i) : undefined;
 

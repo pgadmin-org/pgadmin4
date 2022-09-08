@@ -335,7 +335,7 @@ const toggleFullScreen = () => {
     pgAdminWindowObject.toggleFullscreen();
 
     // Change the menu label.
-    var menu_label = pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
+    let menu_label = pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
     if (menu_label.indexOf('Enter Full Screen') >= 0) {
       pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Enter', 'Exit');
     } else if (menu_label.indexOf('Exit Full Screen') >= 0) {

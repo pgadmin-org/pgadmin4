@@ -37,7 +37,7 @@ define('pgadmin.settings', [
       Notify.confirm(gettext('Reset layout'),
         gettext('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.'),
         function() {
-          var reloadingIndicator = $('<div id="reloading-indicator"></div>');
+          let reloadingIndicator = $('<div id="reloading-indicator"></div>');
           $('body').append(reloadingIndicator);
           // Delete the record from database as well, then only reload page
           $.ajax({

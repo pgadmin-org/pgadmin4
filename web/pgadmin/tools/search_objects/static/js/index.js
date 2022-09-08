@@ -38,7 +38,7 @@ export default class SearchObjectModule {
     this.initialized = true;
 
     // Define the nodes on which the menus to be appear
-    var menus = [{
+    let menus = [{
       name: 'search_objects',
       module: this,
       applies: ['tools'],
@@ -56,7 +56,7 @@ export default class SearchObjectModule {
   }
 
   search_objects_enabled(obj) {
-    var isEnabled = (() => {
+    let isEnabled = (() => {
       if (!_.isUndefined(obj) && !_.isNull(obj)) {
         if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
           if (obj._type == 'database' && obj.allowConn) {
@@ -85,7 +85,7 @@ export default class SearchObjectModule {
     let nodeData = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
 
     pgBrowser.Node.registerUtilityPanel();
-    var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
+    let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
       j = panel.$container.find('.obj_properties').first();
 
     panel.title(dialogTitle);

@@ -86,7 +86,7 @@ define('pgadmin.node.subscription', [
               return new Promise((resolve, reject)=>{
                 const api = getApiInstance();
                 if(host != undefined && port!= undefined && username!= undefined && db != undefined){
-                  var _url = pgBrowser.Nodes['cast'].generate_url.apply(
+                  let _url = pgBrowser.Nodes['cast'].generate_url.apply(
                     pgBrowser.Nodes['subscription'], [
                       null, 'get_publications', itemNodeData, false,
                       treeNodeInfo,

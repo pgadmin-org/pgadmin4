@@ -49,16 +49,16 @@ export default class RoleSchema extends BaseUISchema {
   }
 
   readOnly(state) {
-    var user = this.nodeInfo.server.user;
+    let user = this.nodeInfo.server.user;
     this.oid = state.oid;
     this.isReadOnly = !(user.is_superuser || user.can_create_role);
     return (!(user.is_superuser || user.can_create_role) && user.id != state.oid);
   }
 
   memberDataFormatter(rawData) {
-    var members = '';
+    let members = '';
     if(_.isObject(rawData)) {
-      var withAdmin = '';
+      let withAdmin = '';
       rawData.forEach(member => {
         if(member.admin) { withAdmin = ' [WITH ADMIN]';}
 

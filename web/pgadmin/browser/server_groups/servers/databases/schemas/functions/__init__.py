@@ -786,14 +786,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             )
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            current_app.logger.error(traceback.print_exception(
-                exc_type,
-                exc_value,
-                exc_traceback,
-                limit=2
-            )
-            )
-
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition

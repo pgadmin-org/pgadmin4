@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-var mfa_form_elem = document.getElementById('mfa_form');
+let mfa_form_elem = document.getElementById('mfa_form');
 
 if (mfa_form_elem)
   mfa_form_elem.setAttribute('class', '');
@@ -16,7 +16,7 @@ function sendCodeToEmail(data, _json, _callback) {
   const URL = '{{ url_for('mfa.send_email_code') }}';
   let accept = 'text/html; charset=utf-8;';
 
-  var btn_send_code_elem = document.getElementById('btn_send_code');
+  let btn_send_code_elem = document.getElementById('btn_send_code');
   if (btn_send_code_elem) btn_send_code_elem.disabled = true;
 
   if (!data) {
@@ -46,7 +46,7 @@ function sendCodeToEmail(data, _json, _callback) {
       return null;
     }
     if (!resp.ok) {
-      var btn_send_code_elem = document.getElementById('btn_send_code');
+      let btn_send_code_elem = document.getElementById('btn_send_code');
       if (btn_send_code_elem) btn_send_code_elem.disabled = true;
       resp.text().then(msg => render_error(msg));
 

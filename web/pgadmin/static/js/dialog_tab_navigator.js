@@ -33,7 +33,7 @@ class dialogTabNavigator {
   }
 
   onKeyboardEvent(event, shortcut) {
-    var currentTabPane =  this.dialogContainer
+    let currentTabPane =  this.dialogContainer
         .find('.tab-content:first > .tab-pane.active:first:visible'),
       childTabData = this.isActivePaneHasChildTabs(currentTabPane);
 
@@ -44,7 +44,7 @@ class dialogTabNavigator {
     this.tabSwitching = true;
 
     if(childTabData) {
-      var res = this.navigate(shortcut, childTabData.childTab,
+      let res = this.navigate(shortcut, childTabData.childTab,
         childTabData.childTabPane, event);
 
       if (!res) {
@@ -56,7 +56,7 @@ class dialogTabNavigator {
   }
 
   isActivePaneHasChildTabs(currentTabPane) {
-    var childTab = currentTabPane.find('.nav-tabs:first:visible'),
+    let childTab = currentTabPane.find('.nav-tabs:first:visible'),
       childTabPane;
 
     if (childTab.length > 0) {
@@ -82,7 +82,7 @@ class dialogTabNavigator {
   }
 
   navigateBackward(tabs, tab_pane, event) {
-    var self = this,
+    let self = this,
       nextTabPane,
       innerTabContainer,
       prevtab = $(tabs).find('li').has('a.active').prev('li');
@@ -113,7 +113,7 @@ class dialogTabNavigator {
   }
 
   navigateForward(tabs, tab_pane, event) {
-    var self = this,
+    let self = this,
       nextTabPane,
       innerTabContainer,
       nexttab = $(tabs).find('li').has('a.active').next('li');

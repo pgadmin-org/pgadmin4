@@ -85,12 +85,12 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
         return new Promise((resolve, reject)=>{
           const api = getApiInstance();
 
-          var _url = nodeObj.generate_url.apply(
+          let _url = nodeObj.generate_url.apply(
             nodeObj, [
               null, 'get_subopclass', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data;
+          let data;
 
           if(!_.isUndefined(typname) && typname != ''){
             api.get(_url, {
@@ -113,12 +113,12 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
         return new Promise((resolve, reject)=>{
           const api = getApiInstance();
 
-          var _url = nodeObj.generate_url.apply(
+          let _url = nodeObj.generate_url.apply(
             nodeObj, [
               null, 'get_canonical', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data = [];
+          let data = [];
 
           if(!_.isUndefined(name) && name != '' && name != null){
             api.get(_url, {
@@ -140,12 +140,12 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
         return new Promise((resolve, reject)=>{
           const api = getApiInstance();
 
-          var _url = nodeObj.generate_url.apply(
+          let _url = nodeObj.generate_url.apply(
             nodeObj, [
               null, 'get_stypediff', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data;
+          let data;
 
           if(!_.isUndefined(typname) && typname != '' &&
               !_.isUndefined(opcname) && opcname != ''){
@@ -211,7 +211,7 @@ class EnumerationSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [
       {
         id: 'label', label: gettext('Label'),
@@ -247,7 +247,7 @@ class RangeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       // We will disable range type control in edit mode
       id: 'typname', label: gettext('Subtype'),
@@ -333,7 +333,7 @@ class RangeSchema extends BaseUISchema {
           return disableCollNameControl;
 
         // To check if collation is allowed?
-        var of_subtype = state.typname;
+        let of_subtype = state.typname;
         if(!_.isUndefined(of_subtype)) {
           // iterating over all the types
           _.each(state.subtypes, function(s) {
@@ -473,7 +473,7 @@ class ExternalSchema extends BaseUISchema {
 
   // Function will help us to fill combobox
   external_func_combo(control) {
-    var result = [];
+    let result = [];
     _.each(control, function(item) {
 
       if(item && item.label == '') {
@@ -515,7 +515,7 @@ class ExternalSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'spacer_ctrl', group: gettext('Required'), mode: ['edit', 'create'], type: 'spacer',
     },{
@@ -892,7 +892,7 @@ class CompositeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'member_name', label: gettext('Member Name'),
       type: 'text', cell: 'text'
@@ -951,8 +951,8 @@ class CompositeSchema extends BaseUISchema {
       deps: ['type'],
       editable: (state) => {
         // We will store type from selected from combobox
-        var of_type = state.type;
-        var flag = false;
+        let of_type = state.type;
+        let flag = false;
         if(obj.type_options) {
           // iterating over all the types
           _.each(obj.type_options, function(o) {
@@ -1026,7 +1026,7 @@ class DataTypeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var dataTypeObj = this;
+    let dataTypeObj = this;
     return [{
       id: 'type',
       label: gettext('Data Type'),
@@ -1048,7 +1048,7 @@ class DataTypeSchema extends BaseUISchema {
           controlProps: {
             allowClear: false,
             filter: (options) => {
-              var data_types = [];
+              let data_types = [];
               options.forEach((option) => {
                 if (!(option.value.includes('[]'))) {
                   data_types.push(option);
@@ -1089,7 +1089,7 @@ class DataTypeSchema extends BaseUISchema {
       visible: (state) => isVisible(state, 'N'),
       disabled: function(state) {
 
-        var of_type = state.type,
+        let of_type = state.type,
           flag = true;
         if (state.type_options) {
           _.each(state.type_options, function (o) {
@@ -1129,7 +1129,7 @@ class DataTypeSchema extends BaseUISchema {
       cell: 'int',
       visible: (state) => isVisible(state, 'N'),
       disabled: function(state) {
-        var of_type = state.type,
+        let of_type = state.type,
           flag = true;
         _.each(state.type_options, function(o) {
           if ( of_type == o.value ) {
@@ -1217,7 +1217,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'name', label: gettext('Name'), cell: 'string',
       type: 'text', mode: ['properties', 'create', 'edit'],
@@ -1272,7 +1272,7 @@ export default class TypeSchema extends BaseUISchema {
       },
       controlProps: { allowClear: false },
       options: function() {
-        var typetype = [
+        let typetype = [
           {label: gettext('Composite'), value: 'c'},
           {label: gettext('Enumeration'), value: 'e'},
           {label: gettext('External'), value: 'b'},
@@ -1462,7 +1462,7 @@ export default class TypeSchema extends BaseUISchema {
         // Do not allow to add when shell type is selected
         // Clear acl & security label collections as well
         if (state.typtype === 'p') {
-          var acl = state.typacl;
+          let acl = state.typacl;
           if(acl && acl.length > 0)
             acl.splice(0, acl.length);
         }
@@ -1480,7 +1480,7 @@ export default class TypeSchema extends BaseUISchema {
         // Do not allow to add when shell type is selected
         // Clear acl & security label collections as well
         if (state.typtype === 'p') {
-          var secLabs = state.seclabels;
+          let secLabs = state.seclabels;
           if(secLabs && secLabs.length > 0)
             secLabs.splice(0, secLabs.length);
         }

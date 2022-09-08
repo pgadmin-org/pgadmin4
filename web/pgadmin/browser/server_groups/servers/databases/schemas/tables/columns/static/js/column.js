@@ -103,7 +103,7 @@ define('pgadmin.node.column', [
         if (data && data.check == false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [];
         // To iterate over tree to check parent node
         while (i) {
           // If it is schema then allow user to create table

@@ -15,10 +15,10 @@ import Notify from './helpers/Notifier';
 import { hasTrojanSource } from 'anti-trojan-source';
 import convert from 'convert-units';
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
 export function parseShortcutValue(obj) {
-  var shortcut = '';
+  let shortcut = '';
   if (obj.alt) { shortcut += 'alt+'; }
   if (obj.shift) { shortcut += 'shift+'; }
   if (obj.control) { shortcut += 'ctrl+'; }
@@ -89,7 +89,7 @@ export function findAndSetFocus(container) {
     return;
   }
   setTimeout(function() {
-    var first_el = container
+    let first_el = container
       .find('button.fa-plus:first');
 
     /* Adding the tabindex condition makes sure that
@@ -263,7 +263,7 @@ export function getRandomInt(min, max) {
   const intArray = new Uint32Array(1);
   crypto.getRandomValues(intArray);
 
-  var range = max - min + 1;
+  let range = max - min + 1;
   return min + (intArray[0] % range);
 }
 
@@ -303,7 +303,7 @@ export function CSVToArray(strData, strDelimiter, quoteChar){
   quoteChar = quoteChar || '"';
 
   // Create a regular expression to parse the CSV values.
-  var objPattern = new RegExp(
+  let objPattern = new RegExp(
     (
     // Delimiters.
       '(\\' + strDelimiter + '|\\r?\\n|\\r|^)' +
@@ -317,7 +317,7 @@ export function CSVToArray(strData, strDelimiter, quoteChar){
 
   // Create an array to hold our data. Give the array
   // a default empty first row.
-  var arrData = [[]];
+  let arrData = [[]];
 
   // The regex doesn't handle and skips start value if
   // string starts with delimiter
@@ -327,13 +327,13 @@ export function CSVToArray(strData, strDelimiter, quoteChar){
 
   // Create an array to hold our individual pattern
   // matching groups.
-  var arrMatches = null;
+  let arrMatches = null;
 
   // Keep looping over the regular expression matches
   // until we can no longer find a match.
   while ((arrMatches = objPattern.exec( strData ))){
     // Get the delimiter that was found.
-    var strMatchedDelimiter = arrMatches[ 1 ];
+    let strMatchedDelimiter = arrMatches[ 1 ];
 
     // Check to see if the given delimiter has a length
     // (is not the start of string) and if it matches
@@ -345,7 +345,7 @@ export function CSVToArray(strData, strDelimiter, quoteChar){
       arrData.push( [] );
     }
 
-    var strMatchedValue;
+    let strMatchedValue;
 
     // Now that we have our delimiter out of the way,
     // let's check to see which kind of value we
@@ -429,11 +429,11 @@ export function registerDetachEvent(panel){
     });
   });
   panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
-    var docker = this.docker(this._panel);
-    var dockerPos = docker.$container.offset();
-    var pos = this.$container.offset();
-    var width = this.$container.width();
-    var height = this.$container.height();
+    let docker = this.docker(this._panel);
+    let dockerPos = docker.$container.offset();
+    let pos = this.$container.offset();
+    let width = this.$container.width();
+    let height = this.$container.height();
 
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('top', pos.top - dockerPos.top);
     $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('left', pos.left - dockerPos.left);
@@ -446,7 +446,7 @@ export function registerDetachEvent(panel){
 }
 
 export function getBrowser() {
-  var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+  let ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
   if(/trident/i.test(M[1])) {
     tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
     return {name:'IE', version:(tem[1]||'')};
@@ -536,13 +536,13 @@ export function calcFontSize(fontSize) {
 }
 
 export function pgHandleItemError(xhr, args) {
-  var pgBrowser = window.pgAdmin.Browser;
+  let pgBrowser = window.pgAdmin.Browser;
 
   if (!xhr || !pgBrowser) {
     return;
   }
 
-  var contentType = xhr.getResponseHeader('Content-Type'),
+  let contentType = xhr.getResponseHeader('Content-Type'),
     jsonResp = contentType &&
     contentType.indexOf('application/json') == 0 &&
     JSON.parse(xhr.responseText);
@@ -568,14 +568,14 @@ export function pgHandleItemError(xhr, args) {
     }
 
     // Check the status of the maintenance server connection.
-    var server = pgBrowser.Nodes['server'],
+    let server = pgBrowser.Nodes['server'],
       ctx = {
         resp: jsonResp,
         xhr: xhr,
         args: args,
       },
       reconnectServer = function() {
-        var ctx_local = this,
+        let ctx_local = this,
           onServerConnect = function(_sid, _i, _d) {
             // Yay - server is reconnected.
             if (this.args.info.server._id == _sid) {

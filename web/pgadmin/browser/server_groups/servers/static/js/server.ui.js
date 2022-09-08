@@ -65,10 +65,7 @@ export default class ServerSchema extends BaseUISchema {
   get SSL_MODES() { return ['prefer', 'require', 'verify-ca', 'verify-full']; }
 
   isShared(state) {
-    if(!this.isNew(state) && this.userId != current_user.id && state.shared) {
-      return true;
-    }
-    return false;
+    return !this.isNew(state) && this.userId != current_user.id && state.shared;
   }
 
   isConnected(state) {
@@ -105,11 +102,8 @@ export default class ServerSchema extends BaseUISchema {
       {
         id: 'server_owner', label: gettext('Shared Server Owner'), type: 'text', mode: ['properties'],
         visible: function(state) {
-          var serverOwner = obj.userId;
-          if (state.shared && serverOwner != current_user.id && pgAdmin.server_mode == 'True'){
-            return true;
-          }
-          return false;
+          let serverOwner = obj.userId;
+          return state.shared && serverOwner != current_user.id && pgAdmin.server_mode == 'True';
         },
       },
       {
@@ -143,16 +137,10 @@ export default class ServerSchema extends BaseUISchema {
         id: 'shared', label: gettext('Shared?'), type: 'switch',
         mode: ['properties', 'create', 'edit'],
         readonly: function(state){
-          var serverOwner = obj.userId;
-          if (!obj.isNew(state) && serverOwner != current_user.id) {
-            return true;
-          }
-          return false;
+          let serverOwner = obj.userId;
+          return !obj.isNew(state) && serverOwner != current_user.id;
         }, visible: function(){
-          if (current_user.is_admin && pgAdmin.server_mode == 'True')
-            return true;
-
-          return false;
+          return current_user.is_admin && pgAdmin.server_mode == 'True';
         },
       },
       {
@@ -229,9 +217,7 @@ export default class ServerSchema extends BaseUISchema {
           return state.connect_now && obj.isNew(state);
         },
         disabled: function(state) {
-          if (!current_user.allow_save_password || state.kerberos_conn)
-            return true;
-          return false;
+          return !current_user.allow_save_password || state.kerberos_conn;
         },
       },{
         id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
@@ -301,7 +287,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('SSL'), mode: ['properties'],
         deps: ['sslmode'],
         visible: function(state) {
-          var sslcert = state.sslcert;
+          let sslcert = state.sslcert;
           return !_.isUndefined(sslcert) && !_.isNull(sslcert);
         },
       },{
@@ -309,7 +295,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('SSL'), mode: ['properties'],
         deps: ['sslmode'],
         visible: function(state) {
-          var sslkey = state.sslkey;
+          let sslkey = state.sslkey;
           return !_.isUndefined(sslkey) && !_.isNull(sslkey);
         },
       },{
@@ -317,7 +303,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('SSL'), mode: ['properties'],
         deps: ['sslmode'],
         visible: function(state) {
-          var sslrootcert = state.sslrootcert;
+          let sslrootcert = state.sslrootcert;
           return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
         },
       },{
@@ -325,7 +311,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('SSL'), mode: ['properties'],
         deps: ['sslmode'],
         visible: function(state) {
-          var sslcrl = state.sslcrl;
+          let sslcrl = state.sslcrl;
           return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
         },
       },{
@@ -435,7 +421,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passfile', label: gettext('Password file'), type: 'text',
         group: gettext('Advanced'), mode: ['properties'],
         visible: function(state) {
-          var passfile = state.passfile;
+          let passfile = state.passfile;
           return !_.isUndefined(passfile) && !_.isNull(passfile);
         },
       },{

@@ -75,11 +75,11 @@ _.extend(pgBrowser.browserTreeState, {
         type: 'DELETE',
       })
         .fail(function(jqx) {
-          var msg = jqx.responseText;
+          let msg = jqx.responseText;
           /* Error from the server */
           if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
             try {
-              var data = JSON.parse(jqx.responseText);
+              let data = JSON.parse(jqx.responseText);
               msg = data.errormsg;
             } catch (e) {
               console.warn(e.stack || e);
@@ -93,7 +93,7 @@ _.extend(pgBrowser.browserTreeState, {
   },
   save_state: function() {
 
-    var self = pgBrowser.browserTreeState;
+    let self = pgBrowser.browserTreeState;
     if(self.last_state == JSON.stringify(self.current_state))
       return;
 
@@ -108,11 +108,11 @@ _.extend(pgBrowser.browserTreeState, {
         self.fetch_state();
       })
       .fail(function(jqx) {
-        var msg = jqx.responseText;
+        let msg = jqx.responseText;
         /* Error from the server */
         if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
           try {
-            var data = JSON.parse(jqx.responseText);
+            let data = JSON.parse(jqx.responseText);
             msg = data.errormsg;
           } catch (e) {
             console.warn(e.stack || e);
@@ -125,7 +125,7 @@ _.extend(pgBrowser.browserTreeState, {
   },
   fetch_state: function() {
 
-    var self = this;
+    let self = this;
     $.ajax({
       url: url_for('settings.get_tree_state'),
       type: 'GET',
@@ -136,11 +136,11 @@ _.extend(pgBrowser.browserTreeState, {
         self.stored_state = res;
       })
       .fail(function(jqx) {
-        var msg = jqx.responseText;
+        let msg = jqx.responseText;
         /* Error from the server */
         if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
           try {
-            var data = JSON.parse(jqx.responseText);
+            let data = JSON.parse(jqx.responseText);
             msg = data.errormsg;
           } catch (e) {
             console.warn(e.stack || e);

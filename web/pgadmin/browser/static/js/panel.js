@@ -14,11 +14,11 @@ define(
   ['sources/pgadmin', 'jquery', 'wcdocker'],
   function(pgAdmin, $) {
 
-    var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
+    let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
       wcDocker = window.wcDocker;
 
     pgAdmin.Browser.Panel = function(options) {
-      var defaults = [
+      let defaults = [
         'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
         'isPrivate', 'isLayoutMember', 'content', 'icon', 'events', 'onCreate', 'elContainer',
         'canHide', 'limit', 'extraClasses', 'canMaximise',
@@ -44,7 +44,7 @@ define(
       limit: null,
       extraClasses: null,
       load: function(docker, title) {
-        var that = this;
+        let that = this;
         if (!that.panel) {
           docker.registerPanelType(that.name, {
             title: that.title,
@@ -58,13 +58,13 @@ define(
               if (!that.showTitle)
                 myPanel.title(false);
               else {
-                var title_elem = '<a href="#" tabindex="-1" class="panel-link-heading">' + (title || that.title) + '</a>';
+                let title_elem = '<a href="#" tabindex="-1" class="panel-link-heading">' + (title || that.title) + '</a>';
                 myPanel.title(title_elem);
                 if (that.icon != '')
                   myPanel.icon(that.icon);
               }
 
-              var $container = $('<div>', {
+              let $container = $('<div>', {
                 'class': 'pg-panel-content',
               }).append($(that.content));
 
@@ -197,7 +197,7 @@ define(
         }
       },
       eventFunc: function(eventName) {
-        var name = $(this).data('pgAdminName');
+        let name = $(this).data('pgAdminName');
         try {
           pgBrowser.Events.trigger(
             'pgadmin-browser:panel', eventName, this, arguments
@@ -219,7 +219,7 @@ define(
         }
       },
       resizedContainer: function() {
-        var p = this;
+        let p = this;
 
         if (p.pgElContainer && !p.pgResizeTimeout) {
           if (!p.isVisible()) {
@@ -230,7 +230,7 @@ define(
           }
           p.pgResizeTimeout = setTimeout(
             function() {
-              var w = p.width(),
+              let w = p.width(),
                 elAttr = 'xs';
               p.pgResizeTimeout = null;
 
@@ -259,7 +259,7 @@ define(
 
         let selectedPanel = pgBrowser.docker.findPanels(this._type)[0];
         let isPanelVisible = selectedPanel.isVisible();
-        var $container = selectedPanel
+        let $container = selectedPanel
           .layout()
           .scene()
           .find('.pg-panel-content');

@@ -22,7 +22,7 @@ define([
 
   pgAdmin = pgAdmin || window.pgAdmin || {};
 
-  var pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
+  let pgTools = pgAdmin.Tools = pgAdmin.Tools || {};
   const api = getApiInstance();
 
   // Return back, this has been called more than once
@@ -38,7 +38,7 @@ define([
 
       this.initialized = true;
 
-      var menus = [{
+      let menus = [{
         name: 'maintenance',
         module: this,
         applies: ['tools'],
@@ -96,7 +96,7 @@ define([
       }
     },
     setExtraParameters(treeInfo) {
-      var extraData = {};
+      let extraData = {};
       extraData['database'] = treeInfo.database._label;
       if(treeInfo?.schema) {
         extraData['schema'] = treeInfo?.schema._label;
@@ -109,11 +109,11 @@ define([
       Open the dialog for the maintenance functionality
     */
     callback_maintenance: function(args, item) {
-      var i = item || pgBrowser.tree.selected(),
+      let i = item || pgBrowser.tree.selected(),
         server_data = null;
 
       while (i) {
-        var node_data = pgBrowser.tree.itemData(i);
+        let node_data = pgBrowser.tree.itemData(i);
         if (node_data._type == 'server') {
           server_data = node_data;
           break;
@@ -131,16 +131,16 @@ define([
         return;
       }
 
-      var t = pgBrowser.tree;
+      let t = pgBrowser.tree;
 
       i = item || t.selected();
 
-      var d = i  ? t.itemData(i) : undefined;
+      let d = i  ? t.itemData(i) : undefined;
 
       if (!d)
         return;
 
-      var treeInfo = t && t.getTreeNodeHierarchy(i);
+      let treeInfo = t && t.getTreeNodeHierarchy(i);
 
       if (treeInfo.database._label.indexOf('=') >= 0) {
         Notify.alert(
@@ -170,10 +170,10 @@ define([
           } else{
 
             pgBrowser.Node.registerUtilityPanel();
-            var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+            let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
               j = panel.$container.find('.obj_properties').first();
 
-            var schema = that.getUISchema(item);
+            let schema = that.getUISchema(item);
             panel.title(gettext('Maintenance'));
             panel.focus();
 
@@ -184,7 +184,7 @@ define([
               });
             let extraData = that.setExtraParameters(treeInfo);
 
-            var sqlHelpUrl = 'maintenance.html',
+            let sqlHelpUrl = 'maintenance.html',
               helpUrl = url_for('help.static', {
                 'filename': 'maintenance_dialog.html',
               });

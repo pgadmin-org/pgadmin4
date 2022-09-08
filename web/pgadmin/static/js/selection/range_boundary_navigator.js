@@ -16,10 +16,10 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
         }
 
         allRanges.sort(firstElementNumberComparator);
-        var unionedRanges = [allRanges[0]];
+        let unionedRanges = [allRanges[0]];
 
         allRanges.forEach(function (range) {
-          var maxBeginningOfRange = _.last(unionedRanges);
+          let maxBeginningOfRange = _.last(unionedRanges);
           if (isStartInsideRange(range, maxBeginningOfRange)) {
             if (!isEndInsideRange(range, maxBeginningOfRange)) {
               maxBeginningOfRange[1] = range[1];
@@ -45,9 +45,9 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
       },
 
       mapDimensionBoundaryUnion: function (unionedDimensionBoundaries, iteratee) {
-        var mapResult = [];
+        let mapResult = [];
         unionedDimensionBoundaries.forEach(function (subrange) {
-          for (var index = subrange[0]; index <= subrange[1]; index += 1) {
+          for (let index = subrange[0]; index <= subrange[1]; index += 1) {
             mapResult.push(iteratee(index));
           }
         });
@@ -55,11 +55,11 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
       },
 
       mapOver2DArray: function (rowRangeBounds, colRangeBounds, processCell, rowCollector) {
-        var unionedRowRanges = this.getUnion(rowRangeBounds);
-        var unionedColRanges = this.getUnion(colRangeBounds);
+        let unionedRowRanges = this.getUnion(rowRangeBounds);
+        let unionedColRanges = this.getUnion(colRangeBounds);
 
         return this.mapDimensionBoundaryUnion(unionedRowRanges, function (rowId) {
-          var rowData = this.mapDimensionBoundaryUnion(unionedColRanges, function (colId) {
+          let rowData = this.mapDimensionBoundaryUnion(unionedColRanges, function (colId) {
             return processCell(rowId, colId);
           });
           return rowCollector(rowData);
@@ -67,7 +67,7 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
       },
 
       getHeaderData: function (columnDefinitions, CSVOptions) {
-        var headerData = [],
+        let headerData = [],
           field_separator = CSVOptions.field_separator || '\t',
           quote_char = CSVOptions.quote_char || '"';
 
@@ -82,10 +82,10 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
 
       rangesToCsv: function (data, columnDefinitions, selectedRanges, CSVOptions, copyWithHeader) {
 
-        var rowRangeBounds = selectedRanges.map(function (range) {
+        let rowRangeBounds = selectedRanges.map(function (range) {
           return [range.fromRow, range.toRow];
         });
-        var colRangeBounds = selectedRanges.map(function (range) {
+        let colRangeBounds = selectedRanges.map(function (range) {
           return [range.fromCell, range.toCell];
         });
 
@@ -93,13 +93,13 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
           colRangeBounds = this.removeFirstColumn(colRangeBounds);
         }
 
-        var csvRows = this.mapOver2DArray(rowRangeBounds, colRangeBounds, this.csvCell.bind(this, data, columnDefinitions, CSVOptions), function (rowData) {
-          var field_separator = CSVOptions.field_separator || '\t';
+        let csvRows = this.mapOver2DArray(rowRangeBounds, colRangeBounds, this.csvCell.bind(this, data, columnDefinitions, CSVOptions), function (rowData) {
+          let field_separator = CSVOptions.field_separator || '\t';
           return rowData.join(field_separator);
         });
 
         if (copyWithHeader) {
-          var headerData = '';
+          let headerData = '';
           headerData = this.getHeaderData(columnDefinitions, CSVOptions);
 
           return headerData + '\n' + csvRows.join('\n');
@@ -109,13 +109,13 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
       },
 
       removeFirstColumn: function (colRangeBounds) {
-        var unionedColRanges = this.getUnion(colRangeBounds);
+        let unionedColRanges = this.getUnion(colRangeBounds);
 
         if(unionedColRanges.length == 0) {
           return [];
         }
 
-        var firstSubrangeStartsAt0 = function () {
+        let firstSubrangeStartsAt0 = function () {
           return unionedColRanges[0][0] == 0;
         };
 
@@ -134,7 +134,7 @@ define(['sources/selection/range_selection_helper', 'json-bignumber'],
       },
 
       csvCell: function (data, columnDefinitions, CSVOptions, rowId, colId) {
-        var val = data[rowId][columnDefinitions[colId].field],
+        let val = data[rowId][columnDefinitions[colId].field],
           cell_type = columnDefinitions[colId].cell || '',
           quoting = CSVOptions.quoting || 'strings',
           quote_char = CSVOptions.quote_char || '"';

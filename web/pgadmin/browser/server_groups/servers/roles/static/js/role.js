@@ -44,7 +44,7 @@ define('pgadmin.node.role', [
       hasSQL: true,
       width: '550px',
       canDrop: function(node, item) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
           /*
         To Drop a role:
@@ -112,13 +112,13 @@ define('pgadmin.node.role', [
         }]);
       },
       can_create_role: function(node, item) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         return server.connected && server.user.can_create_role;
       },
       can_reassign_role: function(node, item) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         return server.connected && node.can_login;
