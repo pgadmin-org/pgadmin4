@@ -82,10 +82,7 @@ define('pgadmin.node.sequence', [
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
               // If schema name start with pg_* then we need to exclude them
-              if (m.label.match(/^pg_/)) {
-                return false;
-              }
-              return true;
+              return !(m.label.match(/^pg_/));
             }),
             allTables: ()=>getNodeListByName('table', treeNodeInfo, itemNodeData, {includeItemKeys: ['_id']}),
             getColumns: (params)=>{

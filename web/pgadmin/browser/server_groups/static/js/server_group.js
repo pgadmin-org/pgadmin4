@@ -40,18 +40,14 @@ define('pgadmin.node.server_group', [
       getSchema: ()=>new ServerGroupSchema(),
       canDrop: function(itemData) {
         let serverOwner = itemData.user_id;
-        if (serverOwner != current_user.id && !_.isUndefined(serverOwner))
-          return false;
-        return true; },
+        return !(serverOwner != current_user.id && !_.isUndefined(serverOwner));
+      },
       dropAsRemove: true,
       canDelete: function(i) {
         let s = pgAdmin.Browser.tree.siblings(i, true);
 
         /* This is the only server group - we can't remove it*/
-        if (!s || s.length == 0) {
-          return false;
-        }
-        return true;
+        return !(!s || s.length == 0);
       },
     });
   }

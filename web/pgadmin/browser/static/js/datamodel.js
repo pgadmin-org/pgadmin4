@@ -337,11 +337,8 @@ define([
         return false;
       }
 
-      if ('validate' in self && _.isFunction(self.validate) &&
-        _.isString(self.validate.apply(self))) {
-        return false;
-      }
-      return true;
+      return !('validate' in self && _.isFunction(self.validate) &&
+        _.isString(self.validate.apply(self)));
     },
     set: function(key, val, options) {
       let opts = _.isObject(key) ? val : options;
@@ -445,7 +442,7 @@ define([
       let self = this,
         res, isNew = self.isNew();
 
-      session = (typeof(session) != 'undefined' && session == true);
+      session = (typeof(session) != 'undefined' && session);
 
       if (!session || isNew) {
         res = Backbone.Model.prototype.toJSON.call(this, arguments);
@@ -1040,7 +1037,7 @@ define([
      */
     toJSON: function(session) {
       let self = this;
-      session = (typeof(session) != 'undefined' && session == true);
+      session = (typeof(session) != 'undefined' && session);
 
       if (!session) {
         return Backbone.Collection.prototype.toJSON.call(self);

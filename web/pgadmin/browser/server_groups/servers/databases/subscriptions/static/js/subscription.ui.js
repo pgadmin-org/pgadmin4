@@ -53,9 +53,7 @@ export default class SubscriptionSchema extends BaseUISchema{
   get SSL_MODES() { return ['prefer', 'require', 'verify-ca', 'verify-full']; }
 
   isDisable(){
-    if (this.isNew())
-      return false;
-    return true;
+    return !this.isNew();
   }
   isSameDB(state){
     let host = state.host,
@@ -76,9 +74,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       db   = state.db,
       port = state.port,
       username = state.username;
-    if ((!_.isUndefined(host) && host) && (!_.isUndefined(db) && db) && (!_.isUndefined(port) && port) && (!_.isUndefined(username) && username))
-      return false;
-    return true;
+    return !((!_.isUndefined(host) && host) && (!_.isUndefined(db) && db) && (!_.isUndefined(port) && port) && (!_.isUndefined(username) && username));
   }
   isConnect(state){
     if(!_.isUndefined(state.connect) && !state.connect){
@@ -106,12 +102,9 @@ export default class SubscriptionSchema extends BaseUISchema{
       id: 'name', label: gettext('Name'), type: 'text',
       mode: ['properties', 'create', 'edit'], noEmpty: true,
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info'])
+        return (!_.isUndefined(this.node_info['node_info'])
             && !_.isUndefined(this.node_info['node_info'].version)
-            && this.node_info['node_info'].version >= 100000) {
-          return true;
-        }
-        return false;
+            && this.node_info['node_info'].version >= 100000);
       },
     },{
       id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
@@ -123,9 +116,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       type: 'select',
       mode: ['edit', 'properties', 'create'], controlProps: { allowClear: false},
       disabled: function(){
-        if(obj.isNew())
-          return true;
-        return false;
+        return obj.isNew();
       },
     },{
       id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),

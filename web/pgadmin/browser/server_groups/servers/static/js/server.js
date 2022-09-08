@@ -60,9 +60,7 @@ define('pgadmin.node.server', [
       label: gettext('Server'),
       canDrop: function(node){
         let serverOwner = node.user_id;
-        if (serverOwner != current_user.id && !_.isUndefined(serverOwner))
-          return false;
-        return true;
+        return !(serverOwner != current_user.id && !_.isUndefined(serverOwner));
       },
       dropAsRemove: true,
       dropPriority: 5,
@@ -146,11 +144,8 @@ define('pgadmin.node.server', [
           label: gettext('Clear Saved Password'), icon: 'fa fa-eraser',
           priority: 11,
           enable: function(node) {
-            if (node && node._type === 'server' &&
-              node.is_password_saved) {
-              return true;
-            }
-            return false;
+            return (node && node._type === 'server' &&
+              node.is_password_saved);
           },
         },{
           name: 'clear_sshtunnel_password', node: 'server', module: this,
@@ -158,11 +153,8 @@ define('pgadmin.node.server', [
           label: gettext('Clear SSH Tunnel Password'), icon: 'fa fa-eraser',
           priority: 12,
           enable: function(node) {
-            if (node && node._type === 'server' &&
-              node.is_tunnel_password_saved) {
-              return true;
-            }
-            return false;
+            return (node && node._type === 'server' &&
+              node.is_tunnel_password_saved);
           },
           data: {
             data_disabled: gettext('SSH Tunnel password is not saved for selected server.'),
@@ -175,54 +167,38 @@ define('pgadmin.node.server', [
         );
       },
       is_not_connected: function(node) {
-        return (node && node.connected != true);
+        return (node && !node.connected);
       },
       canCreate: function(node){
         let serverOwner = node.user_id;
-        if (serverOwner == current_user.id || _.isUndefined(serverOwner))
-          return true;
-        return false;
+        return (serverOwner == current_user.id || _.isUndefined(serverOwner));
 
       },
       is_connected: function(node) {
-        return (node && node.connected == true);
+        return (node && node.connected);
       },
       enable_reload_config: function(node) {
         // Must be connected & is Super user
-        if (node && node._type == 'server' &&
-          node.connected && node.user.is_superuser) {
-          return true;
-        }
-        return false;
+        return (node && node._type == 'server' &&
+          node.connected && node.user.is_superuser);
       },
       is_applicable: function(node) {
         // Must be connected & super user & not in recovery mode
-        if (node && node._type == 'server' &&
+        return (node && node._type == 'server' &&
           node.connected && node.user.is_superuser
-            && node.in_recovery == false) {
-          return true;
-        }
-        return false;
+            && !node.in_recovery);
       },
       wal_pause_enabled: function(node) {
         // Must be connected & is Super user & in Recovery mode
-        if (node && node._type == 'server' &&
+        return (node && node._type == 'server' &&
           node.connected && node.user.is_superuser
-            && node.in_recovery == true
-            && node.wal_pause == false) {
-          return true;
-        }
-        return false;
+            && node.in_recovery && !node.wal_pause);
       },
       wal_resume_enabled: function(node) {
         // Must be connected & is Super user & in Recovery mode
-        if (node && node._type == 'server' &&
+        return (node && node._type == 'server' &&
           node.connected && node.user.is_superuser
-            && node.in_recovery == true
-            && node.wal_pause == true) {
-          return true;
-        }
-        return false;
+            && node.in_recovery && node.wal_pause);
       },
       callbacks: {
         /* Connect the server */

@@ -191,10 +191,7 @@ function getDataTypeSchema(nodeObj, treeNodeInfo, itemNodeData) {
 }
 
 function isVisible(state, type) {
-  if(state.typtype === type) {
-    return true;
-  }
-  return false;
+  return state.typtype === type;
 }
 
 class EnumerationSchema extends BaseUISchema {
@@ -1413,10 +1410,7 @@ export default class TypeSchema extends BaseUISchema {
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
       visible: function(state) {
-        if(state.typtype === 'N' || state.typtype === 'V') {
-          return true;
-        }
-        return false;
+        return state.typtype === 'N' || state.typtype === 'V';
       }
     },
     {

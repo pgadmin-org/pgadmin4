@@ -48,10 +48,7 @@ class UserManagementCollection extends BaseUISchema {
   }
 
   isUserNameEnabled(state) {
-    if (this.authOnlyInternal || state.auth_source == authConstant['INTERNAL']) {
-      return false;
-    }
-    return true;
+    return !(this.authOnlyInternal || state.auth_source == authConstant['INTERNAL']);
   }
 
   isEditable(state) {
@@ -70,9 +67,7 @@ class UserManagementCollection extends BaseUISchema {
           first_empty: false,
         },
         visible: function() {
-          if (obj.authOnlyInternal)
-            return false;
-          return true;
+          return !obj.authOnlyInternal;
         },
         editable: function(state) {
           return (obj.isNew(state) && !obj.authOnlyInternal);
@@ -96,10 +91,7 @@ class UserManagementCollection extends BaseUISchema {
           if (obj.isNew(state))
             return true;
 
-          if (obj.isEditable(state) && state.auth_source != authConstant['INTERNAL'])
-            return true;
-
-          return false;
+          return obj.isEditable(state) && state.auth_source != authConstant['INTERNAL'];
         }
       }, {
         id: 'role', label: gettext('Role'), cell: 'select',
@@ -246,9 +238,7 @@ class UserManagementSchema extends BaseUISchema {
         id: 'userManagement', label: '', type: 'collection', schema: obj.userManagementCollObj,
         canAdd: true, canDelete: true, isFullTab: true, group: 'temp_user',
         canDeleteRow: (row)=>{
-          if (row['id'] == current_user['id'])
-            return false;
-          return true;
+          return row['id'] != current_user['id'];
         },
         onDelete: (row, deleteRow)=> {
           let deletedUser = {'id': row['id'], 'name': !isEmptyString(row['email']) ? row['email'] : row['username']};

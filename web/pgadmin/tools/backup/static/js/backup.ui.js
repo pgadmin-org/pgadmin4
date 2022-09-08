@@ -194,9 +194,7 @@ export function getSaveOptSchema(fieldOptions) {
 }
 
 function isVisible () {
-  if (!_.isUndefined(this.backupType) && this.backupType === 'server')
-    return false;
-  return true;
+  return !(!_.isUndefined(this.backupType) && this.backupType === 'server');
 }
 
 export class QueryOptionSchema extends BaseUISchema {
@@ -240,9 +238,7 @@ export class QueryOptionSchema extends BaseUISchema {
       disabled: false,
       group: gettext('Queries'),
       visible: function() {
-        if (!_.isUndefined(obj.backupType) && obj.backupType === 'server')
-          return false;
-        return true;
+        return !(!_.isUndefined(obj.backupType) && obj.backupType === 'server');
       },
     }, {
       id: 'include_drop_database',

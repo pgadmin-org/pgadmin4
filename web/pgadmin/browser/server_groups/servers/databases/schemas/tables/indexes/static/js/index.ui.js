@@ -163,7 +163,7 @@ export class ColumnSchema extends BaseUISchema {
           if(isEmptyString(topState.amname) || topState.amname === 'btree') {
             // We need to set nulls to true if sort_order is set to desc
             // nulls first is default for desc
-            if(state.sort_order == true && actionObj.oldState.sort_order ==  false) {
+            if(state.sort_order && !actionObj.oldState.sort_order) {
               setTimeout(function() {
                 state.nulls = true;
               }, 10);
@@ -195,11 +195,7 @@ export class ColumnSchema extends BaseUISchema {
 }
 
 function inSchema(node_info) {
-  if(node_info &&  'catalog' in node_info)
-  {
-    return true;
-  }
-  return false;
+  return node_info && 'catalog' in node_info;
 }
 
 export default class IndexSchema extends BaseUISchema {
@@ -257,12 +253,9 @@ export default class IndexSchema extends BaseUISchema {
   }
 
   isVisible() {
-    if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+    return (!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
       && !_.isUndefined(this.node_info.server.version) &&
-      this.node_info.server.version >= 110000)
-      return true;
-
-    return false;
+      this.node_info.server.version >= 110000);
   }
 
   get baseFields() {

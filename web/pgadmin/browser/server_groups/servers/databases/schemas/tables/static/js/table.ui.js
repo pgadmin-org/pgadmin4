@@ -39,11 +39,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
         cacheNode: 'database',
       }, (d)=>{
         // If schema name start with pg_* then we need to exclude them
-        if(d && d.label.match(/^pg_/))
-        {
-          return false;
-        }
-        return true;
+        return !(d && d.label.match(/^pg_/));
       }),
       spcname: spcname,
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', tableNode, treeNodeInfo, itemNodeData),
@@ -106,10 +102,7 @@ export class ConstraintsSchema extends BaseUISchema {
   }
 
   canAdd(state) {
-    if (state.is_partitioned && this.top.getServerVersion() < 110000) {
-      return false;
-    }
-    return true;
+    return !(state.is_partitioned && this.top.getServerVersion() < 110000);
   }
 
   get baseFields() {
@@ -219,17 +212,11 @@ export class LikeSchema extends BaseUISchema {
   }
 
   isLikeDisable(state) {
-    if(!this.top.inSchemaWithModelCheck(state) && isEmptyString(state.typname)) {
-      return false;
-    }
-    return true;
+    return !(!this.top.inSchemaWithModelCheck(state) && isEmptyString(state.typname));
   }
 
   isRelationDisable(state) {
-    if(isEmptyString(state.like_relation)) {
-      return true;
-    }
-    return false;
+    return isEmptyString(state.like_relation);
   }
 
   resetVals(state) {
@@ -396,20 +383,14 @@ export default class TableSchema extends BaseUISchema {
   canAddRowColumns(state) {
     if(!this.inCatalog()) {
       // if of_type then disable add in grid
-      if (!isEmptyString(state.typname)) {
-        return false;
-      }
-      return true;
+      return isEmptyString(state.typname);
     }
     return false;
   }
 
   // Check for column grid when to edit/delete (for each row)
   canEditDeleteRowColumns(colstate) {
-    if (!isEmptyString(colstate.inheritedfrom)) {
-      return false;
-    }
-    return true;
+    return isEmptyString(colstate.inheritedfrom);
   }
 
   isPartitioned(state) {
@@ -464,18 +445,14 @@ export default class TableSchema extends BaseUISchema {
           return false;
         }
         // Always show in case of create mode
-        if (obj.isNew(state) || state.is_partitioned)
-          return true;
-        return false;
+        return (obj.isNew(state) || state.is_partitioned);
       },
     },{
       id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
       min_version: 100000, visible: !this.inErd,
       readonly: function(state) {
-        if (!obj.isNew(state))
-          return true;
-        return false;
+        return !obj.isNew(state);
       },
     },{
       id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
@@ -495,10 +472,7 @@ export default class TableSchema extends BaseUISchema {
         if(state.adding_inherit_cols || state.is_partitioned){
           return true;
         }
-        if(!obj.inCatalog() && isEmptyString(state.typname)) {
-          return false;
-        }
-        return true;
+        return !(!obj.inCatalog() && isEmptyString(state.typname));
       },
       depChange: (state, source, topState, actionObj)=>{
         if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[0] == 'coll_inherits') {
@@ -703,10 +677,7 @@ export default class TableSchema extends BaseUISchema {
       mode: ['properties', 'create', 'edit'], group: 'advanced', deps: ['coll_inherits'],
       visible: !this.inErd,
       disabled: (state)=>{
-        if(!obj.inSchemaWithModelCheck(state) && isEmptyString(state.coll_inherits)) {
-          return false;
-        }
-        return true;
+        return !(!obj.inSchemaWithModelCheck(state) && isEmptyString(state.coll_inherits));
       }, options: this.fieldOptions.typname, optionsLoaded: (res)=>{
         obj.ofTypeTables = res;
       },
@@ -836,9 +807,7 @@ export default class TableSchema extends BaseUISchema {
       mode:['create'],
       min_version: 100000,
       disabled: function(state) {
-        if (!state.is_partitioned)
-          return true;
-        return false;
+        return !state.is_partitioned;
       },
       readonly: function(state) {return !obj.isNew(state);},
     },
@@ -851,9 +820,7 @@ export default class TableSchema extends BaseUISchema {
       deps: ['is_partitioned', 'partition_type', 'typname'],
       canEdit: false, canDelete: true,
       canAdd: function(state) {
-        if (obj.isNew(state) && state.is_partitioned)
-          return true;
-        return false;
+        return obj.isNew(state) && state.is_partitioned;
       },
       canAddRow: function(state) {
         let columnsExist = false;
@@ -924,9 +891,7 @@ export default class TableSchema extends BaseUISchema {
       customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
       columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],
       canAdd: function(state) {
-        if (state.is_partitioned)
-          return true;
-        return false;
+        return state.is_partitioned;
       },
       min_version: 100000,
     },

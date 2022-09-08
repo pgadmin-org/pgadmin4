@@ -331,11 +331,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
           document.execCommand('copy');
         }
 
-        if (e.ctrlKey && platform == 'win32') {
-          return false;
-        }
-
-        return true;
+        return !(e.ctrlKey && platform == 'win32');
       });
 
       term.textarea.addEventListener('paste', function() {

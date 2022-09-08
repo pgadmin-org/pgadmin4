@@ -34,22 +34,18 @@ export class DefaultWithSchema extends BaseUISchema {
       id: 'evnt_truncate', label: gettext('TRUNCATE'),
       type: 'switch', group: gettext('With'),
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info'])
-          && !_.isUndefined(this.node_info['node_info'].version) &&
-            this.node_info['node_info'].version >= 110000)
-          return true;
-        return false;
+        return !_.isUndefined(this.node_info['node_info'])
+          && !_.isUndefined(this.node_info['node_info'].version)
+          && this.node_info['node_info'].version >= 110000;
       },
 
     },{
       id: 'publish_via_partition_root', label: gettext('Publish via root?'),
       type: 'switch', group: gettext('With'),
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info'])
-          && !_.isUndefined(this.node_info['node_info'].version) &&
-            this.node_info['node_info'].version >= 130000)
-          return true;
-        return false;
+        return !_.isUndefined(this.node_info['node_info'])
+          && !_.isUndefined(this.node_info['node_info'].version)
+          && this.node_info['node_info'].version >= 130000;
       },
     }];
   }
@@ -111,12 +107,9 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'name', label: gettext('Name'), type: 'text',
       mode: ['properties', 'create', 'edit'], noEmpty: true,
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info'])
-            && !_.isUndefined(this.node_info['node_info'].version)
-            && this.node_info['node_info'].version >= 100000) {
-          return true;
-        }
-        return false;
+        return !_.isUndefined(this.node_info['node_info'])
+          && !_.isUndefined(this.node_info['node_info'].version)
+          && this.node_info['node_info'].version >= 100000;
       },
     },{
       id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
@@ -125,9 +118,7 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'pubowner', label: gettext('Owner'), type: 'select',
       options: this.fieldOptions.role,
       disabled: ()  => {
-        if (obj.isNew())
-          return true;
-        return false;
+        return obj.isNew();
       },
       mode: ['edit', 'properties', 'create'], controlProps: { allowClear: false},
     },{

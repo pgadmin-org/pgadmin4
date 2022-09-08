@@ -316,9 +316,7 @@ define('pgadmin.node.table', [
           type: 'switch', mode: ['properties', 'create', 'edit'],
           visible: 'isVersionGreaterThan96',
           readonly: function(m) {
-            if (!m.isNew())
-              return true;
-            return false;
+            return !m.isNew();
           },
         },{
           id: 'description', label: gettext('Comment'), type: 'multiline',
@@ -336,11 +334,7 @@ define('pgadmin.node.table', [
         },
         // We will disable everything if we are under catalog node
         inSchema: function() {
-          if(this.node_info &&  'catalog' in this.node_info)
-          {
-            return true;
-          }
-          return false;
+          return this.node_info && 'catalog' in this.node_info;
         },
       }),
       // Check to whether table has disable trigger(s)

@@ -96,11 +96,7 @@ define('pgadmin.node.row_security_policy', [
           return false;
 
         // If server is less than 9.5 then do not allow 'create' menu
-        if (server && server.version < 90500)
-          return false;
-
-        // by default we want to allow create menu
-        return true;
+        return server && server.version >= 90500;
       },
     });
   }

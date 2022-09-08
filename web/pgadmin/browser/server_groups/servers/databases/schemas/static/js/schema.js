@@ -175,10 +175,7 @@ define('pgadmin.node.schema', [
         return true;
       }
 
-      if(!m.top.inSchema.apply(this, [m])) {
-        return false;
-      }
-      return true;
+      return m.top.inSchema.apply(this, [m]);
     },
   },{
     id: 'autovacuum_enabled', label: gettext('Autovacuum Enabled?'),
@@ -192,9 +189,7 @@ define('pgadmin.node.schema', [
     ],
     deps: ['autovacuum_custom'],
     disabled: function(m) {
-      if(!m.top.inSchema.apply(this, [m]) &&
-        m.get('autovacuum_custom') == true) {
-
+      if(!m.top.inSchema.apply(this, [m]) && m.get('autovacuum_custom')) {
         return false;
       }
 
@@ -243,11 +238,8 @@ define('pgadmin.node.schema', [
     disabled: function(m) {
       // We need to check additional condition to toggle enable/disable
       // for table auto-vacuum
-      if(!m.top.inSchema.apply(this, [m]) &&
-        (m.isNew() || (m.get('toast_autovacuum_enabled') === true || m.top.get('hastoasttable') === true))) {
-        return false;
-      }
-      return true;
+      return !(!m.top.inSchema.apply(this, [m]) &&
+        (m.isNew() || (m.get('toast_autovacuum_enabled') === true || m.top.get('hastoasttable') === true)));
     },
   },{
     id: 'toast_autovacuum_enabled', label: gettext('Autovacuum Enabled?'),

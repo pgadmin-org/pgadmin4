@@ -104,11 +104,7 @@ export default class ExtensionsSchema extends BaseUISchema {
         controlProps: { allowClear: true }, editable: false,
         options: this.schemaList,
         disabled: function (state) {
-          if (!obj.isNew(state) && !state.relocatable) {
-            return true;
-          }
-
-          return false;
+          return !obj.isNew(state) && !state.relocatable;
         },
       },
       {

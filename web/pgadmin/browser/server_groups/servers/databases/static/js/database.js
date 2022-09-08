@@ -118,24 +118,20 @@ define('pgadmin.node.database', [
           server = treeData['server'];
 
         // If server is less than 10 then do not allow 'create' menu
-        if (server && server.version < 100000)
-          return false;
-
-        // by default we want to allow create menu
-        return true;
+        return server && server.version >= 100000;
       },
 
       is_not_connected: function(node) {
-        return (node && node.connected != true && node.allowConn == true);
+        return (node && !node.connected && node.allowConn);
       },
       is_connected: function(node) {
-        return (node && node.connected == true && node.canDisconn == true);
+        return (node && node.connected && node.canDisconn);
       },
       is_psql_enabled: function(node) {
-        return (node && node.connected == true) && pgAdmin['enable_psql'];
+        return (node && node.connected) && pgAdmin['enable_psql'];
       },
       is_conn_allow: function(node) {
-        return (node && node.allowConn == true);
+        return (node && node.allowConn);
       },
       connection_lost: function(i, resp, server_connected) {
         if (pgBrowser.tree) {

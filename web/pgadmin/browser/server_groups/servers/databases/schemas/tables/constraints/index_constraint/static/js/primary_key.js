@@ -53,7 +53,7 @@ define('pgadmin.node.primary_key', [
       },
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
         let t = pgBrowser.tree, i = item, d = itemData, parents = [],
@@ -164,11 +164,7 @@ define('pgadmin.node.primary_key', [
           }
 
           // We can't update columns of existing index constraint.
-          if (!m.isNew()) {
-            return true;
-          }
-
-          return false;
+          return !m.isNew();
         },
         // Define the schema for the index constraint node
         schema: [{
@@ -451,12 +447,9 @@ define('pgadmin.node.primary_key', [
           visible: function(m) {
             /* In table properties, m.node_info is not available */
             m = m.top;
-            if(!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
+            return (!_.isUndefined(m.node_info) && !_.isUndefined(m.node_info.server)
               && !_.isUndefined(m.node_info.server.version) &&
-              m.node_info.server.version >= 110000)
-              return true;
-
-            return false;
+              m.node_info.server.version >= 110000);
           },
           control: Backform.MultiSelectAjaxControl.extend({
             defaults: _.extend(
@@ -602,7 +595,7 @@ define('pgadmin.node.primary_key', [
           },
           disabled: function(m) {
             // Disable if condeferred is false or unselected.
-            if(m.get('condeferrable') == true) {
+            if(m.get('condeferrable')) {
               return false;
             } else {
               setTimeout(function(){

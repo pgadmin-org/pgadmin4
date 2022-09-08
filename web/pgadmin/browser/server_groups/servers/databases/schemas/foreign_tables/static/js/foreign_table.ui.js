@@ -59,10 +59,7 @@ export default class ForeignTableSchema extends BaseUISchema {
   }
 
   canEditDeleteRowColumns(colstate) {
-    if (!isEmptyString(colstate.inheritedfrom)) {
-      return false;
-    }
-    return true;
+    return isEmptyString(colstate.inheritedfrom);
   }
 
   getTableOid(tabId) {
@@ -183,7 +180,7 @@ export default class ForeignTableSchema extends BaseUISchema {
         canAdd: true, canDelete: true, columns: ['conname','consrc', 'connoinherit', 'convalidated'],
         canEdit: true,
         canDeleteRow: function(state) {
-          return (state.conislocal == true || _.isUndefined(state.conislocal)) ? true : false;
+          return (state.conislocal || _.isUndefined(state.conislocal)) ? true : false;
         },
         canEditRow: function(state) {
           return obj.isNew(state);
@@ -430,10 +427,8 @@ export class ColumnSchema extends BaseUISchema {
             || _.isNull(state.inheritedid)
             || _.isUndefined(state.inheritedfrom)
             || _.isNull(state.inheritedfrom))) { return false; }
-          if (obj.nodeInfo.server.version < 90300){
-            return false;
-          }
-          return true;
+
+          return obj.nodeInfo.server.version >= 90300;
         },
       },
       {
@@ -531,10 +526,7 @@ export class CheckConstraintSchema extends BaseUISchema {
       editable: (state) => {
         if (_.isUndefined(obj.isNew)) { return true; }
         if (!obj.isNew(state)) {
-          if(state.convalidated && obj.convalidated_default) {
-            return false;
-          }
-          return true;
+          return !(state.convalidated && obj.convalidated_default);
         }
         return true;
       },

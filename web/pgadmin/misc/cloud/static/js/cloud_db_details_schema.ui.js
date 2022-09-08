@@ -287,8 +287,7 @@ export class StorageSchema extends BaseUISchema {
         id: 'storage_IOPS', label: gettext('Provisioned IOPS'), type: 'text',
         mode: ['create'],
         visible: (state) => {
-          if(state.storage_type === 'io1') return true;
-          return false;
+          return state.storage_type === 'io1';
         } , deps: ['storage_type'],
         depChange: (state, source) => {
           if (source[0] !== 'storage_IOPS') {
@@ -488,7 +487,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
       setErrMsg('confirm_password', gettext('Password must be 12 characters or more.'));
       return true;
     }
-    if (data.high_availability == true && (isEmptyString(data.replicas) || data.replicas <= 0)) {
+    if (data.high_availability && (isEmptyString(data.replicas) || data.replicas <= 0)) {
       setErrMsg('replicas', gettext('Please select number of stand by replicas.'));
       return true;
     }
@@ -630,8 +629,7 @@ class BigAnimalHighAvailSchema extends BaseUISchema {
           {'label': gettext('2'), 'value': 2},
         ], noEmpty: true,
         disabled: (state) => {
-          if (state.high_availability == true) return false;
-          return true;
+          return !state.high_availability;
         }
       },
     ];

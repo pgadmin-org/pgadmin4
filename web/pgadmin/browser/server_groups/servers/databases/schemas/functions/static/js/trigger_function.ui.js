@@ -75,15 +75,11 @@ export default class TriggerFunctionSchema extends BaseUISchema {
 
 
   isVisible(state) {
-    if (state.name == 'sysproc') { return false; }
-    return true;
+    return state.name != 'sysproc';
   }
 
   isDisabled() {
-    if('catalog' in this.fieldOptions.nodeInfo) {
-      return true;
-    }
-    return false;
+    return 'catalog' in this.fieldOptions.nodeInfo;
   }
 
 
@@ -166,26 +162,21 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         mode: ['properties', 'create', 'edit'],
         group: gettext('Code'), deps: ['lanname'],
         visible: (state) => {
-          if (state.lanname == 'c') {
-            return false;
-          }
-          return true;
+          return state.lanname !== 'c';
         },
         disabled: obj.isDisabled, readonly: obj.isReadonly,
       },{
         id: 'probin', label: gettext('Object file'), cell: 'string',
         type: 'text', group: gettext('Definition'), deps: ['lanname'],
         visible: (state) => {
-          if (state.lanname == 'c') { return true; }
-          return false;
+          return state.lanname == 'c';
         },
         disabled: obj.isDisabled, readonly: obj.isReadonly,
       },{
         id: 'prosrc_c', label: gettext('Link symbol'), cell: 'string',
         type: 'text', group: gettext('Definition'),  deps: ['lanname'],
         visible: (state) => {
-          if (state.lanname == 'c') { return true; }
-          return false;
+          return state.lanname == 'c';
         },
         disabled: obj.isDisabled, readonly: obj.isReadonly,
       },{
@@ -220,7 +211,7 @@ export default class TriggerFunctionSchema extends BaseUISchema {
         group: gettext('Options'),
         disabled: (state) => {
           let isDisabled = true;
-          if(state.proretset == true) {
+          if(state.proretset) {
             isDisabled = false;
           }
           return isDisabled;

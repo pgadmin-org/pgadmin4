@@ -42,10 +42,7 @@ export default class RuleSchema extends BaseUISchema {
           if (state.name == '_RETURN') {
             return true;
           }
-          if (obj.isNew(state) || obj.fieldOptions.nodeInfo.server.version >= 90400) {
-            return false;
-          }
-          return true;
+          return !(obj.isNew(state) || obj.fieldOptions.nodeInfo.server.version >= 90400);
         }, noEmpty: true
       },
       {
@@ -71,10 +68,7 @@ export default class RuleSchema extends BaseUISchema {
         mode: ['edit', 'properties'], group: gettext('Definition'),
         type: 'select',
         disabled: () => {
-          if('catalog' in obj.fieldOptions.nodeInfo || 'view' in obj.fieldOptions.nodeInfo) {
-            return true;
-          }
-          return false;
+          return 'catalog' in obj.fieldOptions.nodeInfo || 'view' in obj.fieldOptions.nodeInfo;
         },
         options: [
           {label: gettext('Enable'), value: 'O'},

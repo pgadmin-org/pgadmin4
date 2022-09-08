@@ -36,10 +36,7 @@ export default class ViewSchema extends BaseUISchema {
   }
 
   notInSchema() {
-    if(this.nodeInfo && 'catalog' in this.nodeInfo) {
-      return true;
-    }
-    return false;
+    return this.nodeInfo && 'catalog' in this.nodeInfo;
   }
 
 

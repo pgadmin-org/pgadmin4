@@ -105,27 +105,19 @@ export default class ColumnSchema extends BaseUISchema {
   // Check whether the column is identity column or not
   isIdentityColumn(state) {
     let isIdentity = state.attidentity;
-    if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
-      return false;
-    return true;
+    return !(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity));
   }
 
   // Check whether the column is a identity column
   isTypeIdentity(state) {
     let colconstype = state.colconstype;
-    if (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'i') {
-      return true;
-    }
-    return false;
+    return (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'i');
   }
 
   // Check whether the column is a generated column
   isTypeGenerated(state) {
     let colconstype = state.colconstype;
-    if (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'g') {
-      return true;
-    }
-    return false;
+    return (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'g');
   }
 
   // We will check if we are under schema node & in 'create' mode
@@ -200,11 +192,8 @@ export default class ColumnSchema extends BaseUISchema {
 
         let name = state.name;
 
-        if(!obj.inSchemaWithColumnCheck(state)
-          && (_.isUndefined(name)  || _.isNull(name) || name == '')) {
-          return true;
-        }
-        return false;
+        return (!obj.inSchemaWithColumnCheck(state)
+          && (_.isUndefined(name)  || _.isNull(name) || name == ''));
       },
       editable: function(state) {
         // If primary key already exist then disable.
@@ -229,10 +218,7 @@ export default class ColumnSchema extends BaseUISchema {
           return false;
         }
 
-        if(!obj.inSchemaWithColumnCheck(state)) {
-          return true;
-        }
-        return false;
+        return !obj.inSchemaWithColumnCheck(state);
       },
     },{
       id: 'attnum', label: gettext('Position'), cell: 'text',
@@ -401,10 +387,7 @@ export default class ColumnSchema extends BaseUISchema {
         }
       }, editable: function(state) {
         // inheritedfrom has value then we should disable it
-        if (!isEmptyString(state.inheritedfrom) || !this.editableCheckForTable(state)) {
-          return false;
-        }
-        return true;
+        return !(!isEmptyString(state.inheritedfrom) || !this.editableCheckForTable(state));
       },
     },{
       id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
@@ -451,10 +434,7 @@ export default class ColumnSchema extends BaseUISchema {
         };
       },
       disabled: function(state) {
-        if (!this.isNew(state) && state.colconstype == 'g') {
-          return true;
-        }
-        return false;
+        return (!this.isNew(state) && state.colconstype == 'g');
       }, min_version: 100000,
     }, {
       id: 'attidentity', label: gettext('Identity'),

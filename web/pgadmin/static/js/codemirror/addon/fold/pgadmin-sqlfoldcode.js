@@ -117,10 +117,7 @@
     //this reg will check the token should be in format as - IF condition or IF(condition)
     let reg = `\\b\\${startToken}\\s*\\(\\w*\\)(?!\\w)|\\b\\${startToken}\\(\\w*\\)(?!\\w)|\\b\\${startToken}\\s*(?!\\w)`;
     let regex = RegExp(reg, 'g');
-    if(regex.exec(text) !== null) {
-      return true;
-    }
-    return false;
+    return regex.exec(text) !== null;
   }
 
   CodeMirror.registerHelper('fold', 'sql', function(cm, start) {

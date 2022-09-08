@@ -139,18 +139,12 @@ export default class BaseUISchema {
 
   /* Check if node in catalog */
   inCatalog() {
-    if(this.nodeInfo && 'catalog' in this.nodeInfo) {
-      return true;
-    }
-    return false;
+    return this.nodeInfo && 'catalog' in this.nodeInfo;
   }
 
   /* Check readonly on the basis of new state */
   isReadOnly(state) {
-    if(!this.isNew(state)) {
-      return true;
-    }
-    return false;
+    return !this.isNew(state);
   }
 
   /* Get the server version */

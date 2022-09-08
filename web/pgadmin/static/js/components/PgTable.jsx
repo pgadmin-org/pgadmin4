@@ -347,10 +347,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
     setHiddenColumns(
       columns
         .filter((column) => {
-          if (column.isVisible === undefined || column.isVisible === true) {
-            return false;
-          }
-          return true;
+          return !(column.isVisible === undefined || column.isVisible === true);
         }
         )
         .map((column) => column.accessor)

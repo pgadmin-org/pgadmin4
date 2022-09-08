@@ -463,10 +463,7 @@ class AzureDatabaseSchema extends BaseUISchema {
   }
 
   validate(data, setErrMsg) {
-    if (this.validateDbUserName(data, setErrMsg) || this.validateDbPassword(data, setErrMsg)) {
-      return true;
-    }
-    return false;
+    return this.validateDbUserName(data, setErrMsg) || this.validateDbPassword(data, setErrMsg);
   }
 
   get baseFields() {
@@ -729,10 +726,7 @@ class AzureClusterSchema extends BaseUISchema {
       return true;
     }
 
-    if(this.validateProjectDetails(data, setErr) || this.validateInstanceDetails(data, setErr) || this.validateNetworkDetails(data, setErr)){
-      return true;
-    }
-    return false;
+    return (this.validateProjectDetails(data, setErr) || this.validateInstanceDetails(data, setErr) || this.validateNetworkDetails(data, setErr));
   }
 }
 

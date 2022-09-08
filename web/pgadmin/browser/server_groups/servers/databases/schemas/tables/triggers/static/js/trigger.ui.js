@@ -84,7 +84,7 @@ export class EventSchema extends BaseUISchema {
         let is_constraint_trigger = state.is_constraint_trigger,
           is_row_trigger = state.is_row_trigger,
           server_type = obj.nodeInfo ? obj.nodeInfo.server.server_type: null;
-        if (is_row_trigger == true){
+        if (is_row_trigger){
           state.evnt_truncate = false;
           return true;
         }
@@ -189,10 +189,7 @@ export default class TriggerSchema extends BaseUISchema {
   }
 
   isDisable(state) {
-    if(!state.is_constraint_trigger) {
-      return true;
-    }
-    return false;
+    return !state.is_constraint_trigger;
   }
 
   get baseFields() {
@@ -208,10 +205,7 @@ export default class TriggerSchema extends BaseUISchema {
       mode: ['edit', 'properties'], group: gettext('Definition'),
       type: 'select',
       disabled: () => {
-        if('catalog' in obj.nodeInfo || 'view' in obj.nodeInfo) {
-          return true;
-        }
-        return false;
+        return 'catalog' in obj.nodeInfo || 'view' in obj.nodeInfo;
       },
       options: [
         {label: gettext('Enable'), value: 'O'},
@@ -252,11 +246,7 @@ export default class TriggerSchema extends BaseUISchema {
         } else {
           // Check if it is row trigger then enabled it.
           let is_row_trigger = state.is_row_trigger;
-          if (!_.isUndefined(is_row_trigger) && obj.nodeInfo.server.server_type == 'ppas') {
-            return false;
-          }
-          // Disable it
-          return true;
+          return !(!_.isUndefined(is_row_trigger) && obj.nodeInfo.server.server_type == 'ppas');
         }
       },
     },{
@@ -278,10 +268,7 @@ export default class TriggerSchema extends BaseUISchema {
         return obj.inSchemaWithModelCheck(state);
       },
       disabled: () => {
-        if('view' in obj.nodeInfo) {
-          return true;
-        }
-        return false;
+        return 'view' in obj.nodeInfo;
       }
     },{
       id: 'tgdeferrable', label: gettext('Deferrable?'),
@@ -403,11 +390,7 @@ export default class TriggerSchema extends BaseUISchema {
         } else {
           // Check if it is row trigger then enabled it.
           let fires_ = state.fires;
-          if (!_.isUndefined(fires_) && obj.nodeInfo.server.server_type == 'ppas') {
-            return false;
-          }
-          // Disable it
-          return true;
+          return !(!_.isUndefined(fires_) && obj.nodeInfo.server.server_type == 'ppas');
         }
       },
     },{
@@ -435,10 +418,7 @@ export default class TriggerSchema extends BaseUISchema {
         }
         // Enable column only if update event is set true
         let isUpdate = state.evnt_update;
-        if(!_.isUndefined(isUpdate) && isUpdate) {
-          return false;
-        }
-        return true;
+        return !(!_.isUndefined(isUpdate) && isUpdate);
       },
     },{
       id: 'tgoldtable', label: gettext('Old table'),

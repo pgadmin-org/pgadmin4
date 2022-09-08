@@ -75,7 +75,7 @@ define('pgadmin.node.package', [
       },
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
         let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
@@ -85,11 +85,7 @@ define('pgadmin.node.package', [
           return false;
 
         // If it is catalog then don't allow user to create package
-        if (treeData['catalog'] != undefined)
-          return false;
-
-        // by default we want to allow create menu
-        return true;
+        return treeData['catalog'] == undefined;
       },
       getSchema: (treeNodeInfo, itemNodeData) => {
         let nodeObj = pgBrowser.Nodes['package'];

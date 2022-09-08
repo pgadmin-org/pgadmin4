@@ -74,10 +74,7 @@ export default class ImportExportSelectionSchema extends BaseUISchema {
         }
       },
       disabled: function (state) {
-        if (state.imp_exp == 'e') {
-          return true;
-        }
-        return false;
+        return state.imp_exp == 'e';
       }
     }];
   }

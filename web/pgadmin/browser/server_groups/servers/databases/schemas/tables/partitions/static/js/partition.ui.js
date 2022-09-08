@@ -34,11 +34,7 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
         cacheNode: 'database',
       }, (d)=>{
         // If schema name start with pg_* then we need to exclude them
-        if(d && d.label.match(/^pg_/))
-        {
-          return false;
-        }
-        return true;
+        return !(d && d.label.match(/^pg_/));
       }),
       spcname: spcname,
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', partNode, treeNodeInfo, itemNodeData),
@@ -186,18 +182,14 @@ export default class PartitionTableSchema extends BaseUISchema {
       mode: ['edit', 'create'], min_version: 100000,
       visible: function(state) {
         // Always show in case of create mode
-        if (obj.isNew(state) || state.is_partitioned)
-          return true;
-        return false;
+        return obj.isNew(state) || state.is_partitioned;
       },
     },{
       id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
       min_version: 100000,
       readonly: function(state) {
-        if (!obj.isNew(state))
-          return true;
-        return false;
+        return !obj.isNew(state);
       },
     },{
       id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
@@ -297,9 +289,7 @@ export default class PartitionTableSchema extends BaseUISchema {
       mode:['create'],
       min_version: 100000,
       disabled: function(state) {
-        if (!state.is_partitioned)
-          return true;
-        return false;
+        return !state.is_partitioned;
       },
       readonly: function(state) {return !obj.isNew(state);},
     },
@@ -311,9 +301,7 @@ export default class PartitionTableSchema extends BaseUISchema {
       deps: ['is_partitioned', 'partition_type', 'typname'],
       canEdit: false, canDelete: true,
       canAdd: function(state) {
-        if (obj.isNew(state) && state.is_partitioned)
-          return true;
-        return false;
+        return obj.isNew(state) && state.is_partitioned;
       },
       canAddRow: function(state) {
         let columnsExist = false;
@@ -384,9 +372,7 @@ export default class PartitionTableSchema extends BaseUISchema {
       customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
       columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],
       canAdd: function(state) {
-        if (state.is_partitioned)
-          return true;
-        return false;
+        return state.is_partitioned;
       },
       min_version: 100000,
     },

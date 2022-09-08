@@ -191,7 +191,7 @@ define('pgadmin.node.compound_trigger', [
 
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
         let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
@@ -201,11 +201,7 @@ define('pgadmin.node.compound_trigger', [
           return false;
 
         // If it is catalog then don't allow user to create package
-        if (treeData['catalog'] != undefined)
-          return false;
-
-        // by default we want to allow create menu
-        return true;
+        return treeData['catalog'] == undefined;
       },
       // Check to whether trigger is disable ?
       canCreate_with_compound_trigger_enable: function(itemData, item, data) {

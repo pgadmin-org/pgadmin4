@@ -102,7 +102,7 @@ define('pgadmin.node.synonym', [
       },
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
         let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
@@ -112,11 +112,7 @@ define('pgadmin.node.synonym', [
           return false;
 
         // If it is catalog then don't allow user to create synonyms
-        if (treeData['catalog'] != undefined)
-          return false;
-
-        // by default we do not want to allow create menu
-        return true;
+        return treeData['catalog'] == undefined;
       },
     });
 
