@@ -21,6 +21,13 @@ export default function JsonEditor({getEditor, value, options, className}) {
   };
 
   useEffect(()=>{
+    const editorResizeObserver = new ResizeObserver(()=>{
+      editor.current.resize();
+    });
+    editorResizeObserver.observe(eleRef.current);
+  }, []);
+
+  useEffect(()=>{
     /* Create the object only once on mount */
     editor.current = new OrigJsonEditor(eleRef.current, {
       ...defaultOptions,

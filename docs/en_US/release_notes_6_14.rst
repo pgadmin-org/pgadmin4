@@ -31,4 +31,5 @@ Bug fixes
   | `Issue #7646 <https://redmine.postgresql.org/issues/7646>`_ -  Ensure that the Import/Export server menu option is visible.
   | `Issue #7648 <https://redmine.postgresql.org/issues/7648>`_ -  Fixed API test case for change password in the server mode.
   | `Issue #7649 <https://redmine.postgresql.org/issues/7649>`_ -  Fixed an issue with the non-visibility of columns added prior to import/export data.
+  | `Issue #7656 <https://redmine.postgresql.org/issues/7656>`_ -  Fixed an issue where textarea of the JSON Editor does not resize with dialog.
   | `Issue #7663 <https://redmine.postgresql.org/issues/7663>`_ -  Fixed ModuleNotFoundError when running setup.py to load/dump servers.
