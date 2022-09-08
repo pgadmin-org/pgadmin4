@@ -94,7 +94,7 @@ define('pgadmin.node.foreign_key', [
       },
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
         let t = pgBrowser.tree, i = item, d = itemData, parents = [],

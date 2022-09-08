@@ -49,7 +49,7 @@ define([
             $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);
 
-            if (myPanel.showTitle == false)
+            if (!myPanel.showTitle)
               myPanel.title(false);
 
             myPanel.icon(that.icon);

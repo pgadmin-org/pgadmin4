@@ -1442,7 +1442,7 @@ define([
       }
 
       // Insert Edit Cell into Grid
-      if (data.disabled == false && data.canEdit) {
+      if (!data.disabled && data.canEdit) {
         let editCell = Backgrid.Extension.ObjectCell.extend({
           schema: gridSchema.schema,
         });
@@ -1521,7 +1521,7 @@ define([
       }
 
       // Add button callback
-      if (!(data.disabled || data.canAdd == false)) {
+      if (!(data.disabled || !data.canAdd)) {
         $dialog.find('button.add').first().on('click',(e) => {
           e.preventDefault();
           let canAddRow = _.isFunction(data.canAddRow) ?
@@ -1703,12 +1703,12 @@ define([
       }
 
       // Set visibility of Add button
-      if (data.disabled || data.canAdd == false) {
+      if (data.disabled || !data.canAdd) {
         $(gridBody).find('button.add').remove();
       }
 
       // Insert Delete Cell into Grid
-      if (data.disabled == false && data.canDelete) {
+      if (!data.disabled && data.canDelete) {
         gridSchema.columns.unshift({
           name: 'pg-backform-delete',
           label: '',
@@ -1722,7 +1722,7 @@ define([
       }
 
       // Insert Edit Cell into Grid
-      if (data.disabled == false && data.canEdit) {
+      if (!data.disabled && data.canEdit) {
         let editCell = Backgrid.Extension.ObjectCell.extend({
             schema: gridSchema.schema,
           }),

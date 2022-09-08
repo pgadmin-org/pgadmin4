@@ -361,7 +361,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
           });
 
           // Insert Delete Cell into Grid
-          if (data.disabled == false && data.canDelete) {
+          if (data.disabled && data.canDelete) {
             gridSchema.columns.unshift({
               name: 'pg-backform-delete width_percent_5', label: '',
               cell: Backgrid.Extension.DeleteCell,
@@ -404,7 +404,7 @@ function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
           $gridBody.append(self.$grid);
 
           // Add button callback
-          if (!(data.disabled || data.canAdd == false)) {
+          if (!(data.disabled || !data.canAdd)) {
             $gridBody.find('button.add').first().on('click',(e) => {
               e.preventDefault();
               let canAddRow = _.isFunction(data.canAddRow) ?

@@ -214,7 +214,7 @@ export function validateBigAnimalStep3(cloudDBDetails, nodeInfo) {
     isError = true;
   }
 
-  if(cloudDBDetails.high_availability == true && (isEmptyString(cloudDBDetails.replicas) || cloudDBDetails.replicas <= 0)) {
+  if(cloudDBDetails.high_availability && (isEmptyString(cloudDBDetails.replicas) || cloudDBDetails.replicas <= 0)) {
     isError = true;
   }
   if (isEmptyString(cloudDBDetails.gid)) cloudDBDetails.gid = nodeInfo['server_group']._id;

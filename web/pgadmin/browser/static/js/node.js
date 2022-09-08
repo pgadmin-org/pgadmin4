@@ -64,7 +64,7 @@ define('pgadmin.browser.node', [
     child.callbacks = _.extend({}, parent.callbacks, props.callbacks);
 
     // Let's not bind the callbacks, or initialize the child.
-    if (initialize === false)
+    if (!initialize)
       return child;
 
     var bindToChild = function(cb) {
@@ -1140,11 +1140,11 @@ define('pgadmin.browser.node', [
         let tree = pgBrowser.tree,
           auto_expand = pgBrowser.get_preference('browser', 'auto_expand_sole_children');
 
-        if (auto_expand && auto_expand.value == true && tree.children(item).length == 1) {
+        if (auto_expand && auto_expand.value && tree.children(item).length == 1) {
           // Automatically expand the child node, if a treeview node has only a single child.
           const first_child = tree.first(item);
 
-          if (first_child._loaded == true) {
+          if (first_child._loaded) {
             tree.open(first_child);
           } else {
             const openSoleItem = setInterval(() => {
