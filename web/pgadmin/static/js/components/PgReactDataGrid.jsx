@@ -159,5 +159,5 @@ PgReactDataGrid.propTypes = {
   onItemSelect: PropTypes.func,
   onItemClick: PropTypes.func,
   noRowsText: PropTypes.string,
-  noRowsIcon: PropTypes.elementType
+  noRowsIcon: PropTypes.object
 };

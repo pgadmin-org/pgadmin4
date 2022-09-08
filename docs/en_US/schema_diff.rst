@@ -99,6 +99,8 @@ following comparison criteria:
 Click on any of the database objects in the object comparison panel to
 display the DDL Statements of that object in the DDL Comparison panel.
 
+Click the *Help* icon to open Schema Diff documentation.
+
 
 Schema Diff DDL Comparison Panel
 ================================

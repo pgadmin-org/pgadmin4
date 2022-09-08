@@ -18,34 +18,6 @@ import { SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
-  },
-  table: {
-    minWidth: 650,
-  },
-  summaryContainer: {
-    flexGrow: 1,
-    minHeight: 0,
-    overflow: 'auto',
-  },
-  panelTitle: {
-    borderBottom: '1px solid ' + theme.otherVars.borderColor,
-    padding: '0.5rem',
-
-  },
-  editorStyle: {
-    height: '100%'
-  },
-  editor: {
-    height: '100%',
-    padding: '0.5rem 0.2rem 2rem 0.5rem',
-  },
-  editorLabel: {
-    padding: '0.3rem 0.6rem 0 0.6rem',
-  },
   header: {
     padding: '0.5rem',
     borderBottom: '1px solid ' + theme.otherVars.borderColor,
@@ -64,8 +36,19 @@ const useStyles = makeStyles((theme) => ({
     padding: '0.2rem 0.5rem',
     width: '33.33%',
   },
+  labelContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   label: {
+    padding: '0.2rem 0.5rem',
+    width: '33.33%'
+  },
+  sqlInput: {
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
+    height: '100%',
   }
 }));
 
@@ -95,40 +78,50 @@ export function Results() {
       <Box className={classes.header}>
         <span>{gettext('DDL Comparision')}</span>
       </Box>
+      <Box className={classes.labelContainer}>
+        <Box className={classes.label}>{gettext('Source')}</Box>
+        <Box className={classes.label}>{gettext('Target')}</Box>
+        <Box className={classes.label}>{gettext('Difference')}</Box>
+      </Box>
       <Box className={classes.sqlContainer}>
-        
         <Box className={classes.sqldata}> 
-          <Box className={classes.label}>{gettext('Source')}</Box>
-          <InputSQL
-            onLable={true}
-            value={sourceSQL}
-            options={{
-              readOnly: true,
-            }}
-            readonly={true}
-          />
+          <Box className={classes.sqlInput}>
+            <InputSQL
+              onLable={true}
+              value={sourceSQL}
+              options={{
+                readOnly: true,
+              }}
+              readonly={true}
+              width='100%'
+            />
+          </Box>
         </Box>
         <Box className={classes.sqldata}>
-          <Box className={classes.label}>{gettext('Target')}</Box>
-          <InputSQL
-            onLable={true}
-            value={targetSQL}
-            options={{
-              readOnly: true,
-            }}
-            readonly={true}
-          />
+          <Box className={classes.sqlInput}>
+            <InputSQL
+              onLable={true}
+              value={targetSQL}
+              options={{
+                readOnly: true,
+              }}
+              readonly={true}
+              width='100%'
+            />
+          </Box>
         </Box>
         <Box className={classes.sqldata}>
-          <Box className={classes.label}>{gettext('Difference')}</Box>
-          <InputSQL
-            onLable={true}
-            value={sqlDiff}
-            options={{
-              readOnly: true,
-            }}
-            readonly={true}
-          />
+          <Box className={classes.sqlInput}>
+            <InputSQL
+              onLable={true}
+              value={sqlDiff}
+              options={{
+                readOnly: true,
+              }}
+              readonly={true}
+              width='100%'
+            />
+          </Box>
         </Box>
       </Box>
     </>

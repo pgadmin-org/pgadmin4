@@ -31,7 +31,7 @@ import Notifier from '../../../../../static/js/helpers/Notifier';
 
 
 const useStyles = makeStyles((theme) => ({
-  root: { 
+  root: {
 
     paddingTop: '0.5rem',
     display: 'flex',
@@ -216,9 +216,9 @@ function CellExpanderFormatter({
   isCellSelected,
   expanded,
   filterParams,
-  onCellExpand
+  onCellExpand,
+  classes
 }) {
-  const classes = useStyles();
   const { ref, tabIndex } = useFocusRef(isCellSelected);
   'identicalCount' in row && setRecordCount(row, filterParams);
 
@@ -257,6 +257,7 @@ CellExpanderFormatter.propTypes = {
   expanded: PropTypes.bool,
   onCellExpand: PropTypes.func,
   filterParams: PropTypes.array,
+  classes: PropTypes.object
 };
 
 
@@ -328,7 +329,7 @@ function collapseRows(newRows, filterParams, rowIndex) {
     }
   });
   let totalChCount = filteredChild.length;
-  for (let i = 0; i <= filteredChild.length; i++) {
+  for (let i = 0; i < filteredChild.length; i++) {
     let _index = i + 1;
     let indx = totalChild ? rowIndex + totalChild + _index : rowIndex + _index;
     if (newRows[indx]?.isExpanded) {
@@ -417,26 +418,6 @@ function reducer(rows, { type, id, filterParams, gridData }) {
   }
 }
 
-function getStyleClassName(row, selectedRowIds, isCellSelected, activeRowId, isCheckbox = false) {
-  const classes = useStyles();
-  let clsName = null;
-  if (selectedRowIds.includes(`${row.id}`) || isCellSelected || row.id == activeRowId) {
-    clsName = isCheckbox ? classes.selectedRowCheckBox : classes.selectedRow;
-  } else {
-    if (row.status == FILTER_NAME.DIFFERENT) {
-      clsName = classes.different;
-    } else if (row.status == FILTER_NAME.SOURCE_ONLY) {
-      clsName = classes.source;
-    } else if (row.status == FILTER_NAME.TARGET_ONLY) {
-      clsName = classes.target;
-    } else if (row.status == FILTER_NAME.IDENTICAL) {
-      clsName = classes.identical;
-    }
-  }
-
-  return clsName;
-}
-
 export function ResultGridComponent({ gridData, allRowIds, filterParams, selectedRowIds, transId, sourceData, targetData }) {
   const classes = useStyles();
   const [rows, dispatch] = useReducer(reducer, [...gridData]);
@@ -470,11 +451,10 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
       let isChildAllInclude = checkAllChildInclude(row, tempSelectedRows);
       isChildAllInclude && tempSelectedRows.push(`${row.metadata.parentId}`);
 
-      for (let i = 0; i < rows.length; i++) {
-        if (rows[i].id == row.metadata.parentId) {
-          let isChildInclude = checkAllChildInclude(rows[i], tempSelectedRows);
-          isChildInclude && tempSelectedRows.push(`${rows[i].metadata.parentId}`);
-          break;
+      for(let rowData of rows) {
+        if (rowData.id == row.metadata.parentId) {
+          let isChildInclude = checkAllChildInclude(rowData, tempSelectedRows);
+          isChildInclude && tempSelectedRows.push(`${rowData.metadata.parentId}`);
         }
       }
 
@@ -528,12 +508,30 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
       let rootIndex = tempSelectedRows.indexOf(`${row.metadata.rootId}`);
       rootIndex != -1 && tempSelectedRows.splice(rootIndex, 1);
 
-
       row.dependencieRowIds.map((id) => {
         let deptRowIndex = tempSelectedRows.indexOf(`${id}`);
         deptRowIndex != -1 && tempSelectedRows.splice(deptRowIndex, 1);
       });
     }
+  }
+
+  function getStyleClassName(row, selectedRowIds, isCellSelected, activeRowId, isCheckbox = false) {
+    let clsName = null;
+    if (selectedRowIds.includes(`${row.id}`) || isCellSelected || row.id == activeRowId) {
+      clsName = isCheckbox ? classes.selectedRowCheckBox : classes.selectedRow;
+    } else {
+      if (row.status == FILTER_NAME.DIFFERENT) {
+        clsName = classes.different;
+      } else if (row.status == FILTER_NAME.SOURCE_ONLY) {
+        clsName = classes.source;
+      } else if (row.status == FILTER_NAME.TARGET_ONLY) {
+        clsName = classes.target;
+      } else if (row.status == FILTER_NAME.IDENTICAL) {
+        clsName = classes.identical;
+      }
+    }
+
+    return clsName;
   }
 
   const columns = [
@@ -617,6 +615,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
                 expanded={row.isExpanded === true}
                 filterParams={filterParams}
                 onCellExpand={() => dispatch({ id: row.id, type: 'toggleSubRow', filterParams: filterParams, gridData: gridData, selectedRows: selectedRows })}
+                classes={classes}
               />
             )}
             <div className="rdg-cell-value">

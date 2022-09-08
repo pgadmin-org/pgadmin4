@@ -19,7 +19,6 @@ import jasmineEnzyme from 'jasmine-enzyme';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios/index';
 
-// import pgAdmin from 'sources/pgadmin';
 import pgWindow from 'sources/window';
 import url_for from 'sources/url_for';
 
@@ -58,8 +57,6 @@ describe('Schema Diff Component', () => {
     pgWindow.pgAdmin.Browser.utils = pgWindow.pgAdmin.Browser.utils || {};
 
     schemaDiffInstance = new SchemaDiff(pgWindow.pgAdmin, pgWindow.pgAdmin.Browser);
-
-    // nodeInfo = { parent: {} };
 
     // eslint-disable-next-line
     let docker = new wcDocker(

@@ -709,6 +709,7 @@ const customReactSelectStyles = (theme, readonly) => ({
     ...provided,
     color: 'inherit',
     fontSize: '0.85em',
+    fontWeight: 'bold',
     textTransform: 'none',
   }),
   menu: (provided) => ({

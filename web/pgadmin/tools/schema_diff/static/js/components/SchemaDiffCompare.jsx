@@ -198,7 +198,7 @@ export function SchemaDiffCompare({ params }) {
         setSelectedTargetScid(null);
       }
     }
-    
+
   }
 
   function setSourceTargetSid(diff_type, selectedOption) {
@@ -224,7 +224,7 @@ export function SchemaDiffCompare({ params }) {
         }
       }
     }
-    
+
     setSourceGroupServerList(serverList);
   };
 
@@ -513,26 +513,27 @@ export function SchemaDiffCompare({ params }) {
     let keyList = Object.keys(tempData);
     let temp = [];
     let rowDependencies = {};
-    for (let i = 0; i < keyList.length; i++) {
-      tempData[keyList[i]]['children'] = Object.values(tempData[keyList[i]]['children']);
 
+    for (let keyItem of keyList) {
+      tempData[keyItem]['children'] = Object.values(tempData[keyItem]['children']);
       let subChildList = [];
-      tempData[keyList[i]]['children'].map((ch) => ch.children.map(({ id }) => subChildList.push(`${id}`)));
-      tempData[keyList[i]]['metadata'] = {
+
+      tempData[keyItem]['children'].map((ch) => ch.children.map(({ id }) => subChildList.push(`${id}`)));
+      tempData[keyItem]['metadata'] = {
         isRoot: true,
-        children: tempData[keyList[i]]['children'].map(({ id }) => `${id}`),
+        children: tempData[keyItem]['children'].map(({ id }) => `${id}`),
         subChildren: subChildList,
       };
-      tempData[keyList[i]]['children'].map((child) => {
+      tempData[keyItem]['children'].map((child) => {
         child['metadata'] = {
-          parentId: tempData[keyList[i]].id,
-          children: tempData[keyList[i]]['children'].map(({ id }) => `${id}`),
+          parentId: tempData[keyItem].id,
+          children: tempData[keyItem]['children'].map(({ id }) => `${id}`),
           subChildren: child.children.map(({ id }) => `${id}`),
           dependencies: [],
         };
         child.children.map((ch) => {
           if (ch.dependenciesOid.length > 0) {
-            tempData[keyList[i]]['children'].map((el) => {
+            tempData[keyItem]['children'].map((el) => {
               el.children.map((data) => {
                 if (ch.dependenciesOid.includes(data.oid)) {
                   ch.dependencieRowIds.push(`${data.id}`);
@@ -543,16 +544,14 @@ export function SchemaDiffCompare({ params }) {
           }
           ch['metadata'] = {
             parentId: child.id,
-            rootId: tempData[keyList[i]].id,
+            rootId: tempData[keyItem].id,
             children: child.children.map(({ id }) => `${id}`),
 
           };
           child['metadata']['dependencies'].push(...ch.dependencieRowIds);
         });
-
-
       });
-      temp.push(tempData[keyList[i]]);
+      temp.push(tempData[keyItem]);
     }
 
     setRowDep(rowDependencies);
@@ -622,7 +621,7 @@ export function SchemaDiffCompare({ params }) {
             }
           }
         }
-                
+
         if (diff_type == TYPE.SOURCE) {
           setSelectedSourceSid(sid);
         } else {
@@ -697,7 +696,7 @@ export function SchemaDiffCompare({ params }) {
     if(isInit && filterOptions.length == 0) {
       opt = [FILTER_NAME.DIFFERENT, FILTER_NAME.SOURCE_ONLY, FILTER_NAME.TARGET_ONLY];
     } else if(filterOptions.length > 0 ) {
-      opt = filterOptions; 
+      opt = filterOptions;
     }
     return opt;
   }
@@ -748,7 +747,7 @@ export function SchemaDiffCompare({ params }) {
               diff_type={TYPE.TARGET}
             ></InputComponent>
           </Grid>
-        
+
           <Grid item lg={5} md={5} sm={12} xs={12} key={_.uniqueId('c')} className={classes.diffBtn}>
             <SchemaDiffButtonComponent
               sourceData={{
@@ -762,7 +761,7 @@ export function SchemaDiffCompare({ params }) {
                 'sid': selectedTargetSid,
                 'did': selectedTargetDid,
                 'scid': selectedTargetScid,
-              }}           
+              }}
               filterParams={getFilterParams()}
               compareParams={compareOptions}
             ></SchemaDiffButtonComponent>

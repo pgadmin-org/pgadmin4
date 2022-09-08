@@ -26,42 +26,23 @@ export const SchemaDiffEventsContext = createContext();
 export const SchemaDiffContext = createContext();
 
 const useStyles = makeStyles((theme) => ({
-  resetRoot: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    backgroundColor: theme.otherVars.editorToolbarBg,
-    flexWrap: 'wrap',
-    ...theme.mixins.panelBorder.bottom,
-
-    '& #id-schema-diff': {
-      overflow: 'auto'
-    },
-
-    '& #id-results': {
-      overflow: 'auto'
-    }
-  },
   resultPanle: {
     backgroundColor: theme.palette.default.main,
     zIndex: 5,
-    border: '1px solid ' + theme.otherVars.borderColor, 
+    border: '1px solid ' + theme.otherVars.borderColor,
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
-    height: '50%', 
-    minHeight: 150,
-    overflow: 'hidden',   
+    height: 0,
+    overflow: 'hidden',
   },
   comparePanel:{
     overflow: 'hidden',
-    border: '1px solid ' + theme.otherVars.borderColor, 
+    border: '1px solid ' + theme.otherVars.borderColor,
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
-    minHeight: 150,
-    height: '50%',
+    height: 0,
   }
 }));
 
@@ -102,11 +83,11 @@ export default function SchemaDiffComponent({params}) {
       }));
     });
   }
-    
+
   return (
     <SchemaDiffContext.Provider value={schemaDiffContextValue}>
       <SchemaDiffEventsContext.Provider value={eventBus.current}>
-        <Box display="flex" flexDirection="column" flexGrow="1" tabIndex="0" style={{overflowY: 'auto', minHeight: 80}}>
+        <Box display="flex" flexDirection="column" flexGrow="1" height="100%" tabIndex="0" style={{minHeight: 80}}>
           <DividerBox mode='vertical' style={{flexGrow: 1}}>
             <div className={classes.comparePanel} id="schema-diff-compare-container" ref={containerRef}><SchemaDiffCompare params={params} /></div>
             <div className={classes.resultPanle} id="schema-diff-result-container">
