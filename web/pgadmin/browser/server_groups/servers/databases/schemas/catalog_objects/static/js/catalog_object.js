@@ -10,9 +10,9 @@
 import CatalogObjectSchema from './catalog_object.ui';
 
 define('pgadmin.node.catalog_object', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, $, _, pgAdmin, pgBrowser) {
+], function(gettext, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-catalog_object']) {
     pgAdmin.Browser.Nodes['coll-catalog_object'] =

@@ -9,16 +9,16 @@
 
 import { getNodePartitionTableSchema } from './partition.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
   'pgadmin.browser.collection',
 ],
 function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
+  gettext, url_for, $, pgAdmin, pgBrowser,
   SchemaChildTreeNode, pgadminUtils
 ) {
 

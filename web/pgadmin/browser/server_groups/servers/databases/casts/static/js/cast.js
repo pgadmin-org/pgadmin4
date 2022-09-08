@@ -11,10 +11,10 @@ import CastSchema from './cast.ui';
 import getApiInstance from '../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.cast', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+  'pgadmin.browser.collection',
+], function(gettext, url_for, pgAdmin, pgBrowser) {
   // Extend the collection class for cast
   if (!pgBrowser.Nodes['coll-cast']) {
     pgAdmin.Browser.Nodes['coll-cast'] =

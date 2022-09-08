@@ -7,13 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 
+import { calcFontSize } from './utils';
+
 define([
   'sources/gettext', 'underscore', 'jquery',
-  'backbone', 'backform', 'backgrid', 'codemirror', 'sources/sqleditor_utils',
+  'backbone', 'backform', 'backgrid', 'codemirror',
   'sources/keyboard_shortcuts', 'sources/window', 'sources/select2/configure_show_on_scroll',
   'color-picker', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle',
 ], function(gettext, _, $, Backbone, Backform, Backgrid, CodeMirror,
-  SqlEditorUtils, keyboardShortcuts, pgWindow, configure_show_on_scroll,
+  keyboardShortcuts, pgWindow, configure_show_on_scroll,
   Pickr) {
 
   var pgAdmin = (window.pgAdmin = window.pgAdmin || {}),
@@ -1889,7 +1891,7 @@ define([
         let sqlEditPreferences = pgAdmin.Browser.get_preferences_for_module('sqleditor');
 
         $(self.sqlCtrl.getWrapperElement()).css(
-          'font-size',SqlEditorUtils.calcFontSize(sqlEditPreferences.sql_font_size)
+          'font-size', calcFontSize(sqlEditPreferences.sql_font_size)
         );
         self.sqlCtrl.setOption('tabSize', sqlEditPreferences.tab_size);
         self.sqlCtrl.setOption('lineWrapping', sqlEditPreferences.wrap_code);
@@ -2623,7 +2625,7 @@ define([
         let sqlEditPreferences = browser.get_preferences_for_module('sqleditor');
 
         $(self.sqlCtrl.getWrapperElement()).css(
-          'font-size',SqlEditorUtils.calcFontSize(sqlEditPreferences.sql_font_size)
+          'font-size', calcFontSize(sqlEditPreferences.sql_font_size)
         );
         self.sqlCtrl.setOption('indentWithTabs', !sqlEditPreferences.use_spaces);
         self.sqlCtrl.setOption('indentUnit', sqlEditPreferences.tab_size);

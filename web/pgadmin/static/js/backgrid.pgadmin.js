@@ -10,11 +10,11 @@
 import Notify from '../../static/js/helpers/Notifier';
 
 define([
-  'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
+  'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid',
   'moment', 'bignumber', 'codemirror', 'sources/utils', 'sources/keyboard_shortcuts', 'sources/select2/configure_show_on_scroll',
   'sources/window', 'bootstrap.datetimepicker', 'backgrid.filter', 'bootstrap.toggle',
 ], function(
-  gettext, _, $, Backbone, Backform, Backgrid, Alertify, moment, BigNumber, CodeMirror,
+  gettext, _, $, Backbone, Backform, Backgrid, moment, BigNumber, CodeMirror,
   commonUtils, keyboardShortcuts, configure_show_on_scroll, pgWindow
 ) {
   /*

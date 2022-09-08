@@ -8,19 +8,18 @@
 
 import { getNodeTableSchema } from './table.ui';
 import Notify from '../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define('pgadmin.node.table', [
   'pgadmin.tables.js/enable_disable_triggers',
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.node.schema.dir/child','pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.node.column',
   'pgadmin.node.constraints',
 ], function(
   tableFunctions,
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
-  SchemaChild, SchemaChildTreeNode
+  gettext, url_for, $, pgAdmin, pgBrowser, SchemaChild, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-table']) {

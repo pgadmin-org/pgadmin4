@@ -11,13 +11,11 @@ import { getNodeAjaxOptions, getNodeListByName, getNodeListById} from '../../../
 import FTSConfigurationSchema from './fts_configuration.ui';
 
 define('pgadmin.node.fts_configuration', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid,
-  schemaChild, schemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   // Extend the collection class for FTS Configuration

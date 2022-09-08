@@ -9,12 +9,13 @@
 
 import { getNodeForeignKeySchema } from './foreign_key.ui';
 import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define('pgadmin.node.foreign_key', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser
+  gettext, url_for, $, pgAdmin, pgBrowser
 ) {
   // Extend the browser's node class for foreign key node
   if (!pgBrowser.Nodes['foreign_key']) {

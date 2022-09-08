@@ -7,11 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 import ServerGroupSchema from './server_group.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.server_group', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.user_management.current_user', 'pgadmin.browser', 'pgadmin.browser.node',
-], function(gettext, url_for, $, _, pgAdmin, current_user) {
+], function(gettext, url_for, pgAdmin, current_user) {
 
   if (!pgAdmin.Browser.Nodes['server_group']) {
     pgAdmin.Browser.Nodes['server_group'] = pgAdmin.Browser.Node.extend({

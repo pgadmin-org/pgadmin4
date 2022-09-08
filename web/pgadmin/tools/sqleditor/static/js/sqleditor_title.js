@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import Alertify from 'pgadmin.alertifyjs';
 import pgWindow from 'sources/window';
 import { retrieveNameSpaceName, retrieveNodeName } from './show_view_data';
+import Notify from '../../../../static/js/helpers/Notifier';
 
 const pgAdmin = pgWindow.pgAdmin;
 
@@ -139,14 +139,7 @@ export function generateTitle(title_placeholder, title_data) {
  * This function is used refresh the db node after showing alert to the user
  */
 export function refresh_db_node(message, dbNode) {
-  Alertify.alert()
-    .setting({
-      'title': gettext('Database moved/renamed'),
-      'label':gettext('OK'),
-      'message': gettext(message),
-      'onok': function(){
-        //Set the original db name as soon as user clicks ok button
-        pgAdmin.Browser.Nodes.database.callbacks.refresh(undefined, dbNode);
-      },
-    }).show();
+  Notify.alert(gettext('Database moved/renamed'), gettext(message), ()=>{
+    pgAdmin.Browser.Nodes.database.callbacks.refresh(undefined, dbNode);
+  });
 }

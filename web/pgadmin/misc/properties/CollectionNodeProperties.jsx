@@ -198,7 +198,7 @@ export function CollectionNodeView({
       const api = getApiInstance();
 
       let tableColumns = [];
-      var column = {};
+      let column = {};
       setLoaderText('Loading...');
 
       if (itemNodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {

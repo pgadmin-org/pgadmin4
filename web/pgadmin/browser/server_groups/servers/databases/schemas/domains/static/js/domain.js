@@ -12,13 +12,11 @@ import DomainSchema from './domain.ui';
 
 // Domain Module: Collection and Node.
 define('pgadmin.node.domain', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid,
-  schemaChild, schemaChildTreeNode
+  gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   // Define Domain Collection Node

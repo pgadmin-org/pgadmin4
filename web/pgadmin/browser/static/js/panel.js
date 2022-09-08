@@ -8,10 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 import { getPanelView } from './panel_view';
+import _ from 'lodash';
 
 define(
-  ['underscore', 'sources/pgadmin', 'jquery', 'wcdocker'],
-  function(_, pgAdmin, $) {
+  ['sources/pgadmin', 'jquery', 'wcdocker'],
+  function(pgAdmin, $) {
 
     var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
       wcDocker = window.wcDocker;

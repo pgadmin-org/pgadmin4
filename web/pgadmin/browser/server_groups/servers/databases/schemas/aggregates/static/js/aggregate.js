@@ -10,10 +10,9 @@
 import AggregateSchema from './aggregate.ui';
 
 define('pgadmin.node.aggregate', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
+  'sources/gettext', 'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild) {
+], function(gettext, pgAdmin, pgBrowser, schemaChild) {
 
   if (!pgBrowser.Nodes['coll-aggregate']) {
     pgAdmin.Browser.Nodes['coll-aggregate'] =

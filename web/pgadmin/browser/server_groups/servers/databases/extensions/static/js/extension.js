@@ -10,11 +10,12 @@
 
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
 import ExtensionsSchema from './extension.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.extension', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   /*
    * Create and Add an Extension Collection into nodes

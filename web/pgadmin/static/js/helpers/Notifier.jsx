@@ -118,7 +118,7 @@ AlertContent.propTypes = {
 };
 
 
-var Notifier = {
+let Notifier = {
   success(msg, autoHideDuration = AUTO_HIDE_DURATION) {
     this._callNotify(msg, MESSAGE_TYPE.SUCCESS, autoHideDuration);
   },
@@ -151,7 +151,7 @@ var Notifier = {
   },
 
   pgRespErrorNotify(xhr, error, prefixMsg='') {
-    var contentType = xhr.getResponseHeader('Content-Type');
+    let contentType = xhr.getResponseHeader('Content-Type');
     if (xhr.status === 410) {
       const pgBrowser = window.pgAdmin.Browser;
       pgBrowser.report_error(gettext('Error: Object not found - %s.', xhr.statusText), xhr.responseJSON.errormsg);
@@ -162,7 +162,7 @@ var Notifier = {
         } else {
           if(contentType){
             if(contentType.indexOf('application/json') >= 0) {
-              var resp = JSON.parse(xhr.responseText);
+              let resp = JSON.parse(xhr.responseText);
               error = _.escape(resp.result) || _.escape(resp.errormsg) || gettext('Unknown error');
             }
           }
@@ -181,7 +181,7 @@ var Notifier = {
   },
 
   pgNotifier(type, xhr, promptmsg, onJSONResult) {
-    var msg = xhr.responseText,
+    let msg = xhr.responseText,
       contentType = xhr.getResponseHeader('Content-Type');
 
     if (xhr.status == 0) {
@@ -191,10 +191,10 @@ var Notifier = {
       if (contentType) {
         try {
           if (contentType.indexOf('application/json') == 0) {
-            var resp = JSON.parse(msg);
+            let resp = JSON.parse(msg);
 
             if(resp.info == 'CRYPTKEY_MISSING') {
-              var pgBrowser = window.pgAdmin.Browser;
+              let pgBrowser = window.pgAdmin.Browser;
               pgBrowser.set_master_password('', ()=> {
                 if(onJSONResult && typeof(onJSONResult) == 'function') {
                   onJSONResult('CRYPTKEY_SET');

@@ -147,7 +147,7 @@ define([
               res.data.errormsg
             );
           }else{
-            // Open the Alertify dialog for the import/export module
+            // Open the dialog for the import/export module
             pgBrowser.Node.registerUtilityPanel();
             var panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
               j = panel.$container.find('.obj_properties').first();

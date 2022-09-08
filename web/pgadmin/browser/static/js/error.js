@@ -8,10 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 import Notify from '../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define(
-  ['sources/gettext', 'underscore', 'sources/pgadmin'],
-  function(gettext, _, pgAdmin) {
+  ['sources/gettext', 'sources/pgadmin'],
+  function(gettext, pgAdmin) {
     pgAdmin.Browser = pgAdmin.Browser || {};
 
     _.extend(pgAdmin.Browser, {

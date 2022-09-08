@@ -13,14 +13,14 @@ import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import DatabaseSchema from './database.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
 import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
+import _ from 'lodash';
 
 define('pgadmin.node.database', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/utils', 'sources/pgadmin', 'pgadmin.browser.utils',
-  'pgadmin.alertifyjs', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'pgadmin.browser.utils',
   'pgadmin.authenticate.kerberos', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
-], function(gettext, url_for, $, _, pgadminUtils, pgAdmin, pgBrowser, Alertify, Backform, Kerberos) {
+], function(gettext, url_for, $, pgAdmin, pgBrowser, Kerberos) {
 
   if (!pgBrowser.Nodes['coll-database']) {
     pgBrowser.Nodes['coll-database'] =

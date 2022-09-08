@@ -10,15 +10,15 @@ import TriggerFunctionSchema from './trigger_function.ui';
 import { getNodeListByName, getNodeListById, getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
 import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import _ from 'lodash';
 
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.trigger_function', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild, schemaChildTreeNode
+  gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-trigger_function']) {

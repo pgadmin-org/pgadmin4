@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import _ from 'underscore';
+import _ from 'lodash';
 import $ from 'jquery';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';

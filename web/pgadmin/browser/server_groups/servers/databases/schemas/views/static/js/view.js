@@ -12,12 +12,11 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import ViewSchema from './view.ui';
 
 define('pgadmin.node.view', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.server.privilege', 'pgadmin.node.rule',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild, schemaChildTreeNode
+  gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
 

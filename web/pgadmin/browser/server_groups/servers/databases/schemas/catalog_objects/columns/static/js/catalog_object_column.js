@@ -9,9 +9,9 @@
 import CatalogObjectColumnSchema from './catalog_object_column.ui';
 
 define('pgadmin.node.catalog_object_column', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, $, _, pgAdmin, pgBrowser) {
+], function(gettext, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-catalog_object_column']) {
     pgAdmin.Browser.Nodes['coll-catalog_object_column'] =

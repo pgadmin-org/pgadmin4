@@ -12,10 +12,9 @@ import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
 import ForeignDataWrapperSchema from './foreign_data_wrapper.ui';
 
 define('pgadmin.node.foreign_data_wrapper', [
-  'sources/gettext', 'sources/url_for', 'jquery',
-  'sources/pgadmin', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for foreign data wrapper collection
   if (!pgBrowser.Nodes['coll-foreign_data_wrapper']) {

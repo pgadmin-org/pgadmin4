@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeExclusionConstraintSchema } from './exclusion_constraint.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.exclusion_constraint', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser
+  gettext, url_for, pgAdmin, pgBrowser
 ) {
   // Extend the browser's node class for exclusion constraint node
   if (!pgBrowser.Nodes['exclusion_constraint']) {

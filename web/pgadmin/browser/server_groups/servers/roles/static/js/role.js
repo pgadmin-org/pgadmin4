@@ -13,9 +13,9 @@ import { getMembershipSchema } from '../../../static/js/membership.ui';
 import { showRoleReassign } from './roleReassign';
 
 define('pgadmin.node.role', [
-  'sources/gettext', 'sources/url_for', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser'
-], function(gettext, url_for, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-role']) {
     pgAdmin.Browser.Nodes['coll-role'] =

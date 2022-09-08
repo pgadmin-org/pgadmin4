@@ -327,7 +327,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
     if(column.column_type_internal === 'jsonb' && !Array.isArray(newVal) && newVal != null) {
       newVal = JSONBigNumber.stringify(JSONBigNumber.parse(newVal), null, 2);
     } else if (Array.isArray(newVal)) {
-      var temp = newVal.map((ele)=>{
+      let temp = newVal.map((ele)=>{
         if (typeof ele === 'object') {
           return JSONBigNumber.stringify(ele, null, 2);
         }

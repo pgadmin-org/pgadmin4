@@ -523,3 +523,138 @@ export function compareSizeVals(val1, val2) {
   if(val1 > val2) return 1;
   return (val1 < val2 ? -1 : 0);
 }
+
+export function calcFontSize(fontSize) {
+  if(fontSize) {
+    fontSize = parseFloat((Math.round(parseFloat(fontSize + 'e+2')) + 'e-2'));
+    let rounded = Number(fontSize);
+    if(rounded > 0) {
+      return rounded + 'em';
+    }
+  }
+  return '1em';
+}
+
+export function pgHandleItemError(xhr, args) {
+  var pgBrowser = window.pgAdmin.Browser;
+
+  if (!xhr || !pgBrowser) {
+    return;
+  }
+
+  var contentType = xhr.getResponseHeader('Content-Type'),
+    jsonResp = contentType &&
+    contentType.indexOf('application/json') == 0 &&
+    JSON.parse(xhr.responseText);
+
+  if (
+    jsonResp && (
+      xhr.status == 503 ? (
+        jsonResp.info == 'CONNECTION_LOST' &&
+        'server' in args.info && jsonResp.data.sid >= 0 &&
+        jsonResp.data.sid == args.info.server._id
+      ) : (
+        xhr.status == 428 &&
+        jsonResp.errormsg &&
+        jsonResp.errormsg == gettext('Connection to the server has been lost.')
+      )
+    )
+  ) {
+    if (
+      args.preHandleConnectionLost &&
+      typeof(args.preHandleConnectionLost) == 'function'
+    ) {
+      args.preHandleConnectionLost.apply(this, arguments);
+    }
+
+    // Check the status of the maintenance server connection.
+    var server = pgBrowser.Nodes['server'],
+      ctx = {
+        resp: jsonResp,
+        xhr: xhr,
+        args: args,
+      },
+      reconnectServer = function() {
+        var ctx_local = this,
+          onServerConnect = function(_sid, _i, _d) {
+            // Yay - server is reconnected.
+            if (this.args.info.server._id == _sid) {
+              pgBrowser.Events.off(
+                'pgadmin:server:connected', onServerConnect
+              );
+              pgBrowser.Events.off(
+                'pgadmin:server:connect:cancelled', onConnectCancel
+              );
+
+              // Do we need to connect the disconnected server now?
+              if (
+                this.resp.data.database &&
+                this.resp.data.database != _d.db
+              ) {
+                // Server is connected now, we will need to inform the
+                // database to connect it now.
+                pgBrowser.Events.trigger(
+                  'pgadmin:database:connection:lost', this.args.item,
+                  this.resp, true
+                );
+              }
+            }
+          }.bind(ctx_local),
+          onConnectCancel = function(_sid, _item, _data) {
+            // User has cancelled the operation in between.
+            if (_sid == this.args.info.server.id) {
+              pgBrowser.Events.off('pgadmin:server:connected', onServerConnect);
+              pgBrowser.Events.off('pgadmin:server:connect:cancelled', onConnectCancel);
+
+              // Connection to the database will also be cancelled
+              pgBrowser.Events.trigger(
+                'pgadmin:database:connect:cancelled', _sid,
+                this.resp.data.database || _data.db, _item, _data
+              );
+            }
+          }.bind(ctx_local);
+
+        pgBrowser.Events.on('pgadmin:server:connected', onServerConnect);
+        pgBrowser.Events.on('pgadmin:server:connect:cancelled', onConnectCancel);
+
+        // Connection to the server has been lost, we need to inform the
+        // server first to take the action first.
+        pgBrowser.Events.trigger(
+          'pgadmin:server:connection:lost', this.args.item, this.resp
+        );
+      }.bind(ctx);
+
+    $.ajax({
+      url: server.generate_url(
+        null, 'connect', args.info.server, true, args.info
+      ),
+      dataType: 'json',
+    })
+      .done(function(res) {
+        if (res.success && 'connected' in res.data) {
+          if (res.data.connected) {
+          // Server is connected, but - the connection with the
+          // particular database has been lost.
+            pgBrowser.Events.trigger(
+              'pgadmin:database:connection:lost', args.item, jsonResp
+            );
+            return;
+          }
+        }
+
+        // Server was not connected, we should first try to connect
+        // the server.
+        reconnectServer();
+      })
+      .fail(function() {
+        reconnectServer();
+      });
+    return true;
+  } else if (jsonResp && jsonResp.info == 'CRYPTKEY_MISSING' && xhr.status == 503) {
+    /* Suppress the error here and handle in pgNotifier wherever
+     * required, as it has callback option
+     */
+    return false;
+  }
+  return false;
+}

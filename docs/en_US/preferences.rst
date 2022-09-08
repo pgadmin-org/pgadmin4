@@ -43,13 +43,6 @@ Use the fields on the *Display* panel to specify general display preferences:
   attempt to catch browser close or refresh events and prompt before allowing
   them to continue.
 
-* When the *Enable browser tree animation?* switch is set to *True*, the client
-  will display the animated tree control otherwise it will be unanimated.
-
-* When the *Enable dialogue/notification animation?* switch is set to *True*,
-  the client will display the animated dialogues/notifications otherwise it
-  will be unanimated.
-
 * When the *Hide shared servers?* switch is set to *True*, the client will hide
   all the shared servers from the browser tree.
 

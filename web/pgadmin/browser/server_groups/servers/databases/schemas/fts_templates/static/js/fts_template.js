@@ -11,10 +11,10 @@ import FTSTemplateSchema from './fts_template.ui';
 import { getNodeAjaxOptions, getNodeListById } from '../../../../../../../static/js/node_ajax';
 
 define('pgadmin.node.fts_template', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   // Extend the collection class for fts template
   if (!pgBrowser.Nodes['coll-fts_template']) {

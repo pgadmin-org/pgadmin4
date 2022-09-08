@@ -12,10 +12,10 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import ForeignServerSchema from './foreign_server.ui';
 
 define('pgadmin.node.foreign_server', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/url_for', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for foreign server collection
   if (!pgBrowser.Nodes['coll-foreign_server']) {

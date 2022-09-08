@@ -8,15 +8,16 @@
 //////////////////////////////////////////////////////////////
 
 import EDBFuncSchema from './edbfunc.ui';
+import _ from 'lodash';
 
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.edbproc', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
   'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, EdbFunction
+  gettext, url_for, pgAdmin, pgBrowser, EdbFunction
 ) {
 
   if (!pgBrowser.Nodes['coll-edbproc']) {

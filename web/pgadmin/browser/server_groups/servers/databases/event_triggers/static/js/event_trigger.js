@@ -11,9 +11,9 @@ import EventTriggerSchema from './event_trigger.ui';
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../static/js/node_ajax';
 
 define('pgadmin.node.event_trigger', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for event trigger collection
   if (!pgBrowser.Nodes['coll-event_trigger']) {

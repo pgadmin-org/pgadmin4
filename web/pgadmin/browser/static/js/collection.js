@@ -7,13 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 import {getPanelView} from './panel_view';
+import _ from 'lodash';
 
 define([
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
-  'backbone', 'alertify', 'backform', 'backgrid', 'sources/browser/generate_url',
+  'sources/gettext', 'sources/pgadmin',
+  'sources/browser/generate_url',
   'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.node', 'backgrid.select.all',
-], function(gettext, $, _, pgAdmin, Backbone, Alertify, Backform, Backgrid, generateUrl) {
+], function(gettext, pgAdmin, generateUrl) {
 
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 

@@ -10,9 +10,8 @@
 import CatalogSchema from './catalog.ui';
 
 define('pgadmin.node.catalog', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
-  'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, $, _, pgAdmin, pgBrowser) {
+  'sources/gettext', 'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, pgBrowser) {
 
   // Extend the browser's collection class for catalog collection
   if (!pgBrowser.Nodes['coll-catalog']) {

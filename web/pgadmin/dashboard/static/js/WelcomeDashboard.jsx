@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
 
 function AddNewServer(pgBrowser) {
   if (pgBrowser && pgBrowser.tree) {
-    var i = _.isUndefined(pgBrowser.tree.selected()) ?
+    let i = _.isUndefined(pgBrowser.tree.selected()) ?
         pgBrowser.tree.first(null, false) :
         pgBrowser.tree.selected(),
       serverModule = pgAdmin.Browser.Nodes.server,

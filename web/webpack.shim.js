@@ -72,9 +72,6 @@ var webpackShimConfig = {
       'deps': ['jquery'], 'exports': 'jQuery.fn.drag',
     },
     'jquery.ui': {'deps': ['jquery']},
-    'alertify': {
-      'exports': 'alertify',
-    },
     'jqueryui.position': {
       'deps': ['jquery'],
       'exports': 'jQuery.ui.position',
@@ -120,7 +117,6 @@ var webpackShimConfig = {
     // Vendor JS
     'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
     'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker.min'),
-    'alertify': path.join(__dirname, './node_modules/alertifyjs/build/alertify'),
     'moment': path.join(__dirname, './node_modules/moment/moment'),
     'jqueryui.position': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.ui.position'),
     'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextMenu'),
@@ -160,7 +156,6 @@ var webpackShimConfig = {
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
     'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
     'backgrid.select.all': path.join(__dirname, './pgadmin/static/vendor/backgrid/backgrid-select-all'),
-    'pgadmin.alertifyjs': path.join(__dirname, './pgadmin/static/js/alertify.pgadmin.defaults'),
     'pgadmin.backform': path.join(__dirname, './pgadmin/static/js/backform.pgadmin'),
     'pgadmin.backgrid': path.join(__dirname, './pgadmin/static/js/backgrid.pgadmin'),
 
@@ -292,7 +287,7 @@ var webpackShimConfig = {
     'pgadmin.browser.datamodel', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
     'pgadmin.browser.frame', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser',
     'pgadmin.browser.node',
-    'pgadmin.alertifyjs', 'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
+    'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
   ],
   // Checks whether JS module is npm module or not
   isExternal: function(module) {

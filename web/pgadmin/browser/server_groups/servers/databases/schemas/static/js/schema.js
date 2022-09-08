@@ -10,12 +10,13 @@
 import PGSchema from './schema.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
 import { getNodeListByName } from '../../../../../../static/js/node_ajax';
+import _ from 'lodash';
 
 define('pgadmin.node.schema', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid) {
+], function(gettext, url_for, $, pgBrowser, Backform, Backgrid) {
 
   // VacuumSettings Collection to display all settings parameters as Grid
   Backform.VacuumCollectionControl =

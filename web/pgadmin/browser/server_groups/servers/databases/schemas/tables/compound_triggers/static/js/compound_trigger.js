@@ -12,12 +12,12 @@ import CompoundTriggerSchema from './compound_trigger.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.compound_trigger', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode
+  gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-compound_trigger']) {

@@ -11,14 +11,12 @@ import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 
 
 define('pgadmin.node.row_security_policy', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.alertifyjs',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, alertify,
-  SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-row_security_policy']) {

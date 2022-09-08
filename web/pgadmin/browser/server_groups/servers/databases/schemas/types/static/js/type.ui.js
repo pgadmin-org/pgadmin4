@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 
 import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
-import _ from 'underscore';
+import _ from 'lodash';
 import getApiInstance from 'sources/api_instance';
 import { isEmptyString } from 'sources/validators';
 

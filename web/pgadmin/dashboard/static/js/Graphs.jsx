@@ -41,7 +41,7 @@ export function transformData(labels, refreshRate, use_diff_point_style) {
 
 /* Custom ChartJS legend callback */
 export function generateLegend(chart) {
-  var text = [];
+  let text = [];
   text.push('<div class="' + chart.id + '-legend d-flex">');
   for (let chart_val of chart.data.datasets) {
     text.push('<div class="legend-value"><span style="background-color:' + chart_val.backgroundColor + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>');

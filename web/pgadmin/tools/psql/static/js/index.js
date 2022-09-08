@@ -10,7 +10,7 @@
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'top/browser/static/js/browser';
 import * as csrfToken from 'sources/csrf';

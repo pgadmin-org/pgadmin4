@@ -6,11 +6,12 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import _ from 'lodash';
 
 define([
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin', 'backbone', 'backform',
-  'alertify', 'backgrid', 'select2', 'pgadmin.browser.node',
-], function(gettext, $, _, pgAdmin, Backbone, Backform, Alertify, Backgrid) {
+  'sources/gettext', 'jquery', 'sources/pgadmin', 'backform',
+  'backgrid', 'select2', 'pgadmin.browser.node',
+], function(gettext, $, pgAdmin, Backform, Backgrid) {
 
   /*
    * Define the selectAll adapter for select2.

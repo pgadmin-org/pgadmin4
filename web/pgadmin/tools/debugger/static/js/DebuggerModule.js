@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import $ from 'jquery';
-
+import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -282,7 +282,7 @@ export default class DebuggerModule {
     _.each(
       _.sortBy(
         _.values(
-          _.pick(treeInfo,
+          _.pickBy(treeInfo,
             function (v, k) {
               return (k != 'server_group');
             })
@@ -343,7 +343,7 @@ export default class DebuggerModule {
     }
     return db_label;
   }
-  
+
   getTreeNodeData(item) {
     let t = this.pgBrowser.tree,
       i = item || t.selected(),

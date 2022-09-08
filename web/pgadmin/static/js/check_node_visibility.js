@@ -6,9 +6,10 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
+import _ from 'lodash';
 
-define(['jquery', 'underscore'],
-  function ($, _) {
+define([],
+  function () {
 
     return function (pgBrowser, node_type) {
       if(_.isUndefined(node_type) || _.isNull(node_type)) {

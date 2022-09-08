@@ -14,13 +14,11 @@ import _ from 'lodash';
 
 /* Create and Register Foreign Table Collection and Node. */
 define('pgadmin.node.foreign_table', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, Backbone, pgAdmin, pgBrowser, Backgrid,
-  schemaChild, schemaChildTreeNode
+  gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-foreign_table']) {

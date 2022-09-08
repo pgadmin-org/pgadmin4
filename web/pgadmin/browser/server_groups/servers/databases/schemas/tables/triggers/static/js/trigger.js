@@ -9,14 +9,15 @@
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../../static/js/node_ajax';
 import TriggerSchema from './trigger.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define('pgadmin.node.trigger', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.node.schema.dir/schema_child_tree_node',
+  'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode
+  gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-trigger']) {

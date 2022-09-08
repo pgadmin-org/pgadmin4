@@ -14,13 +14,11 @@ import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
 
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.procedure', [
-  'sources/gettext', 'sources/url_for', 'jquery',
-  'sources/pgadmin', 'pgadmin.browser', 'alertify',
-  'pgadmin.node.function', 'pgadmin.node.schema.dir/child',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, pgAdmin, pgBrowser, alertify, Function,
-  schemaChild, schemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {
     pgAdmin.Browser.Nodes['coll-procedure'] =

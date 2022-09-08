@@ -8,12 +8,14 @@
 //////////////////////////////////////////////////////////////
 
 import { generateNodeUrl } from './node_ajax';
+import _ from 'lodash';
 import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
 import { checkMasterPassword } from '../../../static/js/Dialogs/index';
+import { pgHandleItemError } from '../../../static/js/utils';
 
 define('pgadmin.browser', [
-  'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
-  'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
+  'sources/gettext', 'sources/url_for', 'require', 'jquery',
+  'bootstrap', 'sources/pgadmin', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
   'sources/csrf', 'sources/utils', 'sources/window', 'pgadmin.authenticate.kerberos',
   'sources/tree/tree_init',
@@ -25,8 +27,8 @@ define('pgadmin.browser', [
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state'
 ], function(
-  gettext, url_for, require, $, _,
-  Bootstrap, pgAdmin, Alertify, codemirror,
+  gettext, url_for, require, $,
+  Bootstrap, pgAdmin, codemirror,
   checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils, pgWindow,
   Kerberos, InitTree,
 ) {
@@ -1707,12 +1709,10 @@ define('pgadmin.browser', [
               success();
             }
           })
-          .fail(function(xhr, error, status) {
-            if (
-              !Alertify.pgHandleItemError(
-                xhr, error, status, {item: __i, info: info}
-              )
-            ) {
+          .fail(function(xhr, error) {
+            if (!pgHandleItemError(
+              xhr, {item: __i, info: info}
+            )) {
               var contentType = xhr.getResponseHeader('Content-Type'),
                 jsonResp = (
                   contentType &&

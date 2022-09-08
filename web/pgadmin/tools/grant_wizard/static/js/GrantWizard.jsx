@@ -60,7 +60,7 @@ const useStyles = makeStyles(() =>
 
 export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
   const classes = useStyles();
-  var columns = [
+  let columns = [
     {
 
       Header: 'Object Type',
@@ -112,7 +112,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       isVisible: false
     }
   ];
-  var steps = [gettext('Object Selection'), gettext('Privilege Selection'), gettext('Review')];
+  let steps = [gettext('Object Selection'), gettext('Privilege Selection'), gettext('Review')];
   const [selectedObject, setSelectedObject] = React.useState([]);
   const [selectedAcl, setSelectedAcl] = React.useState({});
   const [msqlData, setSQL] = React.useState('');
@@ -125,7 +125,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
 
   const api = getApiInstance();
   const validatePrivilege = () => {
-    var isValid = true;
+    let isValid = true;
     selectedAcl.privilege.forEach((priv) => {
       if ((_.isUndefined(priv.grantee) || _.isUndefined(priv.privileges) || priv.privileges.length === 0) && isValid) {
         isValid = false;
@@ -153,10 +153,10 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       setPrivOptions(res.data);
     });
 
-    var node_type = nodeData._type.replace('coll-', '').replace(
+    let node_type = nodeData._type.replace('coll-', '').replace(
       'materialized_', ''
     );
-    var _url = url_for(
+    let _url = url_for(
       'grant_wizard.objects', {
         'sid': encodeURI(sid),
         'did': encodeURI(did),
@@ -165,7 +165,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       });
     api.get(_url)
       .then(res => {
-        var data = res.data.result;
+        let data = res.data.result;
         data.forEach(element => {
           if (element.icon)
             element['icon'] = {
@@ -189,12 +189,12 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
   const wizardStepChange = (data) => {
     if (data.currentStep == 2) {
       setLoaderText('Loading SQL ...');
-      var msql_url = url_for(
+      let msql_url = url_for(
         'grant_wizard.modified_sql', {
           'sid': encodeURI(sid),
           'did': encodeURI(did),
         });
-      var post_data = {
+      let post_data = {
         acl: selectedAcl.privilege,
         objects: selectedObject
       };
@@ -211,7 +211,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
 
   const onSave = () => {
     setLoaderText('Saving...');
-    var _url = url_for(
+    let _url = url_for(
       'grant_wizard.apply', {
         'sid': encodeURI(sid),
         'did': encodeURI(did),
@@ -244,12 +244,12 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
   };
 
   const getTableSelectedRows = (selRows) => {
-    var selObj = [];
-    var objectTypes = new Set();
+    let selObj = [];
+    let objectTypes = new Set();
     if (selRows.length > 0) {
 
       selRows.forEach((row) => {
-        var object_type = '';
+        let object_type = '';
         switch (row.values.object_type) {
         case 'Function':
           object_type = 'function';
@@ -286,7 +286,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
         selObj.push(row.values);
       });
     }
-    var privs = new Set();
+    let privs = new Set();
     objectTypes.forEach((objType) => {
       privOptions[objType]?.acl.forEach((priv) => {
         privs.add(priv);

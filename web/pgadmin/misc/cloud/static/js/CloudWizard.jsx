@@ -67,7 +67,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
 
   const eventBus = React.useRef(new EventBus());
 
-  var steps = [gettext('Cloud Provider'), gettext('Credentials'),
+  let steps = [gettext('Cloud Provider'), gettext('Credentials'),
     gettext('Instance Specification'), gettext('Database Details'), gettext('Review')];
   const [currentStep, setCurrentStep] = React.useState('');
   const [selectionVal, setCloudSelection] = React.useState('');
@@ -121,7 +121,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
   };
 
   const onSave = () => {
-    var _url = url_for('cloud.deploy_on_cloud'),
+    let _url = url_for('cloud.deploy_on_cloud'),
       post_data = {};
 
     if (cloudProvider == 'rds') {
@@ -227,7 +227,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
     return new Promise((resolve, reject)=>{
       if(activeStep == 1 && cloudProvider == 'rds') {
         setErrMsg([MESSAGE_TYPE.INFO, gettext('Validating credentials...')]);
-        var _url = url_for('rds.verify_credentials');
+        let _url = url_for('rds.verify_credentials');
         const post_data = {
           cloud: selectionVal,
           secret: cloudDBCred,
@@ -283,7 +283,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
   };
 
   const authenticateBigAnimal = () => {
-    var loading_icon_url = url_for(
+    let loading_icon_url = url_for(
       'static', { 'filename': 'img/loading.gif'}
     );
 

@@ -9,7 +9,7 @@
 
 import * as BrowserFS from 'browserfs'
 import pgAdmin from 'sources/pgadmin';
-import _ from 'underscore';
+import _ from 'lodash';
 import { FileType } from 'react-aspen'
 import { findInTree } from './tree';
 

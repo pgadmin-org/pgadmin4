@@ -11,10 +11,10 @@ import DomainConstraintSchema from './domain_constraints.ui';
 
 // Domain Constraint Module: Collection and Node
 define('pgadmin.node.domain_constraints', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChildTreeNode) {
 
   // Define Domain Constraint Collection Node
   if (!pgBrowser.Nodes['coll-domain_constraints']) {

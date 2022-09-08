@@ -9,16 +9,15 @@
 
 import IndexSchema, { getColumnSchema } from './index.ui';
 import { getNodeAjaxOptions, getNodeListByName } from 'pgbrowser/node_ajax';
+import _ from 'lodash';
 
 define('pgadmin.node.index', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'backbone', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.backform', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify, Backform,
-  Backgrid, SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-index']) {

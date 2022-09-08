@@ -12,13 +12,11 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import TypeSchema, { getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema } from './type.ui';
 
 define('pgadmin.node.type', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.backgrid', 'pgadmin.node.schema.dir/child',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid,
-  schemaChild, schemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-type']) {

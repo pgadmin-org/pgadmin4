@@ -11,13 +11,14 @@ import { getNodeListByName } from '../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import TablespaceSchema from './tablespace.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.tablespace', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
+  'sources/gettext', 'sources/url_for',
+  'pgadmin.browser', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
   'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser
+  gettext, url_for, pgBrowser
 ) {
 
   if (!pgBrowser.Nodes['coll-tablespace']) {

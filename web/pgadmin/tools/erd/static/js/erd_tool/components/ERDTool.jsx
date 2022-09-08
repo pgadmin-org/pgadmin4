@@ -565,7 +565,7 @@ class ERDTool extends React.Component {
     if(this.state.current_file && !isSaveAs) {
       this.saveFile(this.state.current_file);
     } else {
-      var params = {
+      let params = {
         'supported_types': ['*','pgerd'],
         'dialog_type': 'create_file',
         'dialog_title': 'Save File',

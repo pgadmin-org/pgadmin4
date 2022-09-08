@@ -7,11 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 
+import _ from 'lodash';
+
 define([
-  'sources/gettext', 'underscore', 'jquery', 'backbone', 'backform', 'backgrid', 'alertify',
-  'sources/pgadmin', 'pgadmin.browser.node', 'pgadmin.browser.node.ui',
+  'sources/gettext', 'jquery', 'backbone', 'backform', 'backgrid',
+  'pgadmin.browser.node', 'pgadmin.browser.node.ui',
 ],
-function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgAdmin, pgNode) {
+function(gettext, $, Backbone, Backform, Backgrid, pgNode) {
 
   /*
      * cellFunction for variable control.

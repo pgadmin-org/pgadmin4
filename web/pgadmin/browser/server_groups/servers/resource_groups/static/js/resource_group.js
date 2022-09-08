@@ -10,9 +10,9 @@
 import ResourceGroupSchema from './resource_group.ui';
 
 define('pgadmin.node.resource_group', [
-  'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.browser.collection',
-], function(gettext, url_for, _, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for resource group collection
   if (!pgBrowser.Nodes['coll-resource_group']) {

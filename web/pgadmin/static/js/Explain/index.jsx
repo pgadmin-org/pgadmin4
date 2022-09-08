@@ -27,11 +27,11 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 // Some predefined constants used to calculate image location and its border
-var pWIDTH = 100.;
-var pHEIGHT = 100.;
-var offsetX = 200,
+let pWIDTH = 100.;
+let pHEIGHT = 100.;
+let offsetX = 200,
   offsetY = 60;
-var xMargin = 25,
+let xMargin = 25,
   yMargin = 25;
 
 const DEFAULT_ARROW_SIZE = 2;
@@ -154,7 +154,7 @@ function nodeExplainTableData(_planData, _ctx) {
   }
 
   if ('Peak Memory Usage' in _planData) {
-    var buffer = [
+    let buffer = [
       '<strong>' + gettext('Buckets') + '</strong>:', _.escape(_planData['Hash Buckets']),
       '<strong>' + gettext('Batches') + '</strong>:', _.escape(_planData['Hash Batches']),
       '<strong>' + gettext('Memory Usage') + '</strong>:', _.escape(_planData['Peak Memory Usage']), 'kB',
@@ -246,7 +246,7 @@ function parseExplainTableData(plan, ctx) {
 }
 
 function parsePlan(data, ctx) {
-  var idx = 1,
+  let idx = 1,
     lvl = data.level = data.level || [idx],
     plans = [],
     nodeType = data['Node Type'],
@@ -292,7 +292,7 @@ function parsePlan(data, ctx) {
     nodeType = nodeType.substring(0, 7);
 
   // Get the image information for current node
-  var mappedImage = (_.isFunction(ImageMapper[nodeType]) &&
+  let mappedImage = (_.isFunction(ImageMapper[nodeType]) &&
       ImageMapper[nodeType].apply(undefined, [data])) ||
     ImageMapper[nodeType] || {
     'image': 'ex_unknown.svg',
@@ -378,7 +378,7 @@ function parsePlan(data, ctx) {
         }
       }
 
-      var childHeight = plan.height;
+      let childHeight = plan.height;
 
       if (idx !== 1) {
         data['height'] = data['height'] + childHeight + offsetY;

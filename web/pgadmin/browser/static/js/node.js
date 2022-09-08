@@ -9,17 +9,17 @@
 
 import {getNodeView, removeNodeView} from './node_view';
 import Notify from '../../../static/js/helpers/Notifier';
+import _ from 'lodash';
+import { pgHandleItemError } from '../../../static/js/utils';
 
 define('pgadmin.browser.node', [
-  'sources/url_for',
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
-  'pgadmin.browser.menu', 'backbone', 'pgadmin.alertifyjs', 'pgadmin.browser.datamodel',
+  'sources/gettext', 'jquery', 'sources/pgadmin',
+  'backbone', 'pgadmin.browser.datamodel',
   'backform', 'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
   'pgadmin.browser.utils', 'pgadmin.backform',
 ], function(
-  url_for,
-  gettext, $, _, pgAdmin,
-  Menu, Backbone, Alertify, pgBrowser,
+  gettext, $, pgAdmin,
+  Backbone, pgBrowser,
   Backform, generateUrl, help,
   commonUtils
 ) {
@@ -458,11 +458,10 @@ define('pgadmin.browser.node', [
                     'pgadmin:node:retrieval:error', 'properties',
                     xhr, options.textStatus, options.errorThrown, item
                   );
-                  if (!Alertify.pgHandleItemError(
-                    xhr, options.textStatus, options.errorThrown, {
-                      item: item,
-                      info: info,
-                    }
+                  if (!pgHandleItemError(xhr, {
+                    item: item,
+                    info: info,
+                  }
                   )) {
                     Notify.pgNotifier(
                       options.textStatus, xhr,
@@ -1672,7 +1671,7 @@ define('pgadmin.browser.node', [
               type: 'cancel',
               tooltip: gettext('Cancel changes to this object.'),
               extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-times pg-alertify-button',
+              icon: 'fa fa-times',
               disabled: false,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1686,7 +1685,7 @@ define('pgadmin.browser.node', [
               type: 'reset',
               tooltip: gettext('Reset the fields on this dialog.'),
               extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-recycle pg-alertify-button',
+              icon: 'fa fa-recycle',
               disabled: true,
               register: function(btn) {
                 btn.on('click',() => {
@@ -1706,7 +1705,7 @@ define('pgadmin.browser.node', [
               type: 'save',
               tooltip: gettext('Save this object.'),
               extraClasses: ['btn-primary', 'mx-1'],
-              icon: 'fa fa-save pg-alertify-button',
+              icon: 'fa fa-save',
               disabled: true,
               register: function(btn) {
                 // Save the changes
@@ -1975,7 +1974,7 @@ define('pgadmin.browser.node', [
         ) || 0;
 
       if (node_info) {
-        _.each(_.sortBy(_.values(_.pick(
+        _.each(_.sortBy(_.values(_.pickBy(
           node_info,
           function(v) {
             return (v.priority <= min_priority);

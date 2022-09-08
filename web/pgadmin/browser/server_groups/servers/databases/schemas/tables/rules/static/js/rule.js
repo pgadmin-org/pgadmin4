@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////
 import RuleSchema from './rule.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define('pgadmin.node.rule', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode) {
+], function(gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode) {
 
   /**
     Create and add a rule collection into nodes

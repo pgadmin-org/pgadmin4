@@ -8,14 +8,13 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeColumnSchema } from './column.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.column', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Backform, Backgrid,
-  SchemaChildTreeNode
+  gettext, url_for, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-column']) {

@@ -24,20 +24,20 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
 // Some predefined constants used to calculate image location and its border
-var pWIDTH = 100.;
-var pHEIGHT = 100.;
-var IMAGE_WIDTH = 50;
-var IMAGE_HEIGHT = 50;
-var ARROW_WIDTH = 10,
+let pWIDTH = 100.;
+let pHEIGHT = 100.;
+let IMAGE_WIDTH = 50;
+let IMAGE_HEIGHT = 50;
+let ARROW_WIDTH = 10,
   ARROW_HEIGHT = 10;
-var TXT_ALIGN = 5,
+let TXT_ALIGN = 5,
   TXT_SIZE = '15px';
-var xMargin = 25,
+let xMargin = 25,
   yMargin = 25;
-var MIN_ZOOM_FACTOR = 0.3,
+let MIN_ZOOM_FACTOR = 0.3,
   MAX_ZOOM_FACTOR = 2,
   INIT_ZOOM_FACTOR = 1;
-var ZOOM_RATIO = 0.05;
+let ZOOM_RATIO = 0.05;
 
 const AUXILIARY_KEYS = ['image', 'Plans', 'level', 'image_text', 'xpos', 'ypos', 'width', 'height', 'total_time', 'parent_node', '_serial', 'arr_id'];
 
@@ -66,11 +66,11 @@ PolyLine.propTypes = {
 function Multitext({currentXpos, currentYpos, label, maxWidth}) {
   const theme = useTheme();
   let abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var xmlns = 'http://www.w3.org/2000/svg';
-  var svgElem = document.createElementNS(xmlns, 'svg');
+  let xmlns = 'http://www.w3.org/2000/svg';
+  let svgElem = document.createElementNS(xmlns, 'svg');
   svgElem.setAttributeNS(xmlns, 'height', '100%');
   svgElem.setAttributeNS(xmlns, 'width', '100%');
-  var text = document.createElementNS(xmlns, 'text');
+  let text = document.createElementNS(xmlns, 'text');
   text.innerHTML = abc;
   text.setAttributeNS(xmlns, 'x', 0);
   text.setAttributeNS(xmlns, 'y', 0);
@@ -88,11 +88,11 @@ function Multitext({currentXpos, currentYpos, label, maxWidth}) {
   * Find letter width in pixels and
   * index from where the text should be broken
   */
-  var letterWidth = text.getBBox().width / abc.length,
+  let letterWidth = text.getBBox().width / abc.length,
     wordBreakIndex = Math.round((maxWidth / letterWidth)) - 1;
   svgElem.remove();
 
-  var words = label.split(' '),
+  let words = label.split(' '),
     widthSoFar = 0,
     lines = [],
     currLine = '',
@@ -102,7 +102,7 @@ function Multitext({currentXpos, currentYpos, label, maxWidth}) {
     * the max-width boundary.
     */
     splitTextInMultiLine = function(leading, so_far, line) {
-      var l = line.length,
+      let l = line.length,
         res = [];
 
       if (l == 0)
@@ -126,8 +126,8 @@ function Multitext({currentXpos, currentYpos, label, maxWidth}) {
       return res;
     };
 
-  for (var i = 0; i < words.length; i++) {
-    var tmpArr = splitTextInMultiLine(
+  for (let i = 0; i < words.length; i++) {
+    let tmpArr = splitTextInMultiLine(
       currLine, widthSoFar, words[i]
     );
 

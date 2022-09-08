@@ -76,7 +76,7 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
   const [tableData, setTableData] = React.useState([]);
   const [loaderText, setLoaderText] = React.useState('');
   const [msg, setMsg] = React.useState('');
-  var columns = [
+  let columns = [
     {
       Header: 'Type',
       accessor: 'type',

@@ -10,9 +10,10 @@
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
 import $ from 'jquery';
-import * as SqlEditorUtils from 'sources/sqleditor_utils';
 import pgWindow from 'sources/window';
 import Notify from '../../../static/js/helpers/Notifier';
+import { calcFontSize } from '../../../static/js/utils';
+
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -123,7 +124,7 @@ _.extend(pgBrowser, {
       let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
 
       $(obj?.editor?.getWrapperElement()).css(
-        'font-size',SqlEditorUtils.calcFontSize(sqlEditPreferences.sql_font_size)
+        'font-size', calcFontSize(sqlEditPreferences.sql_font_size)
       );
       obj?.editor?.setOption('tabSize', sqlEditPreferences.tab_size);
       obj?.editor?.setOption('lineWrapping', sqlEditPreferences.wrap_code);

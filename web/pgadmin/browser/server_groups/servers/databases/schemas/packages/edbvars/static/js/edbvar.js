@@ -11,10 +11,9 @@ import EDBVarSchema from './edbvar.ui';
 
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.edbvar', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-edbvar']) {
     pgBrowser.Nodes['coll-edbvar'] =

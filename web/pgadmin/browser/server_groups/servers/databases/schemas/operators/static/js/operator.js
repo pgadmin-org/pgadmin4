@@ -10,10 +10,10 @@
 import OperatorSchema from './operator.ui';
 
 define('pgadmin.node.operator', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild) {
+], function(gettext, pgAdmin, pgBrowser, schemaChild) {
 
   if (!pgBrowser.Nodes['coll-operator']) {
     pgAdmin.Browser.Nodes['coll-operator'] =

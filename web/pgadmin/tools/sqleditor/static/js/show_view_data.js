@@ -10,7 +10,7 @@ import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {getDatabaseLabel, generateTitle} from './sqleditor_title';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import _ from 'underscore';
+import _ from 'lodash';
 import Notify from '../../../../static/js/helpers/Notifier';
 import { isEmptyString } from 'sources/validators';
 import { getUtilityView } from '../../../../browser/static/js/utility_view';

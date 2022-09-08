@@ -11,15 +11,16 @@ import { getNodeListById } from '../../../../static/js/node_ajax';
 import ServerSchema from './server.ui';
 import Notify from '../../../../../static/js/helpers/Notifier';
 import { showServerPassword, showChangeServerPassword, showNamedRestorePoint } from '../../../../../static/js/Dialogs/index';
+import _ from 'lodash';
 
 define('pgadmin.node.server', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.user_management.current_user',
   'pgadmin.authenticate.kerberos',
   'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser,
+  gettext, url_for, $, pgAdmin, pgBrowser,
   current_user, Kerberos,
 ) {
 

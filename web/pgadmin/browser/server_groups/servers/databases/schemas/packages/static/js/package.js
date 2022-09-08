@@ -11,13 +11,12 @@ import PackageSchema from './package.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
 
+
 define('pgadmin.node.package', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild,
-  schemaChildTreeNode) {
+], function(gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   // Extend the browser's collection class for package collection
   if (!pgBrowser.Nodes['coll-package']) {

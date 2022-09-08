@@ -9,12 +9,13 @@
 
 import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import UserMappingSchema from './user_mapping.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.user_mapping', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+], function(gettext, url_for, pgAdmin, pgBrowser, Backform) {
 
   // Extend the browser's collection class for user mapping collection
   if (!pgBrowser.Nodes['coll-user_mapping']) {

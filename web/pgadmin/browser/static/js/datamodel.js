@@ -6,10 +6,11 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import _ from 'lodash';
 
 define([
-  'underscore', 'sources/pgadmin', 'jquery', 'backbone', 'sources/utils',
-], function(_, pgAdmin, $, Backbone, pgadminUtils) {
+  'sources/pgadmin', 'jquery', 'backbone', 'sources/utils',
+], function(pgAdmin, $, Backbone, pgadminUtils) {
   var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   pgBrowser.DataModel = Backbone.Model.extend({

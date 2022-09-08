@@ -32,7 +32,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
   let loadingEle;
   let prevSearch = null;
   OrigCodeMirror.registerHelper('hint', 'sql', function (editor) {
-    var data = [],
+    let data = [],
       doc = editor.getDoc(),
       cur = doc.getCursor(),
       // function context
@@ -50,7 +50,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
          * and icon as per the object type.
          */
         hint_render: function (elt, data_arg, cur_arg) {
-          var el = document.createElement('span');
+          let el = document.createElement('span');
           switch (cur_arg.type) {
           case 'database':
             el.className = 'sqleditor-hint pg-icon-' + cur_arg.type;
@@ -90,15 +90,15 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
       }
 
       if(!loadingEle) {
-        var ownerDocument = editor.getInputField().ownerDocument;
+        let ownerDocument = editor.getInputField().ownerDocument;
         loadingEle = ownerDocument.createElement('div');
         loadingEle.className = 'CodeMirror-hints';
-        var iconEle = ownerDocument.createElement('div');
+        let iconEle = ownerDocument.createElement('div');
         iconEle.className = 'icon-spinner';
         iconEle.style.marginTop = '4px';
         iconEle.style.marginLeft = '2px';
 
-        var spanEle = ownerDocument.createElement('span');
+        let spanEle = ownerDocument.createElement('span');
         spanEle.innerText = gettext('Loading...');
         spanEle.style.marginLeft = '17px';
 
@@ -106,7 +106,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
         loadingEle.appendChild(iconEle);
         ownerDocument.body.appendChild(loadingEle);
       }
-      var pos = editor.cursorCoords(true);
+      let pos = editor.cursorCoords(true);
       loadingEle.style.left = pos.left + 'px';
       loadingEle.style.top = pos.bottom + 'px';
       loadingEle.style.height = '25px';
@@ -120,7 +120,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
 
     return {
       then: function (cb) {
-        var self_local = this;
+        let self_local = this;
 
         // This function is used to filter the data and call the callback
         // function with that filtered data.
@@ -146,7 +146,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
          * Below logic find the start and end point
          * to replace the selected auto complete suggestion.
          */
-        var token = self_local.editor.getTokenAt(cur),
+        let token = self_local.editor.getTokenAt(cur),
           start, end, search;
         if (token.end > cur.ch) {
           token.end = cur.ch;
@@ -211,7 +211,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
           api.post(self_local.url, JSON.stringify(self_local.data))
             .then((res) => {
               hideLoading();
-              var result = [];
+              let result = [];
 
               _.each(res.data.data.result, function (obj, key) {
                 result.push({
@@ -264,21 +264,21 @@ export default function Query() {
       selectedLineNo = cmObj.getCursor(true).line;
 
     // Fetch the LINE string using regex from the result
-    var line = /LINE (\d+)/.exec(result),
+    let line = /LINE (\d+)/.exec(result),
       // Fetch the Character string using regex from the result
       char = /Character: (\d+)/.exec(result);
 
     // If line and character is null then no need to mark
     if (line != null && char != null) {
       errorLineNo = (parseInt(line[1]) - 1) + selectedLineNo;
-      var errorCharNo = (parseInt(char[1]) - 1);
+      let errorCharNo = (parseInt(char[1]) - 1);
 
       /* We need to loop through each line till the error line and
         * count the total no of character to figure out the actual
         * starting/ending marker point for the individual line. We
         * have also added 1 per line for the "\n" character.
         */
-      var prevLineChars = 0;
+      let prevLineChars = 0;
       for (let i = selectedLineNo > 0 ? selectedLineNo : 0; i < errorLineNo; i++)
         prevLineChars += cmObj.getLine(i).length + 1;
 
@@ -289,7 +289,7 @@ export default function Query() {
       startMarker = errorCharNo - prevLineChars;
 
       // Find the next space from the character or end of line
-      var errorLine = cmObj.getLine(errorLineNo);
+      let errorLine = cmObj.getLine(errorLineNo);
 
       if (_.isUndefined(errorLine)) return;
       endMarker = errorLine.indexOf(' ', startMarker);

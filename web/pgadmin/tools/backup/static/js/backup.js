@@ -16,11 +16,11 @@ import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 
 // Backup dialog
 define([
-  'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'tools/backup/static/js/menu_utils',
   'sources/nodes/supported_database_node',
 ], function(
-  gettext, url_for, _, pgBrowser, menuUtils, supportedNodes
+  gettext, url_for, pgBrowser, menuUtils, supportedNodes
 ) {
 
   // if module is already initialized, refer to that.
@@ -307,10 +307,6 @@ define([
         if (nodeData._type === 'table' || nodeData._type === 'partition') {
           extraData['tables'] = [[treeInfo.schema._label, nodeData._label]];
         }
-
-        /*(if (_.isEmpty(this.view.model.get('ratio'))) {
-          this.view.model.unset('ratio');
-        }*/
       } else if(typeOfDialog === 'server') {
         extraData['type'] = 'server';
       } else if(typeOfDialog === 'globals') {

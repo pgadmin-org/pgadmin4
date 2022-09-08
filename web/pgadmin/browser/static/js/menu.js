@@ -6,10 +6,11 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
+import _ from 'lodash';
 
 define([
-  'underscore', 'sources/pgadmin', 'jquery', 'sources/utils', 'sources/gettext',
-], function(_, pgAdmin, $, pgadminUtils, gettext) {
+  'sources/pgadmin', 'jquery', 'sources/utils', 'sources/gettext',
+], function(pgAdmin, $, pgadminUtils, gettext) {
   'use strict';
 
   pgAdmin.Browser = pgAdmin.Browser || {};

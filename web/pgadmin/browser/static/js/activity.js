@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import $ from 'jquery';
-import _ from 'underscore';
+import _ from 'lodash';
 
 import pgAdmin from 'sources/pgadmin';
 import pgWindow from 'sources/window';

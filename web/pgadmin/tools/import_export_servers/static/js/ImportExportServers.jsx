@@ -57,7 +57,7 @@ export default function ImportExportServers({onClose}) {
   const classes = useStyles();
   const tableClasses = commonTableStyles();
 
-  var steps = [gettext('Import/Export'), gettext('Database Servers'), gettext('Summary')];
+  let steps = [gettext('Import/Export'), gettext('Database Servers'), gettext('Summary')];
   const [loaderText, setLoaderText] = React.useState('');
   const [errMsg, setErrMsg] = React.useState('');
   const [selectionFormData, setSelectionFormData] = React.useState({});
@@ -165,7 +165,7 @@ export default function ImportExportServers({onClose}) {
       if(activeStep == 0) {
         setLoaderText('Loading Servers/Server Groups ...');
         if (selectionFormData.imp_exp == 'e') {
-          var get_servers_url = url_for('import_export_servers.get_servers');
+          let get_servers_url = url_for('import_export_servers.get_servers');
           api.get(get_servers_url)
             .then(res => {
               setLoaderText('');
@@ -179,7 +179,7 @@ export default function ImportExportServers({onClose}) {
               reject();
             });
         } else if (selectionFormData.imp_exp == 'i') {
-          var load_servers_url = url_for('import_export_servers.load_servers');
+          let load_servers_url = url_for('import_export_servers.load_servers');
           const post_data = {
             filename: selectionFormData.filename
           };

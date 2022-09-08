@@ -11,10 +11,9 @@ import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/
 import PublicationSchema from './publication.ui';
 
 define('pgadmin.node.publication', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for publications collection
   if (!pgBrowser.Nodes['coll-publication']) {

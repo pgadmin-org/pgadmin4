@@ -9,7 +9,7 @@
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
-import _ from 'underscore';
+import _ from 'lodash';
 import pgAdmin from 'sources/pgadmin';
 
 let _toolbarButtons = {};

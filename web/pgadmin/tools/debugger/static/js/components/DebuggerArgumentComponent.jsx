@@ -81,14 +81,14 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   const wcDocker = window.wcDocker;
 
   function getURL() {
-    var _Url = null;
+    let _Url = null;
 
     if (restartDebug == 0) {
 
       if (!pgData)
         return;
 
-      var treeInfo = pgTreeInfo;
+      let treeInfo = pgTreeInfo;
 
       if (pgData._type == 'function') {
         // Get the existing function parameters available from sqlite database
@@ -156,7 +156,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   function checkModesAndTypes() {
     // Check modes and type in the arguments.
     if (debuggerInfo['proargmodes'] != null) {
-      var argmodes = debuggerInfo['proargmodes'].split(',');
+      let argmodes = debuggerInfo['proargmodes'].split(',');
       argmodes.forEach((NULL, indx) => {
         if (argmodes[indx] == 'i' || argmodes[indx] == 'b' ||
           (isEdbProc && argmodes[indx] == 'o')) {
@@ -164,7 +164,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         }
       });
     } else {
-      var argtypes = debuggerInfo['proargtypenames'].split(',');
+      let argtypes = debuggerInfo['proargtypenames'].split(',');
       argtypes.forEach((NULL, indx) => {
         InputArgIds.current.push(indx);
       });
@@ -224,7 +224,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function getArgsList(argType, argMode, defValList, argName, useDefValue) {
-    var myObj = [];
+    let myObj = [];
     if (argType.length != 0) {
       for (let i = 0; i < argType.length; i++) {
         if (debuggerInfo['proargmodes'] != null) {
@@ -379,15 +379,15 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     })
       .then(function (res) {
         funcArgsData = setArgs(res);
-        var argName;
+        let argName;
 
-        var defValList = [];
-        var myObj = [];
-        var funcObj = [];
+        let defValList = [];
+        let myObj = [];
+        let funcObj = [];
 
-        var [argType, argMode, argCnt, defaultArgs] = checkModesAndTypes();
+        let [argType, argMode, argCnt, defaultArgs] = checkModesAndTypes();
 
-        var useDefValue;
+        let useDefValue;
 
         if (debuggerInfo['proargnames'] != null) {
           argName = debuggerInfo['proargnames'].split(',');
@@ -405,7 +405,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         else {
           /* Generate the name parameter if function do not have arguments name
           like dbgparam1, dbgparam2 etc. */
-          var myargname = generateArgsNames(argType);
+          let myargname = generateArgsNames(argType);
 
           // If there is no default arguments
           if (!debuggerInfo['pronargdefaults']) {
@@ -547,7 +547,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     }
   }
   function getFunctionID(d, treeInfo) {
-    var functionId;
+    let functionId;
     if (d._type == 'function') {
       functionId = treeInfo.function._id;
     } else if (d._type == 'procedure') {
@@ -562,7 +562,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
 
   function setSqliteFuncArgs(d, treeInfo, arg, intCount, sqliteFuncArgsList) {
     if (restartDebug == 0) {
-      var functionId = getFunctionID(d, treeInfo);
+      let functionId = getFunctionID(d, treeInfo);
       // Below will format the data to be stored in sqlite database
       sqliteFuncArgsList.push({
         'server_id': treeInfo.server._id,
@@ -596,7 +596,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function checkTypeAndGetUrl(d, treeInfo) {
-    var baseUrl;
+    let baseUrl;
     if (d && d._type == 'function') {
       baseUrl = url_for('debugger.initialize_target_for_function', {
         'debug_type': 'direct',
@@ -639,7 +639,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   }
 
   function getSetArgsUrl(d, treeInfo) {
-    var baseUrl;
+    let baseUrl;
     if (d._type == 'function') {
       baseUrl = url_for('debugger.set_arguments', {
         'sid': treeInfo.server._id,
@@ -680,12 +680,12 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
     try {
       /* Initialize the target once the debug button is clicked and create asynchronous connection
         and unique transaction ID If the debugging is started again then treeInfo is already stored. */
-      var treeInfo = pgTreeInfo;
+      let treeInfo = pgTreeInfo;
       if (!pgData) return;
 
-      var argsValueList = [];
-      var sqliteFuncArgsList = [];
-      var intCount = 0;
+      let argsValueList = [];
+      let sqliteFuncArgsList = [];
+      let intCount = 0;
 
       let argsList = [];
       let argSet = [];
@@ -698,7 +698,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         intCount = intCount + 1;
       });
 
-      var baseUrl;
+      let baseUrl;
 
       /* If debugging is not started again then we should initialize the target otherwise not */
       if (restartDebug == 0) {
@@ -711,14 +711,14 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         })
           .then(function (res_post) {
 
-            var url = url_for(
+            let url = url_for(
               'debugger.direct', {
                 'trans_id': res_post.data.data.debuggerTransId,
               }
             );
 
-            var browserPreferences = pgAdmin.Browser.get_preferences_for_module('browser');
-            var open_new_tab = browserPreferences.new_browser_tab_open;
+            let browserPreferences = pgAdmin.Browser.get_preferences_for_module('browser');
+            let open_new_tab = browserPreferences.new_browser_tab_open;
             if (open_new_tab && open_new_tab.includes('debugger')) {
               window.open(url, '_blank');
               // Send the signal to runtime, so that proper zoom level will be set.
@@ -733,18 +733,18 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
                 });
 
               // Create the debugger panel as per the data received from user input dialog.
-              var propertiesPanel = pgAdmin.Browser.docker.findPanels('properties');
-              var panel = pgAdmin.Browser.docker.addPanel(
+              let propertiesPanel = pgAdmin.Browser.docker.findPanels('properties');
+              let panel = pgAdmin.Browser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, propertiesPanel[0]
               );
-              var browser_pref = pgAdmin.Browser.get_preferences_for_module('browser');
-              var label = getAppropriateLabel(treeInfo);
+              let browser_pref = pgAdmin.Browser.get_preferences_for_module('browser');
+              let label = getAppropriateLabel(treeInfo);
               setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgAdmin.Browser);
               panel.focus();
 
               // Panel Closed event
               panel.on(wcDocker.EVENT.CLOSED, function () {
-                var closeUrl = url_for('debugger.close', {
+                let closeUrl = url_for('debugger.close', {
                   'trans_id': res_post.data.data.debuggerTransId,
                 });
                 api({
@@ -761,7 +761,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               });
             }
 
-            var _url = getSetArgsUrl(pgData, treeInfo);
+            let _url = getSetArgsUrl(pgData, treeInfo);
 
             api({
               url: _url,
@@ -814,7 +814,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           });
         setLoaderText('');
         // Set the new input arguments given by the user during debugging
-        var _Url = url_for('debugger.set_arguments', {
+        let _Url = url_for('debugger.set_arguments', {
           'sid': debuggerInfo.server_id,
           'did': debuggerInfo.database_id,
           'scid': debuggerInfo.schema_id,

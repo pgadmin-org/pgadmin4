@@ -24,7 +24,7 @@ class BrowserToolBarLocators():
     filter_data_button_css = \
         ".wcFrameButton[title='Filtered Rows']:not(.disabled)"
 
-    filter_alertify_box_css = "//*[@id='0']/div[contains(text()," \
+    filter_box_css = "//*[@id='0']/div[contains(text()," \
                               "'Data Filter')]"
 
 
@@ -271,14 +271,13 @@ class ConnectToServerDiv:
     password_field = "//input[@id='password']"
 
     ok_button = \
-        "//button[@class='ajs-button btn btn-primary fa fa-check " \
-        "pg-alertify-button']"
+        "//button[@class='ajs-button btn btn-primary fa fa-check']"
 
     error_message = \
         "//form[@id='frmPassword']/div/div//div[@class='alert-text']"
 
     cancel_button = \
-        "//div [@class='alertify  ajs-modeless ajs-movable ajs-zoom']" \
+        "//div [@class='ajs-modeless ajs-movable ajs-zoom']" \
         "//button[text()='Cancel']"
 
 

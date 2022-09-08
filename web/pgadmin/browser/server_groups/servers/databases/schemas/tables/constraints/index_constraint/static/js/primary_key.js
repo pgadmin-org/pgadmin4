@@ -9,12 +9,13 @@
 
 import { getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
 import PrimaryKeySchema from './primary_key.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.primary_key', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, Backgrid) {
+], function(gettext, url_for, pgAdmin, pgBrowser, Backform, Backgrid) {
 
   // Extend the browser's node class for index constraint node
   if (!pgBrowser.Nodes['primary_key']) {

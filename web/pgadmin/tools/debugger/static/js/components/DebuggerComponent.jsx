@@ -85,10 +85,10 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   // Function to get the breakpoint information from the server
   const getBreakpointInformation = (transId, callBackFunc) => {
-    var result = '';
+    let result = '';
 
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.execute_query', {
+    let baseUrl = url_for('debugger.execute_query', {
       'trans_id': transId,
       'query_type': 'get_breakpoints',
     });
@@ -112,16 +112,16 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   const clearAllBreakpoint = (transId) => {
-    var clearBreakpoint = (br_list) => {
+    let clearBreakpoint = (br_list) => {
       // If there is no break point to clear then we should return from here.
       if ((br_list.length == 1) && (br_list[0].linenumber == -1))
         return;
 
       disableToolbarButtons();
-      var breakpoint_list = getBreakpointList(br_list);
+      let breakpoint_list = getBreakpointList(br_list);
 
       // Make ajax call to listen the database message
-      var baseUrl = url_for('debugger.clear_all_breakpoint', {
+      let baseUrl = url_for('debugger.clear_all_breakpoint', {
         'trans_id': transId,
       });
 
@@ -146,7 +146,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const raiseJSONError = (xhr) => {
     try {
-      var err = xhr.response.data;
+      let err = xhr.response.data;
       if (err.success == 0) {
         Notify.alert(gettext('Debugger Error'), err.errormsg, () => {
           if (panel) {
@@ -187,7 +187,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const messages = (transId) => {
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.messages', {
+    let baseUrl = url_for('debugger.messages', {
       'trans_id': transId,
     });
 
@@ -221,7 +221,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const startExecution = (transId, port_num) => {
     // Make ajax call to listen the database message
-    var baseUrl = url_for(
+    let baseUrl = url_for(
       'debugger.start_execution', {
         'trans_id': transId,
         'port_num': port_num,
@@ -251,7 +251,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const executeQuery = (transId) => {
     // Make ajax call to listen the database message
-    var baseUrl = url_for(
+    let baseUrl = url_for(
       'debugger.execute_query', {
         'trans_id': transId,
         'query_type': 'wait_for_breakpoint',
@@ -318,7 +318,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const selectFrame = (frameId) => {
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.select_frame', {
+    let baseUrl = url_for('debugger.select_frame', {
       'trans_id': params.transId,
       'frame_id': frameId,
     });
@@ -342,7 +342,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   useEffect(() => {
-    var baseUrl = '';
+    let baseUrl = '';
     if (params.transId != undefined && !params.directDebugger.debug_type) {
       // Make ajax call to execute the and start the target for execution
       baseUrl = url_for('debugger.start_listener', {
@@ -382,7 +382,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   const setUnsetBreakpoint = (res, breakpoint_list) => {
     if (res.data.data.status) {
       for (let brk_val of breakpoint_list) {
-        var info = editor.current.lineInfo((brk_val - 1));
+        let info = editor.current.lineInfo((brk_val - 1));
 
         if (info) {
           if (info.gutterMarkers != undefined) {
@@ -394,16 +394,16 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   const triggerClearBreakpoint = () => {
-    var clearBreakpoint = (br_list) => {
+    let clearBreakpoint = (br_list) => {
       // If there is no break point to clear then we should return from here.
       if ((br_list.length == 1) && (br_list[0].linenumber == -1))
         return;
 
       disableToolbarButtons();
-      var breakpoint_list = getBreakpointList(br_list);
+      let breakpoint_list = getBreakpointList(br_list);
 
       // Make ajax call to listen the database message
-      var _baseUrl = url_for('debugger.clear_all_breakpoint', {
+      let _baseUrl = url_for('debugger.clear_all_breakpoint', {
         'trans_id': params.transId,
       });
 
@@ -421,7 +421,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
         .catch(raiseClearBrekpointError);
     };
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.execute_query', {
+    let baseUrl = url_for('debugger.execute_query', {
       'trans_id': params.transId,
       'query_type': 'get_breakpoints',
     });
@@ -442,7 +442,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   const debuggerMark = () => {
-    var marker = document.createElement('div');
+    let marker = document.createElement('div');
     marker.style.color = '#822';
     marker.innerHTML = '●';
     return marker;
@@ -450,8 +450,8 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const triggerToggleBreakpoint = () => {
     disableToolbarButtons();
-    var info = editor.current.lineInfo(editor.current.activeLineNo);
-    var baseUrl = '';
+    let info = editor.current.lineInfo(editor.current.activeLineNo);
+    let baseUrl = '';
 
     // If gutterMarker is undefined that means there is no marker defined previously
     // So we need to set the breakpoint command here...
@@ -476,7 +476,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       .then(function (res) {
         if (res.data.data.status) {
           // Call function to create and update local variables ....
-          var info_local = editor.current.lineInfo(editor.current.activeLineNo);
+          let info_local = editor.current.lineInfo(editor.current.activeLineNo);
 
           if (info_local.gutterMarkers != undefined) {
             editor.current.setGutterMarker(editor.current.activeLineNo, 'breakpoints', null);
@@ -503,7 +503,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   const stopDebugging = () => {
     disableToolbarButtons();
     // Make ajax call to listen the database message
-    var baseUrl = url_for(
+    let baseUrl = url_for(
       'debugger.execute_query', {
         'trans_id': params.transId,
         'query_type': 'abort_target',
@@ -526,7 +526,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
           // We will give same behaviour as pgAdmin3 and disable all buttons
           disableToolbarButtons();
 
-          // Set the Alertify message to inform the user that execution
+          // Set the message to inform the user that execution
           // is completed.
           Notify.success(res.data.info, 3000);
         } else if (res.data.data.status === 'NotConnected') {
@@ -545,7 +545,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   const restart = (transId) => {
-    var baseUrl = url_for('debugger.restart', { 'trans_id': transId });
+    let baseUrl = url_for('debugger.restart', { 'trans_id': transId });
     disableToolbarButtons();
 
     api({
@@ -553,7 +553,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     })
       .then(function (res) {
         // Restart the same function debugging with previous arguments
-        var restart_dbg = res.data.data.restart_debug ? 1 : 0;
+        let restart_dbg = res.data.data.restart_debug ? 1 : 0;
 
         // Start pooling again
         params.directDebugger.polling_timeout_idle = false;
@@ -654,7 +654,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       params.directDebugger.direct_execution_completed = true;
       params.directDebugger.polling_timeout_idle = true;
 
-      //Set the alertify message to inform the user that execution is completed.
+      //Set the message to inform the user that execution is completed.
       Notify.success(res.data.info, 3000);
 
       // Update the message tab of the debugger
@@ -683,7 +683,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     }
 
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.poll_end_execution_result', {
+    let baseUrl = url_for('debugger.poll_end_execution_result', {
         'trans_id': transId,
       }),
       poll_end_timeout;
@@ -721,7 +721,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
                 params.directDebugger.direct_execution_completed = true;
                 params.directDebugger.polling_timeout_idle = true;
 
-                //Set the alertify message to inform the user that execution is completed.
+                //Set the message to inform the user that execution is completed.
                 Notify.success(res.data.info, 3000);
 
                 // Update the message tab of the debugger
@@ -775,7 +775,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       restart(params.transId);
     } else {
       // Make ajax call to listen the database message
-      var baseUrl = url_for('debugger.execute_query', {
+      let baseUrl = url_for('debugger.execute_query', {
         'trans_id': params.transId,
         'query_type': 'continue',
       });
@@ -806,7 +806,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     disableToolbarButtons();
 
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.execute_query', {
+    let baseUrl = url_for('debugger.execute_query', {
       'trans_id': params.transId,
       'query_type': 'step_over',
     });
@@ -834,7 +834,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   const getBreakpointList = (br_list) => {
-    var breakpoint_list = new Array();
+    let breakpoint_list = new Array();
     for (let val of br_list) {
       if (val.linenumber != -1) {
         breakpoint_list.push(val.linenumber);
@@ -847,16 +847,16 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   // Function to get the latest breakpoint information and update the
   // gutters of codemirror
   const updateBreakpoint = (transId, updateLocalVar = false) => {
-    var callBackFunc = (br_list) => {
+    let callBackFunc = (br_list) => {
       // If there is no break point to clear then we should return from here.
       if ((br_list.length == 1) && (br_list[0].linenumber == -1))
         return;
 
-      var breakpoint_list = getBreakpointList(br_list);
+      let breakpoint_list = getBreakpointList(br_list);
 
 
       for (let brk_val of breakpoint_list) {
-        var info = editor.current.lineInfo((brk_val - 1));
+        let info = editor.current.lineInfo((brk_val - 1));
 
         if (info.gutterMarkers != undefined) {
           editor.current.setGutterMarker((brk_val - 1), 'breakpoints', null);
@@ -875,7 +875,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   // Get the local variable information of the functions and update the grid
   const getLocalVariables = (transId) => {
     // Make ajax call to listen the database message
-    var baseUrl = url_for(
+    let baseUrl = url_for(
       'debugger.execute_query', {
         'trans_id': transId,
         'query_type': 'get_variables',
@@ -922,7 +922,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const getStackInformation = (transId) => {
     // Make ajax call to listen the database message
-    var baseUrl = url_for(
+    let baseUrl = url_for(
       'debugger.execute_query', {
         'trans_id': transId,
         'query_type': 'get_stack_info',
@@ -1010,7 +1010,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     }
 
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.poll_result', {
+    let baseUrl = url_for('debugger.poll_result', {
         'trans_id': transId,
       }),
       poll_timeout;
@@ -1067,7 +1067,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   const stepInto = () => {
     disableToolbarButtons();
     // Make ajax call to listen the database message
-    var baseUrl = url_for('debugger.execute_query', {
+    let baseUrl = url_for('debugger.execute_query', {
       'trans_id': params.transId,
       'query_type': 'step_into',
     });
@@ -1096,7 +1096,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
   const onChangesLocalVarParameters = (data) => {
     // Make api call to listen the database message
-    var baseUrl = url_for('debugger.deposit_value', {
+    let baseUrl = url_for('debugger.deposit_value', {
       'trans_id': params.transId,
     });
     api({

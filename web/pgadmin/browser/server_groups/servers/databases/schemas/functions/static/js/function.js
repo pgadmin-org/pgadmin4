@@ -14,13 +14,11 @@ import { getNodeVariableSchema } from '../../../../../static/js/variable.ui';
 
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.function', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, Backbone, pgAdmin, pgBrowser, Backform, schemaChild,
-  schemaChildTreeNode
+  gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-function']) {

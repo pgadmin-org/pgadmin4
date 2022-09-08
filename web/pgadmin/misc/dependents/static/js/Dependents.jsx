@@ -77,7 +77,7 @@ export default function Dependents({ nodeData, item, node, ...props }) {
   const [loaderText, setLoaderText] = React.useState('');
   const [msg, setMsg] = React.useState('');
 
-  var columns = [
+  let columns = [
     {
       Header: 'Type',
       accessor: 'type',

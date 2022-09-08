@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import _ from 'underscore';
+import _ from 'lodash';
 import pgAdmin from '../../../static/js/pgadmin';
 import $ from 'jquery';
 import Mousetrap from 'mousetrap';

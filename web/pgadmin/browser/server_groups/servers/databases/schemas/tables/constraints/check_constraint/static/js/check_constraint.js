@@ -9,13 +9,14 @@
 
 import CheckConstraintSchema from './check_constraint.ui';
 import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChildTreeNode) {
+], function(gettext, url_for, $, pgAdmin, pgBrowser, schemaChildTreeNode) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {

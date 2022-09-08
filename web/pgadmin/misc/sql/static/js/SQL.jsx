@@ -35,7 +35,7 @@ export default function SQL({ nodeData, node, did,  ...props }) {
   const [msg, setMsg] = React.useState('');
 
   useEffect(() => {
-    var sql = '-- ' + gettext('Please select an object in the tree view.');
+    let sql = '-- ' + gettext('Please select an object in the tree view.');
     if (node) {
       let url = generateNodeUrl.call(
         node,

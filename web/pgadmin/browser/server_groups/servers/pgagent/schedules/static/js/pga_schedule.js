@@ -10,10 +10,9 @@
 import PgaJobScheduleSchema from './pga_schedule.ui';
 
 define('pgadmin.node.pga_schedule', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'moment', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
 ], function(
-  gettext, url_for, $, _, pgAdmin, moment, pgBrowser
+  gettext, url_for, pgBrowser
 ) {
 
   if (!pgBrowser.Nodes['coll-pga_schedule']) {

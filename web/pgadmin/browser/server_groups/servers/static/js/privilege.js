@@ -7,9 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-define(['sources/gettext', 'underscore', 'jquery', 'backbone', 'backform',
-  'backgrid', 'alertify', 'pgadmin.browser.node', 'sources/utils', 'pgadmin.browser.node.ui',
-], function(gettext, _, $, Backbone, Backform, Backgrid, Alertify, pgNode, commonUtils) {
+import _ from 'lodash';
+
+define(['sources/gettext', 'jquery', 'backbone',
+  'backgrid', 'pgadmin.browser.node', 'sources/utils', 'pgadmin.browser.node.ui',
+], function(gettext, $, Backbone, Backgrid, pgNode, commonUtils) {
   /**
    * Each Privilege, supporeted by an database object, will be represented
    * using this Model.

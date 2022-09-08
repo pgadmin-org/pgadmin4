@@ -83,18 +83,12 @@ class PgadminPage:
 
     def click_modal(self, button_text, react_dialog=False):
         time.sleep(0.5)
-        # Find active alertify dialog in case of multiple alertify dialog
+        # Find active dialog in case of multiple dialog
         # & click on that dialog
 
         # In case of react dialog we use different xpath
-        if react_dialog:
-            modal_button = self.find_by_xpath(
-                "//span[text()='{}']".format(button_text))
-        else:
-            modal_button = self.find_by_xpath(
-                "//div[contains(@class, 'alertify') and "
-                "not(contains(@class, 'ajs-hidden'))]//button[.='%s']"
-                % button_text)
+        modal_button = self.find_by_xpath(
+            "//span[text()='{}']".format(button_text))
 
         self.click_element(modal_button)
 

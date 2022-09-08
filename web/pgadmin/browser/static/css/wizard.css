@@ -45,8 +45,7 @@
   padding: 0.5rem 0rem;
 }
 
-/* In wizard select2 dropdown doesn't
- * popup because z-index of alertify
+/* In wizard select2 dropdown doesn't popup.
  * wizard is greater than the z-index
  * of select2 dropdown. To make select2
  * visible, set z-index of select2

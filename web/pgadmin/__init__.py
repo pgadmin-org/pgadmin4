@@ -222,7 +222,7 @@ def create_app(app_name=None):
 
         config.SECURITY_RECOVERABLE = True
         config.SECURITY_CHANGEABLE = True
-        # Now we'll open change password page in alertify dialog
+        # Now we'll open change password page in dialog
         # we don't want it to redirect to main page after password
         # change operation so we will open the same password change page again.
         config.SECURITY_POST_CHANGE_VIEW = 'browser.change_password'

@@ -13,10 +13,9 @@ import { getNodePgaJobStepSchema } from '../../steps/static/js/pga_jobstep.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
 
 define('pgadmin.node.pga_job', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'jquery', 'pgadmin.browser',
   'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+], function(gettext, url_for, $, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     pgBrowser.Nodes['coll-pga_job'] =

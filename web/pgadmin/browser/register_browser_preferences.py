@@ -46,18 +46,6 @@ def register_browser_preferences(self):
         )
 
     self.preference.register(
-        'display', 'enable_acitree_animation',
-        gettext("Enable browser tree animation?"), 'boolean', True,
-        category_label=PREF_LABEL_DISPLAY
-    )
-
-    self.preference.register(
-        'display', 'enable_alertify_animation',
-        gettext("Enable dialogue/notification animation?"), 'boolean',
-        True, category_label=PREF_LABEL_DISPLAY
-    )
-
-    self.preference.register(
         'display', 'browser_tree_state_save_interval',
         gettext("Browser tree state saving interval"), 'integer',
         30, category_label=PREF_LABEL_DISPLAY,

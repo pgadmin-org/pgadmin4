@@ -12,15 +12,16 @@ import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui';
 import Notify from '../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
 
 define('pgadmin.node.mview', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.alertifyjs', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.node.schema.dir/child',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
   'pgadmin.browser.server.privilege',
 ], function(
-  gettext, url_for, $, _, pgAdmin, Alertify, pgBrowser, Backform,
+  gettext, url_for, $, pgAdmin, pgBrowser,
   schemaChild, schemaChildTreeNode, commonUtils
 ) {
 
@@ -178,7 +179,7 @@ define('pgadmin.node.mview', [
           return;
         }
 
-        if (!commonUtils.hasBinariesConfiguration(pgBrowser, server_data, Alertify)) {
+        if (!commonUtils.hasBinariesConfiguration(pgBrowser, server_data)) {
           return;
         }
 

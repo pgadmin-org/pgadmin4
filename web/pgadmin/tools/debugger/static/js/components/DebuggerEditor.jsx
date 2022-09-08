@@ -36,7 +36,7 @@ export default function DebuggerEditor({ getEditor, params }) {
   const api = getApiInstance();
 
   function makeMarker() {
-    var marker = document.createElement('div');
+    let marker = document.createElement('div');
     marker.style.color = '#822';
     marker.innerHTML = '●';
     return marker;
@@ -44,7 +44,7 @@ export default function DebuggerEditor({ getEditor, params }) {
 
   function setBreakpoint(lineNo, setType) {
     // Make ajax call to set/clear the break point by user
-    var baseUrl = url_for('debugger.set_breakpoint', {
+    let baseUrl = url_for('debugger.set_breakpoint', {
       'trans_id': params.transId,
       'line_no': lineNo,
       'set_type': setType,
@@ -69,7 +69,7 @@ export default function DebuggerEditor({ getEditor, params }) {
   function onBreakPoint(cm, n, gutter) {
     // If breakpoint gutter is clicked and execution is not completed then only set the breakpoint
     if (gutter == 'breakpoints' && !params.debuggerDirect.polling_timeout_idle) {
-      var info = cm.lineInfo(n);
+      let info = cm.lineInfo(n);
       // If gutterMarker is undefined that means there is no marker defined previously
       // So we need to set the breakpoint command here...
       if (info.gutterMarkers == undefined) {
@@ -84,7 +84,7 @@ export default function DebuggerEditor({ getEditor, params }) {
 
       // If line folding is defined then gutterMarker will be defined so
       // we need to find out 'breakpoints' information
-      var markers = info.gutterMarkers;
+      let markers = info.gutterMarkers;
       if (markers != undefined && info.gutterMarkers.breakpoints == undefined)
         markers = info.gutterMarkers.breakpoints;
       cm.setGutterMarker(n, 'breakpoints', markers ? null : makeMarker());

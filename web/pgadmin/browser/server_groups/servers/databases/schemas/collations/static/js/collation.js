@@ -11,11 +11,11 @@ import CollationSchema from './collation.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
 
 define('pgadmin.node.collation', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, schemaChild,
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChild,
   schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-collation']) {

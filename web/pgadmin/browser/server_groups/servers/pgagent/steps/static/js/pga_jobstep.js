@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodePgaJobStepSchema } from './pga_jobstep.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.pga_jobstep', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'alertify', 'backform',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser', 'backform',
   'backgrid', 'pgadmin.backform',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform) {
+], function(gettext, url_for, pgBrowser, Backform) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
     pgBrowser.Nodes['coll-pga_jobstep'] =
