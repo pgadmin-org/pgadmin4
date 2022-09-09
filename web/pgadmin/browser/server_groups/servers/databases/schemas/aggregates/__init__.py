@@ -167,7 +167,6 @@ class AggregateView(PGChildNodeView):
             # Set the template path for the SQL scripts
             self.template_path = compile_template_path(
                 'aggregates/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 

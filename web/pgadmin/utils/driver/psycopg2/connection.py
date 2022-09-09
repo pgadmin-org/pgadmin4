@@ -621,10 +621,16 @@ WHERE db.datname = current_database()""")
             server_types = ServerType.types()
 
         for st in server_types:
-            if st.instance_of(manager.ver):
-                manager.server_type = st.stype
-                manager.server_cls = st
-                break
+            if st.stype == 'ppas':
+                if st.instance_of(manager.ver):
+                    manager.server_type = st.stype
+                    manager.server_cls = st
+                    break
+            else:
+                if st.instance_of():
+                    manager.server_type = st.stype
+                    manager.server_cls = st
+                    break
 
     def __cursor(self, server_cursor=False):
 
@@ -783,8 +789,8 @@ WHERE db.datname = current_database()""")
         if self.async_ == 1:
             self._wait(cur.connection)
 
-    def execute_on_server_as_csv(self, params=None,
-                                 formatted_exception_msg=False, records=2000):
+    def execute_on_server_as_csv(self, formatted_exception_msg=False,
+                                 records=2000):
         """
         To fetch query result and generate CSV output
 

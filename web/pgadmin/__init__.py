@@ -444,7 +444,7 @@ def create_app(app_name=None):
     # Don't bother paths when running in cli mode
     if not cli_mode:
         import pgadmin.utils.paths as paths
-        paths.init_app(app)
+        paths.init_app()
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -578,7 +578,7 @@ def create_app(app_name=None):
                          maintenance_db='postgres',
                          username=superuser,
                          ssl_mode='prefer',
-                         comment=svr_comment,
+                         comment=comment,
                          discovery_id=discovery_id)
 
             db.session.add(svr)
@@ -700,7 +700,7 @@ def create_app(app_name=None):
 
         for mdl in current_app.logout_hooks:
             try:
-                mdl.on_logout(user)
+                mdl.on_logout()
             except Exception as e:
                 current_app.logger.exception(e)
 

@@ -248,14 +248,12 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
 
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
                 'indexes/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 

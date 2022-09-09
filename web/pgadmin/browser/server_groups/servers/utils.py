@@ -275,20 +275,3 @@ def remove_saved_passwords(user_id):
     except Exception:
         db.session.rollback()
         raise
-
-
-def does_server_exists(sid, user_id):
-
-    """
-    This function will return True if server is existing for a user
-    :param sid: server id
-    :param user_id: user id
-    :return: Boolean
-    """
-    # **kwargs parameter can be added to function to filter with more
-    # parameters.
-    try:
-        return True if Server.query.filter_by(
-            id=sid).first() is not None else False
-    except Exception:
-        return False

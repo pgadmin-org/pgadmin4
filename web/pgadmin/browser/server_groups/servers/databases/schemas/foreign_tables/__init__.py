@@ -392,7 +392,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             # on the server version.
             self.template_path = compile_template_path(
                 'foreign_tables/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 

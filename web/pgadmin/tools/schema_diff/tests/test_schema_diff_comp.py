@@ -94,8 +94,7 @@ class SchemaDiffTestCase(BaseTestGenerator):
             absolute_path = tests_folder_path
 
         # Iterate the version mapping directories.
-        for version_mapping in get_version_mapping_directories(
-                self.server['type']):
+        for version_mapping in get_version_mapping_directories():
             if version_mapping['number'] > \
                     self.server_information['server_version']:
                 continue

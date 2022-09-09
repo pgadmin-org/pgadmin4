@@ -236,13 +236,13 @@ CREATE TABLE public.nonintpkey
                     self._update_numeric_cell(xpath, value):
                 break
             elif cell_type in ['text', 'text[]', 'boolean[]'] and \
-                    self._update_text_cell(cell_el, value):
+                    self._update_text_cell(value):
                 break
             elif cell_type in ['json', 'jsonb'] and \
-                    self._update_json_cell(cell_el, value):
+                    self._update_json_cell(value):
                 retry = 0
             elif cell_type in ['bool'] and \
-                    self._update_boolean_cell(cell_el, value):
+                    self._update_boolean_cell(value):
                 retry = 0
             else:
                 print('Unable to update cell in try ' + str(retry),
@@ -269,7 +269,7 @@ CREATE TABLE public.nonintpkey
                   file=sys.stderr)
             return False
 
-    def _update_text_cell(self, cell_el, value):
+    def _update_text_cell(self, value):
         try:
             text_area_ele = WebDriverWait(self.driver, 3).until(
                 EC.visibility_of_element_located(
@@ -289,7 +289,7 @@ CREATE TABLE public.nonintpkey
                   file=sys.stderr)
             return False
 
-    def _update_json_cell(self, cell_el, value):
+    def _update_json_cell(self, value):
         platform = 'mac'
         if "platform" in self.driver.capabilities:
             platform = (self.driver.capabilities["platform"]).lower()
@@ -318,7 +318,7 @@ CREATE TABLE public.nonintpkey
                   file=sys.stderr)
             return False
 
-    def _update_boolean_cell(self, cell_el, value):
+    def _update_boolean_cell(self, value):
         # Boolean editor test for to True click
         try:
             checkbox_el = self.page.find_by_css_selector(

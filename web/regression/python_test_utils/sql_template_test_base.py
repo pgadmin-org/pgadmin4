@@ -69,7 +69,7 @@ class SQLTemplateTestBase(BaseTestGenerator):
         """
         # Iterate all the mapping directories and check the file is exist
         # in the specified folder. If it exists then return the path.
-        for directory in get_version_mapping_directories(self.server['type']):
+        for directory in get_version_mapping_directories():
             if directory['number'] > version:
                 continue
 

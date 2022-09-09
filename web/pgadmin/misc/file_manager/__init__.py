@@ -741,57 +741,7 @@ class Filemanager(object):
         trans_data = Filemanager.get_trasaction_selection(self.trans_id)
         return False if capability not in trans_data['capabilities'] else True
 
-    def getinfo(self, path=None, get_size=True, name=None, req=None):
-        """
-        Returns a JSON object containing information
-        about the given file.
-        """
-        date_created = 'Date Created'
-        date_modified = 'Date Modified'
-        path = unquote(path)
-        if self.dir is None:
-            self.dir = ""
-        orig_path = "{0}{1}".format(self.dir, path)
-
-        Filemanager.check_access_permission(self.dir, path)
-
-        user_dir = path
-        thefile = {
-            'Filename': split_path(orig_path)[-1],
-            'FileType': '',
-            'Path': user_dir,
-            'Info': '',
-            'Properties': {
-                date_created: '',
-                date_modified: '',
-                'Width': '',
-                'Height': '',
-                'Size': ''
-            }
-        }
-
-        if not path_exists(orig_path):
-            return make_json_response(
-                status=404,
-                errormsg=gettext("'{0}' file does not exist.").format(path))
-
-        if split_path(user_dir)[-1] == '/'\
-                or os.path.isfile(orig_path) is False:
-            thefile['FileType'] = 'Directory'
-        else:
-            thefile['FileType'] = splitext(user_dir)
-
-        created = time.ctime(os.path.getctime(orig_path))
-        modified = time.ctime(os.path.getmtime(orig_path))
-
-        thefile['Properties'][date_created] = created
-        thefile['Properties'][date_modified] = modified
-        thefile['Properties']['Size'] = sizeof_fmt(getsize(orig_path))
-
-        return thefile
-
-    def getfolder(self, path=None, file_type="", name=None, req=None,
-                  show_hidden=False):
+    def getfolder(self, path=None, file_type="", show_hidden=False):
         """
         Returns files and folders in give path
         """
@@ -806,7 +756,7 @@ class Filemanager(object):
             the_dir, path, trans_data, file_type, show_hidden)
         return filelist
 
-    def rename(self, old=None, new=None, req=None):
+    def rename(self, old=None, new=None):
         """
         Rename file or folder
         """
@@ -850,7 +800,7 @@ class Filemanager(object):
             'New Name': newname,
         }
 
-    def delete(self, path=None, req=None):
+    def delete(self, path=None):
         """
         Delete file or folder
         """
@@ -919,7 +869,7 @@ class Filemanager(object):
             'Name': new_name,
         }
 
-    def is_file_exist(self, path, name, req=None):
+    def is_file_exist(self, path, name):
         """
         Checks whether given file exists or not
         """
@@ -1038,7 +988,7 @@ class Filemanager(object):
 
         return status, err_msg, is_binary, is_startswith_bom, enc
 
-    def addfolder(self, path, name, req=None):
+    def addfolder(self, path, name):
         """
         Functionality to create new folder
         """
@@ -1066,7 +1016,7 @@ class Filemanager(object):
 
         return result
 
-    def download(self, path=None, name=None, req=None):
+    def download(self, path=None):
         """
         Functionality to download file
         """
@@ -1093,7 +1043,7 @@ class Filemanager(object):
 
         return response
 
-    def permission(self, path=None, req=None):
+    def permission(self, path=None):
         the_dir = self.dir if self.dir is not None else ''
         res = {'Code': 1}
         Filemanager.check_access_permission(the_dir, path)
@@ -1130,9 +1080,15 @@ def file_manager(trans_id):
             'name': req.args['name'] if 'name' in req.args else ''
         }
         mode = req.args['mode']
-
     func = getattr(my_fm, mode)
     try:
+        if mode in ['getfolder', 'download']:
+            kwargs.pop('name', None)
+
+        if mode in ['addfolder', 'getfolder', 'rename', 'delete',
+                    'is_file_exist', 'req', 'permission']:
+            kwargs.pop('req', None)
+
         res = func(**kwargs)
     except PermissionError as e:
         return unauthorized(str(e))

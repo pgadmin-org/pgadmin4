@@ -200,7 +200,6 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             self.template_path = 'rules/sql'
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
 

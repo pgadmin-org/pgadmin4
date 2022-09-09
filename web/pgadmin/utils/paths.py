@@ -76,7 +76,7 @@ def get_storage_directory(user=current_user):
     return storage_dir
 
 
-def init_app(app):
+def init_app():
     import config
     if config.SERVER_MODE is not True:
         return None

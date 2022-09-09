@@ -204,7 +204,6 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
             # Set the template path for the SQL scripts
             self.template_path = compile_template_path(
                 'collations/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 

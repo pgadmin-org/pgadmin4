@@ -138,7 +138,7 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.connect_server',
         ]
 
-    def on_logout(self, user):
+    def on_logout(self):
         """
         This is a callback function when user logout from pgAdmin
         :param user:

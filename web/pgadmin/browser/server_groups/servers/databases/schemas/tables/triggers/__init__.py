@@ -264,7 +264,6 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             # we will set template path for sql scripts
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
             self.template_path = 'triggers/sql/{0}/#{1}#'.format(

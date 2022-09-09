@@ -224,7 +224,7 @@ class DebuggerModule(PgAdminModule):
                 'debugger.poll_end_execution_result', 'debugger.poll_result'
                 ]
 
-    def on_logout(self, user):
+    def on_logout(self):
         """
         This is a callback function when user logout from pgAdmin
         :param user:

@@ -303,7 +303,6 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
                 'domains/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 

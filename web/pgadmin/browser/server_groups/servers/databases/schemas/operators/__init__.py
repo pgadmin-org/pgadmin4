@@ -166,7 +166,6 @@ class OperatorView(PGChildNodeView):
             # Set the template path for the SQL scripts
             self.template_path = compile_template_path(
                 'operators/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 

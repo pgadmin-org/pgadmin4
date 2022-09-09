@@ -25,6 +25,6 @@ class TestCompileTemplateName(BaseTestGenerator):
 
     def runTest(self):
         result = compile_template_name(
-            'some/prefix', 'some_file.sql', self.server_type, self.version
+            'some/prefix', 'some_file.sql', self.version
         )
         self.assertEqual(result, self.expected_return_value)

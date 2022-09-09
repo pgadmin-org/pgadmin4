@@ -203,7 +203,6 @@ class RowSecurityView(PGChildNodeView):
             # Set template path for the sql scripts
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
             self.template_path = 'row_security_policies/sql/#{0}#'.format(

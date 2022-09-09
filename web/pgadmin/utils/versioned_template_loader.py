@@ -64,14 +64,13 @@ def parse_template(template):
 def get_version_mapping(template):
     template_path_parts = template.split("#", 3)
 
-    server_type = None
     if len(template_path_parts) == 4:
         _, server_type, _, _ = template_path_parts
 
-    return get_version_mapping_directories(server_type)
+    return get_version_mapping_directories()
 
 
-def get_version_mapping_directories(server_type):
+def get_version_mapping_directories():
     """
     This function will return all the version mapping directories
     :param server_type:

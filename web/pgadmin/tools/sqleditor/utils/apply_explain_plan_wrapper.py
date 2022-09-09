@@ -22,7 +22,6 @@ def apply_explain_plan_wrapper_if_needed(manager, sql):
         template_path = compile_template_name(
             'sqleditor/sql',
             'explain_plan.sql',
-            server_type,
             ver
         )
         return render_template(template_path, sql=sql['sql'], **explain_plan)

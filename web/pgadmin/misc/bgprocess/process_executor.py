@@ -111,14 +111,14 @@ class UTC(tzinfo):
     def dst(self, dt):
         return _ZERO
 
-    def localize(self, dt, is_dst=False):
-        '''Convert naive time to local time'''
+    def localize(self, dt):
+        """Convert naive time to local time"""
         if dt.tzinfo is not None:
             raise ValueError('Not naive datetime (tzinfo is already set)')
         return dt.replace(tzinfo=self)
 
-    def normalize(self, dt, is_dst=False):
-        '''Correct the timezone information on the given datetime'''
+    def normalize(self, dt):
+        """Correct the timezone information on the given datetime"""
         if dt.tzinfo is self:
             return dt
         if dt.tzinfo is None:

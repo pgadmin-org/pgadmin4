@@ -117,11 +117,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             ver = self.manager.version
             server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.table_template_path = compile_template_path('tables/sql',
-                                                             server_type, ver)
+            self.table_template_path = compile_template_path('tables/sql', ver)
             self.data_type_template_path = compile_template_path(
-                'datatype/sql',
-                server_type, ver)
+                'datatype/sql', ver)
             self.partition_template_path = \
                 'partitions/sql/{0}/#{0}#{1}#'.format(server_type, ver)
 
@@ -131,7 +129,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             # Template for index node
             self.index_template_path = compile_template_path(
-                'indexes/sql', server_type, ver)
+                'indexes/sql', ver)
 
             # Template for index node
             self.row_security_policies_template_path = \

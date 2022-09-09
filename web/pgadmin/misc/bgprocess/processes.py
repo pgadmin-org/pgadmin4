@@ -25,7 +25,6 @@ import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
-from pgadmin.browser.server_groups.servers.utils import does_server_exists
 from pgadmin.utils.constants import KERBEROS
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.preferences import Preferences
