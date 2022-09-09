@@ -303,7 +303,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
 
         # discard edits
         self.page.execute_query('SELECT 1')
-        self.page.click_modal('Yes', True)
+        self.page.click_modal('Yes')
 
     def _test_is_editable_columns_icons(self):
         if self.driver_version < 2.8:
@@ -418,7 +418,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
             self.page.find_by_css_selector(
                 QueryToolLocators.btn_history_remove_all)
         )
-        self.page.click_modal('Yes', True)
+        self.page.click_modal('Yes')
 
     def _navigate_to_query_tool(self):
         self.page.expand_database_node("Server", self.server['name'],
@@ -448,7 +448,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
                                       discard_changes_modal=False):
         self.page.execute_query(query)
         if discard_changes_modal:
-            self.page.click_modal('Yes', True)
+            self.page.click_modal('Yes')
 
         # first column is rownum
         enumerated_should_be_editable = enumerate(cols_should_be_editable, 2)

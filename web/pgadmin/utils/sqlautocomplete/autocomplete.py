@@ -49,7 +49,7 @@ def SchemaObject(name, schema=None, meta=None):
 
 
 # Regex for finding "words" in documents.
-_FIND_WORD_RE = re.compile(r'([a-zA-Z0-9_]+|[^a-zA-Z0-9_\s]+)')
+_FIND_WORD_RE = re.compile(r'([\w]+|[^a-zA-Z0-9_\s]+)')
 _FIND_BIG_WORD_RE = re.compile(r'([^\s]+)')
 
 _Candidate = namedtuple("Candidate",
@@ -1191,7 +1191,7 @@ class SQLAutoComplete(object):
             )
             if obj_type == 'tables':
                 self.extend_foreignkeys(
-                    self.fetch_foreign_keys(in_clause, obj_type)
+                    self.fetch_foreign_keys(in_clause)
                 )
         elif obj_type == 'datatypes' and len(data) > 0:
             self.extend_datatypes(data)
@@ -1285,12 +1285,11 @@ class SQLAutoComplete(object):
                     ))
         return data
 
-    def fetch_foreign_keys(self, schemas, obj_type):
+    def fetch_foreign_keys(self, schemas):
         """
         This function is used to fetch the foreign_keys for the given
         schema name
         :param schemas:
-        :param obj_type:
         :return:
         """
 

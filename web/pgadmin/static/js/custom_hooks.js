@@ -1,6 +1,5 @@
 import {useRef, useEffect, useState, useCallback} from 'react';
 import moment from 'moment';
-// export { useStopwatch } from 'react-timer-hook';
 
 /* React hook for setInterval */
 export function useInterval(callback, delay) {

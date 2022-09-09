@@ -79,7 +79,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self._open_maintenance_dialogue()
-        self.page.click_modal('OK', True)
+        self.page.click_modal('OK')
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element(
                 By.XPATH, NavMenuLocators.maintenance_operation), 10)

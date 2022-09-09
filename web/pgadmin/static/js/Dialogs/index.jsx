@@ -24,7 +24,7 @@ import ChangeOwnershipContent from './ChangeOwnershipContent';
 import UrlDialogContent from './UrlDialogContent';
 import RenamePanelContent from './RenamePanelContent';
 
-function mountDialog(title, getDialogContent, docker=undefined, width, height) {
+function mountDialog(title, getDialogContent, docker=undefined, width=undefined, height=undefined) {
   // Register dialog panel
   let panel;
   if (docker) {

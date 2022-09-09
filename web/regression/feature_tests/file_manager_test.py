@@ -97,7 +97,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
         input_file_path_ele = \
             self.page.find_by_xpath(QueryToolLocators.save_file_path_xpath)
         input_file_path_ele.send_keys(self.XSS_FILE)
-        self.page.click_modal('Save', True)
+        self.page.click_modal('Save')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
     def _open_file_manager_and_check_xss_file(self):
@@ -136,7 +136,7 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
             except (StaleElementReferenceException, TimeoutException):
                 retry_count += 1
 
-        self.page.click_modal('Cancel', True)
+        self.page.click_modal('Cancel')
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
         filename = self.server_information['type'] + \
             str(self.server_information['server_version'])
@@ -189,4 +189,4 @@ class CheckFileManagerFeatureTest(BaseFeatureTest):
             raise RuntimeError("Unable to sort in descending order while "
                                "clicked on 'Name' column")
 
-        self.page.click_modal('Cancel', True)
+        self.page.click_modal('Cancel')

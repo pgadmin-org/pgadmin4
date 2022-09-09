@@ -93,5 +93,5 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
              BrowserToolBarLocators.filter_data_button_css),
             (By.XPATH, BrowserToolBarLocators.filter_box_css)),
             'Filter dialogue did not open on clicking filter button.')
-        self.page.click_modal('Close', True)
+        self.page.click_modal('Close')
         self.page.close_query_tool(prompt=False)

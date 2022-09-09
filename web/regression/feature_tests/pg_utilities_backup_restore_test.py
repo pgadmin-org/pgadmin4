@@ -317,9 +317,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
         # save and close the preference dialog.
         if path_already_set:
-            self.page.click_modal('Cancel', True)
+            self.page.click_modal('Cancel')
         else:
-            self.page.click_modal('Save', True)
+            self.page.click_modal('Save')
 
         self.page.wait_for_element_to_disappear(
             lambda driver: driver.find_element(By.CSS_SELECTOR, ".ajs-modal")

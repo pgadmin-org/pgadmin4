@@ -200,7 +200,7 @@ export function Search() {
                 :''}
               <div >
 
-                { (menuSearchResult.fetched && !isMenuLoading ) ?
+                { (menuSearchResult.fetched && !(isMenuLoading??true) ) ?
                   <div>
                     <div className='menu-groups'>
                       <span className='fa fa-window-maximize'></span> &nbsp;{gettext('MENU ITEMS')} ({menuSearchResult.data.length})
@@ -210,9 +210,9 @@ export function Search() {
                     {refactorMenuItems(menuSearchResult.data)}
                   </div> : ( (isMenuLoading) ? (<div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>) : '')}
 
-                {(menuSearchResult.data.length == 0 && menuSearchResult.fetched && !isMenuLoading) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
+                {(menuSearchResult.data.length == 0 && menuSearchResult.fetched && !(isMenuLoading??true)) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
 
-                { (helpSearchResult.fetched && !isHelpLoading) ?
+                { (helpSearchResult.fetched && !(isHelpLoading??true)) ?
                   <div>
                     <div className='help-groups'>
                       <span className='fa fa-question-circle'></span> &nbsp;{gettext('HELP ARTICLES')} {Object.keys(helpSearchResult.data).length > 10 ?
@@ -228,7 +228,7 @@ export function Search() {
                     })}
 
                     {(Object.keys(helpSearchResult.data).length == 0) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
-                  </div> : ( (isHelpLoading && !isMenuLoading) ? (
+                  </div> : ( (isHelpLoading && !(isMenuLoading??true)) ? (
                     <div>
                       <div className='help-groups'>
                         <span className='fa fa-question-circle'></span>

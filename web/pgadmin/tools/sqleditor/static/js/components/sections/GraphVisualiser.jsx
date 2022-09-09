@@ -311,9 +311,8 @@ export function GraphVisualiser({initColumns}) {
       // Check the previously selected X axis column is exist in the list of
       // new columns. If exists then set that as it is.
       setXAxis((prevXAxis)=>{
-        if (prevXAxis === '<Row Number>') {
-          return prevXAxis;
-        } else if (newColumns.map((c)=>c.name).includes(prevXAxis)) {
+        if (prevXAxis === '<Row Number>' ||
+          newColumns.map((c)=>c.name).includes(prevXAxis)) {
           return prevXAxis;
         }
         return null;

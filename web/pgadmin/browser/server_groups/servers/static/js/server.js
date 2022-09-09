@@ -186,13 +186,13 @@ define('pgadmin.node.server', [
         // Must be connected & super user & not in recovery mode
         return (node && node._type == 'server' &&
           node.connected && node.user.is_superuser
-            && !node.in_recovery);
+            && !(node.in_recovery??true));
       },
       wal_pause_enabled: function(node) {
         // Must be connected & is Super user & in Recovery mode
         return (node && node._type == 'server' &&
           node.connected && node.user.is_superuser
-            && node.in_recovery && !node.wal_pause);
+            && node.in_recovery && !(node.wal_pause??true));
       },
       wal_resume_enabled: function(node) {
         // Must be connected & is Super user & in Recovery mode

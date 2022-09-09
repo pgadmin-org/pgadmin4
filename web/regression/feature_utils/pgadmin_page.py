@@ -81,7 +81,7 @@ class PgadminPage:
         except TimeoutException:
             pass
 
-    def click_modal(self, button_text, react_dialog=False):
+    def click_modal(self, button_text):
         time.sleep(0.5)
         # Find active dialog in case of multiple dialog
         # & click on that dialog
@@ -222,7 +222,7 @@ class PgadminPage:
         self.click_element(
             self.find_by_css_selector(QueryToolLocators.btn_clear)
         )
-        self.click_modal('Yes', True)
+        self.click_modal('Yes')
 
     def execute_query(self, query):
         self.fill_codemirror_area_with(query)
@@ -332,7 +332,7 @@ class PgadminPage:
             delete_menu_item = self.find_by_partial_link_text("Remove Server")
             self.click_element(delete_menu_item)
             self.driver.switch_to.default_content()
-            self.click_modal('Yes', True)
+            self.click_modal('Yes')
             time.sleep(1)
         else:
             print("%s Server is not removed", server_config['name'],
@@ -1262,5 +1262,5 @@ class PgadminPage:
         return element_located_status
 
     def clear_edit_box(self, edit_box_webelement):
-        while not edit_box_webelement.get_attribute("value") == "":
+        while edit_box_webelement.get_attribute("value") != "":
             edit_box_webelement.send_keys(Keys.BACK_SPACE)

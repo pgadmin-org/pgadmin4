@@ -90,7 +90,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             click = True
             while click:
                 try:
-                    self.page.click_modal('OK', True)
+                    self.page.click_modal('OK')
                     wait.until(EC.invisibility_of_element(
                         (By.XPATH, "//div[@class ='MuiDialogTitle-root']"
                                    "//div[text()='Debugger Error']")

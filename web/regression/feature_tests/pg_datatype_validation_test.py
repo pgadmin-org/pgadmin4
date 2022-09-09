@@ -154,7 +154,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
                 time.sleep(0.5)
 
                 # save and close the preference dialog.
-                self.page.click_modal('Save', react_dialog=True)
+                self.page.click_modal('Save')
                 break
             except Exception:
                 retry -= 1

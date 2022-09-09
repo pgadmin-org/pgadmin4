@@ -155,4 +155,4 @@ class CopySQLFeatureTest(BaseFeatureTest):
         maximize_button.click()
 
         # save and close the preference dialog.
-        self.page.click_modal('Save', react_dialog=True)
+        self.page.click_modal('Save')

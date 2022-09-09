@@ -929,7 +929,7 @@ export function ResultSet() {
     eventBus.fireEvent(QUERY_TOOL_EVENTS.RESET_GRAPH_VISUALISER, columns);
   }, [columns]);
 
-  const fetchMoreRows = async (all=false, callback)=>{
+  const fetchMoreRows = async (all=false, callback=undefined)=>{
     if(queryData.has_more_rows) {
       setIsLoadingMore(true);
       const res = await rsu.current.getMoreRows(all);

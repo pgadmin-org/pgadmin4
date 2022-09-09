@@ -137,4 +137,4 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
         maximize_button.click()
 
         # save and close the preference dialog.
-        self.page.click_modal('Save', True)
+        self.page.click_modal('Save')

@@ -125,7 +125,7 @@ def load_servers():
             file_path.lstrip('/').lstrip('\\')
         )
 
-    if file_path is not None and os.path.exists(file_path):
+    if file_path and os.path.exists(file_path):
         try:
             with open(file_path, 'r') as j:
                 data = json.loads(j.read())
