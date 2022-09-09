@@ -64,7 +64,7 @@ define('pgadmin.browser.node', [
     child.callbacks = _.extend({}, parent.callbacks, props.callbacks);
 
     // Let's not bind the callbacks, or initialize the child.
-    if (!initialize)
+    if (!(initialize??true))
       return child;
 
     var bindToChild = function(cb) {
