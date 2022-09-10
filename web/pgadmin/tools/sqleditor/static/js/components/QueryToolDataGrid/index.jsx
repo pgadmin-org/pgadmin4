@@ -272,6 +272,32 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
   return retColumns;
 }
 
+function RowNumColFormatter({row, rowKeyGetter, dataChangeStore, onSelectedColumnsChange}) {
+  const {rowIdx} = useContext(RowInfoContext);
+  const [isRowSelected, onRowSelectionChange] = useRowSelection();
+  const classes = useStyles();
+
+  let rowKey = rowKeyGetter(row);
+  let rownum = rowIdx+1;
+  if(rowKey in (dataChangeStore?.added || {})) {
+    rownum = rownum+'+';
+  } else if(rowKey in (dataChangeStore?.deleted || {})) {
+    rownum = rownum+'-';
+  }
+  return (<div className={classes.rowNumCell} onClick={()=>{
+    onSelectedColumnsChange(new Set());
+    onRowSelectionChange({ row: row, checked: !isRowSelected, isShiftClick: false});
+  }}>
+    {rownum}
+  </div>);
+}
+RowNumColFormatter.propTypes = {
+  row: PropTypes.object,
+  rowKeyGetter: PropTypes.func,
+  dataChangeStore: PropTypes.object,
+  onSelectedColumnsChange: PropTypes.func,
+};
+
 function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColumnsChange, rowKeyGetter, classes) {
   let retColumns = [
     ...columns,
@@ -288,22 +314,8 @@ function formatColumns(columns, dataChangeStore, selectedColumns, onSelectedColu
 
   let rowNumCol = retColumns[0];
   rowNumCol.headerRenderer = SelectAllHeaderRenderer;
-  rowNumCol.formatter = ({row})=>{
-    const {rowIdx} = useContext(RowInfoContext);
-    const [isRowSelected, onRowSelectionChange] = useRowSelection();
-    let rowKey = rowKeyGetter(row);
-    let rownum = rowIdx+1;
-    if(rowKey in (dataChangeStore?.added || {})) {
-      rownum = rownum+'+';
-    } else if(rowKey in (dataChangeStore?.deleted || {})) {
-      rownum = rownum+'-';
-    }
-    return (<div className={classes.rowNumCell} onClick={()=>{
-      onSelectedColumnsChange(new Set());
-      onRowSelectionChange({ row: row, checked: !isRowSelected, isShiftClick: false});
-    }}>
-      {rownum}
-    </div>);
+  rowNumCol.formatter = (props)=>{
+    return <RowNumColFormatter {...props} rowKeyGetter={rowKeyGetter} dataChangeStore={dataChangeStore} onSelectedColumnsChange={onSelectedColumnsChange} />;
   };
 
   return retColumns;

@@ -106,7 +106,7 @@ module.exports = {
         options: { esModules: true },
       },
       enforce: 'post',
-      exclude: /node_modules|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js$/,
+      exclude: /node_modules|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js/,
     },
     ],
   },

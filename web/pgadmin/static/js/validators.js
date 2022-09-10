@@ -52,7 +52,7 @@ export function emptyValidator(label, value) {
 }
 
 export function isEmptyString(value) {
-  return _.isUndefined(value) || _.isNull(value) || String(value).trim() === '' || String(value).replace(/^\s+|\s+$/g, '') == '';
+  return _.isUndefined(value) || _.isNull(value) || String(value).trim() === '' || String(value).replace(/(^\s+)|(\s+$)/g, '') == '';
 }
 
 /* Validate rows to check for any duplicate rows based on uniqueCols-columns array */

@@ -85,7 +85,7 @@ export function AzureCredentials(props) {
           }, 1000);
         });
       }
-    });
+    }, {}, _eventBus);
     setCloudDBCredInstance(azureCloudDBCredSchema);
   }, [props.cloudProvider]);
 

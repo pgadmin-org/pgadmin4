@@ -45,7 +45,7 @@ define([], function() {
     }
 
     function a(_t, _e) {
-      let _o, _n, _i, _l, _d, _c = /^top|bottom/,
+      let _o, _n, _i, _l, _d, _c = /^(top|bottom)/,
         _f = ['paddingTop', 'paddingBottom', 'borderTop', 'borderBottom'],
         _u = 4;
 

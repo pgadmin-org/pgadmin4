@@ -41,8 +41,7 @@ const useStyles = makeStyles((theme)=>({
   },
 }));
 
-function getRowClassname(data, collapseParent) {
-  const classes = useStyles();
+function getRowClassname(classes, data, collapseParent) {
   let className = [];
   if(data['Plans']?.length > 0) {
     className.push(classes.collapsible);
@@ -75,7 +74,7 @@ function ExplainRow({row, show, activeExId, setActiveExId, collapsedExId, toggle
   const exId = `pga_ex_${data['level'].join('_')}`;
   const parentExId = `pga_ex_${data['parent_node']}`;
   const collapsed = collapsedExId.findIndex((v)=>parentExId.startsWith(v)) > -1;
-  const className = getRowClassname(data, collapsedExId.indexOf(exId) > -1);
+  const className = getRowClassname(classes, data, collapsedExId.indexOf(exId) > -1);
   let onRowClick = (e)=>{
     toggleCollapseExId(e.currentTarget.getAttribute('data-ex-id'), data['Plans']?.length);
   };

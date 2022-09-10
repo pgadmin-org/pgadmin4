@@ -86,7 +86,7 @@ const columns = [
     key: 'name',
     name: gettext('Object name'),
     width: 250,
-    formatter({row}) {
+    formatter: ({row})=>{
       const classes = useStyles();
       return (
         <div className='rdg-cell-value'>
@@ -104,7 +104,7 @@ const columns = [
     key: 'type',
     name: gettext('Type'),
     width: 30,
-    formatter({row}) {
+    formatter: ({row})=>{
       const classes = useStyles();
       return (
         <Box className={row.show_node ? '' : classes.cellMuted}>{row.type_label}</Box>
@@ -114,7 +114,7 @@ const columns = [
     key: 'path',
     name: gettext('Browser path'),
     sortable: false,
-    formatter({row}) {
+    formatter: ({row})=>{
       const classes = useStyles();
       return (
         <Box className={row.show_node ? '' : classes.cellMuted}>{row.path}</Box>

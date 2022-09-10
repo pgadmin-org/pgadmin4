@@ -466,7 +466,7 @@ export default class ServerSchema extends BaseUISchema {
       /* Hostname, IP address validate */
       if (state.host) {
         // Check for leading and trailing spaces.
-        if (/^\s|\s$/.test(state.host)){
+        if (/(^\s)|(\s$)/.test(state.host)){
           errmsg = gettext('Host name must be valid hostname or IPv4 or IPv6 address.');
           setError('host', errmsg);
           return true;

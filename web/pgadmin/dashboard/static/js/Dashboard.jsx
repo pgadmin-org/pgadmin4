@@ -134,7 +134,7 @@ export default function Dashboard({
   if (!did) {
     tabs.push(gettext('Configuration'));
   }
-  tabVal == 3 && did && setTabVal(0);
+
   const tabChanged = (e, tabVal) => {
     setTabVal(tabVal);
   };
@@ -724,6 +724,10 @@ export default function Dashboard({
       message = gettext(
         'Please connect to the selected server to view the dashboard.'
       );
+
+    if(tabVal == 3 && did) {
+      setTabVal(0);
+    }
 
     if (sid && props.serverConnected) {
 

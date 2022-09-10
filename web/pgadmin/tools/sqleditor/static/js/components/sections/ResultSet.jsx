@@ -1065,7 +1065,7 @@ export function ResultSet() {
             return deletedKeys.indexOf(row[rsu.current.clientPK]) == -1;
           });
         });
-        setColumns(columns);
+        setColumns((prev)=>prev);
       }
       dispatchDataChange({type: 'reset'});
       setSelectedRows(new Set());

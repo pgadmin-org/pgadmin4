@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import _ from 'lodash';
 import {
   FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
@@ -212,7 +212,7 @@ const ALLOWED_PROPS_FIELD_CELL = [
 ];
 
 
-export const MappedFormControl = (props) => {
+export const MappedFormControl = ({memoDeps, ...props}) => {
   let newProps = { ...props };
   let typeProps = evalFunc(null, newProps.type, newProps.state);
   if (typeof (typeProps) === 'object') {
@@ -233,7 +233,7 @@ export const MappedFormControl = (props) => {
   };
 
   /* Filter out garbage props if any using ALLOWED_PROPS_FIELD */
-  return <MappedFormControlBase {..._.pick(newProps, _.union(ALLOWED_PROPS_FIELD_COMMON, ALLOWED_PROPS_FIELD_FORM))} />;
+  return useMemo(()=><MappedFormControlBase {..._.pick(newProps, _.union(ALLOWED_PROPS_FIELD_COMMON, ALLOWED_PROPS_FIELD_FORM))} />, memoDeps??[]);
 };
 
 MappedFormControl.propTypes = {

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -47,7 +47,7 @@ export default function FieldSetView({
 
   let viewFields = [];
   /* Prepare the array of components based on the types */
-  schema.fields.forEach((field)=>{
+  for(const field of schema.fields) {
     let {visible, disabled, readonly, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
@@ -59,7 +59,7 @@ export default function FieldSetView({
         * from there as well.
         */
       viewFields.push(
-        useMemo(()=><MappedFormControl
+        <MappedFormControl
           state={value}
           key={field.id}
           viewHelperProps={viewHelperProps}
@@ -79,18 +79,19 @@ export default function FieldSetView({
           }}
           hasError={hasError}
           className={controlClassName}
-        />, [
-          value[field.id],
-          readonly,
-          disabled,
-          visible,
-          hasError,
-          controlClassName,
-          ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-        ])
+          memoDeps={[
+            value[field.id],
+            readonly,
+            disabled,
+            visible,
+            hasError,
+            controlClassName,
+            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
+          ]}
+        />
       );
     }
-  });
+  }
 
   if(!visible) {
     return <></>;

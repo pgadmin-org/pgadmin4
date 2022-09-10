@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Box, makeStyles, Tab, Tabs } from '@material-ui/core';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -163,16 +163,19 @@ export default function FormView({
   const stateUtils = useContext(StateUtilsContext);
 
   let isOnScreen = useOnScreen(formRef);
-  if(isOnScreen) {
-    /* Don't do it when the form is alredy visible */
-    if(!onScreenTracker.current) {
-      /* Re-select the tab. If form is hidden then sometimes it is not selected */
-      setTabValue(tabValue);
-      onScreenTracker.current = true;
+
+  useEffect(()=>{
+    if(isOnScreen) {
+      /* Don't do it when the form is alredy visible */
+      if(!onScreenTracker.current) {
+        /* Re-select the tab. If form is hidden then sometimes it is not selected */
+        setTabValue((prev)=>prev);
+        onScreenTracker.current = true;
+      }
+    } else {
+      onScreenTracker.current = false;
     }
-  } else {
-    onScreenTracker.current = false;
-  }
+  }, [isOnScreen]);
 
   useEffect(()=>{
     /* Calculate the fields which depends on the current field */
@@ -210,7 +213,7 @@ export default function FormView({
   let fullTabs = [];
 
   /* Prepare the array of components based on the types */
-  schemaRef.current.fields.forEach((field)=>{
+  for(const field of schemaRef.current.fields) {
     let {visible, disabled, readonly, canAdd, canEdit, canDelete, canAddRow, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
@@ -221,7 +224,7 @@ export default function FormView({
         if(!visible) {
           schemaRef.current.filterGroups.push(field.label);
         }
-        return;
+        continue;
       }
       group = groupLabels[group] || group || defaultTab;
 
@@ -297,7 +300,7 @@ export default function FormView({
         }
 
         tabs[group].push(
-          useMemo(()=><MappedFormControl
+          <MappedFormControl
             inputRef={(ele)=>{
               if(firstEleRef && firstEleID.current === field.id) {
                 firstEleRef.current = ele;
@@ -324,19 +327,20 @@ export default function FormView({
             hasError={hasError}
             className={classes.controlRow}
             noLabel={field.isFullTab}
-          />, [
-            value[id],
-            readonly,
-            disabled,
-            visible,
-            hasError,
-            classes.controlRow,
-            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-          ])
+            memoDeps={[
+              value[id],
+              readonly,
+              disabled,
+              visible,
+              hasError,
+              classes.controlRow,
+              ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
+            ]}
+          />
         );
       }
     }
-  });
+  }
 
   let finalTabs = _.pickBy(tabs, (v, tabName)=>schemaRef.current.filterGroups.indexOf(tabName) <= -1);
 
@@ -347,7 +351,7 @@ export default function FormView({
     sqlTabActive = (Object.keys(finalTabs).length === tabValue);
     /* Re-render and fetch the SQL tab when it is active */
     finalTabs[sqlTabName] = [
-      useMemo(()=><SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />, [sqlTabActive, value]),
+      <SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />,
     ];
     tabsClassname[sqlTabName] = classes.fullSpace;
     fullTabs.push(sqlTabName);

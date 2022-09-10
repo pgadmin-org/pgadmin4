@@ -224,6 +224,83 @@ function SortIcon ({column}) {
 SortIcon.propTypes = {
   column: PropTypes.object
 };
+
+function RenderRow({ index, style, schema, row, prepareRow, setRowHeight, ExpandedComponent }) {
+  const [expandComplete, setExpandComplete] = React.useState(false);
+  const rowRef = React.useRef() ;
+  const classes = useStyles();
+  prepareRow(row);
+
+  React.useEffect(()=>{
+    if(rowRef.current) {
+      if(!expandComplete && rowRef.current.style.height == `${ROW_HEIGHT}px`) {
+        return;
+      }
+      let rowHeight;
+      rowRef.current.style.height = 'unset';
+      if(expandComplete) {
+        rowHeight = rowRef.current.offsetHeight;
+      } else {
+        rowHeight = ROW_HEIGHT;
+        rowRef.current.style.height = ROW_HEIGHT;
+      }
+      rowRef.current.style.height = rowHeight + 'px';
+      setRowHeight(index, rowHeight);
+    }
+  }, [expandComplete]);
+
+  return (
+    <div style={style} key={row.id} ref={rowRef} data-test="row-container">
+      <div className={classes.tableRowContent}>
+        <div {...row.getRowProps()} className={classes.tr}>
+          {row.cells.map((cell) => {
+            let classNames = [classes.tableCell];
+            if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
+              classNames.push(classes.btnCell);
+            }
+            if(cell.column.id == 'btn-edit' && row.isExpanded) {
+              classNames.push(classes.expandedIconCell);
+            }
+            if (row.original.row_type === 'warning'){
+              classNames.push(classes.warning);
+            }
+            if (row.original.row_type === 'alert'){
+              classNames.push(classes.alert);
+            }
+            return (
+              <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, cell.column?.dataClassName, row.original.icon?.[cell.column.id], row.original.icon?.[cell.column.id] && classes.cellIcon)}
+                title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
+                {cell.render('Cell')}
+              </div>
+            );
+          })}
+        </div>
+        {!_.isUndefined(row) && row.isExpanded && (
+          <Box key={row.id} className={classes.expandedForm}>
+            {schema && <SchemaView
+              getInitData={()=>Promise.resolve({})}
+              viewHelperProps={{ mode: 'properties' }}
+              schema={schema[row.id]}
+              showFooter={false}
+              onDataChange={()=>{setExpandComplete(true);}}
+            />}
+            {ExpandedComponent && <ExpandedComponent row={row} onExpandComplete={()=>setExpandComplete(true)}/>}
+          </Box>
+        )}
+      </div>
+    </div>
+  );
+}
+RenderRow.propTypes = {
+  index: PropTypes.number,
+  style: PropTypes.object,
+  row: PropTypes.object,
+  schema: PropTypes.object,
+  prepareRow: PropTypes.func,
+  setRowHeight: PropTypes.func,
+  ExpandedComponent: PropTypes.node,
+};
+
 export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, tableProps, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
@@ -381,75 +458,6 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
     setGlobalFilter(searchVal || undefined);
   }, [searchVal]);
 
-  const RenderRow = React.useCallback(
-    ({ index, style }) => {
-      const row = rows[index];
-      const [expandComplete, setExpandComplete] = React.useState(false);
-      const rowRef = React.useRef() ;
-      prepareRow(row);
-
-      React.useEffect(()=>{
-        if(rowRef.current) {
-          if(!expandComplete && rowRef.current.style.height == `${ROW_HEIGHT}px`) {
-            return;
-          }
-          let rowHeight;
-          rowRef.current.style.height = 'unset';
-          if(expandComplete) {
-            rowHeight = rowRef.current.offsetHeight;
-          } else {
-            rowHeight = ROW_HEIGHT;
-            rowRef.current.style.height = ROW_HEIGHT;
-          }
-          rowRef.current.style.height = rowHeight + 'px';
-          setRowHeight(index, rowHeight);
-        }
-      }, [expandComplete]);
-
-      return (
-        <div style={style} key={row.id} ref={rowRef} data-test="row-container">
-          <div className={classes.tableRowContent}>
-            <div {...row.getRowProps()} className={classes.tr}>
-              {row.cells.map((cell) => {
-                let classNames = [classes.tableCell];
-                if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
-                  classNames.push(classes.btnCell);
-                }
-                if(cell.column.id == 'btn-edit' && row.isExpanded) {
-                  classNames.push(classes.expandedIconCell);
-                }
-                if (row.original.row_type === 'warning'){
-                  classNames.push(classes.warning);
-                }
-                if (row.original.row_type === 'alert'){
-                  classNames.push(classes.alert);
-                }
-                return (
-                  <div key={cell.column.id} {...cell.getCellProps()} className={clsx(classNames, cell.column?.dataClassName, row.original.icon?.[cell.column.id], row.original.icon?.[cell.column.id] && classes.cellIcon)}
-                    title={_.isUndefined(cell.value) || _.isNull(cell.value) ? '': String(cell.value)}>
-                    {cell.render('Cell')}
-                  </div>
-                );
-              })}
-            </div>
-            {!_.isUndefined(row) && row.isExpanded && (
-              <Box key={row.id} className={classes.expandedForm}>
-                {schema && <SchemaView
-                  getInitData={()=>Promise.resolve({})}
-                  viewHelperProps={{ mode: 'properties' }}
-                  schema={schema[row.id]}
-                  showFooter={false}
-                  onDataChange={()=>{setExpandComplete(true);}}
-                />}
-                {ExpandedComponent && <ExpandedComponent row={row} onExpandComplete={()=>setExpandComplete(true)}/>}
-              </Box>
-            )}
-          </div>
-        </div>
-      );
-    },
-    [prepareRow, rows, selectedRowIds]
-  );
   // Render the UI for your table
   return (
     <Box className={classes.pgTableContainer} data-test={props['data-test']}>
@@ -514,8 +522,12 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                       height={height}
                       itemCount={rows.length}
                       itemSize={getRowHeight}
+                      itemData={{rows, prepareRow, setRowHeight}}
                     >
-                      {RenderRow}
+                      {({index, style})=>(
+                        <RenderRow index={index} style={style} row={rows[index]} schema={schema} prepareRow={prepareRow}
+                          setRowHeight={setRowHeight} ExpandedComponent={ExpandedComponent} />
+                      )}
                     </VariableSizeList>)}
                 </AutoSizer>
               </div>
