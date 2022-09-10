@@ -12,6 +12,32 @@ import {onlineHelpSearch} from './online_help';
 import {menuSearch} from './menuitems_help';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
+import PropTypes from 'prop-types';
+
+function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
+  return (isHelpLoading && !(isMenuLoading??true)) ? (
+    <div>
+      <div className='help-groups'>
+        <span className='fa fa-question-circle'></span>
+          &nbsp;HELP ARTICLES
+        {Object.keys(helpSearchResult.data).length > 10
+          ? '(10 of ' + Object.keys(helpSearchResult.data).length + ')'
+          : '(' + Object.keys(helpSearchResult.data).length + ')'
+        }
+        { Object.keys(helpSearchResult.data).length > 10
+          ? <a href={helpSearchResult.url} className='pull-right no-padding' target='_blank' rel='noreferrer'>
+          Show all &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''
+        }
+      </div>
+      <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>
+    </div>) : '';
+}
+
+HelpArticleContents.propTypes = {
+  helpSearchResult: PropTypes.object,
+  isHelpLoading: PropTypes.bool,
+  isMenuLoading: PropTypes.bool
+};
 
 export function Search() {
   const wrapperRef = useRef(null);
@@ -180,6 +206,10 @@ export function Search() {
 
   useOutsideAlerter(wrapperRef);
 
+  const showLoader = (loading) => {
+    return loading ? <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div> : '';
+  };
+
   return (
     <div id='quick-search-container' onClick={setSearchTerm}></div>,
     <ul id='quick-search-container' ref={wrapperRef} className='test' role="menu">
@@ -208,7 +238,7 @@ export function Search() {
 
 
                     {refactorMenuItems(menuSearchResult.data)}
-                  </div> : ( (isMenuLoading) ? (<div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>) : '')}
+                  </div> :  showLoader(isMenuLoading)}
 
                 {(menuSearchResult.data.length == 0 && menuSearchResult.fetched && !(isMenuLoading??true)) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
 
@@ -228,22 +258,8 @@ export function Search() {
                     })}
 
                     {(Object.keys(helpSearchResult.data).length == 0) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
-                  </div> : ( (isHelpLoading && !(isMenuLoading??true)) ? (
-                    <div>
-                      <div className='help-groups'>
-                        <span className='fa fa-question-circle'></span>
-                          &nbsp;HELP ARTICLES
-                        {Object.keys(helpSearchResult.data).length > 10
-                          ? '(10 of ' + Object.keys(helpSearchResult.data).length + ')'
-                          : '(' + Object.keys(helpSearchResult.data).length + ')'
-                        }
-                        { Object.keys(helpSearchResult.data).length > 10
-                          ? <a href={helpSearchResult.url} className='pull-right no-padding' target='_blank' rel='noreferrer'>
-                          Show all &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''
-                        }
-                      </div>
-                      <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>
-                    </div>) : '')}
+
+                  </div> : <HelpArticleContents isHelpLoading={isHelpLoading} isMenuLoading={isMenuLoading} helpSearchResult={helpSearchResult} /> }
               </div>
             </div>
           </div>

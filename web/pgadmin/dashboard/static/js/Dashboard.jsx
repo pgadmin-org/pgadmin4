@@ -786,6 +786,27 @@ export default function Dashboard({
     );
   };
 
+  const showDefaultContents = () => {
+    return (
+      sid && !props.serverConnected ? (
+        <Box className={classes.dashboardPanel}>
+          <div className={classes.emptyPanel}>
+            <EmptyPanelMessage text={msg}/>
+          </div>
+        </Box>
+      ) : (
+        <WelcomeDashboard
+          pgBrowser={pgBrowser}
+          node={node}
+          itemData={nodeData}
+          item={item}
+          sid={sid}
+          did={did}
+        />
+      )
+    );
+  };
+
   return (
     <>
       {sid && props.serverConnected ? (
@@ -854,22 +875,7 @@ export default function Dashboard({
             )}
           </Box>
         </Box>
-      ) : sid && !props.serverConnected ? (
-        <Box className={classes.dashboardPanel}>
-          <div className={classes.emptyPanel}>
-            <EmptyPanelMessage text={msg}/>
-          </div>
-        </Box>
-      ) : (
-        <WelcomeDashboard
-          pgBrowser={pgBrowser}
-          node={node}
-          itemData={nodeData}
-          item={item}
-          sid={sid}
-          did={did}
-        />
-      )}
+      ) : showDefaultContents() }
     </>
   );
 }

@@ -22,7 +22,11 @@ define([], function() {
         _f = 'px' === _c ? 1 : d[_c + 'toPx'],
         _u = /r?em/i;
       if (_f || _u.test(_c) && !_p){
-        _t = _f ? _t : 'rem' === _c ? i : 'fontSize' === _r ? +t.parentNode || _t : _t;
+        if ('rem' === _c) {
+          _t = i;
+        }
+        _t = 'fontSize' === _r ? +t.parentNode || _t : _t;
+        // _t = _f ? _t : 'rem' === _c ? i : 'fontSize' === _r ? +t.parentNode || _t : _t;
         _f = _f || parseFloat(a(_t, 'fontSize'));
         _m = parseFloat(_e) * _f;
       }
@@ -46,7 +50,15 @@ define([], function() {
         _u = 4;
 
       _n = _t.style['pixel' + _e.charAt(0).toUpperCase() + _e.slice(1)];
-      _o = m ? m(_t)[_e] : (_n) ? _n + 'px' : 'fontSize' === _e ? r(_t, '1em', 'left', 1) + 'px' : _t.currentStyle[_e];
+      if (m) {
+        _o = m(_t)[_e];
+      } else {
+        if (_n) {
+          _o = _n + 'px'; 
+        } else {
+          _o = 'fontSize' === _e ? r(_t, '1em', 'left', 1) + 'px' : _t.currentStyle[_e];
+        }
+      }
       _i = (_o.match(s) || [])[2];
 
       if ('%' === _i && p)

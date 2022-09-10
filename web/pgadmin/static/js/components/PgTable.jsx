@@ -213,6 +213,17 @@ IndeterminateCheckbox.propTypes = {
 };
 
 const ROW_HEIGHT = 35;
+
+function SortIcon ({column}) {
+  if (column.isSorted) {
+    return column.isSortedDesc ? <KeyboardArrowDownIcon style={{fontSize: '1.2rem'}} /> : <KeyboardArrowUpIcon style={{fontSize: '1.2rem'}} />;
+  }
+  return '';
+}
+
+SortIcon.propTypes = {
+  column: PropTypes.object
+};
 export default function PgTable({ columns, data, isSelectRow, caveTable=true, schema, ExpandedComponent, sortOptions, tableProps, ...props }) {
   // Use the state and functions returned from useTable to build your UI
   const classes = useStyles();
@@ -476,11 +487,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                     >
                       {column.render('Header')}
                       <span>
-                        {column.isSorted
-                          ? column.isSortedDesc
-                            ? <KeyboardArrowDownIcon style={{fontSize: '1.2rem'}} />
-                            : <KeyboardArrowUpIcon style={{fontSize: '1.2rem'}} />
-                          : ''}
+                        <SortIcon column={column} />
                       </span>
                     </div>
                     {column.resizable && (

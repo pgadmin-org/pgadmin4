@@ -701,12 +701,18 @@ define('pgadmin.browser', [
             }
 
             let get_menuitem_obj = function(_m) {
+              let enable = _m.enable;
+              if(_m.enable == '') {
+                enable = true;
+              } else if(_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') {
+                enable = false;
+              }
               return new MenuItem({
                 name: _m.name, label: _m.label, module: _m.module,
                 category: _m.category, callback: _m.callback,
                 priority: _m.priority, data: _m.data, url: _m.url || '#',
                 target: _m.target, icon: _m.icon,
-                enable: (_m.enable == '' ? true : (_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') ? false : _m.enable),
+                enable,
                 node: _m.node, checked: _m.checked, below: _m.below,
               });
             };

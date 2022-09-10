@@ -120,6 +120,9 @@ const useStyles = makeStyles((theme)=>({
 
 function DataTableHeader({headerGroups}) {
   const classes = useStyles();
+  const sortIcon = (isDesc) => {
+    return isDesc ? ' 🔽' : ' 🔼';
+  };
   return (
     <div className={classes.tableContentWidth}>
       {headerGroups.map((headerGroup, hi) => (
@@ -129,11 +132,7 @@ function DataTableHeader({headerGroups}) {
               <div {...(column.sortable ? column.getSortByToggleProps() : {})} className={clsx(classes.tableCell, classes.tableCellHeader)}>
                 {column.render('Header')}
                 <span>
-                  {column.isSorted
-                    ? column.isSortedDesc
-                      ? ' 🔽'
-                      : ' 🔼'
-                    : ''}
+                  {column.isSorted ? sortIcon(column.isSortedDesc) : ''}
                 </span>
               </div>
               {!column.disableResizing &&
