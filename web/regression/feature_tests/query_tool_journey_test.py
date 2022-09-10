@@ -492,7 +492,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
                       str(retry), file=sys.stderr)
                 retry -= 1
                 if retry == 0:
-                    raise Exception(e)
+                    raise TimeoutError(e)
 
     def _check_can_add_row(self):
         return self.page.check_if_element_exist_by_xpath(

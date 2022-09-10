@@ -54,7 +54,7 @@ def extract_from_part(parsed, stop_at_punctuation=True):
             # INNER JOIN, FULL OUTER JOIN, etc.
             elif (
                 item.ttype is Keyword and
-                (not item.value.upper() == "FROM") and
+                item.value.upper() != "FROM" and
                 (not item.value.upper().endswith("JOIN"))
             ):
                 tbl_prefix_seen = False

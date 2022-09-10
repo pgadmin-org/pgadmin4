@@ -423,8 +423,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     let pref = pgWindow?.pgAdmin?.Browser?.get_preferences_for_module('sqleditor') || {};
     if (autocomplete && pref.autocomplete_on_key_press) {
       editor.current.on('keyup', (cm, event)=>{
-        let pattern = new RegExp('^[ -~]{1}$');
-        if (!cm.state.completionActive && (event.key == 'Backspace' || pattern.test(event.key))) {
+        if (!cm.state.completionActive && (event.key == 'Backspace' || /^[ -~]{1}$'/.test(event.key))) {
           OrigCodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
         }
       });

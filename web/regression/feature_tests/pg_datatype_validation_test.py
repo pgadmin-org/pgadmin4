@@ -183,12 +183,6 @@ class PGDataypeFeatureTest(BaseFeatureTest):
     def after(self):
         self.page.remove_server(self.server)
 
-    # TODO - To be remove
-    def _schema_node_expandable(self):
-        self.page.expand_database_node("Server", self.server['name'],
-                                       self.server['db_password'],
-                                       self.test_db)
-
     def _check_datatype(self):
         # Slick grid does not render all the column if viewport is not enough
         # wide. So execute test as batch of queries.

@@ -611,31 +611,6 @@ class PgadminPage:
             print("The databases/previous nodes not expanded", file=sys.stderr)
         return database_expanded
 
-    # TODO - We might need this method
-    # def click_to_expand_database_node(self, database_name, database_node):
-    #     """
-    #     Method clicks on specified database name from expanded databases node
-    #     of server.
-    #     :param sub_nodes_of_databases_node:
-    #     :param index_of_required_db_node:
-    #     :param name_of_database:
-    #     :return: True if particular database click is successful & expanded
-    #     """
-    #     database_expanded = False
-    #     if self.check_if_element_exist_by_xpath(
-    #     TreeAreaLocators.database_node_exp_status(database_name), 2):
-    #         database_expanded = True
-    #     else:
-    #         # TODO - This is bug 6962
-    #         webdriver.ActionChains(self.driver).click(database_node).perform()
-    #         if self.check_if_element_exist_by_xpath(
-    #         TreeAreaLocators.database_node_exp_status(database_name)):
-    #             database_expanded = True
-    #     print("click_to_expand_database_node> db_node_expanded_status - ",
-    #     database_expanded)
-    #     return database_expanded
-    #
-
     def expand_database_child_node(self, server_group_name, server_name,
                                    server_password, database_name,
                                    database_child_node_name):
@@ -1150,6 +1125,8 @@ class PgadminPage:
                         webdriver.ActionChains(self.driver).move_to_element(
                             top_el).perform()
                         r_scroll -= 1
+                else:
+                    break
         else:
             print("check_if_element_exists_with_scroll > Element NOT found",
                   xpath, file=sys.stderr)

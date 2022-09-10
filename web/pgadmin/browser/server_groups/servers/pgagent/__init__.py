@@ -173,7 +173,7 @@ class JobView(PGChildNodeView):
             # Set the template path for the sql scripts.
             self.template_path = 'pga_job/sql/pre3.4'
 
-            if not ('pgAgent' in self.manager.db_info):
+            if 'pgAgent'not in self.manager.db_info:
                 status, res = self.conn.execute_dict("""
 SELECT EXISTS(
         SELECT 1 FROM information_schema.columns

@@ -76,7 +76,7 @@ define([], function() {
   pgAdmin.natural_sort = function(a, b, options) {
     options = options || {};
 
-    let re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi,
+    let re = /(^-?\d+(\.?\d*)[df]?e?\d?$|^0x[0-9a-f]+$|\d+)/gi,
       sre = /(^[ ]*|[ ]*$)/g,
       dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
       hre = /^0x[0-9a-f]+$/i,

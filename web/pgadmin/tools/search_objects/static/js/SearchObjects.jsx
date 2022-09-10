@@ -189,7 +189,7 @@ const translateSearchObjectsPath = (nodeData, path, catalog_level)=> {
   /* add the slash to match regex, remove it from display path later */
   path = '/' + path;
   /* the below regex will match all /:schema.2200:/ */
-  let new_path = path.replace(/\/:[a-zA-Z_]+\.[0-9]+:\//g, (token)=>{
+  let new_path = path.replace(/\/:[a-zA-Z_]+\.\d+:\//g, (token)=>{
     let orig_token = token;
     /* remove the slash and colon */
     token = token.slice(2, -2);

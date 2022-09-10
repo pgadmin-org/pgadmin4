@@ -21,6 +21,7 @@ from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, forbidden, success_return, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.constants import ERROR_FETCHING_ROLE_INFORMATION
+from pgadmin.utils.exception import ExecuteError
 
 from config import PG_DEFAULT_DRIVER
 from flask_babel import gettext
@@ -1293,6 +1294,9 @@ WHERE
         )
         status, res = conn.execute_scalar(SQL)
 
+        if not status:
+            raise ExecuteError(res)
+
         return status, res
 
     @check_precondition()
@@ -1404,9 +1408,6 @@ WHERE
 
             status, old_role_name = self._execute_role_reassign(conn, rid)
 
-            if not status:
-                raise Exception(old_role_name)
-
             data['old_role_name'] = old_role_name
 
             is_reassign = True if data['role_op'] == 'reassign' else False
@@ -1421,15 +1422,9 @@ WHERE
                 status, new_role_name = \
                     self._execute_role_reassign(conn, data['new_role_id'])
 
-                if not status:
-                    raise Exception(new_role_name)
-
                 data['new_role_name'] = new_role_name
 
-            status, res = self._execute_role_reassign(conn, None, data)
-
-            if not status:
-                raise Exception(res)
+            self._execute_role_reassign(conn, None, data)
 
             if is_already_connected is False and can_disconn:
                 manager.release(did=did)
