@@ -43,7 +43,6 @@ const providePlugin = new webpack.ProvidePlugin({
   'window.jQuery': 'jquery',
   _: 'underscore',
   Backbone: 'backbone',
-  Backgrid: 'backgrid',
   pgAdmin: 'pgadmin',
   'moment': 'moment',
   'window.moment':'moment',

@@ -14,7 +14,7 @@ import ViewSchema from './view.ui';
 define('pgadmin.node.view', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
-  'pgadmin.browser.server.privilege', 'pgadmin.node.rule',
+  'pgadmin.node.rule',
 ], function(
   gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {

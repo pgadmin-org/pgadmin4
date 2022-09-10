@@ -11,7 +11,7 @@ import Notify from '../../../static/js/helpers/Notifier';
 
 define('pgadmin.settings', [
   'jquery', 'sources/pgadmin',
-  'sources/gettext', 'sources/url_for', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for',
 ], function($, pgAdmin, gettext, url_for) {
 
   // This defines the Preference/Options Dialog for pgAdmin IV.

@@ -29,8 +29,8 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     We will cover,
         1) Browser Tree
-        2) Properties Tab (BackFrom)
-        3) Dependents Tab (BackGrid)
+        2) Properties Tab
+        3) Dependents Tab
         4) SQL Tab (Code Mirror)
         5) Query Tool (Result Grid)
     """
@@ -55,7 +55,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
             ['"<script>alert(1)</script>" char',
              'typcol ' + self.test_type_name]
         )
-        # This is needed to test dependents tab (eg: BackGrid)
+        # This is needed to test dependents tab
         test_utils.create_constraint(
             self.server, self.test_db,
             self.test_table_name,
@@ -184,7 +184,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_escaped_characters(
             source_code,
             "public.&lt;h1 onmouseover='console.log(2);'&gt;Y",
-            "Dependents tab (BackGrid)"
+            "Dependents tab"
         )
 
     def _check_xss_in_query_tool(self):

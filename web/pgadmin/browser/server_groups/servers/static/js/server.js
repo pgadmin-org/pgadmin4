@@ -18,7 +18,6 @@ define('pgadmin.node.server', [
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.user_management.current_user',
   'pgadmin.authenticate.kerberos',
-  'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, $, pgAdmin, pgBrowser,
   current_user, Kerberos,

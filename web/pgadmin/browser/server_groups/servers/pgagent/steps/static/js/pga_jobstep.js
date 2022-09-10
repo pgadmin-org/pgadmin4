@@ -11,9 +11,8 @@ import { getNodePgaJobStepSchema } from './pga_jobstep.ui';
 import _ from 'lodash';
 
 define('pgadmin.node.pga_jobstep', [
-  'sources/gettext', 'sources/url_for', 'pgadmin.browser', 'backform',
-  'backgrid', 'pgadmin.backform',
-], function(gettext, url_for, pgBrowser, Backform) {
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
+], function(gettext, url_for, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-pga_jobstep']) {
     pgBrowser.Nodes['coll-pga_jobstep'] =
@@ -93,37 +92,6 @@ define('pgadmin.node.pga_jobstep', [
           }
         },
         idAttribute: 'jstid',
-        schema: [{
-          id: 'jstid', label: gettext('ID'), type: 'int',
-          cellHeaderClasses: 'width_percent_5', mode: ['properties'],
-        },{
-          id: 'jstname', label: gettext('Name'), type: 'text',
-          cellHeaderClasses: 'width_percent_60',
-        },{
-          id: 'jstenabled', label: gettext('Enabled?'),
-          type: 'switch',
-        },{
-          id: 'jstkind', label: gettext('Kind'), type: 'switch',
-          options: {
-            'onText': gettext('SQL'), 'offText': gettext('Batch'),
-            'onColor': 'primary', 'offColor': 'primary',
-          }, control: Backform.SwitchControl,
-        },{
-          id: 'jstconntype', label: gettext('Connection type'),
-          type: 'switch', deps: ['jstkind'], mode: ['properties'],
-          disabled: function(m) { return !m.get('jstkind'); },
-          options: {
-            'onText': gettext('Local'), 'offText': gettext('Remote'),
-            'onColor': 'primary', 'offColor': 'primary', width: '65',
-          },
-        },{
-          id: 'jstonerror', label: gettext('On error'), cell: 'select2',
-          control: 'select2', options: [
-            {'label': gettext('Fail'), 'value': 'f'},
-            {'label': gettext('Success'), 'value': 's'},
-            {'label': gettext('Ignore'), 'value': 'i'},
-          ], select2: {allowClear: false},
-        }],
       }),
     });
   }

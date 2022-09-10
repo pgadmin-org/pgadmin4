@@ -12,7 +12,7 @@ import PublicationSchema from './publication.ui';
 
 define('pgadmin.node.publication', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection',
 ], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for publications collection

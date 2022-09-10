@@ -16,7 +16,7 @@ import _ from 'lodash';
 define('pgadmin.node.trigger_function', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection',
 ], function(
   gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {

@@ -15,7 +15,6 @@ define('pgadmin.node.edbproc', [
   'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, pgAdmin, pgBrowser, EdbFunction
 ) {

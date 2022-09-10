@@ -48,26 +48,6 @@ let webpackShimConfig = {
         'jquery:$', // Provide jquery as dependency with name $
       ],
     },
-    'backgrid': {
-      'deps': ['backform'],
-      'exports': 'Backgrid',
-    },
-    'pgadmin.backform': {
-      'deps': ['backform', 'pgadmin.backgrid', 'select2', 'bootstrap.toggle'],
-    },
-    'pgadmin.backgrid': {
-      'deps': ['backgrid', 'bootstrap.datetimepicker', 'bootstrap.toggle'],
-    },
-
-    'backgrid.select.all': {
-      'deps': ['backgrid'],
-    },
-    'backgrid.paginator': {
-      'deps': ['backgrid', 'backbone.paginator'],
-    },
-    'backgrid.filter': {
-      'deps': ['backgrid'],
-    },
     'jquery.event.drag': {
       'deps': ['jquery'], 'exports': 'jQuery.fn.drag',
     },
@@ -146,18 +126,12 @@ let webpackShimConfig = {
     //socket
     'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),
 
-    // Backbone and Backgrid
+    // Backbone
     'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
     'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
-    'backform': path.join(__dirname, './pgadmin/static/vendor/backform/backform'),
-    'backgrid': path.join(__dirname, './pgadmin/static/vendor/backgrid/backgrid'),
     'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
     'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min'),
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
-    'backgrid.filter': path.join(__dirname, './node_modules/backgrid-filter/backgrid-filter'),
-    'backgrid.select.all': path.join(__dirname, './pgadmin/static/vendor/backgrid/backgrid-select-all'),
-    'pgadmin.backform': path.join(__dirname, './pgadmin/static/js/backform.pgadmin'),
-    'pgadmin.backgrid': path.join(__dirname, './pgadmin/static/js/backgrid.pgadmin'),
 
     'pgadmin.about': path.join(__dirname, './pgadmin/about/static/js/about'),
     'pgadmin.authenticate.kerberos': path.join(__dirname, './pgadmin/authenticate/static/js/kerberos'),
@@ -178,11 +152,8 @@ let webpackShimConfig = {
     'pgadmin.browser.quick_search': path.join(__dirname, './pgadmin/browser/static/js/quick_search'),
     'pgadmin.browser.messages': '/browser/js/messages',
     'pgadmin.browser.node': path.join(__dirname, './pgadmin/browser/static/js/node'),
-    'pgadmin.browser.node.ui': path.join(__dirname, './pgadmin/browser/static/js/node.ui'),
     'pgadmin.browser.panel': path.join(__dirname, './pgadmin/browser/static/js/panel'),
     'pgadmin.browser.toolbar': path.join(__dirname, './pgadmin/browser/static/js/toolbar'),
-    'pgadmin.browser.server.privilege': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/privilege'),
-    'pgadmin.browser.server.variable': path.join(__dirname, './pgadmin/browser/server_groups/servers/static/js/variable'),
     'pgadmin.browser.utils': '/browser/js/utils',
     'pgadmin.dashboard': path.join(__dirname, './pgadmin/dashboard/static/js/Dashboard'),
     'pgadmin.help': path.join(__dirname, './pgadmin/help/static/js/help'),
@@ -282,10 +253,10 @@ let webpackShimConfig = {
   // Define list of pgAdmin common libraries to bundle them separately
   // into commons JS from app.bundle.js
   pgLibs: [
-    'pgadmin.browser.error', 'pgadmin.browser.server.privilege',
-    'pgadmin.browser.server.variable', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
+    'pgadmin.browser.error',
+    'pgadmin.browser.collection',
     'pgadmin.browser.datamodel', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
-    'pgadmin.browser.frame', 'pgadmin.backform', 'pgadmin.backgrid', 'pgadmin.browser',
+    'pgadmin.browser.frame', 'pgadmin.browser',
     'pgadmin.browser.node',
     'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
   ],

@@ -15,8 +15,7 @@ import _ from 'lodash';
 
 define('pgadmin.node.tablespace', [
   'sources/gettext', 'sources/url_for',
-  'pgadmin.browser', 'pgadmin.browser.collection', 'pgadmin.browser.node.ui',
-  'pgadmin.browser.server.privilege',
+  'pgadmin.browser', 'pgadmin.browser.collection',
 ], function(
   gettext, url_for, pgBrowser
 ) {

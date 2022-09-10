@@ -17,7 +17,7 @@ define('pgadmin.node.procedure', [
   'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection',
 ], function(gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-procedure']) {

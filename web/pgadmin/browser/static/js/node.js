@@ -10,17 +10,16 @@
 import {getNodeView, removeNodeView} from './node_view';
 import Notify from '../../../static/js/helpers/Notifier';
 import _ from 'lodash';
-import { pgHandleItemError } from '../../../static/js/utils';
 
 define('pgadmin.browser.node', [
   'sources/gettext', 'jquery', 'sources/pgadmin',
   'backbone', 'pgadmin.browser.datamodel',
-  'backform', 'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
-  'pgadmin.browser.utils', 'pgadmin.backform',
+  'sources/browser/generate_url', 'pgadmin.help', 'sources/utils',
+  'pgadmin.browser.utils',
 ], function(
   gettext, $, pgAdmin,
   Backbone, pgBrowser,
-  Backform, generateUrl, help,
+  generateUrl, help,
   commonUtils
 ) {
 
@@ -293,210 +292,6 @@ define('pgadmin.browser.node', [
       } else {
         return true;
       }
-    },
-    ///////
-    // Generate a Backform view using the node's model type
-    //
-    // Used to generate view for the particular node properties, edit,
-    // creation.
-    getView: function(item, type, el, node, formType, callback, ctx, cancelFunc) {
-      let that = this;
-
-      if (!this.type || this.type == '')
-        // We have no information, how to generate view for this type.
-        return null;
-
-      if (this.model) {
-        // This will be the URL, used for object manipulation.
-        // i.e. Create, Update in these cases
-        let urlBase = this.generate_url(item, type, node, false, null, that.url_jump_after_node);
-
-        if (!urlBase)
-          // Ashamed of myself, I don't know how to manipulate this
-          // node.
-          return null;
-
-        let attrs = {};
-
-        // In order to get the object data from the server, we must set
-        // object-id in the model (except in the create mode).
-        if (type !== 'create') {
-          attrs[this.model.idAttribute || this.model.prototype.idAttribute ||
-            'id'] = node._id;
-        }
-
-        // We know - which data model to be used for this object.
-        let info = pgBrowser.tree.getTreeNodeHierarchy(item),
-          newModel = new(this.model.extend({
-            urlRoot: urlBase,
-          }))(
-            attrs, {
-              node_info: info,
-            }
-          ),
-          fields = Backform.generateViewSchema(
-            info, newModel, type, this, node
-          );
-
-        if (type == 'create' || type == 'edit') {
-
-          if (callback && ctx) {
-            callback = callback.bind(ctx);
-          } else {
-            callback = function() {
-              console.warn(
-                'Broke something!!! Why we don\'t have the callback or the context???'
-              );
-            };
-          }
-
-          let onSessionInvalid = function(msg) {
-            let alertMessage = `
-            <div class="error-in-footer">
-              <div class="d-flex px-2 py-1">
-                <div class="pr-2">
-                  <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true" role="img"></i>
-                </div>
-                <div role="alert" class="alert-text">${msg}</div>
-                <div class="ml-auto close-error-bar">
-                  <a class="close-error fa fa-times text-danger"></a>
-                </div>
-              </div>
-            </div>`;
-
-            if (!_.isUndefined(that.statusBar)) {
-              that.statusBar.html(alertMessage).css('visibility', 'visible');
-              that.statusBar.find('a.close-error').bind('click', function() {
-                this.empty().css('visibility', 'hidden');
-              }.bind(that.statusBar));
-            }
-
-            let sessHasChanged = false;
-            if(this.sessChanged && this.sessChanged()){
-              sessHasChanged = true;
-            }
-            callback(true, sessHasChanged);
-
-            return true;
-          };
-
-          let onSessionValidated = function(sessHasChanged) {
-
-            if (!_.isUndefined(that.statusBar)) {
-              that.statusBar.empty().css('visibility', 'hidden');
-            }
-
-            callback(false, sessHasChanged);
-          };
-
-          callback(false, false);
-
-          newModel.on('pgadmin-session:valid', onSessionValidated);
-          newModel.on('pgadmin-session:invalid', onSessionInvalid);
-        }
-
-        let view;
-        // 'schema' has the information about how to generate the form.
-        if (_.size(fields)) {
-          // This will contain the actual view
-
-          if (formType == 'fieldset') {
-            // It is used to show, edit, create the object in the
-            // properties tab.
-            view = new Backform.Accordian({
-              el: el,
-              model: newModel,
-              schema: fields,
-            });
-          } else {
-            // This generates a view to be used by the node dialog
-            // (for create/edit operation).
-            view = new Backform.Dialog({
-              el: el,
-              model: newModel,
-              schema: fields,
-            });
-          }
-
-          let setFocusOnEl = function() {
-            let container = $(el).find('.tab-content:first > .tab-pane.active:first');
-            commonUtils.findAndSetFocus(container);
-          };
-
-          if (!newModel.isNew()) {
-            // This is definetely not in create mode
-            let msgDiv = '<div role="status" class="pg-panel-message pg-panel-properties-message">' +
-              gettext('Retrieving data from the server...') + '</div>',
-              $msgDiv = $(msgDiv);
-            let timer = setTimeout(function(_ctx) {
-              // notify user if request is taking longer than 1 second
-
-              if (!_.isUndefined(_ctx)) {
-                $msgDiv.appendTo(_ctx);
-              }
-            }, 1000, ctx);
-
-
-            let fetchAjaxHook = function() {
-              newModel.fetch({
-                success: function() {
-                  // Clear timeout and remove message
-                  clearTimeout(timer);
-                  $msgDiv.addClass('d-none');
-
-                  // We got the latest attributes of the object. Render the view
-                  // now.
-                  view.render();
-                  setFocusOnEl();
-                  newModel.startNewSession();
-                },
-                error: function(model, xhr, options) {
-                  let _label = that && item ?
-                    pgBrowser.tree.getTreeNodeHierarchy(
-                      item
-                    )[that.type].label : '';
-                  pgBrowser.Events.trigger(
-                    'pgadmin:node:retrieval:error', 'properties',
-                    xhr, options.textStatus, options.errorThrown, item
-                  );
-                  if (!pgHandleItemError(xhr, {
-                    item: item,
-                    info: info,
-                  }
-                  )) {
-                    Notify.pgNotifier(
-                      options.textStatus, xhr,
-                      gettext('Error retrieving properties - %s', options.errorThrown || _label),
-                      function(msg) {
-                        if(msg === 'CRYPTKEY_SET') {
-                          fetchAjaxHook();
-                        } else {
-                          console.warn(arguments);
-                        }
-                      }
-                    );
-                  }
-                  // Close the panel (if could not fetch properties)
-                  if (cancelFunc) {
-                    cancelFunc();
-                  }
-                },
-              });
-            };
-
-            fetchAjaxHook();
-          } else {
-            // Yay - render the view now!
-            view.render();
-            setFocusOnEl();
-            newModel.startNewSession();
-          }
-        }
-
-        return view;
-      }
-
-      return null;
     },
     addUtilityPanel: function(width, height, docker) {
       let body = window.document.body,
@@ -1182,8 +977,6 @@ define('pgadmin.browser.node', [
         tree = pgAdmin.Browser.tree,
         j = panel.$container.find('.obj_properties').first(),
         view = j.data('obj-view'),
-        content = $('<div></div>')
-          .addClass('pg-prop-content col-12'),
         confirm_close = true;
 
       // Handle key press events for Cancel, save and help button
@@ -1220,70 +1013,11 @@ define('pgadmin.browser.node', [
         });
       }, 200); // wait for panel tab to render
 
-      // Template function to create the status bar
-      let createStatusBar = function(location) {
-          let statusBar = $('<div role="status"></div>').addClass(
-            'pg-prop-status-bar'
-          ).appendTo(j);
-          statusBar.css('visibility', 'hidden');
-          if (location == 'header') {
-            statusBar.appendTo(that.header);
-          } else {
-            statusBar.prependTo(that.footer);
-          }
-          that.statusBar = statusBar;
-          return statusBar;
-        }.bind(panel),
-        // Template function to create the button-group
-        createButtons = function(buttons, location, extraClasses) {
-          // Arguments must be non-zero length array of type
-          // object, which contains following attributes:
-          // label, type, extraClasses, register
-          if (buttons && _.isArray(buttons) && buttons.length > 0) {
-            // All buttons will be created within a single
-            // div area.
-            let btnGroup =
-              $('<div class="pg-prop-btn-group"></div>'),
-              // Template used for creating a button
-              tmpl = _.template([
-                '<button tabindex="0" type="<%= type %>" ',
-                'class="btn <%=extraClasses.join(\' \')%>"',
-                '<% if (disabled) { %> disabled="disabled"<% } %> title="<%-tooltip%>"',
-                '<% if (label != "") {} else { %> aria-label="<%-tooltip%>"<% } %> >',
-                '<span class="<%= icon %>"></span><% if (label != "") { %>&nbsp;<%-label%><% } %></button>',
-              ].join(' '));
-            if (location == 'header') {
-              btnGroup.appendTo(that.header);
-            } else {
-              btnGroup.appendTo(that.footer);
-            }
-            if (extraClasses) {
-              btnGroup.addClass(extraClasses);
-            }
-            _.each(buttons, function(btn) {
-              // Create the actual button, and append to
-              // the group div
-
-              // icon may not present for this button
-              if (!btn.icon) {
-                btn.icon = '';
-              }
-              let b = $(tmpl(btn));
-              btnGroup.append(b);
-              // Register is a callback to set callback
-              // for certain operation for this button.
-              btn.register(b);
-            });
-            return btnGroup;
-          }
-          return null;
-        }.bind(panel),
-        // Callback to show object properties
-        properties = function() {
+      // Callback to show object properties
+      let  properties = function() {
 
           // Avoid unnecessary reloads
           let i = tree.selected(),
-            d = i && tree.itemData(i),
             treeHierarchy = tree.getTreeNodeHierarchy(i);
 
           // Cache the current IDs for next time
@@ -1291,106 +1025,11 @@ define('pgadmin.browser.node', [
 
           /* Remove any dom rendered by getNodeView */
           removeNodeView(j[0]);
-          if(that.getSchema) {
-            let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
-            getNodeView(
-              that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
-            );
-            return;
-          }
-
-          if (!content.hasClass('has-pg-prop-btn-group'))
-            content.addClass('has-pg-prop-btn-group');
-
-          // We need to release any existing view, before
-          // creating new view.
-          if (view) {
-            // Release the view
-            view.remove({
-              data: true,
-              internal: true,
-              silent: true,
-            });
-            // Deallocate the view
-            // delete view;
-            view = null;
-            // Reset the data object
-            j.data('obj-view', null);
-          }
-          // Make sure the HTML element is empty.
-          j.empty();
-          that.header = $('<div></div>').addClass(
-            'pg-prop-header'
-          ).appendTo(j);
-          that.footer = $('<div></div>').addClass(
-            'pg-prop-footer'
-          ).appendTo(j);
-
-          // Create a view to show the properties in fieldsets
-          view = that.getView(item, 'properties', content, data, 'fieldset', undefined, j);
-          if (view) {
-            // Save it for release it later
-            j.data('obj-view', view);
-
-            // Create proper buttons
-
-            let buttons = [];
-
-            buttons.push({
-              label: gettext('Edit'),
-              type: 'edit',
-              tooltip: gettext('Edit'),
-              extraClasses: ['btn', 'btn-primary', 'pull-right', 'm-1'],
-              icon: 'fa fa-sm fa-pencil-alt',
-              disabled: _.isFunction(that.canEdit) ? !that.canEdit.apply(that, [d, i]) : !that.canEdit,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onEdit();
-                });
-              },
-            });
-
-            buttons.push({
-              label: '',
-              type: 'help',
-              tooltip: gettext('SQL help for this object type.'),
-              extraClasses: ['btn-primary-icon', 'btn-primary-icon', 'm-1'],
-              icon: 'fa fa-info',
-              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '' && !that.epasHelp) ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onSqlHelp();
-                });
-              },
-            });
-            createButtons(buttons, 'header', 'pg-prop-btn-group-above');
-          }
-          j.append(content);
-        }.bind(panel),
-        onSqlHelp = function() {
-          // Construct the URL
-          let server = pgBrowser.tree.getTreeNodeHierarchy(item).server;
-
-          let url = pgBrowser.utils.pg_help_path;
-          let fullUrl = '';
-
-          if (server.server_type == 'ppas' && that.epasHelp) {
-            fullUrl = help.getEPASHelpUrl(server.version);
-          } else {
-            if (that.sqlCreateHelp == '' && that.sqlAlterHelp != '') {
-              fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
-            } else if (that.sqlCreateHelp != '' && that.sqlAlterHelp == '') {
-              fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
-            } else {
-              if (view.model.isNew()) {
-                fullUrl = help.getHelpUrl(url, that.sqlCreateHelp, server.version);
-              } else {
-                fullUrl = help.getHelpUrl(url, that.sqlAlterHelp, server.version);
-              }
-            }
-          }
-
-          window.open(fullUrl, 'postgres_help');
+          let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
+          getNodeView(
+            that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
+          );
+          return;
         }.bind(panel),
 
         onDialogHelp = function() {
@@ -1425,52 +1064,6 @@ define('pgadmin.browser.node', [
             yes_callback();
             return true;
           }
-        }.bind(panel),
-
-        warnBeforeAttributeChange = function(yes_callback) {
-          let $props = this.$container.find('.obj_properties').first(),
-            objview = $props && $props.data('obj-view'),
-            self = this;
-
-          if (objview && objview.model && !_.isUndefined(objview.model.warn_text) && !_.isNull(objview.model.warn_text)) {
-            let warn_text;
-            warn_text = gettext(objview.model.warn_text);
-            if(objview.model.sessChanged()){
-              Notify.confirm(
-                gettext('Warning'),
-                warn_text,
-                function() {
-                  setTimeout(function(){
-                    yes_callback();
-                  }.bind(self), 50);
-                  return true;
-                },
-                function() {
-                  return true;
-                }
-              );
-            } else {
-              return true;
-            }
-          } else {
-            yes_callback();
-            return true;
-          }
-        }.bind(panel),
-
-        informBeforeAttributeChange = function(ok_callback) {
-          let $props = this.$container.find('.obj_properties').first(),
-            objview = $props && $props.data('obj-view');
-
-          if (objview && objview.model && !_.isUndefined(objview.model.inform_text) && !_.isNull(objview.model.inform_text)) {
-            Notify.alert(
-              gettext('Warning'),
-              gettext(objview.model.inform_text)
-            );
-
-          }
-          ok_callback();
-          return true;
         }.bind(panel),
 
         onSave = function(_view, saveBtn) {
@@ -1547,229 +1140,41 @@ define('pgadmin.browser.node', [
           /* Remove any dom rendered by getNodeView */
           removeNodeView(j[0]);
           /* getSchema is a schema for React. Get the react node view */
-          if(that.getSchema) {
-            let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
-            getNodeView(
-              that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onEdit,
-              (nodeData)=>{
-                if(nodeData.node) {
-                  onSaveFunc(nodeData.node, treeNodeInfo);
-                  // Removing the node-prop property of panel
-                  // so that we show updated data on panel
-                  let pnlProperties = pgBrowser.docker.findPanels('properties')[0],
-                    pnlSql = pgBrowser.docker.findPanels('sql')[0],
-                    pnlStats = pgBrowser.docker.findPanels('statistics')[0],
-                    pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
-                    pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
+          let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
+          getNodeView(
+            that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onEdit,
+            (nodeData)=>{
+              if(nodeData.node) {
+                onSaveFunc(nodeData.node, treeNodeInfo);
+                // Removing the node-prop property of panel
+                // so that we show updated data on panel
+                let pnlProperties = pgBrowser.docker.findPanels('properties')[0],
+                  pnlSql = pgBrowser.docker.findPanels('sql')[0],
+                  pnlStats = pgBrowser.docker.findPanels('statistics')[0],
+                  pnlDependencies = pgBrowser.docker.findPanels('dependencies')[0],
+                  pnlDependents = pgBrowser.docker.findPanels('dependents')[0];
 
-                  if (pnlProperties)
-                    $(pnlProperties).removeData('node-prop');
-                  if (pnlSql)
-                    $(pnlSql).removeData('node-prop');
-                  if (pnlStats)
-                    $(pnlStats).removeData('node-prop');
-                  if (pnlDependencies)
-                    $(pnlDependencies).removeData('node-prop');
-                  if (pnlDependents)
-                    $(pnlDependents).removeData('node-prop');
+                if (pnlProperties)
+                  $(pnlProperties).removeData('node-prop');
+                if (pnlSql)
+                  $(pnlSql).removeData('node-prop');
+                if (pnlStats)
+                  $(pnlStats).removeData('node-prop');
+                if (pnlDependencies)
+                  $(pnlDependencies).removeData('node-prop');
+                if (pnlDependents)
+                  $(pnlDependents).removeData('node-prop');
 
-                  if(nodeData.success === 0) {
-                    Notify.alert(gettext('Error'),
-                      gettext(nodeData.errormsg)
-                    );
-                  }
+                if(nodeData.success === 0) {
+                  Notify.alert(gettext('Error'),
+                    gettext(nodeData.errormsg)
+                  );
                 }
               }
-            );
-            return;
-          }
-
-          // We need to release any existing view, before
-          // creating the new view.
-          if (view) {
-            // Release the view
-            view.remove({
-              data: true,
-              internal: true,
-              silent: true,
-            });
-            // Deallocate the view
-            view = null;
-            // Reset the data object
-            j.data('obj-view', null);
-          }
-          // Make sure the HTML element is empty.
-          j.empty();
-
-          that.header = $('<div></div>').addClass(
-            'pg-prop-header'
-          ).appendTo(j);
-          that.footer = $('<div></div>').addClass(
-            'pg-prop-footer'
-          ).appendTo(j);
-
-          let updateButtons = function(hasError, modified) {
-
-            let btnGroup = this.find('.pg-prop-btn-group'),
-              btnSave = btnGroup.find('button.btn-primary'),
-              btnReset = btnGroup.find('button.btn-secondary[type="reset"]');
-
-            if (hasError || !modified) {
-              btnSave.prop('disabled', true);
-              btnSave.attr('disabled', 'disabled');
-            } else {
-              btnSave.prop('disabled', false);
-              btnSave.removeAttr('disabled');
             }
+          );
+          return;
 
-            if (!modified) {
-              btnReset.prop('disabled', true);
-              btnReset.attr('disabled', 'disabled');
-            } else {
-              btnReset.prop('disabled', false);
-              btnReset.removeAttr('disabled');
-            }
-          };
-
-          // Create a view to edit/create the properties in fieldsets
-          view = that.getView(item, action, content, data, 'dialog', updateButtons, j, onCancelFunc);
-          if (view) {
-            // Save it to release it later
-            j.data('obj-view', view);
-
-            self.icon(
-              _.isFunction(that['node_image']) ?
-                (that['node_image']).apply(that, [data, view.model]) :
-                (that['node_image'] || ('icon-' + that.type))
-            );
-
-            // Create proper buttons
-            let btn_grp = createButtons([{
-              label: '',
-              type: 'help',
-              tooltip: gettext('SQL help for this object type.'),
-              extraClasses: ['btn-primary-icon', 'pull-left', 'mx-1'],
-              icon: 'fa fa-info',
-              disabled: (that.sqlAlterHelp == '' && that.sqlCreateHelp == '' && !that.epasHelp) ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onSqlHelp();
-                });
-              },
-            }, {
-              label: '',
-              type: 'help',
-              tooltip: gettext('Help for this dialog.'),
-              extraClasses: ['btn-primary-icon', 'pull-left', 'mx-1'],
-              icon: 'fa fa-question',
-              disabled: (that.dialogHelp == '') ? true : false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  onDialogHelp();
-                });
-              },
-            }, {
-              label: gettext('Cancel'),
-              type: 'cancel',
-              tooltip: gettext('Cancel changes to this object.'),
-              extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-times',
-              disabled: false,
-              register: function(btn) {
-                btn.on('click',() => {
-                  // Removing the action-mode
-                  self.$container.removeAttr('action-mode');
-                  onCancelFunc.call(true);
-                });
-              },
-            }, {
-              label: gettext('Reset'),
-              type: 'reset',
-              tooltip: gettext('Reset the fields on this dialog.'),
-              extraClasses: ['btn-secondary', 'mx-1'],
-              icon: 'fa fa-recycle',
-              disabled: true,
-              register: function(btn) {
-                btn.on('click',() => {
-                  warnBeforeChangesLost.call(
-                    self,
-                    gettext('Changes will be lost. Are you sure you want to reset?'),
-                    function() {
-                      setTimeout(function() {
-                        editFunc.call();
-                      }, 0);
-                    }
-                  );
-                });
-              },
-            }, {
-              label: gettext('Save'),
-              type: 'save',
-              tooltip: gettext('Save this object.'),
-              extraClasses: ['btn-primary', 'mx-1'],
-              icon: 'fa fa-save',
-              disabled: true,
-              register: function(btn) {
-                // Save the changes
-                btn.on('click',() => {
-                  warnBeforeAttributeChange.call(
-                    self,
-                    function() {
-                      informBeforeAttributeChange.call(self, function(){
-                        setTimeout(function() {
-                          onSave.call(this, view, btn);
-                        }, 0);
-                      });
-                    }
-                  );
-                });
-              },
-            }], 'footer', 'pg-prop-btn-group-below');
-
-            btn_grp.on('keydown', 'button', function(event) {
-              if (!event.shiftKey && event.keyCode == 9 && $(this).nextAll('button:not([disabled])').length == 0) {
-                // set focus back to first focusable element on dialog
-                view.$el.closest('.wcFloating').find('[tabindex]:not([tabindex="-1"]').first().focus();
-                return false;
-              }
-              let btnGroup = $(self.$container.find('.pg-prop-btn-group'));
-              let el = $(btnGroup).find('button:first');
-              if (self.$container.find('.number-cell.editable:last').is(':visible')){
-                if (event.keyCode === 9 && event.shiftKey) {
-                  if ($(el).is($(event.target))){
-                    $(self.$container.find('td.editable:last').trigger('click'));
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }
-                }
-              }
-            });
-
-            setTimeout(function() {
-              pgBrowser.keyboardNavigation.getDialogTabNavigator(self.pgElContainer);
-            }, 200);
-          }
-
-          // Create status bar.
-          createStatusBar('footer');
-
-          // Add some space, so that - button group does not override the
-          // space
-          content.addClass('pg-prop-has-btn-group-below');
-
-          // Show contents before buttons
-          j.prepend(content);
-          // add required attributes to select2 input to resolve accessibility issue.
-          $('.select2-search__field').attr('aria-label', 'select2');
-          view.$el.closest('.wcFloating').find('.wcFrameButtonBar > .wcFrameButton[style!="display: none;"]').on('keydown', function(e) {
-
-            if(e.shiftKey && e.keyCode === 9) {
-              e.stopPropagation();
-              setTimeout(() => {
-                view.$el.closest('.wcFloating').find('[tabindex]:not([tabindex="-1"]):not([disabled])').last().focus();
-              }, 10);
-            }
-          });
         }.bind(panel),
         closePanel = function(confirm_close_flag) {
           if(!_.isUndefined(confirm_close_flag)) {
@@ -1832,7 +1237,6 @@ define('pgadmin.browser.node', [
             }]);
           }, 0);
         },
-        onCancelFunc = closePanel,
         onSaveFunc = updateTreeItem.bind(panel, that),
         onEdit = editFunc.bind(panel);
 

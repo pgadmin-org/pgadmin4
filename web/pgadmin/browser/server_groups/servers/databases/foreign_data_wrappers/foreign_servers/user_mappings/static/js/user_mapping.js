@@ -14,8 +14,8 @@ import _ from 'lodash';
 define('pgadmin.node.user_mapping', [
   'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, pgAdmin, pgBrowser, Backform) {
+  'pgadmin.browser.collection',
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for user mapping collection
   if (!pgBrowser.Nodes['coll-user_mapping']) {
@@ -105,34 +105,6 @@ define('pgadmin.node.user_mapping', [
           }
           pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
         },
-
-        // Defining schema for the user mapping node
-        schema: [
-          {
-            id: 'name', label: gettext('User'), type: 'text',
-            control: Backform.NodeListByNameControl, node: 'role',
-            mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
-            disabled: function(m) { return !m.isNew(); },
-            transform: function() {
-              let self = this,
-                node = self.field.get('schema_node');
-              let res =
-              Backform.NodeListByNameControl.prototype.defaults.transform.apply(
-                this, arguments
-              );
-              res.unshift({
-                label: 'CURRENT_USER', value: 'CURRENT_USER',
-                image: 'icon-' + node.type,
-              },{
-                label: 'PUBLIC', value: 'PUBLIC', image: 'icon-' + node.type,
-              });
-              return res;
-            },
-          }, {
-            id: 'oid', label: gettext('OID'), cell: 'string',
-            type: 'text', mode: ['properties'],
-          }
-        ],
       }),
     });
 

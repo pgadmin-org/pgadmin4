@@ -118,7 +118,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                            "[contains(.,'Hello, pgAdmin4')]"))
             )
 
-            # Only this tab is vulnerable rest are BackGrid & Code Mirror
+            # Only this tab is vulnerable rest are Code Mirror
             # control which are already tested in Query tool test case
             self.page.click_tab('id-debugger-messages', rc_dock=True)
             source_code = self.page.find_by_xpath(

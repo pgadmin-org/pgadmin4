@@ -13,7 +13,7 @@ import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
 
 define('pgadmin.node.language', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection',
 ], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for languages collection

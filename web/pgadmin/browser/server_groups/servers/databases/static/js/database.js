@@ -19,7 +19,6 @@ define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser.utils',
   'pgadmin.authenticate.kerberos', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege', 'pgadmin.browser.server.variable',
 ], function(gettext, url_for, $, pgAdmin, pgBrowser, Kerberos) {
 
   if (!pgBrowser.Nodes['coll-database']) {

@@ -1947,10 +1947,9 @@ def convert_data_to_dict(conn, result):
             column['type_code'] = items[1][1]
             columns.append(column)
 
-    # We need to convert result from 2D array to dict for BackGrid
-    # BackGrid do not support for 2D array result as it it Backbone Model
-    # based grid, This Conversion is not an overhead as most of the time
-    # result will be smaller
+    # We need to convert result from 2D array to dict.
+    # This Conversion is not an overhead as most of the time
+    # result will be smaller.
     _tmp_result = []
     for row in result:
         temp = dict()

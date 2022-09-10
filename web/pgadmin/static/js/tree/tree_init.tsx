@@ -89,8 +89,8 @@ var initBrowserTree = async (pgBrowser) => {
   await treeModelX.root.ensureLoaded();
   var _height = undefined;
 
-  document.getElementsByClassName('wcLayoutPane').forEach((item, index) => {
-    if (index > 0 && $(item).find('#tree').length == 1) {
+  [...document.getElementsByClassName('wcLayoutPane')].forEach((item, index) => {
+    if ($(item).find('#tree').length == 1) {
       _height = item.clientHeight - 30;
     }
   });

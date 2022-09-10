@@ -19,7 +19,6 @@ define('pgadmin.node.mview', [
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
-  'pgadmin.browser.server.privilege',
 ], function(
   gettext, url_for, $, pgAdmin, pgBrowser,
   schemaChild, schemaChildTreeNode, commonUtils

@@ -12,8 +12,7 @@ import _ from 'lodash';
 define([
   'sources/gettext', 'sources/pgadmin',
   'sources/browser/generate_url',
-  'pgadmin.backform', 'pgadmin.backgrid',
-  'pgadmin.browser.node', 'backgrid.select.all',
+  'pgadmin.browser.node',
 ], function(gettext, pgAdmin, generateUrl) {
 
   let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};

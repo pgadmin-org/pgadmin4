@@ -12,7 +12,7 @@ import EDBFuncSchema from './edbfunc.ui';
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.edbfunc', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection',
 ], function(gettext, url_for, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-edbfunc']) {
