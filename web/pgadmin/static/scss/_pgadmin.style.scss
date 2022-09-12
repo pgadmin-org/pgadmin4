@@ -186,15 +186,6 @@
   min-width: initial;
 }
 
-.pg-prop-btn-group .backgrid-filter.form-search {
-  position: relative;
-  width: 248px;
-  height: 30px;
-  float: right;
-  margin-top: 2px;
-  margin-right: 10px;
-}
-
 .pg-prop-content {
     position: absolute;
     overflow: auto;
@@ -726,10 +717,6 @@ div.rolmembership {
       border: none !important;
       border-bottom: $panel-border;
     }
-  }
-
-  .backgrid.pgadmin-control-group {
-    margin-bottom: 0rem !important;
   }
 }
 
