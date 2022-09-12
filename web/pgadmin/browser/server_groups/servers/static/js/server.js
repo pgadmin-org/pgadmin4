@@ -24,34 +24,6 @@ define('pgadmin.node.server', [
 ) {
 
   if (!pgBrowser.Nodes['server']) {
-    pgBrowser.SecLabelModel = pgBrowser.Node.Model.extend({
-      defaults: {
-        provider: undefined,
-        label: undefined,
-      },
-      schema: [{
-        id: 'provider', label: gettext('Provider'),
-        type: 'text', editable: true,
-        cellHeaderClasses:'width_percent_50',
-      },{
-        id: 'label', label: gettext('Security label'),
-        type: 'text', editable: true,
-        cellHeaderClasses:'override_label_class_font_size',
-      }],
-      validate: function() {
-        this.errorModel.clear();
-        if (_.isUndefined(this.get('label')) ||
-          _.isNull(this.get('label')) ||
-            String(this.get('label')).replace(/^\s+|\s+$/g, '') == '') {
-          let errmsg = gettext('Security label must be specified.');
-          this.errorModel.set('label', errmsg);
-          return errmsg;
-        }
-
-        return null;
-      },
-    });
-
     pgAdmin.Browser.Nodes['server'] = pgAdmin.Browser.Node.extend({
       parent_type: 'server_group',
       type: 'server',

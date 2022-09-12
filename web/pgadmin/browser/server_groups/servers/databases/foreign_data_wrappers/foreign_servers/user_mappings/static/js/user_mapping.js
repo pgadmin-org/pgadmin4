@@ -9,7 +9,6 @@
 
 import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import UserMappingSchema from './user_mapping.ui';
-import _ from 'lodash';
 
 define('pgadmin.node.user_mapping', [
   'sources/gettext', 'sources/url_for',
@@ -89,23 +88,6 @@ define('pgadmin.node.user_mapping', [
           }
         );
       },
-
-      // Defining model for user mapping node
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          let isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            let userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'name': userInfo.name}, {silent: true});
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-      }),
     });
 
   }

@@ -859,13 +859,13 @@ define([
       return null;
     },
     number_validate: function(value, field) {
-      if (!/^-?[0-9]+(\.?[0-9]*)?$/.test(value)) {
+      if (!/^-?\d+(\.?\d*)$/.test(value)) {
         return pgadminUtils.sprintf(pgAdmin.Browser.messages.MUST_BE_NUM, field.label);
       }
       return this.check_min_max(value, field);
     },
     integer_validate: function(value, field) {
-      if (!/^-?[0-9]*$/.test(value)) {
+      if (!/^-?\d*$/.test(value)) {
         return pgadminUtils.sprintf(pgAdmin.Browser.messages.MUST_BE_INT, field.label);
       }
       return this.check_min_max(value, field);

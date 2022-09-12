@@ -79,6 +79,33 @@ const useStyles = makeStyles((theme)=>({
   },
 }));
 
+function ObjectNameFormatter({row}) {
+  const classes = useStyles();
+  return (
+    <div className='rdg-cell-value'>
+      <Box className={row.show_node ? '' : classes.cellMuted}>
+        <span className={clsx(classes.gridCell, row.icon)}></span>
+        {row.name}
+        {row.other_info != null && row.other_info != '' && <>
+          <span className={classes.funcArgs}onClick={()=>{row.showArgs = true;}}> {row?.showArgs ? `(${row.other_info})` : '(...)'}</span>
+        </>}
+      </Box>
+    </div>
+  );
+}
+ObjectNameFormatter.propTypes = {
+  row: PropTypes.object,
+};
+
+function TypePathFormatter({row}) {
+  const classes = useStyles();
+  return (
+    <Box className={row.show_node ? '' : classes.cellMuted}>{row.type_label}</Box>
+  );
+}
+TypePathFormatter.propTypes = {
+  row: PropTypes.object,
+};
 
 
 const columns = [
@@ -86,40 +113,17 @@ const columns = [
     key: 'name',
     name: gettext('Object name'),
     width: 250,
-    formatter: ({row})=>{
-      const classes = useStyles();
-      return (
-        <div className='rdg-cell-value'>
-          <Box className={row.show_node ? '' : classes.cellMuted}>
-            <span className={clsx(classes.gridCell, row.icon)}></span>
-            {row.name}
-            {row.other_info != null && row.other_info != '' && <>
-              <span className={classes.funcArgs}onClick={()=>{row.showArgs = true;}}> {row?.showArgs ? `(${row.other_info})` : '(...)'}</span>
-            </>}
-          </Box>
-        </div>
-      );
-    }
+    formatter: ObjectNameFormatter,
   },{
     key: 'type',
     name: gettext('Type'),
     width: 30,
-    formatter: ({row})=>{
-      const classes = useStyles();
-      return (
-        <Box className={row.show_node ? '' : classes.cellMuted}>{row.type_label}</Box>
-      );
-    }
+    formatter: TypePathFormatter,
   },{
     key: 'path',
     name: gettext('Browser path'),
     sortable: false,
-    formatter: ({row})=>{
-      const classes = useStyles();
-      return (
-        <Box className={row.show_node ? '' : classes.cellMuted}>{row.path}</Box>
-      );
-    }
+    formatter: TypePathFormatter,
   }
 ];
 
