@@ -74,7 +74,6 @@ HELP_PATH = '../../../docs/en_US/_build/html/'
 # Languages we support in the UI
 LANGUAGES = {
     'en': 'English',
-    'br': 'Brazilian',
     'zh': 'Chinese (Simplified)',
     'cs': 'Czech',
     'fr': 'French',
@@ -83,6 +82,7 @@ LANGUAGES = {
     'ja': 'Japanese',
     'ko': 'Korean',
     'pl': 'Polish',
+    'pt_BR': 'Portuguese (Brazilian)',
     'ru': 'Russian',
     'es': 'Spanish',
 }
