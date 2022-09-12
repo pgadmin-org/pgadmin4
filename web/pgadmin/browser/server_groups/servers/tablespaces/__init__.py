@@ -623,7 +623,7 @@ class TablespaceView(PGChildNodeView):
         ver = self.manager.version
         if ver >= 90600:
             SQL = render_template(
-                "/".join(['tablespaces/sql/9.6_plus', 'variables.sql'])
+                "/".join(['tablespaces/sql/default', 'variables.sql'])
             )
         else:
             SQL = render_template(

@@ -916,6 +916,11 @@ function SchemaPropertiesView({
             visible={visible}
             className={field.isFullTab ? null : classes.controlRow}
             noLabel={field.isFullTab}
+            memoDeps={[
+              origData[field.id],
+              classes.controlRow,
+              field.isFullTab
+            ]}
           />
         );
       }

@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme)=>({
   },
   spanLabel: {
     alignSelf: 'center',
-    minWidth: '5%',
+    minWidth: '6%',
     whiteSpace: 'nowrap',
   },
   selectCtrl: {
