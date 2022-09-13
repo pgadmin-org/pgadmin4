@@ -107,7 +107,7 @@ def init_debugger_function(self):
 
 def initialize_target(self, utils, close_debugger_instance=True):
     target_url = '/debugger/initialize_target/{0}/'.format(self.type)
-    response = self.tester.get(
+    response = self.tester.post(
         target_url + str(self.trans_id) + '/' + str(self.server_id) +
         '/' + str(self.db_id) + '/' + str(self.schema_id) +
         '/' + str(self.func_id),
@@ -127,7 +127,7 @@ def initialize_target(self, utils, close_debugger_instance=True):
 
 
 def start_listener(self, utils, db_utils):
-    response = self.tester.get(
+    response = self.tester.post(
         'debugger/start_listener/' + str(self.trans_id),
         content_type='application/json')
     if response.status_code != 200:

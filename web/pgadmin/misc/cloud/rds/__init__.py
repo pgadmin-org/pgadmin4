@@ -121,7 +121,7 @@ def get_db_instances():
 
 
 @blueprint.route('/db_versions/',
-                 methods=['GET', 'POST'], endpoint='db_versions')
+                 methods=['GET'], endpoint='db_versions')
 @login_required
 def get_db_versions():
     """GET AWS Database Versions for AWS."""
@@ -147,7 +147,7 @@ def get_db_versions():
 
 
 @blueprint.route('/regions/',
-                 methods=['GET', 'POST'], endpoint='regions')
+                 methods=['GET'], endpoint='regions')
 @login_required
 def get_regions():
     """GET Regions for AWS."""

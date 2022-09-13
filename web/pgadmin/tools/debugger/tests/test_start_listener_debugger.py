@@ -33,11 +33,6 @@ class DebuggerStartListener(BaseTestGenerator):
         self.db_id = self.schema_data['db_id']
         self.schema_id = self.schema_data['schema_id']
 
-        local_self = funcs_utils.set_up(self)
-
-        # if self.server['type'] == 'pg':
-        #     self.skipTest('Skipping test case for pg')
-
         self.test_data['funcowner'] = self.server["username"]
 
         function_info = debugger_utils.create_function(self, utils)
@@ -60,7 +55,7 @@ class DebuggerStartListener(BaseTestGenerator):
                 data=json.dumps({}),
                 content_type='application/json')
         else:
-            return self.tester.get(
+            return self.tester.post(
                 self.url + str(self.trans_id),
                 content_type='application/json')
 

@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme)=>({
     display: 'flex',
     lineHeight: '16px',
     alignItems: 'center',
+    fontWeight: 'normal',
   },
   columnName: {
     fontWeight: 'bold',

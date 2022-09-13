@@ -123,20 +123,12 @@ export default function ExplainStatistics({explainTable}) {
   );
 }
 
-const NodeType = {
-  name: PropTypes.string,
-  count: PropTypes.number,
-  sum_of_times: PropTypes.number,
-};
 ExplainStatistics.propTypes = {
   explainTable: PropTypes.shape({
     show_timings: PropTypes.bool,
     statistics: PropTypes.shape({
-      nodes: PropTypes.arrayOf(NodeType),
-      tables: PropTypes.arrayOf({
-        ...NodeType,
-        nodes: PropTypes.arrayOf(NodeType),
-      }),
+      nodes: PropTypes.object,
+      tables: PropTypes.object,
     }),
     total_time: PropTypes.number,
   }),

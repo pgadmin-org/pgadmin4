@@ -120,7 +120,7 @@ ExplainRow.propTypes = {
   row: PropTypes.shape({
     data: PropTypes.shape({
       Plans: PropTypes.array,
-      level: PropTypes.number,
+      level: PropTypes.array,
       _serial: PropTypes.number,
       parent_node: PropTypes.number,
       exclusive: PropTypes.number,
@@ -129,7 +129,7 @@ ExplainRow.propTypes = {
       inclusive_flag: PropTypes.string,
       rowsx_direction: PropTypes.string,
       rowsx: PropTypes.number,
-      rowsx_flag: PropTypes.number,
+      rowsx_flag: PropTypes.oneOfType([PropTypes.number,PropTypes.string]),
       'Actual Rows': PropTypes.number,
       'Plan Rows': PropTypes.number,
       'Actual Loops': PropTypes.number,
@@ -145,8 +145,8 @@ ExplainRow.propTypes = {
     show_plan_rows: PropTypes.bool,
   }),
   activeExId: PropTypes.string,
-  setActiveExId: PropTypes.string,
-  collapsedExId: PropTypes.string,
+  setActiveExId: PropTypes.func,
+  collapsedExId: PropTypes.array,
   toggleCollapseExId: PropTypes.func,
 };
 

@@ -1052,7 +1052,7 @@ class Filemanager(object):
 
 @blueprint.route(
     "/filemanager/<int:trans_id>/",
-    methods=["GET", "POST"], endpoint='filemanager'
+    methods=["POST"], endpoint='filemanager'
 )
 @login_required
 def file_manager(trans_id):

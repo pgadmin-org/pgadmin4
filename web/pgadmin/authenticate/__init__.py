@@ -61,7 +61,7 @@ class AuthenticateModule(PgAdminModule):
 blueprint = AuthenticateModule(MODULE_NAME, __name__, static_url_path='')
 
 
-@blueprint.route('/login', endpoint='login', methods=['GET', 'POST'])
+@blueprint.route('/login', endpoint='login', methods=['POST'])
 def login():
     """
     Entry point for all the authentication sources.

@@ -344,11 +344,12 @@ export class Tree {
     if (path == null || !Array.isArray(path)) {
       return Promise.reject();
     }
+    const basepath = '/browser/' + path.slice(0, path.length-1).join('/') + '/';
     path = '/browser/' + path.join('/');
 
     let onCorrectPath = function (matchPath) {
       return (matchPath !== undefined && path !== undefined
-        && (path.startsWith(matchPath) || path === matchPath));
+        && (basepath.startsWith(matchPath) || path === matchPath));
     };
 
     return (function findInNode(currentNode) {

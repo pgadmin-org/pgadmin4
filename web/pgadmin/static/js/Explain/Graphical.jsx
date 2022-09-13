@@ -323,7 +323,7 @@ function PlanSVG({planData, zoomFactor, fitZoomFactor, ...props}) {
 PlanSVG.propTypes = {
   planData: PropTypes.object,
   zoomFactor: PropTypes.number,
-  fitZoomFactor: PropTypes.number,
+  fitZoomFactor: PropTypes.func,
   ctx: PropTypes.object,
 };
 

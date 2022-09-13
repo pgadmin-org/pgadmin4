@@ -744,13 +744,13 @@ def get_search_path(conn):
 @blueprint.route(
     '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
     '<int:scid>/<int:func_id>',
-    methods=['GET', 'POST'],
+    methods=['POST'],
     endpoint='initialize_target_for_function'
 )
 @blueprint.route(
     '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
     '<int:scid>/<int:func_id>/<int:tri_id>',
-    methods=['GET', 'POST'],
+    methods=['POST'],
     endpoint='initialize_target_for_trigger'
 )
 @login_required
@@ -825,7 +825,7 @@ def initialize_target(debug_type, trans_id, sid, did,
     # the session variables accordingly, For indirect debugging user will
     # provide the data from another session so below condition will
     # be be required
-    if request.method == 'POST':
+    if request.data:
         de_inst.function_data['args_value'] = \
             json.loads(request.data, encoding='utf-8')
 
@@ -940,7 +940,7 @@ def restart_debugging(trans_id):
 
 
 @blueprint.route(
-    '/start_listener/<int:trans_id>', methods=['GET', 'POST'],
+    '/start_listener/<int:trans_id>', methods=['POST'],
     endpoint='start_listener'
 )
 @login_required
@@ -983,7 +983,7 @@ def start_debugger_listener(trans_id):
 
     # If user again start the same debug function with different arguments
     # then we need to save that values to session variable and database.
-    if request.method == 'POST':
+    if request.data:
         data = json.loads(request.data, encoding='utf-8')
         if data:
             de_inst.function_data['args_value'] = data

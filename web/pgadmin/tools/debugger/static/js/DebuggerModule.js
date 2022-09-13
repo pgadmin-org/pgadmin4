@@ -394,7 +394,7 @@ export default class DebuggerModule {
 
         self.api({
           url: baseUrl,
-          method: 'GET',
+          method: 'POST',
         })
           .then(function (result) {
 
@@ -580,7 +580,7 @@ export default class DebuggerModule {
 
     self.api({
       url: baseUrl,
-      method: 'GET',
+      method: 'POST',
     })
       .then(function (res) {
         let url = url_for('debugger.direct', {

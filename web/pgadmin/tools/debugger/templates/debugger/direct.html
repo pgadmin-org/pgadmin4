@@ -38,10 +38,14 @@ try {
 {% endblock %}
 {% block body %}
 <style>
-  #debugger-main-container {
+    #debugger-main-container {
         display: flex;
         flex-direction: column;
         height: 100%;
+    }
+
+    #debugger-main-container:not(:empty) + .pg-sp-container {
+        display: none;
     }
 </style>
 {% if is_desktop_mode and is_linux %}
@@ -50,6 +54,13 @@ try {
 </style>
 {% endif %}
 <div id="debugger-main-container" tabindex="0">
+    <div class="pg-sp-container">
+        <div class="pg-sp-content">
+            <div class="row">
+                <div class="col-12 pg-sp-icon"></div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

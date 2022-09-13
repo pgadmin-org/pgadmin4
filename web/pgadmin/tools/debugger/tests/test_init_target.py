@@ -89,13 +89,13 @@ class InitTargetDebugger(BaseTestGenerator):
 
     def initialize_traget(self):
         if hasattr(self, 'create_trigger_func') and self.create_trigger_func:
-            return self.tester.get(
+            return self.tester.post(
                 self.url + str(self.trans_id) + '/' + str(self.server_id) +
                 '/' + str(self.db_id) + '/' + str(self.schema_id) +
                 '/' + str(self.table_id) + '/' +
                 str(self.trigger_id), content_type='application/json')
         else:
-            return self.tester.get(
+            return self.tester.post(
                 self.url + str(self.trans_id) + '/' + str(self.server_id) +
                 '/' + str(self.db_id) + '/' + str(self.schema_id) +
                 '/' + str(self.func_id),
