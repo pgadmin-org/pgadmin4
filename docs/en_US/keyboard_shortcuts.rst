@@ -1,10 +1,10 @@
-***************************
-`Keyboard Shortcuts`:index:
-***************************
+****************************
+`Keyboard Shortcuts`:index::
+****************************
 
 Keyboard shortcuts are provided in pgAdmin to allow easy access to specific
 functions. Alternate shortcuts can be configured through File > Preferences if
-desired.˝
+desired.
 
 Main Browser Window
 *******************
@@ -18,33 +18,49 @@ When using main browser window, the following keyboard shortcuts are available:
    +----------------------------+-------------------------------------------------------+
    | Shortcut for all platforms | Function                                              |
    +============================+=======================================================+
-   | Alt+Shift+F                | Open the File menu                                    |
+   | Shift+Ctrl+a               | Add grid row                                          |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+O                | Open the Object menu                                  |
+   | Shift+Alt+b                | Browser tree                                          |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+L                | Open the Tools menu                                   |
+   | Shift+Alt+n                | Create object                                         |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+H                | Open the Help menu                                    |
+   | Shift+Alt+d                | Delete object                                         |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+B                | Focus the browser tree                                |
+   | Shift+Alt+m                | Delete/Drop multiple objects                          |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+[                | Move tabbed panel backward                            |
+   | Shift+Ctrl+[               | Dialog tab backward                                   |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+]                | Move tabbed panel forward                             |
+   | Shift+Ctrl+]               | Dialog tab forward                                    |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+Q                | Open the Query Tool in the current database           |
+   | Shift+Alt+g                | Direct debugging                                      |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+V                | View Data in the selected table/view                  |
+   | Shift+Alt+u                | Drop Cascade multiple objects                         |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+C                | Open the context menu                                 |
+   | Shift+Alt+e                | Edit object properties                                |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+N                | Create an object                                      |
+   | Shift+Alt+f                | File main menu                                        |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+E                | Edit object properties                                |
+   | Shift+Alt+h                | Help main menu                                        |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+D                | Delete the object                                     |
+   | Shift+Alt+o                | Object main menu                                      |
    +----------------------------+-------------------------------------------------------+
-   | Alt+Shift+G                | Direct debugging                                      |
+   | Shift+Alt+c                | Open context menu                                     |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Alt+q                | Open query tool                                       |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Ctrl+f               | Quick Search                                          |
+   +----------------------------+-------------------------------------------------------+
+   | F5                         | Refresh browser tree                                  |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Alt+s                | Search objects                                        |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Alt+[                | Tabbed panel backward                                 |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Alt+]                | Tabbed panel forward                                  |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Alt+l                | Tools main menu                                       |
+   +----------------------------+-------------------------------------------------------+
+   | Shift+Alt+v                | View data                                             |
    +----------------------------+-------------------------------------------------------+
 
 Dialog Tabs
@@ -152,43 +168,51 @@ When using the Query Tool, the following shortcuts are available:
    +--------------------------+--------------------+-----------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)     | Function                          |
    +==========================+====================+===================================+
-   | F5                       | F5                 | Execute query                     |
+   | <accesskey> + q          | <accesskey> + q    | Cancel query                      |
    +--------------------------+--------------------+-----------------------------------+
-   | F6                       | F6                 | Save data changes                 |
+   | <accesskey> + t          | <accesskey> + t    | Connection status                 |
    +--------------------------+--------------------+-----------------------------------+
-   | F7                       | F7                 | EXPLAIN query                     |
+   | <accesskey> + d          | <accesskey> + d    | Delete rows                       |
    +--------------------------+--------------------+-----------------------------------+
-   | Shift + F7               | Shift + F7         | EXPLAIN ANALYZE query             |
-   +--------------------------+--------------------+-----------------------------------+
-   | F8                       | F8                 | Execute query to CSV file         |
-   +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + o          | <accesskey> + o    | Open file                         |
-   +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + s          | <accesskey> + s    | Save file                         |
-   +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + n          | <accesskey> + n    | Find option drop down             |
-   +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + c          | <accesskey> + c    | Copy row(s)                       |
-   +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + p          | <accesskey> + p    | Paste row(s)                      |
-   +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + d          | <accesskey> + d    | Delete row(s)                     |
+   | <accesskey> + x          | <accesskey> + x    | Execute options                   |
    +--------------------------+--------------------+-----------------------------------+
    | <accesskey> + f          | <accesskey> + f    | Filter dialog                     |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + i          | <accesskey> + i    | Filter options drop down          |
+   | <accesskey> + i          | <accesskey> + i    | Filter options                    |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + r          | <accesskey> + r    | Row limit                         |
+   | <accesskey> + n          | <accesskey> + n    | Find options                      |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + q          | <accesskey> + q    | Cancel query                      |
+   | <accesskey> + o          | <accesskey> + o    | Open file                         |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + l          | <accesskey> + l    | Clear option drop down            |
+   | <accesskey> + p          | <accesskey> + p    | Paste rows                        |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + x          | <accesskey> + x    | Execute option drop down          |
+   | <accesskey> + r          | <accesskey> + r    | Rows limit                        |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + t          | <accesskey> + t    | Display connection status         |
+   | <accesskey> + s          | <accesskey> + s    | Save file                         |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + y          | <accesskey> + y    | Copy SQL on history panel         |
+   | Ctrl + Alt + L           | Ctrl + option + L  | Clear query                       |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Ctrl + m         | Shift + Ctrl + m   | Commit                            |
+   +--------------------------+--------------------+-----------------------------------+
+   | F8                       | F8                 | Download Results                  |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + F7               | Shift + F7         | EXPLAIN ANALYZE query             |
+   +--------------------------+--------------------+-----------------------------------+
+   | F7                       | F7                 | EXPLAIN query                     |
+   +--------------------------+--------------------+-----------------------------------+
+   | F5                       | F5                 | Execute query                     |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + ]          | Shift + option + ] | Next tab                          |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + [          | Shift + option + [ | Previous tab                      |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Ctrl + r         | Shift + Ctrl + r   | Rollback                          |
+   +--------------------------+--------------------+-----------------------------------+
+   | F6                       | F6                 | Save data changes                 |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + Tab        | Shift + option +Tab| Switch Panel                      |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Ctrl + u         |  Shift + Ctrl + u  | Toggle case of selected text      |
    +--------------------------+--------------------+-----------------------------------+
 
 Debugger
@@ -203,19 +227,72 @@ When using the Debugger, the following shortcuts are available:
    +--------------------------+--------------------+-----------------------------------+
    | Shortcut (Windows/Linux) | Shortcut (Mac)     | Function                          |
    +==========================+====================+===================================+
-   | <accesskey> + i          | <accesskey> + i    | Step in                           |
+   | <accesskey> + x          | <accesskey> + x    | Clear all breakpoints             |
+   +--------------------------+--------------------+-----------------------------------+
+   | <accesskey> + c          | <accesskey> + c    | Continue/Start                    |
+   +--------------------------+--------------------+-----------------------------------+
+   | <accesskey> + i          | <accesskey> + i    | Step into                         |
    +--------------------------+--------------------+-----------------------------------+
    | <accesskey> + o          | <accesskey> + o    | Step over                         |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + c          | <accesskey> + c    | Continue/Restart                  |
+   | <accesskey> + s          | <accesskey> + s    | Stop                              |
    +--------------------------+--------------------+-----------------------------------+
    | <accesskey> + t          | <accesskey> + t    | Toggle breakpoint                 |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + x          | <accesskey> + x    | Clear all breakpoints             |
+   | Shift + Alt + q          | Shift + option + q | Edit grid values                  |
    +--------------------------+--------------------+-----------------------------------+
-   | <accesskey> + s          | <accesskey> + s    | Stop                              |
+   | Shift + Alt + ]          | Shift + option + ] | Next tab                          |
    +--------------------------+--------------------+-----------------------------------+
-   | Alt + Shift + q          | Option + Shift + q | Enter or Edit values in Grid      |
+   | Shift + Alt + [          | Shift + option + ] | Previous tab                      |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + Tab        | Shift + option +Tab| Switch Panel                      |
+   +--------------------------+--------------------+-----------------------------------+
+
+ERD Tool
+********
+
+When using the ERD Tool, the following shortcuts are available:
+
+.. table::
+   :class: longtable
+   :widths: 2 2 3
+
+   +--------------------------+--------------------+-----------------------------------+
+   | Shortcut (Windows/Linux) | Shortcut (Mac)     | Function                          |
+   +==========================+====================+===================================+
+   | Ctrl + Alt + a           | Ctrl + option + a  | Add table                         |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + n           | Ctrl + option + n  | Add/Edit note                     |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + l           | Ctrl + option + l  | Auto align                        |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + c           | Ctrl + option + c  | Clone table                       |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + i           | Ctrl + option + i  | Download image                    |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + d           | Ctrl + option + d  | Drop table                        |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + e           | Ctrl + option + e  | Edit table                        |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + s           | Ctrl + option + s  | Generate SQL                      |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + m           | Ctrl + option + m  | Many to many link                 |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + o           | Ctrl + option + o  | One to many link                  |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + o                 | Ctrl + o           | Open project                      |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + s                 | Ctrl + s           | Save project                      |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Ctrl + s         | Shift + Ctrl + s   | Save project as                   |
+   +--------------------------+--------------------+-----------------------------------+
+   | Ctrl + Alt + t           | Ctrl + option + t  | Show more/fewer details           |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + +          | Shift + option + + | Zoom in                           |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + -          | Shift + option + - | Zoom out                          |
+   +--------------------------+--------------------+-----------------------------------+
+   | Shift + Alt + f          | Shift + option + f | Zoom to fit                       |
    +--------------------------+--------------------+-----------------------------------+
 
 Inner Tab and Panel Navigation
@@ -224,7 +301,7 @@ Inner Tab and Panel Navigation
 When using the Query Tool and Debugger, the following shortcuts are available
 for inner panel navigation:
 
-.. table::
+.. table::I
    :class: longtable
    :widths: 2 2 3
 
@@ -251,7 +328,7 @@ default access keys for supported browsers.
    +-------------------+-------------+-------------+---------------+
    |                   | Windows     | Linux       | Mac           |
    +===================+=============+=============+===============+
-   | Internet Explorer | Alt         | Alt         |               |
+   | Edge              | Alt         |             |               |
    +-------------------+-------------+-------------+---------------+
    | Chrome            | Alt         | Alt         | Ctrl + Option |
    +-------------------+-------------+-------------+---------------+

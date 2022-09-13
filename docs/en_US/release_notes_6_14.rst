@@ -22,6 +22,7 @@ Housekeeping
   | `Issue #6133 <https://redmine.postgresql.org/issues/6133>`_ -  Port schema diff to React.
   | `Issue #6134 <https://redmine.postgresql.org/issues/6134>`_ -  Remove Backgrid and Backform.
   | `Issue #7343 <https://redmine.postgresql.org/issues/7343>`_ -  Port the remaining components of the ERD Tool to React.
+  | `Issue #7446 <https://redmine.postgresql.org/issues/7446>`_ -  Updated keyboard shortcut documentation.
   | `Issue #7619 <https://redmine.postgresql.org/issues/7619>`_ -  Remove Alertify from pgAdmin completely.
   | `Issue #7622 <https://redmine.postgresql.org/issues/7622>`_ -  Port search object dialog to React.
 
