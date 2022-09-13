@@ -17,7 +17,7 @@ import gettext from 'sources/gettext';
 import { Box, InputAdornment, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { InputText } from './FormComponents';
-import { PgIconButton } from './Buttons';
+import { DefaultButton, PgIconButton } from './Buttons';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import ArrowDownwardRoundedIcon from '@material-ui/icons/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@material-ui/icons/ArrowUpwardRounded';
@@ -27,6 +27,8 @@ import _ from 'lodash';
 import { RegexIcon, FormatCaseIcon } from './ExternalIcon';
 import { isMac } from '../keyboard_shortcuts';
 import { checkTrojanSource } from '../utils';
+import { copyToClipboard } from '../clipboard';
+import { useDelayedCaller } from '../../../static/js/custom_hooks';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -49,6 +51,12 @@ const useStyles = makeStyles((theme)=>({
   },
   marginTop: {
     marginTop: '0.25rem',
+  },
+  copyButton: {
+    position: 'absolute',
+    zIndex: 99,
+    right: '4px',
+    width: '66px',
   }
 }));
 
@@ -280,6 +288,29 @@ FindDialog.propTypes = {
   onClose: PropTypes.func,
 };
 
+export function CopyButton({show, copyText}) {
+  const classes = useStyles();
+  const [copyBtnLabel, setCopyBtnLabel] = useState(gettext('Copy'));
+  const revertCopiedText = useDelayedCaller(()=>{
+    setCopyBtnLabel(gettext('Copy'));
+  });
+
+  return (
+    <Box className={classes.copyButton} visibility={show ? 'visible' : 'hidden'}>
+      <DefaultButton onClick={() => {
+        copyToClipboard(copyText);
+        setCopyBtnLabel(gettext('Copied!'));
+        revertCopiedText(1500);
+      }}>{copyBtnLabel}</DefaultButton>
+    </Box>
+  );
+}
+
+CopyButton.propTypes = {
+  show: PropTypes.bool,
+  copyText: PropTypes.string
+};
+
 function handleDrop(editor, e) {
   let dropDetails = null;
   try {
@@ -330,13 +361,14 @@ function handlePaste(_editor, e) {
 }
 
 /* React wrapper for CodeMirror */
-export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className, autocomplete=false, gutters=['CodeMirror-linenumbers', 'CodeMirror-foldgutter']}) {
+export default function CodeMirror({currEditor, name, value, options, events, readonly, disabled, className, autocomplete=false, gutters=['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], showCopyBtn=false}) {
   const taRef = useRef();
   const editor = useRef();
   const cmWrapper = useRef();
   const isVisibleTrack = useRef();
   const classes = useStyles();
   const [[showFind, isReplace], setShowFind] = useState([false, false]);
+  const [showCopy, setShowCopy] = useState(false);
   const defaultOptions = useMemo(()=>{
     let goLeftKey = 'Ctrl-Alt-Left',
       goRightKey = 'Ctrl-Alt-Right',
@@ -437,6 +469,8 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     };
   }, []);
 
+
+
   const initPreferences = ()=>{
     reflectPreferences();
     pgWindow?.pgAdmin?.Browser?.onPreferencesChange('sqleditor', function() {
@@ -509,8 +543,12 @@ export default function CodeMirror({currEditor, name, value, options, events, re
   };
 
   return (
-    <div className={clsx(className, classes.root)}>
+    <div className={clsx(className, classes.root)}
+      onMouseEnter={() => { showCopyBtn && value.length > 0 && setShowCopy(true);}}
+      onMouseLeave={() => {showCopyBtn && setShowCopy(false);}}
+    >
       <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind}/>
+      <CopyButton editor={editor.current} show={showCopy} copyText={value}></CopyButton>
       <textarea ref={taRef} name={name} />
     </div>
   );
@@ -527,5 +565,6 @@ CodeMirror.propTypes = {
   disabled: PropTypes.bool,
   className: CustomPropTypes.className,
   autocomplete: PropTypes.bool,
-  gutters: PropTypes.array
+  gutters: PropTypes.array,
+  showCopyBtn: PropTypes.bool,
 };

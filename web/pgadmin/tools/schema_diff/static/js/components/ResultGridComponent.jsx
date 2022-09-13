@@ -107,7 +107,6 @@ const useStyles = makeStyles((theme) => ({
     width: '1.3rem'
   },
   cellExpand: {
-    float: 'inline-end',
     display: 'table',
     blockSize: '100%',
 
@@ -137,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
   identical: {
     paddingLeft: '0.5rem',
-    color: theme.otherVars.schemaDiff.diffSelectFG,
+    color: theme.otherVars.schemaDiff.diffColorFg,
   },
   selectCell: {
     padding: '0 0.3rem'
@@ -162,7 +161,7 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedRowCheckBox: {
     paddingLeft: '0.5rem',
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: theme.otherVars.schemaDiff.diffSelCheckbox,
   },
   selChBox: {
     paddingLeft: 0,
@@ -237,10 +236,18 @@ function CellExpanderFormatter({
           {
             'identicalCount' in row ?
               <span className={clsx(classes.count)}>
-                <span className={classes.countLabel}>{FILTER_NAME.IDENTICAL}:</span> <span className={classes.countStyle}>{row.identicalCount} </span>
-                <span className={classes.countLabel}>{FILTER_NAME.DIFFERENT}:</span> <span className={classes.countStyle}>{row.differentCount}  </span>
-                <span className={classes.countLabel}>{FILTER_NAME.SOURCE_ONLY}:</span> <span className={classes.countStyle}>{row.sourceOnlyCount}  </span>
-                <span className={classes.countLabel}>{FILTER_NAME.TARGET_ONLY}: </span><span className={classes.countStyle}>{row.targetOnlyCount}</span>
+                {
+                  filterParams.includes(FILTER_NAME.IDENTICAL) && <><span className={classes.countLabel}>{FILTER_NAME.IDENTICAL}:</span> <span className={classes.countStyle}>{row.identicalCount} </span></>
+                }
+                {
+                  filterParams.includes(FILTER_NAME.DIFFERENT) && <><span className={classes.countLabel}>{FILTER_NAME.DIFFERENT}:</span> <span className={classes.countStyle}>{row.differentCount}  </span></>
+                }
+                {
+                  filterParams.includes(FILTER_NAME.SOURCE_ONLY) && <><span className={classes.countLabel}>{FILTER_NAME.SOURCE_ONLY}:</span> <span className={classes.countStyle}>{row.sourceOnlyCount}  </span></>
+                }
+                {
+                  filterParams.includes(FILTER_NAME.TARGET_ONLY) && <><span className={classes.countLabel}>{FILTER_NAME.TARGET_ONLY}: </span><span className={classes.countStyle}>{row.targetOnlyCount}</span></>
+                }
               </span>
               : null
 

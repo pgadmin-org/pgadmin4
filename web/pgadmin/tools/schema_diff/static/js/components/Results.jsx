@@ -120,6 +120,11 @@ export function Results() {
               }}
               readonly={true}
               width='100%'
+              controlProps={
+                {
+                  showCopyBtn: true
+                }
+              }
             />
           </Box>
         </Box>

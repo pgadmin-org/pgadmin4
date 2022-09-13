@@ -303,9 +303,10 @@ export function SchemaDiffCompare({ params }) {
         setFilterOptions(filterParams);
         getResultGridData(res.data.data, filterParams);
       }).catch((err) => {
+        clearInterval(schemaDiffPollInterval);
         setLoaderText(null);
         setShowResultGrid(false);
-        Notifier.error(gettext(err.message));
+        Notifier.alert(gettext('Schema compare error'), gettext(err.response.data.errormsg));
       });
 
     }
@@ -405,7 +406,7 @@ export function SchemaDiffCompare({ params }) {
       });
 
     } else if (record.group_name in tempData) {
-      let chidId = Math.floor(Math.random() * 1000000);
+      let chidId = crypto.getRandomValues(new Uint16Array(1));
       allRowIds.push(`${chidId}`);
 
       let subChildId = record.id;
@@ -448,8 +449,8 @@ export function SchemaDiffCompare({ params }) {
       };
     } else {
       let label = record.label;
-      let _id = Math.floor(Math.random() * 100000);
-      let _subChildId = Math.floor(Math.random() * 100000);
+      let _id = crypto.getRandomValues(new Uint16Array(1));
+      let _subChildId = crypto.getRandomValues(new Uint16Array(1));
       allRowIds.push(`${_id}`);
       allRowIds.push(`${_subChildId}`);
       tempData[record.group_name] = {

@@ -108,7 +108,8 @@ export default function(basicSettings) {
         sourceRowColor: '#402025',
         targetRowColor: '#6b5438',
         diffColorFg: '#d4d4d4',
-        diffSelectFG: '#d4d4d4'
+        diffSelectFG: '#d4d4d4',
+        diffSelCheckbox: '#323E43'
       }
     }
   });
