@@ -351,7 +351,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
       api({
         url: baseUrl,
-        method: 'GET',
+        method: 'POST',
       })
         .then(function (res) {
           if (res.data.data.status) {
@@ -368,7 +368,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
       api({
         url: baseUrl,
-        method: 'GET',
+        method: 'POST',
       })
         .then(function (res) {
           if (res.data.data.status) {
@@ -608,7 +608,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
 
     api({
       url: base_url,
-      method: 'GET',
+      method: 'POST',
     })
       .then(function () {
         if (params.directDebugger.debug_type) {

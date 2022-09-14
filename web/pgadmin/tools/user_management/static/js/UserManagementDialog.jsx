@@ -275,7 +275,7 @@ class UserManagementSchema extends BaseUISchema {
       {
         id: 'refreshBrowserTree', visible: false, type: 'boolean',
         deps: ['userManagement'], depChange: ()=> {
-          return { refreshBrowserTree: this.changeOwnership }
+          return { refreshBrowserTree: this.changeOwnership };
         }
       }
     ];

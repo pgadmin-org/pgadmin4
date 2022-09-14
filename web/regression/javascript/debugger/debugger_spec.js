@@ -262,7 +262,7 @@ describe('Debugger Component', () => {
 
   it('DebuggerInit Indirect', () => {
     params.directDebugger.debug_type = 1;
-    networkMock.onGet(url_for('debugger.start_listener', {'trans_id': params.transId})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':true,'result':2}});
+    networkMock.onPost(url_for('debugger.start_listener', {'trans_id': params.transId})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':true,'result':2}});
     networkMock.onGet(url_for('debugger.messages', {'trans_id': params.transId})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':'Success','result':'10'}});
     networkMock.onGet(url_for('debugger.execute_query', {'trans_id': params.transId, 'query_type': 'get_stack_info'})).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':{'status':'Success','result':[{'level':0,'targetname':'_test()','func':3138947,'linenumber':9,'args':''}]}});
     networkMock.onGet(url_for('debugger.poll_result', {'trans_id': params.transId})).reply(200, {'success':0,'errormsg':'','info':'','result':null,'data':{'status':'Success','result':[{'pldbg_wait_for_target':28298}]}});
