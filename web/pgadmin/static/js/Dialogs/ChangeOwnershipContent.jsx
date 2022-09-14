@@ -30,12 +30,11 @@ class ChangeOwnershipSchema extends BaseUISchema {
     return [
       {
         id: 'note', type: 'note',
-        text: gettext('Select the user that will take ownership of the shared servers created by <b>' + self.deletedUser + '</b>. <b>' + self.noOfSharedServers + '</b> shared servers are currently owned by this user.'),
+        text: gettext('Select the user that will take ownership of the shared servers created by <b>' + self.deletedUser + '</b>. <b>' + self.noOfSharedServers + '</b> shared servers are currently owned by this user. </br></br> Clicking on the “Change” button will either change ownership if a user is selected or delete any shared servers if no user is selected. There is no way to reverse this action.'),
       }, {
         id: 'newUser', label: gettext('User'),
         type: 'select', controlProps: {allowClear: true},
-        options: self.adminUserList,
-        helpMessage: gettext('Note: If no user is selected, the shared servers will be deleted.')
+        options: self.adminUserList
       }
     ];
   }

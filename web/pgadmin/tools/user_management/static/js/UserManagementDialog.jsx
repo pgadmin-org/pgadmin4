@@ -215,8 +215,9 @@ class UserManagementCollection extends BaseUISchema {
 
 class UserManagementSchema extends BaseUISchema {
   constructor(authSources, roleOptions) {
-    super();
+    super({refreshBrowserTree: false});
     this.userManagementCollObj = new UserManagementCollection(authSources, roleOptions);
+    this.changeOwnership = false;
   }
 
   deleteUser(deleteRow) {
@@ -251,7 +252,10 @@ class UserManagementSchema extends BaseUISchema {
                       result?.data?.data?.result?.data,
                       res?.data?.data?.shared_servers,
                       deletedUser,
-                      deleteRow
+                      ()=> {
+                        this.changeOwnership = true;
+                        deleteRow();
+                      }
                     );
                   })
                   .catch((err)=>{
@@ -268,6 +272,12 @@ class UserManagementSchema extends BaseUISchema {
         },
         canSearch: true
       },
+      {
+        id: 'refreshBrowserTree', visible: false, type: 'boolean',
+        deps: ['userManagement'], depChange: ()=> {
+          return { refreshBrowserTree: this.changeOwnership }
+        }
+      }
     ];
   }
 }
@@ -310,6 +320,21 @@ function UserManagementDialog({onClose}) {
   const onSaveClick = (_isNew, changeData)=>{
     return new Promise((resolve, reject)=>{
       try {
+        if (changeData['refreshBrowserTree']) {
+          // Confirmation dialog to refresh the browser tree.
+          Notify.confirm(
+            gettext('Browser tree refresh required'),
+            gettext('The ownership of the shared server was changed or the shared server was deleted, so a browser tree refresh is required. Do you wish to refresh the tree?'),
+            function () {
+              pgAdmin.Browser.tree.destroy();
+            },
+            function () {
+              return true;
+            },
+            gettext('Refresh'),
+            gettext('Later')
+          );
+        }
         api.post(url_for('user_management.save'), changeData['userManagement'])
           .then(()=>{
             Notify.success('Users Saved Successfully');
