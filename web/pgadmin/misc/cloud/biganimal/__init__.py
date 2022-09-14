@@ -89,6 +89,7 @@ def biganimal_regions():
     """Get Regions."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
     status, regions = biganimal_obj.get_regions()
+    session['biganimal']['provider_obj'] = pickle.dumps(biganimal_obj, -1)
     return make_json_response(data=regions)
 
 
@@ -162,6 +163,7 @@ class BigAnimalProvider():
         self.access_token = None
         self.token_error = {}
         self.token_status = -1
+        self.regions = []
         self.get_auth_provider()
 
     def _get_headers(self):
@@ -272,6 +274,7 @@ class BigAnimalProvider():
                     'label': value['regionName'],
                     'value': value['regionId']
                 })
+                self.regions.append(value['regionId'])
             return True, regions
         elif resp.content:
             regions_resp = json.loads(resp.content)
@@ -315,6 +318,8 @@ class BigAnimalProvider():
 
     def get_instance_types(self, region_id):
         """GEt Instance Types."""
+        if region_id not in self.regions:
+            return []
         _url = "{0}/{1}".format(
             self.BASE_URL,
             'cloud-providers/azure/regions/'
@@ -327,6 +332,9 @@ class BigAnimalProvider():
 
     def get_volume_types(self, region_id):
         """Get Volume Types."""
+        if region_id not in self.regions:
+            return []
+
         _url = "{0}/{1}".format(
             self.BASE_URL,
             'cloud-providers/azure/regions/{0}/volume-types'.format(region_id))
@@ -343,6 +351,9 @@ class BigAnimalProvider():
 
     def get_volume_properties(self, region_id, volume_type):
         """Get Volume Properties."""
+        if region_id not in self.regions:
+            return []
+
         _url = "{0}/{1}".format(
             self.BASE_URL,
             'cloud-providers/azure/regions/{0}/volume-types'
