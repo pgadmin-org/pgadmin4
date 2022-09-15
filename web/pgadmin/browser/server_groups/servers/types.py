@@ -62,6 +62,36 @@ class ServerType(object):
         paths = Preferences('paths', _('Paths'))
         bin_paths = copy.deepcopy(BINARY_PATHS)
 
+        def path_converter(old_path):
+            """
+            This function is used to convert old path to the
+            new paths which are in JSON format.
+            """
+            bin_paths_server_based = \
+                copy.deepcopy(BINARY_PATHS['pg_bin_paths'])
+            if key == 'ppas':
+                bin_paths_server_based = \
+                    copy.deepcopy(BINARY_PATHS['as_bin_paths'])
+
+            if not ServerType.is_binary_path_of_type_json(old_path):
+                set_binary_path(old_path, bin_paths_server_based,
+                                key, set_as_default=True)
+            else:
+                bin_path_dict = \
+                    {item['version']: item for item in bin_paths_server_based}
+                old_path_dict = \
+                    {item['version']: item for item in json.loads(old_path)}
+
+                for item in bin_path_dict:
+                    bin_path_dict[item].update(old_path_dict.get(item, {}))
+
+                bin_paths_server_based = list(bin_path_dict.values())
+
+            # Set the DEFAULT_BINARY_PATHS if any
+            ServerType.set_default_binary_path(bin_paths_server_based, key)
+
+            return json.dumps(bin_paths_server_based)
+
         for key in cls.registry:
             st = cls.registry[key]
 
@@ -90,35 +120,6 @@ class ServerType(object):
                     json.dumps(bin_paths['as_bin_paths']),
                     category_label=_('Binary paths')
                 )
-
-            def path_converter(old_path):
-                """
-                This function is used to convert old path to the
-                new paths which are in JSON format.
-                """
-                bin_paths_server_based = \
-                    copy.deepcopy(BINARY_PATHS['pg_bin_paths'])
-                if key == 'ppas':
-                    bin_paths_server_based = \
-                        copy.deepcopy(BINARY_PATHS['as_bin_paths'])
-
-                bin_path_dict = \
-                    {item['version']: item for item in bin_paths_server_based}
-                old_path_dict = \
-                    {item['version']: item for item in json.loads(old_path)}
-
-                for item in bin_path_dict:
-                    bin_path_dict[item].update(old_path_dict.get(item, {}))
-
-                bin_paths_server_based = list(bin_path_dict.values())
-                if not ServerType.is_binary_path_of_type_json(old_path):
-                    set_binary_path(old_path, bin_paths_server_based,
-                                    key, set_as_default=True)
-
-                # Set the DEFAULT_BINARY_PATHS if any
-                ServerType.set_default_binary_path(bin_paths_server_based, key)
-
-                return json.dumps(bin_paths_server_based)
 
             # Run the migrate user preferences.
             paths.migrate_user_preferences(st.utility_path.pid,

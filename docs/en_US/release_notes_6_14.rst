@@ -29,6 +29,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #7557 <https://redmine.postgresql.org/issues/7557>`_ -  Fixed an issue where pgAdmin failed to start due to bin path migration.
   | `Issue #7580 <https://redmine.postgresql.org/issues/7580>`_ -  Fixed an issue where backup does not work due to parameter 'preexec_fn' no longer being supported.
   | `Issue #7607 <https://redmine.postgresql.org/issues/7607>`_ -  Ensure that the browser tree should be refreshed after changing the ownership.
   | `Issue #7644 <https://redmine.postgresql.org/issues/7644>`_ -  Ensure that the dump servers functionality works from setup.py.
