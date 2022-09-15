@@ -34,7 +34,7 @@ class DebuggerStartListener(BaseTestGenerator):
         self.schema_id = self.schema_data['schema_id']
 
         self.test_data['funcowner'] = self.server["username"]
-
+        funcs_utils.set_up(self)
         function_info = debugger_utils.create_function(self, utils)
 
         self.func_id = json.loads(function_info.data)['node']['_id']

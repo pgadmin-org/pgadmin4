@@ -272,6 +272,9 @@ define('pgadmin.node.server', [
           // Call added method of node.js
           pgAdmin.Browser.Node.callbacks.added.apply(this, arguments);
 
+          // Check the database server against supported version.
+          checkSupportedVersion(data.version);
+
           if(data.was_connected) {
             fetch_connection_status(this, data, pgBrowser.tree, item);
           }
@@ -575,6 +578,17 @@ define('pgadmin.node.server', [
       },
     });
 
+    let checkSupportedVersion = function (version, info) {
+      if (!_.isUndefined(version) && !_.isNull(version) && version < 100000) {
+        Notify.warning(gettext('You have connected to a server version that is older ' +
+          'than is supported by pgAdmin. This may cause pgAdmin to break in strange and ' +
+          'unpredictable ways. Or a plague of frogs. Either way, you have been warned!') +
+          '<br /><br />' + gettext('Server connected'), null);
+      } else if (!_.isUndefined(info) && !_.isNull(info)) {
+        Notify.success(info);
+      }
+    };
+
     let connect_to_server = function(obj, data, tree, item, reconnect) {
     // Open properties dialog in edit mode
       let server_url = obj.generate_url(item, 'obj', data, true);
@@ -665,15 +679,8 @@ define('pgadmin.node.server', [
               pgBrowser.serverInfo || {};
             serverInfo[_data._id] = _.extend({}, _data);
 
-            if (_data.version < 90500) {
-              Notify.warning(gettext('You have connected to a server version that is older ' +
-                'than is supported by pgAdmin. This may cause pgAdmin to break in strange and ' +
-                'unpredictable ways. Or a plague of frogs. Either way, you have been warned!') +
-                '<br /><br />' +
-                res.info, null);
-            } else {
-              Notify.success(res.info);
-            }
+            // Check the database server against supported version.
+            checkSupportedVersion(_data.version, res.info);
 
             obj.trigger('connected', obj, _item, _data);
 
