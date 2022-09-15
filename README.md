@@ -263,15 +263,12 @@ See https://www.pgadmin.org/support/ for support options.
 
 # Project info
 
-The source code repository can be found here:
+A GitHub project for pgAdmin 4 can be found at the address below:
 
-http://git.postgresql.org/gitweb/?p=pgadmin4.git;a=summary
+https://github.com/pgadmin-org/pgadmin4
 
-A Redmine project for pgAdmin 4 can be found at the address below. A PostgreSQL
-community account is required to access this site. Please note that at present
-only project developers can log bug and feature requests:
-
-https://redmine.postgresql.org/projects/pgadmin4
+**NOTE:** The repository on GitHub is a clone of the main project repository.
+Please do not submit pull requests!
 
 If you wish to discuss pgAdmin 4, or contribute to the project, please use the
 pgAdmin Hackers mailing list:
