@@ -633,11 +633,10 @@ class RowSecurityView(PGChildNodeView):
 
         drop_sql = ''
         if drop_req:
-            drop_sql = '\n' + self.delete(gid=1, sid=sid, did=did,
-                                          scid=scid, tid=tid,
-                                          plid=oid, only_sql=True)
+            drop_sql = self.delete(gid=1, sid=sid, did=did,
+                                   scid=scid, tid=tid, plid=oid, only_sql=True)
         if drop_sql != '':
-            sql = drop_sql + '\n\n' + sql
+            sql = drop_sql + '\n\n'
         return sql
 
     @check_precondition
