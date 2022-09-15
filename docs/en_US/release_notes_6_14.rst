@@ -39,3 +39,4 @@ Bug fixes
   | `Issue #7656 <https://redmine.postgresql.org/issues/7656>`_ -  Fixed an issue where textarea of the JSON Editor does not resize with dialog.
   | `Issue #7663 <https://redmine.postgresql.org/issues/7663>`_ -  Fixed ModuleNotFoundError when running setup.py to load/dump servers.
   | `Issue #7693 <https://redmine.postgresql.org/issues/7693>`_ -  Replace the language selection 'Brazilian' with 'Portuguese (Brazilian).
+  | `Issue #7709 <https://redmine.postgresql.org/issues/7709>`_ -  Fixed an issue where ERD throws an error if variable is added to the column.

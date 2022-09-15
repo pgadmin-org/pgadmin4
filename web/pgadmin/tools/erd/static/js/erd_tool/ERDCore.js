@@ -285,8 +285,8 @@ export default class ERDCore {
         Object.values(existPort.getLinks()).forEach((link)=>{
           self.removeOneToManyLink(link);
         });
+        tableNode.removePort(existPort);
       }
-      tableNode.removePort(existPort);
     });
   }
 
