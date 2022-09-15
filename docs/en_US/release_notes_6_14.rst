@@ -19,26 +19,28 @@ New features
 Housekeeping
 ************
 
-  | `Issue #6133 <https://redmine.postgresql.org/issues/6133>`_ -  Port schema diff to React.
-  | `Issue #6134 <https://redmine.postgresql.org/issues/6134>`_ -  Remove Backgrid and Backform.
-  | `Issue #7343 <https://redmine.postgresql.org/issues/7343>`_ -  Port the remaining components of the ERD Tool to React.
-  | `Issue #7446 <https://redmine.postgresql.org/issues/7446>`_ -  Updated keyboard shortcut documentation.
-  | `Issue #7619 <https://redmine.postgresql.org/issues/7619>`_ -  Remove Alertify from pgAdmin completely.
-  | `Issue #7622 <https://redmine.postgresql.org/issues/7622>`_ -  Port search object dialog to React.
+  | `Issue #4059 <https://github.com/postgres/pgadmin4/issues/4059>`_ -  Port schema diff to React. (RM #6133)
+  | `Issue #4060 <https://github.com/postgres/pgadmin4/issues/4060>`_ -  Remove Backgrid and Backform. (RM #6134)
+  | `Issue #5035 <https://github.com/postgres/pgadmin4/issues/5035>`_ -  Port the remaining components of the ERD Tool to React. (RM #7343)
+  | `Issue #5120 <https://github.com/postgres/pgadmin4/issues/5120>`_ -  Updated keyboard shortcut documentation. (RM #7446)
+  | `Issue #5260 <https://github.com/postgres/pgadmin4/issues/5260>`_ -  Remove Alertify from pgAdmin completely. (RM #7619)
+  | `Issue #5263 <https://github.com/postgres/pgadmin4/issues/5263>`_ -  Port search object dialog to React. (RM #7622)
 
 Bug fixes
 *********
 
-  | `Issue #7557 <https://redmine.postgresql.org/issues/7557>`_ -  Fixed an issue where pgAdmin failed to start due to bin path migration.
-  | `Issue #7580 <https://redmine.postgresql.org/issues/7580>`_ -  Fixed an issue where backup does not work due to parameter 'preexec_fn' no longer being supported.
-  | `Issue #7607 <https://redmine.postgresql.org/issues/7607>`_ -  Ensure that the browser tree should be refreshed after changing the ownership.
-  | `Issue #7637 <https://redmine.postgresql.org/issues/7637>`_ -  Fixed an issue where the wrong SQL displayed in difference if the user create an RLS policy on the table without a column.
-  | `Issue #7644 <https://redmine.postgresql.org/issues/7644>`_ -  Ensure that the dump servers functionality works from setup.py.
-  | `Issue #7646 <https://redmine.postgresql.org/issues/7646>`_ -  Ensure that the Import/Export server menu option is visible.
-  | `Issue #7648 <https://redmine.postgresql.org/issues/7648>`_ -  Fixed API test case for change password in the server mode.
-  | `Issue #7649 <https://redmine.postgresql.org/issues/7649>`_ -  Fixed an issue with the non-visibility of columns added prior to import/export data.
-  | `Issue #7656 <https://redmine.postgresql.org/issues/7656>`_ -  Fixed an issue where textarea of the JSON Editor does not resize with dialog.
-  | `Issue #7663 <https://redmine.postgresql.org/issues/7663>`_ -  Fixed ModuleNotFoundError when running setup.py to load/dump servers.
-  | `Issue #7693 <https://redmine.postgresql.org/issues/7693>`_ -  Replace the language selection 'Brazilian' with 'Portuguese (Brazilian).
-  | `Issue #7695 <https://redmine.postgresql.org/issues/7695>`_ -  Fixed an issue where server names with special characters are not displayed correctly in the process tab.
-  | `Issue #7709 <https://redmine.postgresql.org/issues/7709>`_ -  Fixed an issue where ERD throws an error if variable is added to the column.
+  | `Issue #5144 <https://github.com/postgres/pgadmin4/issues/5144>`_ -  Ensure that if big animal authentication is aborted, API calls should be stopped. (RM #7472)
+  | `Issue #5209 <https://github.com/postgres/pgadmin4/issues/5209>`_ -  Fixed an issue where pgAdmin failed to start due to bin path migration. (RM #7557)
+  | `Issue #5230 <https://github.com/postgres/pgadmin4/issues/5230>`_ -  Fixed an issue where backup does not work due to parameter 'preexec_fn' no longer being supported. (RM #7580)
+  | `Issue #5250 <https://github.com/postgres/pgadmin4/issues/5250>`_ -  Ensure that the browser tree should be refreshed after changing the ownership. (RM #7607)
+  | `Issue #5274 <https://github.com/postgres/pgadmin4/issues/5274>`_ -  Fixed the error message displayed when clicking the cloud server for which deployment is in progress. (RM #7636)
+  | `Issue #5275 <https://github.com/postgres/pgadmin4/issues/5275>`_ -  Fixed an issue where the wrong SQL displayed in difference if the user create an RLS policy on the table without a column. (RM #7637)
+  | `Issue #5282 <https://github.com/postgres/pgadmin4/issues/5282>`_ -  Ensure that the dump servers functionality works from setup.py. (RM #7644)
+  | `Issue #5284 <https://github.com/postgres/pgadmin4/issues/5284>`_ -  Ensure that the Import/Export server menu option is visible. (RM #7646)
+  | `Issue #5286 <https://github.com/postgres/pgadmin4/issues/5286>`_ -  Fixed API test case for change password in the server mode. (RM #7648)
+  | `Issue #5287 <https://github.com/postgres/pgadmin4/issues/5287>`_ -  Fixed an issue with the non-visibility of columns added prior to import/export data. (RM #7649)
+  | `Issue #5292 <https://github.com/postgres/pgadmin4/issues/5292>`_ -  Fixed an issue where textarea of the JSON Editor does not resize with dialog. (RM #7656)
+  | `Issue #5299 <https://github.com/postgres/pgadmin4/issues/5299>`_ -  Fixed ModuleNotFoundError when running setup.py to load/dump servers. (RM #7663)
+  | `Issue #5323 <https://github.com/postgres/pgadmin4/issues/5323>`_ -  Replace the language selection 'Brazilian' with 'Portuguese (Brazilian). (RM #7693)
+  | `Issue #5325 <https://github.com/postgres/pgadmin4/issues/5325>`_ -  Fixed an issue where server names with special characters are not displayed correctly in the process tab. (RM #7695)
+  | `Issue #5333 <https://github.com/postgres/pgadmin4/issues/5333>`_ -  Fixed an issue where ERD throws an error if variable is added to the column. (RM #7709)

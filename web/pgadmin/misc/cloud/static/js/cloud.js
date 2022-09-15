@@ -92,7 +92,7 @@ define('pgadmin.misc.cloud', [
 
       ReactDOM.render(
         <Theme>
-          <CloudWizard nodeInfo={info} nodeData={d}
+          <CloudWizard nodeInfo={info} nodeData={d} cloudPanel={panel}
             onClose={() => {
               ReactDOM.unmountComponentAtNode(j[0]);
               panel.close();

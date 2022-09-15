@@ -186,7 +186,7 @@ export default class BgProcessManager {
       .then((res)=>{
         let _server = res.data?.data?.node;
         if(!_server) {
-          Notifier.error(gettext('Cloud server information not available'));
+          Notifier.error(gettext('Cloud server deployment is pending'));
           return;
         }
         let  _server_path = '/browser/server_group_' + _server.gid + '/' + _server.id,

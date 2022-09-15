@@ -62,7 +62,7 @@ const useStyles = makeStyles(() =>
 export const CloudWizardEventsContext = React.createContext();
 
 
-export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
+export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) {
   const classes = useStyles();
 
   const eventBus = React.useRef(new EventBus());
@@ -288,7 +288,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
     );
 
     setErrMsg([MESSAGE_TYPE.INFO, gettext('EDB BigAnimal authentication process is in progress...') + '<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
-    window.open(verificationURI, 'edb_biganimal_authentication');
+    let child = window.open(verificationURI, 'edb_biganimal_authentication');
     let _url = url_for('biganimal.verification_ack') ;
     const myInterval = setInterval(() => {
       axiosApi.get(_url)
@@ -307,12 +307,20 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
             setErrMsg([MESSAGE_TYPE.INFO, gettext('Authentication completed successfully but you do not have permission to create the cluster.')]);
             setVerificationIntiated(false);
             clearInterval(myInterval);
+          }else if (child.closed) {
+            setVerificationIntiated(false);
+            setErrMsg([MESSAGE_TYPE.ERROR, gettext('Authentication is aborted.')]);
+            clearInterval(myInterval);
           }
         })
         .catch((error) => {
           setErrMsg([MESSAGE_TYPE.ERROR, gettext(`Error while verifying EDB BigAnimal: ${error.response.data.errormsg}`)]);
         });
     }, 1000);
+
+    cloudPanel.on(window.wcDocker.EVENT.CLOSED, function() {
+      clearInterval(myInterval);
+    });
 
   };
 
@@ -450,5 +458,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose}) {
 CloudWizard.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  cloudPanel: PropTypes.object
 };
