@@ -98,7 +98,7 @@ class IEMessage(IProcessDesc):
 
         if s is None:
             return _("Not available")
-        return html.safe_str("{0} ({1}:{2})".format(s.name, s.host, s.port))
+        return "{0} ({1}:{2})".format(s.name, s.host, s.port)
 
     @property
     def message(self):
@@ -107,9 +107,7 @@ class IEMessage(IProcessDesc):
             "Copying table data '{0}.{1}' on database '{2}' "
             "and server '{3}'"
         ).format(
-            html.safe_str(self.schema),
-            html.safe_str(self.table),
-            html.safe_str(self.database),
+            self.schema, self.table, self.database,
             self.get_server_name()
         )
 

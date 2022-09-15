@@ -923,7 +923,7 @@ def signal_runtime():
 
 if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
     @blueprint.route("/change_password", endpoint="change_password",
-                     methods=['POST'])
+                     methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
     @login_required
     def change_password():
@@ -1011,7 +1011,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
             user=user, token=token)
 
     @blueprint.route("/reset_password", endpoint="forgot_password",
-                     methods=['POST'])
+                     methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
     @anonymous_user_required
     def forgot_password():

@@ -115,9 +115,6 @@ class BackupMessage(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
-        s.name = html.safe_str(s.name)
-        host = html.safe_str(host)
-        port = html.safe_str(port)
         return "{0} ({1}:{2})".format(s.name, host, port)
 
     @property
@@ -140,9 +137,7 @@ class BackupMessage(IProcessDesc):
             return _(
                 "Backing up an object on the server '{0}' "
                 "from database '{1}'"
-            ).format(server_name,
-                     html.safe_str(self.database)
-                     )
+            ).format(server_name, self.database)
         if self.backup_type == BACKUP.GLOBALS:
             return _("Backing up the global objects on "
                      "the server '{0}'").format(

@@ -181,7 +181,7 @@ class Message(IProcessDesc):
 
         if s is None:
             return gettext("Not available")
-        return html.safe_str("{0} ({1}:{2})".format(s.name, s.host, s.port))
+        return "{0} ({1}:{2})".format(s.name, s.host, s.port)
 
     def details(self, cmd, args):
         return {

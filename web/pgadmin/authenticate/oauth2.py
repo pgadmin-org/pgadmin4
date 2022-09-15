@@ -48,7 +48,7 @@ def init_app(app):
     blueprint = Oauth2Module(MODULE_NAME, __name__, static_url_path='')
 
     @blueprint.route('/authorize', endpoint="authorize",
-                     methods=['POST'])
+                     methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
     def oauth_authorize():
         auth_obj = session['auth_obj']
@@ -66,7 +66,7 @@ def init_app(app):
         return redirect(get_post_login_redirect())
 
     @blueprint.route('/logout', endpoint="logout",
-                     methods=['POST'])
+                     methods=['GET', 'POST'])
     @pgCSRFProtect.exempt
     def oauth_logout():
         if not current_user.is_authenticated:
