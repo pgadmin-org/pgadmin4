@@ -44,3 +44,4 @@ Bug fixes
   | `Issue #5323 <https://github.com/postgres/pgadmin4/issues/5323>`_ -  Replace the language selection 'Brazilian' with 'Portuguese (Brazilian). (RM #7693)
   | `Issue #5325 <https://github.com/postgres/pgadmin4/issues/5325>`_ -  Fixed an issue where server names with special characters are not displayed correctly in the process tab. (RM #7695)
   | `Issue #5333 <https://github.com/postgres/pgadmin4/issues/5333>`_ -  Fixed an issue where ERD throws an error if variable is added to the column. (RM #7709)
+  | `Issue #5343 <https://github.com/postgres/pgadmin4/issues/5343>`_ -  Fixes a redirect vulnerability when the user opens the pgAdmin URL.

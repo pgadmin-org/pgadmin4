@@ -16,11 +16,10 @@ from flask import current_app, flash, Response, request, url_for, \
     session, redirect
 from flask_babel import gettext
 from flask_security.views import _security
-from flask_security.utils import get_post_logout_redirect, \
-    get_post_login_redirect, logout_user
+from flask_security.utils import get_post_logout_redirect, logout_user
 
 from pgadmin.model import db, User
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
 from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP
 from pgadmin.authenticate.registry import AuthSourceRegistry
 
@@ -145,7 +144,7 @@ def login():
 
         if 'auth_obj' in session:
             session.pop('auth_obj')
-        return redirect(get_post_login_redirect())
+        return redirect(get_safe_post_login_redirect())
 
     elif isinstance(msg, Response):
         return msg

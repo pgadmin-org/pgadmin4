@@ -16,14 +16,13 @@ from flask import current_app, url_for, session, request,\
     redirect, Flask, flash
 from flask_babel import gettext
 from flask_security import login_user, current_user
-from flask_security.utils import get_post_logout_redirect, \
-    get_post_login_redirect, logout_user
+from flask_security.utils import get_post_logout_redirect, logout_user
 
 from pgadmin.authenticate.internal import BaseAuthentication
 from pgadmin.model import User
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import OAUTH2
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.model import db
 
@@ -58,12 +57,12 @@ def init_app(app):
             session['auth_source_manager'] = auth_obj.as_dict()
             if 'auth_obj' in session:
                 session.pop('auth_obj')
-            return redirect(get_post_login_redirect())
+            return redirect(get_safe_post_login_redirect())
         if 'auth_obj' in session:
             session.pop('auth_obj')
         logout_user()
         flash(msg, 'danger')
-        return redirect(get_post_login_redirect())
+        return redirect(get_safe_post_login_redirect())
 
     @blueprint.route('/logout', endpoint="logout",
                      methods=['GET', 'POST'])

@@ -14,9 +14,10 @@ import subprocess
 from collections import defaultdict
 from operator import attrgetter
 
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, url_for
 from flask_babel import gettext
 from flask_security import current_user, login_required
+from flask_security.utils import get_post_login_redirect
 from threading import Lock
 
 from .paths import get_storage_directory
@@ -831,3 +832,14 @@ class KeyManager:
 
             if user is not None:
                 del self.users[current_user.id]
+
+
+def get_safe_post_login_redirect():
+    allow_list = [
+        url_for('browser.index')
+    ]
+    url = get_post_login_redirect()
+    if url in allow_list:
+        return url
+
+    return "/"
