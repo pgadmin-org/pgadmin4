@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-15 19:29+0530\n"
-"PO-Revision-Date: 2022-06-27 02:43+0900\n"
+"PO-Revision-Date: 2022-09-19 03:31+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -650,18 +650,18 @@ msgstr "統計タブに表示する pgAgent ジョブ履歴の最大行数です
 
 #: pgadmin/browser/register_browser_preferences.py:123
 msgid "Process details/logs retention days"
-msgstr ""
+msgstr "プロセスの詳細/ログを保管しておく日数"
 
 #: pgadmin/browser/register_browser_preferences.py:125
 #: pgadmin/browser/static/js/browser.js:312
 msgid "Processes"
-msgstr ""
+msgstr "プロセス"
 
 #: pgadmin/browser/register_browser_preferences.py:126
 msgid ""
 "After this many days, the process info and logs will be automatically "
 "cleared."
-msgstr ""
+msgstr "この日数が過ぎたら、プロセスの情報とログを自動的に消去します。"
 
 #: pgadmin/browser/register_browser_preferences.py:133
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:41
@@ -1181,7 +1181,7 @@ msgstr "EDB Advanced Server のバイナリパス"
 msgid ""
 "Path to the directory containing the EDB Advanced Server utility programs"
 " (pg_dump, pg_restore etc)."
-msgstr "EDB Advanced Server ユーティリティプログラム (pg_dump, pg_restore など) を含むディレクトリのパスです。"
+msgstr "EDB Advanced Server のユーティリティプログラム (pg_dump, pg_restore など) を含むディレクトリのパスです。"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:26
 msgid "EDB Advanced Server"
@@ -1196,7 +1196,7 @@ msgstr "PostgreSQL のバイナリパス"
 msgid ""
 "Path to the directory containing the PostgreSQL utility programs "
 "(pg_dump, pg_restore etc)."
-msgstr "PostgreSQL ユーティリティプログラム (pg_dump, pg_restore など) を含むディレクトリのパスです。"
+msgstr "PostgreSQL のユーティリティプログラム (pg_dump, pg_restore など) を含むディレクトリのパスです。"
 
 #: pgadmin/browser/server_groups/servers/types.py:62
 #: pgadmin/help/__init__.py:53
@@ -6028,11 +6028,11 @@ msgstr "マテリアライズドビューをリフレッシュ"
 #: pgadmin/tools/maintenance/__init__.py:67
 #: pgadmin/tools/restore/__init__.py:83
 msgid "Not available"
-msgstr ""
+msgstr "利用不可"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:193
 msgid "Refresh MView"
-msgstr ""
+msgstr "マテリアライズドビューをリフレッシュ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:204
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:46
@@ -8158,11 +8158,11 @@ msgstr "一般"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:64
 msgid "Reassign"
-msgstr ""
+msgstr "移譲"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:65
 msgid "Drop"
-msgstr ""
+msgstr "削除"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:67
 msgid ""
@@ -8200,17 +8200,17 @@ msgstr "操作を実行する対象のデータベースです"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:176
 msgid "'Reassign objects to' can not be empty"
-msgstr ""
+msgstr "'オブジェクトの移譲先' は必須です"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:182
 msgid "'From database ' can not be empty"
-msgstr ""
+msgstr "'対象データベース ' は必須です"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:187
 msgid ""
 "Are you sure you wish to ${state.role_op} all the objects owned by the "
 "selected role?"
-msgstr ""
+msgstr "選択したロールが所有しているオブジェクトすべてを ${state.role_op} しますか？"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:195
 #: pgadmin/browser/static/js/node.js:1291
@@ -8226,7 +8226,7 @@ msgstr "エラー"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:226
 msgid "Reassign/Drop Owned - ${data.label}"
-msgstr ""
+msgstr "所有オブジェクトを移譲/削除 - ${data.label}"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:43
 msgid "Set as default"
@@ -8448,7 +8448,7 @@ msgstr "pgAdmin がサポートしていない、古いバージョンのサー�
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:586
 msgid "Server connected"
-msgstr ""
+msgstr "サーバに接続しました"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:648
 msgid "Connect to server."
@@ -9352,19 +9352,19 @@ msgstr "最終変更日時"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:136
 msgid "Sessions"
-msgstr ""
+msgstr "セッション"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:136
 msgid "Locks"
-msgstr ""
+msgstr "ロック"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:136
 msgid "Prepared Transactions"
-msgstr ""
+msgstr "プリペアドトランザクション"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:144
 msgid "Configuration"
-msgstr ""
+msgstr "構成"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:164
 msgid "Category"
@@ -9767,32 +9767,32 @@ msgstr "バックグラウンドプロセス '{0}' を終了できませんで�
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessManager.js:197
 msgid "Cloud server deployment is pending"
-msgstr ""
+msgstr "クラウドサーバの展開が保留中です"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessManager.js:220
 msgid "Failed Cloud Deployment."
-msgstr ""
+msgstr "クラウドの展開に失敗しました。"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessNotify.jsx:81
 msgid "Process started"
-msgstr ""
+msgstr "プロセスを開始しました"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessNotify.jsx:87
 msgid "Process completed"
-msgstr ""
+msgstr "プロセスが完了しました"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessNotify.jsx:90
 msgid "Process terminated"
-msgstr ""
+msgstr "プロセスが中断されました"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessNotify.jsx:93
 msgid "Process failed"
-msgstr ""
+msgstr "プロセスが失敗しました"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:100
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:97
 msgid "Not started"
-msgstr ""
+msgstr "開始していません"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:115
 msgid "Running..."
@@ -9825,11 +9825,11 @@ msgstr "致命的なエラー"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:162
 msgid "Running command"
-msgstr ""
+msgstr "コマンドを実行しています"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:166
 msgid "Running query"
-msgstr ""
+msgstr "クエリを実行しています"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:173
 #: pgadmin/misc/file_manager/__init__.py:387
@@ -9844,7 +9844,7 @@ msgstr "プロセスのログを読み込んでいます..."
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:184
 msgid "No logs available."
-msgstr ""
+msgstr "ログがありません。"
 
 #: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:195
 msgid "Execution time"
@@ -9856,19 +9856,19 @@ msgstr "秒"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:98
 msgid "Running"
-msgstr ""
+msgstr "実行しています"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:99
 msgid "Finished"
-msgstr ""
+msgstr "完了しました"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:100
 msgid "Terminated"
-msgstr ""
+msgstr "中断されました"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:101
 msgid "Terminating..."
-msgstr ""
+msgstr "中断しています..."
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:137
 msgid "Stop Process"
@@ -9876,27 +9876,27 @@ msgstr "プロセスを停止"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:165
 msgid "View details"
-msgstr ""
+msgstr "詳細を表示"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:208
 msgid "Start Time"
-msgstr ""
+msgstr "開始時刻"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:232
 msgid "Time Taken (sec)"
-msgstr ""
+msgstr "所要時間 (秒)"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:277
 msgid "Acknowledge and Remove"
-msgstr ""
+msgstr "確認して削除"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:279
 msgid "Remove Processes"
-msgstr ""
+msgstr "プロセスを削除"
 
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:279
 msgid "Are you sure you want to remove the selected processes?"
-msgstr ""
+msgstr "選択したプロセスを削除しますか？"
 
 #: pgadmin/misc/bgprocess/static/js/showDetails.jsx:16
 #, python-format
@@ -9963,19 +9963,19 @@ msgstr "クラウドウィザードのデータ保存中にエラーが発生し
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:237
 msgid "Validating credentials..."
-msgstr ""
+msgstr "資格情報を検証しています..."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:254
 msgid "Error while checking cloud credentials"
-msgstr ""
+msgstr "クラウドの資格情報を確認中にエラーが発生しました"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:259
 msgid "Getting EDB BigAnimal verification URL..."
-msgstr ""
+msgstr "EDB BigAnimal の認証 URL を取得しています..."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:272
 msgid "Checking cluster name availability..."
-msgstr ""
+msgstr "クラスタ名が使用できるかを確認しています..."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:276
 msgid "Specified cluster name is already used."
@@ -9983,7 +9983,7 @@ msgstr "指定したクラスタ名はすでに使用されています。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:298
 msgid "EDB BigAnimal authentication process is in progress..."
-msgstr ""
+msgstr "EDB BigAnimal への認証処理が進行中です..."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:305
 #: pgadmin/misc/cloud/static/js/azure.js:61
@@ -10002,23 +10002,23 @@ msgstr "認証は正常に完了しましたが、クラスタを作成できる
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:320
 msgid "Authentication is aborted."
-msgstr ""
+msgstr "認証が中止されました。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:325
 msgid "Error while verifying EDB BigAnimal: ${error.response.data.errormsg}"
-msgstr ""
+msgstr "EDB BigAnimal への認証中にエラーが発生しました: ${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:344
 msgid "Amazon RDS"
-msgstr ""
+msgstr "Amazon RDS"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:345
 msgid "EDB BigAnimal"
-msgstr ""
+msgstr "EDB BigAnimal"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:346
 msgid "Azure PostgreSQL"
-msgstr ""
+msgstr "Azure PostgreSQL"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:352
 #: pgadmin/misc/cloud/static/js/cloud.js:95
@@ -10051,7 +10051,7 @@ msgstr "クラウドインスタンスを作成する前に、詳細を今一度
 #: pgadmin/misc/cloud/static/js/azure.js:322
 #: pgadmin/misc/cloud/static/js/biganimal.js:177
 msgid "Cloud"
-msgstr ""
+msgstr "クラウド"
 
 #: pgadmin/misc/cloud/static/js/aws.js:225
 #: pgadmin/misc/cloud/static/js/biganimal.js:178
@@ -10062,7 +10062,7 @@ msgstr "インスタンス名"
 #: pgadmin/misc/cloud/static/js/aws.js:226
 #: pgadmin/misc/cloud/static/js/azure.js:344
 msgid "Public IP"
-msgstr ""
+msgstr "パブリック IP"
 
 #: pgadmin/misc/cloud/static/js/aws.js:230
 #: pgadmin/misc/cloud/static/js/azure.js:330
@@ -10097,7 +10097,7 @@ msgstr "データベース名"
 
 #: pgadmin/misc/cloud/static/js/azure.js:72
 msgid "Error while verifying Microsoft Azure: ${error}"
-msgstr ""
+msgstr "Microsoft Azure への認証中にエラーが発生しました: ${error}"
 
 #: pgadmin/misc/cloud/static/js/azure.js:304
 msgid ""
@@ -10127,11 +10127,11 @@ msgstr "可用性ゾーン"
 #: pgadmin/misc/cloud/static/js/azure.js:348
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:628
 msgid "High availability"
-msgstr ""
+msgstr "高可用性"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:53
 msgid "Azure Tenant ID is required for Azure interactive authentication."
-msgstr ""
+msgstr "Azure の対話認証には Azure テナント ID が必要です。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:64
 msgid "Authenticate via"
@@ -10205,11 +10205,11 @@ msgstr "ストレージの容量"
 msgid ""
 "The Admin username must be between 1-63 characters long, and must only "
 "contain alphabetic characters and numbers."
-msgstr ""
+msgstr "管理者ユーザ名は 1-63 文字の英数字にしてください。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:444
 msgid "Specified Admin username is not allowed."
-msgstr ""
+msgstr "指定した管理者ユーザ名は許可されません。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:462
 msgid ""
@@ -10238,6 +10238,9 @@ msgid ""
 "\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", "
 "\"root\", \"guest\", \"public\", or start with \"pg_\"."
 msgstr ""
+"管理者ユーザ名は 1-63 文字にし、英数字とアンダースコアだけを使ってください。また、ユーザ名を \"azure_superuser\", "
+"\"azure_pg_admin\", \"admin\", \"administrator\", \"root\", \"guest\", "
+"\"public\" のどれかにしたり、\"pg_\" で始めることはできません。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:502
 msgid ""
@@ -10269,6 +10272,9 @@ msgid ""
 "addresses/ranges separated with commas, for example: \"192.168.0.50, "
 "192.168.0.100 -  192.168.0.200\""
 msgstr ""
+"どの IP アドレスからのインバウンドトラフィックを許容するかです。IP アドレスの一覧か、IP アドレスの範囲 (開始 IP アドレス - 終了"
+" IP アドレス) を指定できます。複数の IP アドレス/範囲を追加するには、コンマで区切って並べてください。例: "
+"\"192.168.0.50, 192.168.0.100 -  192.168.0.200\""
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:559
 msgid "Zone redundant high availability"
@@ -10343,15 +10349,15 @@ msgstr "パブリック IP の範囲は必須です。"
 msgid ""
 "Name must be more than 2 characters and must only contain lowercase "
 "letters, numbers, and hyphens"
-msgstr ""
+msgstr "名前は 3 文字以上の小文字アルファベット、数字、ハイフンにしてください"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:180
 msgid "Cluster type"
-msgstr ""
+msgstr "クラスタの種類"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:181
 msgid "Public IPs"
-msgstr ""
+msgstr "パブリック IP"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:188
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:365
@@ -10375,11 +10381,11 @@ msgstr "ボリュームのプロパティ"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:199
 msgid "Database Type"
-msgstr ""
+msgstr "データベースの種類"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:200
 msgid "Database Version"
-msgstr ""
+msgstr "データベースのバージョン"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:201
 msgid "High Availability"
@@ -10387,7 +10393,7 @@ msgstr "高可用性"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:202
 msgid "No. of Standby Replicas"
-msgstr ""
+msgstr "スタンバイレプリカの数"
 
 #: pgadmin/misc/cloud/static/js/cloud.js:58
 #: pgadmin/misc/cloud/static/js/cloud.js:70
@@ -10403,6 +10409,8 @@ msgid ""
 "IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
 "Add multiple IP addresses/ranges separated with commas."
 msgstr ""
+"インバウンドトラフィックを許容する IP アドレスの範囲です - 例: 127.0.0.1/32。複数の IP "
+"アドレス/範囲を追加するには、コンマで区切って並べてください。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:97
 msgid "The cloud instance will be deployed in the selected region."
@@ -10437,6 +10445,8 @@ msgid ""
 "At least 8 printable ASCII characters. Cannot contain any of the "
 "following: / (slash), '(single quote), \"(double quote) and @ (at sign)."
 msgstr ""
+"最低 8 文字の印字可能な ASCII 文字です。/ (スラッシュ), '(シングルクォート), \"(ダブルクォート), @ (アットマーク) "
+"の使用はできません。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:211
 msgid "Standard classes (includes m classes)"
@@ -10472,7 +10482,7 @@ msgstr "パスワードは 12 文字以上にしてください。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:499
 msgid "Please select number of stand by replicas."
-msgstr ""
+msgstr "スタンバイレプリカの数を選択してください。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:518
 msgid "Database type"
@@ -10488,6 +10498,8 @@ msgid ""
 "Add multiple IP addresses/ranges separated with commas. Leave blank for "
 "0.0.0.0/0"
 msgstr ""
+"インバウンドトラフィックを許容する IP アドレスの範囲です - 例: 127.0.0.1/32。複数の IP "
+"アドレス/範囲を追加するには、コンマで区切って並べてください。空欄のままだと 0.0.0.0/0 になります"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:587
 msgid "Instance Type"
@@ -10499,24 +10511,26 @@ msgid ""
 "standby replicas. Clusters are configured across availability zones in "
 "regions with availability zones."
 msgstr ""
+"高可用性のクラスタは、1 つのプライマリと 2 "
+"つまでのスタンバイレプリカで構成されています。クラスタは、可用性ゾーンのある地域の可用性ゾーン全体で構成されます。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:631
 msgid "Number of standby replicas"
-msgstr ""
+msgstr "スタンバイレプリカの数"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:634
 msgid ""
 "Adding standby replicas will increase your number of CPUs, as well as "
 "your cost."
-msgstr ""
+msgstr "スタンバイレプリカを追加することで CPU の数が増えますが、相応な費用もかかります。"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:636
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: pgadmin/misc/cloud/static/js/cloud_db_details_schema.ui.js:637
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: pgadmin/misc/cloud/utils/__init__.py:79
 msgid "Deployment on {0} is started for instance {1}."
@@ -10594,11 +10608,11 @@ msgstr "ファイル名の変更中にエラーがありました:"
 
 #: pgadmin/misc/file_manager/__init__.py:822
 msgid "There was an error deleting the file:"
-msgstr ""
+msgstr "ファイルの削除中にエラーがありました:"
 
 #: pgadmin/misc/file_manager/__init__.py:863
 msgid "There was an error adding the file:"
-msgstr ""
+msgstr "ファイルの追加中にエラーがありました:"
 
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:52
 msgid "Storage Manager..."
@@ -10611,7 +10625,7 @@ msgstr "ファイルを保存"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:533
 msgid "Are you sure you want to delete this file/folder?"
-msgstr ""
+msgstr "このファイル/フォルダを削除しますか？"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:574
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:75
@@ -10629,7 +10643,7 @@ msgstr "ホーム"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:668
 msgid "Go Back"
-msgstr ""
+msgstr "戻る"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:684
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:252
@@ -10645,27 +10659,27 @@ msgstr "ダウンロード"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:689
 msgid "New Folder"
-msgstr ""
+msgstr "新しいフォルダ"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:703
 msgid "Rename"
-msgstr ""
+msgstr "名前を変更"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:713
 msgid "Upload"
-msgstr ""
+msgstr "アップロード"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:716
 msgid "List View"
-msgstr ""
+msgstr "リスト表示"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:717
 msgid "Grid View"
-msgstr ""
+msgstr "グリッド表示"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:723
 msgid "Show Hidden Files"
-msgstr ""
+msgstr "隠しファイルを表示"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:760
 msgid "All Files"
@@ -10674,24 +10688,24 @@ msgstr "すべてのファイル"
 #: pgadmin/misc/file_manager/static/js/components/GridView.jsx:148
 #: pgadmin/misc/file_manager/static/js/components/ListView.jsx:183
 msgid "No files/folders found"
-msgstr ""
+msgstr "ファイル/フォルダがありません"
 
 #: pgadmin/misc/file_manager/static/js/components/ListView.jsx:142
 msgid "Date Modified"
-msgstr ""
+msgstr "変更日時"
 
 #: pgadmin/misc/file_manager/static/js/components/Uploader.jsx:125
 msgid "Remove from list"
-msgstr ""
+msgstr "一覧から削除"
 
 #: pgadmin/misc/file_manager/static/js/components/Uploader.jsx:190
 msgid "Drop files here, or click to select files."
-msgstr ""
+msgstr "ここにファイルをドロップするか、クリックしてファイルを選択します。"
 
 #: pgadmin/misc/file_manager/static/js/components/Uploader.jsx:191
 #, python-format
 msgid "The file size limit (per file) is %s MB."
-msgstr ""
+msgstr "ファイルサイズの上限は (ひとつにつき) %s MB です。"
 
 #: pgadmin/misc/file_manager/templates/file_manager/index.html:15
 #: pgadmin/static/js/helpers/wizard/Wizard.jsx:219
@@ -10885,6 +10899,9 @@ msgid ""
 "if a user is selected or delete any shared servers if no user is "
 "selected. There is no way to reverse this action."
 msgstr ""
+"<b></b> によって作成された共有サーバを移譲するユーザを選択してください。このユーザは現在 <b></b> 個の共有サーバを所有しています。"
+" </br></br> \"変更\" ボタンをクリックすると、所有権の移譲 (ユーザを選択した場合)、または対応する共有サーバの削除 "
+"(ユーザを選択しなかった場合) が行われます。この操作は元に戻せません。"
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:54
 msgid ""
@@ -10977,7 +10994,7 @@ msgstr "追加するリストアポイントの名前を入力してください
 
 #: pgadmin/static/js/Dialogs/RenamePanelContent.jsx:80
 msgid "Title cannot be empty"
-msgstr ""
+msgstr "題名は必須です"
 
 #: pgadmin/static/js/Dialogs/index.jsx:176
 msgid "Unlock Saved Passwords"
@@ -11002,7 +11019,7 @@ msgstr "他の操作をする前に、まずサーバから切断して、pgpass
 
 #: pgadmin/static/js/Dialogs/index.jsx:365
 msgid "Rename Panel ${_.escape(title)}"
-msgstr ""
+msgstr "パネル ${_.escape(title)} の題名を変更"
 
 #: pgadmin/static/js/Explain/Analysis.jsx:183
 msgid "Timings"
@@ -11236,11 +11253,11 @@ msgstr "色を選択"
 
 #: pgadmin/static/js/components/PgReactDataGrid.jsx:153
 msgid "No rows found."
-msgstr ""
+msgstr "行がありません。"
 
 #: pgadmin/static/js/components/PgTable.jsx:535
 msgid "No rows found"
-msgstr ""
+msgstr "行がありません"
 
 #: pgadmin/static/js/components/QueryThresholds.jsx:81
 msgid "Alert"
@@ -11418,11 +11435,11 @@ msgstr "サーバ '{0}' をバックアップしています"
 
 #: pgadmin/tools/backup/__init__.py:158
 msgid "Backup Object"
-msgstr ""
+msgstr "オブジェクトをバックアップ"
 
 #: pgadmin/tools/backup/__init__.py:160
 msgid "Backup Globals"
-msgstr ""
+msgstr "グローバルオブジェクトをバックアップ"
 
 #: pgadmin/tools/backup/__init__.py:162
 #: pgadmin/tools/backup/static/js/backup.js:181
@@ -12148,23 +12165,23 @@ msgstr "データベース/データベースオブジェクトを選択して�
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:70
 msgid "Connected"
-msgstr ""
+msgstr "接続しました"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:72
 msgid "Connecting"
-msgstr ""
+msgstr "接続しています"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:74
 msgid "Disconnected"
-msgstr ""
+msgstr "切断しました"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:91
 msgid "(Obtaining connection...)"
-msgstr ""
+msgstr "(接続を確立しています...)"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ConnectionBar.jsx:92
 msgid "(Connection failed)"
-msgstr ""
+msgstr "(接続に失敗しました)"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:297
 msgid "Preparing..."
@@ -12287,60 +12304,60 @@ msgstr "現在の変更を破棄しますか？"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:140
 msgid "Load Project"
-msgstr ""
+msgstr "プロジェクトを読み込む"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:146
 msgid "Save Project"
-msgstr ""
+msgstr "プロジェクトを保存"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:168
 msgid "Add Table"
-msgstr ""
+msgstr "テーブルを追加"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:173
 msgid "Edit Table"
-msgstr ""
+msgstr "テーブルを編集"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:178
 msgid "Clone Table"
-msgstr ""
+msgstr "テーブルを複製"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:183
 msgid "Drop Table/Relation"
-msgstr ""
+msgstr "テーブル/リレーションを削除"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:190
 msgid "One-to-Many Relation"
-msgstr ""
+msgstr "一対多のリレーション"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:195
 msgid "Many-to-Many Relation"
-msgstr ""
+msgstr "多対多のリレーション"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:202
 msgid "Add/Edit Note"
-msgstr ""
+msgstr "メモを追加/編集"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:207
 msgid "Auto Align"
-msgstr ""
+msgstr "自動整列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:212
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:285
 msgid "Show Details"
-msgstr ""
+msgstr "詳細を表示"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:220
 msgid "Zoom In"
-msgstr ""
+msgstr "ズームイン"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:225
 msgid "Zoom to Fit"
-msgstr ""
+msgstr "画面に合わせてズーム"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:230
 msgid "Zoom Out"
-msgstr ""
+msgstr "ズームアウト"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:244
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:562
@@ -12369,7 +12386,7 @@ msgstr "参照先の列"
 
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:289
 msgid "Check Note"
-msgstr ""
+msgstr "メモを確認"
 
 #: pgadmin/tools/erd/static/js/erd_tool/nodes/TableNode.jsx:297
 msgid "Fetching..."
@@ -12438,7 +12455,7 @@ msgstr "インポート/エクスポート"
 
 #: pgadmin/tools/import_export/__init__.py:106
 msgid "Copying table data '{0}.{1}' on database '{2}' and server '{3}'"
-msgstr ""
+msgstr "サーバ '{3}' のデータベース '{2}' にあるテーブル '{0}.{1}' のデータをコピーしています"
 
 #: pgadmin/tools/import_export/__init__.py:116
 msgid "Import - "
@@ -12454,11 +12471,11 @@ msgstr "テーブルのデータをコピーしています"
 
 #: pgadmin/tools/import_export/__init__.py:127
 msgid "Import Data"
-msgstr ""
+msgstr "データをインポート"
 
 #: pgadmin/tools/import_export/__init__.py:127
 msgid "Export Data"
-msgstr ""
+msgstr "データをエクスポート"
 
 #: pgadmin/tools/import_export/__init__.py:281
 msgid "Please connect to the server first..."
@@ -12574,7 +12591,7 @@ msgstr "コピーする列の一覧です (任意)。何も指定しなかった
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:229
 msgid "NOT NULL columns"
-msgstr ""
+msgstr "NOT NULL 列"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:236
 msgid "Not null columns..."
@@ -12588,7 +12605,7 @@ msgid ""
 "are not quoted. This option is allowed only in import, and only when "
 "using CSV format."
 msgstr ""
-"指定した列の値を NULL 文字と見なしません。既定では空になっているため、引用符付けに関わらず、空の値は (NULL ではなく) 0 "
+"指定した列の値を NULL 文字と見なしません。既定だと NULL 文字は空なので、引用符付けに関わらず、空の値は (NULL ではなく) 0 "
 "文字の値と見なされます。このオプションはインポート時、かつ CSV 形式にのみ使用できます。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:40
@@ -12969,7 +12986,7 @@ msgstr "比較対象のみ"
 
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:110
 msgid "Error in schema diff initialize ${error.response.data}"
-msgstr ""
+msgstr "スキーマ比較の初期化エラー ${error.response.data}"
 
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:729
 msgid "No difference found"
@@ -12977,11 +12994,11 @@ msgstr "差異は見つかりませんでした"
 
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:734
 msgid "Loading result grid..."
-msgstr ""
+msgstr "結果グリッドを読み込んでいます..."
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:87
 msgid "DDL Comparision"
-msgstr ""
+msgstr "DDL の比較"
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:90
 msgid "Source"
@@ -13023,7 +13040,7 @@ msgstr "スキーマの比較エラー"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:329
 msgid "Generating script..."
-msgstr ""
+msgstr "スクリプトを生成しています..."
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:332
 msgid "-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
@@ -13051,15 +13068,15 @@ msgstr "スクリプトの生成エラー"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:579
 msgid " (this may take a few minutes)... ${res.data.data.diff_percentage} %"
-msgstr ""
+msgstr " (少し時間がかかります)... ${res.data.data.diff_percentage} %"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:612
 msgid "Error in connect database ${error.response.data}"
-msgstr ""
+msgstr "データベースへの接続エラー ${error.response.data}"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:647
 msgid "Error in connect server ${error.response.data}"
-msgstr ""
+msgstr "サーバへの接続エラー ${error.response.data}"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:689
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:481
@@ -13077,38 +13094,38 @@ msgstr "比較対象を選択"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:803
 msgid " Source and Target database server must be of the same major version."
-msgstr ""
+msgstr " 比較元と比較対象のデータベースサーバは同じメジャーバージョンで合わせてください。"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:804
 msgid " Database Compare:"
-msgstr ""
+msgstr " データベース比較:"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:805
 msgid " Select the server and database for the source and target and Click"
-msgstr ""
+msgstr " 比較元と比較対象のサーバ・データベースを選択し、"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:805
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:808
 msgid "Compare."
-msgstr ""
+msgstr "比較をクリックしてください。"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:807
 msgid "Schema Compare:"
-msgstr ""
+msgstr "スキーマ比較:"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:808
 msgid ""
 " Select the server, database and schema for the source and target and "
 "Click"
-msgstr ""
+msgstr " 比較元と比較対象のサーバ・データベース・スキーマを選択し、"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:810
 msgid "Note:"
-msgstr ""
+msgstr "注:"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:810
 msgid "The dependencies will not be resolved in the Schema comparison."
-msgstr ""
+msgstr "スキーマ比較では、オブジェクト間の依存関係を解決できません。"
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:122
 msgid "Object name"
@@ -13124,6 +13141,8 @@ msgid ""
 "%s objects are disabled in the browser. You can enable them in the <a "
 "id=\"prefdlgid\" class=\"pref-dialog-link\">preferences dialog</a>."
 msgstr ""
+"%sのオブジェクトはブラウザに表示されていませんが、<a id=\"prefdlgid\" class=\"pref-dialog-"
+"link\">設定ダイアログ</a>から有効にできます。"
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:306
 msgid "Locating..."
@@ -13292,7 +13311,7 @@ msgstr "スクラッチパッド"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:209
 msgid "Data Output"
-msgstr ""
+msgstr "データ出力"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:215
 msgid "Notifications"
@@ -13491,19 +13510,19 @@ msgstr "折れ線グラフ"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:404
 msgid "Stacked Line Chart"
-msgstr ""
+msgstr "積層型折れ線グラフ"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:405
 msgid "Bar Chart"
-msgstr ""
+msgstr "棒グラフ"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:406
 msgid "Stacked Bar Chart"
-msgstr ""
+msgstr "積層型棒グラフ"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:407
 msgid "Pie Chart"
-msgstr ""
+msgstr "円グラフ"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:416
 msgid "Generate"
@@ -13511,11 +13530,11 @@ msgstr "生成"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:418
 msgid "Collapse"
-msgstr ""
+msgstr "折り畳む"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:418
 msgid "Expand"
-msgstr ""
+msgstr "広げる"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:424
 msgid "X Axis"
@@ -13813,16 +13832,16 @@ msgstr "クエリの完了を待機しています..."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:328
 msgid "Connection Error"
-msgstr ""
+msgstr "接続エラー"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:331
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:332
 msgid "Execution Cancelled!"
-msgstr ""
+msgstr "実行をキャンセルしました！"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:334
 msgid "Execution Cancelled"
-msgstr ""
+msgstr "実行をキャンセルしました"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:649
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:70
@@ -14341,7 +14360,7 @@ msgstr "True の場合、自動補完時のキーワードが大文字で表示�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:669
 msgid "Autocomplete on key press"
-msgstr ""
+msgstr "キー押下時に自動補完"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:671
 msgid ""
@@ -14349,6 +14368,8 @@ msgid ""
 "CTRL/CMD + Space. If set to False, autocomplete is only activated when "
 "CTRL/CMD + Space is pressed."
 msgstr ""
+"True の場合、何らかのキーを押すたびに自動補完が発動します。False の場合、手動で Ctrl/Cmd + Space "
+"を押さない限り、自動補完は発動しません。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:715
 msgid "Keyword case"
@@ -14453,7 +14474,7 @@ msgstr "Tab キー、もしくは自動インデントによるタブの挿入�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:809
 msgid "Row Limit"
-msgstr "行数上限"
+msgstr "行数の上限"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:811
 msgid ""
@@ -14477,7 +14498,7 @@ msgstr "共有サーバが見つかりませんでした"
 
 #: pgadmin/tools/user_management/__init__.py:455
 msgid "Invalid email address {0}."
-msgstr ""
+msgstr "メールアドレス {0} が不正です。"
 
 #: pgadmin/tools/user_management/__init__.py:519
 msgid "Missing field: '{0}'"
@@ -14486,7 +14507,7 @@ msgstr "フィールドの不足: '{0}'"
 #: pgadmin/tools/user_management/__init__.py:545
 #: pgadmin/tools/user_management/__init__.py:579
 msgid "Unable to update user '{0}'"
-msgstr ""
+msgstr "ユーザ '{0}' を更新できません"
 
 #: pgadmin/tools/user_management/__init__.py:553
 msgid "'{0}' is not allowed to modify."
@@ -14510,46 +14531,46 @@ msgstr "ロック"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:137
 msgid "Username cannot be empty"
-msgstr ""
+msgstr "ユーザ名は必須です"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:150
 #, python-format
 msgid "User name '%s' already exists"
-msgstr ""
+msgstr "ユーザ名 '%s' はすでに存在します"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:161
 msgid "Email cannot be empty"
-msgstr ""
+msgstr "メールアドレスは必須です"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:165
 #, python-format
 msgid "Invalid email address: %s"
-msgstr ""
+msgstr "メールアドレスが不正です: %s"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:176
 #, python-format
 msgid "Email address '%s' already exists"
-msgstr ""
+msgstr "メールアドレス '%s' はすでに存在します"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:184
 #, python-format
 msgid "Password cannot be empty for user %s"
-msgstr ""
+msgstr "ユーザ %s のパスワードは必須です"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:188
 #, python-format
 msgid "Password must be at least 6 characters for user %s"
-msgstr ""
+msgstr "ユーザ %s のパスワードは 6 文字以上にしてください"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:196
 #, python-format
 msgid "Confirm Password cannot be empty for user %s"
-msgstr ""
+msgstr "ユーザ %s のパスワードの確認は必須です"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:204
 #, python-format
 msgid "Passwords do not match for user %s"
-msgstr ""
+msgstr "ユーザ %s のパスワードが一致しません"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:225
 msgid "Delete user?"
@@ -14561,14 +14582,14 @@ msgstr "このユーザを削除しますか？"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:251
 msgid "Change ownership"
-msgstr ""
+msgstr "所有権を変更"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:327
 msgid ""
 "The ownership of the shared server was changed or the shared server was "
 "deleted, so a browser tree refresh is required. Do you wish to refresh "
 "the tree?"
-msgstr ""
+msgstr "共有サーバの所有権が移譲、もしくは削除されたため、ブラウザツリーの再読み込みが必要です。ツリーを再読み込みしますか？"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:408
 msgid "User Management"
@@ -14882,576 +14903,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー: {0}"
-
-#~ msgid "Please enter a valid name."
-#~ msgstr "有効な名前を入力してください。"
-
-#~ msgid "Master password"
-#~ msgstr "マスタパスワード"
-
-#~ msgid ""
-#~ "Error while verification Microsoft Azure: "
-#~ "${error.response.data.errormsg}"
-#~ msgstr "Microsoft Azure への認証中にエラーが発生しました: ${error.response.data.errormsg}"
-
-#~ msgid "No permission to operate on specified path."
-#~ msgstr "指定されたパスで実行する権限がありません。"
-
-#~ msgid "Error occurred while checking access permission."
-#~ msgstr "アクセス権限の確認中にエラーが発生しました。"
-
-#~ msgid "Select file"
-#~ msgstr "ファイルを選択"
-
-#~ msgid "Drop files here to upload."
-#~ msgstr "アップロードするファイルを、ここへドロップしてください。"
-
-#~ msgid "Select file..."
-#~ msgstr "ファイルを選択..."
-
-#~ msgid "Validate file"
-#~ msgstr "ファイルを検証"
-
-#~ msgid "File Info"
-#~ msgstr "ファイルの情報"
-
-#~ msgid "Not null columns"
-#~ msgstr "NOT NULL 列"
-
-#~ msgid "<More charts coming soon>"
-#~ msgstr "<他のグラフも実装される予定です>"
-
-#~ msgid "Concurrently"
-#~ msgstr "同時実行"
-
-#~ msgid "Running Query:"
-#~ msgstr "クエリを実行中:"
-
-#~ msgid "Last statistics reset"
-#~ msgstr "最終統計リセット"
-
-#~ msgid "Tablespace conflicts"
-#~ msgstr "テーブル空間競合"
-
-#~ msgid "Lock conflicts"
-#~ msgstr "ロック競合"
-
-#~ msgid "Snapshot conflicts"
-#~ msgstr "スナップショット競合"
-
-#~ msgid "Bufferpin conflicts"
-#~ msgstr "バッファピン競合"
-
-#~ msgid "Deadlock conflicts"
-#~ msgstr "デッドロック競合"
-
-#~ msgid "Temporary files"
-#~ msgstr "一時ファイル"
-
-#~ msgid "Deadlocks"
-#~ msgstr "デッドロック"
-
-#~ msgid "Block read time"
-#~ msgstr "ブロック読み取り時間"
-
-#~ msgid "Block write time"
-#~ msgstr "ブロック書き込み時間"
-
-#~ msgid "Close error bar"
-#~ msgstr "エラーバーを閉じる"
-
-#~ msgid "Please provide a new role name"
-#~ msgstr "新しいロール名を指定してください"
-
-#~ msgid "%s Objects"
-#~ msgstr "オブジェクトの %s"
-
-#~ msgid "Are you sure you wish to %s all the objects owned by the selected role?"
-#~ msgstr "選択したロールが所有しているオブジェクトすべてを %s しますか？"
-
-#~ msgid "Role reassign/drop failed."
-#~ msgstr "ロールの移譲/削除に失敗しました。"
-
-#~ msgid "Reassign/Drop Owned - '%s'"
-#~ msgstr "所有オブジェクトを移譲/削除 - '%s'"
-
-#~ msgid "Waiting?"
-#~ msgstr "待機中"
-
-#~ msgid "Left panel logo"
-#~ msgstr "左パネルのロゴ"
-
-#~ msgid "Authentiction"
-#~ msgstr "認証"
-
-#~ msgid "yes"
-#~ msgstr "yes"
-
-#~ msgid "no"
-#~ msgstr "no"
-
-#~ msgid ""
-#~ "Server with id '{0}' is either "
-#~ "removed or does not exists for the"
-#~ " background process '{1}'"
-#~ msgstr "ID '{0}' のサーバは削除されたか、バックグラウンドプロセス '{1}' に存在しません"
-
-#~ msgid "Started"
-#~ msgstr "開始しました"
-
-#~ msgid "More details..."
-#~ msgstr "詳細..."
-
-#~ msgid "Error while verification EDB BigAnimal: ${error.response.data.errormsg}"
-#~ msgstr "EDB BigAnimal への認証中にエラーが発生しました: ${error.response.data.errormsg}"
-
-#~ msgid "Error while verification Microsoft Azure: ${error}"
-#~ msgstr ""
-
-#~ msgid "Azure Tenant Id is required for Azure interactive authentication."
-#~ msgstr "Azure の対話認証には Azure テナント ID が必要です。"
-
-#~ msgid ""
-#~ "Admin username must be more than 1"
-#~ " character & less than 63 and "
-#~ "must only contains characters and "
-#~ "numbers."
-#~ msgstr "管理者ユーザ名は 2 文字以上かつ 62 文字以下の英数字にしてください。"
-
-#~ msgid "Specified Admin username is not allowed"
-#~ msgstr "指定した管理者ユーザ名は許可されません"
-
-#~ msgid ""
-#~ "The admin username must be 1-63 "
-#~ "characters long and can only contain "
-#~ "character, numbers and the underscore "
-#~ "character. The username cannot be "
-#~ "\"azure_superuser\", \"azure_pg_admin\", \"admin\", "
-#~ "\"administrator\", \"root\", \"guest\", \"public\","
-#~ " or start with \"pg_\"."
-#~ msgstr ""
-#~ "管理者ユーザ名は 1-63 文字にし、英数字とアンダースコアだけを使ってください。また、ユーザ名を "
-#~ "\"azure_superuser\", \"azure_pg_admin\", \"admin\", "
-#~ "\"administrator\", \"root\", \"guest\", \"public\""
-#~ " のどれかにしたり、\"pg_\" で始めることはできません。"
-
-#~ msgid ""
-#~ "List of IP Addresses or range of"
-#~ " IP Addresses (start IP Address - "
-#~ "end IP address) from which inbound "
-#~ "traffic should be accepted. Add multiple"
-#~ " IP addresses/ranges separated with commas,"
-#~ " for example: \"192.168.0.50, 192.168.0.100 "
-#~ "-  192.168.0.200\""
-#~ msgstr ""
-#~ "どの IP アドレスからのインバウンドトラフィックを許容するかです。IP アドレスの一覧か、IP "
-#~ "アドレスの範囲 (開始 IP アドレス - 終了 IP "
-#~ "アドレス) を指定できます。複数の IP "
-#~ "アドレス/範囲を追加するには、コンマで区切って並べてください。例: \"192.168.0.50, "
-#~ "192.168.0.100 -  192.168.0.200\""
-
-#~ msgid ""
-#~ "Name must be more than 2 "
-#~ "characters or more & must only "
-#~ "contain lowercase letters, numbers, and "
-#~ "hyphens"
-#~ msgstr "名前は 3 文字以上の小文字アルファベット、数字、ハイフンにしてください"
-
-#~ msgid ""
-#~ "IP Address range for permitting the "
-#~ "inbound traffic. Ex: 127.0.0.1/32, add "
-#~ "multiple ip addresses/ranges by comma "
-#~ "separated."
-#~ msgstr ""
-#~ "インバウンドトラフィックを許容する IP アドレスの範囲です - 例: "
-#~ "127.0.0.1/32。複数の IP アドレス/範囲を追加するには、コンマで区切って並べてください。"
-
-#~ msgid ""
-#~ "At least 8 printable ASCII characters."
-#~ " Can not contain any of the "
-#~ "following: / (slash), '(single quote), "
-#~ "\"(double quote) and @ (at sign)."
-#~ msgstr ""
-#~ "最低 8 文字の印字可能な ASCII 文字です。/ (スラッシュ), "
-#~ "'(シングルクォート), \"(ダブルクォート), @ (アットマーク) "
-#~ "の使用はできません。"
-
-#~ msgid ""
-#~ "IP Address range for permitting the "
-#~ "inbound traffic. Ex: 127.0.0.1/32, add "
-#~ "multiple ip addresses/ranges by comma "
-#~ "separated. Leave it blank for 0.0.0.0/0"
-#~ msgstr ""
-#~ "インバウンドトラフィックを許容する IP アドレスの範囲です - 例: "
-#~ "127.0.0.1/32。複数の IP アドレス/範囲を追加するには、コンマで区切って並べてください。空欄のままだと"
-#~ " 0.0.0.0/0 になります"
-
-#~ msgid ""
-#~ "High availability clusters are configured "
-#~ "with one primary and two replicas "
-#~ "with synchronous streaming replication. "
-#~ "Clusters are configured across availability"
-#~ " zones in regions with availability "
-#~ "zones."
-#~ msgstr ""
-#~ "高可用性のクラスタでは、1 つのプライマリと 2 "
-#~ "つのレプリカが、同期ストリーミングレプリケーションで構成されています。クラスタは、可用性ゾーンのある地域の可用性ゾーン全体で構成されます。"
-
-#~ msgid ""
-#~ "Turning on high availability means your"
-#~ " number of CPUs will triple, as "
-#~ "will your cost."
-#~ msgstr "高可用性を有効にすると、利用できる CPU の数は 3 倍になりますが、相応な費用もかかります。"
-
-#~ msgid "Renamed successfully."
-#~ msgstr "名前が変更されました。"
-
-#~ msgid "#"
-#~ msgstr "#"
-
-#~ msgid "Node"
-#~ msgstr "ノード"
-
-#~ msgid "Graphical"
-#~ msgstr "グラフィカル"
-
-#~ msgid "Analysis"
-#~ msgstr "分析"
-
-#~ msgid "Click for details..."
-#~ msgstr "クリックで詳細を表示..."
-
-#~ msgid "JIT:"
-#~ msgstr "JIT:"
-
-#~ msgid "Triggers:"
-#~ msgstr "トリガ:"
-
-#~ msgid "Summary:"
-#~ msgstr "要約:"
-
-#~ msgid "No record found"
-#~ msgstr "レコードが見つかりませんでした"
-
-#~ msgid "Backing up an object on the server '{0}' from database '{1}'..."
-#~ msgstr "サーバ '{0}' のデータベース '{1}' からオブジェクトをバックアップしています..."
-
-#~ msgid "Backing up the global objects on the server '{0}'..."
-#~ msgstr "サーバ '{0}' のグローバルオブジェクトをバックアップしています..."
-
-#~ msgid "Backing up the server '{0}'..."
-#~ msgstr "サーバ '{0}' をバックアップしています..."
-
-#~ msgid "Running command:"
-#~ msgstr "実行中のコマンド:"
-
-#~ msgid "Copying table data '{0}.{1}' on database '{2}' and server ({3}:{4})"
-#~ msgstr "サーバ ({3}:{4}) のデータベース '{2}' にあるテーブル '{0}.{1}' のデータをコピーしています"
-
-#~ msgid "Copying table data '{0}.{1}' on database '{2}' for the server '{3}'"
-#~ msgstr "サーバ '{3}' のデータベース '{2}' にあるテーブル '{0}.{1}' のデータをコピーしています"
-
-#~ msgid "Import/Export job created."
-#~ msgstr "インポート/エクスポートジョブが作成されました。"
-
-#~ msgid "Restoring backup on the server '{0}'..."
-#~ msgstr "サーバ '{0}' のバックアップをリストアしています..."
-
-#~ msgid "Accesskey (Copy rows)"
-#~ msgstr "アクセスキー (行をコピー)"
-
-#~ msgid "Invalid email address."
-#~ msgstr "メールアドレスが不正です。"
-
-#~ msgid "User deleted."
-#~ msgstr "ユーザが削除されました。"
-
-#~ msgid "Filter by email"
-#~ msgstr "メールアドレスでフィルタ"
-
-#~ msgid "pgAdmin 4 login"
-#~ msgstr "pgAdmin 4 ログイン"
-
-#~ msgid "Email address cannot be empty."
-#~ msgstr "メールアドレスは必須です。"
-
-#~ msgid "Invalid email address: %s."
-#~ msgstr "メールアドレスが不正です: %s。"
-
-#~ msgid "The email address %s already exists."
-#~ msgstr "メールアドレス %s はすでに存在します。"
-
-#~ msgid "Role cannot be empty for user %s."
-#~ msgstr "ユーザ %s のロールを決めてください。"
-
-#~ msgid "Password cannot be empty for user %s."
-#~ msgstr "ユーザ %s のパスワードを入力してください。"
-
-#~ msgid "Password must be at least 6 characters for user %s."
-#~ msgstr "ユーザ %s のパスワードは 6 文字以上にしてください。"
-
-#~ msgid "Confirm Password cannot be empty for user %s."
-#~ msgstr "ユーザ %s のパスワード確認を入力してください。"
-
-#~ msgid "Passwords do not match for user %s."
-#~ msgstr "ユーザ %s のパスワードが一致しません。"
-
-#~ msgid "The username %s already exists."
-#~ msgstr "ユーザ名 %s はすでに存在します。"
-
-#~ msgid "Error during deleting user."
-#~ msgstr "ユーザの削除中にエラーが発生しました。"
-
-#~ msgid "Unable to change owner."
-#~ msgstr "所有者を変更できません。"
-
-#~ msgid "Cannot delete user."
-#~ msgstr "ユーザを削除できません。"
-
-#~ msgid "Cannot delete currently logged in user."
-#~ msgstr "ログイン中のユーザは削除できません。"
-
-#~ msgid "This user cannot be deleted."
-#~ msgstr "このユーザは削除できません。"
-
-#~ msgid "User '%s' saved."
-#~ msgstr "ユーザ '%s' が保存されました。"
-
-#~ msgid "Error saving user: '%s'"
-#~ msgstr "ユーザの保存エラー: '%s'"
-
-#~ msgid "Add new user"
-#~ msgstr "新しいユーザを追加"
-
-#~ msgid "Cannot load user roles."
-#~ msgstr "ユーザのロールを読み込めません。"
-
-#~ msgid "Cannot load user Sources."
-#~ msgstr "ユーザのソースを読み込めません。"
-
-#~ msgid "Discard unsaved changes?"
-#~ msgstr "未保存の変更を破棄しますか？"
-
-#~ msgid ""
-#~ "Are you sure you want to close "
-#~ "the dialog? Any unsaved changes will "
-#~ "be lost."
-#~ msgstr "ダイアログを閉じますか？保存されていない変更は失われます。"
-
-#~ msgid "Enable browser tree animation?"
-#~ msgstr "ブラウザツリーのアニメーションを有効化"
-
-#~ msgid "Enable dialogue/notification animation?"
-#~ msgstr "ダイアログと通知のアニメーションを有効化"
-
-#~ msgid "A grantee must be selected."
-#~ msgstr "付与対象は必須です。"
-
-#~ msgid "Security label must be specified."
-#~ msgstr "セキュリティラベルは必須です。"
-
-#~ msgid "Add new row"
-#~ msgstr "新しい行を追加"
-
-#~ msgid "Error retrieving properties - %s"
-#~ msgstr "プロパティの取得エラー - %s"
-
-#~ msgid "SQL help for this object type."
-#~ msgstr "このオブジェクトの種類についての SQL ヘルプです。"
-
-#~ msgid "Cancel changes to this object."
-#~ msgstr "このオブジェクトへの変更をキャンセルします。"
-
-#~ msgid "Reset the fields on this dialog."
-#~ msgstr "このダイアログの入力欄をリセットします。"
-
-#~ msgid "Save this object."
-#~ msgstr "このオブジェクトを保存します。"
-
-#~ msgid "Cloud server information not available"
-#~ msgstr ""
-
-#~ msgid "Toggle button"
-#~ msgstr "ボタンを切り替え"
-
-#~ msgid "Toggle"
-#~ msgstr "切り替え"
-
-#~ msgid "Select path"
-#~ msgstr "パスを選択"
-
-#~ msgid "Validate utilities"
-#~ msgstr "ユーティリティを検証"
-
-#~ msgid ""
-#~ "Enter the directory in which the "
-#~ "psql, pg_dump, pg_dumpall, and pg_restore "
-#~ "utilities can be found for the "
-#~ "corresponding database server version. The "
-#~ "default path will be used for "
-#~ "server versions that do not have a"
-#~ " path specified."
-#~ msgstr ""
-#~ "対応するバージョンの psql, pg_dump, pg_dumpall, "
-#~ "pg_restore "
-#~ "ユーティリティが置かれているディレクトリを入力してください。既定のパスとして指定されたものは、パスが未指定のサーババージョンに対しても使われるようになります。"
-
-#~ msgid "Add"
-#~ msgstr "追加"
-
-#~ msgid "Space"
-#~ msgstr "スペース"
-
-#~ msgid "Edit object"
-#~ msgstr "オブジェクトを編集"
-
-#~ msgid "This object is not user editable."
-#~ msgstr "このオブジェクトをユーザが編集することはできません。"
-
-#~ msgid "This object cannot be deleted."
-#~ msgstr "このオブジェクトは削除できません。"
-
-#~ msgid "Are you sure you wish to clear this row?"
-#~ msgstr "この行を消去しますか？"
-
-#~ msgid "Clear Row"
-#~ msgstr "行を消去"
-
-#~ msgid "Clear row"
-#~ msgstr "行を消去"
-
-#~ msgid "Array Values"
-#~ msgstr "配列値"
-
-#~ msgid ""
-#~ "Select the user that will take "
-#~ "ownership of the shared servers created"
-#~ " by <b></b>. <b></b> shared servers "
-#~ "are currently owned by this user."
-#~ msgstr ""
-
-#~ msgid "Note: If no user is selected, the shared servers will be deleted."
-#~ msgstr "注: ユーザが選択されていない場合、共有サーバは削除されます。"
-
-#~ msgid "Select/Deselect All"
-#~ msgstr "すべて選択/解除"
-
-#~ msgid "Rename Panel"
-#~ msgstr "パネル名を変更"
-
-#~ msgid "Client error"
-#~ msgstr "クライアントエラー"
-
-#~ msgid "Load from file"
-#~ msgstr "ファイルから読み込み"
-
-#~ msgid "Drop table/link"
-#~ msgstr "テーブル/リンクを削除"
-
-#~ msgid "One-to-Many link"
-#~ msgstr "一対多のリンク"
-
-#~ msgid "Many-to-Many link"
-#~ msgstr "多対多のリンク"
-
-#~ msgid "Obtaining connection..."
-#~ msgstr "接続を確立しています..."
-
-#~ msgid "Connection failed"
-#~ msgstr "接続に失敗しました"
-
-#~ msgid "Show fewer details"
-#~ msgstr "簡易的な情報を表示"
-
-#~ msgid "Show more details"
-#~ msgstr "具体的な情報を表示"
-
-#~ msgid "Schema Diff initialize error"
-#~ msgstr "スキーマ比較の初期化エラー"
-
-#~ msgid "DDL Comparison"
-#~ msgstr "DDL の比較"
-
-#~ msgid "Please select source and target."
-#~ msgstr "比較元と比較対象を選択してください。"
-
-#~ msgid "Objects"
-#~ msgstr "オブジェクト"
-
-#~ msgid "Comparison Result"
-#~ msgstr "比較結果"
-
-#~ msgid " (this may take a few minutes)..."
-#~ msgstr " (しばらく時間がかかります)..."
-
-#~ msgid "%s completed."
-#~ msgstr "%s 完了しました。"
-
-#~ msgid "Poll error"
-#~ msgstr "ポールエラー"
-
-#~ msgid "Select server..."
-#~ msgstr "サーバを選択..."
-
-#~ msgid "Select database..."
-#~ msgstr "データベースを選択..."
-
-#~ msgid "Select schema..."
-#~ msgstr "スキーマを選択..."
-
-#~ msgid ""
-#~ "<strong>Database Compare:</strong> Select the "
-#~ "server and database for the source "
-#~ "and target and Click <strong>Compare</strong>."
-#~ msgstr ""
-#~ "<strong>データベース比較:</strong> "
-#~ "比較元と比較対象のサーバ・データベースを選択し、<strong>比較</strong>をクリックしてください。"
-
-#~ msgid ""
-#~ "</br><strong>Schema Compare:</strong> Select the "
-#~ "server, database and schema for the "
-#~ "source and target and Click "
-#~ "<strong>Compare</strong>."
-#~ msgstr ""
-#~ "</br><strong>スキーマ比較:</strong> "
-#~ "比較元と比較対象のサーバ・データベース・スキーマを選択し、<strong>比較</strong>をクリックしてください。"
-
-#~ msgid ""
-#~ "</br><strong>Note:</strong> The dependencies will"
-#~ " not be resolved in the Schema "
-#~ "comparison."
-#~ msgstr "</br><strong>注:</strong> このツールではオブジェクト間の依存関係を解決できません。"
-
-#~ msgid "Failed to connect the database."
-#~ msgstr "データベースへの接続に失敗しました。"
-
-#~ msgid "Search Objects Error"
-#~ msgstr "オブジェクトの検索エラー"
-
-#~ msgid "Object types"
-#~ msgstr "オブジェクトの種類"
-
-#~ msgid "%s match found."
-#~ msgstr "%s 件の一致が見つかりました。"
-
-#~ msgid "%s matches found."
-#~ msgstr "%s 件の一致が見つかりました。"
-
-#~ msgid ""
-#~ "%s objects are disabled in the "
-#~ "browser. You can enable them in "
-#~ "the <a class=\"pref-dialog-link\">preferences"
-#~ " dialog</a>."
-#~ msgstr ""
-#~ "%sのオブジェクトはブラウザに表示されていませんが、<a class=\"pref-dialog-"
-#~ "link\">設定ダイアログ</a>から有効にできます。"
-
-#~ msgid "No response received"
-#~ msgstr "応答がありませんでした"
-
-#~ msgid "An unexpected occurred: %s"
-#~ msgstr "予期しない事態が発生しました: %s"
-
-#~ msgid "Data output"
-#~ msgstr "データ出力"
 
