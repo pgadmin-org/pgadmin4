@@ -92,6 +92,15 @@ const useStyles = makeStyles((theme)=>({
     '&.Mui-disabled': {
       border: 0,
     },
+  },
+  noBorderPrimary: {
+    color: theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.primary.main,
+    '&:hover': {
+      color: theme.palette.primary.contrastText,
+      backgroundColor: theme.palette.primary.hoverMain,
+      borderColor: theme.palette.primary.hoverBorderColor,
+    },
   }
 }));
 
@@ -104,7 +113,7 @@ export const PrimaryButton = forwardRef((props, ref)=>{
     size = undefined;
     allClassName.push(classes.xsButton);
   }
-  noBorder && allClassName.push(classes.noBorder);
+  noBorder && allClassName.push(...[classes.noBorder, classes.noBorderPrimary]);
   const dataLabel = typeof(children) == 'string' ? children : undefined;
   return (
     <Button ref={ref} size={size} className={clsx(allClassName)} data-label={dataLabel} {...otherProps} variant="contained" color="primary">{children}</Button>

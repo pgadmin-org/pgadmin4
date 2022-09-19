@@ -305,11 +305,14 @@ export default class ERDCore {
         let fkTableNode = this.getModel().getNodesDict()[linkData.local_table_uid];
 
         let newForeingKeys = [];
+        /* Update the FK table with new references */
         fkTableNode.getData().foreign_key?.forEach((theFkRow)=>{
           for(let fkColumn of theFkRow.columns) {
-            let attnum = _.find(oldTableData.columns, (c)=>c.name==fkColumn.referenced).attnum;
-            fkColumn.referenced = _.find(tableData.columns, (colm)=>colm.attnum==attnum).name;
-            fkColumn.references_table_name = tableData.name;
+            if(fkColumn.references == tableNode.getID()) {
+              let attnum = _.find(oldTableData.columns, (c)=>c.name==fkColumn.referenced).attnum;
+              fkColumn.referenced = _.find(tableData.columns, (colm)=>colm.attnum==attnum).name;
+              fkColumn.references_table_name = tableData.name;
+            }
           }
           newForeingKeys.push(theFkRow);
         });

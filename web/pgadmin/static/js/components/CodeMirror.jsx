@@ -71,17 +71,21 @@ function parseString(string) {
 }
 
 function parseQuery(query, useRegex=false, matchCase=false) {
-  if (useRegex) {
-    query = new RegExp(query, matchCase ? 'g': 'gi');
-  } else {
-    query = parseString(query);
-    if(!matchCase) {
-      query = query.toLowerCase();
+  try {
+    if (useRegex) {
+      query = new RegExp(query, matchCase ? 'g': 'gi');
+    } else {
+      query = parseString(query);
+      if(!matchCase) {
+        query = query.toLowerCase();
+      }
     }
+    if (typeof query == 'string' ? query == '' : query.test(''))
+      query = /x^/;
+    return query;
+  } catch (error) {
+    return null;
   }
-  if (typeof query == 'string' ? query == '' : query.test(''))
-    query = /x^/;
-  return query;
 }
 
 function getRegexFinder(query) {
@@ -143,6 +147,8 @@ export function FindDialog({editor, show, replace, onClose}) {
   const search = ()=>{
     if(editor) {
       let query = parseQuery(findVal, useRegex, matchCase);
+      if(!query) return;
+
       searchCursor.current = editor.getSearchCursor(query, 0, !matchCase);
       if(findVal != '') {
         editor.removeOverlay(highlightsearch.current);
