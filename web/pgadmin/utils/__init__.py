@@ -838,8 +838,12 @@ def get_safe_post_login_redirect():
     allow_list = [
         url_for('browser.index')
     ]
-    url = get_post_login_redirect()
-    if url in allow_list:
-        return url
+    if "SCRIPT_NAME" in os.environ and os.environ["SCRIPT_NAME"]:
+        allow_list.append(os.environ["SCRIPT_NAME"])
 
-    return "/"
+    url = get_post_login_redirect()
+    for item in allow_list:
+        if url.startswith(item):
+            return url
+
+    return os.environ.get("SCRIPT_NAME", "/")
