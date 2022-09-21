@@ -19,7 +19,7 @@ pgAdmin server and opens a window to render the user interface.
 .. seealso:: For detailed instructions on building and configuring pgAdmin from
     scratch, please see the README file in the top level directory of the source code.
     For convenience, you can find the latest version of the file
-    `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob;f=README.md>`_,
+    `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_,
     but be aware that this may differ from the version included with the source code
     for a specific version of pgAdmin.
 

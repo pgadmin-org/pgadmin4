@@ -18,7 +18,7 @@ patches correctly. You can checkout the source code with a command like:
 
 .. code-block:: bash
 
-    $ git clone git://git.postgresql.org/git/pgadmin4.git
+    $ git clone https://github.com/pgadmin-org/pgadmin4.git
     
 Once you've made the changes you wish to make, commit them to a private 
 development branch in your local repository. Then create a patch containing the

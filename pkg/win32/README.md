@@ -141,7 +141,7 @@ want to build an installer.
 
 1. Check out the source code:
 
-        git clone https://git.postgresql.org/git/pgadmin4.git
+        git clone https://github.com/pgadmin-org/pgadmin4.git
 
 2. Install and build the JS dependencies:
 

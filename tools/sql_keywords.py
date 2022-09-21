@@ -18,8 +18,8 @@ import requests
 import argparse
 
 PG_CODES_URLS = [
-    "https://git.postgresql.org/gitweb/?p=postgresql.git;a=blob_plain;"
-    "f=src/pl/plpgsql/src/pl_scanner.c",
+    "https://raw.githubusercontent.com/postgres/postgres/master/src/pl/"
+    "plpgsql/src/pl_scanner.c",
 ]
 PG_CODES_REGEX = "PG_KEYWORD\(\"([a-z]*)\"[A-Z_, ]*\)"
 
