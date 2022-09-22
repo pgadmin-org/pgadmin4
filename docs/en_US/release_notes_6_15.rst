@@ -25,4 +25,5 @@ Bug fixes
 *********
 
   | `Issue #5249 <https://github.com/pgadmin-org/pgadmin4/issues/5249>`_ -  Added the ability to display the selected text from the query tool in the find/replace box.
+  | `Issue #5262 <https://github.com/pgadmin-org/pgadmin4/issues/5262>`_ -  Ensure that the user management dialog should not allow the same email addresses with different letter casings when creating users.
   | `Issue #5308 <https://github.com/pgadmin-org/pgadmin4/issues/5308>`_ -  Ensure that the default value for a column should be used if it is made empty.
