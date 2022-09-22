@@ -73,7 +73,7 @@ details.
   should be accepted. Add multiple IP addresses/ranges separated with commas,
   for example: "192.168.0.50, 192.168.0.100 - 192.168.0.200"
 
-* User *Zone redundant high availability* option to specify High Availability
+* Use *Zone redundant high availability* option to specify High Availability
   option. Zone redundant high availability deploys a standby replica in a
   different zone.
   The Burstable instance type does not support high availability.

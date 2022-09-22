@@ -102,6 +102,8 @@ class RdsProvider(AbsProvider):
         parser_create_instance.add_argument('--storage-type', default='gp2',
                                             help='storage type for the data '
                                                  'database (default: gp2)')
+        parser_create_instance.add_argument('--high-availability',
+                                            default=False)
         parser_create_instance.add_argument('--public-ip', default='127.0.0.1',
                                             help='Public IP '
                                                  '(default: 127.0.0.1)')
@@ -207,7 +209,7 @@ class RdsProvider(AbsProvider):
                                    StorageEncrypted=True,
                                    Iops=args.storage_iops,
                                    AutoMinorVersionUpgrade=True,
-                                   MultiAZ=False,
+                                   MultiAZ=bool(args.high_availability),
                                    MasterUsername=args.db_username,
                                    MasterUserPassword=db_password,
                                    DBInstanceClass=args.instance_type,

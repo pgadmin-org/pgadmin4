@@ -205,6 +205,10 @@ export function validateCloudStep3(cloudDBDetails, nodeInfo) {
 }
 
 function createData(name, value) {
+  if (typeof(value) == 'boolean') {
+    value = (value === true) ? 'True' : 'False';
+  }
+
   return { name, value };
 }
 
@@ -237,7 +241,11 @@ export function getAWSSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
     createData(gettext('Port'),  cloudDBDetails.db_port),
   ];
 
-  return [rows1, rows2, rows3, rows4];
+  const rows5 = [
+    createData(gettext('High availability'), cloudInstanceDetails.high_availability),
+  ];
+
+  return [rows1, rows2, rows3, rows4, rows5];
 }
 
 const getStorageType = (cloudInstanceDetails) => {

@@ -18,6 +18,7 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
       oid: undefined,
       name: '',
       public_ip: initValues.hostIP,
+      high_availability: false,
       ...initValues
     });
 
@@ -50,6 +51,10 @@ class CloudInstanceDetailsSchema extends BaseUISchema {
         type: 'nested-fieldset', label: gettext('Storage'),
         mode: ['create'],
         schema: new StorageSchema(),
+      }, {
+        type: 'nested-fieldset', label: gettext('Availability'),
+        mode: ['create'],
+        schema: new HighAvailablity(),
       },
     ];
   }
@@ -198,12 +203,12 @@ export class InstanceSchema extends BaseUISchema {
       noEmpty: true,
     },{
       id: 'db_instance_class', label: gettext('Instance class'),
-      type: 'toggle',
+      type: 'select',
       options: [
         {'label': gettext('Standard classes (includes m classes)'), value: 'm'},
         {'label': gettext('Memory optimized classes (includes r & x classes)'), value: 'x'},
         {'label': gettext('Burstable classes (includes t classes)'), value: 't'},
-      ],  noEmpty: true, orientation: 'vertical',
+      ],  noEmpty: true
     },{
       id: 'instance_type', label: gettext('Instance type'),
       options: this.instanceOpts,
@@ -296,6 +301,27 @@ export class StorageSchema extends BaseUISchema {
             }
           }
         },
+      },
+    ];
+  }
+}
+
+export class HighAvailablity extends BaseUISchema {
+  constructor() {
+    super({
+      high_availability: false
+    });
+  }
+  get baseFields() {
+    return [
+      {
+        id: 'high_availability',
+        label: gettext('High availability'),
+        type: 'switch',
+        mode: ['create'],
+        helpMessage: gettext(
+          'Creates a standby in a different Availability Zone (AZ) to provide data redundancy, eliminate I/O freezes, and minimize latency spikes during system backups.'
+        ),
       },
     ];
   }

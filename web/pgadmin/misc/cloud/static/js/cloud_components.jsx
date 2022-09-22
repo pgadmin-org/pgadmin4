@@ -71,10 +71,11 @@ export function FinalSummary(props) {
   if (props.cloudProvider == 'biganimal') {
     summary = getBigAnimalSummary(props.cloudProvider, props.instanceData, props.databaseData);
     summaryHeader[1] = 'Version Details';
-  } else if(props.cloudProvider == 'azure'){
+  } else if(props.cloudProvider == 'azure') {
     summaryHeader.push('Network Connectivity','Availability');
     summary = getAzureSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }else {
+    summaryHeader.push('Availability');
     summary = getAWSSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }
 

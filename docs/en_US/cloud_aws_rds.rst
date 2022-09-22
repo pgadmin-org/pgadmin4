@@ -53,6 +53,9 @@ details.
 
 * Use the *Provisioned IOPS* in case of  Provisioned IOPS (SSD) storage type.
 
+* Use the *High Availability* option to specify High Availability
+  option. This option creates a standby in a different Availability Zone(AZ).
+
 .. image:: images/cloud_aws_database.png
     :alt: Cloud Deployment Provider
     :align: center

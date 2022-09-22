@@ -283,6 +283,8 @@ def deploy_on_rds(data):
             str(data['instance_details']['storage_size']),
             '--public-ip',
             str(data['instance_details']['public_ip']),
+            '--high-availability',
+            str(data['instance_details']['high_availability'])
             ]
 
     if data['instance_details']['storage_type'] == 'io1':

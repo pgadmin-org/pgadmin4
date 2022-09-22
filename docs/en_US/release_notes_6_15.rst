@@ -1,0 +1,25 @@
+************
+Version 6.15
+************
+
+Release date: 2022-10-20
+
+This release contains a number of bug fixes and new features since the release of pgAdmin 4 v6.14.
+
+Supported Database Servers
+**************************
+**PostgreSQL**: 10, 11, 12, 13 and 14
+
+**EDB Advanced Server**: 10, 11, 12, 13 and 14
+
+New features
+************
+
+  | `Issue #5304 <https://github.com/pgadmin-org/pgadmin4/issues/5304>`_ -  Added high availability options to AWS deployment.
+
+Housekeeping
+************
+
+
+Bug fixes
+*********
