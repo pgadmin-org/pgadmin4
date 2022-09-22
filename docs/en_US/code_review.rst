@@ -5,7 +5,7 @@
 **************************
 
 This document lists a number of standard items that will be checked during the
-review process for any patches submitted for inclusion in pgAdmin.
+review process for any changes submitted for inclusion in pgAdmin.
 
 * Ensure all code follows the pgAdmin :doc:`coding_standards`.
 
@@ -52,10 +52,13 @@ review process for any patches submitted for inclusion in pgAdmin.
   current schema/user as appropriate. In general, if there are common or sensible
   default values available, put them in the fields for the user.
 
-* 1 patch == 1 feature. If you need to fix/update existing infrastructure in
-  your patch, it's usually easier if it's in a separate patch. Patches containing
-  multiple new features or unrelated changes are likely to be rejected.
+* 1 Pull Request == 1 feature. If you need to fix/update existing
+  infrastructure in your change, it's usually easier if it's in a separate
+  Pull Request. Pull Requests containing multiple new features or unrelated
+  changes are likely to be rejected.
 
-* Ensure the patch is fully functional, and works! If a patch is being sent as
-  a work in progress, not intended for commit, clearly state that it's a WIP,
-  and note what does or does not yet work.
+* Ensure the change is fully functional, and works! If you wish to send a
+  work in progress (WIP) change that is not intended for commit, instead of
+  submitting a Pull Request, send either as a link to a repository fork or a
+  patch to the pgadmin-hackers@postgresql.org mailing list, clearly stating
+  that it's a WIP, and noting what does or does not yet work.
