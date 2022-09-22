@@ -13,7 +13,6 @@ import * as toolBar from 'pgadmin.browser.toolbar';
 import * as panelTitleFunc from './sqleditor_title';
 import * as commonUtils from 'sources/utils';
 import $ from 'jquery';
-import url_for from 'sources/url_for';
 import _ from 'lodash';
 import pgWindow from 'sources/window';
 import pgAdmin from 'sources/pgadmin';
@@ -258,7 +257,7 @@ export default class SQLEditor {
   }
 
 
-  openQueryToolPanel(trans_id, is_query_tool, panel_title, closeUrl, queryToolForm) {
+  openQueryToolPanel(trans_id, is_query_tool, panel_title, queryToolForm) {
     let self = this;
     let browser_preferences = pgBrowser.get_preferences_for_module('browser');
     let propertiesPanel = pgBrowser.docker.findPanels('properties');
@@ -310,21 +309,24 @@ export default class SQLEditor {
     openQueryToolURL(queryToolPanel);
   }
 
-  launch(trans_id, panel_url, is_query_tool, panel_title, sURL=null, sql_filter=null) {
+  launch(trans_id, panel_url, is_query_tool, panel_title, params={}) {
     const self = this;
-    let closeUrl = url_for('sqleditor.close', {'trans_id': trans_id});
     let queryToolForm = `
       <form id="queryToolForm" action="${panel_url}" method="post">
-        <input id="title" name="title" hidden />
-        <input id="conn_title" name="conn_title" hidden />
-        <input name="close_url" value="${closeUrl}" hidden />`;
+        <input id="title" name="title" hidden />`;
 
 
-    if(sURL && typeof(sURL) === 'string'){
-      queryToolForm +=`<input name="query_url" value="${sURL}" hidden />`;
+    if(params.query_url && typeof(params.query_url) === 'string'){
+      queryToolForm +=`<input name="query_url" value="${params.query_url}" hidden />`;
     }
-    if(sql_filter) {
-      queryToolForm +=`<textarea name="sql_filter" hidden>${sql_filter}</textarea>`;
+    if(params.sql_filter) {
+      queryToolForm +=`<textarea name="sql_filter" hidden>${params.sql_filter}</textarea>`;
+    }
+    if(params.user) {
+      queryToolForm +=`<input name="user" value="${_.escape(params.user)}" hidden />`;
+    }
+    if(params.role) {
+      queryToolForm +=`<input name="role" value="${_.escape(params.role)}" hidden />`;
     }
 
     /* Escape backslashes as it is stripped by back end */
@@ -354,7 +356,7 @@ export default class SQLEditor {
       /* On successfully initialization find the dashboard panel,
        * create new panel and add it to the dashboard panel.
        */
-      self.openQueryToolPanel(trans_id, is_query_tool, panel_title, closeUrl, queryToolForm);
+      self.openQueryToolPanel(trans_id, is_query_tool, panel_title, queryToolForm);
     }
     return true;
   }

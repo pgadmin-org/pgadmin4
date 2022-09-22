@@ -284,14 +284,9 @@ def panel(trans_id):
     if request.args:
         params = {k: v for k, v in request.args.items()}
 
-    close_url = ''
     if request.form:
-        params['title'] = request.form['title']
-        close_url = request.form['close_url']
-        if 'sql_filter' in request.form:
-            params['sql_filter'] = request.form['sql_filter']
-        if 'query_url' in request.form:
-            params['query_url'] = request.form['query_url']
+        for key, val in request.form.items():
+            params[key] = val
 
     params['trans_id'] = trans_id
 
@@ -318,7 +313,8 @@ def panel(trans_id):
         params['fgcolor'] = s.fgcolor or 'black'
 
     params['server_name'] = underscore_escape(s.name)
-    params['username'] = underscore_escape(s.username)
+    if 'user' not in params:
+        params['user'] = underscore_escape(s.username)
     params['layout'] = get_setting('SQLEditor/Layout')
     params['macros'] = get_user_macros()
     params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
@@ -327,7 +323,6 @@ def panel(trans_id):
 
     return render_template(
         "sqleditor/index.html",
-        close_url=close_url,
         title=underscore_unescape(params['title']),
         params=json.dumps(params),
         requirejs=True,
@@ -359,15 +354,21 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
     # Read the data if present. Skipping read may cause connection
     # reset error if data is sent from the client
     if request.data:
-        _ = request.data
+        data = json.loads(request.data, encoding='utf-8')
 
     req_args = request.args
     if ('recreate' in req_args and
             req_args['recreate'] == '1'):
         connect = False
 
+    kwargs = {
+        'user': data['user'] if 'user' in data else None,
+        'role': data['role'] if 'role' in data else None,
+        'password': None
+    }
+
     is_error, errmsg, conn_id, version = _init_sqleditor(
-        trans_id, connect, sgid, sid, did)
+        trans_id, connect, sgid, sid, did, **kwargs)
     if is_error:
         return errmsg
 
@@ -2437,8 +2438,9 @@ def clear_query_history(trans_id):
     status, error_msg, conn, trans_obj, session_ob = \
         check_transaction_status(trans_id)
 
-    filter = request.get_json(silent=True)
-    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db, filter)
+    filter_json = request.get_json(silent=True)
+    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db,
+                              filter_json)
 
 
 @blueprint.route(
