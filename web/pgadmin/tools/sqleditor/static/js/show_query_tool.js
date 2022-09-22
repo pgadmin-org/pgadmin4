@@ -50,7 +50,6 @@ function generateTitle(pgBrowser, treeIdentifier) {
 }
 
 export function showQueryTool(queryToolMod, pgBrowser, url, treeIdentifier, transId) {
-  const sURL = url || '';
   const queryToolTitle = generateTitle(pgBrowser, treeIdentifier);
 
   const currentNode = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
@@ -69,7 +68,7 @@ export function showQueryTool(queryToolMod, pgBrowser, url, treeIdentifier, tran
   }
 
   const gridUrl = generateUrl(transId, parentData);
-  launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, sURL);
+  launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, {query_url: url});
 }
 
 export function generateScript(parentData, queryToolMod) {
@@ -108,11 +107,11 @@ export function showERDSqlTool(parentData, erdSqlId, queryToolTitle, queryToolMo
   };
 
   const gridUrl = generateUrl(transId, parentData, erdSqlId);
-  launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, '');
+  launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, {});
 }
 
-export function launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, sURL) {
-  let retVal = queryToolMod.launch(transId, gridUrl, true, queryToolTitle, sURL);
+export function launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, params) {
+  let retVal = queryToolMod.launch(transId, gridUrl, true, queryToolTitle, params);
 
   if(!retVal) {
     Notify.alert(
