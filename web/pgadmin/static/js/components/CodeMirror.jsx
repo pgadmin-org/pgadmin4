@@ -132,6 +132,7 @@ export const CodeMirrorInstancType = PropTypes.shape({
   addOverlay: PropTypes.func,
   setSelection: PropTypes.func,
   scrollIntoView: PropTypes.func,
+  getSelection: PropTypes.func,
 });
 
 export function FindDialog({editor, show, replace, onClose}) {
@@ -146,6 +147,12 @@ export function FindDialog({editor, show, replace, onClose}) {
 
   const search = ()=>{
     if(editor) {
+      // Get selected text from editor and set it to find/replace input.
+      let selText = editor.getSelection();
+      if(selText.length != 0) {
+        setFindVal(selText);
+      }
+
       let query = parseQuery(findVal, useRegex, matchCase);
       if(!query) return;
 
