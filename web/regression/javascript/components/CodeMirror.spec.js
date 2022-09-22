@@ -31,6 +31,7 @@ describe('CodeMirror', ()=>{
       'setOption': ()=>{/*This is intentional (SonarQube)*/},
       'removeKeyMap': ()=>{/*This is intentional (SonarQube)*/},
       'addKeyMap': ()=>{/*This is intentional (SonarQube)*/},
+      'getSelection': () => {/*This is intentional (SonarQube)*/},
       'getSearchCursor': {
         _from: 3,
         _to: 14,
