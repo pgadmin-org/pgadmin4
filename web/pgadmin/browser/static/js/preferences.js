@@ -13,6 +13,8 @@ import $ from 'jquery';
 import pgWindow from 'sources/window';
 import Notify from '../../../static/js/helpers/Notifier';
 import { calcFontSize } from '../../../static/js/utils';
+import { shortcutToString } from '../../../static/js/components/ShortcutTitle';
+import gettext from 'sources/gettext';
 
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -131,6 +133,27 @@ _.extend(pgBrowser, {
       obj?.editor?.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
       obj?.editor?.setOption('matchBrackets', sqlEditPreferences.brace_matching);
       obj?.editor?.refresh();
+    }
+    //browser preference
+    if(module === 'browser') {
+      let browserPreferences = obj.get_preferences_for_module('browser');
+      let buttonList = obj?.panels?.browser?.panel?._buttonList;
+      buttonList.forEach(btn => {
+        let key = null;
+        switch(btn.name) {
+        case gettext('Query Tool'):
+          key = shortcutToString(browserPreferences.sub_menu_query_tool,null,true);
+          obj?.panels?.browser?.panel?.updateButton(gettext('Query Tool'), {key});
+          break;
+        case gettext('View Data'):
+          key = shortcutToString(browserPreferences.sub_menu_view_data,null,true);
+          obj?.panels?.browser?.panel?.updateButton(gettext('View Data'), {key});
+          break;
+        case gettext('Search objects'):
+          key = shortcutToString(browserPreferences.sub_menu_search_objects,null,true);
+          obj?.panels?.browser?.panel?.updateButton(gettext('Search objects'), {key});
+        }
+      });
     }
   },
 

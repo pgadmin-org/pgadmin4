@@ -344,3 +344,25 @@
 .wcMenuSubMenu::before{
   content: none;
 }
+
+.tooltip {
+  font-size: 0.7rem;
+  line-height: 1.4em;
+}
+
+.tooltip.show {
+  opacity: 1;
+}
+
+.wcTooltip-shortcut {
+  justify-content: center;
+  margin-top: 0.125rem;
+  display: flex
+}
+
+.wcTooltip-shortcut-key{
+  padding: 0 0.25rem;
+  border: 1px solid $border-color;
+  margin-right: 0.125rem;
+  border-radius: $border-radius
+}
