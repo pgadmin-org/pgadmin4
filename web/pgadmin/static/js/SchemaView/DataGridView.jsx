@@ -246,7 +246,11 @@ export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTe
         </Box>
       }
       <Box className={classes.gridControls}>
-        {canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={onAddClick} icon={<AddIcon />} className={classes.gridControlsButton} />}
+        {canAdd && <PgIconButton data-test="add-row" title={gettext('Add row')} onClick={()=>{
+          setSearchText('');
+          onSearchTextChange('');
+          onAddClick();
+        }} icon={<AddIcon />} className={classes.gridControlsButton} />}
       </Box>
     </Box>
   );
