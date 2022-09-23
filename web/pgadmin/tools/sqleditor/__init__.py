@@ -353,6 +353,7 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
     connect = True
     # Read the data if present. Skipping read may cause connection
     # reset error if data is sent from the client
+    data = {}
     if request.data:
         data = json.loads(request.data, encoding='utf-8')
 
