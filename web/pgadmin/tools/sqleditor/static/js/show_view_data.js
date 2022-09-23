@@ -165,7 +165,7 @@ function showFilterDialog(pgBrowser, treeNodeInfo, queryToolMod, transId,
   let helpUrl = url_for('help.static', {'filename': 'viewdata_filter.html'});
 
   let okCallback = function() {
-    queryToolMod.launch(transId, gridUrl, false, queryToolTitle, null, schema._sessData.filter_sql);
+    queryToolMod.launch(transId, gridUrl, false, queryToolTitle, null, {sql_filter: schema._sessData.filter_sql});
   };
 
   getUtilityView(schema, treeNodeInfo, 'create', 'dialog', j[0], panel,

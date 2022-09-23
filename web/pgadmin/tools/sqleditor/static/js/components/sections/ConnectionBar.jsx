@@ -135,9 +135,9 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
         onClose={()=>{setConnDropdownOpen(false);}}
         className={classes.menu}
       >
-        {(connectionList||[]).map((conn)=>{
+        {(connectionList||[]).map((conn, i)=>{
           return (
-            <PgMenuItem key={conn.conn_title} hasCheck checked={conn.is_selected} value={conn}
+            <PgMenuItem key={i+conn.conn_title} hasCheck checked={conn.is_selected} value={conn}
               onClick={onConnItemClick}>{conn.conn_title}</PgMenuItem>
           );
         })}

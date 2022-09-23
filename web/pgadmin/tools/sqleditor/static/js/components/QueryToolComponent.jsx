@@ -100,14 +100,14 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       sgid: params.sgid,
       sid: params.sid,
       did: params.did,
-      user: _.unescape(params.username),
-      role: null,
+      user: _.unescape(params.user),
+      role: _.unescape(params.role),
       title: _.unescape(params.title),
       fgcolor: params.fgcolor,
       bgcolor: params.bgcolor,
       conn_title: getTitle(
         pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
-        _.unescape(params.username), params.is_query_tool == 'true' ? true : false),
+        _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true' ? true : false),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
       is_selected: true,
@@ -259,7 +259,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         ...qtState.params,
       });
     }
-    api.post(baseUrl, qtState.params.is_query_tool ? null : JSON.stringify(qtState.params.sql_filter))
+    api.post(baseUrl, qtState.params.is_query_tool ? {
+      user: qtState.params.user,
+      role: qtState.params.role,
+    } : JSON.stringify(qtState.params.sql_filter))
       .then(()=>{
         setQtState({
           connected: true,
@@ -578,7 +581,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             sid: data.sid,
             did: data.did,
             user: data.user,
-            role: data.role ?? null,
+            role: data.role,
             password: data.password,
             title: getTitle(pgAdmin, qtState.preferences.browser, null, false, data.server_name, data.database_name, data.role || data.user, true),
             conn_title: getTitle(pgAdmin, null, null, true, data.server_name, data.database_name, data.role || data.user, true),
@@ -629,8 +632,11 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     };
 
     const gridUrl = showQueryTool.generateUrl(transId, parentData, null);
-    const title = getTitle(pgAdmin, qtState.preferences.browser, null, false, selectedConn.server_name, selectedConn.database_name, selectedConn.user);
-    showQueryTool.launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, gridUrl, title, '');
+    const title = getTitle(pgAdmin, qtState.preferences.browser, null, false, selectedConn.server_name, selectedConn.database_name, selectedConn.role || selectedConn.user);
+    showQueryTool.launchQueryTool(pgWindow.pgAdmin.Tools.SQLEditor, transId, gridUrl, title, {
+      user: selectedConn.user,
+      role: selectedConn.role,
+    });
   };
 
   const onManageMacros = useCallback(()=>{
@@ -734,7 +740,8 @@ QueryToolComponent.propTypes = {
     bgcolor: PropTypes.string,
     fgcolor: PropTypes.string,
     is_query_tool: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]).isRequired,
-    username: PropTypes.string,
+    user: PropTypes.string,
+    role: PropTypes.string,
     server_name: PropTypes.string,
     database_name: PropTypes.string,
     layout: PropTypes.string,
