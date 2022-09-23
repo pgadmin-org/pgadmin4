@@ -25,6 +25,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5145 <https://github.com/pgadmin-org/pgadmin4/issues/5145>`_ -  Fixed intermittent error shown while OAuth2 login.
   | `Issue #5188 <https://github.com/pgadmin-org/pgadmin4/issues/5188>`_ -  Ensure that the continue/start button should be disabled if the user stops the Debugger for the procedures.
   | `Issue #5210 <https://github.com/pgadmin-org/pgadmin4/issues/5210>`_ -  Ensure that the query tool creates a new tab with the appropriate user when pressing Alt+Shift+Q.
   | `Issue #5249 <https://github.com/pgadmin-org/pgadmin4/issues/5249>`_ -  Added the ability to display the selected text from the query tool in the find/replace box.

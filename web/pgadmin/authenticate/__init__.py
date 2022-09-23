@@ -67,12 +67,15 @@ def login():
     The user input will be validated and authenticated.
     """
     form = _security.login_form()
-
-    auth_obj = AuthSourceManager(form, copy.deepcopy(
-        config.AUTHENTICATION_SOURCES))
     if OAUTH2 in config.AUTHENTICATION_SOURCES \
             and 'oauth2_button' in request.form:
+        # Sending empty form as oauth2 does not require form attribute
+        auth_obj = AuthSourceManager({}, copy.deepcopy(
+            config.AUTHENTICATION_SOURCES))
         session['auth_obj'] = auth_obj
+    else:
+        auth_obj = AuthSourceManager(form, copy.deepcopy(
+            config.AUTHENTICATION_SOURCES))
 
     session['auth_source_manager'] = None
 
