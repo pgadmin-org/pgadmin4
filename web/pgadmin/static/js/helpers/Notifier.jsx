@@ -145,7 +145,7 @@ let Notifier = {
   },
   _callNotify(msg, type, autoHideDuration) {
     this.notify(
-      <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={_.isNull(autoHideDuration) ? true : false} />,
+      <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={true} />,
       autoHideDuration
     );
   },
