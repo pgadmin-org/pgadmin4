@@ -29,8 +29,8 @@ jobs:
       - name: Install yarn
         run: sudo npm install --global yarn
         
-      - name: Install eslint
-        run: cd web && yarn add eslint
+      - name: Install Node modules
+        run: cd web && yarn install
 
       - name: Run the linter
         run: cd web && yarn run linter
