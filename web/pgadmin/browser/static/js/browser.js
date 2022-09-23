@@ -482,15 +482,22 @@ define('pgadmin.browser', [
        */
       let cacheIntervalId = setInterval(()=> {
         let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
-        if(sqlEditPreferences) {
+        let browserPreferences = obj.get_preferences_for_module('browser');
+        if(sqlEditPreferences && browserPreferences) {
           clearInterval(cacheIntervalId);
           obj.reflectPreferences('sqleditor');
+          obj.reflectPreferences('browser');
         }
       }, 500);
 
       /* Check for sql editor preference changes */
       obj.onPreferencesChange('sqleditor', function() {
         obj.reflectPreferences('sqleditor');
+      });
+
+      /* Check for browser preference changes */
+      obj.onPreferencesChange('browser', function() {
+        obj.reflectPreferences('browser');
       });
 
       setTimeout(function() {

@@ -514,8 +514,11 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     })
       .then(function (res) {
         if (res.data.data.status) {
-          // Call function to create and update local variables ....
+          // Remove active time in the editor
           setActiveLine(-1);
+          // Clear timeout on stop debugger.
+          clearTimeout(timeOut);
+
           params.directDebugger.direct_execution_completed = true;
           params.directDebugger.is_user_aborted_debugging = true;
 

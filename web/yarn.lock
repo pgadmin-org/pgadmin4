@@ -11419,12 +11419,13 @@ watchpack@^2.2.0:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
-"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#40d025e0d86ee3cf058a52e01d2042113f134cdd":
+"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#b4d58f29b3a308ab555085ee444fa7010aa4b991":
   version "2.2.5"
-  resolved "git+https://github.com/EnterpriseDB/wcDocker/#40d025e0d86ee3cf058a52e01d2042113f134cdd"
+  resolved "git+https://github.com/EnterpriseDB/wcDocker/#b4d58f29b3a308ab555085ee444fa7010aa4b991"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"
+    bootstrap "^4.3.1"
     jquery "^3.3.1"
     jquery-contextmenu "^2.6.4"
 
