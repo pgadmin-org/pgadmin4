@@ -1,4 +1,4 @@
-name: Check Javascript code passes linting
+name: Check Javascript style
 
 on:
   # Triggers the workflow on push or pull request events but only for the "master" branch
@@ -24,10 +24,10 @@ jobs:
 
       # Run the tests
       - name: Install nodejs
-        run: apt install nodejs
+        run: sudo apt install nodejs
         
       - name: Install yarn
-        run: npm install --global yarn
+        run: sudo npm install --global yarn
 
       - name: Run the linter
         run: cd web && yarn run linter
