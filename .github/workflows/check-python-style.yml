@@ -1,4 +1,4 @@
-name: Check Python code conforms to PEP-8
+name: Check Python style
 
 on:
   # Triggers the workflow on push or pull request events but only for the "master" branch
