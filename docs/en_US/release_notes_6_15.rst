@@ -20,6 +20,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #5293 <https://github.com/pgadmin-org/pgadmin4/issues/5293>`_ -  Ensure that the tooltips are consistent throughout the entire application. 
 
 Bug fixes
 *********
