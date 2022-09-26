@@ -1086,7 +1086,7 @@ def file_manager(trans_id):
             kwargs.pop('name', None)
 
         if mode in ['addfolder', 'getfolder', 'rename', 'delete',
-                    'is_file_exist', 'req', 'permission']:
+                    'is_file_exist', 'req', 'permission', 'download']:
             kwargs.pop('req', None)
 
         res = func(**kwargs)
