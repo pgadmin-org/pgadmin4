@@ -869,14 +869,14 @@ export function ResultSet() {
       setLoaderText(null);
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, ()=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_SAVE_RESULTS, async ()=>{
       let extension = queryToolCtx.preferences?.sqleditor?.csv_field_separator === ',' ? '.csv': '.txt';
       let fileName = 'data-' + new Date().getTime() + extension;
       if(!queryToolCtx.params.is_query_tool) {
         fileName = queryToolCtx.params.node_name + extension;
       }
       setLoaderText(gettext('Downloading results...'));
-      rsu.current.saveResultsToFile(fileName);
+      await rsu.current.saveResultsToFile(fileName);
       setLoaderText('');
     });
 
