@@ -645,6 +645,14 @@ LDAP_ANONYMOUS_BIND = False
 # OpenLDAP example: CN=Users,dc=example,dc=com
 LDAP_BASE_DN = '<Base-DN>'
 
+# Configure the bind format string
+# Default: LDAP_BIND_FORMAT="{LDAP_USERNAME_ATTRIBUTE}={LDAP_USERNAME},{LDAP_BASE_DN}"
+# The current available options are:
+# LDAP_USERNAME_ATTRIBUTE, LDAP_USERNAME, LDAP_BASE_DN
+# Example: LDAP_BIND_FORMAT="myldapuser@sales.example.com"
+#          LDAP_BIND_FORMAT="NET\\myldapuser"
+LDAP_BIND_FORMAT="{LDAP_USERNAME_ATTRIBUTE}={LDAP_USERNAME},{LDAP_BASE_DN}"
+
 ##########################################################################
 
 # Search ldap for further authentication (REQUIRED)
