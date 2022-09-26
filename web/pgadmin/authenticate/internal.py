@@ -9,7 +9,6 @@
 
 """Implements Internal Authentication"""
 
-import six
 from flask import current_app, flash
 from flask_security import login_user
 from abc import abstractmethod, abstractproperty
@@ -21,8 +20,7 @@ from pgadmin.utils.validation_utils import validate_email
 from pgadmin.utils.constants import INTERNAL
 
 
-@six.add_metaclass(AuthSourceRegistry)
-class BaseAuthentication(object):
+class BaseAuthentication(object, metaclass=AuthSourceRegistry):
 
     DEFAULT_MSG = {
         'USER_DOES_NOT_EXIST': gettext('Incorrect username or password.'),

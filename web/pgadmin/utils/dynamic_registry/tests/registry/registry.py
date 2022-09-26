@@ -6,7 +6,6 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import six
 from pgadmin.utils.dynamic_registry import create_registry_metaclass
 
 
@@ -20,13 +19,11 @@ TestNamedRegistry = create_registry_metaclass(
 )
 
 
-@six.add_metaclass(TestModuleRegistry)
-class TestModuleBase(object):
+class TestModuleBase(object, metaclass=TestModuleRegistry):
     pass
 
 
-@six.add_metaclass(TestNamedRegistry)
-class TestNameBase(object):
+class TestNameBase(object, metaclass=TestNamedRegistry):
     pass
 
 

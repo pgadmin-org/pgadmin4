@@ -12,9 +12,9 @@ Name                                                             Version        
 ----                                                             -------          -------                              ---
 Python                                                           3.6+             PSF                                  https://www.python.org/
 nw                                                               0.50.2           MIT                                  git://github.com/nwjs/npm-installer.git
-axios                                                            0.21.0           MIT                                  https://github.com/axios/axios.git
+axios                                                            0.21.2           MIT                                  https://github.com/axios/axios.git
 bootstrap                                                        4.5.3            MIT                                  git+https://github.com/twbs/bootstrap.git
-follow-redirects                                                 1.13.1           MIT                                  git@github.com:follow-redirects/follow-redirects.git
+follow-redirects                                                 1.15.2           MIT                                  git@github.com:follow-redirects/follow-redirects.git
 
 5 dependencies listed.
 
@@ -39,7 +39,6 @@ WTForms                                                          3.0.1          
 passlib                                                          1.7.4            BSD                                  https://passlib.readthedocs.io
 pytz                                                             2021.3           MIT                                  http://pythonhosted.org/pytz
 simplejson                                                       3.17.6           MIT License                          https://github.com/simplejson/simplejson
-six                                                              1.16.0           MIT                                  https://github.com/benjaminp/six
 speaklater3                                                      1.4              UNKNOWN                              https://github.com/ThomasWaldmann/speaklater
 sqlparse                                                         0.4.2            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
 psutil                                                           5.9.1            BSD                                  https://github.com/giampaolo/psutil
@@ -62,7 +61,7 @@ qrcode                                                           7.3.1          
 Pillow                                                           9.2.0            HPND                                 https://python-pillow.org
 boto3                                                            1.20.54          Apache License 2.0                   https://github.com/boto/boto3
 botocore                                                         1.23.54          Apache License 2.0                   https://github.com/boto/botocore
-urllib3                                                          1.26.11          MIT                                  https://urllib3.readthedocs.io/
+urllib3                                                          1.26.12          MIT                                  https://urllib3.readthedocs.io/
 Werkzeug                                                         2.1.2            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
 azure-mgmt-rdbms                                                 10.1.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
 azure-mgmt-resource                                              21.0.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
@@ -72,7 +71,7 @@ azure-identity                                                   1.9.0          
 NOTE: This report was generated using Python 3.10. Full information may not be
 shown for Python modules that are not required with this version.
 
-45 dependencies listed.
+44 dependencies listed.
 
 Javascript Dependencies
 =======================
@@ -157,7 +156,6 @@ Name                                                             Version        
 @nodelib/fs.scandir                                              2.1.5            MIT                                  https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.scandir
 @nodelib/fs.stat                                                 2.0.5            MIT                                  https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.stat
 @nodelib/fs.walk                                                 1.2.8            MIT                                  https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk
-@popperjs/core                                                   2.10.2           MIT                                  https://github.com/popperjs/popper-core.git
 @projectstorm/geometry                                           6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-canvas-core                                  6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-diagrams                                     6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
@@ -169,7 +167,6 @@ Name                                                             Version        
 @socket.io/base64-arraybuffer                                    1.0.2            MIT                                  https://github.com/socketio/base64-arraybuffer
 @socket.io/component-emitter                                     3.0.0            MIT                                  https://github.com/socketio/emitter.git
 @szhsin/react-menu                                               2.3.3            MIT                                  https://github.com/szhsin/react-menu.git
-@tippyjs/react                                                   4.2.6            MIT                                  git+https://github.com/atomiks/tippyjs-react.git
 @types/classnames                                                2.3.1            MIT                                  Unknown
 @types/json-schema                                               7.0.9            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/minimist                                                  1.2.2            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
@@ -186,7 +183,6 @@ ajv                                                              8.9.0          
 ajv                                                              6.12.6           MIT                                  https://github.com/ajv-validator/ajv.git
 ajv-errors                                                       1.0.1            MIT                                  git+https://github.com/epoberezkin/ajv-errors.git
 ajv-keywords                                                     3.5.2            MIT                                  git+https://github.com/epoberezkin/ajv-keywords.git
-alertifyjs                                                       1.7.1            MIT                                  git@github.com:MohammadYounes/AlertifyJS.git
 alphanum-sort                                                    1.0.2            MIT                                  https://github.com/TrySound/alphanum-sort.git
 ansi-styles                                                      3.2.1            MIT                                  https://github.com/chalk/ansi-styles.git
 array-union                                                      3.0.1            MIT                                  https://github.com/sindresorhus/array-union.git
@@ -201,12 +197,6 @@ babel-plugin-styled-components                                   1.13.3         
 babel-plugin-syntax-jsx                                          6.18.0           MIT                                  https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-jsx
 babelify                                                         10.0.0           MIT                                  https://github.com/babel/babelify.git
 backbone                                                         1.4.0            MIT                                  https://github.com/jashkenas/backbone.git
-backbone                                                         1.2.3            MIT                                  https://github.com/jashkenas/backbone.git
-backbone                                                         1.3.3            MIT                                  https://github.com/jashkenas/backbone.git
-backform                                                         0.2.0            MIT                                  https://github.com/AmiliaApp/backform
-backgrid                                                         0.3.8            MIT                                  http://github.com/cloudflare/backgrid
-backgrid-filter                                                  0.3.7            MIT                                  git://github.com/wyuenho/backgrid-text-cell.git
-backgrid-select-all                                              0.3.5            MIT                                  git://github.com/wyuenho/backgrid-select-all.git
 backo2                                                           1.0.2            MIT                                  https://github.com/mokesmokes/backo.git
 balanced-match                                                   1.0.2            MIT                                  git://github.com/juliangruber/balanced-match.git
 base64-arraybuffer                                               0.2.0            MIT                                  https://github.com/niklasvh/base64-arraybuffer
@@ -366,7 +356,6 @@ lodash.noop                                                      2.3.0          
 lodash.support                                                   2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
 lodash.uniq                                                      4.5.0            MIT                                  https://github.com/lodash/lodash.git
 loose-envify                                                     1.4.0            MIT                                  git://github.com/zertosh/loose-envify.git
-lunr                                                             0.7.2            MIT                                  https://github.com/olivernn/lunr.js.git
 make-dir                                                         3.1.0            MIT                                  https://github.com/sindresorhus/make-dir.git
 map-obj                                                          4.3.0            MIT                                  https://github.com/sindresorhus/map-obj.git
 map-obj                                                          1.0.1            MIT                                  https://github.com/sindresorhus/map-obj.git
@@ -385,7 +374,7 @@ ml-array-rescale                                                 1.3.6          
 ml-matrix                                                        6.8.0            MIT                                  https://github.com/mljs/matrix.git
 mobius1-selectr                                                  2.4.13           MIT                                  git+https://github.com/Mobius1/Selectr.git
 moment                                                           2.29.4           MIT                                  https://github.com/moment/moment.git
-moment-timezone                                                  0.5.34           MIT                                  https://github.com/moment/moment-timezone.git
+moment-timezone                                                  0.5.37           MIT                                  https://github.com/moment/moment-timezone.git
 ms                                                               2.1.2            MIT                                  https://github.com/zeit/ms.git
 nanoid                                                           3.3.2            MIT                                  https://github.com/ai/nanoid.git
 nanoid                                                           3.2.0            MIT                                  https://github.com/ai/nanoid.git
@@ -464,7 +453,7 @@ react                                                            17.0.2         
 react-aspen                                                      1.2.0            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-aspen                                                      1.1.1            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-checkbox-tree                                              1.7.2            MIT                                  https://github.com/jakezatecky/react-checkbox-tree
-react-data-grid                                                  7.0.0-beta.12    MIT                                  https://github.com/adazzle/react-data-grid.git
+react-data-grid                                                  7.0.0-beta.14    MIT                                  https://github.com/adazzle/react-data-grid.git
 react-dom                                                        16.14.0          MIT                                  git+https://github.com/facebook/react.git
 react-dom                                                        17.0.2           MIT                                  https://github.com/facebook/react.git
 react-draggable                                                  4.4.4            MIT                                  https://github.com/react-grid-layout/react-draggable.git
@@ -499,7 +488,6 @@ select2                                                          4.0.13         
 shallowequal                                                     1.1.0            MIT                                  https://github.com/dashed/shallowequal.git
 shim-loader                                                      1.0.1            MIT                                  https://github.com/zinserjan/shim-loader
 slash                                                            4.0.0            MIT                                  https://github.com/sindresorhus/slash.git
-slickgrid                                                        2.3.16           MIT                                  git+https://github.com/6pac/SlickGrid.git
 snapsvg-cjs                                                      0.0.6            MIT                                  git+https://github.com/geelen/Snap.svg-cjs.git
 socket.io-client                                                 4.3.2            MIT                                  https://github.com/socketio/socket.io-client.git
 socket.io-parser                                                 4.1.1            MIT                                  https://github.com/socketio/socket.io-parser.git
@@ -521,7 +509,6 @@ text-segmentation                                                1.0.2          
 timsort                                                          0.3.0            MIT                                  https://github.com/mziccard/node-timsort.git
 tiny-emitter                                                     2.1.0            MIT                                  https://github.com/scottcorgan/tiny-emitter.git
 tiny-warning                                                     1.0.3            MIT                                  https://github.com/alexreardon/tiny-warning.git
-tippy.js                                                         6.3.5            MIT                                  git+https://github.com/atomiks/tippyjs.git
 to-fast-properties                                               2.0.0            MIT                                  https://github.com/sindresorhus/to-fast-properties.git
 to-regex-range                                                   5.0.1            MIT                                  https://github.com/micromatch/to-regex-range.git
 trim-newlines                                                    4.0.2            MIT                                  https://github.com/sindresorhus/trim-newlines.git
@@ -620,5 +607,5 @@ tslib                                                            2.4.0          
 tslib                                                            2.3.0            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 
-540 dependencies listed.
+528 dependencies listed.
 

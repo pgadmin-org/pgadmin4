@@ -56,7 +56,8 @@ def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
 
 
 class IProcessDesc(object, metaclass=ABCMeta):
-    @abstractproperty
+    @property
+    @abstractmethod
     def message(self):
         pass
 

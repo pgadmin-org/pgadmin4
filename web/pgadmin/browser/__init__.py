@@ -18,7 +18,6 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
 from socket import error as SOCKETErrorException
 from urllib.request import urlopen
 
-import six
 import time
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
@@ -227,8 +226,7 @@ class BrowserModule(PgAdminModule):
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
 
-@six.add_metaclass(ABCMeta)
-class BrowserPluginModule(PgAdminModule):
+class BrowserPluginModule(PgAdminModule, metaclass=ABCMeta):
     """
     Abstract base class for browser submodules.
 
@@ -351,11 +349,13 @@ class BrowserPluginModule(PgAdminModule):
         """
         return []
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def node_type(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def script_load(self):
         """
         This property defines, when to load this script.

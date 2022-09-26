@@ -10,14 +10,10 @@
 """Implement the Base class for Driver and Connection"""
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-
-import six
-
 from .registry import DriverRegistry
 
 
-@six.add_metaclass(DriverRegistry)
-class BaseDriver(object):
+class BaseDriver(object, metaclass=DriverRegistry):
     """
     class BaseDriver(object):
 
@@ -50,11 +46,13 @@ class BaseDriver(object):
       configuration.
     """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def version(cls):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def libpq_version(cls):
         pass
 
@@ -71,8 +69,7 @@ class BaseDriver(object):
         pass
 
 
-@six.add_metaclass(ABCMeta)
-class BaseConnection(object):
+class BaseConnection(object, metaclass=ABCMeta):
     """
     class BaseConnection(object)
 

@@ -9,8 +9,7 @@
 
 from abc import ABCMeta, abstractmethod
 
-import six
-from flask import url_for, render_template
+from flask import render_template
 from flask_babel import gettext
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import PGChildModule
@@ -19,8 +18,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PGADMIN_NODE
 
 
-@six.add_metaclass(ABCMeta)
-class CollectionNodeModule(PgAdminModule, PGChildModule):
+class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
     """
     Base class for collection node submodules.
     """

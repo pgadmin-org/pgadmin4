@@ -11,7 +11,6 @@
 
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
-import six
 from flask import render_template
 from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
@@ -76,8 +75,7 @@ class ObjectRegistry(ABCMeta):
         )
 
 
-@six.add_metaclass(ObjectRegistry)
-class BaseCommand(object):
+class BaseCommand(object, metaclass=ObjectRegistry):
     """
     class BaseCommand
 

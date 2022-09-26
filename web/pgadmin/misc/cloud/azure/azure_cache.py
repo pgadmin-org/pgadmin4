@@ -8,9 +8,6 @@ import sys
 from typing import TYPE_CHECKING
 import config
 
-
-import six
-
 if TYPE_CHECKING:
     from typing import Any
     import msal_extensions
@@ -132,7 +129,7 @@ def _get_persistence(
                     ' the cache unencrypted'
                     " instead of raising this exception."
                 )
-                six.raise_from(error, ex)
+                raise error
         return msal_extensions.FilePersistence(cache_file_path)
 
     raise NotImplementedError("A persistent cache is not "

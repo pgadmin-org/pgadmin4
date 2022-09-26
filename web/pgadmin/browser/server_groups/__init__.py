@@ -12,7 +12,6 @@
 import simplejson as json
 from abc import ABCMeta, abstractmethod
 
-import six
 from flask import request, jsonify, render_template
 from flask_babel import gettext
 from flask_security import current_user, login_required
@@ -139,8 +138,7 @@ class ServerGroupMenuItem(MenuItem):
         super(ServerGroupMenuItem, self).__init__(**kwargs)
 
 
-@six.add_metaclass(ABCMeta)
-class ServerGroupPluginModule(BrowserPluginModule):
+class ServerGroupPluginModule(BrowserPluginModule, metaclass=ABCMeta):
     """
     Base class for server group plugins.
     """

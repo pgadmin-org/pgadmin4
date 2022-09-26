@@ -9,7 +9,6 @@
 
 """External 2FA Authentication Registry."""
 from abc import abstractmethod, abstractproperty
-import six
 from typing import Union
 
 import flask
@@ -50,8 +49,7 @@ MultiFactorAuthRegistry = create_registry_metaclass(
 )
 
 
-@six.add_metaclass(MultiFactorAuthRegistry)
-class BaseMFAuth():
+class BaseMFAuth(metaclass=MultiFactorAuthRegistry):
     """
     Base Multi-Factor Authentication (MFA) class
 
@@ -60,7 +58,8 @@ class BaseMFAuth():
     available as a MFA method.
     """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def name(self) -> str:
         """
         Represents the short name for the authentiation method. It can be used
@@ -74,7 +73,8 @@ class BaseMFAuth():
         """
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def label(self) -> str:
         """
         Represents the user visible name for the authentiation method. It will

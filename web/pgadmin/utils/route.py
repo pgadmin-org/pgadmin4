@@ -12,7 +12,6 @@ import traceback
 from abc import ABCMeta, abstractmethod
 from importlib import import_module
 
-import six
 from werkzeug.utils import find_modules
 from pgadmin.utils import server_utils
 
@@ -122,8 +121,7 @@ class TestsGeneratorRegistry(ABCMeta):
                 traceback.print_exc(file=sys.stderr)
 
 
-@six.add_metaclass(TestsGeneratorRegistry)
-class BaseTestGenerator(unittest.TestCase):
+class BaseTestGenerator(unittest.TestCase, metaclass=TestsGeneratorRegistry):
     # Defining abstract method which will override by individual testcase.
 
     def setUp(self):
