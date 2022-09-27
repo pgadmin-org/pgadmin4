@@ -35,4 +35,5 @@ Bug fixes
   | `Issue #5262 <https://github.com/pgadmin-org/pgadmin4/issues/5262>`_ -  Ensure that the user management dialog should not allow the same email addresses with different letter casings when creating users.
   | `Issue #5308 <https://github.com/pgadmin-org/pgadmin4/issues/5308>`_ -  Ensure that the default value for a column should be used if it is made empty.
   | `Issue #5338 <https://github.com/pgadmin-org/pgadmin4/issues/5338>`_ -  Fixed an issue where the prompt is not visible when clicking on the 'save results to file' button on the large data.
+  | `Issue #5352 <https://github.com/pgadmin-org/pgadmin4/issues/5352>`_ -  Fixed error occurring while LDAP authentication for a user with multiple email attributes.
   | `Issue #5368 <https://github.com/pgadmin-org/pgadmin4/issues/5368>`_ -  Fixed the issue while downloading the file from the file manager.
