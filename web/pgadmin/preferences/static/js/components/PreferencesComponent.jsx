@@ -356,6 +356,12 @@ export default function PreferencesComponent({ ...props }) {
 
   }
 
+  function selectChildNode(item, prefTreeInit) {
+    if (item.isExpanded && item._children && item._children.length > 0 && prefTreeInit.current && event.code !== 'ArrowUp') {
+      pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
+    }
+  }
+
   useEffect(() => {
     let initTreeTimeout = null;
     let firstElement = null;
@@ -379,9 +385,7 @@ export default function PreferencesComponent({ ...props }) {
         }, 10);
       }
       else {
-        if (item.isExpanded && item._children && item._children.length > 0 && prefTreeInit.current && event.code !== 'ArrowUp') {
-          pgAdmin.Browser.ptree.tree.setActiveFile(item._children[0], true);
-        }
+        selectChildNode(item, prefTreeInit);
       }
     });
 
@@ -391,20 +395,22 @@ export default function PreferencesComponent({ ...props }) {
     });
 
     // Listen added preferences tree node event to expand the newly added node on tree load.
-    pgAdmin.Browser.Events.on('preferences:tree:added', (event, item) => {
-      if (item._parent._fileName == firstTreeElement.current && item._parent.isExpanded && !prefTreeInit.current) {
-        pgAdmin.Browser.ptree.tree.setActiveFile(item._parent._children[0], true);
-      }
-      else if (item.type == FileType.Directory) {
-        // Check the if newely added node is Directoy and call toggle to expand the node.
-        pgAdmin.Browser.ptree.tree.toggleDirectory(item);
-      }
-    });
+    pgAdmin.Browser.Events.on('preferences:tree:added', addPrefTreeNode);
     /* Clear the initTreeTimeout timeout if unmounted */
     return () => {
       clearTimeout(initTreeTimeout);
     };
   }, []);
+
+  function addPrefTreeNode(event, item) {
+    if (item._parent._fileName == firstTreeElement.current && item._parent.isExpanded && !prefTreeInit.current) {
+      pgAdmin.Browser.ptree.tree.setActiveFile(item._parent._children[0], true);
+    }
+    else if (item.type == FileType.Directory) {
+      // Check the if newely added node is Directoy and call toggle to expand the node.
+      pgAdmin.Browser.ptree.tree.toggleDirectory(item);
+    }
+  }
 
   function getControlMappedForType(type) {
     switch (type) {

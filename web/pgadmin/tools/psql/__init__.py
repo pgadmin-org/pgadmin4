@@ -8,14 +8,13 @@
 ##########################################################################
 
 import os
-import re
 import select
 import struct
 import config
 from sys import platform as _platform
 import eventlet.green.subprocess as subprocess
 from config import PG_DEFAULT_DRIVER
-from flask import Response, url_for, request
+from flask import Response, request
 from flask import render_template, copy_current_request_context, \
     current_app as app
 from flask_babel import gettext
@@ -215,6 +214,51 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
     sio.sleep(0)
 
 
+def windows_platform(connection_data, sid, max_read_bytes):
+    os.environ['PYWINPTY_BACKEND'] = '1'
+    process = PtyProcess.spawn('cmd.exe')
+
+    process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
+                                              connection_data[1]))
+    process.write("\r\n")
+    app.config['sessions'][request.sid] = process
+    pdata[request.sid] = process
+    set_term_size(process, 50, 50)
+
+    while True:
+        read_stdout(process, sid, max_read_bytes,
+                    win_emit_output=True)
+
+
+def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
+    while p and p.poll() is None:
+        if request.sid in app.config['sessions']:
+            # This code is added to make this unit testable.
+            if "is_test" not in data:
+                sio.sleep(0.01)
+            else:
+                data['count'] += 1
+                if data['count'] == 5:
+                    break
+
+            timeout = 0
+            # module provides access to platform-specific I/O
+            # monitoring functions
+            (data_ready, _, _) = select.select([parent, fd], [], [],
+                                               timeout)
+
+            read_terminal_data(parent, data_ready, max_read_bytes, sid)
+
+
+def pty_handel_io(connection_data, data, sid):
+    max_read_bytes = 1024 * 20
+    if _platform == 'win32':
+        windows_platform(connection_data, sid, max_read_bytes)
+    else:
+        p, parent, fd = create_pty_terminal(connection_data)
+        non_windows_platform(parent, p, fd, data, max_read_bytes, sid)
+
+
 @sio.on('start_process', namespace='/pty')
 def start_process(data):
     """
@@ -224,45 +268,7 @@ def start_process(data):
     """
     @copy_current_request_context
     def read_and_forward_pty_output(sid, data):
-
-        max_read_bytes = 1024 * 20
-        import time
-        if _platform == 'win32':
-
-            os.environ['PYWINPTY_BACKEND'] = '1'
-            process = PtyProcess.spawn('cmd.exe')
-
-            process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
-                                                      connection_data[1]))
-            process.write("\r\n")
-            app.config['sessions'][request.sid] = process
-            pdata[request.sid] = process
-            set_term_size(process, 50, 50)
-
-            while True:
-                read_stdout(process, sid, max_read_bytes,
-                            win_emit_output=True)
-        else:
-
-            p, parent, fd = create_pty_terminal(connection_data)
-
-            while p and p.poll() is None:
-                if request.sid in app.config['sessions']:
-                    # This code is added to make this unit testable.
-                    if "is_test" not in data:
-                        sio.sleep(0.01)
-                    else:
-                        data['count'] += 1
-                        if data['count'] == 5:
-                            break
-
-                    timeout = 0
-                    # module provides access to platform-specific I/O
-                    # monitoring functions
-                    (data_ready, _, _) = select.select([parent, fd], [], [],
-                                                       timeout)
-
-                    read_terminal_data(parent, data_ready, max_read_bytes, sid)
+        pty_handel_io(connection_data, data, sid)
 
     # Check user is authenticated and PSQL is enabled in config.
     if current_user.is_authenticated and config.ENABLE_PSQL:
@@ -555,6 +561,13 @@ def disconnect_socket():
         del app.config['sessions'][request.sid]
 
 
+def get_connection_status(conn):
+    if conn.connected():
+        return True
+
+    return False
+
+
 def _get_database(sid, did):
     """
     This method is used to get database based on sid, did.
@@ -564,10 +577,9 @@ def _get_database(sid, did):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(int(sid))
         conn = manager.connection()
         db_name = None
-        if conn.connected():
-            is_connected = True
-        else:
-            is_connected = False
+
+        is_connected = get_connection_status(conn)
+
         if is_connected:
 
             if conn.manager and conn.manager.db_info \
