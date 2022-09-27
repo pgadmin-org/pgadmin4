@@ -155,14 +155,19 @@ const dialogStyle = makeStyles((theme) => ({
   }
 }));
 
+
+function checkIsResizable(props) {
+  return props.isresizeable == 'true' ? true : false;
+}
+
+function setEnableResizing(props, resizeable) {
+  return props.isfullscreen == 'true' ? false : resizeable;
+}
+
 function PaperComponent({minHeight, minWidth, ...props}) {
   let classes = dialogStyle();
   let [dialogPosition, setDialogPosition] = useState(null);
-  let resizeable = props.isresizeable == 'true' ? true : false;
-
-  const setEnableResizing = () => {
-    return props.isfullscreen == 'true' ? false : resizeable;
-  };
+  let resizeable = checkIsResizable(props);
 
   const setConditionalPosition = () => {
     return props.isfullscreen == 'true' ? { x: 0, y: 0 } : dialogPosition && { x: dialogPosition.x, y: dialogPosition.y };
@@ -187,7 +192,7 @@ function PaperComponent({minHeight, minWidth, ...props}) {
         // {...(props.width && { minWidth: MIN_WIDTH })}
         // {...(props.height && { minHeight: MIN_HEIGHT })}
         bounds="window"
-        enableResizing={setEnableResizing()}
+        enableResizing={setEnableResizing(props, resizeable)}
         position={setConditionalPosition()}
         onDragStop={(e, position) => {
           if (props.isfullscreen !== 'true') {

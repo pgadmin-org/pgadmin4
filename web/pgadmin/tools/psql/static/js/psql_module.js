@@ -17,6 +17,7 @@ import {getRandomInt, hasBinariesConfiguration, registerDetachEvent} from 'sourc
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
 import Notify from '../../../../static/js/helpers/Notifier';
+import { copyToClipboard } from '../../../../static/js/clipboard';
 
 import {generateTitle, refresh_db_node} from 'tools/sqleditor/static/js/sqleditor_title';
 
@@ -328,7 +329,14 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       term.attachCustomKeyEventHandler(e => {
         e.stopPropagation();
         if(e.type=='keydown' && (e.metaKey || e.ctrlKey) && (e.key == 'c' || e.key == 'C')) {
-          document.execCommand('copy');
+          let selected_text = term.getSelection();
+          navigator.permissions.query({ name: 'clipboard-write' }).then(function(result) {
+            if(result.state === 'granted' || result.state === 'prompt') {
+              copyToClipboard(selected_text);
+            } else{
+              Notify.alert(gettext('Clipboard write permission required'), gettext('To copy data from PSQL terminal, Clipboard write permission required.'));
+            }
+          });
         }
 
         return !(e.ctrlKey && platform == 'win32');
