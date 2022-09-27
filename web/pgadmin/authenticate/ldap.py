@@ -97,7 +97,11 @@ class LDAPAuthentication(BaseAuthentication):
                 return status, msg
 
         if 'mail' in ldap_user:
-            user_email = ldap_user['mail'].value
+            mail = ldap_user['mail'].value
+            if isinstance(mail, list) and len(mail) > 0:
+                user_email = mail[0]
+            else:
+                user_email = ldap_user['mail'].value
 
         return self.__auto_create_user(user_email)
 
