@@ -66,7 +66,7 @@ class LDAPAuthentication(BaseAuthentication):
         if not self.bind_user and not self.bind_pass and\
                 self.anonymous_bind is False:
 
-            user_dn = config.LDAP_BIND_FORMAT.format (LDAP_USERNAME=self.username
+            user_dn = config.LDAP_BIND_FORMAT.format(LDAP_USERNAME=self.username
                             , LDAP_BASE_DN=config.LDAP_BASE_DN
                             , LDAP_USERNAME_ATTRIBUTE=config.LDAP_USERNAME_ATTRIBUTE
                         )
