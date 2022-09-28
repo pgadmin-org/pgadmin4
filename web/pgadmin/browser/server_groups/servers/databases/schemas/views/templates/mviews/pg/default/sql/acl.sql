@@ -38,4 +38,5 @@ LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)
 GROUP BY
     g.rolname,
     gt.rolname
+ORDER BY grantee
 {% endif %}
