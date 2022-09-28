@@ -15,12 +15,15 @@ import { makeStyles } from '@material-ui/core/styles';
 import { PgIconButton } from '../components/Buttons';
 import AddIcon from '@material-ui/icons/AddOutlined';
 import { MappedCellControl } from './MappedControl';
+import DragIndicatorRoundedIcon from '@material-ui/icons/DragIndicatorRounded';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import { useTable, useFlexLayout, useResizeColumns, useSortBy, useExpanded, useGlobalFilter } from 'react-table';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import {HTML5Backend} from 'react-dnd-html5-backend';
 
 import gettext from 'sources/gettext';
 import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
@@ -74,6 +77,15 @@ const useStyles = makeStyles((theme)=>({
     overflow: 'auto',
     backgroundColor: theme.otherVars.tableBg,
   },
+  tableRowHovered: {
+    position: 'relative',
+    '& .hover-overlay': {
+      backgroundColor: theme.palette.primary.light,
+      position: 'absolute',
+      inset: 0,
+      opacity: 0.75,
+    }
+  },
   tableCell: {
     margin: 0,
     padding: theme.spacing(0.5),
@@ -95,6 +107,9 @@ const useStyles = makeStyles((theme)=>({
   btnCell: {
     padding: theme.spacing(0.5, 0),
     textAlign: 'center',
+  },
+  btnReorder: {
+    cursor: 'move',
   },
   resizer: {
     display: 'inline-block',
@@ -152,10 +167,12 @@ DataTableHeader.propTypes = {
   headerGroups: PropTypes.array.isRequired,
 };
 
-function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath}) {
+function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex}) {
   const classes = useStyles();
   const [key, setKey] = useState(false);
   const depListener = useContext(DepListenerContext);
+  const rowRef = useRef(null);
+  const dragHandleRef = useRef(null);
 
   /* Memoize the row to avoid unnecessary re-render.
    * If table data changes, then react-table re-renders the complete tables
@@ -201,28 +218,87 @@ function DataTableRow({row, totalRows, isResizing, schema, schemaRef, accessPath
     };
   }, []);
 
+  const [{ handlerId }, drop] = useDrop({
+    accept: 'row',
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item, monitor) {
+      if (!rowRef.current) {
+        return;
+      }
+      item.hoverIndex = null;
+      // Don't replace items with themselves
+      if (item.index === index) {
+        return;
+      }
+      // Determine rectangle on screen
+      const hoverBoundingRect = rowRef.current?.getBoundingClientRect();
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+      // Get pixels to the top
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      // Only perform the move when the mouse has crossed certain part of the items height
+      // Dragging downwards
+      if (item.index < index && hoverClientY < (hoverBoundingRect.bottom - hoverBoundingRect.top)/3) {
+        return;
+      }
+      // Dragging upwards
+      if (item.index > index && hoverClientY > ((hoverBoundingRect.bottom - hoverBoundingRect.top)*2/3)) {
+        return;
+      }
+      setHoverIndex(index);
+      item.hoverIndex = index;
+    },
+  });
+
+  const [, drag] = useDrag({
+    type: 'row',
+    item: () => {
+      return {index};
+    },
+    end: (item)=>{
+      // Time to actually perform the action
+      setHoverIndex(null);
+      if(item.hoverIndex >= 0) {
+        moveRow(item.index, item.hoverIndex);
+      }
+    }
+  });
+
   /* External deps values are from top schema sess data */
   depsMap = depsMap.concat(externalDeps.map((source)=>_.get(schemaRef.current.top?.sessData, source)));
-  depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing]);
+  depsMap = depsMap.concat([totalRows, row.isExpanded, key, isResizing, isHovered]);
+
+  drag(dragHandleRef);
+  drop(rowRef);
+
   return useMemo(()=>
-    <div {...row.getRowProps()} className="tr">
-      {row.cells.map((cell, ci) => {
-        let classNames = [classes.tableCell];
-        if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
-          classNames.push(classes.btnCell);
-        }
-        if(cell.column.id == 'btn-edit' && row.isExpanded) {
-          classNames.push(classes.expandedIconCell);
-        }
-        return (
-          <div key={ci} {...cell.getCellProps()} className={clsx(classNames)}>
-            {cell.render('Cell', {
-              reRenderRow: ()=>{setKey((currKey)=>!currKey);}
-            })}
-          </div>
-        );
-      })}
-    </div>, depsMap);
+    <>
+      <div {...row.getRowProps()} ref={rowRef} data-handler-id={handlerId}
+        className={isHovered ? classes.tableRowHovered : null}
+      >
+        {row.cells.map((cell, ci) => {
+          let classNames = [classes.tableCell];
+          if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
+            classNames.push(classes.btnCell);
+          }
+          if(cell.column.id == 'btn-edit' && row.isExpanded) {
+            classNames.push(classes.expandedIconCell);
+          }
+          return (
+            <div ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null} key={ci} {...cell.getCellProps()} className={clsx(classNames)}>
+              {cell.render('Cell', {
+                reRenderRow: ()=>{setKey((currKey)=>!currKey);}
+              })}
+            </div>
+          );
+        })}
+        <div className='hover-overlay'></div>
+      </div>
+    </>, depsMap);
 }
 
 export function DataGridHeader({label, canAdd, onAddClick, canSearch, onSearchTextChange}) {
@@ -269,12 +345,33 @@ export default function DataGridView({
   const classes = useStyles();
   const stateUtils = useContext(StateUtilsContext);
   const checkIsMounted = useIsMounted();
+  const [hoverIndex, setHoverIndex] = useState();
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
   let columns = useMemo(
     ()=>{
       let cols = [];
+      if(props.canReorder) {
+        let colInfo = {
+          Header: <>&nbsp;</>,
+          id: 'btn-reorder',
+          accessor: ()=>{/*This is intentional (SonarQube)*/},
+          disableResizing: true,
+          sortable: false,
+          dataType: 'reorder',
+          width: 26,
+          minWidth: 26,
+          maxWidth: 26,
+          Cell: ()=>{
+            return <div className={classes.btnReorder}>
+              <DragIndicatorRoundedIcon fontSize="small" />
+            </div>;
+          }
+        };
+        colInfo.Cell.displayName = 'Cell';
+        cols.push(colInfo);
+      }
       if(props.canEdit) {
         let colInfo = {
           Header: <>&nbsp;</>,
@@ -432,7 +529,7 @@ export default function DataGridView({
         })
       );
       return cols;
-    },[props.canEdit, props.canDelete]
+    },[props.canEdit, props.canDelete, props.canReorder]
   );
 
   const onAddClick = useCallback(()=>{
@@ -496,6 +593,15 @@ export default function DataGridView({
     }
   }, []);
 
+  const moveRow = (dragIndex, hoverIndex) => {
+    dataDispatch({
+      type: SCHEMA_STATE_ACTIONS.MOVE_ROW,
+      path: accessPath,
+      oldIndex: dragIndex,
+      newIndex: hoverIndex,
+    });
+  };
+
   const isResizing = _.flatMap(headerGroups, headerGroup => headerGroup.headers.map(col=>col.isResizing)).includes(true);
 
   if(!props.visible) {
@@ -511,23 +617,26 @@ export default function DataGridView({
             setGlobalFilter(value || undefined);
           }}
         />}
-        <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table}>
-          <DataTableHeader headerGroups={headerGroups} />
-          <div {...getTableBodyProps()} className={classes.tableContentWidth}>
-            {rows.map((row, i) => {
-              prepareRow(row);
-              return <React.Fragment key={i}>
-                <DataTableRow row={row} totalRows={rows.length} isResizing={isResizing}
-                  schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])} />
-                {props.canEdit && row.isExpanded &&
-                  <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
-                    schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
-                    isDataGridForm={true}/>
-                }
-              </React.Fragment>;
-            })}
+        <DndProvider backend={HTML5Backend}>
+          <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table}>
+            <DataTableHeader headerGroups={headerGroups} />
+            <div {...getTableBodyProps()} className={classes.tableContentWidth}>
+              {rows.map((row, i) => {
+                prepareRow(row);
+                return <React.Fragment key={i}>
+                  <DataTableRow index={i} row={row} totalRows={rows.length} isResizing={isResizing}
+                    schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])}
+                    moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} />
+                  {props.canEdit && row.isExpanded &&
+                    <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
+                      schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}
+                      isDataGridForm={true}/>
+                  }
+                </React.Fragment>;
+              })}
+            </div>
           </div>
-        </div>
+        </DndProvider>
       </Box>
     </Box>
   );
@@ -546,6 +655,7 @@ DataGridView.propTypes = {
   canEdit: PropTypes.bool,
   canAdd: PropTypes.bool,
   canDelete: PropTypes.bool,
+  canReorder: PropTypes.bool,
   visible: PropTypes.bool,
   canAddRow: PropTypes.oneOfType([
     PropTypes.bool, PropTypes.func,

@@ -430,7 +430,12 @@ module.exports = [{
           plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
         },
       },
-    }, {
+    },{
+      test: /\.m?js$/,
+      resolve: {
+        fullySpecified: false
+      },
+    },{
       test: /\.tsx?$|\.ts?$/,
       use: {
         loader: 'babel-loader',

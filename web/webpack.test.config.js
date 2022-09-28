@@ -107,6 +107,11 @@ module.exports = {
       },
       enforce: 'post',
       exclude: /node_modules|plugins|bundle|generated|regression|[Tt]est.js|[Ss]pecs.js|[Ss]pec.js|\.spec\.js/,
+    },{
+      test: /\.m?js$/,
+      resolve: {
+        fullySpecified: false
+      },
     },
     ],
   },

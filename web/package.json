@@ -146,6 +146,8 @@
     "react-aspen": "^1.1.0",
     "react-checkbox-tree": "^1.7.2",
     "react-data-grid": "git+https://github.com/EnterpriseDB/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^17.0.1",
     "react-draggable": "^4.4.4",
     "react-dropzone": "^14.2.1",
