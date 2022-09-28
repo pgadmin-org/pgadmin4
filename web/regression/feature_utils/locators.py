@@ -11,18 +11,18 @@ class BrowserToolBarLocators():
     """This will contains element locators for browser tool bar"""
 
     open_query_tool_button_css = \
-        ".wcFrameButton[title='Query Tool']:not(.disabled)"
+        ".wcFrameButton[aria-label='Query Tool']:not(.disabled)"
 
     query_tool_panel_css = \
         ".wcPanelTab .wcTabIcon.pg-font-icon.icon-query_tool"
 
     view_table_data_button_css = \
-        ".wcFrameButton[title='View Data']:not(.disabled)"
+        ".wcFrameButton[aria-label='View Data']:not(.disabled)"
 
     view_data_panel_css = ".wcPanelTab .wcTabIcon.pg-font-icon.icon-view_data"
 
     filter_data_button_css = \
-        ".wcFrameButton[title='Filtered Rows']:not(.disabled)"
+        ".wcFrameButton[aria-label='Filtered Rows']:not(.disabled)"
 
     filter_box_css = "//*[@id='0']/div[contains(text(), 'Data Filter')]"
 
