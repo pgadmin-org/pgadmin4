@@ -27,6 +27,7 @@ Bug fixes
 *********
 
   | `Issue #5145 <https://github.com/pgadmin-org/pgadmin4/issues/5145>`_ -  Fixed intermittent error shown while OAuth2 login.
+  | `Issue #5167 <https://github.com/pgadmin-org/pgadmin4/issues/5167>`_ -  Fixed the .psqlrc issue for PSQL Tool.
   | `Issue #5188 <https://github.com/pgadmin-org/pgadmin4/issues/5188>`_ -  Ensure that the continue/start button should be disabled if the user stops the Debugger for the procedures.
   | `Issue #5210 <https://github.com/pgadmin-org/pgadmin4/issues/5210>`_ -  Ensure that the query tool creates a new tab with the appropriate user when pressing Alt+Shift+Q.
   | `Issue #5212 <https://github.com/pgadmin-org/pgadmin4/issues/5212>`_ -  Added the close button for all the notifications of the notistack.
