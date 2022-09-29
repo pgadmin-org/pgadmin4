@@ -6,7 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
+import json
 import os
 import select
 import struct
@@ -98,18 +98,10 @@ def panel(trans_id):
         app.config['sid_soid_mapping'] = dict()
     if request.args:
         params.update({k: v for k, v in request.args.items()})
-    # Set TERM env for xterm.
-    os.environ['TERM'] = 'xterm'
-
-    # If psql is enabled in server mode, set psqlrc and hist paths
-    # to individual user storage.
-    if config.ENABLE_PSQL and config.SERVER_MODE:
-        os.environ['PSQLRC'] = get_complete_file_path('.psqlrc', False)
-        os.environ['PSQL_HISTORY'] = \
-            get_complete_file_path('.psql_history', False)
 
     o_db_name = _get_database(params['sid'], params['did'])
 
+    set_env_variables(is_win=_platform == 'win32')
     return render_template('editor_template.html',
                            sid=params['sid'],
                            db=underscore_unescape(
@@ -123,6 +115,21 @@ def panel(trans_id):
                            basejs=True,
                            platform=_platform
                            )
+
+
+def set_env_variables(is_win=False):
+    # Set TERM env for xterm.
+    os.environ['TERM'] = 'xterm'
+    if is_win:
+        os.environ['PYWINPTY_BACKEND'] = '1'
+    # If psql is enabled in server mode, set psqlrc and hist paths
+    # to individual user storage.
+    if config.ENABLE_PSQL and config.SERVER_MODE:
+        psql_data = {
+            'PSQLRC': get_complete_file_path('.psqlrc', False),
+            'PSQL_HISTORY': get_complete_file_path('.psql_history', False)
+        }
+        os.environ[current_user.username] = json.dumps(psql_data)
 
 
 def set_term_size(fd, row, col, xpix=0, ypix=0):
@@ -156,6 +163,15 @@ def connect():
                  to=request.sid)
 
 
+def get_user_env():
+    env = os.environ
+    if config.ENABLE_PSQL and config.SERVER_MODE:
+        user_env = json.loads(os.environ[current_user.username])
+        env['PSQLRC'] = user_env['PSQLRC']
+        env['PSQL_HISTORY'] = user_env['PSQL_HISTORY']
+    return env
+
+
 def create_pty_terminal(connection_data):
     # Create the pty terminal process, parent and fd are file descriptors
     # for parent and child.
@@ -168,7 +184,8 @@ def create_pty_terminal(connection_data):
                              stdin=fd,
                              stdout=fd,
                              stderr=fd,
-                             universal_newlines=True
+                             universal_newlines=True,
+                             env=get_user_env()
                              )
 
         app.config['sessions'][request.sid] = parent
@@ -215,8 +232,7 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
 
 
 def windows_platform(connection_data, sid, max_read_bytes):
-    os.environ['PYWINPTY_BACKEND'] = '1'
-    process = PtyProcess.spawn('cmd.exe')
+    process = PtyProcess.spawn('cmd.exe', env=get_user_env())
 
     process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
                                               connection_data[1]))
