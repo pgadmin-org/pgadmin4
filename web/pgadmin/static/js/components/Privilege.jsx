@@ -131,7 +131,7 @@ export default function Privilege({value, onChange, controlProps}) {
   return (
     <div className={classes.root}>
       <InputText value={textValue} readOnly/>
-      <table className={clsx(classes.table, 'priv-table')}>
+      <table className={clsx(classes.table, 'priv-table')} tabIndex="0">
         {(realVal.length > 1) && <thead>
           <tr>
             <td className={classes.tableCell}>
