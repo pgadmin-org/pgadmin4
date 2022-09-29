@@ -11,4 +11,6 @@ EXPLAIN ({% if format -%}
   , TIMING {{ UTILS.BOOL_TEXT(timing) }}
 {%- endif %}{% if buffers is defined -%}
   , BUFFERS {{ UTILS.BOOL_TEXT(buffers) }}
+{%- endif %}{% if summary is defined -%}
+  , SUMMARY {{ UTILS.BOOL_TEXT(summary) }}
 {%- endif %}) {{ sql }}

@@ -20,14 +20,7 @@ class TestCheckRecovery(BaseTestGenerator):
                                               self.server['sslmode']).cursor()
 
         if cursor is not None and cursor.connection is not None:
-            server_version = cursor.connection.server_version
-            if server_version >= 100000:
-                version = '10_plus'
-            elif server_version >= 90000:
-                version = '9.0_plus'
-            else:
-                version = 'default'
-
+            version = 'default'
             template_file = os.path.join(
                 os.path.dirname(__file__), "../templates/connect/sql", version,
                 "check_recovery.sql"

@@ -15,5 +15,5 @@ ALTER TABLE public."testview_$%{}[]()&*^!@""'`\/#"
 COMMENT ON VIEW public."testview_$%{}[]()&*^!@""'`\/#"
     IS 'Testcomment-updated';
 
-GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO postgres;
 GRANT SELECT ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
+GRANT ALL ON TABLE public."testview_$%{}[]()&*^!@""'`\/#" TO postgres;

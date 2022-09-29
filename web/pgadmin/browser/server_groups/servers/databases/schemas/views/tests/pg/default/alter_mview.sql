@@ -14,5 +14,5 @@ ALTER TABLE IF EXISTS public."testmview_$%{}[]()&*^!/@`#"
 COMMENT ON MATERIALIZED VIEW public."testmview_$%{}[]()&*^!/@`#"
     IS 'comment1';
 
-GRANT ALL ON TABLE public."testmview_$%{}[]()&*^!/@`#" TO postgres;
 GRANT ALL ON TABLE public."testmview_$%{}[]()&*^!/@`#" TO PUBLIC;
+GRANT ALL ON TABLE public."testmview_$%{}[]()&*^!/@`#" TO postgres;

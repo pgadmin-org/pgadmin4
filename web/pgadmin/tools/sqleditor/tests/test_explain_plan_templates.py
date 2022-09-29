@@ -20,67 +20,11 @@ from pgadmin import tools
 class TestExplainPlanTemplates(BaseTestGenerator):
     scenarios = [
         (
-            'When rendering Postgres 9.0 template, '
-            'when passing all parameters,'
-            'it returns the explain plan with all parameters',
-            dict(
-                template_path='sqleditor/sql/default/explain_plan.sql',
-                input_parameters=dict(
-                    sql='SELECT * FROM places',
-                    format='xml',
-                    analyze=True,
-                    verbose=True,
-                    costs=False,
-                    buffers=True
-                ),
-                sql_statement='SELECT * FROM places',
-                expected_return_value='EXPLAIN '
-                                      '(FORMAT XML, ANALYZE true, '
-                                      'VERBOSE true, COSTS false, '
-                                      'BUFFERS true) SELECT * FROM places'
-            )
-        ),
-        (
-            'When rendering Postgres 9.0 template, '
-            'when not all parameters are present,'
-            'it returns the explain plan with the present parameters',
-            dict(
-                template_path='sqleditor/sql/default/explain_plan.sql',
-                input_parameters=dict(
-                    sql='SELECT * FROM places',
-                    format='json',
-                    buffers=True
-                ),
-                sql_statement='SELECT * FROM places',
-                expected_return_value='EXPLAIN '
-                                      '(FORMAT JSON, BUFFERS true) '
-                                      'SELECT * FROM places'
-            )
-        ),
-        (
-            'When rendering Postgres 9.2 template, '
-            'when timing is present,'
-            'it returns the explain plan with timing',
-            dict(
-                template_path='sqleditor/sql/9.2_plus/explain_plan.sql',
-                input_parameters=dict(
-                    sql='SELECT * FROM places',
-                    format='json',
-                    buffers=True,
-                    timing=False
-                ),
-                sql_statement='SELECT * FROM places',
-                expected_return_value='EXPLAIN '
-                                      '(FORMAT JSON, TIMING false, '
-                                      'BUFFERS true) SELECT * FROM places'
-            )
-        ),
-        (
             'When rendering Postgres 10 template, '
             'when summary is present,'
             'it returns the explain plan with summary',
             dict(
-                template_path='sqleditor/sql/10_plus/explain_plan.sql',
+                template_path='sqleditor/sql/default/explain_plan.sql',
                 input_parameters=dict(
                     sql='SELECT * FROM places',
                     format='yaml',
