@@ -135,8 +135,8 @@ export const CodeMirrorInstancType = PropTypes.shape({
   getSelection: PropTypes.func,
 });
 
-export function FindDialog({editor, show, replace, onClose}) {
-  const [findVal, setFindVal] = useState('');
+export function FindDialog({editor, show, replace, onClose, selFindVal}) {
+  const [findVal, setFindVal] = useState(selFindVal);
   const [replaceVal, setReplaceVal] = useState('');
   const [useRegex, setUseRegex] = useState(false);
   const [matchCase, setMatchCase] = useState(false);
@@ -147,12 +147,6 @@ export function FindDialog({editor, show, replace, onClose}) {
 
   const search = ()=>{
     if(editor) {
-      // Get selected text from editor and set it to find/replace input.
-      let selText = editor.getSelection();
-      if(selText.length != 0) {
-        setFindVal(selText);
-      }
-
       let query = parseQuery(findVal, useRegex, matchCase);
       if(!query) return;
 
@@ -170,6 +164,11 @@ export function FindDialog({editor, show, replace, onClose}) {
 
   useEffect(()=>{
     if(show) {
+      // Get selected text from editor and set it to find/replace input.
+      let selText = editor.getSelection();
+      if(selText.length != 0) {
+        setFindVal(selText);
+      }
       findInputRef.current && findInputRef.current.select();
       search();
     }
@@ -299,6 +298,7 @@ FindDialog.propTypes = {
   show: PropTypes.bool,
   replace: PropTypes.bool,
   onClose: PropTypes.func,
+  selFindVal: PropTypes.string,
 };
 
 export function CopyButton({show, copyText}) {
@@ -560,7 +560,7 @@ export default function CodeMirror({currEditor, name, value, options, events, re
       onMouseEnter={() => { showCopyBtn && value.length > 0 && setShowCopy(true);}}
       onMouseLeave={() => {showCopyBtn && setShowCopy(false);}}
     >
-      <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind}/>
+      <FindDialog editor={editor.current} show={showFind} replace={isReplace} onClose={closeFind} selFindVal={editor.current?.getSelection() && editor.current.getSelection().length > 0 ? editor.current.getSelection() : ''}/>
       <CopyButton editor={editor.current} show={showCopy} copyText={value}></CopyButton>
       <textarea ref={taRef} name={name} />
     </div>
