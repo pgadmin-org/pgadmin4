@@ -244,7 +244,7 @@ class Connection(BaseConnection):
                 return True, \
                     _(
                         "Failed to decrypt the saved password.\nError: {0}"
-                    ).format(str(e))
+                    ).format(str(e)), password
         return False, '', password
 
     def connect(self, **kwargs):
