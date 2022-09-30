@@ -39,4 +39,5 @@ Bug fixes
   | `Issue #5327 <https://github.com/pgadmin-org/pgadmin4/issues/5327>`_ -  Fixed an issue where user was unable to select privileges in Safari.
   | `Issue #5338 <https://github.com/pgadmin-org/pgadmin4/issues/5338>`_ -  Fixed an issue where the prompt is not visible when clicking on the 'save results to file' button on the large data.
   | `Issue #5352 <https://github.com/pgadmin-org/pgadmin4/issues/5352>`_ -  Fixed error occurring while LDAP authentication for a user with multiple email attributes.
+  | `Issue #5367 <https://github.com/pgadmin-org/pgadmin4/issues/5367>`_ -  Ensure that the correct value should be returned if an exception occurs while decoding the password.
   | `Issue #5368 <https://github.com/pgadmin-org/pgadmin4/issues/5368>`_ -  Fixed the issue while downloading the file from the file manager.
