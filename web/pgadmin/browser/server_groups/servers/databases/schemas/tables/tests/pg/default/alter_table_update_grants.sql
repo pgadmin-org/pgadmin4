@@ -16,11 +16,9 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     OWNER to postgres;
 
-REVOKE ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" FROM PUBLIC;
+GRANT SELECT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
 GRANT ALL ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO postgres;
-
-GRANT SELECT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
 COMMENT ON TABLE public."table_with_advanced_options_$%{}[]()&*^!@""'`\/#"
     IS 'test comment';
