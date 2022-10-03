@@ -17,6 +17,7 @@ New features
 
   | `Issue #4994 <https://github.com/pgadmin-org/pgadmin4/issues/4994>`_ -  Allow reordering table columns using drag and drop in ERD Tool.
   | `Issue #5304 <https://github.com/pgadmin-org/pgadmin4/issues/5304>`_ -  Added high availability options to AWS deployment.
+  | `Issue #5390 <https://github.com/pgadmin-org/pgadmin4/issues/5390>`_ -  Expose the Gunicorn limit_request_line parameter in the container, with the default set to the maximum 8190.
 
 Housekeeping
 ************

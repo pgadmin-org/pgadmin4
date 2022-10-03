@@ -115,6 +115,15 @@ Override the default file path for the server definition list. See the
 Specify an output file in which to store the Gunicorn access logs, instead of
 sending them to stdout.
 
+**GUNICORN_LIMIT_REQUEST_LINE**
+
+*Default: 8190*
+
+Set the maximum size of HTTP request line in bytes. By default the pgAdmin
+container uses the maximum limited size offered by Gunicorn as some requests
+can be quite large. In exceptional cases this value can be set to 0 (zero) to
+specify "unlimited", however this poses a potential denial of service hazard.
+
 **GUNICORN_THREADS**
 
 *Default: 25*
