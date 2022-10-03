@@ -134,13 +134,14 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
     retData.editable = evalFunc(schema, _.isUndefined(editable) ? true : editable, value);
   }
 
-  let {canAdd, canEdit, canDelete, canAddRow } = field;
+  let {canAdd, canEdit, canDelete, canReorder, canAddRow } = field;
   retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
   retData.canAdd = !retData.disabled && retData.canAdd;
   retData.canEdit = _.isUndefined(canEdit) ? retData.canEdit : evalFunc(schema, canEdit, value);
   retData.canEdit = !retData.disabled && retData.canEdit;
   retData.canDelete = _.isUndefined(canDelete) ? retData.canDelete : evalFunc(schema, canDelete, value);
   retData.canDelete = !retData.disabled && retData.canDelete;
+  retData.canReorder =_.isUndefined(canReorder) ? retData.canReorder : evalFunc(schema, canReorder, value);
   retData.canAddRow = _.isUndefined(canAddRow) ? retData.canAddRow : evalFunc(schema, canAddRow, value);
   return retData;
 }
@@ -214,7 +215,7 @@ export default function FormView({
 
   /* Prepare the array of components based on the types */
   for(const field of schemaRef.current.fields) {
-    let {visible, disabled, readonly, canAdd, canEdit, canDelete, canAddRow, modeSupported} =
+    let {visible, disabled, readonly, canAdd, canEdit, canDelete, canReorder, canAddRow, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
     if(modeSupported) {
@@ -273,7 +274,8 @@ export default function FormView({
         const props = {
           key: field.id, value: value[field.id] || [], viewHelperProps: viewHelperProps,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
-          containerClassName: classes.controlRow, ...field, canAdd: canAdd, canEdit: canEdit, canDelete: canDelete,
+          containerClassName: classes.controlRow, ...field, canAdd: canAdd, canReorder: canReorder,
+          canEdit: canEdit, canDelete: canDelete,
           visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch
         };
 

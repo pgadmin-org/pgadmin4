@@ -15,6 +15,7 @@ Supported Database Servers
 New features
 ************
 
+  | `Issue #4994 <https://github.com/pgadmin-org/pgadmin4/issues/4994>`_ -  Allow reordering table columns using drag and drop in ERD Tool.
   | `Issue #5304 <https://github.com/pgadmin-org/pgadmin4/issues/5304>`_ -  Added high availability options to AWS deployment.
 
 Housekeeping

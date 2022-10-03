@@ -196,18 +196,29 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
           }
         } else if(!isEdit) {
           if(field.type === 'collection') {
-            const changeDiff = diffArray(
-              _.get(origVal, field.id) || [],
-              _.get(sessVal, field.id) || [],
-              'cid',
-            );
+            const origColl = _.get(origVal, field.id) || [];
+            const sessColl = _.get(sessVal, field.id) || [];
+            let changeDiff = diffArray(origColl,sessColl,'cid');
+
             /* For fixed rows, check only the updated changes */
+            /* If canReorder, check the updated changes */
             if((!_.isUndefined(field.fixedRows) && changeDiff.updated.length > 0)
               || (_.isUndefined(field.fixedRows) && (
                 changeDiff.added.length > 0 || changeDiff.removed.length > 0 || changeDiff.updated.length > 0
-              ))) {
+              ))
+              || (field.canReorder && _.differenceBy(origColl, sessColl, 'cid'))
+            ) {
               let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
               attrChanged(field.id, change, true);
+              return;
+            }
+
+            if(field.canReorder) {
+              changeDiff = diffArray(origColl,sessColl);
+              if(changeDiff.updated.length > 0) {
+                let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
+                attrChanged(field.id, change, true);
+              }
             }
           } else {
             attrChanged(field.id);
@@ -298,10 +309,11 @@ export const SCHEMA_STATE_ACTIONS = {
   SET_VALUE: 'set_value',
   ADD_ROW: 'add_row',
   DELETE_ROW: 'delete_row',
+  MOVE_ROW: 'move_row',
   RERENDER: 'rerender',
   CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
   DEFERRED_DEPCHANGE: 'deferred_depchange',
-  BULK_UPDATE: 'bulk_update'
+  BULK_UPDATE: 'bulk_update',
 };
 
 const getDepChange = (currPath, newState, oldState, action)=>{
@@ -383,6 +395,13 @@ const sessDataReducer = (state, action)=>{
     _.set(data, action.path, rows);
     /* If there is any dep listeners get the changes */
     data = getDepChange(action.path, data, state, action);
+    break;
+  case SCHEMA_STATE_ACTIONS.MOVE_ROW:
+    rows = _.get(data, action.path)||[];
+    var row = rows[action.oldIndex];
+    rows.splice(action.oldIndex, 1);
+    rows.splice(action.newIndex, 0, row);
+    _.set(data, action.path, rows);
     break;
   case SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE:
     data.__deferred__ = [];

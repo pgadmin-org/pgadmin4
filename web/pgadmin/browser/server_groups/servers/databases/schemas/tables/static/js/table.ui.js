@@ -661,6 +661,7 @@ export default class TableSchema extends BaseUISchema {
       },
       canAdd: this.canAddRowColumns,
       canEdit: true, canDelete: true,
+      canReorder: (state)=>(this.inErd || this.isNew(state)),
       // For each row edit/delete button enable/disable
       canEditRow: this.canEditDeleteRowColumns,
       canDeleteRow: this.canEditDeleteRowColumns,
