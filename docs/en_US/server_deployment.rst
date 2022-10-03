@@ -300,3 +300,12 @@ Then, configure NGINX:
       include uwsgi_params;
       uwsgi_pass unix:/tmp/pgadmin4.sock;
     }
+
+Additional Information
+----------------------
+
+.. note:: pgAdmin will spawn additional Python processes from time to time, and
+    relies on the *sys.executable* variable in Python to do this. In some cases,
+    you may need to override that value to ensure the correct interpreter is
+    used, instead of the WSGI host process. For example, uWSGI offers the
+    *--py-sys-executable* command line option to achieve this.
