@@ -27,6 +27,7 @@ Bug fixes
 *********
 
   | `Issue #5101 <https://github.com/pgadmin-org/pgadmin4/issues/5101>`_ -  Ensure consistent orderings for ACLS when comparing schemas in the schema diff.
+  | `Issue #5133 <https://github.com/pgadmin-org/pgadmin4/issues/5133>`_ -  Fixed an exception occur while taking backup and SSL certificates/keys are not found in the specified path.
   | `Issue #5145 <https://github.com/pgadmin-org/pgadmin4/issues/5145>`_ -  Fixed intermittent error shown while OAuth2 login.
   | `Issue #5167 <https://github.com/pgadmin-org/pgadmin4/issues/5167>`_ -  Ensure that the path to the psqlrc file is correct when multiple users open the PSQL tool at the same time.
   | `Issue #5188 <https://github.com/pgadmin-org/pgadmin4/issues/5188>`_ -  Ensure that the continue/start button should be disabled if the user stops the Debugger for the procedures.

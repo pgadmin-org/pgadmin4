@@ -802,12 +802,15 @@ class BatchProcess(object):
             # Set SSL related ENV variables
             if server.sslcert and server.sslkey and server.sslrootcert:
                 # SSL environment variables
+                sslcert = get_complete_file_path(server.sslcert)
+                sslkey = get_complete_file_path(server.sslkey)
+                sslrootcert = get_complete_file_path(server.sslrootcert)
+
                 self.env['PGSSLMODE'] = server.ssl_mode
-                self.env['PGSSLCERT'] = get_complete_file_path(server.sslcert)
-                self.env['PGSSLKEY'] = get_complete_file_path(server.sslkey)
-                self.env['PGSSLROOTCERT'] = get_complete_file_path(
-                    server.sslrootcert
-                )
+                self.env['PGSSLCERT'] = '' if sslcert is None else sslcert
+                self.env['PGSSLKEY'] = '' if sslkey is None else sslkey
+                self.env['PGSSLROOTCERT'] = \
+                    '' if sslrootcert is None else sslrootcert
 
             # Set service name related ENV variable
             if server.service:
