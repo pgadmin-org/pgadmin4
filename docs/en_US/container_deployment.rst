@@ -8,6 +8,31 @@ pgAdmin can be deployed in a container using the image at:
 
     https://hub.docker.com/r/dpage/pgadmin4/
 
+There are various tags that you can select from to get the version of pgAdmin
+that you want, using a command such as this if you're using Docker:
+
+.. code-block:: bash
+
+   docker pull dpage/pgadmin4:<tag name>
+
+where *<tag name>* is one of the following:
+
+.. table::
+   :class: longtable
+   :widths: 1 4
+
+   +----------+-------------------------------------------------------------------------------+
+   | Tag name | Description                                                                   |
+   +==========+===============================================================================+
+   | latest   | The most recent release.                                                      |
+   +----------+-------------------------------------------------------------------------------+
+   | 6.14     | A specific version (6.14 in this case).                                       |
+   +----------+-------------------------------------------------------------------------------+
+   | 6        | the latest release of a specific major version (major version 6 in this case).|
+   +----------+-------------------------------------------------------------------------------+
+   | snapshot | The latest nightly test build.                                                |
+   +----------+-------------------------------------------------------------------------------+
+
 PostgreSQL Utilities
 ********************
 
