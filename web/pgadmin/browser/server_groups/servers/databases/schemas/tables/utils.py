@@ -1442,7 +1442,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
-    def get_sql(self, did, scid, tid, data, res, add_not_exists_clause=False):
+    def get_sql(self, did, scid, tid, data, res, add_not_exists_clause=False,
+                with_drop=False):
         """
         This function will generate create/update sql from model data
         coming from client
@@ -1539,10 +1540,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             # Update the vacuum toast table settings.
             self.update_vacuum_settings('vacuum_toast', data)
 
-            sql = render_template("/".join([self.table_template_path,
+            sql = ''
+            if with_drop:
+                sql = self.get_delete_sql(data) + '\n\n'
+
+            sql += render_template("/".join([self.table_template_path,
                                             self._CREATE_SQL]),
-                                  data=data, conn=self.conn,
-                                  add_not_exists_clause=add_not_exists_clause)
+                                   data=data, conn=self.conn,
+                                   add_not_exists_clause=add_not_exists_clause)
 
             # Append SQL for partitions
             sql += '\n' + partitions_sql
@@ -1969,11 +1974,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             }
         )
 
-    def get_delete_sql(self, res):
+    def get_delete_sql(self, data):
         # Below will decide if it's simple drop or drop with cascade call
         cascade = self._check_cascade_operation()
-
-        data = res['rows'][0]
 
         return render_template(
             "/".join([self.table_template_path, self._DELETE_SQL]),
@@ -1993,7 +1996,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
            tid: Table ID
         """
 
-        sql = self.get_delete_sql(res)
+        sql = self.get_delete_sql(res['rows'][0])
 
         status, res = self.conn.execute_scalar(sql)
         if not status:
