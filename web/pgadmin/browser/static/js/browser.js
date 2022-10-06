@@ -196,7 +196,7 @@ define('pgadmin.browser', [
         isPrivate: true,
         icon: '',
         limit: 1,
-        content: '<div id="tree" class="aciTree"></div>',
+        content: '<div id="tree" class="browser-tree"></div>',
         onCreate: function(panel, $container) {
           toolBar.initializeToolbar(panel, wcDocker);
           $container.addClass('pg-no-overflow');
