@@ -793,8 +793,8 @@ export function ResultSet() {
           (procQueryData, procColumns, procRows)=>{
             setRowsResetKey((prev)=>prev+1);
             setQueryData(procQueryData);
-            setColumns(procColumns);
             setRows(procRows);
+            setColumns(procColumns);
           },
           (planJson)=>{
             /* No need to open if plan is empty */
