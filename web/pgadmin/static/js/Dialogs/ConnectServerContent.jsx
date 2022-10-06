@@ -102,7 +102,7 @@ export default function ConnectServerContent({closeModal, data, onOK, setHeight}
               onChange={(e)=>onTextChange(e.target.checked, 'save_password')} disabled={!data.allow_save_password} />
           </Box>
         </>}
-        <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={data.errmsg} closable={false} style={{
+        <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={_.escape(data.errmsg)} closable={false} style={{
           position: 'unset', padding: '12px 0px 0px'
         }}/>
       </Box>

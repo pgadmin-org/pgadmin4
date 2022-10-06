@@ -48,3 +48,4 @@ Bug fixes
   | `Issue #5367 <https://github.com/pgadmin-org/pgadmin4/issues/5367>`_ -  Ensure that the correct value should be returned if an exception occurs while decoding the password.
   | `Issue #5368 <https://github.com/pgadmin-org/pgadmin4/issues/5368>`_ -  Fixed the issue while downloading the file from the file manager.
   | `Issue #5402 <https://github.com/pgadmin-org/pgadmin4/issues/5402>`_ -  Ensure that scroll bar on browser tree should be visible on windows resize.
+  | `Issue #5405 <https://github.com/pgadmin-org/pgadmin4/issues/5405>`_ -  Fixed the cross-site scripting vulnerability.
