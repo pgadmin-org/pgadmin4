@@ -1301,7 +1301,7 @@ export function NotifierMessage({
   return (
     <Box className={clsx(classes.container, classes[`container${type}`])} style={style}>
       {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
-      <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(_.escape(message) || '')}</Box>
+      <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
       {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
         <FormIcon close={true} />
       </IconButton>}
