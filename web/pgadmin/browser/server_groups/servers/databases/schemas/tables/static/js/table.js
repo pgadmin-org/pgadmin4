@@ -204,7 +204,7 @@ define('pgadmin.node.table', [
                     }, 10);
                   }
                   if (res.success == 2) {
-                    Notify.error(res.info, 0);
+                    Notify.error(res.info);
                   }
                 })
                 .fail(function(xhr, status, error) {
