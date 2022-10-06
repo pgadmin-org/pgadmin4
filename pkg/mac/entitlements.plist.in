@@ -48,10 +48,11 @@
     <false/>
 
     <!--
-        Ensure we can't modify our own executables.
+        We need to enable this, even though we don't modify our own executables.
+        Otherwise, NWjs just bombs out.
     -->
     <key>com.apple.security.cs.disable-executable-page-protection</key>
-    <false/>
+    <true/>
 
     <!--
         We're not a debugger (well, except for procedural languages in Postgres,
