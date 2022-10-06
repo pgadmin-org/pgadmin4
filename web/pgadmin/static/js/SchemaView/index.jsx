@@ -661,7 +661,7 @@ function SchemaDialogView({
         console.error(err);
         setFormErr({
           name: 'apierror',
-          message: _.escape(parseApiError(err)),
+          message: parseApiError(err),
         });
       }).finally(()=>{
         if(checkIsMounted()) {
