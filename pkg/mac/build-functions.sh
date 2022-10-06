@@ -74,8 +74,16 @@ _create_python_env() {
     PATH=${PGADMIN_POSTGRES_DIR}/bin:${PATH}
     LD_LIBRARY_PATH=${PGADMIN_POSTGRES_DIR}/lib:${LD_LIBRARY_PATH}
 
+    # Figure out what python to use
+    if which python3 > /dev/null 2>&1
+    then
+        SYSTEM_PYTHON_EXE="python3"
+    else
+        SYSTEM_PYTHON_EXE="python"
+    fi
+
     git clone https://github.com/gregneagle/relocatable-python.git "${BUILD_ROOT}/relocatable_python"
-    PATH=$PATH:/usr/local/pgsql/bin python \
+    PATH=$PATH:/usr/local/pgsql/bin "${SYSTEM_PYTHON_EXE}" \
         "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" \
         --upgrade-pip \
         --python-version "${PGADMIN_PYTHON_VERSION}" \
