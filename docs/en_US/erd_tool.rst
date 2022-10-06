@@ -47,7 +47,7 @@ File Options
    |                      | diagram to a file.                                                                                |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Save as*            | Click the *Save As* to open a new browser dialog and specify a new location to save the diagram.  | Ctrl + Shift + |
-   |                      |                                                                                                   | S              |
+   |                      | You need to click the down arrow beside the save button to see *Save As*.                         | S              |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Export Options
@@ -62,6 +62,8 @@ Export Options
    +======================+===================================================================================================+================+
    | *Generate SQL*       | Click the *Generate SQL* icon to generate the DDL SQL for the diagram and open a query tool       | Option + Ctrl +|
    |                      | with the generated SQL ready for execution.                                                       | S              |
+   |                      | You can select the option *With DROP Table* if you wish to have DROP Table DDL statements before  |                |
+   |                      | each CREATE Table DDL. You can see the option by clicking the down arrow beside the SQL button.   |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Download image*     | Click the *Download image* icon to save the ERD diagram in a image formate                        | Option + Ctrl +|
    |                      |                                                                                                   | I              |

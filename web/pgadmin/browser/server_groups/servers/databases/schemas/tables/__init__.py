@@ -1627,7 +1627,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
         if status:
             self.cmd = 'delete'
-            sql = super(TableView, self).get_delete_sql(res)
+            sql = super(TableView, self).get_delete_sql(res['rows'][0])
             self.cmd = None
 
         return sql

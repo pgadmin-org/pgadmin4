@@ -20,9 +20,10 @@ class ERDTableView(BaseTableView, DataTypeReader):
         super(BaseTableView, self).__init__(cmd='erd')
 
     @BaseTableView.check_precondition
-    def sql(self, conn_id=None, did=None, sid=None, data={}):
+    def sql(self, conn_id=None, did=None, sid=None, data={}, with_drop=False):
         return BaseTableView.get_sql(self, did, None, None, data, None,
-                                     add_not_exists_clause=True)
+                                     add_not_exists_clause=True,
+                                     with_drop=with_drop)
 
     @BaseTableView.check_precondition
     def get_types(self, conn_id=None, did=None, sid=None):
@@ -59,10 +60,10 @@ class ERDHelper:
         return self.table_view.get_types(
             conn_id=self.conn_id, did=self.did, sid=self.sid)
 
-    def get_table_sql(self, data):
+    def get_table_sql(self, data, with_drop=False):
         SQL, name = self.table_view.sql(
             conn_id=self.conn_id, did=self.did, sid=self.sid,
-            data=data)
+            data=data, with_drop=with_drop)
         return SQL
 
     def get_all_tables(self):

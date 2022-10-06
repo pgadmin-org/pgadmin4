@@ -69,11 +69,23 @@ export function MainToolBar({preferences, eventBus}) {
 
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const saveAsMenuRef = React.useRef(null);
+  const sqlMenuRef = React.useRef(null);
   const isDirtyRef = React.useRef(null);
+  const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
   const modal = useModal();
 
   const setDisableButton = useCallback((name, disable=true)=>{
     setButtonsDisabled((prev)=>({...prev, [name]: disable}));
+  }, []);
+
+  const checkMenuClick = useCallback((e)=>{
+    setCheckedMenuItems((prev)=>{
+      let newVal = !prev[e.value];
+      return {
+        ...prev,
+        [e.value]: newVal,
+      };
+    });
   }, []);
 
   const onHelpClick=()=>{
@@ -97,6 +109,17 @@ export function MainToolBar({preferences, eventBus}) {
       }
     );
   };
+
+  useEffect(()=>{
+    if(preferences) {
+      /* Get the prefs first time */
+      if(_.isUndefined(checkedMenuItems.sql_with_drop)) {
+        setCheckedMenuItems({
+          sql_with_drop: preferences.sql_with_drop,
+        });
+      }
+    }
+  }, [preferences]);
 
   useEffect(()=>{
     const events = [
@@ -125,6 +148,16 @@ export function MainToolBar({preferences, eventBus}) {
     };
   }, []);
 
+  useEffect(()=>{
+    const showSql = ()=>{
+      eventBus.fireEvent(ERD_EVENTS.SHOW_SQL, checkedMenuItems['sql_with_drop']);
+    };
+    eventBus.registerListener(ERD_EVENTS.TRIGGER_SHOW_SQL, showSql);
+    return ()=>{
+      eventBus.deregisterListener(ERD_EVENTS.TRIGGER_SHOW_SQL, showSql);
+    };
+  }, [checkedMenuItems['sql_with_drop']]);
+
   return (
     <>
       <Box className={classes.root}>
@@ -148,8 +181,11 @@ export function MainToolBar({preferences, eventBus}) {
           <PgIconButton title={gettext('Generate SQL')} icon={<SQLFileIcon />}
             shortcut={preferences.generate_sql}
             onClick={()=>{
-              eventBus.fireEvent(ERD_EVENTS.SHOW_SQL);
+              eventBus.fireEvent(ERD_EVENTS.TRIGGER_SHOW_SQL);
             }} />
+          <PgIconButton title={gettext('SQL Options')} icon={<KeyboardArrowDownIcon />} splitButton
+            name="menu-sql" ref={sqlMenuRef} onClick={toggleMenu}
+          />
           <PgIconButton title={gettext('Download image')} icon={<ImageRoundedIcon />}
             shortcut={preferences.download_image}
             onClick={()=>{
@@ -238,6 +274,14 @@ export function MainToolBar({preferences, eventBus}) {
         <PgMenuItem onClick={()=>{
           eventBus.fireEvent(ERD_EVENTS.SAVE_DIAGRAM, true);
         }}>{gettext('Save as')}</PgMenuItem>
+      </PgMenu>
+      <PgMenu
+        anchorRef={sqlMenuRef}
+        open={openMenuName=='menu-sql'}
+        onClose={onMenuClose}
+        label={gettext('SQL Options')}
+      >
+        <PgMenuItem hasCheck value="sql_with_drop" checked={checkedMenuItems['sql_with_drop']} onClick={checkMenuClick}>{gettext('With DROP Table')}</PgMenuItem>
       </PgMenu>
     </>
   );
