@@ -351,7 +351,7 @@ function getTextWidth(column, rows, canvas, columnWidthBy) {
     }
   }
   /* Gracefull */
-  width += 2;
+  width += 8;
   return width;
 }
 
