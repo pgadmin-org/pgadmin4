@@ -1372,10 +1372,8 @@ define('pgadmin.browser', [
               this.t.openPath(this.i);
               this.t.deselect(this.i);
 
-              // select tree item after few milliseconds
-              setTimeout(function() {
-                self.t.select(self.i);
-              }, 10);
+              // select tree item
+              self.t.select(self.i);
             }
           }
           let success = this.o && this.o.success;
