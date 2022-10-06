@@ -32,7 +32,7 @@ import convert from 'convert-units';
 import PropTypes from 'prop-types';
 import { downloadBlob } from '../../../../../static/js/utils';
 import ErrorBoundary from '../../../../../static/js/helpers/ErrorBoundary';
-
+import _ from 'lodash';
 
 const useStyles = makeStyles((theme)=>({
   footerSaveAs: {
@@ -729,7 +729,7 @@ export default function FileManager({params, closeModal, onOK, onCancel}) {
             {viewMode == 'grid' &&
             <GridView key={fmUtilsObj.currPath} items={filteredItems} operation={operation} onItemEnter={onItemEnter}
               onItemSelect={onItemSelect} />}
-            <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={errorMsg} closable onClose={()=>setErrorMsg('')}  />
+            <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={_.escape(errorMsg)} closable onClose={()=>setErrorMsg('')}  />
             {params.dialog_type == 'create_file' &&
             <Box className={clsx(modalClasses.footer, classes.footerSaveAs)}>
               <span style={{whiteSpace: 'nowrap', marginRight: '4px'}}>Save As</span>
