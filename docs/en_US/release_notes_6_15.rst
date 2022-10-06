@@ -47,4 +47,5 @@ Bug fixes
   | `Issue #5352 <https://github.com/pgadmin-org/pgadmin4/issues/5352>`_ -  Fixed error occurring while LDAP authentication for a user with multiple email attributes.
   | `Issue #5367 <https://github.com/pgadmin-org/pgadmin4/issues/5367>`_ -  Ensure that the correct value should be returned if an exception occurs while decoding the password.
   | `Issue #5368 <https://github.com/pgadmin-org/pgadmin4/issues/5368>`_ -  Fixed the issue while downloading the file from the file manager.
+  | `Issue #5386 <https://github.com/pgadmin-org/pgadmin4/issues/5386>`_ -  Ensure that the login form is hidden if the authentication source is OAuth2 or Kerberos.
   | `Issue #5402 <https://github.com/pgadmin-org/pgadmin4/issues/5402>`_ -  Ensure that scroll bar on browser tree should be visible on windows resize.
