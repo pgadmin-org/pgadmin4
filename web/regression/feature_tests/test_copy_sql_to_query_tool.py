@@ -138,7 +138,7 @@ class CopySQLFeatureTest(BaseFeatureTest):
 
         option_node = self.page.find_by_xpath(
             "//*[@id='treeContainer']//div//span[text()="
-            "'Results grid']//preceding::span[text()='Options']")
+            "'Results grid']//preceding::span[text()='Options'][1]")
         # self.page.check_if_element_exists_with_scroll(option_node)
         self.page.driver.execute_script("arguments[0].scrollIntoView(false)",
                                         option_node)
