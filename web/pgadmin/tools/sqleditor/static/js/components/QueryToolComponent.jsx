@@ -333,6 +333,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         } else if(LayoutHelper.isTabVisible(docker.current, PANELS.HISTORY)) {
           LayoutHelper.focus(docker.current, PANELS.HISTORY);
         }
+
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL);
       }
     });
     window.addEventListener('beforeunload', onBeforeUnload);
