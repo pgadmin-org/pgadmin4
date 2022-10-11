@@ -1088,7 +1088,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
         '/reset_password' + slash_url_suffix(
             '/browser/reset_password', '<token>'
         ),
-        methods=['POST'],
+        methods=['GET', 'POST'],
         endpoint='reset_password'
     )
     @pgCSRFProtect.exempt
