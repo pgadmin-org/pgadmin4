@@ -760,6 +760,8 @@ export function ResultSet() {
     fireRowsColsCellChanged();
   };
   const [rowsResetKey, setRowsResetKey] = useState(0);
+  const lastScrollRef = useRef(null);
+  const isResettingScroll = useRef(true);
 
   rsu.current.setEventBus(eventBus);
   rsu.current.setQtPref(queryToolCtx.preferences?.sqleditor);
@@ -908,6 +910,8 @@ export function ResultSet() {
       }
     });
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_INCLUDE_EXCLUDE_FILTER, triggerFilter);
+
+    eventBus.registerListener(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL, triggerResetScroll);
   }, []);
 
   useEffect(()=>{
@@ -1239,10 +1243,34 @@ export function ResultSet() {
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_RENDER_GEOMETRIES, renderGeometries);
   }, [rows, columns, selectedRows.size, selectedColumns.size]);
 
-  const handleScroll = (e)=>{
+  const handleScroll = (e) => {
+    // Set scroll current position of RestSet.
+    if (!_.isNull(e.currentTarget) && isResettingScroll.current) {
+      lastScrollRef.current = {
+        ref: { ...e },
+        top: e.currentTarget.scrollTop,
+        left: e.currentTarget.scrollLeft
+      };
+    }
+
     if (isLoadingMore || !rsu.current.isAtBottom(e)) return;
     eventBus.fireEvent(QUERY_TOOL_EVENTS.FETCH_MORE_ROWS);
   };
+
+  const triggerResetScroll = () => {
+    // Reset the scroll position to previously saved location.
+    if (lastScrollRef.current) {
+      isResettingScroll.current = false;
+      setTimeout(() => {
+        lastScrollRef.current.ref.currentTarget.scroll({
+          top: lastScrollRef.current.top,
+          left: lastScrollRef.current.left,
+        });
+        isResettingScroll.current = true;
+      }, 1);
+    }
+  };
+
 
   const onRowsChange = (newRows, otherInfo)=>{
     let row = newRows[otherInfo.indexes[0]];
