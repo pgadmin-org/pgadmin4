@@ -49,6 +49,7 @@ export class TableNodeModel extends DefaultNodeModel {
         /* Once the data is available, it is no more a promise */
         this._data = data;
         this._metadata = {
+          ...this._metadata,
           data_failed: false,
           is_promise: false,
         };
@@ -56,6 +57,7 @@ export class TableNodeModel extends DefaultNodeModel {
         this.fireEvent({}, 'nodeUpdated');
       }).catch(()=>{
         this._metadata = {
+          ...this._metadata,
           data_failed: true,
           is_promise: true,
         };
@@ -83,6 +85,13 @@ export class TableNodeModel extends DefaultNodeModel {
 
   getMetadata() {
     return this._metadata;
+  }
+
+  setMetadata(metadata) {
+    this._metadata = {
+      ...this._metadata,
+      ...metadata,
+    };
   }
 
   addColumn(col) {
@@ -152,6 +161,7 @@ RowIcon.propTypes = {
 const styles = (theme)=>({
   tableNode: {
     backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
     ...theme.mixins.panelBorder.all,
     borderRadius: theme.shape.borderRadius,
     position: 'relative',
@@ -201,6 +211,12 @@ class TableNodeWidgetRaw extends React.Component {
     this.props.node.registerListener({
       toggleDetails: (event) => {
         this.setState({show_details: event.show_details});
+      },
+      changeColors: (event)=>{
+        this.props.node.setMetadata({
+          fillColor: event.fillColor, textColor: event.textColor,
+        });
+        this.setState({});
       },
       dataAvaiable: ()=>{
         /* Just re-render */
@@ -271,8 +287,13 @@ class TableNodeWidgetRaw extends React.Component {
       localUkCols.push(...uk.columns.map((c)=>c.column));
     });
     const {classes} = this.props;
+    const styles = {
+      backgroundColor: tableMetaData.fillColor,
+      color: tableMetaData.textColor,
+    };
     return (
-      <div className={clsx(classes.tableNode, (this.props.node.isSelected() ? classes.tableNodeSelected: ''))} onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
+      <div className={clsx(classes.tableNode, (this.props.node.isSelected() ? classes.tableNodeSelected: ''))}
+        onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}} style={styles}>
         <div className={clsx(classes.tableSection, classes.tableToolbar)}>
           <PgIconButton size="xs" title={gettext('Show Details')} icon={this.state.show_details ? <VisibilityRoundedIcon /> : <VisibilityOffRoundedIcon />}
             onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />

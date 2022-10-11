@@ -25,6 +25,7 @@ export class FakeNode {
     retVal.name = tabName;
     return retVal;
   }
+  setMetadata() {/* no-op */}
   getMetadata() {
     return {
       is_promise: false,

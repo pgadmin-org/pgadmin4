@@ -25,7 +25,6 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
 import Select, { components as RSComponents } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
-import Pickr from '@simonwep/pickr';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
@@ -42,6 +41,7 @@ import KeyboardShortcuts from './KeyboardShortcuts';
 import QueryThresholds from './QueryThresholds';
 import SelectThemes from './SelectThemes';
 import { showFileManager } from '../helpers/showFileManager';
+import { withColorPicker } from '../helpers/withColorPicker';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -980,120 +980,17 @@ FormInputSelect.propTypes = {
   inputRef: CustomPropTypes.ref
 };
 
-/* React wrapper on color pickr */
+const ColorButton = withColorPicker(PgIconButton);
 export function InputColor({ value, controlProps, disabled, onChange, currObj }) {
-  const pickrOptions = {
-    showPalette: true,
-    allowEmpty: true,
-    colorFormat: 'HEX',
-    defaultColor: null,
-    position: 'right-middle',
-    clearText: gettext('No color'),
-    ...controlProps,
-    disabled: disabled,
-  };
-  const eleRef = useRef();
-  const pickrObj = useRef();
   const classes = useStyles();
-
-  const setColor = (newVal) => {
-    pickrObj.current &&
-      pickrObj.current.setColor((_.isUndefined(newVal) || newVal == '') ? pickrOptions.defaultColor : newVal);
-  };
-
-  const destroyPickr = () => {
-    if (pickrObj.current) {
-      pickrObj.current.destroy();
-      pickrObj.current = null;
-    }
-  };
-
-  const initPickr = () => {
-    /* pickr does not have way to update options, need to
-    destroy and recreate pickr to reflect options */
-    destroyPickr();
-
-    pickrObj.current = new Pickr({
-      el: eleRef.current,
-      useAsButton: true,
-      theme: 'monolith',
-      swatches: [
-        '#000', '#666', '#ccc', '#fff', '#f90', '#ff0', '#0f0',
-        '#f0f', '#f4cccc', '#fce5cd', '#d0e0e3', '#cfe2f3', '#ead1dc', '#ea9999',
-        '#b6d7a8', '#a2c4c9', '#d5a6bd', '#e06666', '#93c47d', '#76a5af', '#c27ba0',
-        '#f1c232', '#6aa84f', '#45818e', '#a64d79', '#bf9000', '#0c343d', '#4c1130',
-      ],
-      position: pickrOptions.position,
-      strings: {
-        clear: pickrOptions.clearText,
-      },
-      components: {
-        palette: pickrOptions.showPalette,
-        preview: true,
-        hue: pickrOptions.showPalette,
-        interaction: {
-          clear: pickrOptions.allowEmpty,
-          defaultRepresentation: pickrOptions.colorFormat,
-          disabled: pickrOptions.disabled,
-        },
-      },
-    }).on('init', instance => {
-      setColor(value);
-      disabled && instance.disable();
-
-      const { lastColor } = instance.getRoot().preview;
-      const { clear } = instance.getRoot().interaction;
-
-      /* Cycle the keyboard navigation within the color picker */
-      clear.addEventListener('keydown', (e) => {
-        if (e.keyCode === 9) {
-          e.preventDefault();
-          e.stopPropagation();
-          lastColor.focus();
-        }
-      });
-
-      lastColor.addEventListener('keydown', (e) => {
-        if (e.keyCode === 9 && e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          clear.focus();
-        }
-      });
-    }).on('clear', () => {
-      onChange && onChange('');
-    }).on('change', (color) => {
-      onChange && onChange(color.toHEXA().toString());
-    }).on('show', (color, instance) => {
-      const { palette } = instance.getRoot().palette;
-      palette.focus();
-    }).on('hide', (instance) => {
-      const button = instance.getRoot().button;
-      button.focus();
-    });
-
-    if (currObj) {
-      currObj(pickrObj.current);
-    }
-  };
-
-  useEffect(() => {
-    initPickr();
-    return () => {
-      destroyPickr();
-    };
-  }, [...Object.values(pickrOptions)]);
-
-  useEffect(() => {
-    if (pickrObj.current) {
-      setColor(value);
-    }
-  }, [value]);
 
   let btnStyles = { backgroundColor: value };
   return (
-    <PgIconButton ref={eleRef} title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={pickrOptions.disabled}
-      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />}
+    <ColorButton title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={disabled}
+      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />} options={{
+        ...controlProps,
+        disabled: disabled
+      }} onChange={onChange} value={value} currObj={currObj}
     />
   );
 }

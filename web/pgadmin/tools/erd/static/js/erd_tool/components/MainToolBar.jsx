@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React, {useCallback, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Box } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { PgButtonGroup, PgIconButton } from '../../../../../../static/js/components/Buttons';
 import FolderRoundedIcon from '@material-ui/icons/FolderRounded';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -25,6 +25,8 @@ import NoteRoundedIcon from '@material-ui/icons/NoteRounded';
 import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
 import VisibilityOffRoundedIcon from '@material-ui/icons/VisibilityOffRounded';
 import ImageRoundedIcon from '@material-ui/icons/ImageRounded';
+import FormatColorFillRoundedIcon from '@material-ui/icons/FormatColorFillRounded';
+import FormatColorTextRoundedIcon from '@material-ui/icons/FormatColorTextRounded';
 
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
@@ -33,6 +35,7 @@ import PropTypes from 'prop-types';
 import { ERD_EVENTS } from '../ERDConstants';
 import { MagicIcon, SQLFileIcon } from '../../../../../../static/js/components/ExternalIcon';
 import { useModal } from '../../../../../../static/js/helpers/ModalProvider';
+import { withColorPicker } from '../../../../../../static/js/helpers/withColorPicker';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -54,8 +57,9 @@ const useStyles = makeStyles((theme)=>({
   },
 }));
 
-export function MainToolBar({preferences, eventBus}) {
+export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
   const classes = useStyles();
+  const theme = useTheme();
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save': true,
     'edit-table': true,
@@ -196,7 +200,7 @@ export function MainToolBar({preferences, eventBus}) {
           <PgIconButton title={gettext('Add Table')} icon={<AddBoxIcon />}
             shortcut={preferences.add_table}
             onClick={()=>{
-              eventBus.fireEvent(ERD_EVENTS.ADD_NODE);
+              eventBus.fireEvent(ERD_EVENTS.ADD_NODE, {fillColor: fillColor, textColor: textColor});
             }} />
           <PgIconButton title={gettext('Edit Table')} icon={<EditRoundedIcon />}
             shortcut={preferences.edit_table} disabled={buttonsDisabled['edit-table']}
@@ -225,6 +229,30 @@ export function MainToolBar({preferences, eventBus}) {
             onClick={()=>{
               eventBus.fireEvent(ERD_EVENTS.MANY_TO_MANY);
             }} />
+        </PgButtonGroup>
+        <PgButtonGroup size="small">
+          <ColorButton title={gettext('Fill Color')} icon={<FormatColorFillRoundedIcon />}
+            value={fillColor ?? theme.palette.background.default} options={{
+              allowSave: true,
+            }}
+            onSave={(val)=>{
+              if(val) {
+                eventBus.fireEvent(ERD_EVENTS.CHANGE_COLORS, val, textColor);
+              } else {
+                eventBus.fireEvent(ERD_EVENTS.CHANGE_COLORS, null, textColor);
+              }
+            }}/>
+          <ColorButton title={gettext('Text Color')} icon={<FormatColorTextRoundedIcon />}
+            value={textColor ?? theme.palette.text.primary} options={{
+              allowSave: true,
+            }}
+            onSave={(val)=>{
+              if(val) {
+                eventBus.fireEvent(ERD_EVENTS.CHANGE_COLORS, fillColor, val);
+              } else {
+                eventBus.fireEvent(ERD_EVENTS.CHANGE_COLORS, fillColor, null);
+              }
+            }}/>
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Add/Edit Note')} icon={<NoteRoundedIcon />}
@@ -290,4 +318,8 @@ export function MainToolBar({preferences, eventBus}) {
 MainToolBar.propTypes = {
   preferences: PropTypes.object,
   eventBus: PropTypes.object,
+  fillColor: PropTypes.string,
+  textColor: PropTypes.string,
 };
+
+const ColorButton = withColorPicker(PgIconButton);

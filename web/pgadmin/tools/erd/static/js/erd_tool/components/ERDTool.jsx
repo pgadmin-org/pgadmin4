@@ -118,6 +118,8 @@ class ERDTool extends React.Component {
       oto_dialog_open: true,
       otm_dialog_open: true,
       database: null,
+      fill_color: null,
+      text_color: null,
     };
     this.diagram = new ERDCore();
     /* Flag for checking if user has opted for save before close */
@@ -137,7 +139,7 @@ class ERDTool extends React.Component {
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onDetailsToggle', 'onHelpClick', 'onDropNode', 'onBeforeUnload',
+      'onDetailsToggle', 'onChangeColors', 'onHelpClick', 'onDropNode', 'onBeforeUnload',
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
@@ -214,6 +216,7 @@ class ERDTool extends React.Component {
     this.eventBus.registerListener(ERD_EVENTS.MANY_TO_MANY, this.onManyToManyClick);
     this.eventBus.registerListener(ERD_EVENTS.AUTO_DISTRIBUTE, this.onAutoDistribute);
     this.eventBus.registerListener(ERD_EVENTS.TOGGLE_DETAILS, this.onDetailsToggle);
+    this.eventBus.registerListener(ERD_EVENTS.CHANGE_COLORS, this.onChangeColors);
     this.eventBus.registerListener(ERD_EVENTS.ZOOM_FIT, this.diagram.zoomToFit);
     this.eventBus.registerListener(ERD_EVENTS.ZOOM_IN, this.diagram.zoomIn);
     this.eventBus.registerListener(ERD_EVENTS.ZOOM_OUT, this.diagram.zoomOut);
@@ -427,7 +430,10 @@ class ERDTool extends React.Component {
         if(this.diagram.anyDuplicateNodeName(newData)) {
           return gettext('Table name already exists');
         }
-        let newNode = this.diagram.addNode(newData);
+        let newNode = this.diagram.addNode(newData, [50, 50], {
+          fillColor: this.state.fill_color,
+          textColor: this.state.text_color,
+        });
         this.diagram.syncTableLinks(newNode);
         newNode.setSelected(true);
       });
@@ -461,7 +467,10 @@ class ERDTool extends React.Component {
             });
         });
         const {x, y} = this.diagram.getEngine().getRelativeMousePoint(e);
-        this.diagram.addNode(dataPromise, [x, y]).setSelected(true);
+        this.diagram.addNode(dataPromise, [x, y], {
+          fillColor: this.state.fill_color,
+          textColor: this.state.text_color,
+        }).setSelected(true);
       }
     }
   }
@@ -484,6 +493,7 @@ class ERDTool extends React.Component {
       if(newData) {
         let {x, y} = selected[0].getPosition();
         let newNode = this.diagram.addNode(newData, [x+20, y+20]);
+        newNode.setMetadata(_.pick(selected[0].getMetadata(), ['fillColor', 'textColor']));
         newNode.setSelected(true);
       }
     }
@@ -509,6 +519,16 @@ class ERDTool extends React.Component {
 
   onAutoDistribute() {
     this.diagram.dagreDistributeNodes();
+  }
+
+  onChangeColors(fillColor, textColor) {
+    this.setState({
+      fill_color: fillColor,
+      text_color: textColor,
+    });
+    this.diagram.getSelectedNodes().forEach((node)=>{
+      node.fireEvent({fillColor: fillColor, textColor: textColor}, 'changeColors');
+    });
   }
 
   onDetailsToggle() {
@@ -903,7 +923,9 @@ class ERDTool extends React.Component {
       <Box ref={this.containerRef} height="100%">
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
           fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
-        <MainToolBar containerRef={this.containerRef} preferences={this.state.preferences} connStatus={this.state.conn_status} params={this.props.params} eventBus={this.eventBus} />
+        <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
+          fillColor={this.state.fill_color} textColor={this.state.text_color}
+        />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
         <div className={this.props.classes.diagramContainer} data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
