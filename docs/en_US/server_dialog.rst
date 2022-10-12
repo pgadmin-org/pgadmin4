@@ -189,6 +189,16 @@ Use the fields in the *Advanced* tab to configure a connection:
   (.pgpass). A .pgpass file allows a user to login without providing a password
   when they connect.  For more information, see
   `Section 33.15 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
+* Use the *Password exec command* field to specify a shell command to be executed
+  to retrieve a password to be used for SQL authentication. The ``stdout`` of the
+  command will be used as the SQL password. This may be useful when the password
+  should be generated as a transient authorization token instead of providing a
+  password when connecting in `PAM authentication <https://www.postgresql.org/docs/current/auth-pam.html>`_ scenarios.
+* Use the *Password exec expiration* field to specify a maximum age, in seconds,
+  of the password generated with a *Password exec command*. If not specified,
+  the password will not expire until your pgAdmin session does.
+  Zero means the command will be executed for each new connection or reconnection that is made.
+  If the generated password is not valid indefinitely, set this value to slightly before it will expire.
 * Use the *Connection timeout* field to specify the maximum wait for connection,
   in seconds. Zero or not specified means wait indefinitely. It is not
   recommended to use a timeout of less than 2 seconds. By default it is set to
@@ -196,6 +206,8 @@ Use the fields in the *Advanced* tab to configure a connection:
 
 .. note:: The password file option is only supported when pgAdmin is using libpq
     v10.0 or later to connect to the server.
+
+.. note:: The Password exec option is only supported when pgAdmin is run in desktop mode.
 
 * Click the *Save* button to save your work.
 * Click the *Close* button to exit without saving your work.
