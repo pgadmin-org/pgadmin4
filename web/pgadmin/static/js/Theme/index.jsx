@@ -20,6 +20,7 @@ import getStandardTheme from './standard';
 import getDarkTheme from './dark';
 import getHightContrastTheme from './high_contrast';
 import { CssBaseline } from '@material-ui/core';
+import pickrOverride from './overrides/pickr.override';
 
 /* Common settings across all themes */
 let basicSettings = createMuiTheme();
@@ -309,7 +310,8 @@ function getFinalTheme(baseTheme) {
             listStyle: 'none',
             margin: 0,
             padding: 0,
-          }
+          },
+          ...pickrOverride(baseTheme),
         },
       },
       MuiOutlinedInput:  {

@@ -658,3 +658,10 @@ export function pgHandleItemError(xhr, args) {
   }
   return false;
 }
+
+export function fullHexColor(shortHex) {
+  if(shortHex?.length == 4) {
+    return shortHex.replace(RegExp('#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])'), '#$1$1$2$2$3$3').toUpperCase();
+  }
+  return shortHex;
+}

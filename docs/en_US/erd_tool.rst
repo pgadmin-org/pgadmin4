@@ -111,6 +111,23 @@ Table Relationship Options
    |                      | tables and link them.                                                                             |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
+Node Color Options
+**************************
+
+.. table::
+   :class: longtable
+   :widths: 1 5
+
+   +----------------------+----------------------------------------------------------------------------------------------------------+
+   | Icon                 | Behavior                                                                                                 |
+   +======================+==========================================================================================================+
+   | *Fill Color*         | Use Fill Color to change the background color of a table node. This is helpful if you want to            |
+   |                      | identify a of group tables. Once set, all the newly added tables will take the same color.               |
+   +----------------------+----------------------------------------------------------------------------------------------------------+
+   | *Text Color*         | Use Text Color to change the text color of a table node based on the fill color to make text             |
+   |                      | easily readable.                                                                                         |
+   +----------------------+----------------------------------------------------------------------------------------------------------+
+
 Utility Options
 ***************
 

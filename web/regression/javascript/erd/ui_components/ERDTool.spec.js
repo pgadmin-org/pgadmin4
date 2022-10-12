@@ -132,6 +132,7 @@ describe('ERDTool', ()=>{
     body = erd.find('ERDTool');
     bodyInstance = body.instance();
     spyOn(bodyInstance, 'getDialog').and.callFake(getDialog);
+    spyOn(bodyInstance, 'onChangeColors').and.callFake(()=>{/*no op*/});
   });
 
   afterAll(() => {
@@ -248,7 +249,7 @@ describe('ERDTool', ()=>{
     let saveCallback = tableDialog.calls.mostRecent().args[3];
     let newData = {key: 'value'};
     saveCallback(newData);
-    expect(bodyInstance.diagram.addNode).toHaveBeenCalledWith(newData);
+    expect(bodyInstance.diagram.addNode.calls.mostRecent().args[0]).toEqual(newData);
 
     /* Existing */
     tableDialog.calls.reset();

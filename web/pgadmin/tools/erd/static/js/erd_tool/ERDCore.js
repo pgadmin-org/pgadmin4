@@ -202,10 +202,11 @@ export default class ERDCore {
     });
   }
 
-  addNode(data, position=[50, 50]) {
+  addNode(data, position=[50, 50], metadata={}) {
     let newNode = this.getNewNode(data);
     this.clearSelection();
     newNode.setPosition(position[0], position[1]);
+    newNode.setMetadata(metadata);
     this.getModel().addNode(newNode);
     return newNode;
   }
