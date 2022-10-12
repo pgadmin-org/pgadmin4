@@ -29,9 +29,11 @@ export function withColorPicker(Component) {
     };
     const eleRef = useRef();
     const pickrObj = useRef();
+    const onChangeRef = useRef(onChange);
+    const onSaveRef = useRef(onSave);
 
-    const setColor = (newVal) => {
-      pickrObj.current?.setColor((_.isUndefined(newVal) || newVal == '') ? pickrOptions.defaultColor : newVal);
+    const setColor = (newVal, silent) => {
+      pickrObj.current?.setColor((_.isUndefined(newVal) || newVal == '') ? pickrOptions.defaultColor : newVal, silent);
     };
 
     const destroyPickr = () => {
@@ -95,9 +97,9 @@ export function withColorPicker(Component) {
           }
         });
       }).on('clear', () => {
-        onChange?.('');
+        onChangeRef.current?.('');
       }).on('change', (color) => {
-        onChange?.(color.toHEXA().toString());
+        onChangeRef.current?.(color.toHEXA().toString());
       }).on('show', (color, instance) => {
         const { palette } = instance.getRoot().palette;
         palette.focus();
@@ -106,10 +108,10 @@ export function withColorPicker(Component) {
         button.focus();
       }).on('save', (color, instance) => {
         if(color) {
-          color.toHEXA().toString() != fullHexColor(value) && onSave?.(color.toHEXA().toString());
+          color.toHEXA().toString() != fullHexColor(value) && onSaveRef.current?.(color.toHEXA().toString());
           instance?.hide();
         } else {
-          onSave?.('');
+          onSaveRef.current?.('');
         }
       });
 
@@ -126,10 +128,10 @@ export function withColorPicker(Component) {
     }, [...Object.values(pickrOptions)]);
 
     useEffect(() => {
-      if (pickrObj.current && !pickrOptions.allowSave) {
-        setColor(value);
+      if (pickrObj.current) {
+        setColor(value, true);
       }
-    }, [value, pickrOptions.allowSave]);
+    }, [value]);
 
     return <Component ref={eleRef} {...props}/>;
   };
