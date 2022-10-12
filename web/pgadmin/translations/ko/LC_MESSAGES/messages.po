@@ -8377,6 +8377,14 @@ msgstr "DB 제한"
 msgid "Password file"
 msgstr "비밀번호 파일"
 
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:431
+msgid "Password exec command"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:436
+msgid "Password exec expiration (seconds)"
+msgstr ""
+
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:438
 msgid "Connection timeout (seconds)"
 msgstr "연결 제한시간(초)"

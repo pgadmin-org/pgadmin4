@@ -30,7 +30,7 @@ import uuid
 #
 ##########################################################################
 
-SCHEMA_VERSION = 33
+SCHEMA_VERSION = 34
 
 ##########################################################################
 #
@@ -158,6 +158,8 @@ class Server(db.Model):
     )
     db_res = db.Column(db.Text(), nullable=True)
     passfile = db.Column(db.Text(), nullable=True)
+    passexec_cmd = db.Column(db.Text(), nullable=True)
+    passexec_expiration = db.Column(db.Integer(), nullable=True)
     sslcert = db.Column(db.Text(), nullable=True)
     sslkey = db.Column(db.Text(), nullable=True)
     sslrootcert = db.Column(db.Text(), nullable=True)
@@ -215,6 +217,8 @@ class Server(db.Model):
             "discovery_id": self.discovery_id,
             "db_res": self.db_res,
             "passfile": self.passfile,
+            "passexec_cmd": self.passexec_cmd,
+            "passexec_expiration": self.passexec_expiration,
             "sslcert": self.sslcert,
             "sslkey": self.sslkey,
             "sslrootcert": self.sslrootcert,

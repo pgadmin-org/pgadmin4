@@ -39,6 +39,8 @@ export default class ServerSchema extends BaseUISchema {
       save_password: false,
       db_res: [],
       passfile: undefined,
+      passexec: undefined,
+      passexec_expiration: undefined,
       sslcompression: false,
       sslcert: undefined,
       sslkey: undefined,
@@ -424,7 +426,21 @@ export default class ServerSchema extends BaseUISchema {
           let passfile = state.passfile;
           return !_.isUndefined(passfile) && !_.isNull(passfile);
         },
-      },{
+      },
+      {
+        id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
+      },
+      {
+        id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
+        visible: function(state) {
+          return !_.isUndefined(state.passexec_cmd) && !_.isNull(state.passexec_cmd);
+        },
+      },
+      {
         id: 'connect_timeout', label: gettext('Connection timeout (seconds)'),
         type: 'int', group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
