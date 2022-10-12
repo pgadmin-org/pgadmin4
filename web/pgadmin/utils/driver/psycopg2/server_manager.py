@@ -13,6 +13,7 @@ Implementation of ServerManager
 import os
 import datetime
 import config
+import logging
 from flask import current_app, session
 from flask_security import current_user
 from flask_babel import gettext
@@ -569,20 +570,28 @@ WHERE db.oid = {0}""".format(did))
         try:
             # If authentication method is 1 then it uses identity file
             # and password
+            ssh_logger = None
+            if current_app.debug:
+                ssh_logger = logging.getLogger('sshtunnel')
+                ssh_logger.setLevel(logging.DEBUG)
+                for h in current_app.logger.handlers:
+                    ssh_logger.addHandler(h)
             if self.tunnel_authentication == 1:
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_pkey=get_complete_file_path(self.tunnel_identity_file),
                     ssh_private_key_password=tunnel_password,
-                    remote_bind_address=(self.host, self.port)
+                    remote_bind_address=(self.host, self.port),
+                    logger=ssh_logger
                 )
             else:
                 self.tunnel_object = SSHTunnelForwarder(
                     (self.tunnel_host, int(self.tunnel_port)),
                     ssh_username=self.tunnel_username,
                     ssh_password=tunnel_password,
-                    remote_bind_address=(self.host, self.port)
+                    remote_bind_address=(self.host, self.port),
+                    logger=ssh_logger
                 )
             # flag tunnel threads in daemon mode to fix hang issue.
             self.tunnel_object.daemon_forward_servers = True

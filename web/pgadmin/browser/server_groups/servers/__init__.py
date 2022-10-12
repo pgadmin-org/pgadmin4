@@ -1096,6 +1096,8 @@ class ServerNode(PGChildNodeView):
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
                 shared=data.get('shared', None),
                 passfile=data.get('passfile', None),
+                passexec_cmd=data.get('passexec_cmd', None),
+                passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
             )
             db.session.add(server)

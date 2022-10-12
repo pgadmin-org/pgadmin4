@@ -13,13 +13,12 @@ class PasswordExec:
 
     def __init__(self, cmd, expiration_seconds = None, timeout = 60):
         self.cmd = str(cmd)
-        self.expiration_seconds = int(expiration_seconds)
+        self.expiration_seconds = int(expiration_seconds) if expiration_seconds != None else None
         self.timeout = int(timeout)
         self.password = None
         self.last_result = None
 
     def get(self):
-        current_app.logger.info(f'passexec {type(self.expiration_seconds)}:{self.expiration_seconds} GET {self.cmd}')
         with self.lock:
             if not self.password or self.is_expired():
                 if not self.cmd:
@@ -34,9 +33,9 @@ class PasswordExec:
                     text = True,
                     check = True,
                 )
+                current_app.logger.info(f'Passexec completed successfully')
                 self.last_result = now
                 self.password = p.stdout.strip()
-                current_app.logger.info(f'passexec generated {self.password}')
             return self.password
 
     def is_expired(self):
