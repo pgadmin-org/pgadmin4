@@ -1114,8 +1114,6 @@ define('pgadmin.browser', [
       if (!ctx.t.wasInit() || !_data) {
         return;
       }
-      _data._label = _data.label;
-      _data.label = _.escape(_data.label);
 
       traversePath();
     },

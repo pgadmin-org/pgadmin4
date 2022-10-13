@@ -145,7 +145,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       // Set psql tab title as per prefrences setting.
       let title_data = {
         'database': parentData.database ? parentData.database.label : 'postgres' ,
-        'username': parentData.server.user_name,
+        'username': parentData.server.user.name,
         'server': parentData.server.label,
         'type': 'psql_tool',
       };

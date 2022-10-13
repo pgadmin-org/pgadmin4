@@ -548,7 +548,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           });
           setPanelTitle(panel, connectionData.title, qtState, isDirtyRef.current);
           let msg = `${connectionData['server_name']}/${connectionData['database_name']} - Database connected`;
-          Notifier.success(msg);
+          Notifier.success(_.escape(msg));
           resolve();
         })
         .catch((error)=>{
