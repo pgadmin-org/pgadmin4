@@ -8489,14 +8489,6 @@ msgstr "Restricción DB"
 msgid "Password file"
 msgstr "Archivo de contraseña"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:431
-msgid "Password exec command"
-msgstr ""
-
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:436
-msgid "Password exec expiration (seconds)"
-msgstr ""
-
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:438
 msgid "Connection timeout (seconds)"
 msgstr "Tiempo de espera de conexión (segundos)"

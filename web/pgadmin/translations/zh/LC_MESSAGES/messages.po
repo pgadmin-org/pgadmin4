@@ -8532,14 +8532,6 @@ msgstr "数据库限制"
 msgid "Password file"
 msgstr "密码文件"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:431
-msgid "Password exec command"
-msgstr ""
-
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:436
-msgid "Password exec expiration (seconds)"
-msgstr ""
-
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:438
 msgid "Connection timeout (seconds)"
 msgstr "连接超时 (秒)"

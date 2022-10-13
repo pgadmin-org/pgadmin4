@@ -437,7 +437,7 @@ export default class ServerSchema extends BaseUISchema {
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
         visible: function(state) {
-          return !_.isUndefined(state.passexec_cmd) && !_.isNull(state.passexec_cmd);
+          return !_.isEmpty(state.passexec_cmd);
         },
       },
       {
