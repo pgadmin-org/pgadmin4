@@ -123,6 +123,7 @@ Name                                                             Version        
 @babel/preset-react                                              7.13.13          MIT                                  https://github.com/babel/babel.git
 @babel/runtime                                                   7.16.0           MIT                                  https://github.com/babel/babel.git
 @babel/runtime                                                   7.17.0           MIT                                  https://github.com/babel/babel.git
+@babel/runtime                                                   7.19.0           MIT                                  https://github.com/babel/babel.git
 @babel/runtime                                                   7.17.8           MIT                                  https://github.com/babel/babel.git
 @babel/template                                                  7.16.7           MIT                                  https://github.com/babel/babel.git
 @babel/template                                                  7.14.5           MIT                                  https://github.com/babel/babel.git
@@ -162,6 +163,9 @@ Name                                                             Version        
 @projectstorm/react-diagrams-core                                6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-diagrams-defaults                            6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-diagrams-routing                             6.6.1            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@react-dnd/asap                                                  5.0.2            MIT                                  https://github.com/react-dnd/react-dnd
+@react-dnd/invariant                                             4.0.2            MIT                                  https://github.com/react-dnd/react-dnd
+@react-dnd/shallowequal                                          4.0.2            MIT                                  https://github.com/react-dnd/react-dnd
 @simonwep/pickr                                                  1.8.2            MIT                                  https://github.com/Simonwep/pickr.git
 @sindresorhus/is                                                 0.7.0            MIT                                  https://github.com/sindresorhus/is.git
 @socket.io/base64-arraybuffer                                    1.0.2            MIT                                  https://github.com/socketio/base64-arraybuffer
@@ -254,6 +258,7 @@ decamelize-keys                                                  1.1.0          
 deep-diff                                                        1.0.2            MIT                                  git://github.com/flitbit/diff.git
 diff-arrays-of-objects                                           1.1.9            MIT                                  git+https://github.com/malcolmvr/diff-arrays-of-objects.git
 dir-glob                                                         3.0.1            MIT                                  https://github.com/kevva/dir-glob.git
+dnd-core                                                         16.0.1           MIT                                  https://github.com/react-dnd/react-dnd.git
 dom-align                                                        1.12.2           MIT                                  git@github.com:yiminghe/dom-align.git
 dom-helpers                                                      5.2.1            MIT                                  git+https://github.com/react-bootstrap/dom-helpers.git
 dom-serializer                                                   1.3.2            MIT                                  git://github.com/cheeriojs/dom-renderer.git
@@ -454,6 +459,8 @@ react-aspen                                                      1.2.0          
 react-aspen                                                      1.1.1            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-checkbox-tree                                              1.7.2            MIT                                  https://github.com/jakezatecky/react-checkbox-tree
 react-data-grid                                                  7.0.0-beta.14    MIT                                  https://github.com/adazzle/react-data-grid.git
+react-dnd                                                        16.0.1           MIT                                  https://github.com/react-dnd/react-dnd.git
+react-dnd-html5-backend                                          16.0.1           MIT                                  https://github.com/react-dnd/react-dnd.git
 react-dom                                                        16.14.0          MIT                                  git+https://github.com/facebook/react.git
 react-dom                                                        17.0.2           MIT                                  https://github.com/facebook/react.git
 react-draggable                                                  4.4.4            MIT                                  https://github.com/react-grid-layout/react-draggable.git
@@ -473,6 +480,7 @@ react-window                                                     1.8.6          
 read-pkg                                                         6.0.0            MIT                                  https://github.com/sindresorhus/read-pkg.git
 read-pkg-up                                                      8.0.0            MIT                                  https://github.com/sindresorhus/read-pkg-up.git
 redent                                                           4.0.0            MIT                                  https://github.com/sindresorhus/redent.git
+redux                                                            4.2.0            MIT                                  https://github.com/reduxjs/redux.git
 regenerator-runtime                                              0.13.9           MIT                                  https://github.com/facebook/regenerator/tree/master/packages/runtime
 require-from-string                                              2.0.2            MIT                                  https://github.com/floatdrop/require-from-string.git
 resize-observer-polyfill                                         1.5.1            MIT                                  https://github.com/que-etc/resize-observer-polyfill.git
@@ -607,5 +615,5 @@ tslib                                                            2.4.0          
 tslib                                                            2.3.0            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 
-528 dependencies listed.
+536 dependencies listed.
 
