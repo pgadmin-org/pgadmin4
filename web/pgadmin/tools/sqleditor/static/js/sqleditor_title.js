@@ -15,7 +15,7 @@ import Notify from '../../../../static/js/helpers/Notifier';
 const pgAdmin = pgWindow.pgAdmin;
 
 export function getDatabaseLabel(parentData) {
-  return parentData.database ? parentData.database._label
+  return parentData.database ? parentData.database.label
     : parentData.server?.db;
 }
 
@@ -74,7 +74,7 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
   let title_data = {
     'database': db_label,
     'username': parentData.server.user.name,
-    'server': parentData.server._label,
+    'server': parentData.server.label,
     'type': 'query_tool',
   };
 
@@ -116,15 +116,15 @@ export function set_renamable_option(panel, is_file) {
 export function generateTitle(title_placeholder, title_data) {
 
   if(title_data.type == 'query_tool' || title_data.type == 'psql_tool') {
-    title_placeholder = title_placeholder.replace('%DATABASE%', _.unescape(title_data.database));
-    title_placeholder = title_placeholder.replace('%USERNAME%', _.unescape(title_data.username));
-    title_placeholder = title_placeholder.replace('%SERVER%', _.unescape(title_data.server));
+    title_placeholder = title_placeholder.replace('%DATABASE%', title_data.database);
+    title_placeholder = title_placeholder.replace('%USERNAME%', title_data.username);
+    title_placeholder = title_placeholder.replace('%SERVER%', title_data.server);
   } else if(title_data.type == 'view_data') {
-    title_placeholder = title_placeholder.replace('%DATABASE%', _.unescape(title_data.database));
-    title_placeholder = title_placeholder.replace('%USERNAME%', _.unescape(title_data.username));
-    title_placeholder = title_placeholder.replace('%SERVER%', _.unescape(title_data.server));
-    title_placeholder = title_placeholder.replace('%SCHEMA%', _.unescape(title_data.schema));
-    title_placeholder = title_placeholder.replace('%TABLE%', _.unescape(title_data.table));
+    title_placeholder = title_placeholder.replace('%DATABASE%', title_data.database);
+    title_placeholder = title_placeholder.replace('%USERNAME%', title_data.username);
+    title_placeholder = title_placeholder.replace('%SERVER%', title_data.server);
+    title_placeholder = title_placeholder.replace('%SCHEMA%', title_data.schema);
+    title_placeholder = title_placeholder.replace('%TABLE%', title_data.table);
   } else if(title_data.type == 'debugger') {
     title_placeholder = title_placeholder.replace('%FUNCTION%', _.unescape(title_data.function_name));
     title_placeholder = title_placeholder.replace('%ARGS%', _.unescape(title_data.args));
