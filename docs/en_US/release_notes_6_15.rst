@@ -41,6 +41,7 @@ Bug fixes
   | `Issue #5249 <https://github.com/pgadmin-org/pgadmin4/issues/5249>`_ -  Added the ability to display the selected text from the query tool in the find/replace box.
   | `Issue #5261 <https://github.com/pgadmin-org/pgadmin4/issues/5261>`_ -  Ensure that the search filter should be cleared when a new row is added to the user management.
   | `Issue #5262 <https://github.com/pgadmin-org/pgadmin4/issues/5262>`_ -  Ensure that the user management dialog should not allow the same email addresses with different letter casings when creating users.
+  | `Issue #5277 <https://github.com/pgadmin-org/pgadmin4/issues/5277>`_ -  Fixed XSS vulnerability issues.
   | `Issue #5296 <https://github.com/pgadmin-org/pgadmin4/issues/5296>`_ -  Ensure that the scroll position should be preserved for the result set in the query tool on tab change.
   | `Issue #5308 <https://github.com/pgadmin-org/pgadmin4/issues/5308>`_ -  Ensure that the default value for a column should be used if it is made empty.
   | `Issue #5327 <https://github.com/pgadmin-org/pgadmin4/issues/5327>`_ -  Fixed an issue where user was unable to select privileges in Safari.
@@ -54,3 +55,4 @@ Bug fixes
   | `Issue #5397 <https://github.com/pgadmin-org/pgadmin4/issues/5397>`_ -  Fixed an issue where the password recovery link was not working.
   | `Issue #5402 <https://github.com/pgadmin-org/pgadmin4/issues/5402>`_ -  Ensure that scroll bar on browser tree should be visible on windows resize.
   | `Issue #5405 <https://github.com/pgadmin-org/pgadmin4/issues/5405>`_ -  Fixed the cross-site scripting vulnerability.
+  | `Issue #5427 <https://github.com/pgadmin-org/pgadmin4/issues/5427>`_ -  Fixed an issue where filtered rows were not working.
