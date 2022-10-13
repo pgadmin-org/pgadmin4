@@ -55,6 +55,7 @@ export class TableNodeModel extends DefaultNodeModel {
         };
         this.fireEvent(this._metadata, 'dataAvaiable');
         this.fireEvent({}, 'nodeUpdated');
+        this.fireEvent({}, 'selectionChanged');
       }).catch(()=>{
         this._metadata = {
           ...this._metadata,

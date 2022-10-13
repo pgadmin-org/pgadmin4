@@ -29,8 +29,11 @@ export function withColorPicker(Component) {
     };
     const eleRef = useRef();
     const pickrObj = useRef();
-    const onChangeRef = useRef(onChange);
-    const onSaveRef = useRef(onSave);
+    const onChangeRef = useRef();
+    const onSaveRef = useRef();
+
+    onChangeRef.current = onChange;
+    onSaveRef.current = onSave;
 
     const setColor = (newVal, silent) => {
       pickrObj.current?.setColor((_.isUndefined(newVal) || newVal == '') ? pickrOptions.defaultColor : newVal, silent);

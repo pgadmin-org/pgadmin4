@@ -55,10 +55,22 @@ const useStyles = makeStyles((theme)=>({
     border: '1px solid ' + theme.palette.default.borderColor,
     justifyContent: 'flex-start',
   },
+  fillColorIcon: (props)=>({
+    '& path[fill-opacity]': {
+      fillOpacity: 1,
+      color: props.fillColor ?? theme.palette.background.default,
+    }
+  }),
+  textColorIcon: (props)=>({
+    '& path[fill-opacity]': {
+      fillOpacity: 1,
+      color: props.textColor ?? theme.palette.text.primary,
+    }
+  }),
 }));
 
 export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
-  const classes = useStyles();
+  const classes = useStyles({fillColor,textColor});
   const theme = useTheme();
   const [buttonsDisabled, setButtonsDisabled] = useState({
     'save': true,
@@ -231,7 +243,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
             }} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
-          <ColorButton title={gettext('Fill Color')} icon={<FormatColorFillRoundedIcon />}
+          <ColorButton title={gettext('Fill Color')} icon={<FormatColorFillRoundedIcon className={classes.fillColorIcon} />}
             value={fillColor ?? theme.palette.background.default} options={{
               allowSave: true,
             }}
@@ -242,7 +254,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
                 eventBus.fireEvent(ERD_EVENTS.CHANGE_COLORS, null, textColor);
               }
             }}/>
-          <ColorButton title={gettext('Text Color')} icon={<FormatColorTextRoundedIcon />}
+          <ColorButton title={gettext('Text Color')} icon={<FormatColorTextRoundedIcon className={classes.textColorIcon} />}
             value={textColor ?? theme.palette.text.primary} options={{
               allowSave: true,
             }}
