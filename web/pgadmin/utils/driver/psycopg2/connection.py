@@ -300,6 +300,8 @@ class Connection(BaseConnection):
         # if it's present then we will use it
         if not password and not encpass and not passfile:
             passfile = manager.passfile if manager.passfile else None
+            if manager.passexec:
+                password = manager.passexec.get()
 
         try:
             database = self.db

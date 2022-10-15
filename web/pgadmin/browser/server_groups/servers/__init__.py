@@ -710,6 +710,8 @@ class ServerNode(PGChildNodeView):
             'role': 'role',
             'db_res': 'db_res',
             'passfile': 'passfile',
+            'passexec_cmd': 'passexec_cmd',
+            'passexec_expiration': 'passexec_expiration',
             'sslcert': 'sslcert',
             'sslkey': 'sslkey',
             'sslrootcert': 'sslrootcert',
@@ -978,6 +980,11 @@ class ServerNode(PGChildNodeView):
             'fgcolor': server.fgcolor,
             'db_res': server.db_res.split(',') if server.db_res else None,
             'passfile': server.passfile if server.passfile else None,
+            'passexec_cmd':
+                server.passexec_cmd if server.passexec_cmd else None,
+            'passexec_expiration':
+                server.passexec_expiration if server.passexec_expiration
+                else None,
             'sslcert': sslcert,
             'sslkey': sslkey,
             'sslrootcert': sslrootcert,
@@ -1092,6 +1099,8 @@ class ServerNode(PGChildNodeView):
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
                 shared=data.get('shared', None),
                 passfile=data.get('passfile', None),
+                passexec_cmd=data.get('passexec_cmd', None),
+                passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
             )
             db.session.add(server)
@@ -1378,7 +1387,9 @@ class ServerNode(PGChildNodeView):
                                        server.kerberos_conn is None):
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and not server.save_password and \
-                    server.passfile is None and server.service is None:
+                    server.passfile is None and \
+                    server.passexec_cmd is None and \
+                    server.service is None:
                 prompt_password = True
             elif server.passfile and server.passfile != '':
                 passfile = server.passfile
