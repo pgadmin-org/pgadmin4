@@ -980,8 +980,11 @@ class ServerNode(PGChildNodeView):
             'fgcolor': server.fgcolor,
             'db_res': server.db_res.split(',') if server.db_res else None,
             'passfile': server.passfile if server.passfile else None,
-            'passexec_cmd': server.passexec_cmd if server.passexec_cmd else None,
-            'passexec_expiration': server.passexec_expiration if server.passexec_expiration else None,
+            'passexec_cmd':
+                server.passexec_cmd if server.passexec_cmd else None,
+            'passexec_expiration':
+                server.passexec_expiration if server.passexec_expiration
+                else None,
             'sslcert': sslcert,
             'sslkey': sslkey,
             'sslrootcert': sslrootcert,
@@ -1384,7 +1387,8 @@ class ServerNode(PGChildNodeView):
                                        server.kerberos_conn is None):
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and not server.save_password and \
-                    server.passfile is None and server.passexec_cmd is None and \
+                    server.passfile is None and \
+                    server.passexec_cmd is None and \
                     server.service is None:
                 prompt_password = True
             elif server.passfile and server.passfile != '':

@@ -14,9 +14,10 @@ class PasswordExec:
 
     lock = Lock()
 
-    def __init__(self, cmd, expiration_seconds = None, timeout = 60):
+    def __init__(self, cmd, expiration_seconds=None, timeout=60):
         self.cmd = str(cmd)
-        self.expiration_seconds = int(expiration_seconds) if expiration_seconds != None else None
+        self.expiration_seconds = int(expiration_seconds) \
+            if expiration_seconds is not None else None
         self.timeout = int(timeout)
         self.password = None
         self.last_result = None
@@ -34,11 +35,11 @@ class PasswordExec:
                 try:
                     p = subprocess.run(
                         self.cmd,
-                        shell = True,
-                        timeout = self.timeout,
-                        capture_output = True,
-                        text = True,
-                        check = True,
+                        shell=True,
+                        timeout=self.timeout,
+                        capture_output=True,
+                        text=True,
+                        check=True,
                     )
                 except subprocess.CalledProcessError as e:
                     if (e.stderr):
@@ -51,14 +52,14 @@ class PasswordExec:
             return self.password
 
     def is_expired(self):
-        if self.expiration_seconds == None:
+        if self.expiration_seconds is None:
             return False
-        return self.last_result is not None and datetime.utcnow() - self.last_result >= timedelta(seconds=self.expiration_seconds)
+        return self.last_result is not None and\
+            datetime.utcnow() - self.last_result \
+            >= timedelta(seconds=self.expiration_seconds)
 
     def create_logger(self):
         logger = logging.getLogger('passexec')
         for h in current_app.logger.handlers:
             logger.addHandler(h)
         return logger
-
-

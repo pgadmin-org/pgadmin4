@@ -79,7 +79,9 @@ class ServerManager(object):
         self.server_types = None
         self.db_res = server.db_res
         self.passfile = server.passfile
-        self.passexec = PasswordExec(server.passexec_cmd, server.passexec_expiration) if server.passexec_cmd else None
+        self.passexec = \
+            PasswordExec(server.passexec_cmd, server.passexec_expiration) \
+            if server.passexec_cmd else None
         self.sslcert = server.sslcert
         self.sslkey = server.sslkey
         self.sslrootcert = server.sslrootcert
