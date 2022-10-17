@@ -31,8 +31,11 @@ from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
     PREF_LABEL_DISPLAY, PREF_LABEL_OPTIONS
 from .utils import ERDHelper
 from pgadmin.utils.exception import ConnectionLost
+from pgadmin.authenticate import socket_login_required
+from ... import socketio
 
 MODULE_NAME = 'erd'
+SOCKETIO_NAMESPACE = '/{0}'.format(MODULE_NAME)
 
 
 class ERDModule(PgAdminModule):
@@ -601,22 +604,36 @@ def sql(trans_id, sgid, sid, did):
     )
 
 
-@blueprint.route('/tables/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
-                 methods=["GET"],
-                 endpoint='tables')
-@login_required
-def tables(trans_id, sgid, sid, did):
-    helper = ERDHelper(trans_id, sid, did)
-    _get_connection(sid, did, trans_id)
-    status, tables = helper.get_all_tables()
+@socketio.on('connect', namespace=SOCKETIO_NAMESPACE)
+def connect():
+    """
+    Connect to the server through socket.
+    :return:
+    :rtype:
+    """
+    socketio.emit('connected', {'sid': request.sid},
+                  namespace=SOCKETIO_NAMESPACE,
+                  to=request.sid)
 
-    if not status:
-        return internal_server_error(errormsg=tables)
 
-    return make_json_response(
-        data=tables,
-        status=200
-    )
+@socketio.on('tables', namespace=SOCKETIO_NAMESPACE)
+@socket_login_required
+def tables(params):
+    try:
+        helper = ERDHelper(params['trans_id'], params['sid'], params['did'])
+        _get_connection(params['sid'], params['did'], params['trans_id'])
+        status, tables = helper.get_all_tables()
+
+        if not status:
+            socketio.emit('tables_failed', tables,
+                          namespace=SOCKETIO_NAMESPACE,
+                          to=request.sid)
+            return internal_server_error(errormsg=tables)
+        socketio.emit('tables_success', tables, namespace=SOCKETIO_NAMESPACE,
+                      to=request.sid)
+    except Exception as e:
+        socketio.emit('tables_failed', str(e), namespace=SOCKETIO_NAMESPACE,
+                      to=request.sid)
 
 
 @blueprint.route('/close/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
