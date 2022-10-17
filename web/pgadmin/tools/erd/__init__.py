@@ -63,7 +63,6 @@ class ERDModule(PgAdminModule):
             'erd.initialize',
             'erd.prequisite',
             'erd.sql',
-            'erd.tables',
             'erd.close'
         ]
 

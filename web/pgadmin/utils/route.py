@@ -180,7 +180,6 @@ class BaseSocketTestGenerator(BaseTestGenerator):
 
     def setUp(self):
         super(BaseSocketTestGenerator, self).setUp()
-        # flask_client = self.app.test_client()
         self.tester.get("/")
         self.socket_client = socketio.test_client(
             self.app, namespace=self.SOCKET_NAMESPACE,
