@@ -25,6 +25,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #5065 <https://github.com/pgadmin-org/pgadmin4/issues/5065>`_ -  Use SocketIO instead of REST for fetching database tables data in ERD.
   | `Issue #5293 <https://github.com/pgadmin-org/pgadmin4/issues/5293>`_ -  Ensure that the tooltips are consistent throughout the entire application.
   | `Issue #5357 <https://github.com/pgadmin-org/pgadmin4/issues/5357>`_ -  Remove Python's 'Six' package completely.
 

@@ -32,6 +32,7 @@ import { Box, withStyles } from '@material-ui/core';
 import EventBus from '../../../../../../static/js/helpers/EventBus';
 import { ERD_EVENTS } from '../ERDConstants';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
+import { openSocket, socketApiGet } from '../../../../../../static/js/socket_instance';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -897,23 +898,22 @@ class ERDTool extends React.Component {
 
   async loadTablesData() {
     this.setLoading(gettext('Fetching schema data...'));
-    let url = url_for('erd.tables', {
-      trans_id: this.props.params.trans_id,
-      sgid: this.props.params.sgid,
-      sid: this.props.params.sid,
-      did: this.props.params.did,
-    });
-
+    let resData = [];
+    let socket;
     try {
-      let response = await this.apiObj.get(url);
-      this.diagram.deserializeData(response.data.data);
-      return true;
+      socket = await openSocket('/erd');
+      resData = await socketApiGet(socket, 'tables', {
+        trans_id: parseInt(this.props.params.trans_id),
+        sgid: parseInt(this.props.params.sgid),
+        sid: parseInt(this.props.params.sid),
+        did: parseInt(this.props.params.did),
+      });
     } catch (error) {
       this.handleAxiosCatch(error);
-      return false;
-    } finally {
-      this.setLoading(null);
     }
+    socket?.disconnect();
+    this.diagram.deserializeData(resData);
+    this.setLoading(null);
   }
 
   render() {

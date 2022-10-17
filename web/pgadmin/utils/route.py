@@ -14,6 +14,7 @@ from importlib import import_module
 
 from werkzeug.utils import find_modules
 from pgadmin.utils import server_utils
+from .. import socketio
 
 import unittest
 
@@ -172,3 +173,25 @@ class BaseTestGenerator(unittest.TestCase, metaclass=TestsGeneratorRegistry):
     @classmethod
     def setForModules(cls, for_modules):
         cls.for_modules = for_modules
+
+
+class BaseSocketTestGenerator(BaseTestGenerator):
+    SOCKET_NAMESPACE = ""
+
+    def setUp(self):
+        super(BaseSocketTestGenerator, self).setUp()
+        # flask_client = self.app.test_client()
+        self.tester.get("/")
+        self.socket_client = socketio.test_client(
+            self.app, namespace=self.SOCKET_NAMESPACE,
+            flask_test_client=self.tester)
+        self.assertTrue(self.socket_client.is_connected(self.SOCKET_NAMESPACE))
+
+    def runTest(self):
+        super(BaseSocketTestGenerator, self).runTest()
+
+    def tearDown(self):
+        super(BaseSocketTestGenerator, self).tearDown()
+        self.socket_client.disconnect(namespace=self.SOCKET_NAMESPACE)
+        self.assertFalse(
+            self.socket_client.is_connected(self.SOCKET_NAMESPACE))

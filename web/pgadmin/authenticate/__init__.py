@@ -11,12 +11,16 @@
 
 import config
 import copy
+import functools
 
 from flask import current_app, flash, Response, request, url_for, \
     session, redirect
 from flask_babel import gettext
 from flask_security.views import _security
 from flask_security.utils import get_post_logout_redirect, logout_user
+from flask_login import current_user
+from flask_socketio import disconnect, ConnectionRefusedError
+
 
 from pgadmin.model import db, User
 from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
@@ -50,6 +54,17 @@ def get_logout_url() -> str:
 
     return _URL_WITH_NEXT_PARAM.format(
         url_for('security.logout'), url_for(BROWSER_INDEX))
+
+
+def socket_login_required(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not current_user.is_authenticated:
+            disconnect()
+            raise ConnectionRefusedError("Unauthorised !")
+        else:
+            return f(*args, **kwargs)
+    return wrapped
 
 
 class AuthenticateModule(PgAdminModule):

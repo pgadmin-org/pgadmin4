@@ -129,6 +129,7 @@ module.exports = {
       'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
       'react': path.join(__dirname, 'node_modules/react'),
       'react-dom': path.join(__dirname, 'node_modules/react-dom'),
+      'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),
       'sources': sourcesDir + '/js',
       'translations': regressionDir + '/javascript/fake_translations',
       'pgadmin.browser.messages': regressionDir + '/javascript/fake_messages',

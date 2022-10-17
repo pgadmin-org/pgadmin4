@@ -133,6 +133,7 @@ describe('ERDTool', ()=>{
     bodyInstance = body.instance();
     spyOn(bodyInstance, 'getDialog').and.callFake(getDialog);
     spyOn(bodyInstance, 'onChangeColors').and.callFake(()=>{/*no op*/});
+    spyOn(bodyInstance, 'loadTablesData').and.callFake(()=>{/*no op*/});
   });
 
   afterAll(() => {
