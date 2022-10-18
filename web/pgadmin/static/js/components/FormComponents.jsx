@@ -42,6 +42,7 @@ import QueryThresholds from './QueryThresholds';
 import SelectThemes from './SelectThemes';
 import { showFileManager } from '../helpers/showFileManager';
 import { withColorPicker } from '../helpers/withColorPicker';
+import { useWindowSize } from '../custom_hooks';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -843,6 +844,7 @@ export const InputSelect = forwardRef(({
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 
+  useWindowSize();
 
   /* React will always take options let as changed parameter. So,
   We cannot run the below effect with options dependency as it will keep on

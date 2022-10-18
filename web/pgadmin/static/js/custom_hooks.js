@@ -1,4 +1,4 @@
-import {useRef, useEffect, useState, useCallback} from 'react';
+import {useRef, useEffect, useState, useCallback, useLayoutEffect} from 'react';
 import moment from 'moment';
 
 /* React hook for setInterval */
@@ -180,4 +180,17 @@ export function useKeyboardShortcuts(shortcuts, eleRef) {
   useEffect(()=>{
     shortcutsRef.current = shortcuts;
   }, [shortcuts]);
+}
+
+export function useWindowSize() {
+  const [size, setSize] = useState([999999, 999999]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight]);
+    }
+    window.addEventListener('resize', updateSize);
+    updateSize();
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+  return size;
 }
