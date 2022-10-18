@@ -16,8 +16,8 @@ Revises: 6650c52670c2
 Create Date: 2021-11-24 17:33:12.533825
 
 """
-from pgadmin.model import db
-
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '15c88f765bc8'
@@ -27,15 +27,13 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute("""
-CREATE TABLE user_mfa(
-    user_id  INTEGER NOT NULL,
-    mfa_auth VARCHAR(256) NOT NULL,
-    options  TEXT,
-    PRIMARY KEY (user_id, mfa_auth),
-    FOREIGN KEY(user_id) REFERENCES user (id)
-)
-    """)
+    op.create_table(
+        'user_mfa', sa.Column('user_id', sa.Integer(), nullable=False),
+        sa.Column('mfa_auth', sa.String(length=256), nullable=False),
+        sa.Column('options', sa.String()),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.PrimaryKeyConstraint('user_id', 'mfa_auth'))
+
     # ### end Alembic commands ###
 
 

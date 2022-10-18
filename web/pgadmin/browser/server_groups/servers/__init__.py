@@ -831,7 +831,8 @@ class ServerNode(PGChildNodeView):
                     # Delete the shared server from DB if server
                     # owner uncheck shared property
                     self.delete_shared_server(server.name, gid, server.id)
-                if arg == 'sslcompression':
+                if arg in ('sslcompression', 'use_ssh_tunnel',
+                           'tunnel_authentication', 'kerberos_conn', 'shared'):
                     value = 1 if value else 0
                 self._update_server_details(server, sharedserver,
                                             config_param_map, arg, value)
@@ -1091,11 +1092,12 @@ class ServerNode(PGChildNodeView):
                 fgcolor=data.get('fgcolor', None),
                 service=data.get('service', None),
                 connect_timeout=data.get('connect_timeout', 0),
-                use_ssh_tunnel=data.get('use_ssh_tunnel', 0),
+                use_ssh_tunnel=1 if data.get('use_ssh_tunnel', False) else 0,
                 tunnel_host=data.get('tunnel_host', None),
                 tunnel_port=data.get('tunnel_port', 22),
                 tunnel_username=data.get('tunnel_username', None),
-                tunnel_authentication=data.get('tunnel_authentication', 0),
+                tunnel_authentication=1 if data.get('tunnel_authentication',
+                                                    False) else 0,
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
                 shared=data.get('shared', None),
                 passfile=data.get('passfile', None),

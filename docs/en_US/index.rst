@@ -16,6 +16,7 @@ of database objects.
    :maxdepth: 2
 
    getting_started
+   external_database
    connecting
    managing_cluster_objects
    managing_database_objects

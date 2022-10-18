@@ -26,10 +26,19 @@ When Administrator itself gets locked, following steps may be considered to rest
 
 OR
 
-By updating SQLite DB (pgAdmin4.db):
+By updating configuration database
+
+SQLite DB (pgAdmin4.db):
 
 * Locate the pgAdmin4.db file and open it using any DB Browser (or DB Browser for SQLite)
 * After opening the DB file, head towards 'Execute SQL' section.
+* Run below query -
+
+*UPDATE USER SET LOCKED = false, LOGIN_ATTEMPTS = 0 WHERE USERNAME = <YOUR_EMAIL_ID>*
+
+External database:
+
+* Connect to the database.
 * Run below query -
 
 *UPDATE USER SET LOCKED = false, LOGIN_ATTEMPTS = 0 WHERE USERNAME = <YOUR_EMAIL_ID>*

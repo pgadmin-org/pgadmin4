@@ -13,7 +13,8 @@ Revises: 493cd3e39c0c
 Create Date: 2018-07-26 11:19:50.879849
 
 """
-from pgadmin.model import db
+from alembic import op
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'aa86fb60b73d'
@@ -23,9 +24,7 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN tunnel_password TEXT(64)'
-    )
+    op.add_column('server', sa.Column('tunnel_password', sa.String(length=64)))
 
 
 def downgrade():

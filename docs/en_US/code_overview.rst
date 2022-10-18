@@ -44,7 +44,7 @@ the **Flask-Security** module to manage application security and users, and
 provides options for self-service password reset and password changes etc.
 
 Whether in desktop or server mode, each user's settings are stored in a SQLite
-database which is also used to store the user accounts. This is initially
+OR external database which is also used to store the user accounts. This is initially
 created using the **setup.py** script which will create the database file and
 schema within it, and add the first user account (with administrative
 privileges) and a default server group for them. A **settings** table is also

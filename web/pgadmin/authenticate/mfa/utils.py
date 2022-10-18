@@ -347,7 +347,7 @@ def mfa_delete(auth_name: str) -> bool:
         user_id=current_user.id, mfa_auth=auth_name
     )
 
-    if auth.count() != 0:
+    if int(auth.count()) != 0:
         auth.delete()
         db.session.commit()
 

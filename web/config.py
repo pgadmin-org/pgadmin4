@@ -307,6 +307,23 @@ PG_DEFAULT_DRIVER = 'psycopg2'
 MAX_SESSION_IDLE_TIME = 60
 
 ##########################################################################
+# External Database Settings
+#
+# All configuration settings are stored by default in the SQLite database.
+# In order to use external databases like PostgreSQL sets the value of
+# CONFIG_DATABASE_URI like below:
+# dialect+driver://username:password@host:port/database
+#
+# PostgreSQL:
+# postgresql://username:password@host:port/database
+# Specify Schema Name
+# postgresql://username:password@host:port/database?options=-csearch_path=pgadmin
+# Using PGPASS file
+# postgresql://username@host:port?options=-csearch_path=pgadmin
+##########################################################################
+CONFIG_DATABASE_URI = ''
+
+##########################################################################
 # User account and settings storage
 ##########################################################################
 

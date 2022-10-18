@@ -137,7 +137,10 @@ class BatchProcess(object):
         if p is None:
             raise LookupError(PROCESS_NOT_FOUND)
 
-        tmp_desc = loads(p.desc)
+        try:
+            tmp_desc = loads(bytes.fromhex(p.desc))
+        except Exception:
+            tmp_desc = loads(p.desc)
 
         # ID
         self.id = _id
@@ -228,7 +231,7 @@ class BatchProcess(object):
         csv_writer.writerow(_args)
 
         args_val = args_csv_io.getvalue().strip(str('\r\n'))
-        tmp_desc = dumps(self.desc)
+        tmp_desc = dumps(self.desc).hex()
 
         j = Process(
             pid=int(uid),
@@ -679,7 +682,11 @@ class BatchProcess(object):
         :return: return value for details, type_desc and desc related
         to process
         """
-        desc = loads(p.desc)
+        try:
+            desc = loads(bytes.fromhex(p.desc))
+        except Exception:
+            desc = loads(p.desc)
+
         details = desc
         type_desc = ''
         current_storage_dir = None
