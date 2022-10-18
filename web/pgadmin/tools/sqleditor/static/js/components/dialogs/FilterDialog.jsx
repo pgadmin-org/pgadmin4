@@ -145,6 +145,7 @@ export default function FilterDialog({onClose, onSave}) {
       disableDialogHelp={true}
       isTabView={false}
       formClassName={classes.root}
+      checkDirtyOnEnableSave={true}
     />
   </>);
 }
