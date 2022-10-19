@@ -99,6 +99,9 @@ define('pgadmin.node.database', [
           name: 'generate_erd', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'generate_erd',
           category: 'erd', priority: 5, label: gettext('Generate ERD'),
+          enable: (node) => {
+            return node.allowConn;
+          }
         }]);
 
         _.bindAll(this, 'connection_lost');
