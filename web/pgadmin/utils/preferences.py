@@ -147,6 +147,10 @@ class _Preference(object):
             for opt in self.options:
                 if 'value' in opt and opt['value'] == res.value:
                     return True, res.value
+
+            if self.control_props and self.control_props['creatable']:
+                return True, res.value
+
             if self.select and self.select['tags']:
                 return True, res.value
             return True, self.default
@@ -191,7 +195,9 @@ class _Preference(object):
                 has_value = next((True for opt in self.options
                                   if 'value' in opt and opt['value'] == value),
                                  False)
-                assert (has_value or (self.select and self.select['tags']))
+                assert (has_value or (self.control_props and
+                                      (self.control_props['tags'] or
+                                       self.control_props['creatable'])))
             elif self._type == 'date':
                 value = parser_map[self._type](value).date()
             else:
