@@ -447,7 +447,7 @@ function prepareData(val, createMode=false) {
 
 /* If its the dialog */
 function SchemaDialogView({
-  getInitData, viewHelperProps, loadingText, schema={}, showFooter=true, isTabView=true, ...props}) {
+  getInitData, viewHelperProps, loadingText, schema={}, showFooter=true, isTabView=true, checkDirtyOnEnableSave=false, ...props}) {
   const classes = useDialogStyles();
   /* Some useful states */
   const [dirty, setDirty] = useState(false);
@@ -773,7 +773,7 @@ function SchemaDialogView({
               <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
                 {gettext('Reset')}
               </DefaultButton>
-              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={ !(viewHelperProps.mode === 'edit' ? dirty : true) || saving || Boolean(formErr.name) || !formReady}>
+              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={ !(viewHelperProps.mode === 'edit' || checkDirtyOnEnableSave ? dirty : true) || saving || Boolean(formErr.name) || !formReady}>
                 {props.customSaveBtnName ? gettext(props.customSaveBtnName) : gettext('Save')}
               </PrimaryButton>
             </Box>
@@ -812,6 +812,7 @@ SchemaDialogView.propTypes = {
   customSaveBtnIconType: PropTypes.string,
   formClassName: CustomPropTypes.className,
   Notifier: PropTypes.object,
+  checkDirtyOnEnableSave: PropTypes.bool,
 };
 
 const usePropsStyles = makeStyles((theme)=>({
