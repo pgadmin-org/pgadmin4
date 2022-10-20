@@ -30,7 +30,8 @@ import { InputComponent } from './InputComponent';
 import { SchemaDiffButtonComponent } from './SchemaDiffButtonComponent';
 import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { ResultGridComponent } from './ResultGridComponent';
-
+import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
+import { parseApiError } from '../../../../../static/js/api_instance';
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -268,15 +269,13 @@ export function SchemaDiffCompare({ params }) {
     }
   };
 
-  const triggerCompareDiff = ({ sourceData, targetData, compareParams, filterParams }) => {
+  const triggerCompareDiff = async ({ sourceData, targetData, compareParams, filterParams }) => {
     setGridData([]);
     setIsInit(false);
     if (JSON.stringify(sourceData) === JSON.stringify(targetData)) {
       Notifier.alert(gettext('Selection Error'),
         gettext('Please select the different source and target.'));
     } else {
-      getCompareStatus();
-      let schemaDiffPollInterval = setInterval(getCompareStatus, 1000);
       setLoaderText('Comparing objects... (this may take a few minutes)...');
       let url_params = {
         'trans_id': params.transId,
@@ -287,28 +286,34 @@ export function SchemaDiffCompare({ params }) {
         'ignore_owner': compareParams['ignoreOwner'],
         'ignore_whitespaces': compareParams['ignoreWhitespaces'],
       };
-
-      let baseUrl = url_for('schema_diff.compare_database', url_params);
+      let socketEndpoint = 'compare_database';
       if (sourceData['scid'] != null && targetData['scid'] != null) {
         url_params['source_scid'] = sourceData['scid'];
         url_params['target_scid'] = targetData['scid'];
-        baseUrl = url_for('schema_diff.compare_schema', url_params);
+        socketEndpoint = 'compare_schema';
       }
-
-      setCompareOptions(compareParams);
-      schemaDiffToolContext.api.get(baseUrl).then((res) => {
+      let resData = [];
+      let socket;
+      try {
+        setCompareOptions(compareParams);
+        socket = await openSocket('/schema_diff');
+        socket.on('compare_status', res=>{
+          let msg = res.compare_msg;
+          msg = msg + gettext(` (this may take a few minutes)... ${res.diff_percentage} %`);
+          setLoaderText(msg);
+        });
+        resData = await socketApiGet(socket, socketEndpoint, url_params);
         setShowResultGrid(true);
         setLoaderText(null);
-        clearInterval(schemaDiffPollInterval);
         setFilterOptions(filterParams);
-        getResultGridData(res.data.data, filterParams);
-      }).catch((err) => {
-        clearInterval(schemaDiffPollInterval);
+        getResultGridData(resData, filterParams);
+      } catch (error) {
         setLoaderText(null);
         setShowResultGrid(false);
-        Notifier.alert(gettext('Schema compare error'), gettext(err.response.data.errormsg));
-      });
-
+        console.error(error);
+        Notifier.alert(gettext('Error'), parseApiError(error));
+      }
+      socket?.disconnect();
     }
   };
 
@@ -560,22 +565,6 @@ export function SchemaDiffCompare({ params }) {
     setGridData(temp);
     setAllRowIdList([...new Set(allRowIds)]);
   }
-
-  const getCompareStatus = () => {
-    let url_params = { 'trans_id': params.transId };
-
-    schemaDiffToolContext.api.get(url_for('schema_diff.poll', url_params)).then((res) => {
-      let msg = res.data.data.compare_msg;
-      if (res.data.data.diff_percentage != 100) {
-        msg = msg + gettext(` (this may take a few minutes)... ${res.data.data.diff_percentage} %`);
-        setLoaderText(msg);
-      }
-
-    })
-      .catch((err) => {
-        Notifier.error(gettext(err.message));
-      });
-  };
 
   const connectDatabase = (sid, selectedDB, diff_type, databaseList) => {
     schemaDiffToolContext.api({
