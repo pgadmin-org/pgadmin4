@@ -25,11 +25,6 @@ depends_on = None
 
 def upgrade():
     op.add_column('user', sa.Column('masterpass_check', sa.String(length=256)))
-    with op.batch_alter_table("user") as batch_op:
-        batch_op.create_check_constraint(
-            "ck_active_range",
-            "active IN (0, 1)"
-        )
 
 
 def downgrade():
