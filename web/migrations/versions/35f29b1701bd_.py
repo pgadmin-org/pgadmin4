@@ -1,17 +1,20 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: 35f29b1701bd
 Revises: ec1cac3399c9
 Create Date: 2019-04-26 16:38:08.368471
 
 """
-import base64
-import os
-import sys
-
-from pgadmin.model import db, Server
-
+from alembic import op
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '35f29b1701bd'
@@ -21,33 +24,12 @@ depends_on = None
 
 
 def upgrade():
-
-    db.engine.execute("create table user_old as select * from user")
-
-    db.engine.execute("DROP TABLE user")
-
-    db.engine.execute("""
-        CREATE TABLE user (
-            id INTEGER NOT NULL,
-            email VARCHAR(256) NOT NULL,
-            password VARCHAR(256),
-            active BOOLEAN NOT NULL,
-            confirmed_at DATETIME,
-            masterpass_check VARCHAR(256),
-            PRIMARY KEY (id),
-            UNIQUE (email),
-            CHECK (active IN (0, 1))
-        );
-        """)
-
-    db.engine.execute("""
-        INSERT INTO user (
-            id, email, password, active, confirmed_at
-        ) SELECT
-            id, email, password, active, confirmed_at
-        FROM user_old""")
-
-    db.engine.execute("DROP TABLE user_old")
+    op.add_column('user', sa.Column('masterpass_check', sa.String(length=256)))
+    with op.batch_alter_table("user") as batch_op:
+        batch_op.create_check_constraint(
+            "ck_active_range",
+            "active IN (true, false)"
+        )
 
 
 def downgrade():

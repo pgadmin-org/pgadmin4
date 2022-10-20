@@ -1,13 +1,20 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: c465fee44968
 Revises: d0bc9f32b2b9
 Create Date: 2021-06-04 14:42:12.843116
 
 """
-from pgadmin.model import db, User
-from sqlalchemy.sql import text
+from alembic import op
+import sqlalchemy as sa
 import uuid
 
 
@@ -19,46 +26,20 @@ depends_on = None
 
 
 def upgrade():
+    op.add_column('user', sa.Column('fs_uniquifier', sa.String(),
+                                    nullable=True))
 
-    db.engine.execute("create table user_old as select * from user")
+    meta = sa.MetaData(bind=op.get_bind())
+    # define table representation
+    meta.reflect(only=('user',))
+    user_table = sa.Table('user', meta)
 
-    db.engine.execute("DROP TABLE user")
+    op.execute(
+        user_table.update().values(fs_uniquifier=uuid.uuid4().hex)
+    )
+    with op.batch_alter_table("user") as batch_op:
+        batch_op.alter_column('fs_uniquifier', nullable=False)
 
-    db.engine.execute("""
-        CREATE TABLE user (
-            id INTEGER NOT NULL,
-            username VARCHAR(256) NOT NULL,
-            email VARCHAR(256),
-            password VARCHAR(256),
-            active BOOLEAN NOT NULL,
-            confirmed_at DATETIME,
-            masterpass_check VARCHAR(256),
-            auth_source VARCHAR(256) NOT NULL DEFAULT 'internal',
-            fs_uniquifier NOT NULL UNIQUE,
-            PRIMARY KEY (id),
-            UNIQUE (username, auth_source),
-            CHECK (active IN (0, 1))
-        );
-        """)
-
-    user_old = db.engine.execute(
-        'select id, username, email, password, active, '
-        'confirmed_at, masterpass_check, auth_source '
-        'from user_old')
-
-    statement = text("""
-            INSERT INTO user(id, username, email, password, active,
-            confirmed_at, masterpass_check, auth_source, fs_uniquifier)
-            VALUES(:id, :username, :email, :password, :active, :confirmed_at,
-            :masterpass_check, :auth_source, :fs_uniquifier)""")
-    db.engine.execute(statement, [
-        {
-            **row,
-            'fs_uniquifier': uuid.uuid4().hex
-        } for row in user_old
-    ])
-
-    db.engine.execute("DROP TABLE user_old")
 
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.

@@ -1730,12 +1730,12 @@ def get_arguments_sqlite(sid, did, scid, func_id):
     """
 
     """Get the count of the existing data available in sqlite database"""
-    dbg_func_args_count = DebuggerFunctionArguments.query.filter_by(
+    dbg_func_args_count = int(DebuggerFunctionArguments.query.filter_by(
         server_id=sid,
         database_id=did,
         schema_id=scid,
         function_id=func_id
-    ).count()
+    ).count())
 
     args_data = []
 
@@ -1819,13 +1819,13 @@ def set_arguments_sqlite(sid, did, scid, func_id):
 
     try:
         for i in range(0, len(data)):
-            dbg_func_args_exists = DebuggerFunctionArguments.query.filter_by(
-                server_id=data[i]['server_id'],
-                database_id=data[i]['database_id'],
-                schema_id=data[i]['schema_id'],
-                function_id=data[i]['function_id'],
-                arg_id=data[i]['arg_id']
-            ).count()
+            dbg_func_args_exists = int(
+                DebuggerFunctionArguments.query.filter_by(
+                    server_id=data[i]['server_id'],
+                    database_id=data[i]['database_id'],
+                    schema_id=data[i]['schema_id'],
+                    function_id=data[i]['function_id'],
+                    arg_id=data[i]['arg_id']).count())
 
             # handle the Array list sent from the client
             array_string = ''

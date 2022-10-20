@@ -16,7 +16,6 @@ Create Date: 2020-04-09 13:20:13.939775
 """
 from alembic import op
 import sqlalchemy as sa
-from pgadmin.model import db
 
 # revision identifiers, used by Alembic.
 revision = 'd39482714a2e'
@@ -26,22 +25,21 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN save_password INTEGER DEFAULT 0'
-    )
+    op.add_column('server', sa.Column('save_password', sa.Integer(),
+                                      server_default='0'))
     # If password is already exists for any existing server then change the
     # save_password column to 1 (True) else set 0
-    db.engine.execute(
-        """
-        UPDATE server SET save_password = (
-            CASE WHEN password IS NOT NULL AND password != '' THEN
-                1
-            ELSE
-                0
-            END
-        )
-        """
-    )
+    # get metadata from current connection
+    meta = sa.MetaData(bind=op.get_bind())
+    # define table representation
+    meta.reflect(only=('server',))
+    server_table = sa.Table('server', meta)
+
+    op.execute(
+        server_table.update().values(save_password=sa.case(
+            (server_table.c.password != 'NULL' and
+             server_table.c.password != '', 1), else_=0)
+        ))
 
 
 def downgrade():

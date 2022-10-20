@@ -14,8 +14,8 @@ Revises: 15c88f765bc8
 Create Date: 2022-01-04 13:08:05.484598
 
 """
-from pgadmin.model import db
-
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '1586db67b98e'
@@ -25,12 +25,10 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE process ADD COLUMN server_id INTEGER DEFAULT 0'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN cloud_status INTEGER DEFAULT 0'
-    )
+    op.add_column('process', sa.Column('server_id', sa.Integer(),
+                                       server_default='0'))
+    op.add_column('server', sa.Column('cloud_status', sa.Integer(),
+                                      server_default='0'))
 
 
 def downgrade():

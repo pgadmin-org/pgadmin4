@@ -97,28 +97,55 @@ def setup_db(app):
     print("pgAdmin 4 - Application Initialisation")
     print("======================================\n")
 
-    with app.app_context():
-        # Run migration for the first time i.e. create database
-        from config import SQLITE_PATH
-        if not os.path.exists(SQLITE_PATH):
-            db_upgrade(app)
-        else:
-            version = Version.query.filter_by(name='ConfigDB').first()
-            schema_version = version.value
-
-            # Run migration if current schema version is greater than the
-            # schema version stored in version table
-            if CURRENT_SCHEMA_VERSION >= schema_version:
+    def run_migration_for_sqlite():
+        with app.app_context():
+            # Run migration for the first time i.e. create database
+            from config import SQLITE_PATH
+            if not os.path.exists(SQLITE_PATH):
                 db_upgrade(app)
-
-            # Update schema version to the latest
-            if CURRENT_SCHEMA_VERSION > schema_version:
+            else:
                 version = Version.query.filter_by(name='ConfigDB').first()
-                version.value = CURRENT_SCHEMA_VERSION
-                db.session.commit()
+                schema_version = version.value
 
-        if os.name != 'nt':
-            os.chmod(config.SQLITE_PATH, 0o600)
+                # Run migration if current schema version is greater than the
+                # schema version stored in version table
+                if CURRENT_SCHEMA_VERSION >= schema_version:
+                    db_upgrade(app)
+
+                # Update schema version to the latest
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    version = Version.query.filter_by(name='ConfigDB').first()
+                    version.value = CURRENT_SCHEMA_VERSION
+                    db.session.commit()
+
+            if os.name != 'nt':
+                os.chmod(config.SQLITE_PATH, 0o600)
+
+    def run_migration_for_others():
+        with app.app_context():
+            version = Version.query.filter_by(name='ConfigDB').first()
+            if version == -1:
+                db_upgrade(app)
+            else:
+                schema_version = version.value
+
+                # Run migration if current schema version is greater than the
+                # schema version stored in version table
+                if CURRENT_SCHEMA_VERSION >= schema_version:
+                    db_upgrade(app)
+
+                # Update schema version to the latest
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    version = Version.query.filter_by(name='ConfigDB').first()
+                    version.value = CURRENT_SCHEMA_VERSION
+                    db.session.commit()
+
+    # Run the migration as per specified by the user.
+    if config.CONFIG_DATABASE_URI is not None and \
+            len(config.CONFIG_DATABASE_URI) > 0:
+        run_migration_for_others()
+    else:
+        run_migration_for_sqlite()
 
 
 def clear_servers():

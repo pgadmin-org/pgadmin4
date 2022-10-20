@@ -169,8 +169,8 @@ class Server(db.Model):
         db.CheckConstraint('sslcompression >= 0 AND sslcompression <= 1'),
         nullable=False
     )
-    bgcolor = db.Column(db.Text(10), nullable=True)
-    fgcolor = db.Column(db.Text(10), nullable=True)
+    bgcolor = db.Column(db.String(10), nullable=True)
+    fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
     connect_timeout = db.Column(db.Integer(), nullable=False)
     use_ssh_tunnel = db.Column(
@@ -437,8 +437,8 @@ class SharedServer(db.Model):
         db.CheckConstraint('sslcompression >= 0 AND sslcompression <= 1'),
         nullable=False
     )
-    bgcolor = db.Column(db.Text(10), nullable=True)
-    fgcolor = db.Column(db.Text(10), nullable=True)
+    bgcolor = db.Column(db.String(10), nullable=True)
+    fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
     connect_timeout = db.Column(db.Integer(), nullable=False)
     use_ssh_tunnel = db.Column(

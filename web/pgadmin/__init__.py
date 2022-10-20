@@ -341,11 +341,14 @@ def create_app(app_name=None):
     ##########################################################################
     # Setup authentication
     ##########################################################################
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
-        .format(config.SQLITE_PATH.replace('\\', '/'),
-                getattr(config, 'SQLITE_TIMEOUT', 500)
-                )
+    if config.CONFIG_DATABASE_URI is not None and \
+            len(config.CONFIG_DATABASE_URI) > 0:
+        app.config['SQLALCHEMY_DATABASE_URI'] = config.CONFIG_DATABASE_URI
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
+            .format(config.SQLITE_PATH.replace('\\', '/'),
+                    getattr(config, 'SQLITE_TIMEOUT', 500)
+                    )
 
     # Override USER_DOES_NOT_EXIST and INVALID_PASSWORD messages from flask.
     app.config['SECURITY_MSG_USER_DOES_NOT_EXIST'] = \
@@ -358,6 +361,9 @@ def create_app(app_name=None):
     ##########################################################################
     # Upgrade the schema (if required)
     ##########################################################################
+    from config import SQLITE_PATH
+    from pgadmin.setup import db_upgrade
+
     def backup_db_file():
         """
         Create a backup of the current database file
@@ -396,48 +402,76 @@ def create_app(app_name=None):
                 ' database'.format(invalid_tb_names))
             backup_db_file()
 
-    with app.app_context():
-        # Run migration for the first time i.e. create database
-        from config import SQLITE_PATH
-        from pgadmin.setup import db_upgrade
-
-        # If version not available, user must have aborted. Tables are not
-        # created and so its an empty db
-        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
-            # If running in cli mode then don't try to upgrade, just raise
-            # the exception
-            if not cli_mode:
-                upgrade_db()
+    def run_migration_for_sqlite():
+        with app.app_context():
+            # Run migration for the first time i.e. create database
+            # If version not available, user must have aborted. Tables are not
+            # created and so its an empty db
+            if not os.path.exists(SQLITE_PATH) or get_version() == -1:
+                # If running in cli mode then don't try to upgrade, just raise
+                # the exception
+                if not cli_mode:
+                    upgrade_db()
+                else:
+                    if not os.path.exists(SQLITE_PATH):
+                        raise FileNotFoundError(
+                            'SQLite database file "' + SQLITE_PATH +
+                            '" does not exists.')
+                    raise RuntimeError(
+                        'The configuration database file is not valid.')
             else:
-                if not os.path.exists(SQLITE_PATH):
-                    raise FileNotFoundError(
-                        'SQLite database file "' + SQLITE_PATH +
-                        '" does not exists.')
-                raise RuntimeError(
-                    'The configuration database file is not valid.')
-        else:
-            schema_version = get_version()
+                schema_version = get_version()
 
-            # Run migration if current schema version is greater than the
-            # schema version stored in version table
-            if CURRENT_SCHEMA_VERSION >= schema_version:
-                upgrade_db()
-            else:
-                # check all tables are present in the db.
-                is_db_error, invalid_tb_names = check_db_tables()
-                if is_db_error:
-                    app.logger.error(
-                        'Table(s) {0} are missing in the'
-                        ' database'.format(invalid_tb_names))
-                    backup_db_file()
+                # Run migration if current schema version is greater than the
+                # schema version stored in version table
+                if CURRENT_SCHEMA_VERSION >= schema_version:
+                    upgrade_db()
+                else:
+                    # check all tables are present in the db.
+                    is_db_error, invalid_tb_names = check_db_tables()
+                    if is_db_error:
+                        app.logger.error(
+                            'Table(s) {0} are missing in the'
+                            ' database'.format(invalid_tb_names))
+                        backup_db_file()
 
-            # Update schema version to the latest
-            if CURRENT_SCHEMA_VERSION > schema_version:
-                set_version(CURRENT_SCHEMA_VERSION)
-                db.session.commit()
+                # Update schema version to the latest
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    set_version(CURRENT_SCHEMA_VERSION)
+                    db.session.commit()
 
-        if os.name != 'nt':
-            os.chmod(config.SQLITE_PATH, 0o600)
+            if os.name != 'nt':
+                os.chmod(config.SQLITE_PATH, 0o600)
+
+    def run_migration_for_others():
+        with app.app_context():
+            # Run migration for the first time i.e. create database
+            # If version not available, user must have aborted. Tables are not
+            # created and so its an empty db
+            try:
+                if get_version() == -1:
+                    db_upgrade(app)
+                else:
+                    schema_version = get_version()
+
+                    # Run migration if current schema version is greater than
+                    # the schema version stored in version table
+                    if CURRENT_SCHEMA_VERSION >= schema_version:
+                        db_upgrade(app)
+
+                    # Update schema version to the latest
+                    if CURRENT_SCHEMA_VERSION > schema_version:
+                        set_version(CURRENT_SCHEMA_VERSION)
+                        db.session.commit()
+            except Exception as e:
+                app.logger.error(e)
+
+    # Run the migration as per specified by the user.
+    if config.CONFIG_DATABASE_URI is not None and \
+            len(config.CONFIG_DATABASE_URI) > 0:
+        run_migration_for_others()
+    else:
+        run_migration_for_sqlite()
 
     Mail(app)
 
@@ -553,7 +587,7 @@ def create_app(app_name=None):
             user_id=user_id
         ).order_by("id")
 
-        if servergroups.count() > 0:
+        if int(servergroups.count()) > 0:
             servergroup = servergroups.first()
             servergroup_id = servergroup.id
 
@@ -567,7 +601,7 @@ def create_app(app_name=None):
                 discovery_id=svr_discovery_id
             ).order_by("id")
 
-            if servers.count() > 0:
+            if int(servers.count()) > 0:
                 return
 
             svr = Server(user_id=user_id,
