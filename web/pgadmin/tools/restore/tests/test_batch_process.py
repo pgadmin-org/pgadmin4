@@ -66,7 +66,10 @@ class BatchProcessTest(BaseTestGenerator):
             current_app.PGADMIN_RUNTIME = False
 
             def db_session_add_mock(j):
-                cmd_obj = loads(j.desc)
+                try:
+                    cmd_obj = loads(bytes.fromhex(j.desc))
+                except Exception:
+                    cmd_obj = loads(j.desc)
                 self.assertTrue(isinstance(cmd_obj, IProcessDesc))
                 self.assertEqual(cmd_obj.bfile, self.class_params['bfile'])
                 self.assertEqual(cmd_obj.cmd,

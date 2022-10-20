@@ -79,7 +79,10 @@ class BatchProcessTest(BaseTestGenerator):
                     self.port = port
 
             def db_session_add_mock(j):
-                cmd_obj = loads(j.desc)
+                try:
+                    cmd_obj = loads(bytes.fromhex(j.desc))
+                except Exception:
+                    cmd_obj = loads(j.desc)
                 self.assertTrue(isinstance(cmd_obj, IProcessDesc))
                 self.assertEqual(cmd_obj.query, self.class_params['cmd'])
                 self.assertEqual(cmd_obj.message, self.expected_msg)

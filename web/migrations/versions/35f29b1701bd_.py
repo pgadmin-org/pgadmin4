@@ -28,7 +28,7 @@ def upgrade():
     with op.batch_alter_table("user") as batch_op:
         batch_op.create_check_constraint(
             "ck_active_range",
-            "active IN (true, false)"
+            "active IN (0, 1)"
         )
 
 
