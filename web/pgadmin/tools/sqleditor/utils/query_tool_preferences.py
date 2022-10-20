@@ -195,7 +195,8 @@ def register_query_tool_preferences(self):
                  {'label': '\'', 'value': '\''}],
         control_props={
             'allowClear': False,
-            'tags': False
+            'tags': False,
+            'creatable': True,
         }
     )
 
@@ -209,7 +210,8 @@ def register_query_tool_preferences(self):
                  {'label': gettext('Tab'), 'value': '\t'}],
         control_props={
             'allowClear': False,
-            'tags': False
+            'tags': False,
+            'creatable': True,
         }
     )
 
