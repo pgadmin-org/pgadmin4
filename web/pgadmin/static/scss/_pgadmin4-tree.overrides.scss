@@ -131,14 +131,11 @@
         transform: none !important;
       }
       &.loading:before {
-        font-weight: 900;
-        font-size: 0.6rem;
-        line-height: 2;
         content: '' !important;
         font-family: $font-family-icon;
-        margin-left: 5px;
         border-style: none;
         background: $loader-icon-small 0 0 no-repeat;
+        background-position: center !important;
       }
     }
   }
