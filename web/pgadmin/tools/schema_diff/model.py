@@ -32,8 +32,6 @@ class SchemaDiffModel(object):
             **kwargs : N number of parameters
         """
         self._comparison_result = dict()
-        self._comparison_msg = gettext('Comparision started...')
-        self._comparison_percentage = 0
 
     def clear_data(self):
         """
@@ -59,20 +57,3 @@ class SchemaDiffModel(object):
             return self._comparison_result[node_name]
 
         return self._comparison_result
-
-    def get_comparison_info(self):
-        """
-        This function is used to get the comparison information.
-        :return:
-        """
-        return self._comparison_msg, self._comparison_percentage
-
-    def set_comparison_info(self, msg, percentage):
-        """
-        This function is used to set the comparison information.
-        :param msg:
-        :param percentage:
-        :return:
-        """
-        self._comparison_msg = msg
-        self._comparison_percentage = percentage
