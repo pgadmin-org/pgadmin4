@@ -24,6 +24,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #4841 <https://github.com/pgadmin-org/pgadmin4/issues/4841>`_ -  Use SocketIO instead of REST for schema diff compare.
   | `Issue #5066 <https://github.com/pgadmin-org/pgadmin4/issues/5066>`_ -  Ensure that users can use custom characters as CSV field separators/CSV quotes when downloading query results.
   | `Issue #5058 <https://github.com/pgadmin-org/pgadmin4/issues/5058>`_ -  Ensure that the save button should be disabled by default on the Sort/Filter dialog in the query tool.
   | `Issue #5122 <https://github.com/pgadmin-org/pgadmin4/issues/5122>`_ -  Ensure that the spinner should be visible on the browser tree on node refresh.
