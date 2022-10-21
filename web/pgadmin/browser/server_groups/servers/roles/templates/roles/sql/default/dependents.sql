@@ -10,7 +10,7 @@ ORDER BY 1, 2
 {% endif %}
 
 {% if fetch_dependents %}
-SELECT cl.relkind, COALESCE(cin.nspname, cln.nspname) as nspname,
+SELECT cl.relkind::text, COALESCE(cin.nspname, cln.nspname) as nspname,
     COALESCE(ci.relname, cl.relname) as relname, cl.relname as indname
 FROM pg_catalog.pg_class cl
 JOIN pg_catalog.pg_namespace cln ON cl.relnamespace=cln.oid
