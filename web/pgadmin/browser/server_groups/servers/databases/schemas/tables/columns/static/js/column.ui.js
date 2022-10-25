@@ -305,6 +305,10 @@ export default class ColumnSchema extends BaseUISchema {
         return Boolean(obj.attlenRange(state));
       },
     },{
+      id: 'min_val_attlen', skipChange: true, visible: false, type: '',
+    },{
+      id: 'max_val_attlen', skipChange: true, visible: false, type: '',
+    },{
       id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
       deps: ['cltype'], type: 'int', group: gettext('Definition'),
       cell: (state)=>{
@@ -332,6 +336,10 @@ export default class ColumnSchema extends BaseUISchema {
         }
         return Boolean(this.attprecisionRange(state));
       },
+    },{
+      id: 'min_val_attprecision', skipChange: true, visible: false, type: '',
+    },{
+      id: 'max_val_attprecision', skipChange: true, visible: false, type: '',
     },{
       id: 'collspcname', label: gettext('Collation'), cell: 'select',
       type: 'select', group: gettext('Definition'),
