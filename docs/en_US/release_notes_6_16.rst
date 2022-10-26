@@ -16,7 +16,8 @@ New features
 ************
 
   | `Issue #1832 <https://github.com/pgadmin-org/pgadmin4/issues/1832>`_ -  Added support for storing configurations of pgAdmin in an external database.
-
+  | `Issue #5468 <https://github.com/pgadmin-org/pgadmin4/issues/5468>`_ -  Add the possibility to configure the Oauth2 claim which is used for the pgAdmin username.
+  
 Housekeeping
 ************
 

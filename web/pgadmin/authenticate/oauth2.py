@@ -123,6 +123,23 @@ class OAuth2Authentication(BaseAuthentication):
             [value for value in self.email_keys if value in profile.keys()]
         email = profile[email_key[0]] if (len(email_key) > 0) else None
 
+        username = email
+        username_claim = None
+        if 'OAUTH2_USERNAME_CLAIM' in self.oauth2_config[
+                self.oauth2_current_client]:
+            username_claim = self.oauth2_config[
+                self.oauth2_current_client
+            ]['OAUTH2_USERNAME_CLAIM']
+        if username_claim is not None:
+            if username_claim in profile:
+                username = profile[username_claim]
+            else:
+                error_msg = "The claim '%s' is required to login into " \
+                    "pgAdmin. Please update your Oauth2 profile." % (
+                        username_claim)
+                current_app.logger.exception(error_msg)
+                return False, gettext(error_msg)
+
         if not email or email == '':
             current_app.logger.exception(
                 "An email id is required to login into pgAdmin. "
@@ -132,10 +149,10 @@ class OAuth2Authentication(BaseAuthentication):
                 "An email id is required to login into pgAdmin. "
                 "Please update your Oauth2 profile.")
 
-        user, msg = self.__auto_create_user(email)
+        user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
-                username=email, auth_source=OAUTH2).first()
+                username=username, auth_source=OAUTH2).first()
             current_app.login_manager.logout_view = \
                 OAuth2Authentication.LOGOUT_VIEW
             return login_user(user), None
@@ -165,17 +182,17 @@ class OAuth2Authentication(BaseAuthentication):
         return False, self.oauth2_clients[
             self.oauth2_current_client].authorize_redirect(redirect_url)
 
-    def __auto_create_user(self, email):
+    def __auto_create_user(self, username, email):
         if config.OAUTH2_AUTO_CREATE_USER:
-            user = User.query.filter_by(username=email,
+            user = User.query.filter_by(username=username,
                                         auth_source=OAUTH2).first()
             if not user:
                 return create_user({
-                    'username': email,
+                    'username': username,
                     'email': email,
                     'role': 2,
                     'active': True,
                     'auth_source': OAUTH2
                 })
 
-        return True, {'username': email}
+        return True, {'username': username}
