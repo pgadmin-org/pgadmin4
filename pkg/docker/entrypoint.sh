@@ -34,7 +34,7 @@ EOF
     for var in $(env | grep PGADMIN_CONFIG_ | cut -d "=" -f 1); do
         # shellcheck disable=SC2086
         # shellcheck disable=SC2046
-        echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> /pgadmin4/config_distro.py
+        echo ${var#PGADMIN_CONFIG_} = \"\"\"$(eval "echo \$$var")\"\"\" >> /pgadmin4/config_distro.py
     done
 fi
 
