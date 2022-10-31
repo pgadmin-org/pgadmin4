@@ -315,6 +315,14 @@ class Connection(BaseConnection):
             os.environ['PGAPPNAME'] = '{0} - {1}'.format(
                 config.APP_NAME, conn_id)
 
+            ssl_key = get_complete_file_path(manager.sslkey)
+            if ssl_key and manager.ssl_mode in \
+                    ['require', 'verify-ca', 'verify-full']:
+                ssl_key_file_permission = \
+                    int(oct(os.stat(ssl_key).st_mode)[-3:])
+                if ssl_key_file_permission > 600:
+                    os.chmod(ssl_key, 0o600)
+
             with ConnectionLocker(manager.kerberos_conn):
                 pg_conn = psycopg2.connect(
                     host=manager.local_bind_host if manager.use_ssh_tunnel
@@ -330,7 +338,7 @@ class Connection(BaseConnection):
                     passfile=get_complete_file_path(passfile),
                     sslmode=manager.ssl_mode,
                     sslcert=get_complete_file_path(manager.sslcert),
-                    sslkey=get_complete_file_path(manager.sslkey),
+                    sslkey=ssl_key,
                     sslrootcert=get_complete_file_path(manager.sslrootcert),
                     sslcrl=get_complete_file_path(manager.sslcrl),
                     sslcompression=True if manager.sslcompression else False,
