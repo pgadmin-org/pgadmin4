@@ -89,11 +89,22 @@ function isValueEqual(val1, val2) {
   /* If the orig value was null and new one is empty string, then its a "no change" */
   /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
   /* If the orig value is undefined or null and new value is boolean false "no change" */
-  return (_.isEqual(val1, val2)
-    || ((val1 === null || _.isUndefined(val1)) && val2 === '')
-    || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
-    || (attrDefined ? (!_.isObject(val1) && _.isEqual(val1.toString(), val2.toString())) : false
-    ));
+  if (_.isEqual(val1, val2)
+  || ((val1 === null || _.isUndefined(val1)) && val2 === '')
+  || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
+  || (attrDefined ? (!_.isObject(val1) && _.isEqual(val1.toString(), val2.toString())) : false)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/* Compare two objects */
+function isObjectEqual(val1, val2) {
+  const allKeys = Array.from(new Set([...Object.keys(val1), ...Object.keys(val2)]));
+  return !allKeys.some((k)=>{
+    return !isValueEqual(val1[k], val2[k]);
+  });
 }
 
 function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, includeSkipChange=true) {
@@ -151,7 +162,10 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
             const changeDiff = diffArray(
               _.get(origVal, field.id) || [],
               _.get(sessVal, field.id) || [],
-              'cid'
+              'cid',
+              {
+                compareFunction: isObjectEqual,
+              }
             );
             change = {};
             if(changeDiff.added.length > 0) {
@@ -165,28 +179,33 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
             }
             if(changeDiff.updated.length > 0) {
               /* There is change in collection. Parse further to go deep */
-              change['changed'] = [];
+              let changed = [];
               for(const changedRow of changeDiff.updated) {
                 let finalChangedRow = {};
                 let rowIndx = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
                 finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndx]), _.get(sessVal, [field.id, rowIndx]));
 
+                if(_.isEmpty(finalChangedRow)) {
+                  continue;
+                }
                 /* If the id attr value is present, then only changed keys can be passed.
                 Otherwise, passing all the keys is useful */
                 let idAttrValue = _.get(sessVal, [field.id, rowIndx, field.schema.idAttribute]);
                 if(_.isUndefined(idAttrValue)) {
-                  change['changed'].push({
+                  changed.push({
                     ...changedRow,
                     ...finalChangedRow,
                   });
                 } else {
-                  change['changed'].push({
+                  changed.push({
                     [field.schema.idAttribute]: idAttrValue,
                     ...finalChangedRow,
                   });
                 }
               }
-              change['changed'] = cleanCid(change['changed'], viewHelperProps.keepCid);
+              if(changed.length > 0) {
+                change['changed'] = cleanCid(changed, viewHelperProps.keepCid);
+              }
             }
             if(Object.keys(change).length > 0) {
               attrChanged(field.id, change, true);
@@ -198,7 +217,9 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
           if(field.type === 'collection') {
             const origColl = _.get(origVal, field.id) || [];
             const sessColl = _.get(sessVal, field.id) || [];
-            let changeDiff = diffArray(origColl,sessColl,'cid');
+            let changeDiff = diffArray(origColl,sessColl,'cid',{
+              compareFunction: isObjectEqual,
+            });
 
             /* For fixed rows, check only the updated changes */
             /* If canReorder, check the updated changes */

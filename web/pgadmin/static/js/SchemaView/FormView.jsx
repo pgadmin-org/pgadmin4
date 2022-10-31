@@ -276,7 +276,8 @@ export default function FormView({
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
           containerClassName: classes.controlRow, ...field, canAdd: canAdd, canReorder: canReorder,
           canEdit: canEdit, canDelete: canDelete,
-          visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch
+          visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch,
+          fixedRows: (viewHelperProps.mode == 'create' ? field.fixedRows : undefined)
         };
 
         if(CustomControl) {
