@@ -114,6 +114,7 @@ class ERDTool extends React.Component {
       dirty: false,
       show_details: true,
       is_new_tab: false,
+      is_close_tab_warning: true,
       preferences: {},
       table_dialog_open: true,
       oto_dialog_open: true,
@@ -297,6 +298,7 @@ class ERDTool extends React.Component {
       preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
       is_new_tab: (this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').new_browser_tab_open || '')
         .includes('erd_tool'),
+      is_close_tab_warning: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_refresh_close,
     }, ()=>{
       this.registerKeyboardShortcuts();
       this.setTitle(this.state.current_file);
@@ -311,6 +313,12 @@ class ERDTool extends React.Component {
       this.setState({
         preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
       }, ()=>this.registerKeyboardShortcuts());
+    });
+
+    this.props.pgWindow.pgAdmin.Browser.onPreferencesChange('browser', () => {
+      this.setState({
+        is_close_tab_warning: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_refresh_close,
+      });
     });
 
     this.props.panel?.on(window.wcDocker?.EVENT.CLOSING, () => {
@@ -342,7 +350,12 @@ class ERDTool extends React.Component {
       await this.loadTablesData();
     }
 
-    window.addEventListener('beforeunload', this.onBeforeUnload);
+    if(this.state.is_close_tab_warning) {
+      window.addEventListener('beforeunload', this.onBeforeUnload);
+    } else {
+      window.removeEventListener('beforeunload', this.onBeforeUnload);
+    }
+    
   }
 
   componentWillUnmount() {
@@ -352,6 +365,12 @@ class ERDTool extends React.Component {
   componentDidUpdate() {
     if(this.state.dirty) {
       this.setTitle(this.state.current_file, true);
+    }
+    // Add beforeunload event if "Confirm on close or refresh" option is enabled in the preferences.
+    if(this.state.is_close_tab_warning){
+      window.addEventListener('beforeunload', this.onBeforeUnload);
+    } else {
+      window.removeEventListener('beforeunload', this.onBeforeUnload);
     }
   }
 

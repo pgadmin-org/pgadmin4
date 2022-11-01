@@ -319,6 +319,10 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       reflectPreferences();
     });
 
+    pgWindow.pgAdmin.Browser.onPreferencesChange('browser', function() {
+      reflectPreferences();
+    });
+
     /* WC docker events */
     panel?.on(window.wcDocker.EVENT.CLOSING, function() {
       window.removeEventListener('beforeunload', onBeforeUnload);
@@ -337,7 +341,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL);
       }
     });
-    window.addEventListener('beforeunload', onBeforeUnload);
   }, []);
 
   useEffect(()=>{
@@ -486,6 +489,19 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       onClose: cancelCallback,
     });
   };
+
+  useEffect(()=> {
+    // Add beforeunload event if "Confirm on close or refresh" option is enabled in the preferences.
+    if(qtState.preferences.browser.confirm_on_refresh_close){
+      window.addEventListener('beforeunload', onBeforeUnload);
+    } else {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    }
+
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [qtState.preferences.browser]);
 
   const updateQueryToolConnection = (connectionData, isNew=false)=>{
     let currSelectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
