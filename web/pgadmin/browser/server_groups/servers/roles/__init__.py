@@ -831,6 +831,7 @@ rolmembership:{
             )
         )
 
+        variables = self.variables(None, None, rid)
         if not status:
             return internal_server_error(
                 _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(res))
@@ -842,9 +843,9 @@ rolmembership:{
         res['rows'][0]['is_sys_obj'] = (
             res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
             self.datistemplate)
-
+        res = {**res['rows'][0], 'variables': variables['rows']}
         return ajax_response(
-            response=res['rows'][0],
+            response=res,
             status=200
         )
 
@@ -1225,8 +1226,8 @@ rolmembership:{
 
         return dependents
 
-    @check_precondition()
-    def variables(self, gid, sid, rid):
+    # @check_precondition()
+    def variables(self, gid, sid, rid, as_json=False):
 
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + 'variables.sql',
@@ -1240,7 +1241,8 @@ rolmembership:{
                     "Error retrieving variable information for the role.\n{0}"
                 ).format(rset)
             )
-
+        if not as_json:
+            return rset
         return make_json_response(
             data=rset['rows']
         )
