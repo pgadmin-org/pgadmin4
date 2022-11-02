@@ -161,6 +161,26 @@ def create_database(server, db_name, encoding=None):
         if oid:
             db_id = oid[0]
         connection.close()
+
+        # In PostgreSQL 15 the default public schema that every database has
+        # will have a different set of permissions. In fact, before PostgreSQL
+        # 15, every user could manipulate the public schema of a database he is
+        # not owner. Since the upcoming new version, only the database owner
+        # will be granted full access to the public schema, while other users
+        # will need to get an explicit GRANT
+        connection = get_db_connection(
+            db_name,
+            server['username'],
+            server['db_password'],
+            server['host'],
+            server['port'],
+            server['sslmode']
+        )
+        pg_cursor = connection.cursor()
+        pg_cursor.execute('''GRANT ALL ON SCHEMA public TO PUBLIC''')
+        connection.commit()
+        connection.close()
+
         return db_id
     except Exception:
         traceback.print_exc(file=sys.stderr)
