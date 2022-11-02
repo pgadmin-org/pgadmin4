@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import { io } from 'socketio';
+import gettext from 'sources/gettext';
 
 export function openSocket(namespace, options) {
   return new Promise((resolve, reject)=>{
@@ -40,6 +41,9 @@ export function socketApiGet(socket, endpoint, params) {
     });
     socket.on(`${endpoint}_failed`, (data)=>{
       reject(data);
+    });
+    socket.on('disconnect', ()=>{
+      reject(gettext('Connection to pgAdmin server has been lost'));
     });
   });
 }

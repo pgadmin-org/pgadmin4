@@ -395,6 +395,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             status=200
         )
 
+    def get_fk_ref_tables(self, tid):
+        """
+        This function get the depending tables of the current table.
+        The tables depending on tid table using FK relation.
+        Args:
+            tid: Table ID
+        """
+        sql = render_template("/".join([self.table_template_path,
+                                        'fk_ref_tables.sql']), oid=tid)
+
+        status, res = self.conn.execute_dict(sql)
+        if not status:
+            return status, res
+
+        return status, res['rows']
+
     def get_table_statistics(self, scid, tid):
         """
         Statistics

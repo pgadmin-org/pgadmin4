@@ -386,6 +386,20 @@ class ERDModule(PgAdminModule):
             )
         )
 
+        self.preference.register(
+            'options',
+            'table_relation_depth',
+            gettext('Table Relation Depth'),
+            'integer',
+            -1,
+            category_label=PREF_LABEL_OPTIONS,
+            help_str=gettext(
+                'The maximum depth pgAdmin should traverse to find '
+                'related tables when generating an ERD for a table. '
+                'Use -1 for no limit.'
+            )
+        )
+
 
 blueprint = ERDModule(MODULE_NAME, __name__, static_url_path='/static')
 
@@ -621,7 +635,9 @@ def tables(params):
     try:
         helper = ERDHelper(params['trans_id'], params['sid'], params['did'])
         _get_connection(params['sid'], params['did'], params['trans_id'])
-        status, tables = helper.get_all_tables()
+
+        status, tables = helper.get_all_tables(params.get('scid', None),
+                                               params.get('tid', None))
 
         if not status:
             socketio.emit('tables_failed', tables,
