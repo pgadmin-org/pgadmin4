@@ -77,6 +77,10 @@ const useStyles = makeStyles((theme)=>({
     color: `${theme.otherVars.textMuted} !important`,
     cursor: 'default !important',
   },
+  textWrap: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden'
+  }
 }));
 
 function ObjectNameFormatter({row}) {
@@ -97,14 +101,23 @@ ObjectNameFormatter.propTypes = {
   row: PropTypes.object,
 };
 
-function TypePathFormatter({row}) {
+function TypePathFormatter({row, column}) {
   const classes = useStyles();
+  let val = '';
+
+  if(column.key == 'type') {
+    val = row.type_label;
+  } else if(column.key == 'path') {
+    val = row.path;
+  }
+
   return (
-    <Box className={row.show_node ? '' : classes.cellMuted}>{row.type_label}</Box>
+    <Box className={clsx(classes.textWrap, row.show_node ? '' : classes.cellMuted)}>{val}</Box>
   );
 }
 TypePathFormatter.propTypes = {
   row: PropTypes.object,
+  column: PropTypes.object,
 };
 
 
