@@ -33,4 +33,6 @@ Bug fixes
   | `Issue #5206 <https://github.com/pgadmin-org/pgadmin4/issues/5206>`_ -  Reposition the select dropdown when the browser is resized.
   | `Issue #5344 <https://github.com/pgadmin-org/pgadmin4/issues/5344>`_ -  Ensure that pgAdmin routes should have the SCRIPT_NAME prefix.
   | `Issue #5424 <https://github.com/pgadmin-org/pgadmin4/issues/5424>`_ -  Ensure that the appropriate permissions are set on the key file before trying an SSL connection with the server in server mode.
+  | `Issue #5429 <https://github.com/pgadmin-org/pgadmin4/issues/5429>`_ -  Fixed an issue where parameters for roles were not visible.
   | `Issue #5455 <https://github.com/pgadmin-org/pgadmin4/issues/5455>`_ -  Fixed an issue where the dependents tab wasn't working for PG 15.
+  | `Issue #5475 <https://github.com/pgadmin-org/pgadmin4/issues/5475>`_ -  Fixed an issue where the 'Confirm on close or refresh' setting was ignored when closing the query/ERD tool opened in the new tab.
