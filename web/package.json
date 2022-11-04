@@ -162,7 +162,7 @@
     "select2": "^4.0.13",
     "shim-loader": "^1.0.1",
     "snapsvg-cjs": "^0.0.6",
-    "socket.io-client": "^4.0.0",
+    "socket.io-client": "^4.5.0",
     "split.js": "^1.5.10",
     "styled-components": "^5.2.1",
     "tempusdominus-bootstrap-4": "^5.1.2",
