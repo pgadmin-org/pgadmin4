@@ -11,6 +11,7 @@
 #
 ##########################################################################
 
+from pgadmin.utils import env, IS_WIN, fs_short_path
 import builtins
 import logging
 import os
@@ -22,7 +23,6 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
-from pgadmin.utils import env, IS_WIN, fs_short_path
 
 ##########################################################################
 # Application settings
@@ -754,6 +754,10 @@ OAUTH2_CONFIG = [
         # Oauth scope, ex: 'openid email profile'
         # Note that an 'email' claim is required in the resulting profile
         'OAUTH2_SCOPE': None,
+        # The claim which is used for the username. If the value is empty the
+        # email is used as username, but if a value is provided,
+        # the claim has to exist.
+        'OAUTH2_USERNAME_CLAIM': None,
         # Font-awesome icon, ex: fa-github
         'OAUTH2_ICON': None,
         # UI button colour, ex: #0000ff
