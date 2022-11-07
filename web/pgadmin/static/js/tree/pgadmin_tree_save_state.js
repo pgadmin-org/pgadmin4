@@ -49,6 +49,8 @@ _.extend(pgBrowser.browserTreeState, {
   // Previous tree state
   last_state: {},
 
+  is_selected: false,
+
   // Current tree state
   current_state: {},
 
@@ -314,6 +316,7 @@ _.extend(pgBrowser.browserTreeState, {
     }
 
     // Select the previously selected item
+    !this.is_selected && pgBrowser.tree.ensureVisible(item, 'center');
     this.select_tree_item(item);
 
   },
@@ -372,13 +375,14 @@ _.extend(pgBrowser.browserTreeState, {
       treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
       tmpTreeData = treeData[treeHierarchy[this.parent]['_id']];
 
-
     if (treeHierarchy.hasOwnProperty('server')) {
       let selectedItem = treeHierarchy['server']['id'];
 
       if (tmpTreeData && 'selected' in tmpTreeData && selectedItem in tmpTreeData['selected']) {
         if (tmpTreeData['selected'][selectedItem] == data.id) {
+          this.is_selected = true;
           pgBrowser.tree.select(item, true, 'center');
+          pgBrowser.tree.ensureVisible(item, 'center');
         }
       }
     }

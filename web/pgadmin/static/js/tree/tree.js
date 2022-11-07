@@ -154,8 +154,8 @@ export class Tree {
     await item.ensureLoaded();
   }
 
-  async ensureVisible(item) {
-    await this.tree.ensureVisible(item);
+  async ensureVisible(item, align='auto') {
+    await this.tree.ensureVisible(item, align);
   }
 
   async openPath(item) {
