@@ -25,6 +25,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #2174 <https://github.com/pgadmin-org/pgadmin4/issues/2174>`_ -  Ensure that the browser tree should auto scroll to the selected node when expanding the server node.
   | `Issue #4841 <https://github.com/pgadmin-org/pgadmin4/issues/4841>`_ -  Use SocketIO instead of REST for schema diff compare.
   | `Issue #5066 <https://github.com/pgadmin-org/pgadmin4/issues/5066>`_ -  Ensure that users can use custom characters as CSV field separators/CSV quotes when downloading query results.
   | `Issue #5058 <https://github.com/pgadmin-org/pgadmin4/issues/5058>`_ -  Ensure that the save button should be disabled by default on the Sort/Filter dialog in the query tool.
@@ -37,4 +38,5 @@ Bug fixes
   | `Issue #5429 <https://github.com/pgadmin-org/pgadmin4/issues/5429>`_ -  Fixed an issue where parameters for roles were not visible.
   | `Issue #5455 <https://github.com/pgadmin-org/pgadmin4/issues/5455>`_ -  Fixed an issue where the dependents tab wasn't working for PG 15.
   | `Issue #5458 <https://github.com/pgadmin-org/pgadmin4/issues/5458>`_ -  Ensure that the browser path column in the search object shows the complete path.
+  | `Issue #5473 <https://github.com/pgadmin-org/pgadmin4/issues/5473>`_ -  Fixed an issue where AutoComplete was not working correctly due to incorrect regex.
   | `Issue #5475 <https://github.com/pgadmin-org/pgadmin4/issues/5475>`_ -  Fixed an issue where the 'Confirm on close or refresh' setting was ignored when closing the query/ERD tool opened in the new tab.
