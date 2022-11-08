@@ -11,7 +11,6 @@
 #
 ##########################################################################
 
-from pgadmin.utils import env, IS_WIN, fs_short_path
 import builtins
 import logging
 import os
@@ -23,6 +22,7 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
+from pgadmin.utils import env, IS_WIN, fs_short_path
 
 ##########################################################################
 # Application settings
