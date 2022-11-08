@@ -1,0 +1,38 @@
+version: "3"
+
+x-uffizzi:
+  ingress:
+    service: pgadmin
+    port: 8081
+
+
+services:
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=root
+      - PGDATA=/tmp
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 250M
+
+  pgadmin:
+   image: "${PGADMIN_IMAGE}"
+   deploy:
+      resources:
+        limits:
+          memory: 250M
+   environment:
+     - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=False
+     - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+     - PGADMIN_DEFAULT_PASSWORD=secret
+     - PGADMIN_LISTEN_PORT=8081
+
+volumes:
+  pgdata:
