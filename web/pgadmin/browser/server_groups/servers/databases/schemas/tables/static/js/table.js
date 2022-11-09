@@ -121,7 +121,11 @@ define('pgadmin.node.table', [
           applies: ['object', 'context'], callback: 'count_table_rows',
           category: 'Count', priority: 2, label: gettext('Count Rows'),
           enable: true,
-        },
+        },{
+          name: 'generate_erd', node: 'table', module: this,
+          applies: ['object', 'context'], callback: 'generate_erd',
+          category: 'erd', priority: 5, label: gettext('ERD For Table'),
+        }
         ]);
         pgBrowser.Events.on(
           'pgadmin:browser:node:table:updated', this.onTableUpdated, this
@@ -288,6 +292,14 @@ define('pgadmin.node.table', [
               Notify.pgRespErrorNotify(xhr, error);
               t.unload(i);
             });
+        },
+        /* Generate the ERD */
+        generate_erd: function(args) {
+          let input = args || {},
+            t = pgBrowser.tree,
+            i = input.item || t.selected(),
+            d = i ? t.itemData(i) : undefined;
+          pgAdmin.Tools.ERD.showErdTool(d, i, true);
         },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
