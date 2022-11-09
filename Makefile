@@ -24,7 +24,7 @@ appbundle:
 	./pkg/mac/build.sh
 
 install-node:
-	cd web && yarn install
+	cd web && yarn install && npm rebuild
 
 bundle:
 	cd web && yarn run bundle
