@@ -39,5 +39,6 @@ Bug fixes
   | `Issue #5429 <https://github.com/pgadmin-org/pgadmin4/issues/5429>`_ -  Fixed an issue where parameters for roles were not visible.
   | `Issue #5455 <https://github.com/pgadmin-org/pgadmin4/issues/5455>`_ -  Fixed an issue where the dependents tab wasn't working for PG 15.
   | `Issue #5458 <https://github.com/pgadmin-org/pgadmin4/issues/5458>`_ -  Ensure that the browser path column in the search object shows the complete path.
+  | `Issue #5465 <https://github.com/pgadmin-org/pgadmin4/issues/5465>`_ -  Fixed an issue where the screen was freezing while closing the wcDocker panel.
   | `Issue #5473 <https://github.com/pgadmin-org/pgadmin4/issues/5473>`_ -  Fixed an issue where AutoComplete was not working correctly due to incorrect regex.
   | `Issue #5475 <https://github.com/pgadmin-org/pgadmin4/issues/5475>`_ -  Fixed an issue where the 'Confirm on close or refresh' setting was ignored when closing the query/ERD tool opened in the new tab.
