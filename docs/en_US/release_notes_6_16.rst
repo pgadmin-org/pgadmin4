@@ -16,8 +16,9 @@ New features
 ************
 
   | `Issue #1832 <https://github.com/pgadmin-org/pgadmin4/issues/1832>`_ -  Added support for storing configurations of pgAdmin in an external database.
+  | `Issue #4756 <https://github.com/pgadmin-org/pgadmin4/issues/4756>`_ -  Added the ability to generate ERDs for tables.
   | `Issue #5468 <https://github.com/pgadmin-org/pgadmin4/issues/5468>`_ -  Add the possibility to configure the Oauth2 claim which is used for the pgAdmin username.
-  
+
 Housekeeping
 ************
 
