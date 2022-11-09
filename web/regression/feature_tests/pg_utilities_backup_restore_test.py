@@ -274,7 +274,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         default_binary_path = self.server['default_binary_paths']
         if default_binary_path is not None:
             def get_server_version_string():
-                server_version = {15000: '15', 140000: '14', 130000: '13',
+                server_version = {150000: '15', 140000: '14', 130000: '13',
                                   120000: '12', 110000: '11', 100000: '10'}
                 for k, v in server_version.items():
                     if k <= self.server_information['server_version']:
@@ -290,15 +290,20 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                             "//div[span[text()='PostgreSQL {}']]"
                             "/following-sibling::div//div/input".format(
                                 server_version))
-                    exiting_path = path_input.get_property("value")
-                    if exiting_path != default_binary_path['pg']:
+                    existing_path = path_input.get_property("value")
+                    if existing_path != default_binary_path['pg']:
                         path_already_set = False
                         self.page.clear_edit_box(path_input)
                         path_input.click()
                         path_input.send_keys(default_binary_path['pg'])
                 elif serv == 'ppas' and server_version is not None:
-
-                    if exiting_path != default_binary_path['pg']:
+                    path_input = \
+                        self.page.find_by_xpath(
+                            "//div[span[text()='EDB Advanced Server {}']]"
+                            "/following-sibling::div//div/input".format(
+                                server_version))
+                    existing_path = path_input.get_property("value")
+                    if existing_path != default_binary_path['ppas']:
                         path_already_set = False
                         path_input = self.page.find_by_xpath(
                             "//div[span[text()='EDB Advanced Server {}']]"
