@@ -41,7 +41,7 @@ pytz                                                             2021.3         
 simplejson                                                       3.17.6           MIT License                          https://github.com/simplejson/simplejson
 speaklater3                                                      1.4              UNKNOWN                              https://github.com/ThomasWaldmann/speaklater
 sqlparse                                                         0.4.2            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
-psutil                                                           5.9.1            BSD                                  https://github.com/giampaolo/psutil
+psutil                                                           5.9.3            BSD-3-Clause                         https://github.com/giampaolo/psutil
 psycopg2                                                         2.9.3            LGPL with exceptions                 https://psycopg.org/
 python-dateutil                                                  2.8.2            Dual License                         https://github.com/dateutil/dateutil
 SQLAlchemy                                                       1.4.40           MIT                                  https://www.sqlalchemy.org
@@ -49,7 +49,7 @@ bcrypt                                                           3.2.2          
 cryptography                                                     3.4.8            BSD or Apache License, Version 2.0   https://github.com/pyca/cryptography
 sshtunnel                                                        0.4.0            MIT                                  https://github.com/pahaz/sshtunnel
 ldap3                                                            2.9.1            LGPL v3                              https://github.com/cannatag/ldap3
-gssapi                                                           1.7.3            LICENSE.txt                          https://github.com/pythongssapi/python-gssapi
+gssapi                                                           1.8.2            LICENSE.txt                          https://github.com/pythongssapi/python-gssapi
 eventlet                                                         0.33.0           UNKNOWN                              http://eventlet.net
 httpagentparser                                                  1.9.3            http://www.opensource.org/licenses/mit-license.php https://github.com/shon/httpagentparser
 user-agents                                                      2.2.0            MIT                                  https://github.com/selwin/python-user-agents
@@ -168,8 +168,7 @@ Name                                                             Version        
 @react-dnd/shallowequal                                          4.0.2            MIT                                  https://github.com/react-dnd/react-dnd
 @simonwep/pickr                                                  1.8.2            MIT                                  https://github.com/Simonwep/pickr.git
 @sindresorhus/is                                                 0.7.0            MIT                                  https://github.com/sindresorhus/is.git
-@socket.io/base64-arraybuffer                                    1.0.2            MIT                                  https://github.com/socketio/base64-arraybuffer
-@socket.io/component-emitter                                     3.0.0            MIT                                  https://github.com/socketio/emitter.git
+@socket.io/component-emitter                                     3.1.0            MIT                                  https://github.com/socketio/emitter.git
 @szhsin/react-menu                                               2.3.3            MIT                                  https://github.com/szhsin/react-menu.git
 @types/classnames                                                2.3.1            MIT                                  Unknown
 @types/json-schema                                               7.0.9            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
@@ -201,7 +200,6 @@ babel-plugin-styled-components                                   1.13.3         
 babel-plugin-syntax-jsx                                          6.18.0           MIT                                  https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-jsx
 babelify                                                         10.0.0           MIT                                  https://github.com/babel/babelify.git
 backbone                                                         1.4.0            MIT                                  https://github.com/jashkenas/backbone.git
-backo2                                                           1.0.2            MIT                                  https://github.com/mokesmokes/backo.git
 balanced-match                                                   1.0.2            MIT                                  git://github.com/juliangruber/balanced-match.git
 base64-arraybuffer                                               0.2.0            MIT                                  https://github.com/niklasvh/base64-arraybuffer
 base64-arraybuffer                                               1.0.1            MIT                                  https://github.com/niklasvh/base64-arraybuffer
@@ -263,8 +261,8 @@ dom-align                                                        1.12.2         
 dom-helpers                                                      5.2.1            MIT                                  git+https://github.com/react-bootstrap/dom-helpers.git
 dom-serializer                                                   1.3.2            MIT                                  git://github.com/cheeriojs/dom-renderer.git
 emojis-list                                                      3.0.0            MIT                                  git+https://github.com/kikobeats/emojis-list.git
-engine.io-client                                                 6.0.2            MIT                                  https://github.com/socketio/engine.io-client.git
-engine.io-parser                                                 5.0.3            MIT                                  git@github.com:socketio/engine.io-parser.git
+engine.io-client                                                 6.2.3            MIT                                  https://github.com/socketio/engine.io-client.git
+engine.io-parser                                                 5.0.4            MIT                                  git@github.com:socketio/engine.io-parser.git
 error-ex                                                         1.3.2            MIT                                  https://github.com/qix-/node-error-ex.git
 escalade                                                         3.1.1            MIT                                  https://github.com/lukeed/escalade.git
 escape-string-regexp                                             1.0.5            MIT                                  https://github.com/sindresorhus/escape-string-regexp.git
@@ -285,7 +283,6 @@ graphlib                                                         2.1.8          
 hammerjs                                                         2.0.8            MIT                                  git://github.com/hammerjs/hammer.js.git
 hard-rejection                                                   2.1.0            MIT                                  https://github.com/sindresorhus/hard-rejection.git
 has                                                              1.0.3            MIT                                  git://github.com/tarruda/has.git
-has-cors                                                         1.1.0            MIT                                  git://github.com/component/has-cors.git
 has-flag                                                         3.0.0            MIT                                  https://github.com/sindresorhus/has-flag.git
 has-flag                                                         4.0.0            MIT                                  https://github.com/sindresorhus/has-flag.git
 history                                                          5.3.0            MIT                                  https://github.com/remix-run/history.git
@@ -320,7 +317,7 @@ json-parse-even-better-errors                                    2.3.1          
 json-schema-traverse                                             1.0.0            MIT                                  git+https://github.com/epoberezkin/json-schema-traverse.git
 json-schema-traverse                                             0.4.1            MIT                                  git+https://github.com/epoberezkin/json-schema-traverse.git
 json-source-map                                                  0.6.1            MIT                                  git+https://github.com/epoberezkin/json-source-map.git
-json5                                                            2.2.0            MIT                                  git+https://github.com/json5/json5.git
+json5                                                            2.2.1            MIT                                  git+https://github.com/json5/json5.git
 json5                                                            1.0.1            MIT                                  git+https://github.com/json5/json5.git
 jsoneditor-react                                                 3.1.2            MIT                                  git+https://github.com/vankop/jsoneditor-react.git
 jss                                                              10.8.2           MIT                                  https://github.com/cssinjs/jss
@@ -336,7 +333,7 @@ kind-of                                                          6.0.3          
 lilconfig                                                        2.0.3            MIT                                  https://github.com/antonk52/lilconfig
 lines-and-columns                                                1.1.6            MIT                                  https://github.com/eventualbuddha/lines-and-columns.git
 loader-utils                                                     2.0.2            MIT                                  https://github.com/webpack/loader-utils.git
-loader-utils                                                     1.4.0            MIT                                  https://github.com/webpack/loader-utils.git
+loader-utils                                                     1.4.1            MIT                                  https://github.com/webpack/loader-utils.git
 locate-path                                                      6.0.0            MIT                                  https://github.com/sindresorhus/locate-path.git
 lodash                                                           4.17.21          MIT                                  https://github.com/lodash/lodash.git
 lodash._basebind                                                 2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
@@ -371,7 +368,7 @@ merge2                                                           1.4.1          
 micromatch                                                       4.0.4            MIT                                  https://github.com/micromatch/micromatch.git
 mime                                                             2.5.2            MIT                                  https://github.com/broofa/mime
 min-indent                                                       1.0.1            MIT                                  https://github.com/thejameskyle/min-indent
-minimist                                                         1.2.6            MIT                                  git://github.com/substack/minimist.git
+minimist                                                         1.2.7            MIT                                  git://github.com/minimistjs/minimist.git
 minimist-options                                                 4.1.0            MIT                                  https://github.com/vadimdemedes/minimist-options.git
 ml-array-max                                                     1.2.3            MIT                                  git+https://github.com/mljs/array.git
 ml-array-min                                                     1.2.2            MIT                                  git+https://github.com/mljs/array.git
@@ -394,8 +391,6 @@ p-locate                                                         5.0.0          
 p-reduce                                                         1.0.0            MIT                                  https://github.com/sindresorhus/p-reduce.git
 p-series                                                         1.1.0            MIT                                  https://github.com/sindresorhus/p-series.git
 parse-json                                                       5.2.0            MIT                                  https://github.com/sindresorhus/parse-json.git
-parseqs                                                          0.0.6            MIT                                  https://github.com/get/querystring.git
-parseuri                                                         0.0.6            MIT                                  https://github.com/get/parseuri.git
 path-exists                                                      4.0.0            MIT                                  https://github.com/sindresorhus/path-exists.git
 path-fx                                                          2.1.1            MIT                                  git+https://github.com/NeekSandhu/path-fx.git
 path-type                                                        4.0.0            MIT                                  https://github.com/sindresorhus/path-type.git
@@ -497,8 +492,8 @@ shallowequal                                                     1.1.0          
 shim-loader                                                      1.0.1            MIT                                  https://github.com/zinserjan/shim-loader
 slash                                                            4.0.0            MIT                                  https://github.com/sindresorhus/slash.git
 snapsvg-cjs                                                      0.0.6            MIT                                  git+https://github.com/geelen/Snap.svg-cjs.git
-socket.io-client                                                 4.3.2            MIT                                  https://github.com/socketio/socket.io-client.git
-socket.io-parser                                                 4.1.1            MIT                                  https://github.com/socketio/socket.io-parser.git
+socket.io-client                                                 4.5.3            MIT                                  https://github.com/socketio/socket.io-client.git
+socket.io-parser                                                 4.2.1            MIT                                  https://github.com/socketio/socket.io-parser.git
 source-list-map                                                  1.1.2            MIT                                  https://github.com/webpack/source-list-map.git
 spdx-expression-parse                                            3.0.1            MIT                                  https://github.com/jslicense/spdx-expression-parse.js.git
 split.js                                                         1.6.4            MIT                                  https://github.com/nathancahill/split
@@ -536,7 +531,6 @@ xterm                                                            4.14.1         
 xterm-addon-fit                                                  0.5.0            MIT                                  https://github.com/xtermjs/xterm.js
 xterm-addon-search                                               0.8.1            MIT                                  https://github.com/xtermjs/xterm.js
 xterm-addon-web-links                                            0.4.0            MIT                                  https://github.com/xtermjs/xterm.js
-yeast                                                            0.1.2            MIT                                  https://github.com/unshiftio/yeast.git
 yocto-queue                                                      0.1.0            MIT                                  https://github.com/sindresorhus/yocto-queue.git
 @fortawesome/fontawesome-free                                    5.15.4           (CC-BY-4.0 AND OFL-1.1 AND MIT)      https://github.com/FortAwesome/Font-Awesome
 @react-leaflet/core                                              1.1.1            Hippocratic-2.1                      https://github.com/PaulLeCam/react-leaflet.git
@@ -554,7 +548,7 @@ icss-utils                                                       5.1.0          
 is-resolvable                                                    1.1.0            ISC                                  https://github.com/shinnn/is-resolvable.git
 jsonrepair                                                       2.2.1            ISC                                  https://github.com/josdejong/jsonrepair.git
 lru-cache                                                        6.0.0            ISC                                  git://github.com/isaacs/node-lru-cache.git
-minimatch                                                        3.0.4            ISC                                  git://github.com/isaacs/minimatch.git
+minimatch                                                        3.1.2            ISC                                  git://github.com/isaacs/minimatch.git
 picocolors                                                       1.0.0            ISC                                  https://github.com/alexeyraspopov/picocolors.git
 postcss-modules-extract-imports                                  3.0.0            ISC                                  https://github.com/css-modules/postcss-modules-extract-imports.git
 postcss-modules-scope                                            3.0.0            ISC                                  https://github.com/css-modules/postcss-modules-scope.git
@@ -615,5 +609,5 @@ tslib                                                            2.4.0          
 tslib                                                            2.3.0            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 
-536 dependencies listed.
+530 dependencies listed.
 
