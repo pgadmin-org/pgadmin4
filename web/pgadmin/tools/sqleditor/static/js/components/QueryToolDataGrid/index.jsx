@@ -79,13 +79,13 @@ function CustomRow(props) {
     }
   };
   if(!props.isRowSelected && props.selectedCellIdx > 0) {
-    dataGridExtras.onSelectedCellChange?.([props.row, props.viewportColumns?.[props.selectedCellIdx]]);
+    dataGridExtras.onSelectedCellChange?.([props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx)]);
   } else if(props.selectedCellIdx == 0) {
     dataGridExtras.onSelectedCellChange?.(null);
   }
   const openEditorOnEnter = (e)=>{
     if(e.code === 'Enter' && !props.isRowSelected && props.selectedCellIdx > 0) {
-      props.selectCell(props.row, props.viewportColumns?.[props.selectedCellIdx], true);
+      props.selectCell(props.row, props.viewportColumns?.find(columns => columns.idx === props.selectedCellIdx), true);
     }
   };
   return (
