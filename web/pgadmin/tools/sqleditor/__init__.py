@@ -1792,7 +1792,7 @@ def script():
 def load_file():
     """
     This function gets name of file from request data
-    reads the data and sends back in reponse
+    reads the data and sends back in response
     """
     if request.data:
         file_data = json.loads(request.data, encoding='utf-8')
@@ -1801,6 +1801,11 @@ def load_file():
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
+    try:
+        Filemanager.check_access_permission(storage_manager_path, file_path)
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+
     if storage_manager_path:
         # generate full path of file
         file_path = os.path.join(

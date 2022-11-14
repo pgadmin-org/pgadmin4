@@ -43,3 +43,5 @@ Bug fixes
   | `Issue #5465 <https://github.com/pgadmin-org/pgadmin4/issues/5465>`_ -  Fixed an issue where the screen was freezing while closing the wcDocker panel.
   | `Issue #5473 <https://github.com/pgadmin-org/pgadmin4/issues/5473>`_ -  Fixed an issue where AutoComplete was not working correctly due to incorrect regex.
   | `Issue #5475 <https://github.com/pgadmin-org/pgadmin4/issues/5475>`_ -  Fixed an issue where the 'Confirm on close or refresh' setting was ignored when closing the query/ERD tool opened in the new tab.
+  | `Issue #5507 <https://github.com/pgadmin-org/pgadmin4/issues/5507>`_ -  Fixed an issue where pgadmin does not respect reverse proxy any more.
+  | `Issue #5522 <https://github.com/pgadmin-org/pgadmin4/issues/5522>`_ -  Ensure that the load file paths are children of the storage directory.
