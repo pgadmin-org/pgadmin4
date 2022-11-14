@@ -97,9 +97,6 @@ app.config['sessions'] = dict()
 if setup_db_required:
     setup.setup_db(app)
 
-if config.SERVER_MODE:
-    app.wsgi_app = ReverseProxied(app.wsgi_app)
-
 # Authentication sources
 if len(config.AUTHENTICATION_SOURCES) > 0:
     # Creating a temporary auth source list removing INTERNAL
@@ -141,6 +138,9 @@ if 'PGADMIN_INT_KEY' in os.environ:
     app.PGADMIN_RUNTIME = True
 else:
     app.PGADMIN_INT_KEY = ''
+
+if not app.PGADMIN_RUNTIME:
+    app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
 ##########################################################################

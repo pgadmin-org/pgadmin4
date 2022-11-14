@@ -846,4 +846,4 @@ def get_safe_post_login_redirect():
         if url.startswith(item):
             return url
 
-    return os.environ.get("SCRIPT_NAME", "/")
+    return url_for('browser.index')

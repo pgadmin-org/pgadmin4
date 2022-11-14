@@ -123,13 +123,17 @@ class PgAdmin(Flask):
         # like 'localhost/pgadmin4' then we have to append '/pgadmin4'
         # into endpoints
         #############################################################
-        wsgi_root_path = current_app.config.get("APPLICATION_ROOT", "/")
+        wsgi_root_path = None
+        if url_for('browser.index') != '/browser/':
+            wsgi_root_path = url_for('browser.index').replace(
+                '/browser/', ''
+            )
 
         def get_full_url_path(url):
             """
             Generate endpoint URL at per WSGI alias
             """
-            if wsgi_root_path != "/" and url:
+            if wsgi_root_path is not None and url:
                 return wsgi_root_path + url
             else:
                 return url
