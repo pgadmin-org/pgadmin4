@@ -129,16 +129,20 @@ function setEditorPosition(cellEle, editorEle) {
   }
   let gridEle = cellEle.closest('.rdg');
   let cellRect = cellEle.getBoundingClientRect();
+  let gridEleRect = gridEle.getBoundingClientRect();
   let position = {
     left: cellRect.left,
     top:  Math.max(cellRect.top - editorEle.offsetHeight + 12, 0)
   };
 
   if ((position.left + editorEle.offsetWidth + 10) > gridEle.offsetWidth) {
-    position.left -=  position.left + editorEle.offsetWidth - gridEle.offsetWidth + 10;
+    position.left -= position.left + editorEle.offsetWidth - gridEle.offsetWidth + 10;
   }
-  editorEle.style.left = position.left + 'px';
-  editorEle.style.top = position.top + 'px';
+  if (cellRect.left < gridEleRect.left) {
+    position.left = gridEleRect.left + 10;
+  }
+  editorEle.style.left = `${position.left}px`;
+  editorEle.style.top = `${position.top}px`;
 }
 
 const EditorPropTypes = {
