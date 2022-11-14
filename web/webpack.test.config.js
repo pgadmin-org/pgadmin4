@@ -21,7 +21,7 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       jQuery: 'jquery',
-      _: 'underscore',
+      _: 'lodash',
       'window.jQuery': 'jquery',
       'moment': 'moment',
       'window.moment':'moment',
@@ -126,7 +126,6 @@ module.exports = {
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
       'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
       'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min'),
-      'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
       'react': path.join(__dirname, 'node_modules/react'),
       'react-dom': path.join(__dirname, 'node_modules/react-dom'),
       'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),

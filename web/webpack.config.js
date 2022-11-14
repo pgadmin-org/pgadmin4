@@ -41,8 +41,7 @@ const providePlugin = new webpack.ProvidePlugin({
   $: 'jquery',
   jQuery: 'jquery',
   'window.jQuery': 'jquery',
-  _: 'underscore',
-  Backbone: 'backbone',
+  _: 'lodash',
   pgAdmin: 'pgadmin',
   'moment': 'moment',
   'window.moment':'moment',
@@ -599,7 +598,7 @@ module.exports = [{
           minChunks: 2,
           enforce: true,
           test(module) {
-            return webpackShimConfig.matchModules(module, ['wcdocker', 'backbone', 'jquery', 'bootstrap', 'popper']);
+            return webpackShimConfig.matchModules(module, ['wcdocker', 'jquery', 'bootstrap', 'popper']);
           },
         },
         vendor_others: {

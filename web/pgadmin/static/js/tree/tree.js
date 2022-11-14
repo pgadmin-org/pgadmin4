@@ -54,9 +54,6 @@ function manageTreeEvents(event, eventName, item) {
 
       /* Raise tree events for the nodes */
       try {
-        node.trigger(
-          'browser-node.' + eventName, node, item, d
-        );
         obj.Events.trigger(
           'pgadmin-browser:tree:' + eventName, item, d, node
         );

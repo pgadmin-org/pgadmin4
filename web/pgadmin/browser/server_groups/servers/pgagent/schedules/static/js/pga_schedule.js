@@ -66,22 +66,6 @@ define('pgadmin.node.pga_schedule', [
       getSchema: function() {
         return new PgaJobScheduleSchema();
       },
-
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'jscid',
-        schema: [{
-          id: 'jscid', label: gettext('ID'), type: 'int',
-          cellHeaderClasses: 'width_percent_5', mode: ['properties'],
-        },{
-          id: 'jscname', label: gettext('Name'), type: 'text',
-          cellHeaderClasses: 'width_percent_45',
-          disabled: function() { return false; },
-        },{
-          id: 'jscenabled', label: gettext('Enabled?'), type: 'switch',
-          disabled: function() { return false; },
-          cellHeaderClasses: 'width_percent_5',
-        }],
-      }),
     });
   }
 

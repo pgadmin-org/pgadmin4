@@ -49,7 +49,7 @@ _.extend(pgBrowser, {
   get_preference: function(module, preference){
     const self = this;
 
-    return _.findWhere(
+    return _.find(
       self.preferences_cache, {'module': module, 'name': preference}
     );
   },
@@ -58,8 +58,8 @@ _.extend(pgBrowser, {
   get_preferences_for_module: function(module) {
     let self = this;
     let preferences = {};
-    _.each(
-      _.where(self.preferences_cache, {'module': module}),
+    _.forEach(
+      _.filter(self.preferences_cache, {'module': module}),
       (preference) => {
         preferences[preference.name] = preference.value;
       }
@@ -72,8 +72,8 @@ _.extend(pgBrowser, {
   /* Get preference of an id, id is numeric */
   get_preference_for_id : function(id) {
     let self = this;
-    /* findWhere returns undefined if not found */
-    return _.findWhere(self.preferences_cache, {'id': id});
+    /* find returns undefined if not found */
+    return _.find(self.preferences_cache, {'id': id});
   },
 
   // Get and cache the preferences

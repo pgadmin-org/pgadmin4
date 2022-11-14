@@ -554,11 +554,11 @@ define('pgadmin.browser', [
 
       obj.set_master_password('');
       obj.check_corrupted_db_file();
-      obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
-      obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
-      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact, obj);
-      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode, obj);
-      obj.Events.on('pgadmin-browser:panel-browser:' + wcDocker.EVENT.RESIZE_ENDED, obj.onResizeEnded, obj);
+      obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact.bind(obj));
+      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
+      obj.Events.on('pgadmin-browser:panel-browser:' + wcDocker.EVENT.RESIZE_ENDED, obj.onResizeEnded.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */

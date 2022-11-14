@@ -81,22 +81,6 @@ define('pgadmin.node.resource_group', [
       getSchema: ()=>{
         return new ResourceGroupSchema();
       },
-
-      // Defining model for resource group node
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        // Defining schema for the resource group node
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text',
-        }, {
-          id: 'cpu_rate_limit', label: gettext('CPU rate limit (percentage)'), cell: 'string',
-          type: 'numeric', min:0, max:16777216,
-        }, {
-          id: 'dirty_rate_limit', label: gettext('Dirty rate limit (KB)'), cell: 'string',
-          type: 'numeric', min:0, max:16777216,
-        }],
-      }),
     });
   }
 

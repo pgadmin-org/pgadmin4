@@ -92,10 +92,6 @@ define('pgadmin.node.extension', [
         ]);
       },
 
-      /*
-       * Define model for the Node and specify the properties
-       * of the model in schema.
-       */
       getSchema: (treeNodeInfo, itemNodeData)=>{
         let nodeObj = pgAdmin.Browser.Nodes['extension'];
         return new ExtensionsSchema(

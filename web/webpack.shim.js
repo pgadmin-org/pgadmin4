@@ -16,9 +16,6 @@ let webpackShimConfig = {
     'moment': {
       exports: 'moment',
     },
-    'underscore': {
-      exports: '_',
-    },
     'jquery': {
       'exports': '$',
     },
@@ -40,13 +37,6 @@ let webpackShimConfig = {
     'bootstrap.toggle': {
       deps: ['jquery', 'bootstrap'],
       'exports': '$.fn.bootstrapToggle',
-    },
-    'backbone': {
-      exports: 'Backbone', // Once loaded, use the global 'Backbone' as the module value.
-      deps: [
-        'underscore', // just make sure that underscore is loaded before (uses it's global value)
-        'jquery:$', // Provide jquery as dependency with name $
-      ],
     },
     'jquery.event.drag': {
       'deps': ['jquery'], 'exports': 'jQuery.fn.drag',
@@ -74,9 +64,6 @@ let webpackShimConfig = {
     },
     'wcdocker': {
       'deps': ['jquery.contextmenu'],
-    },
-    'pgadmin.browser.messages': {
-      'deps': ['pgadmin.browser.datamodel'],
     },
   },
 
@@ -126,9 +113,6 @@ let webpackShimConfig = {
     //socket
     'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),
 
-    // Backbone
-    'backbone': path.join(__dirname, './node_modules/backbone/backbone'),
-    'backbone.undo': path.join(__dirname, './node_modules/backbone-undo/Backbone.Undo'),
     'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
     'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min'),
     'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
@@ -138,7 +122,7 @@ let webpackShimConfig = {
     'pgadmin.browser': path.join(__dirname, './pgadmin/browser/static/js/browser'),
     'pgadmin.browser.bgprocessmanager': path.join(__dirname, './pgadmin/misc/bgprocess/static/js'),
     'pgadmin.browser.collection': path.join(__dirname, './pgadmin/browser/static/js/collection'),
-    'pgadmin.browser.datamodel': path.join(__dirname, './pgadmin/browser/static/js/datamodel'),
+    'pgadmin.browser.events': path.join(__dirname, './pgadmin/browser/static/js/events'),
     'pgadmin.browser.endpoints': '/browser/js/endpoints',
     'pgadmin.browser.constants': '/browser/js/constants',
     'pgadmin.browser.error': path.join(__dirname, './pgadmin/browser/static/js/error'),
@@ -255,7 +239,7 @@ let webpackShimConfig = {
   pgLibs: [
     'pgadmin.browser.error',
     'pgadmin.browser.collection',
-    'pgadmin.browser.datamodel', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
+    'pgadmin.browser.events', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
     'pgadmin.browser.frame', 'pgadmin.browser',
     'pgadmin.browser.node',
     'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',
