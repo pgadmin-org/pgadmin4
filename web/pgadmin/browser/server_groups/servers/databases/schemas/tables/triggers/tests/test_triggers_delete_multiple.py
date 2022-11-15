@@ -30,7 +30,7 @@ class TriggersDeleteMultipleTestCase(BaseTestGenerator):
                                          triggers_utils.test_cases)
 
     def setUp(self):
-        super(TriggersDeleteMultipleTestCase, self).setUp()
+        super().setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]

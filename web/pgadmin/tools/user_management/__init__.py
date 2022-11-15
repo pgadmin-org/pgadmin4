@@ -35,7 +35,7 @@ server_info = {}
 
 class UserManagementModule(PgAdminModule):
     """
-    class UserManagementModule(Object):
+    class UserManagementModule():
 
         It is a utility which inherits PgAdminModule
         class and define methods to load its own

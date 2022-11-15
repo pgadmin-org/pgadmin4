@@ -79,7 +79,7 @@ class FunctionGetTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will delete function under database node. """
-        super(FunctionGetTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         func_name = "test_function_get_%s" % str(uuid.uuid4())[1:8]

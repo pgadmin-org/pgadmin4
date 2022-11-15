@@ -73,7 +73,7 @@ from csv import (
 )
 
 
-class QuoteStrategy(object):
+class QuoteStrategy():
     quoting = None
 
     def __init__(self, dialect):
@@ -214,7 +214,7 @@ class QuoteNoneStrategy(QuoteStrategy):
         return False
 
 
-class Writer(object):
+class Writer():
     def __init__(self, fileobj, dialect='excel', **fmtparams):
         if fileobj is None:
             raise TypeError('fileobj must be file-like, not None')
@@ -264,7 +264,7 @@ EAT_CRNL = 7
 AFTER_ESCAPED_CRNL = 8
 
 
-class Reader(object):
+class Reader():
     def __init__(self, fileobj, dialect='excel', **fmtparams):
         self.input_iter = iter(fileobj)
 
@@ -502,7 +502,7 @@ def list_dialects():
     return list(_dialect_registry)
 
 
-class Dialect(object):
+class Dialect():
     """Describe a CSV dialect.
     This must be subclassed (see csv.excel).  Valid attributes are:
     delimiter, quotechar, escapechar, doublequote, skipinitialspace,
@@ -618,12 +618,12 @@ class Dialect(object):
     def __delattr__(self, attr):
         if self._valid:
             raise AttributeError('dialect is immutable.')
-        super(Dialect, self).__delattr__(attr)
+        super().__delattr__(attr)
 
     def __setattr__(self, attr, value):
         if self._valid:
             raise AttributeError('dialect is immutable.')
-        super(Dialect, self).__setattr__(attr, value)
+        super().__setattr__(attr, value)
 
 
 class Excel(Dialect):
@@ -660,7 +660,7 @@ class UnixDialect(Dialect):
 register_dialect("unix", UnixDialect)
 
 
-class DictReader(object):
+class DictReader():
     def __init__(self, f, fieldnames=None, restkey=None, restval=None,
                  *args, **kwds):
         self._fieldnames = fieldnames   # list of keys for the dict
@@ -712,7 +712,7 @@ class DictReader(object):
     next = __next__
 
 
-class DictWriter(object):
+class DictWriter():
     def __init__(self, f, fieldnames, *args, **kwds):
         self.fieldnames = fieldnames    # list of keys for the dict
         self.extrasaction = kwds.get('extrasaction', "raise")

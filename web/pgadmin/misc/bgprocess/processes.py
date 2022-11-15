@@ -55,7 +55,7 @@ def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
     ).strftime(format)
 
 
-class IProcessDesc(object, metaclass=ABCMeta):
+class IProcessDesc(metaclass=ABCMeta):
     @property
     @abstractmethod
     def message(self):
@@ -111,7 +111,7 @@ def replace_path_for_win(last_dir=None):
     return last_dir
 
 
-class BatchProcess(object):
+class BatchProcess():
     def __init__(self, **kwargs):
 
         self.id = self.desc = self.cmd = self.args = self.log_dir = \
@@ -270,7 +270,7 @@ class BatchProcess(object):
         else:
             interpreter = sys.executable
             if interpreter.endswith('uwsgi'):
-                interpreter = interpreter.split('uwsgi')[0] + 'python'
+                interpreter = interpreter.split('uwsgi', maxsplit=1)[0] + 'python'
 
         return interpreter if interpreter else 'python'
 

@@ -9,7 +9,7 @@
 
 """A blueprint module providing utility functions for the application."""
 
-import pgadmin.utils.driver as driver
+from pgadmin.utils import driver
 from flask import url_for, render_template, Response, request
 from flask_babel import gettext
 from pgadmin.utils import PgAdminModule, replace_binary_path
@@ -120,7 +120,7 @@ class MiscModule(PgAdminModule):
         from .statistics import blueprint as module
         self.submodules.append(module)
 
-        super(MiscModule, self).register(app, options)
+        super().register(app, options)
 
 
 # Initialise the module

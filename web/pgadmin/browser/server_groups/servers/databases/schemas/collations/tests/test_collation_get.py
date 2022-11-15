@@ -26,7 +26,7 @@ class CollationGetTestCase(BaseTestGenerator):
                                          collation_utils.test_cases)
 
     def setUp(self):
-        super(CollationGetTestCase, self).setUp()
+        super().setUp()
         self.schema_info = parent_node_dict["schema"][-1]
         self.schema_name = self.schema_info["schema_name"]
         self.schema_id = self.schema_info["schema_id"]

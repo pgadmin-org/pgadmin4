@@ -64,7 +64,7 @@ class FunctionSqlTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will get function nodes under schema. """
-        super(FunctionSqlTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
         func_name = "test_function_delete_%s" % str(uuid.uuid4())[1:8]
         function_info = funcs_utils.create_function(

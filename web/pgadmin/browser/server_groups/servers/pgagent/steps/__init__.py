@@ -181,7 +181,7 @@ class JobStepView(PGChildNodeView):
         self.template_path = None
         self.manager = None
 
-        super(JobStepView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

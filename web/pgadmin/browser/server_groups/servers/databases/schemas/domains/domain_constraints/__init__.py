@@ -16,8 +16,7 @@ import simplejson as json
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases.schemas.domains \
-    as domains
+from pgadmin.browser.server_groups.servers.databases.schemas import domains
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -52,7 +51,7 @@ class DomainConstraintModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext("Domain Constraints")
 
     def __init__(self, *args, **kwargs):
-        super(DomainConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 

@@ -198,7 +198,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will get function nodes under schema. """
-        super(FunctionGetmsqlTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
         db_user = self.server["username"]
         self.test_data["funcowner"] = db_user

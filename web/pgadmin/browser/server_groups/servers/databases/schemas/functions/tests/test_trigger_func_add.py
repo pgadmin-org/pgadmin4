@@ -27,7 +27,7 @@ class TriggerFuncAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add trigger function under schema node. """
-        super(TriggerFuncAddTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
         db_user = self.server["username"]
         data = {

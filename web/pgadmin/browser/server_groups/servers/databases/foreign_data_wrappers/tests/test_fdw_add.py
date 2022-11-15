@@ -27,7 +27,7 @@ class FDWDAddTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension."""
-        super(FDWDAddTestCase, self).setUp()
+        super().setUp()
 
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']

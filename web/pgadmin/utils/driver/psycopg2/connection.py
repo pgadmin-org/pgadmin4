@@ -49,7 +49,7 @@ configure_driver_encodings(encodings)
 
 class Connection(BaseConnection):
     """
-    class Connection(object)
+    class Connection()
 
         A wrapper class, which wraps the psycopg2 connection object, and
         delegate the execution to the actual connection object, when required.
@@ -147,8 +147,8 @@ class Connection(BaseConnection):
     ARGS_STR = "{0}#{1}"
 
     def __init__(self, manager, conn_id, db, **kwargs):
-        assert (manager is not None)
-        assert (conn_id is not None)
+        assert manager is not None
+        assert conn_id is not None
 
         auto_reconnect = kwargs.get('auto_reconnect', True)
         async_ = kwargs.get('async_', 0)
@@ -175,7 +175,7 @@ class Connection(BaseConnection):
         self.reconnecting = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
-        super(Connection, self).__init__()
+        super().__init__()
 
     def as_dict(self):
         """

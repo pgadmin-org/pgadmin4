@@ -17,7 +17,7 @@ from flask import render_template, current_app, request, jsonify
 from flask_babel import gettext as _
 from flask_security import current_user
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
@@ -47,7 +47,7 @@ class DatabaseModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(DatabaseModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid):
         """
@@ -127,7 +127,7 @@ class DatabaseModule(CollectionNodeModule):
         from .subscriptions import blueprint as module
         self.submodules.append(module)
 
-        super(DatabaseModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = DatabaseModule(__name__)

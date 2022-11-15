@@ -15,7 +15,7 @@ import simplejson as json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask_babel import gettext as _
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
@@ -56,7 +56,7 @@ class FtsDictionaryModule(SchemaChildModule):
         self.min_ver = None
         self.max_ver = None
         self.manager = None
-        super(FtsDictionaryModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -197,7 +197,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(FtsDictionaryView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

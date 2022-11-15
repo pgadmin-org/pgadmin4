@@ -20,7 +20,7 @@ from pgadmin.utils.constants import BINARY_PATHS
 from pgadmin.utils import set_binary_path, replace_binary_path
 
 
-class ServerType(object):
+class ServerType():
     """
     Server Type
 
@@ -42,7 +42,7 @@ class ServerType(object):
         self.spriority = priority
         self.utility_path = None
 
-        assert (server_type not in ServerType.registry)
+        assert server_type not in ServerType.registry
         ServerType.registry[server_type] = self
 
     @property

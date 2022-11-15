@@ -11,7 +11,7 @@
 import json
 import uuid
 
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from regression import trigger_funcs_utils as fts_dict_funcs_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils

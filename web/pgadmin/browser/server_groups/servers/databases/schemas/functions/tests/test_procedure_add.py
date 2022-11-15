@@ -27,7 +27,7 @@ class ProcedureAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add procedure under schema node. """
-        super(ProcedureAddTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         if self.server_type == "pg" and\

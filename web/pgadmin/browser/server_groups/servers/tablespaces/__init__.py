@@ -10,7 +10,7 @@ import simplejson as json
 import re
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from flask import render_template, make_response, request, jsonify, current_app
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -29,7 +29,7 @@ class TablespaceModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext("Tablespaces")
 
     def __init__(self, import_name, **kwargs):
-        super(TablespaceModule, self).__init__(import_name, **kwargs)
+        super().__init__(import_name, **kwargs)
 
     def get_nodes(self, gid, sid):
         """

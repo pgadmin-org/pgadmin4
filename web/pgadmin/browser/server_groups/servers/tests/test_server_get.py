@@ -62,7 +62,7 @@ class ServersGetTestCase(BaseTestGenerator):
             if hasattr(self, 'shared'):
                 server_id = self.server_id
             response = self.get_server(server_id)
-        self.assertEquals(response.status_code,
+        self.assertEqual(response.status_code,
                           self.expected_data["status_code"])
 
     def tearDown(self):

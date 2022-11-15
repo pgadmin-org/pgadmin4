@@ -49,7 +49,7 @@ class FtsParserModule(SchemaChildModule):
     _COLLECTION_LABEL = _('FTS Parsers')
 
     def __init__(self, *args, **kwargs):
-        super(FtsParserModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -213,7 +213,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(FtsParserView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

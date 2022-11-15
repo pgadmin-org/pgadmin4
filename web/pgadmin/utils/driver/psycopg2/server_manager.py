@@ -34,7 +34,7 @@ if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
 
 
-class ServerManager(object):
+class ServerManager():
     """
     class ServerManager
 
@@ -53,8 +53,8 @@ class ServerManager(object):
         self.update(server)
 
     def update(self, server):
-        assert (server is not None)
-        assert (isinstance(server, Server))
+        assert server is not None
+        assert isinstance(server, Server)
 
         self.ver = None
         self.sversion = None

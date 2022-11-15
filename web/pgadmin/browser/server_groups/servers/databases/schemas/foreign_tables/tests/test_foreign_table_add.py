@@ -37,7 +37,7 @@ class ForeignTableAddTestCase(BaseTestGenerator):
     def setUp(self):
         """ This function will create foreign data wrapper and
         foreign server. """
-        super(ForeignTableAddTestCase, self).setUp()
+        super().setUp()
 
         # Load test data
         self.data = self.test_data

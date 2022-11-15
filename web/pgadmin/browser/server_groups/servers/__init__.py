@@ -311,7 +311,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         from .tablespaces import blueprint as module
         self.submodules.append(module)
 
-        super(ServerModule, self).register(app, options)
+        super().register(app, options)
 
     # We do not have any preferences for server node.
     def register_preferences(self):
@@ -404,7 +404,7 @@ class ServerModule(sg.ServerGroupPluginModule):
 class ServerMenuItem(MenuItem):
     def __init__(self, **kwargs):
         kwargs.setdefault("type", ServerModule.node_type)
-        super(ServerMenuItem, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 blueprint = ServerModule(__name__)
@@ -1325,7 +1325,7 @@ class ServerNode(PGChildNodeView):
                 status=200,
                 success=0,
                 errormsg=gettext(
-                    u"Please enter the server details to connect")
+                    "Please enter the server details to connect")
             )
         if current_user and hasattr(current_user, 'id'):
             # Fetch User Details.

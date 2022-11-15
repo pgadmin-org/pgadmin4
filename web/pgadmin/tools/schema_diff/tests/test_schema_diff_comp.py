@@ -30,7 +30,7 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
     SOCKET_NAMESPACE = '/schema_diff'
 
     def setUp(self):
-        super(SchemaDiffTestCase, self).setUp()
+        super().setUp()
         self.src_database = "db_schema_diff_src_%s" % str(uuid.uuid4())[1:8]
         self.tar_database = "db_schema_diff_tar_%s" % str(uuid.uuid4())[1:8]
 
@@ -205,7 +205,7 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
 
     def tearDown(self):
         """This function drop the added database"""
-        super(SchemaDiffTestCase, self).tearDown()
+        super().tearDown()
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
                                              self.server['db_password'],

@@ -32,7 +32,7 @@ server_info = {}
 
 class RestoreModule(PgAdminModule):
     """
-    class RestoreModule(Object):
+    class RestoreModule():
 
         It is a utility which inherits PgAdminModule
         class and define methods to load its own

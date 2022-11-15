@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -63,7 +63,7 @@ class LanguageModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(LanguageModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """
@@ -214,7 +214,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         self.template_path = None
         self.manager = None
 
-        super(LanguageView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
-class TokenCachePersistenceOptions(object):
+class TokenCachePersistenceOptions():
     """Options for persistent token caching.
 
     Most credentials accept an instance of this class to configure persistent

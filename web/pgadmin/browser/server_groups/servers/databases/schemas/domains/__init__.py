@@ -15,7 +15,7 @@ import simplejson as json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
@@ -53,7 +53,7 @@ class DomainModule(SchemaChildModule):
     _COLLECTION_LABEL = gettext("Domains")
 
     def __init__(self, *args, **kwargs):
-        super(DomainModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -78,7 +78,7 @@ class DomainModule(SchemaChildModule):
         """
         from .domain_constraints import blueprint as module
         self.submodules.append(module)
-        super(DomainModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = DomainModule(__name__)

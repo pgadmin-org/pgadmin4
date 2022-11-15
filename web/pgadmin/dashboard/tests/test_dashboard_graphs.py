@@ -8,7 +8,7 @@
 ##########################################################################
 
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from regression import parent_node_dict
 import simplejson as json
 

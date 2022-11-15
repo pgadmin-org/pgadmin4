@@ -14,7 +14,7 @@ import secrets
 debugger_sessions_lock = Lock()
 
 
-class DebuggerInstance(object):
+class DebuggerInstance():
     def __init__(self, trans_id=None):
         if trans_id is None:
             self._trans_id = str(secrets.choice(range(1, 9999999)))

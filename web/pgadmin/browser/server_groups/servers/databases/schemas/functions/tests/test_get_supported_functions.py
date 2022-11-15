@@ -69,7 +69,7 @@ class FunctionGetSupportedFunctionsTestCase(BaseTestGenerator):
                       "< 120000."
             self.skipTest(message)
 
-        super(FunctionGetSupportedFunctionsTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
 
         if self.is_positive_test:

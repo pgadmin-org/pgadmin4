@@ -82,7 +82,7 @@ def help():
     print("\nInvalid command line options. Usage:")
     print("\t{0} <year to find> <year to replace>".format(sys.argv[0]))
     print("\tExample: {0} 2018 2019\n".format(sys.argv[0]))
-    exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':

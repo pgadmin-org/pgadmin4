@@ -160,12 +160,12 @@ class ServersConnectTestCase(BaseTestGenerator):
                         [eval(self.mock_data["return_value"])]
 
                     response = self.get_server_connection(server_id)
-                    self.assertEquals(response.status_code,
+                    self.assertEqual(response.status_code,
                                       self.expected_data["status_code"])
             else:
                 response = self.get_server_connection(server_id)
 
-        self.assertEquals(response.status_code,
+        self.assertEqual(response.status_code,
                           self.expected_data["status_code"])
 
     def tearDown(self):

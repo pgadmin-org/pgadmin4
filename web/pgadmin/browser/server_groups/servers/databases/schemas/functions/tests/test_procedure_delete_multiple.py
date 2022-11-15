@@ -27,7 +27,7 @@ class procedureDeleteMultipleTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will delete procedure under database node. """
-        super(procedureDeleteMultipleTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         if self.server_type == "pg" and\

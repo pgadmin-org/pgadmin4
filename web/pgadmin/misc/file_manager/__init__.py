@@ -291,7 +291,7 @@ def save_show_hidden_file_option(trans_id):
     return make_json_response(status=200)
 
 
-class Filemanager(object):
+class Filemanager():
     """FileManager Class."""
 
     # Stores list of dict for filename & its encoding

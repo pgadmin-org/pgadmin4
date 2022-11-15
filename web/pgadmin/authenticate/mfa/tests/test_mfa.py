@@ -41,7 +41,7 @@ class TestMFATests(BaseTestGenerator):
         if start is not None:
             start(self)
 
-        super(BaseTestGenerator, self).setUp()
+        super().setUp()
 
     def tearDown(self):
 
@@ -50,7 +50,7 @@ class TestMFATests(BaseTestGenerator):
             finish(self)
 
         config.MFA_SUPPORTED_METHODS = []
-        super(BaseTestGenerator, self).tearDown()
+        super().tearDown()
 
     def runTest(self):
         self.check(self)

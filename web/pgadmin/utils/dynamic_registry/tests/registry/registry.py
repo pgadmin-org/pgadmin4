@@ -19,11 +19,11 @@ TestNamedRegistry = create_registry_metaclass(
 )
 
 
-class TestModuleBase(object, metaclass=TestModuleRegistry):
+class TestModuleBase(metaclass=TestModuleRegistry):
     pass
 
 
-class TestNameBase(object, metaclass=TestNamedRegistry):
+class TestNameBase(metaclass=TestNamedRegistry):
     pass
 
 

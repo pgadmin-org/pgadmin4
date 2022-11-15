@@ -47,7 +47,7 @@ from pgadmin.model import SCHEMA_VERSION
 ##########################################################################
 # Support reverse proxying
 ##########################################################################
-class ReverseProxied(object):
+class ReverseProxied():
     def __init__(self, app):
         self.app = app
         # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix

@@ -12,7 +12,7 @@ import sys
 import traceback
 
 from regression.python_test_utils import test_utils as utils
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \

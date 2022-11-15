@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from pgadmin.browser.server_groups.servers.utils import \
     validate_options, tokenize_options
 from flask import render_template, make_response, request, jsonify
@@ -69,7 +69,7 @@ class UserMappingModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(UserMappingModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, fid, fsid):
         """

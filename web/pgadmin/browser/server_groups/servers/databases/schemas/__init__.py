@@ -14,7 +14,7 @@ import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule, PGChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -79,7 +79,7 @@ class SchemaModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(SchemaModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """
@@ -168,7 +168,7 @@ class SchemaModule(CollectionNodeModule):
         from .views import mview_blueprint as module
         self.submodules.append(module)
 
-        super(SchemaModule, self).register(app, options)
+        super().register(app, options)
 
 
 class CatalogModule(SchemaModule):
@@ -186,7 +186,7 @@ class CatalogModule(SchemaModule):
         Override the default register function to automagically register
         sub-modules at once.
         """
-        super(CatalogModule, self).register(app, options)
+        super().register(app, options)
 
 
 schema_blueprint = SchemaModule(__name__)
@@ -317,7 +317,7 @@ class SchemaView(PGChildNodeView):
         Initialize the variables used by methods of SchemaView.
         """
 
-        super(SchemaView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.manager = None
         self.conn = None
@@ -1056,7 +1056,7 @@ class CatalogView(SchemaView):
         Initialize the variables used by methods of SchemaView.
         """
 
-        super(CatalogView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.template_initial = 'catalog'
 
@@ -1078,7 +1078,7 @@ class CatalogView(SchemaView):
         if scid is None:
             return bad_request('Cannot create a catalog schema!')
 
-        return super(CatalogView, self).get_sql(gid, sid, data, scid)
+        return super().get_sql(gid, sid, data, scid)
 
     @check_precondition
     def sql(self, gid, sid, did, scid):

@@ -24,7 +24,7 @@ class CastsCreateTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will get data required to create cast."""
-        super(CastsCreateTestCase, self).runTest()
+        super().runTest()
         self.data = self.test_data
 
     def runTest(self):

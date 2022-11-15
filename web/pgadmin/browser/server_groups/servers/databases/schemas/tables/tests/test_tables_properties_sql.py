@@ -21,7 +21,7 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
     ]
 
     def __init__(self):
-        super(TestTablesPropertiesSql, self).__init__()
+        super().__init__()
         self.database_id = -1
         self.last_system_oid = -1
         self.table_id = -1

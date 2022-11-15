@@ -27,7 +27,7 @@ class ProcedurePutTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will update procedure under database node. """
-        super(ProcedurePutTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         if self.server_type == "pg" and\

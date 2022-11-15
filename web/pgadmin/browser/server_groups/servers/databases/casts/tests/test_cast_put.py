@@ -24,7 +24,7 @@ class CastsPutTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create cast."""
-        super(CastsPutTestCase, self).setUp()
+        super().setUp()
         self.inv_data = self.inventory_data
         self.data = self.test_data
         self.default_db = self.server["db"]

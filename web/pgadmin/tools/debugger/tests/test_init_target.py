@@ -31,7 +31,7 @@ class InitTargetDebugger(BaseTestGenerator):
                                          debugger_utils.test_cases)
 
     def setUp(self):
-        super(InitTargetDebugger, self).setUp()
+        super().setUp()
         self.debugger_error = 'The debugger plugin is not enabled. ' \
                               'Please add the plugin to the shared_preload_' \
                               'libraries setting in the postgresql.conf file' \

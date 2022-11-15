@@ -63,7 +63,7 @@ class TypeModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TypeModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 

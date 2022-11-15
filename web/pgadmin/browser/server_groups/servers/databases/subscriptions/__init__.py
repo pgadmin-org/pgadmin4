@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -62,7 +62,7 @@ class SubscriptionModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(SubscriptionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = self.min_ppasver = 100000
         self.max_ver = None
 
@@ -215,7 +215,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         self.template_path = None
         self.manager = None
 
-        super(SubscriptionView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

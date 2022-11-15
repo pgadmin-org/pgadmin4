@@ -76,7 +76,7 @@ class ManagedSession(CallbackDict, SessionMixin):
                 '%s:%s' % (self.sid, self.randval), secret)
 
 
-class SessionManager(object):
+class SessionManager():
     def new_session(self):
         'Create a new session'
         raise NotImplementedError

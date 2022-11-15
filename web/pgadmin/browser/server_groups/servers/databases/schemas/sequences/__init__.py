@@ -56,7 +56,7 @@ class SequenceModule(SchemaChildModule):
     _COLLECTION_LABEL = _("Sequences")
 
     def __init__(self, *args, **kwargs):
-        super(SequenceModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 

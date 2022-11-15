@@ -26,7 +26,7 @@ class CollationDeleteMultipleTestCase(BaseTestGenerator):
                                          collation_utils.test_cases)
 
     def setUp(self):
-        super(CollationDeleteMultipleTestCase, self).setUp()
+        super().setUp()
         self.schema_info = parent_node_dict["schema"][-1]
         self.schema_name = self.schema_info["schema_name"]
         self.db_name = parent_node_dict["database"][-1]["db_name"]

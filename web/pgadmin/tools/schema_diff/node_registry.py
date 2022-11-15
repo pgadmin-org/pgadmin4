@@ -8,7 +8,7 @@
 ##########################################################################
 
 
-class SchemaDiffRegistry(object):
+class SchemaDiffRegistry():
     """
     SchemaDiffRegistry
 

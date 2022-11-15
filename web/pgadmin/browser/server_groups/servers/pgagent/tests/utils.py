@@ -15,7 +15,7 @@ from urllib.parse import urlencode
 
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 
 # Load test data from json file.
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))

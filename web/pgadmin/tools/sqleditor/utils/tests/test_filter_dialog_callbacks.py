@@ -16,7 +16,7 @@ TX_ID_ERROR_MSG = 'Transaction ID not found in the session.'
 FAILED_TX_MSG = 'Failed to update the data on server.'
 
 
-class MockRequest(object):
+class MockRequest():
     "To mock request object"
     def __init__(self):
         self.data = None

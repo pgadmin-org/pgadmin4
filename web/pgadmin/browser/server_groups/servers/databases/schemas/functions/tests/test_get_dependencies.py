@@ -69,7 +69,7 @@ class FunctionGetDependenciesTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will get function nodes under schema. """
-        super(FunctionGetDependenciesTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
 
         if self.is_positive_test:

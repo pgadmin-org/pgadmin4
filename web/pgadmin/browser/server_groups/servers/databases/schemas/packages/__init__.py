@@ -57,7 +57,7 @@ class PackageModule(SchemaChildModule):
     _COLLECTION_LABEL = _("Packages")
 
     def __init__(self, *args, **kwargs):
-        super(PackageModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90100
         self.max_ver = None
         self.server_type = ['ppas']
@@ -89,7 +89,7 @@ class PackageModule(SchemaChildModule):
 
         from .edbvars import blueprint as module
         self.submodules.append(module)
-        super(PackageModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = PackageModule(__name__)

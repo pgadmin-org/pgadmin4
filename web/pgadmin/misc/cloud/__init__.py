@@ -35,7 +35,7 @@ MODULE_NAME = 'cloud'
 
 class CloudModule(PgAdminModule):
     """
-    class CloudModule(Object):
+    class CloudModule():
 
         It is a wizard which inherits PgAdminModule
         class and define methods to load its own
@@ -67,7 +67,7 @@ class CloudModule(PgAdminModule):
         Override the default register function to automagically register
         sub-modules at once.
         """
-        super(CloudModule, self).register(app, options)
+        super().register(app, options)
 
         from .azure import blueprint as module
         app.register_blueprint(module)

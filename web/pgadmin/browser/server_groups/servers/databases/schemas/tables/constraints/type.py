@@ -11,7 +11,7 @@ from flask import Blueprint
 from pgadmin.browser.collection import CollectionNodeModule
 
 
-class ConstraintRegistry(object):
+class ConstraintRegistry():
     """
     ConstraintTypeRegistry
 
@@ -38,4 +38,4 @@ class ConstraintTypeModule(CollectionNodeModule):
     register = Blueprint.register
 
     def __init__(self, *args, **kwargs):
-        super(ConstraintTypeModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

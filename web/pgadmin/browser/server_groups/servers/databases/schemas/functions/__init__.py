@@ -20,7 +20,7 @@ from flask import render_template, request, jsonify, \
     current_app
 from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
@@ -71,7 +71,7 @@ class FunctionModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(FunctionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = None
         self.max_ver = None
@@ -107,7 +107,7 @@ class FunctionModule(SchemaChildModule):
         """
         snippets = []
         snippets.extend(
-            super(SchemaChildModule, self).csssnippets
+            super().csssnippets
         )
 
         return snippets
@@ -2056,7 +2056,7 @@ class ProcedureModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(ProcedureModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 110000
         self.max_ver = None
@@ -2100,7 +2100,7 @@ class ProcedureView(FunctionView):
             *args:
             **kwargs:
         """
-        super(ProcedureView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def required_args(self):
@@ -2156,7 +2156,7 @@ class TriggerFunctionModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TriggerFunctionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 90100
         self.max_ver = None
@@ -2198,7 +2198,7 @@ class TriggerFunctionView(FunctionView):
             *args:
             **kwargs:
         """
-        super(TriggerFunctionView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def required_args(self):

@@ -18,7 +18,7 @@ from flask import render_template, make_response, request, jsonify, \
     current_app
 from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
@@ -60,7 +60,7 @@ class ForeignTableModule(SchemaChildModule):
     _COLLECTION_LABEL = gettext("Foreign Tables")
 
     def __init__(self, *args, **kwargs):
-        super(ForeignTableModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 

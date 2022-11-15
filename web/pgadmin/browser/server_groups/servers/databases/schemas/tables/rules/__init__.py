@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases.schemas as schemas
+from pgadmin.browser.server_groups.servers.databases import schemas
 from flask import render_template, make_response, request, jsonify,\
     current_app
 from flask_babel import gettext
@@ -48,14 +48,14 @@ class RuleModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(RuleModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def backend_supported(self, manager, **kwargs):
         """
         Load this module if tid is view, we will not load it under
         material view
         """
-        if super(RuleModule, self).backend_supported(manager, **kwargs):
+        if super().backend_supported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
             if 'vid' not in kwargs:

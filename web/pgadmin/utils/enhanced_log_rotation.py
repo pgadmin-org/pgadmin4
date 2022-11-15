@@ -8,8 +8,7 @@
 ##########################################################################
 
 import re
-import logging.handlers as handlers
-
+from logging import handlers
 
 class EnhancedRotatingFileHandler(handlers.TimedRotatingFileHandler,
                                   handlers.RotatingFileHandler):

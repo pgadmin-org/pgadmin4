@@ -21,7 +21,7 @@ class TestDependenciesSql(SQLTemplateTestBase):
     ]
 
     def __init__(self):
-        super(TestDependenciesSql, self).__init__()
+        super().__init__()
         self.table_id = -1
 
     def test_setup(self, connection, cursor):

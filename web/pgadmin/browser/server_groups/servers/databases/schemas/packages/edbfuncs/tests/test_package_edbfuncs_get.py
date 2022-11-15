@@ -13,7 +13,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
     utils as schema_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -31,7 +31,7 @@ class PackageEDBFuncsGetTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        super(PackageEDBFuncsGetTestCase, self).setUp()
+        super().setUp()
         schema_info = parent_node_dict["schema"][-1]
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]

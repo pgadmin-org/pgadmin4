@@ -220,7 +220,7 @@ class BrowserModule(PgAdminModule):
         """
         from .server_groups import blueprint as module
         self.submodules.append(module)
-        super(BrowserModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
@@ -266,7 +266,7 @@ class BrowserPluginModule(PgAdminModule, metaclass=ABCMeta):
         self.pref_show_system_objects = None
         self.pref_show_node = None
 
-        super(BrowserPluginModule, self).__init__(
+        super().__init__(
             "NODE-%s" % self.node_type,
             import_name,
             **kwargs

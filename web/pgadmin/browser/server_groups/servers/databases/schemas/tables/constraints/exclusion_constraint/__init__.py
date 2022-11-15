@@ -67,7 +67,7 @@ class ExclusionConstraintModule(ConstraintTypeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(ExclusionConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, tid):
         """

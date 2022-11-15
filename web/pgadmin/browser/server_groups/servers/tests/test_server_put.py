@@ -64,7 +64,7 @@ class ServerUpdateTestCase(BaseTestGenerator):
             if hasattr(self, 'wrong_server_id'):
                 self.server_id = 9999
             put_response = self.update_server()
-        self.assertEquals(put_response.status_code,
+        self.assertEqual(put_response.status_code,
                           self.expected_data["status_code"])
 
     def tearDown(self):

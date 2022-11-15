@@ -85,7 +85,7 @@ def test_create_base_class():
         'RegistryWithBaseClass', __package__, decorate_as_module=False
     )
 
-    class TestBase(object, metaclass=RegistryWithBaseClass):
+    class TestBase(metaclass=RegistryWithBaseClass):
         pass
 
     registry = RegistryWithBaseClass._registry
