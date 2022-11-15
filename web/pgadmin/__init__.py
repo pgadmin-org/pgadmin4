@@ -123,7 +123,7 @@ class PgAdmin(Flask):
         # like 'localhost/pgadmin4' then we have to append '/pgadmin4'
         # into endpoints
         #############################################################
-        wsgi_root_path = None
+        wsgi_root_path = ''
         if url_for('browser.index') != '/browser/':
             wsgi_root_path = url_for('browser.index').replace(
                 '/browser/', ''
@@ -133,10 +133,7 @@ class PgAdmin(Flask):
             """
             Generate endpoint URL at per WSGI alias
             """
-            if wsgi_root_path is not None and url:
-                return wsgi_root_path + url
-            else:
-                return url
+            return wsgi_root_path + url
 
         # Fetch all endpoints and their respective url
         for rule in current_app.url_map.iter_rules('static'):
@@ -146,6 +143,8 @@ class PgAdmin(Flask):
             for endpoint in module.exposed_endpoints:
                 for rule in current_app.url_map.iter_rules(endpoint):
                     yield rule.endpoint, get_full_url_path(rule.rule)
+
+        yield 'pgadmin.root', wsgi_root_path
 
     @property
     def javascripts(self):
@@ -928,5 +927,5 @@ def create_app(app_name=None):
     ##########################################################################
     # All done!
     ##########################################################################
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
     return app
