@@ -10,6 +10,7 @@
 import re
 from logging import handlers
 
+
 class EnhancedRotatingFileHandler(handlers.TimedRotatingFileHandler,
                                   handlers.RotatingFileHandler):
     """

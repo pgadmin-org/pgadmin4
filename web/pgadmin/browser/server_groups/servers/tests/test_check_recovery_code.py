@@ -47,11 +47,11 @@ class CheckRecoveryCodeTestCase(BaseTestGenerator):
                 self.assertEqual(res['data']['in_recovery'], True)
                 self.assertEqual(res['data']['wal_pause'], self.pause)
                 self.assertEqual(response.status_code,
-                                  self.expected_data["status_code"])
+                                 self.expected_data["status_code"])
         else:
             response = self.run_test_cases()
             self.assertEqual(response.status_code,
-                              self.expected_data["status_code"])
+                             self.expected_data["status_code"])
 
     def run_test_cases(self):
 

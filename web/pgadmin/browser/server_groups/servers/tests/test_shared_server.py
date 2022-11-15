@@ -71,7 +71,7 @@ class SharedServersGetTestCase(BaseTestGenerator):
             else:
                 response = self.get_server(self.server_id)
         self.assertEqual(response.status_code,
-                          self.expected_data["status_code"])
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the server from SQLite """
@@ -128,7 +128,7 @@ class SharedServerUpdateTestCase(BaseTestGenerator):
                 self.server_id = 9999
             put_response = self.update_server()
         self.assertEqual(put_response.status_code,
-                          self.expected_data["status_code"])
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the server from SQLite"""

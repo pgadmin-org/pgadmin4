@@ -99,6 +99,6 @@ class DBPasswordChange(BaseTestGenerator):
 
         self.assertEqual(render_template_mock.called, True)
         self.assertEqual(self.manager.update_session.called,
-                          self.expected_data['update_session'])
+                         self.expected_data['update_session'])
         self.assertEqual(
             self.manager.connection().pq_encrypt_password_conn.called, True)

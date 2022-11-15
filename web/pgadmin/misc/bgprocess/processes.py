@@ -270,7 +270,8 @@ class BatchProcess():
         else:
             interpreter = sys.executable
             if interpreter.endswith('uwsgi'):
-                interpreter = interpreter.split('uwsgi', maxsplit=1)[0] + 'python'
+                interpreter = interpreter.split('uwsgi',
+                                                maxsplit=1)[0] + 'python'
 
         return interpreter if interpreter else 'python'
 

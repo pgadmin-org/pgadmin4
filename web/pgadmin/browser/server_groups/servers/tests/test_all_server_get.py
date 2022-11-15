@@ -87,7 +87,7 @@ class AllServersGetTestCase(BaseTestGenerator):
                     secrets.choice(range(1, 9999999)))
             response = self.get_server()
         self.assertEqual(response.status_code,
-                          self.expected_data["status_code"])
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the server from SQLite """

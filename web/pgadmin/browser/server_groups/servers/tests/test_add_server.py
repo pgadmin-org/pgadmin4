@@ -95,7 +95,7 @@ class AddServerTest(BaseTestGenerator):
                 del self.server['db_password']
             response = self.create_server(url)
         self.assertEqual(response.status_code,
-                          self.expected_data["status_code"])
+                         self.expected_data["status_code"])
         response_data = json.loads(response.data.decode('utf-8'))
         self.server_id = response_data['node']['_id']
 

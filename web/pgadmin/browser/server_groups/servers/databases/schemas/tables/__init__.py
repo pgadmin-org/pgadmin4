@@ -1100,7 +1100,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     return lock_on_table
 
                 status, res = super().delete(gid, sid, did,
-                                                            scid, tid, res)
+                                             scid, tid, res)
 
                 if not status:
                     return internal_server_error(errormsg=res)
