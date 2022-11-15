@@ -127,7 +127,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
         function setAutoCompleteData() {
           const searchRe = new RegExp('^"{0,1}' + search, 'i');
           let filterData = self_local.editor.state.autoCompleteList.filter((item)=>{
-            return searchRe.test(item.text)
+            return searchRe.test(item.text);
           });
 
           cb({
