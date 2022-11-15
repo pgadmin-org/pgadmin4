@@ -125,8 +125,9 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
         // This function is used to filter the data and call the callback
         // function with that filtered data.
         function setAutoCompleteData() {
+          const searchRe = new RegExp('^"{0,1}' + search, 'i');
           let filterData = self_local.editor.state.autoCompleteList.filter((item)=>{
-            return item.text.toLowerCase().startsWith(search.toLowerCase());
+            return searchRe.test(item.text)
           });
 
           cb({

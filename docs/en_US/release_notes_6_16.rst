@@ -34,6 +34,7 @@ Bug fixes
   | `Issue #5122 <https://github.com/pgadmin-org/pgadmin4/issues/5122>`_ -  Ensure that the spinner should be visible on the browser tree on node refresh.
   | `Issue #5149 <https://github.com/pgadmin-org/pgadmin4/issues/5149>`_ -  Ensure the Generate ERD option is hidden if the connection to the database is not allowed.
   | `Issue #5206 <https://github.com/pgadmin-org/pgadmin4/issues/5206>`_ -  Reposition the select dropdown when the browser is resized.
+  | `Issue #5281 <https://github.com/pgadmin-org/pgadmin4/issues/5281>`_ -  Ensure that autocomplete works properly with objects starting with double quotes.
   | `Issue #5344 <https://github.com/pgadmin-org/pgadmin4/issues/5344>`_ -  Ensure that pgAdmin routes should have the SCRIPT_NAME prefix.
   | `Issue #5424 <https://github.com/pgadmin-org/pgadmin4/issues/5424>`_ -  Ensure that the appropriate permissions are set on the key file before trying an SSL connection with the server in server mode.
   | `Issue #5429 <https://github.com/pgadmin-org/pgadmin4/issues/5429>`_ -  Fixed an issue where parameters for roles were not visible.
@@ -44,4 +45,5 @@ Bug fixes
   | `Issue #5473 <https://github.com/pgadmin-org/pgadmin4/issues/5473>`_ -  Fixed an issue where AutoComplete was not working correctly due to incorrect regex.
   | `Issue #5475 <https://github.com/pgadmin-org/pgadmin4/issues/5475>`_ -  Fixed an issue where the 'Confirm on close or refresh' setting was ignored when closing the query/ERD tool opened in the new tab.
   | `Issue #5507 <https://github.com/pgadmin-org/pgadmin4/issues/5507>`_ -  Fixed an issue where pgadmin does not respect reverse proxy any more.
+  | `Issue #5521 <https://github.com/pgadmin-org/pgadmin4/issues/5521>`_ -  Fixed SocketIO calls when pgAdmin 4 server is running from a sub directory.
   | `Issue #5522 <https://github.com/pgadmin-org/pgadmin4/issues/5522>`_ -  Ensure that the load file paths are children of the storage directory.
