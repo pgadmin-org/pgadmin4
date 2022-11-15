@@ -8,10 +8,12 @@
 //////////////////////////////////////////////////////////////
 import { io } from 'socketio';
 import gettext from 'sources/gettext';
+import url_for from 'sources/url_for';
 
 export function openSocket(namespace, options) {
   return new Promise((resolve, reject)=>{
     const socketObj = io(namespace, {
+      path: `${url_for('pgadmin.root')}/socket.io`,
       pingTimeout: 120000,
       pingInterval: 25000,
       ...options,
@@ -24,11 +26,11 @@ export function openSocket(namespace, options) {
     socketObj.on('connected', ()=>{
       resolve(socketObj);
     });
-    socketObj.on('connect_error', ()=>{
-      reject();
+    socketObj.on('connect_error', (err)=>{
+      reject(err);
     });
-    socketObj.on('disconnect', ()=>{
-      reject();
+    socketObj.on('disconnect', (err)=>{
+      reject(err);
     });
   });
 }

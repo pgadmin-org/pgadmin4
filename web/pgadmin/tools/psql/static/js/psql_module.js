@@ -275,7 +275,11 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       return new SearchAddon();
     },
     psql_socket: function() {
-      return io('/pty', {pingTimeout: 120000, pingInterval: 25000});
+      return io('/pty', {
+        path: `${url_for('pgadmin.root')}/socket.io`,
+        pingTimeout: 120000,
+        pingInterval: 25000
+      });
     },
     set_theme: function(term) {
       let theme = {

@@ -25,6 +25,8 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
+from pgadmin.authenticate import socket_login_required
+
 
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
@@ -149,6 +151,7 @@ def set_term_size(fd, row, col, xpix=0, ypix=0):
 
 
 @sio.on('connect', namespace='/pty')
+@socket_login_required
 def connect():
     """
     Connect to the server through socket.
@@ -276,6 +279,7 @@ def pty_handel_io(connection_data, data, sid):
 
 
 @sio.on('start_process', namespace='/pty')
+@socket_login_required
 def start_process(data):
     """
     Start the pty terminal and execute psql command and emit results to user.
