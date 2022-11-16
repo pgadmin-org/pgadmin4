@@ -49,3 +49,4 @@ Bug fixes
   | `Issue #5522 <https://github.com/pgadmin-org/pgadmin4/issues/5522>`_ -  Ensure that the load file paths are children of the storage directory.
   | `Issue #5533 <https://github.com/pgadmin-org/pgadmin4/issues/5533>`_ -  Use the shared server username when opening query tool.
   | `Issue #5535 <https://github.com/pgadmin-org/pgadmin4/issues/5535>`_ -  Fixed an issue where the 'save_password' column threw an error for the shared server when using an external database.
+  | `Issue #5537 <https://github.com/pgadmin-org/pgadmin4/issues/5537>`_ -  Ensure that the correct error message in ERD for permission denied should be shown.
