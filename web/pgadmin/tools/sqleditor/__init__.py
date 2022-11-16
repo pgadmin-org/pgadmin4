@@ -304,6 +304,12 @@ def panel(trans_id):
     params['fgcolor'] = None
 
     s = Server.query.filter_by(id=params['sid']).first()
+    if s.shared and s.user_id != current_user.id:
+        # Import here to avoid circular dependency
+        from pgadmin.browser.server_groups.servers import ServerModule
+        shared_server = ServerModule.get_shared_server(s, params['sgid'])
+        s = ServerModule.get_shared_server_properties(s, shared_server)
+
     if s and s.bgcolor:
         # If background is set to white means we do not have to change
         # the title background else change it as per user specified
