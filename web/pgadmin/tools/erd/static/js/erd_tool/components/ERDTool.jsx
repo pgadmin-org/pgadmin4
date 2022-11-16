@@ -286,8 +286,7 @@ class ERDTool extends React.Component {
   }
 
   handleAxiosCatch(err) {
-    console.error(err);
-    Notify.alert(gettext('Error'), parseApiError(err));
+    this.context.alert(gettext('Error'), parseApiError(err));
   }
 
   async componentDidMount() {
