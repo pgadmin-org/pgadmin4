@@ -40,6 +40,9 @@ export function parseApiError(error) {
   } else if(error.message) {
     // Something happened in setting up the request that triggered an Error
     return error.message;
+  } else if(error.errormsg) {
+    // Received response JSON in socket handle
+    return error.errormsg;
   } else {
     return error;
   }

@@ -10,7 +10,7 @@
 """A blueprint module implementing the erd tool."""
 import simplejson as json
 
-from flask import url_for, request
+from flask import url_for, request, Response
 from flask import render_template, current_app as app
 from flask_security import login_required
 from flask_babel import gettext
@@ -640,10 +640,11 @@ def tables(params):
                                                params.get('tid', None))
 
         if not status:
+            tables = tables.json if type(tables) == Response else tables
             socketio.emit('tables_failed', tables,
                           namespace=SOCKETIO_NAMESPACE,
                           to=request.sid)
-            return internal_server_error(errormsg=tables)
+            return
         socketio.emit('tables_success', tables, namespace=SOCKETIO_NAMESPACE,
                       to=request.sid)
     except Exception as e:
