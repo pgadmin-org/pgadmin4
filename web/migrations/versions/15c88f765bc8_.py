@@ -31,7 +31,7 @@ def upgrade():
         'user_mfa', sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('mfa_auth', sa.String(length=256), nullable=False),
         sa.Column('options', sa.String()),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('user_id', 'mfa_auth'))
 
     # ### end Alembic commands ###

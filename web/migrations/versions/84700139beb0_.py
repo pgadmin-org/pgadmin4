@@ -29,7 +29,7 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('schema_res', sa.String()),
         sa.Column('server', sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(['server'], ['server.id'], ),
+        sa.ForeignKeyConstraint(['server'], ['server.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id', 'server'))
 
 

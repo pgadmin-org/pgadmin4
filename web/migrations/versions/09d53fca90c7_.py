@@ -39,7 +39,7 @@ def upgrade():
     if version < 3:
         op.add_column('server', sa.Column('comment', sa.String(length=1024)))
     if version < 4:
-        op.add_column('server', sa.Column('password', sa.String(length=64)))
+        op.add_column('server', sa.Column('password', sa.String()))
     if version < 5:
         op.add_column('server', sa.Column('role', sa.String(length=64)))
     if version < 6:
@@ -82,8 +82,9 @@ def upgrade():
             sa.Column('pid', sa.Integer(), nullable=False),
             sa.Column('uid', sa.Integer(), nullable=False),
             sa.Column('value', sa.String(length=1024), nullable=False),
-            sa.ForeignKeyConstraint(['pid'], ['preferences.id'], ),
-            sa.ForeignKeyConstraint(['uid'], ['user.id'], ),
+            sa.ForeignKeyConstraint(['pid'], ['preferences.id'],
+                                    ondelete='CASCADE'),
+            sa.ForeignKeyConstraint(['uid'], ['user.id'], ondelete='CASCADE'),
             sa.PrimaryKeyConstraint('pid', 'uid'))
 
     if version < 9:
@@ -116,7 +117,8 @@ def upgrade():
             sa.Column('logdir', sa.String()),
             sa.Column('exit_code', sa.Integer()),
             sa.Column('acknowledge', sa.String()),
-            sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+            sa.ForeignKeyConstraint(['user_id'], ['user.id'],
+                                    ondelete='CASCADE'),
             sa.PrimaryKeyConstraint('pid'))
 
     if version < 11:

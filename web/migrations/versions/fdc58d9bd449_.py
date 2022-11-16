@@ -46,7 +46,7 @@ def upgrade():
         'user',
         sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
         sa.Column('email', sa.String(length=256), nullable=False),
-        sa.Column('password', sa.String(length=256), nullable=True),
+        sa.Column('password', sa.String(), nullable=True),
         sa.Column('active', sa.Boolean(), nullable=False),
         sa.Column('confirmed_at', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id'))
@@ -66,21 +66,21 @@ def upgrade():
         'setting', sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('setting', sa.String(length=256), nullable=False),
         sa.Column('value', sa.String(length=1024), nullable=True),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('user_id', 'setting'))
 
     roles_users_table = op.create_table(
         'roles_users', sa.Column('user_id', sa.Integer(), nullable=True),
         sa.Column('role_id', sa.Integer(), nullable=True),
-        sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ))
+        sa.ForeignKeyConstraint(['role_id'], ['role.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'))
 
     server_group_table = op.create_table(
         'servergroup',
         sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=128), nullable=False),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('user_id', 'name'))
 
@@ -96,7 +96,7 @@ def upgrade():
         sa.Column('username', sa.String(length=64), nullable=False),
         sa.Column('ssl_mode', sa.String(length=16), nullable=False),
         sa.ForeignKeyConstraint(['servergroup_id'], ['servergroup.id'], ),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'))
 
     current_salt = getattr(

@@ -39,8 +39,8 @@ def upgrade():
         sa.Column('uid', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=1024), nullable=False),
         sa.Column('sql', sa.String()),
-        sa.ForeignKeyConstraint(['mid'], ['macros.id']),
-        sa.ForeignKeyConstraint(['uid'], ['user.id']),
+        sa.ForeignKeyConstraint(['mid'], ['macros.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['uid'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('mid', 'uid'))
 
     op.bulk_insert(macro_table, [

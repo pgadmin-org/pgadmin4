@@ -33,8 +33,8 @@ def upgrade():
         sa.Column('dbname', sa.String(), nullable=False),
         sa.Column('query_info', sa.String(), nullable=False),
         sa.Column('last_updated_flag', sa.String(), nullable=False),
-        sa.ForeignKeyConstraint(['sid'], ['server.id']),
-        sa.ForeignKeyConstraint(['uid'], ['user.id']),
+        sa.ForeignKeyConstraint(['sid'], ['server.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['uid'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('srno', 'uid', 'sid', 'dbname'))
 
 

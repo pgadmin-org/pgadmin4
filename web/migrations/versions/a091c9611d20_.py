@@ -36,7 +36,7 @@ def upgrade():
         sa.Column('port', sa.Integer(), nullable=False),
         sa.Column('maintenance_db', sa.String(length=64)),
         sa.Column('username', sa.String(length=64)),
-        sa.Column('password', sa.String(length=64)),
+        sa.Column('password', sa.String()),
         sa.Column('role', sa.String(length=64)),
         sa.Column('ssl_mode', sa.String(length=16), nullable=False),
         sa.Column('comment', sa.String(length=1024)),
@@ -59,13 +59,13 @@ def upgrade():
         sa.Column('tunnel_authentication', sa.Integer(), server_default='0'),
         sa.Column('tunnel_identity_file', sa.String()),
         sa.Column('shared', sa.Boolean(), nullable=False),
-        sa.Column('save_password', sa.Boolean(), nullable=False),
-        sa.Column('tunnel_password', sa.String(length=64)),
+        sa.Column('save_password', sa.Integer(), server_default='0'),
+        sa.Column('tunnel_password', sa.String()),
         sa.Column('connect_timeout', sa.Integer()),
         sa.CheckConstraint("ssl_mode IN ('allow', 'prefer', 'require', \
             'disable', 'verify-ca', 'verify-full')"),
         sa.ForeignKeyConstraint(['servergroup_id'], ['servergroup.id'], ),
-        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'))
 
     # Named constraint

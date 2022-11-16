@@ -2,7 +2,7 @@
 Version 6.16
 ************
 
-Release date: 2022-11-17
+Release date: 2022-11-18
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v6.15.
 
@@ -47,3 +47,5 @@ Bug fixes
   | `Issue #5507 <https://github.com/pgadmin-org/pgadmin4/issues/5507>`_ -  Fixed an issue where pgadmin does not respect reverse proxy any more.
   | `Issue #5521 <https://github.com/pgadmin-org/pgadmin4/issues/5521>`_ -  Fixed SocketIO calls when pgAdmin 4 server is running from a sub directory.
   | `Issue #5522 <https://github.com/pgadmin-org/pgadmin4/issues/5522>`_ -  Ensure that the load file paths are children of the storage directory.
+  | `Issue #5533 <https://github.com/pgadmin-org/pgadmin4/issues/5533>`_ -  Use the shared server username when opening query tool.
+  | `Issue #5535 <https://github.com/pgadmin-org/pgadmin4/issues/5535>`_ -  Fixed an issue where the 'save_password' column threw an error for the shared server when using an external database.
