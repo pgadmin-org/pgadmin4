@@ -132,7 +132,8 @@ than using the default.
 *Default: /pgadmin4/servers.json*
 
 Override the default file path for the server definition list. See the
-/pgadmin4/servers.json mapped file below for more information.
+/pgadmin4/servers.json mapped file below for more information. See the format
+of the `JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html#json-format>`_.
 
 **GUNICORN_ACCESS_LOGFILE**
 

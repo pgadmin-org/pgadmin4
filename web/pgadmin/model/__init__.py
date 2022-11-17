@@ -61,7 +61,8 @@ class PgAdminDbBinaryString(types.TypeDecorator):
     impl = types.String
 
     def process_bind_param(self, value, dialect):
-        return value.hex()
+        return value.hex() if hasattr(value, 'hex') \
+            else value
 
     def process_result_value(self, value, dialect):
         try:

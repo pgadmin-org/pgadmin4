@@ -38,6 +38,7 @@ Bug fixes
   | `Issue #5344 <https://github.com/pgadmin-org/pgadmin4/issues/5344>`_ -  Ensure that pgAdmin routes should have the SCRIPT_NAME prefix.
   | `Issue #5424 <https://github.com/pgadmin-org/pgadmin4/issues/5424>`_ -  Ensure that the appropriate permissions are set on the key file before trying an SSL connection with the server in server mode.
   | `Issue #5429 <https://github.com/pgadmin-org/pgadmin4/issues/5429>`_ -  Fixed an issue where parameters for roles were not visible.
+  | `Issue #5452 <https://github.com/pgadmin-org/pgadmin4/issues/5452>`_ -  The container deployment document should include the server.json file format.
   | `Issue #5455 <https://github.com/pgadmin-org/pgadmin4/issues/5455>`_ -  Fixed an issue where the dependents tab wasn't working for PG 15.
   | `Issue #5458 <https://github.com/pgadmin-org/pgadmin4/issues/5458>`_ -  Ensure that the browser path column in the search object shows the complete path.
   | `Issue #5463 <https://github.com/pgadmin-org/pgadmin4/issues/5463>`_ -  Fixed an issue where the result grid was not working properly while trying to edit data by hitting Enter key.
