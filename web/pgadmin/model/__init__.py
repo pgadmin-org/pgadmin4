@@ -20,6 +20,7 @@ things:
 
 from flask_security import UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy.types as types
 import uuid
 
 ##########################################################################
@@ -48,6 +49,25 @@ roles_users = db.Table(
     db.Column('user_id', db.Integer(), db.ForeignKey(USER_ID)),
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
+
+
+class PgAdminDbBinaryString(types.TypeDecorator):
+    """
+    To make binary string storing compatible with both
+    SQLite and PostgreSQL, convert the bin data to hex
+    to store and convert hex back to binary to get
+    """
+    cache_ok = True
+    impl = types.String
+
+    def process_bind_param(self, value, dialect):
+        return value.hex()
+
+    def process_result_value(self, value, dialect):
+        try:
+            return bytes.fromhex(value)
+        except Exception as _:
+            return value
 
 
 class Version(db.Model):
@@ -135,7 +155,7 @@ class Server(db.Model):
         nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
-    password = db.Column(db.String(64), nullable=True)
+    password = db.Column(PgAdminDbBinaryString())
     save_password = db.Column(
         db.Integer(),
         db.CheckConstraint('save_password >= 0 AND save_password <= 1'),
@@ -191,7 +211,7 @@ class Server(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
-    tunnel_password = db.Column(db.String(64), nullable=True)
+    tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
@@ -405,7 +425,7 @@ class SharedServer(db.Model):
         nullable=True)
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
-    password = db.Column(db.String(64), nullable=True)
+    password = db.Column(PgAdminDbBinaryString())
     save_password = db.Column(
         db.Integer(),
         db.CheckConstraint('save_password >= 0 AND save_password <= 1'),
@@ -459,7 +479,7 @@ class SharedServer(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
-    tunnel_password = db.Column(db.String(64), nullable=True)
+    tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
 
 
