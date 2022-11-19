@@ -1,16 +1,17 @@
 import uuid
 import config
 import sys
-from pgadmin.utils.route import BaseTestGenerator
+from pgadmin.utils.route import BaseSocketTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
 from regression.test_setup import config_data
-from pgAdmin4 import app
-from .... import socketio
 
 
-class PSQLStartProcessFail(BaseTestGenerator):
+class PSQLStartProcessFail(BaseSocketTestGenerator):
+    SOCKET_NAMESPACE = '/pty'
+
     def setUp(self):
+        super(PSQLStartProcessFail, self).setUp()
         self.db_name = "psqltestdb_{0}".format(str(uuid.uuid4())[1:8])
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.did = utils.create_database(self.server, self.db_name)
@@ -20,10 +21,7 @@ class PSQLStartProcessFail(BaseTestGenerator):
     def runTest(self):
         if sys.platform == 'win32':
             self.skipTest('PSQL disabled for windows')
-        self.test_client = socketio.test_client(app, namespace='/pty')
-        self.assertTrue(self.test_client.is_connected('/pty'))
-        received = self.test_client.get_received('/pty')
-
+        received = self.socket_client.get_received('/pty')
         assert received[0]['name'] == 'connected'
         assert received[0]['args'][0]['sid'] != ''
 
@@ -34,13 +32,13 @@ class PSQLStartProcessFail(BaseTestGenerator):
             'user': self.server['username']
         }
         config.ENABLE_PSQL = False
-        self.test_client.emit('start_process', data, namespace='/pty')
-        received = self.test_client.get_received('/pty')
+        self.socket_client.emit('start_process', data, namespace='/pty')
+        received = self.socket_client.get_received('/pty')
 
         assert received[0]['name'] == 'conn_not_allow'
 
-        self.test_client.disconnect(namespace='/pty')
-        self.assertFalse(self.test_client.is_connected('/pty'))
+        self.socket_client.disconnect(namespace='/pty')
+        self.assertFalse(self.socket_client.is_connected('/pty'))
 
     def tearDown(self):
         connection = utils.get_db_connection(self.server['db'],
