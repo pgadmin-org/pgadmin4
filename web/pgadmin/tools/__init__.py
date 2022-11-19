@@ -26,7 +26,7 @@ class ToolsModule(PgAdminModule):
         Override the default register function to automagically register
         sub-modules at once.
         """
-        super(PgAdminModule, self).register(app, options)
+        super().register(app, options)
 
         from .backup import blueprint as module
         app.register_blueprint(module)

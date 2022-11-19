@@ -25,7 +25,7 @@ from pgadmin.model import db, Preferences as PrefTable, \
     PreferenceCategory as PrefCategoryTbl
 
 
-class _Preference(object):
+class _Preference():
     """
     Internal class representing module, and categoy bound preference.
     """
@@ -268,7 +268,7 @@ class _Preference(object):
         return res
 
 
-class Preferences(object):
+class Preferences():
     """
     class Preferences
 

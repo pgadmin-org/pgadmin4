@@ -1702,7 +1702,7 @@ def create_user(user_details):
         return user_id
     except Exception as exception:
         traceback.print_exc(file=sys.stderr)
-        raise ("Error while creating server. %s" % exception)
+        raise "Error while creating server. %s" % exception
 
 
 def get_test_user(self, user_details,

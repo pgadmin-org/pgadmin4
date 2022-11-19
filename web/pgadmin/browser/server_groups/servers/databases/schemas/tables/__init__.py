@@ -64,7 +64,7 @@ class TableModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TableModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.max_ver = None
         self.min_ver = None
 
@@ -147,7 +147,7 @@ class TableModule(SchemaChildModule):
         from .triggers import blueprint as module
         self.submodules.append(module)
 
-        super(TableModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = TableModule(__name__)
@@ -355,7 +355,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     table_info['relhassubclass']):
             default_val = 'icon-table-inherited'
 
-        return super(TableView, self).\
+        return super().\
             get_icon_css_class(table_info, default_val)
 
     @BaseTableView.check_precondition
@@ -614,7 +614,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         if not res['rows']:
             return gone(gettext(self.not_found_error_msg()))
 
-        return super(TableView, self).properties(
+        return super().properties(
             gid, sid, did, scid, tid, res=res
         )
 
@@ -1049,7 +1049,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 return ExecuteError(
                     error_msg=str(lock_on_table.json['info']))
 
-            return super(TableView, self).update(
+            return super().update(
                 gid, sid, did, scid, tid, data=data, res=res)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1099,8 +1099,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if lock_on_table != '':
                     return lock_on_table
 
-                status, res = super(TableView, self).delete(gid, sid, did,
-                                                            scid, tid, res)
+                status, res = super().delete(gid, sid, did,
+                                             scid, tid, res)
 
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -1139,7 +1139,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if len(res['rows']) == 0:
                 return gone(gettext(self.not_found_error_msg()))
 
-            return super(TableView, self).truncate(
+            return super().truncate(
                 gid, sid, did, scid, tid, res
             )
 
@@ -1593,7 +1593,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         """
         data = {}
         data['schema'], data['name'] = \
-            super(TableView, self).get_schema_and_table_name(tid)
+            super().get_schema_and_table_name(tid)
 
         if data['name'] is None:
             return gone(gettext(self.not_found_error_msg()))
@@ -1627,7 +1627,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
         if status:
             self.cmd = 'delete'
-            sql = super(TableView, self).get_delete_sql(res['rows'][0])
+            sql = super().get_delete_sql(res['rows'][0])
             self.cmd = None
 
         return sql

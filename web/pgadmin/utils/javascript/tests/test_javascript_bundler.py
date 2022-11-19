@@ -20,7 +20,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
     scenarios = [('scenario name: JavascriptBundlerTestCase', dict())]
 
     def __init__(self, methodName='runTest'):
-        super(BaseTestGenerator, self).__init__(methodName)
+        super().__init__(methodName)
         self.mockOs = None
         self.mockSubprocessCall = None
 

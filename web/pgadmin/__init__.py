@@ -76,7 +76,7 @@ class PgAdmin(Flask):
         )
         self.logout_hooks = []
 
-        super(PgAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def find_submodules(self, basemodule):
         try:
@@ -472,7 +472,7 @@ def create_app(app_name=None):
 
     # Don't bother paths when running in cli mode
     if not cli_mode:
-        import pgadmin.utils.paths as paths
+        from pgadmin.utils import paths
         paths.init_app()
 
     # Setup Flask-Security
@@ -756,7 +756,7 @@ def create_app(app_name=None):
         HTTP request to avoid Host Header Injection attack
         :return: None/JSON response with 403 HTTP status code
         """
-        client_host = str(request.host).split(':')[0]
+        client_host = str(request.host).split(':', maxsplit=1)[0]
         valid = True
         allowed_hosts = config.ALLOWED_HOSTS
 

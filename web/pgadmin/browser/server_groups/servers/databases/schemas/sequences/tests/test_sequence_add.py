@@ -60,7 +60,7 @@ class SequenceAddTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        super(SequenceAddTestCase, self).setUp()
+        super().setUp()
 
     def runTest(self):
         """This function will add sequence(s) under schema node."""

@@ -438,7 +438,7 @@ def get_tests_result(test_suite):
         traceback.print_exc(file=sys.stderr)
 
 
-class StreamToLogger(object):
+class StreamToLogger():
     def __init__(self, logger, log_level=logging.INFO):
         self.terminal = sys.stderr
         self.logger = logger
@@ -531,7 +531,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
 
         # This is required when some tests are running parallel
         # & some sequential in case of parallel ui tests
-        if threading.current_thread().getName() == "sequential_tests":
+        if threading.current_thread().get_name() == "sequential_tests":
             try:
                 if test_result[server_passed['name']][0] is not None:
                     ran_tests = test_result[server_passed['name']][0] + \
@@ -565,14 +565,14 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         print(str(exc))
         print("Exception in {0} {1}".format(
             threading.current_thread().ident,
-            threading.currentThread().getName()))
+            threading.current_thread().get_name()))
         # Mark failure as true
         global failure
         failure = True
     finally:
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
-        if threading.currentThread().getName() == thread_name:
+        if threading.current_thread().get_name() == thread_name:
             test_utils.quit_webdriver(driver_passed)
             time.sleep(20)
 
@@ -601,7 +601,7 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
         for ser in servers_details:
             while True:
                 # If active thread count <= max_thread_count, add new thread
-                if threading.activeCount() <= max_thread_count:
+                if threading.active_count() <= max_thread_count:
                     # Get remote web-driver instance at server level
                     driver_object = \
                         test_utils.get_remote_webdriver(hub_url,

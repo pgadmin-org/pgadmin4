@@ -122,7 +122,7 @@ SELECT EXISTS(
         from .steps import blueprint as module
         self.submodules.append(module)
 
-        super(JobModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = JobModule(__name__)

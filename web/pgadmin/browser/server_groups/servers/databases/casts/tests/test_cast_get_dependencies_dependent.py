@@ -24,7 +24,7 @@ class CastsGetDependentsAndDependencyTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create cast."""
-        super(CastsGetDependentsAndDependencyTestCase, self).setUp()
+        super().setUp()
         self.inv_data = self.inventory_data
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]

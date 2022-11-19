@@ -61,7 +61,7 @@ class SynonymModule(SchemaChildModule):
             **kwargs:
         """
 
-        super(SynonymModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90100
         self.max_ver = None
         self.server_type = ['ppas']

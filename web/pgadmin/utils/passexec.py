@@ -30,7 +30,7 @@ class PasswordExec:
             if not self.password or self.is_expired():
                 if not self.cmd:
                     return None
-                current_app.logger.info(f'Calling passexec')
+                current_app.logger.info('Calling passexec')
                 now = datetime.utcnow()
                 try:
                     p = subprocess.run(
@@ -42,11 +42,11 @@ class PasswordExec:
                         check=True,
                     )
                 except subprocess.CalledProcessError as e:
-                    if (e.stderr):
+                    if e.stderr:
                         self.create_logger().error(e.stderr)
                     raise
 
-                current_app.logger.info(f'Passexec completed successfully')
+                current_app.logger.info('Passexec completed successfully')
                 self.last_result = now
                 self.password = p.stdout.strip()
             return self.password

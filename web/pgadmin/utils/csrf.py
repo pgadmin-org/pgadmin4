@@ -13,10 +13,10 @@ from flask import request, current_app
 
 class _PGCSRFProtect(CSRFProtect):
     def __init__(self, *args, **kwargs):
-        super(_PGCSRFProtect, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def init_app(self, app):
-        super(_PGCSRFProtect, self).init_app(app)
+        super().init_app(app)
         self._pg_csrf_exempt(app)
 
     def _pg_csrf_exempt(self, app):

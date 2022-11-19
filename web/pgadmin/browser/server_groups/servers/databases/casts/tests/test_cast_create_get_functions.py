@@ -23,7 +23,7 @@ class CastsCreateGetFunctionsTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add cast under test database. """
-        super(CastsCreateGetFunctionsTestCase, self).runTest()
+        super().runTest()
         self.data = self.test_data
         self.server_data = parent_node_dict["database"][-1]
         self.server_id = self.server_data["server_id"]

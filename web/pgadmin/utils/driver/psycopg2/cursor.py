@@ -22,9 +22,9 @@ from .encoding import configure_driver_encodings
 configure_driver_encodings(encodings)
 
 
-class _WrapperColumn(object):
+class _WrapperColumn():
     """
-    class _WrapperColumn(object)
+    class _WrapperColumn()
 
     A wrapper class, which wraps the individual description column object,
     to allow identify the duplicate column name, created by PostgreSQL database

@@ -67,14 +67,14 @@ class TriggerModule(CollectionNodeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(TriggerModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def backend_supported(self, manager, **kwargs):
         """
         Load this module if vid is view, we will not load it under
         material view
         """
-        if super(TriggerModule, self).backend_supported(manager, **kwargs):
+        if super().backend_supported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
             if 'vid' not in kwargs:

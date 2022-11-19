@@ -10,7 +10,7 @@
 from flask_babel import gettext
 
 
-class SchemaDiffModel(object):
+class SchemaDiffModel():
     """
     SchemaDiffModel
     """

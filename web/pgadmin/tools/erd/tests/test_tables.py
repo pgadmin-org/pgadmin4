@@ -36,7 +36,7 @@ class ERDTables(BaseSocketTestGenerator):
         utils.drop_database(connection, self.db_name)
 
     def setUp(self):
-        super(ERDTables, self).setUp()
+        super().setUp()
         self.db_name = "erdtestdb_{0}".format(str(uuid.uuid4())[1:8])
         self.sid = parent_node_dict["server"][-1]["server_id"]
         self.did = utils.create_database(self.server, self.db_name)
@@ -87,5 +87,5 @@ class ERDTables(BaseSocketTestGenerator):
                                        for tab in response_data])
 
     def tearDown(self):
-        super(ERDTables, self).tearDown()
+        super().tearDown()
         self.dropDB()

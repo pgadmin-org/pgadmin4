@@ -43,7 +43,7 @@ def create_app_data_directory(config):
                 os.path.dirname(config.SQLITE_PATH),
                 getpass.getuser(),
                 config.APP_VERSION))
-        exit(1)
+        sys.exit(1)
 
     # Try to set the permissions on the directory, but don't complain
     # if we can't. This may be the case on a mounted directory, e.g. in
@@ -74,7 +74,7 @@ def create_app_data_directory(config):
                 os.path.dirname(config.LOG_FILE),
                 getpass.getuser(),
                 config.APP_VERSION))
-        exit(1)
+        sys.exit(1)
 
     # Create the session directory (if not present).
     try:
@@ -91,7 +91,7 @@ def create_app_data_directory(config):
                 config.SESSION_DB_PATH,
                 getpass.getuser(),
                 config.APP_VERSION))
-        exit(1)
+        sys.exit(1)
 
     if os.name != 'nt' and is_directory_created:
         os.chmod(config.SESSION_DB_PATH, 0o700)
@@ -110,7 +110,7 @@ def create_app_data_directory(config):
                 config.STORAGE_DIR,
                 getpass.getuser(),
                 config.APP_VERSION))
-        exit(1)
+        sys.exit(1)
 
     # Create Azure Credential Cache directory (if not present).
     try:
@@ -126,7 +126,7 @@ def create_app_data_directory(config):
                 config.AZURE_CREDENTIAL_CACHE_DIR,
                 getpass.getuser(),
                 config.APP_VERSION))
-        exit(1)
+        sys.exit(1)
 
     # Create Kerberos Credential Cache directory (if not present).
     if config.SERVER_MODE and KERBEROS in config.AUTHENTICATION_SOURCES:
@@ -143,4 +143,4 @@ def create_app_data_directory(config):
                     config.KERBEROS_CCACHE_DIR,
                     getpass.getuser(),
                     config.APP_VERSION))
-            exit(1)
+            sys.exit(1)

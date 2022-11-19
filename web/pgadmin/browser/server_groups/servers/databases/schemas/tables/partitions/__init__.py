@@ -83,7 +83,7 @@ class PartitionsModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(PartitionsModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 100000
         self.max_ver = None
         self.min_ppasver = 100000
@@ -123,7 +123,7 @@ class PartitionsModule(CollectionNodeModule):
         """
 
         self.submodules = []
-        super(CollectionNodeModule, self).register(app, options)
+        super().register(app, options)
 
         # Now add sub modules of table node to partition table node.
         # Exclude 'partition' module for now to avoid cyclic import issue.
@@ -352,7 +352,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         if len(res['rows']) == 0:
             return gone(self.not_found_error_msg())
 
-        return super(PartitionsView, self).properties(
+        return super().properties(
             gid, sid, did, scid, ptid, res=res)
 
     def _fetch_properties(self, did, scid, tid, ptid=None):
@@ -412,7 +412,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 current_app.logger.error(result)
                 return False
 
-            res = super(PartitionsView, self).properties(
+            res = super().properties(
                 0, sid, did, scid, ptid, result)
 
         else:
@@ -437,7 +437,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                     current_app.logger.error(result)
                     return False
 
-                data = super(PartitionsView, self).properties(
+                data = super().properties(
                     0, sid, did, scid, row['oid'], result, False
                 )
                 res[row['name']] = data
@@ -688,7 +688,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             if not status:
                 return res
 
-            return super(PartitionsView, self).update(
+            return super().update(
                 gid, sid, did, scid, ptid, data=data, res=res, parent_id=tid)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -716,7 +716,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
-            return super(PartitionsView, self).truncate(
+            return super().truncate(
                 gid, sid, did, scid, ptid, res
             )
 
@@ -766,7 +766,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                         )
                     )
 
-                status, res = super(PartitionsView, self).delete(
+                status, res = super().delete(
                     gid, sid, did, scid, tid, res)
 
                 if not status:

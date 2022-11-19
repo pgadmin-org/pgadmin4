@@ -67,7 +67,7 @@ class CompoundTriggerModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(CompoundTriggerModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = self.min_ppasver = 120000
         self.max_ver = None
         self.server_type = ['ppas']
@@ -77,7 +77,7 @@ class CompoundTriggerModule(CollectionNodeModule):
         Load this module if vid is view, we will not load it under
         material view
         """
-        if super(CompoundTriggerModule, self).backend_supported(
+        if super().backend_supported(
                 manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 

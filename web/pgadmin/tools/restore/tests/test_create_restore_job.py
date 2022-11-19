@@ -16,7 +16,7 @@ import simplejson as json
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from pgadmin.utils import server_utils as server_utils, does_utility_exist
+from pgadmin.utils import server_utils, does_utility_exist
 import pgadmin.tools.backup.tests.test_backup_utils as backup_utils
 
 

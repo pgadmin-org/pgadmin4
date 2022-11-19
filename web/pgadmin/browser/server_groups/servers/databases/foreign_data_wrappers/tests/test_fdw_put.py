@@ -27,7 +27,7 @@ class FDWDPutTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create extension and foreign data wrapper."""
-        super(FDWDPutTestCase, self).setUp()
+        super().setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

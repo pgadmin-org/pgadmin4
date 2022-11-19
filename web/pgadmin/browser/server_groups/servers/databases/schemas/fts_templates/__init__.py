@@ -55,7 +55,7 @@ class FtsTemplateModule(SchemaChildModule):
     def __init__(self, *args, **kwargs):
         self.min_ver = None
         self.max_ver = None
-        super(FtsTemplateModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -193,7 +193,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(FtsTemplateView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

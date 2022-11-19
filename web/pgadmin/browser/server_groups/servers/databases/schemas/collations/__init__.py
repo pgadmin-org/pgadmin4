@@ -62,7 +62,7 @@ class CollationModule(SchemaChildModule):
             **kwargs:
         """
 
-        super(CollationModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90100
         self.max_ver = None
 

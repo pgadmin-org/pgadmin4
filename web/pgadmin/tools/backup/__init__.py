@@ -34,7 +34,7 @@ server_info = {}
 
 class BackupModule(PgAdminModule):
     """
-    class BackupModule(Object):
+    class BackupModule():
 
         It is a utility which inherits PgAdminModule
         class and define methods to load its own
@@ -64,7 +64,7 @@ blueprint = BackupModule(
 )
 
 
-class BACKUP(object):
+class BACKUP():
     """
     Constants defined for Backup utilities
     """

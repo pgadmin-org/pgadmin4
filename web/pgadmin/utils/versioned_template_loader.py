@@ -14,7 +14,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
     def get_source(self, environment, template):
         specified_version_number, exists = parse_version(template)
         if not exists:
-            return super(VersionedTemplateLoader, self).get_source(
+            return super().get_source(
                 environment, template
             )
 
@@ -31,7 +31,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
             ])
 
             try:
-                return super(VersionedTemplateLoader, self).get_source(
+                return super().get_source(
                     environment, template_path
                 )
             except TemplateNotFound:

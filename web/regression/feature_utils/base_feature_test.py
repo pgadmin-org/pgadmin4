@@ -97,7 +97,7 @@ class BaseFeatureTest(BaseTestGenerator):
         self.ensure_directory_exists(screenshots_server_directory)
 
         date = datetime.now().strftime("%Y.%m.%d_%H.%M.%S")
-        python_version = sys.version.split(" ")[0]
+        python_version = sys.version.split(" ", maxsplit=1)[0]
 
         self.page.driver.save_screenshot(
             '{0}/{1}-{2}-Python-{3}.png'.format(

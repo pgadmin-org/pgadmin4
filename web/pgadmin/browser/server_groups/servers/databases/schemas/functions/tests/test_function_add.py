@@ -90,7 +90,7 @@ class FunctionAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add function under schema node. """
-        super(FunctionAddTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
         db_user = self.server["username"]
         data = {

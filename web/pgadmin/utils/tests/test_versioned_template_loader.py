@@ -142,7 +142,7 @@ class TestVersionedTemplateLoader(BaseTestGenerator):
 
 class FakeApp(Flask):
     def __init__(self):
-        super(FakeApp, self).__init__("")
+        super().__init__("")
         self.jinja_loader = FileSystemLoader(
             os.path.dirname(os.path.realpath(__file__)) + "/templates"
         )

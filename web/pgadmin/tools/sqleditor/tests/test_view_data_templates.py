@@ -187,7 +187,7 @@ class TestViewDataTemplates(BaseTestGenerator):
 
 class FakeApp(Flask):
     def __init__(self):
-        super(FakeApp, self).__init__("")
+        super().__init__("")
         driver = get_driver(PG_DEFAULT_DRIVER, self)
         self.jinja_env.filters['qtLiteral'] = driver.qtLiteral
         self.jinja_env.filters['qtIdent'] = driver.qtIdent

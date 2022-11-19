@@ -86,7 +86,7 @@ def generate_alias(tbl):
     )
 
 
-class SQLAutoComplete(object):
+class SQLAutoComplete():
     """
     class SQLAutoComplete
 

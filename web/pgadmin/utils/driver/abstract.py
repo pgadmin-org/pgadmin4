@@ -13,9 +13,9 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from .registry import DriverRegistry
 
 
-class BaseDriver(object, metaclass=DriverRegistry):
+class BaseDriver(metaclass=DriverRegistry):
     """
-    class BaseDriver(object):
+    class BaseDriver():
 
     This is a base class for different server types.
     Inherit this class to implement different type of database driver
@@ -69,9 +69,9 @@ class BaseDriver(object, metaclass=DriverRegistry):
         pass
 
 
-class BaseConnection(object, metaclass=ABCMeta):
+class BaseConnection(metaclass=ABCMeta):
     """
-    class BaseConnection(object)
+    class BaseConnection()
 
         It is a base class for database connection. A different connection
         drive must implement this to expose abstract methods for this server.

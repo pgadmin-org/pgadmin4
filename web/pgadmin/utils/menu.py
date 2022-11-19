@@ -10,12 +10,12 @@
 PRIORITY = 100
 
 
-class MenuItem(object):
+class MenuItem():
     def __init__(self, **kwargs):
         self.__dict__.update(**kwargs)
 
 
-class Panel(object):
+class Panel():
     def __init__(
         self, name, title, content='', width=500, height=600, **kwargs
     ):

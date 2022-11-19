@@ -25,7 +25,7 @@ class LanguagesAddTestCase(BaseTestGenerator):
                                          language_utils.test_cases)
 
     def setUp(self):
-        super(LanguagesAddTestCase, self).setUp()
+        super().setUp()
         db_user = self.server['username']
         self.data = self.test_data
         self.data['name'] = "language_%s" % str(uuid.uuid4())[1:8]

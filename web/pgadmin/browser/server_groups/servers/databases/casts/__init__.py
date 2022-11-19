@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -51,7 +51,7 @@ class CastModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext('Casts')
 
     def __init__(self, *args, **kwargs):
-        super(CastModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """
@@ -190,7 +190,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(CastView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

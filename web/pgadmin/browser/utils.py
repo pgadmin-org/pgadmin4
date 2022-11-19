@@ -88,7 +88,7 @@ def is_version_in_range(sversion, min_ver, max_ver):
     return False
 
 
-class PGChildModule(object):
+class PGChildModule():
     """
     class PGChildModule
 
@@ -111,7 +111,7 @@ class PGChildModule(object):
         self.max_ppasver = 1100000000
         self.server_type = None
 
-        super(PGChildModule, self).__init__()
+        super().__init__()
 
     def backend_supported(self, manager, **kwargs):
         if hasattr(self, 'show_node') and not self.show_node:

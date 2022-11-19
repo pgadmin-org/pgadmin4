@@ -35,7 +35,7 @@ server_info = {}
 
 class GrantWizardModule(PgAdminModule):
     """
-    class GrantWizardModule(Object):
+    class GrantWizardModule():
 
         It is a wizard which inherits PgAdminModule
         class and define methods to load its own

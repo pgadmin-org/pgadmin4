@@ -58,7 +58,7 @@ class CatalogObjectColumnsModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(CatalogObjectColumnsModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 

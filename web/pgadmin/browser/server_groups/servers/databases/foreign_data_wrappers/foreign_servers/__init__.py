@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -64,7 +64,7 @@ class ForeignServerModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(ForeignServerModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, fid):
         """
@@ -103,7 +103,7 @@ class ForeignServerModule(CollectionNodeModule):
         """
         from .user_mappings import blueprint as module
         self.submodules.append(module)
-        super(ForeignServerModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = ForeignServerModule(__name__)

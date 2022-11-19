@@ -21,7 +21,7 @@ import unittest
 
 class TestsGeneratorRegistry(ABCMeta):
     """
-    class TestsGeneratorRegistry(object)
+    class TestsGeneratorRegistry()
         Every module will be registered automatically by its module name.
 
     Class-level Methods:
@@ -126,7 +126,7 @@ class BaseTestGenerator(unittest.TestCase, metaclass=TestsGeneratorRegistry):
     # Defining abstract method which will override by individual testcase.
 
     def setUp(self):
-        super(BaseTestGenerator, self).setUp()
+        super().setUp()
         self.server_id = self.server_information["server_id"]
         server_con = server_utils.connect_server(self, self.server_id)
         if hasattr(self, 'skip_on_database') and \
@@ -179,7 +179,7 @@ class BaseSocketTestGenerator(BaseTestGenerator):
     SOCKET_NAMESPACE = ""
 
     def setUp(self):
-        super(BaseSocketTestGenerator, self).setUp()
+        super().setUp()
         self.tester.get("/")
         self.socket_client = socketio.test_client(
             self.app, namespace=self.SOCKET_NAMESPACE,
@@ -187,10 +187,10 @@ class BaseSocketTestGenerator(BaseTestGenerator):
         self.assertTrue(self.socket_client.is_connected(self.SOCKET_NAMESPACE))
 
     def runTest(self):
-        super(BaseSocketTestGenerator, self).runTest()
+        super().runTest()
 
     def tearDown(self):
-        super(BaseSocketTestGenerator, self).tearDown()
+        super().tearDown()
         self.socket_client.disconnect(namespace=self.SOCKET_NAMESPACE)
         self.assertFalse(
             self.socket_client.is_connected(self.SOCKET_NAMESPACE))

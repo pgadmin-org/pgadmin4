@@ -12,7 +12,7 @@ import os
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
-from pgadmin.utils import server_utils as server_utils, does_utility_exist
+from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from unittest.mock import patch, MagicMock

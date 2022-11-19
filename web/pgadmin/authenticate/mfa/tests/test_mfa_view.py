@@ -50,8 +50,8 @@ def check_validation_view_content(test):
 
                         response = test.tester.get("/mfa/validate")
 
-    test.assertEquals(response.status_code, 200)
-    test.assertEquals(
+    test.assertEqual(response.status_code, 200)
+    test.assertEqual(
         response.headers["Content-Type"], "text/html; charset=utf-8"
     )
     # test.assertTrue('Dummy' in response.data.decode('utf8'))

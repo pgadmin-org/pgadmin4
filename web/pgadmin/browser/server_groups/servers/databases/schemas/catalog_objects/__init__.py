@@ -62,7 +62,7 @@ class CatalogObjectModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(CatalogObjectModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -85,7 +85,7 @@ class CatalogObjectModule(SchemaChildModule):
         Override the default register function to automagically register
         sub-modules at once.
         """
-        super(CatalogObjectModule, self).register(app, options)
+        super().register(app, options)
 
         from .columns import blueprint as module
         app.register_blueprint(module)

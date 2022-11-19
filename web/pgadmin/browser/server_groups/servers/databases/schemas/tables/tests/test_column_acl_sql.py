@@ -21,7 +21,7 @@ class TestColumnAclSql(SQLTemplateTestBase):
     ]
 
     def __init__(self):
-        super(TestColumnAclSql, self).__init__()
+        super().__init__()
         self.table_id = -1
         self.column_id = -1
 

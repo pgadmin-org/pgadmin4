@@ -44,7 +44,7 @@ class PgAdminModule(Blueprint):
         self.submodules = []
         self.parentmodules = []
 
-        super(PgAdminModule, self).__init__(name, import_name, **kwargs)
+        super().__init__(name, import_name, **kwargs)
 
         def create_module_preference():
             # Create preference for each module by default
@@ -69,7 +69,7 @@ class PgAdminModule(Blueprint):
         sub-modules at once.
         """
 
-        super(PgAdminModule, self).register(app, options)
+        super().register(app, options)
 
         for module in self.submodules:
             module.parentmodules.append(self)

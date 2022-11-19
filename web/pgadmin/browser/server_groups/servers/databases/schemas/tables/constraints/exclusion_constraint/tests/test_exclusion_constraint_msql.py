@@ -31,7 +31,7 @@ class ExclusionGetTestCase(BaseTestGenerator):
                                          exclusion_utils.test_cases)
 
     def setUp(self):
-        super(ExclusionGetTestCase, self).setUp()
+        super().setUp()
         # Load test data
         self.data = self.test_data
 

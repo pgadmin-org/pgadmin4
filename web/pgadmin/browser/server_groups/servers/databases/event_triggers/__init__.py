@@ -57,7 +57,7 @@ class EventTriggerModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(EventTriggerModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90300
         self.max_ver = None
 

@@ -709,7 +709,7 @@ SELECT 1, pg_sleep(300)"""
         canvas.find_element(By.XPATH, "//*[contains(string(), 'JIT')]")
 
 
-class WaitForAnyElementWithText(object):
+class WaitForAnyElementWithText():
     def __init__(self, locator, text):
         self.locator = locator
         self.text = text

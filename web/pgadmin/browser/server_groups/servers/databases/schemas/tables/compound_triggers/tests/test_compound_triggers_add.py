@@ -11,7 +11,7 @@ import json
 import uuid
 from unittest.mock import patch
 
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -34,7 +34,7 @@ class CompoundTriggersAddTestCase(BaseTestGenerator):
                                          compound_trigger_utils.test_cases)
 
     def setUp(self):
-        super(CompoundTriggersAddTestCase, self).setUp()
+        super().setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]

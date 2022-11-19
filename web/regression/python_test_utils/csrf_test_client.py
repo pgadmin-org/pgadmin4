@@ -17,7 +17,7 @@ from flask_wtf.csrf import generate_csrf
 import config
 
 
-class RequestShim(object):
+class RequestShim():
     """
     A fake request that proxies cookie-related methods to a Flask test client.
     """
@@ -44,14 +44,14 @@ class TestClient(testing.FlaskClient):
     def __init__(self, *args, **kwargs):
         self.csrf_token = None
         self.app = None
-        super(TestClient, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def setApp(self, _app):
         self.app = _app
 
     def open(self, *args, **kwargs):
         if len(args) > 0 and isinstance(args[0], (EnvironBuilder, dict)):
-            return super(TestClient, self).open(*args, **kwargs)
+            return super().open(*args, **kwargs)
 
         data = kwargs.get('data', {})
 
@@ -68,7 +68,7 @@ class TestClient(testing.FlaskClient):
             headers.extend(api_key_headers)
             kwargs['headers'] = headers
 
-        return super(TestClient, self).open(*args, **kwargs)
+        return super().open(*args, **kwargs)
 
     def fetch_csrf(self, res):
         m = re.search(

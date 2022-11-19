@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -29,7 +29,7 @@ from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
 
 class ExtensionModule(CollectionNodeModule):
     """
-    class ExtensionModule(Object):
+    class ExtensionModule():
 
         A collection Node which inherits CollectionNodeModule
         class and define methods to get child nodes, to load its own
@@ -42,7 +42,7 @@ class ExtensionModule(CollectionNodeModule):
         """
         Initialising the base class
         """
-        super(ExtensionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """

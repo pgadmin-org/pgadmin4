@@ -31,7 +31,7 @@ class CheckConstraintGetSqlTestCase(BaseTestGenerator):
                                          check_constraint_utils.test_cases)
 
     def setUp(self):
-        super(CheckConstraintGetSqlTestCase, self).setUp()
+        super().setUp()
         # Load test data
         self.data = self.test_data
 

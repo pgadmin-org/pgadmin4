@@ -63,7 +63,7 @@ class Driver(BaseDriver):
     def __init__(self, **kwargs):
         self.managers = dict()
 
-        super(Driver, self).__init__()
+        super().__init__()
 
     def _restore_connections_from_session(self):
         """

@@ -5,7 +5,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
 from regression.test_setup import config_data
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgAdmin4 import app
 from . import utils as psql_utils
 from .... import socketio

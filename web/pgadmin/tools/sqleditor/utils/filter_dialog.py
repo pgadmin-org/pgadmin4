@@ -19,7 +19,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.constants import ERROR_MSG_TRANS_ID_NOT_FOUND
 
 
-class FilterDialog(object):
+class FilterDialog():
     @staticmethod
     def get(*args):
         """To fetch the current sorted columns"""

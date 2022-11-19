@@ -53,7 +53,7 @@ class ConstraintsModule(CollectionNodeModule):
     def __init__(self, *args, **kwargs):
         self.min_ver = None
         self.max_ver = None
-        super(ConstraintsModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, tid):
         """
@@ -103,7 +103,7 @@ class ConstraintsModule(CollectionNodeModule):
         from .index_constraint import unique_constraint_blueprint as module
         self.submodules.append(module)
 
-        super(ConstraintsModule, self).register(app, options)
+        super().register(app, options)
 
 
 blueprint = ConstraintsModule(__name__)

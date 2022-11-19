@@ -23,7 +23,7 @@ class TestRoleDependenciesSql(SQLTemplateTestBase):
     ]
 
     def __init__(self):
-        super(TestRoleDependenciesSql, self).__init__()
+        super().__init__()
         self.table_id = -1
         self.role_name = "testpgadmin%s" % str(uuid.uuid4())[1:8]
 

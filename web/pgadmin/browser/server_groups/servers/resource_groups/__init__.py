@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -65,7 +65,7 @@ class ResourceGroupModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(ResourceGroupModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 90400
         self.max_ver = None
@@ -204,7 +204,7 @@ class ResourceGroupView(NodeView):
         self.conn = None
         self.template_path = None
 
-        super(ResourceGroupView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

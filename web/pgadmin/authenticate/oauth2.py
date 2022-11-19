@@ -34,7 +34,7 @@ class Oauth2Module(PgAdminModule):
     def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options)
+        super().register(app, options)
 
     def get_exposed_url_endpoints(self):
         return [OAUTH2_AUTHORIZE,

@@ -24,7 +24,7 @@ class SQLTemplateTestBase(BaseTestGenerator):
     ]
 
     def __init__(self):
-        super(SQLTemplateTestBase, self).__init__()
+        super().__init__()
         self.database_name = -1
 
     def test_setup(self, connection, cursor):

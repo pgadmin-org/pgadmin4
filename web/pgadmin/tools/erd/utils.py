@@ -18,7 +18,7 @@ from pgadmin.utils.preferences import Preferences
 
 class ERDTableView(BaseTableView, DataTypeReader):
     def __init__(self):
-        super(BaseTableView, self).__init__(cmd='erd')
+        super().__init__(cmd='erd')
 
     @BaseTableView.check_precondition
     def sql(self, conn_id=None, did=None, sid=None, data={}, with_drop=False):

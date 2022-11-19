@@ -12,7 +12,7 @@
 import simplejson as json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
@@ -56,7 +56,7 @@ class RowSecurityModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext('RLS Policies')
 
     def __init__(self, *args, **kwargs):
-        super(RowSecurityModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90500
         self.max_ver = None
 
@@ -178,7 +178,7 @@ class RowSecurityView(PGChildNodeView):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(RowSecurityView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """

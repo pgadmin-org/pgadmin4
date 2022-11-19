@@ -52,7 +52,7 @@ class CheckConstraintModule(CollectionNodeModule):
     _COLLECTION_LABEL = _("Check Constraints")
 
     def __init__(self, *args, **kwargs):
-        super(CheckConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 

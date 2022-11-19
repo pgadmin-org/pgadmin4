@@ -33,7 +33,7 @@ class ProcedureExecSQLTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will check the EXEC SQL. """
-        super(ProcedureExecSQLTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         if self.server_type == "pg" and\

@@ -129,13 +129,13 @@ class ServerGroupModule(BrowserPluginModule):
         """
         from .servers import blueprint as module
         self.submodules.append(module)
-        super(BrowserPluginModule, self).register(app, options)
+        super().register(app, options)
 
 
 class ServerGroupMenuItem(MenuItem):
     def __init__(self, **kwargs):
         kwargs.setdefault("type", ServerGroupModule.node_type)
-        super(ServerGroupMenuItem, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 class ServerGroupPluginModule(BrowserPluginModule, metaclass=ABCMeta):

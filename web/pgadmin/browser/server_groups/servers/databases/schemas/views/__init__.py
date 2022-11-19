@@ -17,7 +17,7 @@ import simplejson as json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
 from flask_security import current_user
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, parse_rule_definition, VacuumSettings, get_schema
@@ -83,7 +83,7 @@ class ViewModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(ViewModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -147,7 +147,7 @@ class ViewModule(SchemaChildModule):
             tables.compound_triggers import blueprint as module
         self.submodules.append(module)
 
-        super(ViewModule, self).register(app, options)
+        super().register(app, options)
 
 
 class Message(IProcessDesc):
@@ -212,7 +212,7 @@ class MViewModule(ViewModule):
             *args:
             **kwargs:
         """
-        super(MViewModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90300
         self.max_ver = None
 
@@ -364,7 +364,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         Initialize the variables used by methods of ViewNode.
         """
 
-        super(ViewNode, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.manager = None
         self.conn = None
@@ -1763,7 +1763,7 @@ class MViewNode(ViewNode, VacuumSettings):
         Initialize the variables used by methods of ViewNode.
         """
 
-        super(MViewNode, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.template_initial = 'mviews'
 
