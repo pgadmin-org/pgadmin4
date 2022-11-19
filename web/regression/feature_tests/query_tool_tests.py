@@ -101,16 +101,6 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self._query_tool_notify_statements()
         self.page.clear_query_tool()
 
-        # explain query with JIT stats
-        print("Explain query with JIT stats... ",
-              file=sys.stderr, end="")
-        if self._supported_jit_on_server():
-            self._query_tool_explain_check_jit_stats()
-            print("OK.", file=sys.stderr)
-            self.page.clear_query_tool()
-        else:
-            print(skip_warning, file=sys.stderr)
-
     def after(self):
         self.page.remove_server(self.server)
 
@@ -646,67 +636,6 @@ SELECT 1, pg_sleep(300)"""
             print("OK.", file=sys.stderr)
         else:
             print("Skipped.", file=sys.stderr)
-
-    def _supported_jit_on_server(self):
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        pg_cursor = connection.cursor()
-
-        # check if jit is turned on
-        jit_enabled = False
-        try:
-            pg_cursor.execute('show jit')
-            show_jit = pg_cursor.fetchone()
-            if show_jit[0] == 'on':
-                jit_enabled = True
-        except Exception:
-            pass
-
-        connection.close()
-        return connection.server_version >= 110000 and jit_enabled
-
-    def _query_tool_explain_check_jit_stats(self):
-
-        self.page.execute_query("SET jit_above_cost=10;")
-        self.page.clear_query_tool()
-
-        self.page.fill_codemirror_area_with(
-            "SELECT count(*) FROM pg_catalog.pg_class;")
-
-        self.assertTrue(self.page.open_explain_options(),
-                        'Unable to open Explain Options')
-
-        # disable Explain options and only enable COST option
-        for op in (QueryToolLocators.btn_explain_verbose,
-                   QueryToolLocators.btn_explain_costs,
-                   QueryToolLocators.btn_explain_buffers,
-                   QueryToolLocators.btn_explain_timing):
-            btn = self.page.find_by_css_selector(op)
-            if btn.get_attribute('data-checked') == 'true':
-                btn.click()
-        # click cost button
-        cost_btn = self.page.find_by_css_selector(
-            QueryToolLocators.btn_explain_costs)
-        cost_btn.click()
-
-        # close explain options not required
-        self.page.find_by_css_selector(
-            QueryToolLocators.btn_explain_analyze).click()
-
-        self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab(self.data_output_tab_id, rc_dock=True)
-
-        canvas = self.wait.until(EC.presence_of_element_located(
-            (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
-        )
-        # Search for 'Output' word in result (verbose option)
-        canvas.find_element(By.XPATH, "//*[contains(string(), 'JIT')]")
 
 
 class WaitForAnyElementWithText():
