@@ -30,7 +30,7 @@ Flask-Mail                                                       0.9.1          
 Flask-Migrate                                                    3.1.0            UNKNOWN                              https://github.com/miguelgrinberg/flask-migrate
 Flask-SQLAlchemy                                                 2.5.1            BSD-3-Clause                         https://github.com/pallets/flask-sqlalchemy
 Flask-WTF                                                        1.0.1            BSD-3-Clause                         https://github.com/wtforms/flask-wtf/
-Flask-Compress                                                   1.12             MIT                                  https://github.com/colour-science/flask-compress
+Flask-Compress                                                   1.13             MIT                                  https://github.com/colour-science/flask-compress
 Flask-Paranoid                                                   0.3.0            UNKNOWN                              https://github.com/miguelgrinberg/flask-paranoid
 Flask-Babel                                                      2.0.0            BSD                                  http://github.com/python-babel/flask-babel
 Flask-Security-Too                                               4.1.5            MIT                                  https://github.com/Flask-Middleware/flask-security
@@ -40,25 +40,25 @@ passlib                                                          1.7.4          
 pytz                                                             2021.3           MIT                                  http://pythonhosted.org/pytz
 simplejson                                                       3.17.6           MIT License                          https://github.com/simplejson/simplejson
 speaklater3                                                      1.4              UNKNOWN                              https://github.com/ThomasWaldmann/speaklater
-sqlparse                                                         0.4.2            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
+sqlparse                                                         0.4.3            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
 psutil                                                           5.9.3            BSD-3-Clause                         https://github.com/giampaolo/psutil
-psycopg2                                                         2.9.3            LGPL with exceptions                 https://psycopg.org/
+psycopg2                                                         2.9.5            LGPL with exceptions                 https://psycopg.org/
 python-dateutil                                                  2.8.2            Dual License                         https://github.com/dateutil/dateutil
-SQLAlchemy                                                       1.4.40           MIT                                  https://www.sqlalchemy.org
+SQLAlchemy                                                       1.4.44           MIT                                  https://www.sqlalchemy.org
 bcrypt                                                           3.2.2            Apache License, Version 2.0          https://github.com/pyca/bcrypt/
 cryptography                                                     3.4.8            BSD or Apache License, Version 2.0   https://github.com/pyca/cryptography
 sshtunnel                                                        0.4.0            MIT                                  https://github.com/pahaz/sshtunnel
 ldap3                                                            2.9.1            LGPL v3                              https://github.com/cannatag/ldap3
 gssapi                                                           1.8.2            LICENSE.txt                          https://github.com/pythongssapi/python-gssapi
 eventlet                                                         0.33.0           UNKNOWN                              http://eventlet.net
-httpagentparser                                                  1.9.3            http://www.opensource.org/licenses/mit-license.php https://github.com/shon/httpagentparser
+httpagentparser                                                  1.9.5            http://www.opensource.org/licenses/mit-license.php https://github.com/shon/httpagentparser
 user-agents                                                      2.2.0            MIT                                  https://github.com/selwin/python-user-agents
 pywinpty                                                         1.1.*            Unknown                              Unknown
-Authlib                                                          0.15.5           BSD-3-Clause                         https://authlib.org/
+Authlib                                                          0.15.6           BSD-3-Clause                         https://authlib.org/
 requests                                                         2.25.1           Apache 2.0                           https://requests.readthedocs.io
-pyotp                                                            2.6.0            MIT License                          https://github.com/pyotp/pyotp
+pyotp                                                            2.7.0            MIT License                          https://github.com/pyotp/pyotp
 qrcode                                                           7.3.1            BSD                                  https://github.com/lincolnloop/python-qrcode
-Pillow                                                           9.2.0            HPND                                 https://python-pillow.org
+Pillow                                                           9.3.0            HPND                                 https://python-pillow.org
 boto3                                                            1.20.54          Apache License 2.0                   https://github.com/boto/boto3
 botocore                                                         1.23.54          Apache License 2.0                   https://github.com/boto/botocore
 urllib3                                                          1.26.12          MIT                                  https://urllib3.readthedocs.io/
@@ -171,7 +171,6 @@ Name                                                             Version        
 @socket.io/component-emitter                                     3.1.0            MIT                                  https://github.com/socketio/emitter.git
 @szhsin/react-menu                                               2.3.3            MIT                                  https://github.com/szhsin/react-menu.git
 @types/classnames                                                2.3.1            MIT                                  Unknown
-@types/json-schema                                               7.0.9            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/minimist                                                  1.2.2            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/node                                                      16.11.6          MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/normalize-package-data                                    2.4.1            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
@@ -184,8 +183,6 @@ Name                                                             Version        
 @types/styled-jsx                                                2.2.9            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 ajv                                                              8.9.0            MIT                                  https://github.com/ajv-validator/ajv.git
 ajv                                                              6.12.6           MIT                                  https://github.com/ajv-validator/ajv.git
-ajv-errors                                                       1.0.1            MIT                                  git+https://github.com/epoberezkin/ajv-errors.git
-ajv-keywords                                                     3.5.2            MIT                                  git+https://github.com/epoberezkin/ajv-keywords.git
 alphanum-sort                                                    1.0.2            MIT                                  https://github.com/TrySound/alphanum-sort.git
 ansi-styles                                                      3.2.1            MIT                                  https://github.com/chalk/ansi-styles.git
 array-union                                                      3.0.1            MIT                                  https://github.com/sindresorhus/array-union.git
@@ -199,12 +196,9 @@ axios                                                            0.21.4         
 babel-plugin-styled-components                                   1.13.3           MIT                                  https://github.com/styled-components/babel-plugin-styled-components.git
 babel-plugin-syntax-jsx                                          6.18.0           MIT                                  https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-jsx
 babelify                                                         10.0.0           MIT                                  https://github.com/babel/babelify.git
-backbone                                                         1.4.0            MIT                                  https://github.com/jashkenas/backbone.git
-backo2                                                           1.0.2            MIT                                  https://github.com/mokesmokes/backo.git
 balanced-match                                                   1.0.2            MIT                                  git://github.com/juliangruber/balanced-match.git
 base64-arraybuffer                                               0.2.0            MIT                                  https://github.com/niklasvh/base64-arraybuffer
 base64-arraybuffer                                               1.0.1            MIT                                  https://github.com/niklasvh/base64-arraybuffer
-big.js                                                           5.2.2            MIT                                  https://github.com/MikeMcl/big.js.git
 bignumber.js                                                     9.0.1            MIT                                  https://github.com/MikeMcl/bignumber.js.git
 bignumber.js                                                     7.2.1            MIT                                  https://github.com/MikeMcl/bignumber.js.git
 bootstrap                                                        4.6.1            MIT                                  git+https://github.com/twbs/bootstrap.git
@@ -237,7 +231,6 @@ convert-units                                                    2.3.4          
 core-js                                                          3.19.1           MIT                                  https://github.com/zloirock/core-js.git
 css-color-names                                                  1.0.1            MIT                                  git://github.com/bahamas10/css-color-names.git
 css-line-break                                                   2.0.1            MIT                                  git+ssh://git@github.com/niklasvh/css-line-break.git
-css-loader                                                       5.2.7            MIT                                  https://github.com/webpack-contrib/css-loader.git
 css-to-react-native                                              3.0.0            MIT                                  git+https://github.com/styled-components/css-to-react-native.git
 css-tree                                                         1.1.3            MIT                                  https://github.com/csstree/csstree.git
 css-vendor                                                       2.0.8            MIT                                  git@github.com:cssinjs/css-vendor.git
@@ -261,7 +254,6 @@ dnd-core                                                         16.0.1         
 dom-align                                                        1.12.2           MIT                                  git@github.com:yiminghe/dom-align.git
 dom-helpers                                                      5.2.1            MIT                                  git+https://github.com/react-bootstrap/dom-helpers.git
 dom-serializer                                                   1.3.2            MIT                                  git://github.com/cheeriojs/dom-renderer.git
-emojis-list                                                      3.0.0            MIT                                  git+https://github.com/kikobeats/emojis-list.git
 engine.io-client                                                 6.2.3            MIT                                  https://github.com/socketio/engine.io-client.git
 engine.io-parser                                                 5.0.4            MIT                                  git@github.com:socketio/engine.io-parser.git
 error-ex                                                         1.3.2            MIT                                  https://github.com/qix-/node-error-ex.git
@@ -291,7 +283,6 @@ html-escaper                                                     2.0.2          
 html2canvas                                                      1.3.2            MIT                                  git@github.com:niklasvh/html2canvas.git
 ignore                                                           5.2.0            MIT                                  git@github.com:kaelzhang/node-ignore.git
 immutability-helper                                              3.1.1            MIT                                  git+https://github.com/kolodny/immutability-helper.git
-imports-loader                                                   2.0.0            MIT                                  https://github.com/webpack-contrib/imports-loader.git
 indent-string                                                    5.0.0            MIT                                  https://github.com/sindresorhus/indent-string.git
 insert-if                                                        1.2.0            MIT                                  git+https://github.com/chipto/insert-if.git
 ip-address                                                       7.1.0            MIT                                  git://github.com/beaugunderson/ip-address.git
@@ -319,7 +310,6 @@ json-schema-traverse                                             1.0.0          
 json-schema-traverse                                             0.4.1            MIT                                  git+https://github.com/epoberezkin/json-schema-traverse.git
 json-source-map                                                  0.6.1            MIT                                  git+https://github.com/epoberezkin/json-source-map.git
 json5                                                            2.2.1            MIT                                  git+https://github.com/json5/json5.git
-json5                                                            1.0.1            MIT                                  git+https://github.com/json5/json5.git
 jsoneditor-react                                                 3.1.2            MIT                                  git+https://github.com/vankop/jsoneditor-react.git
 jss                                                              10.8.2           MIT                                  https://github.com/cssinjs/jss
 jss-plugin-camel-case                                            10.8.2           MIT                                  https://github.com/cssinjs/jss
@@ -333,8 +323,6 @@ karma-coverage                                                   2.0.3          
 kind-of                                                          6.0.3            MIT                                  https://github.com/jonschlinkert/kind-of.git
 lilconfig                                                        2.0.3            MIT                                  https://github.com/antonk52/lilconfig
 lines-and-columns                                                1.1.6            MIT                                  https://github.com/eventualbuddha/lines-and-columns.git
-loader-utils                                                     2.0.2            MIT                                  https://github.com/webpack/loader-utils.git
-loader-utils                                                     1.4.1            MIT                                  https://github.com/webpack/loader-utils.git
 locate-path                                                      6.0.0            MIT                                  https://github.com/sindresorhus/locate-path.git
 lodash                                                           4.17.21          MIT                                  https://github.com/lodash/lodash.git
 lodash._basebind                                                 2.3.0            MIT                                  https://github.com/lodash/lodash-cli.git
@@ -367,9 +355,7 @@ memoize-one                                                      5.2.1          
 meow                                                             10.1.2           MIT                                  https://github.com/sindresorhus/meow.git
 merge2                                                           1.4.1            MIT                                  git@github.com:teambition/merge2.git
 micromatch                                                       4.0.4            MIT                                  https://github.com/micromatch/micromatch.git
-mime                                                             2.5.2            MIT                                  https://github.com/broofa/mime
 min-indent                                                       1.0.1            MIT                                  https://github.com/thejameskyle/min-indent
-minimist                                                         1.2.7            MIT                                  git://github.com/minimistjs/minimist.git
 minimist-options                                                 4.1.0            MIT                                  https://github.com/vadimdemedes/minimist-options.git
 ml-array-max                                                     1.2.3            MIT                                  git+https://github.com/mljs/array.git
 ml-array-min                                                     1.2.2            MIT                                  git+https://github.com/mljs/array.git
@@ -416,7 +402,6 @@ postcss-minify-font-values                                       5.0.1          
 postcss-minify-gradients                                         5.0.3            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-minify-params                                            5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-minify-selectors                                         5.1.0            MIT                                  https://github.com/cssnano/cssnano.git
-postcss-modules-local-by-default                                 4.0.0            MIT                                  https://github.com/css-modules/postcss-modules-local-by-default.git
 postcss-normalize-charset                                        5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-normalize-display-values                                 5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-normalize-positions                                      5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
@@ -486,20 +471,15 @@ run-parallel                                                     1.2.0          
 safe-buffer                                                      5.1.2            MIT                                  git://github.com/feross/safe-buffer.git
 scheduler                                                        0.19.1           MIT                                  https://github.com/facebook/react.git
 scheduler                                                        0.20.2           MIT                                  https://github.com/facebook/react.git
-schema-utils                                                     3.1.1            MIT                                  https://github.com/webpack/schema-utils.git
-schema-utils                                                     1.0.0            MIT                                  https://github.com/webpack-contrib/schema-utils
 select2                                                          4.0.13           MIT                                  git://github.com/select2/select2.git
 shallowequal                                                     1.1.0            MIT                                  https://github.com/dashed/shallowequal.git
-shim-loader                                                      1.0.1            MIT                                  https://github.com/zinserjan/shim-loader
 slash                                                            4.0.0            MIT                                  https://github.com/sindresorhus/slash.git
 snapsvg-cjs                                                      0.0.6            MIT                                  git+https://github.com/geelen/Snap.svg-cjs.git
 socket.io-client                                                 4.5.3            MIT                                  https://github.com/socketio/socket.io-client.git
 socket.io-parser                                                 4.2.1            MIT                                  https://github.com/socketio/socket.io-parser.git
-source-list-map                                                  1.1.2            MIT                                  https://github.com/webpack/source-list-map.git
 spdx-expression-parse                                            3.0.1            MIT                                  https://github.com/jslicense/spdx-expression-parse.js.git
 split.js                                                         1.6.4            MIT                                  https://github.com/nathancahill/split
 stable                                                           0.1.8            MIT                                  https://github.com/Two-Screen/stable.git
-strip-comments                                                   2.0.1            MIT                                  https://github.com/jonschlinkert/strip-comments.git
 strip-indent                                                     4.0.0            MIT                                  https://github.com/sindresorhus/strip-indent.git
 styled-components                                                5.3.3            MIT                                  git+https://github.com/styled-components/styled-components.git
 stylehacks                                                       5.0.1            MIT                                  https://github.com/cssnano/cssnano.git
@@ -518,12 +498,10 @@ to-regex-range                                                   5.0.1          
 trim-newlines                                                    4.0.2            MIT                                  https://github.com/sindresorhus/trim-newlines.git
 unc-path-regex                                                   0.1.2            MIT                                  https://github.com/regexhq/unc-path-regex.git
 uniqs                                                            2.0.0            MIT                                  git://github.com/fgnass/uniqs.git
-url-loader                                                       1.1.2            MIT                                  https://github.com/webpack-contrib/url-loader.git
 util-deprecate                                                   1.0.2            MIT                                  git://github.com/TooTallNate/util-deprecate.git
 utrie                                                            1.0.1            MIT                                  git+ssh://git@github.com/niklasvh/utrie.git
 valid-filename                                                   2.0.1            MIT                                  https://github.com/sindresorhus/valid-filename.git
 vendors                                                          1.0.4            MIT                                  https://github.com/wooorm/vendors.git
-webpack-sources                                                  0.2.3            MIT                                  git+https://github.com/webpack/webpack-sources.git
 wkx                                                              0.5.0            MIT                                  http://github.com/cschwarz/wkx.git
 ws                                                               8.2.3            MIT                                  https://github.com/websockets/ws.git
 xmlhttprequest-ssl                                               2.0.0            MIT                                  git://github.com/mjwwit/node-XMLHttpRequest.git
@@ -544,18 +522,13 @@ electron-to-chromium                                             1.3.889        
 fastq                                                            1.13.0           ISC                                  git+https://github.com/mcollina/fastq.git
 glob-parent                                                      5.1.2            ISC                                  https://github.com/gulpjs/glob-parent.git
 hosted-git-info                                                  4.1.0            ISC                                  git+https://github.com/npm/hosted-git-info.git
-icss-utils                                                       5.1.0            ISC                                  git+https://github.com/css-modules/icss-utils.git
 is-resolvable                                                    1.1.0            ISC                                  https://github.com/shinnn/is-resolvable.git
 jsonrepair                                                       2.2.1            ISC                                  https://github.com/josdejong/jsonrepair.git
 lru-cache                                                        6.0.0            ISC                                  git://github.com/isaacs/node-lru-cache.git
 minimatch                                                        3.1.2            ISC                                  git://github.com/isaacs/minimatch.git
 picocolors                                                       1.0.0            ISC                                  https://github.com/alexeyraspopov/picocolors.git
-postcss-modules-extract-imports                                  3.0.0            ISC                                  https://github.com/css-modules/postcss-modules-extract-imports.git
-postcss-modules-scope                                            3.0.0            ISC                                  https://github.com/css-modules/postcss-modules-scope.git
-postcss-modules-values                                           4.0.0            ISC                                  git+https://github.com/css-modules/postcss-modules-values.git
 react-timer-hook                                                 3.0.5            ISC                                  git+https://github.com/amrlabib/react-timer-hook.git
 semver                                                           7.3.5            ISC                                  https://github.com/npm/node-semver
-semver                                                           7.3.7            ISC                                  https://github.com/npm/node-semver.git
 semver                                                           6.3.0            ISC                                  https://github.com/npm/node-semver
 vanilla-picker                                                   2.12.1           ISC                                  https://github.com/Sphinxxxx/vanilla-picker.git
 yallist                                                          4.0.0            ISC                                  git+https://github.com/isaacs/yallist.git
@@ -602,12 +575,11 @@ mdn-data                                                         2.0.14         
 spdx-license-ids                                                 3.0.11           CC0-1.0                              https://github.com/jslicense/spdx-license-ids.git
 mousetrap                                                        1.6.5            Apache-2.0 WITH LLVM-exception       git://github.com/ccampbell/mousetrap.git
 pako                                                             1.0.11           (MIT AND Zlib)                       https://github.com/nodeca/pako.git
-precond                                                          0.2.3            MIT*                                 https://github.com/MathieuTurcotte/node-precond.git
-webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 spdx-exceptions                                                  2.3.0            CC-BY-3.0                            https://github.com/kemitchell/spdx-exceptions.json.git
 tslib                                                            2.4.0            0BSD                                 https://github.com/Microsoft/tslib.git
 tslib                                                            2.3.0            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
+webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 
-530 dependencies listed.
+502 dependencies listed.
 

@@ -19,6 +19,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #5493 <https://github.com/pgadmin-org/pgadmin4/issues/5493>`_ -  Remove all traces of Backbone and Underscore.
 
 Bug fixes
 *********
