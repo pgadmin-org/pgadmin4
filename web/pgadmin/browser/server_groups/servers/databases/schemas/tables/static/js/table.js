@@ -128,15 +128,15 @@ define('pgadmin.node.table', [
         }
         ]);
         pgBrowser.Events.on(
-          'pgadmin:browser:node:table:updated', this.onTableUpdated, this
+          'pgadmin:browser:node:table:updated', this.onTableUpdated.bind(this)
         );
         pgBrowser.Events.on(
           'pgadmin:browser:node:type:cache_cleared',
-          this.handle_cache, this
+          this.handle_cache.bind(this)
         );
         pgBrowser.Events.on(
           'pgadmin:browser:node:domain:cache_cleared',
-          this.handle_cache, this
+          this.handle_cache.bind(this)
         );
       },
       callbacks: {
@@ -305,50 +305,6 @@ define('pgadmin.node.table', [
       getSchema: function(treeNodeInfo, itemNodeData) {
         return getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser);
       },
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          relowner: undefined,
-          description: undefined,
-          is_partitioned: false,
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
-        },{
-          id: 'oid', label: gettext('OID'), type: 'text', mode: ['properties'],
-        },{
-          id: 'relowner', label: gettext('Owner'), type: 'text', node: 'role',
-          mode: ['properties', 'create', 'edit'], select2: {allowClear: false},
-          disabled: 'inSchema', control: 'node-list-by-name',
-        },{
-          id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-          visible: 'isVersionGreaterThan96',
-          readonly: function(m) {
-            return !m.isNew();
-          },
-        },{
-          id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'], disabled: 'inSchema',
-        }],
-        sessChanged: function() {
-          /* If only custom autovacuum option is enabled the check if the options table is also changed. */
-          if(_.size(this.sessAttrs) == 2 && this.sessAttrs['autovacuum_custom'] && this.sessAttrs['toast_autovacuum']) {
-            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
-          }
-          if(_.size(this.sessAttrs) == 1 && (this.sessAttrs['autovacuum_custom'] || this.sessAttrs['toast_autovacuum'])) {
-            return this.get('vacuum_table').sessChanged() || this.get('vacuum_toast').sessChanged();
-          }
-          return pgBrowser.DataModel.prototype.sessChanged.apply(this);
-        },
-        // We will disable everything if we are under catalog node
-        inSchema: function() {
-          return this.node_info && 'catalog' in this.node_info;
-        },
-      }),
       // Check to whether table has disable trigger(s)
       canCreate_with_trigger_enable: function(itemData, item, data) {
         return itemData.tigger_count > 0 &&

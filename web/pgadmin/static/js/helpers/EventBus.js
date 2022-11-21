@@ -14,6 +14,10 @@ export default class EventBus {
     });
   }
 
+  on(...args) {
+    this.registerListener(...args);
+  }
+
   deregisterListener(event, callback) {
     if(callback) {
       this._eventListeners = this._eventListeners.filter((e)=>{
@@ -25,6 +29,10 @@ export default class EventBus {
     } else {
       this._eventListeners = this._eventListeners.filter((e)=>e.event!=event);
     }
+  }
+
+  off(...args) {
+    this.deregisterListener(...args);
   }
 
   fireEvent(event, ...args) {
@@ -42,5 +50,9 @@ export default class EventBus {
         }
       }
     });
+  }
+
+  trigger(...args) {
+    this.fireEvent(...args);
   }
 }

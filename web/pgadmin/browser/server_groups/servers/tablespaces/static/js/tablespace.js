@@ -11,7 +11,6 @@ import { getNodeListByName } from '../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import TablespaceSchema from './tablespace.ui';
-import _ from 'lodash';
 
 define('pgadmin.node.tablespace', [
   'sources/gettext', 'sources/url_for',
@@ -96,35 +95,6 @@ define('pgadmin.node.tablespace', [
           }
         );
       },
-
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          let isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            let userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({'spcuser': userInfo.name}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        schema: [
-          {
-            id: 'name', label: gettext('Name'), cell: 'string',
-            type: 'text',
-          }, {
-            id: 'spcuser', label: gettext('Owner'), cell: 'string',
-            type: 'text', control: 'node-list-by-name', node: 'role',
-            select2: {allowClear: false},
-          }, {
-            id: 'description', label: gettext('Comment'), cell: 'string',
-            type: 'multiline',
-          },
-        ],
-      }),
     });
 
   }

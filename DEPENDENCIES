@@ -200,6 +200,7 @@ babel-plugin-styled-components                                   1.13.3         
 babel-plugin-syntax-jsx                                          6.18.0           MIT                                  https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-jsx
 babelify                                                         10.0.0           MIT                                  https://github.com/babel/babelify.git
 backbone                                                         1.4.0            MIT                                  https://github.com/jashkenas/backbone.git
+backo2                                                           1.0.2            MIT                                  https://github.com/mokesmokes/backo.git
 balanced-match                                                   1.0.2            MIT                                  git://github.com/juliangruber/balanced-match.git
 base64-arraybuffer                                               0.2.0            MIT                                  https://github.com/niklasvh/base64-arraybuffer
 base64-arraybuffer                                               1.0.1            MIT                                  https://github.com/niklasvh/base64-arraybuffer
@@ -516,7 +517,6 @@ to-fast-properties                                               2.0.0          
 to-regex-range                                                   5.0.1            MIT                                  https://github.com/micromatch/to-regex-range.git
 trim-newlines                                                    4.0.2            MIT                                  https://github.com/sindresorhus/trim-newlines.git
 unc-path-regex                                                   0.1.2            MIT                                  https://github.com/regexhq/unc-path-regex.git
-underscore                                                       1.13.1           MIT                                  git://github.com/jashkenas/underscore.git
 uniqs                                                            2.0.0            MIT                                  git://github.com/fgnass/uniqs.git
 url-loader                                                       1.1.2            MIT                                  https://github.com/webpack-contrib/url-loader.git
 util-deprecate                                                   1.0.2            MIT                                  git://github.com/TooTallNate/util-deprecate.git

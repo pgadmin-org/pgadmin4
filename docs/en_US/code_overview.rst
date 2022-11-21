@@ -207,8 +207,8 @@ Front End
 
 pgAdmin uses javascript extensively for the front-end implementation. It uses
 require.js to allow the lazy loading (or, say load only when required),
-bootstrap for UI look and feel, Backbone for data manipulation of a node,
-React for generating properties/create dialog for selected node. We have
+bootstrap and MaterialUI for UI look and feel, React for generating
+properties/create dialog for selected node. We have
 divided each module in small chunks as much as possible. Not all javascript
 modules are required to be loaded (i.e. loading a javascript module for
 database will make sense only when a server node is loaded completely.) Please

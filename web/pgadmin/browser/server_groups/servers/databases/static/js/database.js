@@ -442,7 +442,7 @@ define('pgadmin.node.database', [
               } else {
                 Notify.success(res.info);
               }
-              obj.trigger('connected', obj, _item, _data);
+              // obj.trigger('connected', obj, _item, _data);
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', _item, _data
               );

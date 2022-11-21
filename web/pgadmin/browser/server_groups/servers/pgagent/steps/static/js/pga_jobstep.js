@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodePgaJobStepSchema } from './pga_jobstep.ui';
-import _ from 'lodash';
 
 define('pgadmin.node.pga_jobstep', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
@@ -74,25 +73,6 @@ define('pgadmin.node.pga_jobstep', [
         return getNodePgaJobStepSchema(treeNodeInfo, itemNodeData);
       },
 
-      model: pgBrowser.Node.Model.extend({
-        initialize: function() {
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-          if (this.isNew() && this.get('jstconntype')) {
-            let args = arguments.length > 1 && arguments[1];
-
-            if (args) {
-              if (!_.isUndefined(args['node_info']) ||
-                  !_.isUndefined(args.collection.top['node_info'])) {
-                this.set(
-                  'jstdbname',
-                  (args['node_info'] || args.collection.top['node_info'])['server']['db']
-                );
-              }
-            }
-          }
-        },
-        idAttribute: 'jstid',
-      }),
     });
   }
 

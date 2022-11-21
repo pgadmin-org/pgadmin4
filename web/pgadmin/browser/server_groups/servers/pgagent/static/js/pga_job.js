@@ -83,31 +83,6 @@ define('pgadmin.node.pga_job', [
         );
       },
 
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'jobid',
-        schema: [{
-          id: 'jobname', label: gettext('Name'), type: 'text',
-          cellHeaderClasses: 'width_percent_30',
-        },{
-          id: 'jobid', label: gettext('ID'), mode: ['properties'],
-          type: 'int',
-        },{
-          id: 'jobenabled', label: gettext('Enabled?'), type: 'switch',
-          cellHeaderClasses: 'width_percent_5',
-        },{
-          id: 'jobnextrun', type: 'text', mode: ['properties'],
-          label: gettext('Next run'), cellHeaderClasses: 'width_percent_20',
-        },{
-          id: 'joblastrun', type: 'text', mode: ['properties'],
-          label: gettext('Last run'), cellHeaderClasses: 'width_percent_20',
-        },{
-          id: 'jlgstatus', type: 'text', label: gettext('Last result'),
-          cellHeaderClasses: 'width_percent_5', mode: ['properties'],
-        },{
-          id: 'jobdesc', label: gettext('Comment'), type: 'multiline',
-          cellHeaderClasses: 'width_percent_15',
-        }],
-      }),
       /* Run pgagent job now */
       run_pga_job_now: function(args) {
         let input = args || {},

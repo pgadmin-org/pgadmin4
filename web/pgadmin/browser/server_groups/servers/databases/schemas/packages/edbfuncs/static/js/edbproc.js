@@ -8,15 +8,14 @@
 //////////////////////////////////////////////////////////////
 
 import EDBFuncSchema from './edbfunc.ui';
-import _ from 'lodash';
 
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.edbproc', [
   'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
+  'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, pgAdmin, pgBrowser, EdbFunction
+  gettext, url_for, pgAdmin, pgBrowser
 ) {
 
   if (!pgBrowser.Nodes['coll-edbproc']) {
@@ -54,24 +53,6 @@ define('pgadmin.node.edbproc', [
       },
       canDrop: false,
       canDropCascade: false,
-      model: EdbFunction.model.extend({
-        defaults: _.extend({},
-          EdbFunction.model.prototype.defaults,
-          {
-            lanname: 'edbspl',
-          }
-        ),
-        isVisible: function() {
-          if (this.name == 'sysfunc') { return false; }
-          else if (this.name == 'sysproc') { return true; }
-          return false;
-        },
-        validate: function()
-        {
-          return null;
-        },
-      }
-      ),
       getSchema: () => {
         return new EDBFuncSchema(
           {}, {

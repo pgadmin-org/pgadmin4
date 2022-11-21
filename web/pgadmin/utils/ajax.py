@@ -80,7 +80,7 @@ def make_json_response(
 
 
 def make_response(response=None, status=200):
-    """Create a JSON response handled by the backbone models."""
+    """Create a JSON response"""
     return Response(
         response=json.dumps(
             response, cls=DataTypeJSONEncoder, separators=(',', ':')),

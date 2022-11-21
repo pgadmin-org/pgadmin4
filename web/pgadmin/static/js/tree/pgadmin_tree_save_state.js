@@ -66,11 +66,11 @@ _.extend(pgBrowser.browserTreeState, {
       this.fetch_state.apply(this);
 
       pgBrowser.Events.on('pgadmin:browser:tree:expand-from-previous-tree-state',
-        this.expand_from_previous_state, this);
+        this.expand_from_previous_state.bind(this));
       pgBrowser.Events.on('pgadmin:browser:tree:remove-from-tree-state',
-        this.remove_from_cache, this);
+        this.remove_from_cache.bind(this));
       pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
-        this.update_cache, this);
+        this.update_cache.bind(this));
     } else if (!_.isUndefined(save_tree_state_period)) {
       $.ajax({
         url: url_for('settings.reset_tree_state'),

@@ -80,8 +80,11 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *View Data*                 | Click to access a context menu that provides several options for viewing data (see below).                               |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Generate ERD*              | Click to open the ERD tool with automatically generated diagram for the database selected.                               |
+| *ERD For Database*          | Click to open the ERD tool with automatically generated diagram for the database selected.                               |
 |                             | This option is available only when a database is selected. Options are displayed on the flyout menu.                     |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *ERD For Table*             | Click to open the ERD tool with automatically generated diagram for the table selected.                                  |
+|                             | This option is available only when a table is selected. Options are displayed on the flyout menu.                        |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 
 The Tools Menu
