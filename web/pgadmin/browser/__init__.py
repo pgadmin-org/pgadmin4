@@ -649,6 +649,17 @@ def utils():
     except Exception:
         pg_libpq_version = 0
 
+    # Get the pgadmin server's locale
+    default_locale = ''
+    if current_app.PGADMIN_RUNTIME:
+        import locale
+        try:
+            locale_info = locale.getdefaultlocale()
+            if len(locale_info) > 0:
+                default_locale = locale_info[0].replace('_', '-')
+        except Exception:
+            current_app.logger.debug('Failed to get the default locale.')
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
     return make_response(
@@ -671,7 +682,8 @@ def utils():
             platform=sys.platform,
             qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
             vw_edt_default_placeholder=VW_EDT_DEFAULT_PLACEHOLDER,
-            enable_psql=config.ENABLE_PSQL
+            enable_psql=config.ENABLE_PSQL,
+            pgadmin_server_locale=default_locale
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

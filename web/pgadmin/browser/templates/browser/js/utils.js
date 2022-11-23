@@ -61,6 +61,9 @@ define('pgadmin.browser.utils',
   /* GET Binary Path Browse config */
   pgAdmin['enable_binary_path_browsing'] = '{{ current_app.config.get('ENABLE_BINARY_PATH_BROWSING') }}' == 'True';
 
+  /* GET the pgadmin server's locale */
+  pgAdmin['pgadmin_server_locale'] =  '{{pgadmin_server_locale}}';
+
   // Define list of nodes on which Query tool option doesn't appears
   let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',
