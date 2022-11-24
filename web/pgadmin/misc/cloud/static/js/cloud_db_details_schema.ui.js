@@ -422,8 +422,8 @@ class BigAnimalInstanceSchema extends BaseUISchema {
                   _options = [];
                 _.forEach(_types, (value) => {
                   _options.push({
-                    'label': value.instanceType + ' (' + value.cpu + 'vCPU, ' + value.ram + 'GB RAM)',
-                    'value': value.instanceType + ' (' + value.cpu + 'vCPU, ' + value.ram + 'GB RAM)' + '||' + value.id,
+                    'label': value.instanceTypeName + ' (' + value.cpu + 'vCPU, ' + value.ram + 'GB RAM)',
+                    'value': value.instanceTypeName + ' (' + value.cpu + 'vCPU, ' + value.ram + 'GB RAM)' + '||' + value.instanceTypeId,
                   });
                 });
                 return _options;
