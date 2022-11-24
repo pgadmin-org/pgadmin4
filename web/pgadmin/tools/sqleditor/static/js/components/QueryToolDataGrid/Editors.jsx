@@ -138,10 +138,13 @@ function setEditorPosition(cellEle, editorEle) {
   if ((position.left + editorEle.offsetWidth + 10) > gridEle.offsetWidth) {
     position.left -= position.left + editorEle.offsetWidth - gridEle.offsetWidth + 10;
   }
+  if ((cellRect.left > gridEleRect.left) && gridEleRect.left !== 0) {
+    position.left = cellRect.left - editorEle.offsetWidth + 20;
+  }
   if (cellRect.left < gridEleRect.left) {
     position.left = gridEleRect.left + 10;
   }
-  editorEle.style.left = `${position.left}px`;
+  editorEle.style.left = `${Math.abs(position.left)}px`;
   editorEle.style.top = `${position.top}px`;
 }
 
