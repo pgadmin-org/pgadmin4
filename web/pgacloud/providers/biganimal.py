@@ -19,7 +19,7 @@ from utils.io import debug, error, output
 
 
 class BigAnimalProvider(AbsProvider):
-    BASE_URL = 'https://portal.biganimal.com/api/v1'
+    BASE_URL = 'https://portal.biganimal.com/api/v2'
 
     def __init__(self):
         self._clients = {}
@@ -87,7 +87,9 @@ class BigAnimalProvider(AbsProvider):
 
             ip = ip.split(',')
             for i in ip:
-                ip_ranges.append([i, 'pgcloud client {}'.format(i)])
+                ip_ranges.append({'cidrBlock': i,
+                                  'description': 'pgcloud client {}'.format(i)
+                                  })
 
             debug('Creating BigAnimal cluster: {}...'.format(args.name))
 
@@ -98,23 +100,27 @@ class BigAnimalProvider(AbsProvider):
 
             _data = {
                 'clusterName': args.name,
-                'instanceTypeId': args.instance_type,
+                'instanceType': {'instanceTypeId': args.instance_type},
                 'password': self._database_pass,
-                'postgresTypeId': args.db_type,
-                'postgresVersion': args.db_version,
+                'pgType': {'pgTypeId': args.db_type},
+                'pgVersion': {'pgVersionId': args.db_version},
                 'privateNetworking': private_network,
-                'providerId': 'azure',
-                'regionId': args.region,
-                'replicas': 3,
-                'volumePropertiesId': args.volume_properties,
-                'volumeTypeId': args.volume_type,
-                'clusterArch': {'id': args.cluster_arch, 'nodes': int(
-                    args.nodes)},
-                'pgConfigMap': [],
+                'provider': {'cloudProviderId': 'azure'},
+                'region': {'regionId': args.region},
+                'replicas': 1,
+                'storage': {
+                    'volumePropertiesId': args.volume_properties,
+                    'volumeTypeId': args.volume_type
+                },
+                'clusterArchitecture': {
+                    'clusterArchitectureId': args.cluster_arch,
+                    'nodes': int(args.nodes)
+                },
+                'pgConfig': [],
             }
 
             if not private_network:
-                _data['allowIpRangeMap'] = ip_ranges
+                _data['allowedIpRanges'] = ip_ranges
 
             cluster_resp = requests.post(_url,
                                          headers=_headers,
@@ -122,17 +128,17 @@ class BigAnimalProvider(AbsProvider):
 
             if cluster_resp.status_code == 202 and cluster_resp.content:
                 cluster_info = json.loads(cluster_resp.content)
-                instance_id = cluster_info['pgId']
+                instance_id = cluster_info['data']['clusterId']
                 instance = self.get_instance_status(instance_id)
                 data = {'instance': {
-                    'ImageName': instance['imageName'],
-                    'Database Type': instance['pgType']['name'],
-                    'Hostname': instance['clusterConnectionInfo'][
+                    'ImageName': instance['clusterName'],
+                    'Database Type': instance['pgType']['pgTypeName'],
+                    'Hostname': instance['connection'][
                         'serviceName'],
-                    'Port': instance['clusterConnectionInfo']['port'],
-                    'Database': instance['clusterConnectionInfo'][
+                    'Port': instance['connection']['port'],
+                    'Database': instance['connection'][
                         'databaseName'],
-                    'Username': instance['clusterConnectionInfo'][
+                    'Username': instance['connection'][
                         'username']
                 }}
 
@@ -159,14 +165,9 @@ class BigAnimalProvider(AbsProvider):
             if cluster_resp.status_code == 200 and cluster_resp.content:
                 cluster_info = json.loads(cluster_resp.content)
 
-                self._cluster_info = cluster_info[0]
+                self._cluster_info = cluster_info['data']
 
-                if self._cluster_info['instance'] != 0 and\
-                    self._cluster_info['phase'] not in [
-                    'Cluster creation request received',
-                    'Setting up primary',
-                    'Creating CNP cluster'
-                ]:
+                if self._cluster_info['phase'] == 'Cluster in healthy state':
                     running = False
 
                 if status != self._cluster_info['phase']:

@@ -153,7 +153,7 @@ def biganimal_volume_properties(region_id, volume_type):
 
 class BigAnimalProvider():
     """BigAnimal provider class"""
-    BASE_URL = 'https://portal.biganimal.com/api/v1'
+    BASE_URL = 'https://portal.biganimal.com/api/v2'
 
     def __init__(self):
         self.provider = {}
@@ -228,7 +228,8 @@ class BigAnimalProvider():
 
     def exchange_token(self):
         _url = "{0}/{1}".format(self.BASE_URL, 'auth/token')
-        _headers = {"content-type": "application/json"}
+        _headers = {"content-type": "application/json",
+                    "accept": "application/json"}
         _data = {'token': self.raw_access_token}
         token_resp = requests.post(_url,
                                    headers=_headers,
@@ -249,14 +250,14 @@ class BigAnimalProvider():
         """
         _url = "{0}/{1}".format(
             self.BASE_URL,
-            'admin/permissions')
+            'permissions')
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code != 200:
             return False
         if resp.status_code == 200 and resp.content:
             content = json.loads(resp.content)
-            if 'permissionsList' in content and 'create:clusters' in content[
-                    'permissionsList']:
+            if 'data' in content and 'create:clusters' in content[
+                    'data']:
                 return True
         return False
 
@@ -269,7 +270,7 @@ class BigAnimalProvider():
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             regions_resp = json.loads(resp.content)
-            for value in regions_resp['regionsList']:
+            for value in regions_resp['data']:
                 regions.append({
                     'label': value['regionName'],
                     'value': value['regionId']
@@ -286,17 +287,17 @@ class BigAnimalProvider():
         """Get Postgres Types."""
         _url = "{0}/{1}".format(
             self.BASE_URL,
-            'postgres-types')
+            'pg-types')
         pg_types = []
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             pg_types_resp = json.loads(resp.content)
-            for value in pg_types_resp['pgTypesList']:
+            for value in pg_types_resp['data']:
                 # Extreme HA is in Beta, so avoid it
                 if len(value['supportedClusterArchitectureIds']) != 1:
                     pg_types.append({
-                        'label': value['name'],
-                        'value': value['id']
+                        'label': value['pgTypeName'],
+                        'value': value['pgTypeId']
                     })
         return pg_types
 
@@ -304,15 +305,15 @@ class BigAnimalProvider():
         """Get Postgres Versions."""
         _url = "{0}/{1}".format(
             self.BASE_URL,
-            'postgres-versions')
+            'pg-versions')
         pg_versions = []
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             pg_versions_resp = json.loads(resp.content)
-            for value in pg_versions_resp['pgVersionsList']:
+            for value in pg_versions_resp['data']:
                 pg_versions.append({
-                    'label': value['versionName'],
-                    'value': value['versionId']
+                    'label': value['pgVersionName'],
+                    'value': value['pgVersionId']
                 })
         return pg_versions
 
@@ -327,7 +328,7 @@ class BigAnimalProvider():
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             pg_types = json.loads(resp.content)
-            return pg_types['instanceTypesList']
+            return pg_types['data']
         return []
 
     def get_volume_types(self, region_id):
@@ -342,10 +343,10 @@ class BigAnimalProvider():
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             volume_resp = json.loads(resp.content)
-            for value in volume_resp['volumeTypesList']:
+            for value in volume_resp['data']:
                 volume_types.append({
-                    'label': value['displayName'],
-                    'value': value['id']
+                    'label': value['volumeTypeName'],
+                    'value': value['volumeTypeId']
                 })
         return volume_types
 
@@ -362,10 +363,10 @@ class BigAnimalProvider():
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             volume_prop = json.loads(resp.content)
-            for value in volume_prop['volumePropertiesList']:
+            for value in volume_prop['data']:
                 volume_properties.append({
-                    'label': value['value'],
-                    'value': value['id']
+                    'label': value['volumePropertiesName'],
+                    'value': value['volumePropertiesId']
                 })
         return volume_properties
 
