@@ -10,6 +10,7 @@ import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import { PANELS, QUERY_TOOL_EVENTS } from '../QueryToolConstants';
 import gettext from 'sources/gettext';
+import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
 import clsx from 'clsx';
 import { Box, Grid, List, ListItem, ListSubheader } from '@material-ui/core';
@@ -116,6 +117,17 @@ export const QuerySources = {
   },
 };
 
+function getDateFormatted(date) {
+  if (pgAdmin['pgadmin_server_locale'] !== '')
+    return date.toLocaleDateString(pgAdmin['pgadmin_server_locale']);
+  return date.toLocaleDateString();
+}
+
+function getTimeFormatted(time) {
+  if (pgAdmin['pgadmin_server_locale'] !== '')
+    return time.toLocaleTimeString(pgAdmin['pgadmin_server_locale']);
+  return time.toLocaleTimeString();
+}
 
 class QueryHistoryUtils {
   constructor() {
@@ -131,18 +143,14 @@ class QueryHistoryUtils {
     return this.dateAsGroupKey(entry.start_time) + this.formatEntryDate(entry.start_time) + (entry.subKey ?? '');
   }
 
-  getDateFormatted(date) {
-    return date.toLocaleDateString();
-  }
-
   formatEntryDate(date) {
     return moment(date).format('HH:mm:ss');
   }
 
   isDaysBefore(date, before) {
     return (
-      this.getDateFormatted(date) ===
-      this.getDateFormatted(moment().subtract(before, 'days').toDate())
+      getDateFormatted(date) ===
+      getDateFormatted(moment().subtract(before, 'days').toDate())
     );
   }
 
@@ -183,7 +191,7 @@ class QueryHistoryUtils {
   }
 
   getGroupHeader(entry) {
-    return this.getDatePrefix(entry.start_time)+this.getDateFormatted(entry.start_time);
+    return this.getDatePrefix(entry.start_time)+getDateFormatted(entry.start_time);
   }
 
   getGroups() {
@@ -326,7 +334,7 @@ function QueryHistoryDetails({entry}) {
       {entry.info && <Box className={classes.infoHeader}>{entry.info}</Box>}
       <Box padding="0.5rem" data-label="history-detail">
         <Grid container>
-          <Grid item sm={4}>{entry.start_time.toLocaleDateString() + ' ' + entry.start_time.toLocaleTimeString()}</Grid>
+          <Grid item sm={4}>{getDateFormatted(entry.start_time) + ' ' + getTimeFormatted(entry.start_time)}</Grid>
           <Grid item sm={4}>{entry?.row_affected > 0 && entry.row_affected}</Grid>
           <Grid item sm={4}>{entry.total_time}</Grid>
         </Grid>

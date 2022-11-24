@@ -23,3 +23,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #5495 <https://github.com/pgadmin-org/pgadmin4/issues/5495>`_ -  Ensure that the query history date format in Desktop mode matches the format of the locale of the pgadmin server.
