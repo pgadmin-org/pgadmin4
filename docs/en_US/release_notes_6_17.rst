@@ -19,9 +19,11 @@ New features
 Housekeeping
 ************
 
+  | `Issue #5147 <https://github.com/pgadmin-org/pgadmin4/issues/5147>`_ -  Update the BigAnimal API version to V2.
   | `Issue #5493 <https://github.com/pgadmin-org/pgadmin4/issues/5493>`_ -  Remove all traces of Backbone and Underscore.
 
 Bug fixes
 *********
 
   | `Issue #5495 <https://github.com/pgadmin-org/pgadmin4/issues/5495>`_ -  Ensure that the query history date format in Desktop mode matches the format of the locale of the pgadmin server.
+  | `Issue #5548 <https://github.com/pgadmin-org/pgadmin4/issues/5548>`_ -  Fixed an issue where editor position was wrong when editing data from result grid.
