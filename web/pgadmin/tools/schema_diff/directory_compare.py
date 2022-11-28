@@ -13,7 +13,6 @@ import copy
 import string
 from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from flask import current_app
-from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PGADMIN_STRING_SEPARATOR
 
 count = 1

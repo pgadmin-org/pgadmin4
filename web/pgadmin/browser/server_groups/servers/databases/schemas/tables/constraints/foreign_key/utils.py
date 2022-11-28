@@ -355,8 +355,8 @@ def _checks_for_schema_diff(table, schema, data):
 
     if 'remote_schema' not in data:
         data['remote_schema'] = None
-    elif 'schema' in data and (schema is None or schema == ''):
-        data['remote_schema'] = data['schema']
+        if 'schema' in data and (schema is None or schema == ''):
+            data['remote_schema'] = data['schema']
 
     if 'remote_table' not in data:
         data['remote_table'] = None
