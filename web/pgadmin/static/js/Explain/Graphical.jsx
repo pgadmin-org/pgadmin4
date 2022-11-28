@@ -306,8 +306,8 @@ function PlanSVG({planData, zoomFactor, fitZoomFactor, ...props}) {
           ].join(',');
           let viewBox = [0, 0, 2 * ARROW_WIDTH, 2 * ARROW_HEIGHT].join(' ');
           return(
-            <marker key={i} viewBox={viewBox} markerWidth={ARROW_WIDTH} markerHeight={ARROW_HEIGHT} orient="auto" refX="0" refY={ARROW_WIDTH / 4} id={arr_id} fill={theme.palette.text.primary}>
-              <polygon points={arrowPoints}></polygon>
+            <marker key={i} viewBox={viewBox} markerWidth={ARROW_WIDTH} markerHeight={ARROW_HEIGHT} orient="auto" refX="0" refY={ARROW_WIDTH / 4} id={arr_id}>
+              <polygon points={arrowPoints} fill={theme.palette.text.primary}></polygon>
             </marker>
           );
         })}

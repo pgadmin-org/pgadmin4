@@ -44,7 +44,7 @@
     "imports-loader": "^4.0.1",
     "is-docker": "^2.1.1",
     "istanbul-instrumenter-loader": "^3.0.1",
-    "jasmine-core": "^3.6.0",
+    "jasmine-core": "3.10.1",
     "jasmine-enzyme": "^7.1.2",
     "karma": "^6.3.15",
     "karma-babel-preprocessor": "^8.0.0",
