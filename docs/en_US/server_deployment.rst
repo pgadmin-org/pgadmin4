@@ -86,7 +86,9 @@ In order to configure the Python code, follow these steps:
    file locations should be appropriate:
 
    *NOTE: You must ensure the directories specified are writeable by
-   the user that the web server processes will be running as, e.g. apache or www-data.*
+   the user that the web server processes will be running as, e.g. apache or www-data.
+   You may specify DATA_DIR in order to create all required directories and files
+   under DATA_DIR folder.*
 
    .. code-block:: python
 
@@ -94,6 +96,8 @@ In order to configure the Python code, follow these steps:
        SQLITE_PATH = '/var/lib/pgadmin4/pgadmin4.db'
        SESSION_DB_PATH = '/var/lib/pgadmin4/sessions'
        STORAGE_DIR = '/var/lib/pgadmin4/storage'
+       AZURE_CREDENTIAL_CACHE_DIR = '/var/lib/pgadmin4/azurecredentialcache'
+       KERBEROS_CCACHE_DIR = '/var/lib/pgadmin4/kerberoscache'
 
 4. Run the following command to create the configuration database:
 
