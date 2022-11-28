@@ -18,6 +18,10 @@ export default class EventBus {
     this.registerListener(...args);
   }
 
+  once(...args) {
+    this.registerListener(...args, true);
+  }
+
   deregisterListener(event, callback) {
     if(callback) {
       this._eventListeners = this._eventListeners.filter((e)=>{
