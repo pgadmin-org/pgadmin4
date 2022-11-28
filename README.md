@@ -261,6 +261,15 @@ There is no need to increment the SETTINGS_SCHEMA_VERSION.
 
 See https://www.pgadmin.org/support/ for support options.
 
+# Security Issues
+
+If you would like to report a security issue with pgAdmin, please email
+**security (at) pgadmin (dot) org**.
+    
+Note that this address should only be used for reporting security issues
+that you believe you've found in the design or code of pgAdmin, pgAgent,
+and the pgAdmin website. It should not be used to ask security questions.
+
 # Project info
 
 A GitHub project for pgAdmin 4 can be found at the address below:
