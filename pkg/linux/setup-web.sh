@@ -128,7 +128,14 @@ if pgrep ${APACHE} > /dev/null; then
 
     case ${RESPONSE} in
         y|Y )
-            if ! systemctl restart ${APACHE}; then
+            COMMAND=""
+            if [ -x "$(command -v systemctl)" ]; then
+                COMMAND="systemctl restart ${APACHE}"
+            elif [ -x "$(command -v service)" ]; then
+                COMMAND="service ${APACHE} restart"
+            fi
+
+            if ! ${COMMAND}; then
                 echo "Error restarting ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully restarted. You can now start using pgAdmin 4 in web mode at http://127.0.0.1/pgadmin4"
