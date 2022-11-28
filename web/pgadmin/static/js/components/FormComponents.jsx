@@ -919,7 +919,8 @@ export const InputSelect = forwardRef(({
       Option: CustomSelectOption,
       SingleValue: CustomSelectSingleValue,
       IndicatorSeparator: (props) => controlProps.noDropdown ? null: <RSComponents.IndicatorSeparator {...props} />,
-      DropdownIndicator: (props) => controlProps.noDropdown ? null: <RSComponents.DropdownIndicator {...props} />
+      DropdownIndicator: (props) => controlProps.noDropdown ? null: <RSComponents.DropdownIndicator {...props} />,
+      Input: props => <RSComponents.Input {...props} maxLength={controlProps.maxLength} />
     },
     isMulti: Boolean(controlProps.multiple),
     openMenuOnClick: !readonly,

@@ -197,6 +197,7 @@ def register_query_tool_preferences(self):
             'allowClear': False,
             'tags': False,
             'creatable': True,
+            'maxLength': 1
         }
     )
 
@@ -212,6 +213,7 @@ def register_query_tool_preferences(self):
             'allowClear': False,
             'tags': False,
             'creatable': True,
+            'maxLength': 1
         }
     )
 
