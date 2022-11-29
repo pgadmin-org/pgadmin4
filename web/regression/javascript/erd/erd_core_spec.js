@@ -10,6 +10,7 @@ import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import * as createEngineLib from '@projectstorm/react-diagrams';
 import TEST_TABLES_DATA from './test_tables';
 import { FakeLink, FakeNode } from './fake_item';
+import { PortModelAlignment } from '@projectstorm/react-diagrams';
 
 describe('ERDCore', ()=>{
   let eleFactory = jasmine.createSpyObj('nodeFactories', {
@@ -120,15 +121,16 @@ describe('ERDCore', ()=>{
     });
 
     it('getNewPort', ()=>{
-      let data = {name: 'link1'};
-      let options = {opt1: 'val1'};
-      erdCoreObj.getNewPort('porttype', data, options);
-
-      expect(erdEngine.getPortFactories().getFactory).toHaveBeenCalledWith('porttype');
+      erdEngine.getPortFactories().getFactory().generateModel.calls.reset();
+      erdCoreObj.getNewPort('port1', PortModelAlignment.LEFT);
+      expect(erdEngine.getPortFactories().getFactory).toHaveBeenCalledWith('onetomany');
       expect(erdEngine.getPortFactories().getFactory().generateModel).toHaveBeenCalledWith({
         initialConfig: {
-          data:data,
-          options:options,
+          data: null,
+          options: {
+            name: 'port1',
+            alignment: PortModelAlignment.LEFT
+          },
         },
       });
     });
@@ -156,8 +158,7 @@ describe('ERDCore', ()=>{
     it('addLink', ()=>{
       let node1 = new FakeNode({'name': 'table1'}, 'id1');
       let node2 = new FakeNode({'name': 'table2'}, 'id2');
-      spyOn(node1, 'addPort').and.callThrough();
-      spyOn(node2, 'addPort').and.callThrough();
+      spyOn(erdCoreObj, 'getOptimumPorts').and.returnValue([{name: 'port-1'}, {name: 'port-3'}]);
       let nodesDict = {
         'id1': node1,
         'id2': node2,
@@ -169,11 +170,6 @@ describe('ERDCore', ()=>{
       spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
         return link;
       });
-      spyOn(erdCoreObj, 'getNewPort').and.callFake(function(type, initData, options) {
-        return {
-          name: options.name,
-        };
-      });
 
       erdCoreObj.addLink({
         'referenced_column_attnum': 1,
@@ -182,8 +178,6 @@ describe('ERDCore', ()=>{
         'local_table_uid': 'id2',
       }, 'onetomany');
 
-      expect(nodesDict['id1'].addPort).toHaveBeenCalledWith({name: 'port-1'});
-      expect(nodesDict['id2'].addPort).toHaveBeenCalledWith({name: 'port-3'});
       expect(link.setSourcePort).toHaveBeenCalledWith({name: 'port-1'});
       expect(link.setTargetPort).toHaveBeenCalledWith({name: 'port-3'});
     });

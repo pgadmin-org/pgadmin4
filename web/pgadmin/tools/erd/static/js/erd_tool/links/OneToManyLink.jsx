@@ -22,6 +22,8 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 
+export const POINTER_SIZE = 30;
+
 export const OneToManyModel = {
   local_table_uid: undefined,
   local_column_attnum: undefined,
@@ -141,32 +143,31 @@ export class OneToManyLinkWidget extends RightAngleLinkWidget {
     super(props);
   }
 
-  endPointTranslation(alignment, offset) {
+  endPointTranslation(alignment) {
     let degree = 0;
     let tx = 0, ty = 0;
     switch(alignment) {
     case PortModelAlignment.BOTTOM:
-      ty = -offset;
+      ty = -POINTER_SIZE;
       break;
     case PortModelAlignment.LEFT:
       degree = 90;
-      tx = offset;
+      tx = POINTER_SIZE;
       break;
     case PortModelAlignment.TOP:
       degree = 180;
-      ty = offset;
+      ty = POINTER_SIZE;
       break;
     case PortModelAlignment.RIGHT:
       degree = -90;
-      tx = -offset;
+      tx = -POINTER_SIZE;
       break;
     }
     return [degree, tx, ty];
   }
 
   addCustomWidgetPoint(type, endpoint, point) {
-    let offset = 30;
-    const [rotation, tx, ty] = this.endPointTranslation(endpoint.options.alignment, offset);
+    const [rotation, tx, ty] = this.endPointTranslation(endpoint.options.alignment);
     if(!point) {
       point = this.props.link.point(
         endpoint.getX()-tx, endpoint.getY()-ty, {'one': 1, 'many': 2}[type]
