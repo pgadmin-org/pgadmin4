@@ -75,7 +75,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
             });
           } else if (err?.response?.data?.errormsg) {
             Notify.alert(
-              gettext(err.response.statusText),
+              gettext('Error'),
               gettext(err.response.data.errormsg)
             );
 

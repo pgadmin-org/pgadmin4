@@ -69,8 +69,8 @@ export default function SQL({ nodeData, node, did,  ...props }) {
           })
           .catch((e) => {
             Notify.alert(
-              gettext('Failed to retrieve data from the server.'),
-              gettext(e.message)
+              gettext('Error'),
+              gettext(e.response.data.errormsg)
             );
             // show failed message.
             setMsg(gettext('Failed to retrieve data from the server.'));
