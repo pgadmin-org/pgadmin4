@@ -37,6 +37,9 @@ class TableDdlFeatureTest(BaseFeatureTest):
                                      'public')
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
+
+        self.assertTrue(bool(table_node), 'Table node not found.')
+
         table_node.click()
 
         self.page.click_tab("SQL")

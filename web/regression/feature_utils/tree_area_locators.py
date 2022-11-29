@@ -115,6 +115,12 @@ class TreeAreaLocators:
     def schema_child_node(schema_name, child_node_name):
         return TreeAreaLocators.child_node % (schema_name, child_node_name)
 
+    @staticmethod
+    def schema_child_node_expand_icon_xpath(schema_name, child_node_name):
+        return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
+               "following-sibling::div//span[text()='%s']/../" \
+               "preceding-sibling::i" % (schema_name, child_node_name)
+
     # Database child
     @staticmethod
     def database_child_node_exp_status(database_name, child_node_name):
