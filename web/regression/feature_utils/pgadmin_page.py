@@ -339,18 +339,24 @@ class PgadminPage:
                   file=sys.stderr)
 
     def click_to_expand_tree_node(self, tree_node_web_element,
-                                  tree_node_exp_check_xpath):
+                                  tree_node_exp_check_xpath,
+                                  schema_child_node_expand_icon_xpath=None):
         """
         Method clicks passed webelement to expand specified tree node
         :param tree_node_web_element:
         :param tree_node_exp_check_xpath:
+        :param schema_child_node_expand_icon_xpath:
         :return: True is tree_node_exp_check_xpath present in DOM else false
         """
         retry = 2
         while retry > 0:
             try:
-                webdriver.ActionChains(self.driver).double_click(
-                    tree_node_web_element).perform()
+                if retry == 1:
+                    webdriver.ActionChains.click(
+                        schema_child_node_expand_icon_xpath).perform()
+                else:
+                    webdriver.ActionChains(self.driver).double_click(
+                        tree_node_web_element).perform()
                 if self.check_if_element_exist_by_xpath(
                         tree_node_exp_check_xpath):
                     return True
@@ -562,6 +568,8 @@ class PgadminPage:
                         server_name, 'Databases')
                     databases_node = self.check_if_element_exists_with_scroll(
                         databases_node_xpath)
+                    webdriver.ActionChains(self.driver).move_to_element(
+                        databases_node).perform()
                     webdriver.ActionChains(self.driver).double_click(
                         databases_node).perform()
                     child_node_ele = self.check_if_element_exists_with_scroll(
@@ -729,9 +737,10 @@ class PgadminPage:
         schema_child_expanded = False
         schema_child_node_xpath = TreeAreaLocators. \
             schema_child_node(schema_name, schema_child_node_name)
+        schema_child_node_expand_icon_xpath = TreeAreaLocators. \
+            schema_child_node(schema_name, schema_child_node_name)
         schema_child_node_exp_status_check_xpath = TreeAreaLocators. \
             schema_child_node_exp_status(schema_name, schema_child_node_name)
-
         if self.expand_schema_node(server_group_name, server_name,
                                    server_password, database_name,
                                    schema_name):
@@ -744,7 +753,8 @@ class PgadminPage:
                 else:
                     schema_child_expanded = self.click_to_expand_tree_node(
                         child_node_ele,
-                        schema_child_node_exp_status_check_xpath)
+                        schema_child_node_exp_status_check_xpath,
+                        schema_child_node_expand_icon_xpath)
             else:
                 print("%s node not found - ", schema_child_node_name,
                       file=sys.stderr)
@@ -1089,6 +1099,8 @@ class PgadminPage:
                 ele = WebDriverWait(self.driver, 1, 0.01).until(
                     lambda d: d.find_element(By.XPATH, xpath))
                 f_scroll, r_scroll = 0, 0
+                webdriver.ActionChains(self.driver).move_to_element(ele).\
+                    perform()
                 return ele
             except (TimeoutException, NoSuchElementException):
                 tree_height = int((self.driver.find_element(

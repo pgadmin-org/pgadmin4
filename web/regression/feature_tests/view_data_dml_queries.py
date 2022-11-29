@@ -264,7 +264,6 @@ CREATE TABLE public.nonintpkey
                 print('Cell is NOT selected yet.', file=sys.stderr)
                 return False
         except Exception:
-            traceback.print_exc()
             print('Exception occurred while updating int cell',
                   file=sys.stderr)
             return False
@@ -284,7 +283,6 @@ CREATE TABLE public.nonintpkey
                 QueryToolLocators.text_editor_ok_btn_css).click()
             return True
         except Exception:
-            traceback.print_exc()
             print('Exception occurred while updating text cell ',
                   file=sys.stderr)
             return False
@@ -313,7 +311,6 @@ CREATE TABLE public.nonintpkey
                 QueryToolLocators.text_editor_ok_btn_css).click()
             return True
         except Exception:
-            traceback.print_exc()
             print('Exception occurred while updating json cell ',
                   file=sys.stderr)
             return False
@@ -333,7 +330,6 @@ CREATE TABLE public.nonintpkey
                 ActionChains(self.driver).click(checkbox_el).perform()
             return True
         except Exception:
-            traceback.print_exc()
             print('Exception occurred while updating boolean cell',
                   file=sys.stderr)
             return False

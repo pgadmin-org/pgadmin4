@@ -487,7 +487,6 @@ class QueryToolJourneyTest(BaseFeatureTest):
                         retry), file=sys.stderr)
                     retry -= 1
             except Exception as e:
-                traceback.print_exc()
                 print('Exception while reading cell value in try ' +
                       str(retry), file=sys.stderr)
                 retry -= 1
