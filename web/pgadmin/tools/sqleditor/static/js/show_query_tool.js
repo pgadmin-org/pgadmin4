@@ -32,8 +32,8 @@ export function generateUrl(trans_id, parentData, sqlId) {
     if(parentData.database.label) {
       url_endpoint += `&database_name=${parentData.database.label}`;
     }
-    if(parentData.server.user.name){
-      url_endpoint += `&user=${parentData.server.user.name}`;
+    if(!parentData.server.user_name && parentData.server.user?.name) {
+      url_endpoint += `&user=${parentData.server.user?.name}`;
     }
   }
 

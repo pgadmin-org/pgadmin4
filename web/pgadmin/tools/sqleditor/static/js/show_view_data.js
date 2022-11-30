@@ -134,8 +134,11 @@ function generateUrl(trans_id, connectionData, nodeData, parentData) {
     +`&sgid=${parentData.server_group._id}`
     +`&sid=${parentData.server._id}`
     +`&did=${parentData.database._id}`
-    +`&user=${parentData.server.user.name}`
     +`&server_type=${parentData.server.server_type}`;
+
+  if(!parentData.server.user_name && parentData.server.user?.name) {
+    url_endpoint += `&user=${parentData.server.user?.name}`;
+  }
 
   return url_endpoint;
 }
