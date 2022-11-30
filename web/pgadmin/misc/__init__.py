@@ -10,8 +10,9 @@
 """A blueprint module providing utility functions for the application."""
 
 from pgadmin.utils import driver
-from flask import url_for, render_template, Response, request
+from flask import url_for, render_template, Response, request, current_app
 from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.utils import PgAdminModule, replace_binary_path
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
@@ -192,13 +193,14 @@ def shutdown():
 ##########################################################################
 # A special URL used to validate the binary path
 ##########################################################################
+@login_required
 @blueprint.route("/validate_binary_path",
                  endpoint="validate_binary_path",
                  methods=["POST"])
 def validate_binary_path():
     """
     This function is used to validate the specified utilities path by
-    running the utilities with there versions.
+    running the utilities with their versions.
     """
     data = None
     if hasattr(request.data, 'decode'):
@@ -219,6 +221,10 @@ def validate_binary_path():
                               (utility + '.exe'))))
 
             try:
+                # if path doesn't exist raise exception
+                if not os.path.exists(binary_path):
+                    current_app.logger.warning('Invalid binary path.')
+                    raise Exception()
                 # Get the output of the '--version' command
                 version_string = \
                     subprocess.getoutput('"{0}" --version'.format(full_path))
