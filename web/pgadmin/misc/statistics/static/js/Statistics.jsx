@@ -57,7 +57,7 @@ function getColumn(data, singleLineStatistics) {
   if (!singleLineStatistics) {
     if (!_.isUndefined(data)) {
       data.forEach((row) => {
-        if (row.name == 'Size') {
+        if (row.name == gettext('Total Size')) {
           column = {
             Header: row.name,
             accessor: row.name,
