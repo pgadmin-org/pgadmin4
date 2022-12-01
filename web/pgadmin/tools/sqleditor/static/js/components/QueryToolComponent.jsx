@@ -89,6 +89,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     current_file: null,
     obtaining_conn: true,
     connected: false,
+    connected_once: false,
     connection_status: null,
     connection_status_msg: '',
     params: {
@@ -125,7 +126,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
   /* Connection status poller */
   let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
-    && !qtState.obtaining_conn && qtState.preferences?.sqleditor?.connection_status ?
+    && !qtState.obtaining_conn && qtState.connected_once && qtState.preferences?.sqleditor?.connection_status ?
     qtState.preferences.sqleditor.connection_status_fetch_time*1000 : -1;
   /* No need to poll when the query is executing. Query poller will the txn status */
   if(qtState.connection_status === CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE && qtState.connected) {
@@ -241,7 +242,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     }
   };
 
-  const initializeQueryTool = ()=>{
+  const initializeQueryTool = (password)=>{
     let selectedConn = _.find(qtState.connection_list, (c)=>c.is_selected);
     let baseUrl = '';
     if(qtState.params.is_query_tool) {
@@ -262,18 +263,20 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     api.post(baseUrl, qtState.params.is_query_tool ? {
       user: qtState.params.user,
       role: qtState.params.role,
+      password: password
     } : JSON.stringify(qtState.params.sql_filter))
       .then(()=>{
         setQtState({
           connected: true,
+          connected_once: true,
           obtaining_conn: false,
         });
 
         if(!qtState.params.is_query_tool) {
           eventBus.current.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_EXECUTION);
         }
-      }).catch((err)=>{
-        if(err.response?.request?.responseText?.search('Ticket expired') !== -1) {
+      }).catch((error)=>{
+        if(error.response?.request?.responseText?.search('Ticket expired') !== -1) {
           Kerberos.fetch_ticket()
             .then(()=>{
               initializeQueryTool();
@@ -285,12 +288,23 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               });
               eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, kberr);
             });
+        } else if(error?.response?.status == 428) {
+          connectServerModal(error.response?.data?.result, (passwordData)=>{
+            initializeQueryTool(passwordData.password);
+          }, ()=>{
+            setQtState({
+              connected: false,
+              obtaining_conn: false,
+              connection_status_msg: gettext('Not Connected'),
+            });
+          });
+        } else {
+          setQtState({
+            connected: false,
+            obtaining_conn: false,
+          });
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error);
         }
-        setQtState({
-          connected: false,
-          obtaining_conn: false,
-        });
-        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
   };
 

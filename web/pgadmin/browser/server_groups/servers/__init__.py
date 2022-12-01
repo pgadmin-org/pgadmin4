@@ -803,7 +803,9 @@ class ServerNode(PGChildNodeView):
                 shared=server.shared,
                 user_id=server.user_id,
                 user=manager.user_info if connected else None,
-                server_type='pg'  # default server type
+                server_type='pg',  # default server type
+                user_name=server.username,
+                role=server.role,
             )
         )
 
