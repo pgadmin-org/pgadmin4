@@ -321,6 +321,8 @@ def panel(trans_id):
     params['server_name'] = underscore_escape(s.name)
     if 'user' not in params:
         params['user'] = underscore_escape(s.username)
+    if 'role' not in params and s.role:
+        params['role'] = underscore_escape(s.role)
     params['layout'] = get_setting('SQLEditor/Layout')
     params['macros'] = get_user_macros()
     params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
@@ -371,7 +373,7 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
     kwargs = {
         'user': data['user'] if 'user' in data else None,
         'role': data['role'] if 'role' in data else None,
-        'password': None
+        'password': data['password'] if 'password' in data else None
     }
 
     is_error, errmsg, conn_id, version = _init_sqleditor(
