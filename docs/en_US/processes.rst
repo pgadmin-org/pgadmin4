@@ -47,3 +47,9 @@ Use the **Stop Process** button to stop the Backup process.
 .. note:: If you are running *pgAdmin* in *Server Mode* you can click on the |sm_icon| icon in the process watcher window to open the file location in the Storage Manager. You can use the :ref:`Storage Manager <storage_manager>` to download the backup file on the client machine .
 
 .. |sm_icon| image:: images/sm_icon.png
+
+Watch the demo
+*********************
+.. youtube:: jjP6O_xuHxE
+    :align: center
+    :width: 800
