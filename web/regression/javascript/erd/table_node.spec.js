@@ -37,7 +37,7 @@ describe('ERD TableNodeModel', ()=>{
   });
 
   it('getPortName', ()=>{
-    expect(modelObj.getPortName(2)).toBe('coll-port-2');
+    expect(modelObj.getPortName(2)).toBe('coll-port-2-right');
   });
 
   it('setNote', ()=>{
@@ -66,7 +66,6 @@ describe('ERD TableNodeModel', ()=>{
   describe('setData', ()=>{
     let existPort = jasmine.createSpyObj('port', {
       'removeAllLinks': jasmine.createSpy('removeAllLinks'),
-      'getSubtype': 'notset',
     });
 
     beforeEach(()=>{
@@ -87,7 +86,6 @@ describe('ERD TableNodeModel', ()=>{
     });
 
     it('add columns', ()=>{
-      spyOn(existPort, 'getSubtype').and.returnValue('many');
       existPort.removeAllLinks.calls.reset();
       modelObj.setData({
         name: 'noname',
@@ -113,7 +111,6 @@ describe('ERD TableNodeModel', ()=>{
     });
 
     it('update columns', ()=>{
-      spyOn(existPort, 'getSubtype').and.returnValue('many');
       existPort.removeAllLinks.calls.reset();
       modelObj.setData({
         name: 'noname',

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { DefaultNodeModel, DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
+import { DefaultNodeModel, DiagramEngine, PortModelAlignment, PortWidget } from '@projectstorm/react-diagrams';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 import SchemaIcon from 'top/browser/server_groups/servers/databases/schemas/static/img/schema.svg';
@@ -29,6 +29,7 @@ import { Box } from '@material-ui/core';
 
 
 const TYPE = 'table';
+const TABLE_WIDTH = 175;
 
 export class TableNodeModel extends DefaultNodeModel {
   constructor({otherInfo, ...options}) {
@@ -36,6 +37,7 @@ export class TableNodeModel extends DefaultNodeModel {
       ...options,
       type: TYPE,
     });
+    this.width = TABLE_WIDTH;
 
     this._note = otherInfo.note || '';
     this._metadata = {
@@ -72,8 +74,15 @@ export class TableNodeModel extends DefaultNodeModel {
     }
   }
 
-  getPortName(attnum) {
-    return `coll-port-${attnum}`;
+  getPortName(attnum, alignment) {
+    if(alignment) {
+      return `coll-port-${attnum}-${alignment}`;
+    }
+    return `coll-port-${attnum}-right`;
+  }
+
+  getPortAttnum(portName) {
+    return portName.split('-')[2];
   }
 
   setNote(note) {
@@ -93,6 +102,18 @@ export class TableNodeModel extends DefaultNodeModel {
       ...this._metadata,
       ...metadata,
     };
+  }
+
+  getLinks() {
+    let links = {};
+    this.getPorts();
+    Object.values(this.getPorts()).forEach((port)=>{
+      links = {
+        ...links,
+        ...port.getLinks(),
+      };
+    });
+    return links;
   }
 
   addColumn(col) {
@@ -166,7 +187,7 @@ const styles = (theme)=>({
     ...theme.mixins.panelBorder.all,
     borderRadius: theme.shape.borderRadius,
     position: 'relative',
-    width: '175px',
+    width: `${TABLE_WIDTH}px`,
     fontSize: '0.8em',
     '& div:last-child': {
       borderBottomLeftRadius: 'inherit',
@@ -227,7 +248,9 @@ class TableNodeWidgetRaw extends React.Component {
   }
 
   generateColumn(col, localFkCols, localUkCols) {
-    let port = this.props.node.getPort(this.props.node.getPortName(col.attnum));
+    let leftPort = this.props.node.getPort(this.props.node.getPortName(col.attnum, PortModelAlignment.LEFT));
+    let rightPort = this.props.node.getPort(this.props.node.getPortName(col.attnum, PortModelAlignment.RIGHT));
+
     let icon = ColumnIcon;
     /* Less priority */
     if(localUkCols.indexOf(col.name) > -1) {
@@ -247,6 +270,9 @@ class TableNodeWidgetRaw extends React.Component {
     const {classes} = this.props;
     return (
       <div className={classes.tableSection} key={col.attnum} data-test="column-row">
+        <Box marginRight="auto" padding="0" minHeight="0" display="flex" alignItems="center">
+          {this.generatePort(leftPort)}
+        </Box>
         <Box display="flex" width="100%" style={{wordBreak: 'break-all'}}>
           <RowIcon icon={icon} />
           <Box margin="auto 0">
@@ -256,13 +282,13 @@ class TableNodeWidgetRaw extends React.Component {
           </Box>
         </Box>
         <Box marginLeft="auto" padding="0" minHeight="0" display="flex" alignItems="center">
-          {this.generatePort(port)}
+          {this.generatePort(rightPort)}
         </Box>
       </div>
     );
   }
 
-  generatePort = port => {
+  generatePort = (port) => {
     if(port) {
       return (
         <PortWidget engine={this.props.engine} port={port} key={port.getID()} className={'port-' + port.options.alignment} />
