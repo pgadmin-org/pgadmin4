@@ -683,7 +683,7 @@ def utils():
             qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
             vw_edt_default_placeholder=VW_EDT_DEFAULT_PLACEHOLDER,
             enable_psql=config.ENABLE_PSQL,
-            pgadmin_server_locale=default_locale
+            pgadmin_server_locale=default_locale,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

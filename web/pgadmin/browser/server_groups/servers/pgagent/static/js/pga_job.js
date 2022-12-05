@@ -57,17 +57,16 @@ define('pgadmin.node.pga_job', [
           name: 'create_pga_job_on_coll', node: 'coll-pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('pgAgent Job...'),
-          icon: 'wcTabIcon icon-pga_job', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_pga_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('pgAgent Job...'),
-          icon: 'wcTabIcon icon-pga_job', data: {action: 'create'},
+          data: {action: 'create'},
         }, {
           name: 'run_now_pga_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'run_pga_job_now',
           priority: 4, label: gettext('Run now'), data: {action: 'create'},
-          icon: 'fa fa-play-circle',
         }]);
       },
 

@@ -133,7 +133,6 @@ let webpackShimConfig = {
     'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
     'pgadmin.browser.menu': path.join(__dirname, './pgadmin/browser/static/js/menu'),
     'pgadmin.browser.activity': path.join(__dirname, './pgadmin/browser/static/js/activity'),
-    'pgadmin.browser.quick_search': path.join(__dirname, './pgadmin/browser/static/js/quick_search'),
     'pgadmin.browser.messages': '/browser/js/messages',
     'pgadmin.browser.node': path.join(__dirname, './pgadmin/browser/static/js/node'),
     'pgadmin.browser.panel': path.join(__dirname, './pgadmin/browser/static/js/panel'),

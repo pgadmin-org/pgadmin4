@@ -44,6 +44,8 @@ define('pgadmin.browser.utils',
   /* Add hooked-in panels by extensions */
   pgBrowser['panels_items'] = '{{ current_app.panels|tojson }}';
 
+  pgBrowser['MainMenus'] = [];
+
   pgAdmin['csrf_token_header'] = '{{ current_app.config.get('WTF_CSRF_HEADERS')[0] }}';
   pgAdmin['csrf_token'] = '{{ csrf_token() }}';
   pgAdmin['server_mode'] = '{{ current_app.config.get('SERVER_MODE') }}';
@@ -104,7 +106,9 @@ define('pgadmin.browser.utils',
         {% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}
         obj.add_menus({{ MENU_ITEMS(key, current_app.menu_items['%s_items' % key.lower()])}});
         {% endfor %}
-        obj.create_menus();
+        if('{{current_app.PGADMIN_RUNTIME}}' == 'False') {
+          obj.create_menus();
+        }
       } else {
          //recall after some time
          setTimeout(function(){ self.addMenus(obj); }, 3000);

@@ -65,7 +65,6 @@ export default class DebuggerModule {
         data: {
           object: 'function',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'canDebug',
       }, {
         name: 'global_debugger',
@@ -80,7 +79,6 @@ export default class DebuggerModule {
           object: 'function',
           debug_type: 'indirect',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'canDebug',
       }, {
         name: 'procedure_direct_debugger',
@@ -94,7 +92,6 @@ export default class DebuggerModule {
         data: {
           object: 'procedure',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'can_debug',
       }, {
         name: 'procedure_indirect_debugger',
@@ -109,7 +106,6 @@ export default class DebuggerModule {
           object: 'procedure',
           debug_type: 'indirect',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'can_debug',
       }, {
         name: 'trigger_function_indirect_debugger',
@@ -120,7 +116,6 @@ export default class DebuggerModule {
         priority: 10,
         label: gettext('Set Breakpoint'),
         category: gettext('Debugging'),
-        icon: 'fa fa-arrow-circle-right',
         data: {
           object: 'trigger_function',
           debug_type: 'indirect',
@@ -135,7 +130,6 @@ export default class DebuggerModule {
         priority: 10,
         label: gettext('Set Breakpoint'),
         category: gettext('Debugging'),
-        icon: 'fa fa-arrow-circle-right',
         data: {
           object: 'trigger',
           debug_type: 'indirect',
@@ -153,7 +147,6 @@ export default class DebuggerModule {
         data: {
           object: 'edbfunc',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'can_debug',
       }, {
         name: 'package_function_global_debugger',
@@ -168,7 +161,6 @@ export default class DebuggerModule {
           object: 'edbfunc',
           debug_type: 'indirect',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'can_debug',
       }, {
         name: 'package_procedure_direct_debugger',
@@ -182,7 +174,6 @@ export default class DebuggerModule {
         data: {
           object: 'edbproc',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'can_debug',
       }, {
         name: 'package_procedure_global_debugger',
@@ -197,7 +188,6 @@ export default class DebuggerModule {
           object: 'edbproc',
           debug_type: 'indirect',
         },
-        icon: 'fa fa-arrow-circle-right',
         enable: 'can_debug',
       }
     ]);

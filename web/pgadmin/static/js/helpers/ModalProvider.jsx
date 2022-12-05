@@ -263,7 +263,7 @@ export const useModalStyles = makeStyles((theme) => ({
   }
 }));
 
-function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH }) {
+function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH, showTitle=true }) {
   let useModalRef = useModal();
   const classes = useModalStyles();
   let closeModal = (_e, reason) => {
@@ -282,24 +282,27 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       PaperProps={{ 'isfullscreen': isfullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
       fullScreen={isfullScreen}
       fullWidth={isFullWidth}
-      disableBackdropClick
+      disableBackdropClick={showTitle}
       disablePortal
     >
-      <DialogTitle className='modal-drag-area'>
-        <Box className={classes.titleBar}>
-          <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
-          {
-            showFullScreen && !isfullScreen &&
-            <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
-          }
-          {
-            showFullScreen && isfullScreen &&
-            <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
-          }
+      { showTitle && <>
+        <DialogTitle className='modal-drag-area'>
+          <Box className={classes.titleBar}>
+            <Box className={classes.title} marginRight="0.25rem" >{title}</Box>
+            {
+              showFullScreen && !isfullScreen &&
+                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Maximize')} icon={<ExpandDialogIcon className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+            }
+            {
+              showFullScreen && isfullScreen &&
+                <Box className={classes.iconButtonStyle}><PgIconButton title={gettext('Minimize')} icon={<MinimizeDialogIcon  className={classes.icon} />} size="xs" noBorder onClick={() => { setIsFullScreen(!isfullScreen); }} /></Box>
+            }
 
-          <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
-        </Box>
-      </DialogTitle>
+            <Box marginLeft="auto"><PgIconButton title={gettext('Close')} icon={<CloseIcon  />} size="xs" noBorder onClick={closeModal} /></Box>
+          </Box>
+        </DialogTitle>
+      </>
+      }
       <DialogContent height="100%">
         {useMemo(()=>{ return content(closeModal); }, [])}
       </DialogContent>
@@ -320,4 +323,5 @@ ModalContainer.propTypes = {
   onClose: PropTypes.func,
   minWidth: PropTypes.number,
   minHeight: PropTypes.number,
+  showTitle: PropTypes.bool,
 };

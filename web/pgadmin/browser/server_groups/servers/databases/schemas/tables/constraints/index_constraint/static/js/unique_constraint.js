@@ -44,9 +44,7 @@ define('pgadmin.node.unique_constraint', [
           name: 'create_unique_constraint_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Unique constraint'),
-          icon: 'wcTabIcon icon-unique_constraint', data: {action: 'create', check: true},
-          enable: 'canCreate',
-
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },
         ]);
       },

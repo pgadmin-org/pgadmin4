@@ -7,11 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
+import React from 'react';
 import { generateNodeUrl } from './node_ajax';
+import { getBrowser } from '../../../static/js/utils';
+import createMainMenus, {refreshMainMenuItems, MainMenuItemFactory} from './main_menu';
+import { getContextMenu} from './new_menu';
 import _ from 'lodash';
 import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
 import { checkMasterPassword } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
+import { Search } from './quick_search/trigger_search';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery',
@@ -304,6 +309,8 @@ define('pgadmin.browser', [
       // Help menus
       help: {},
     },
+    native_context_menus: {},
+
     add_panels: function() {
       /* Add hooked-in panels by extensions */
       let panels = JSON.parse(pgBrowser.panels_items);
@@ -366,6 +373,77 @@ define('pgadmin.browser', [
       scripts[n].push({'name': m, 'path': p, loaded: false});
     },
     masterpass_callback_queue: [],
+    getMenuList: function(name, item, d, skipDisabled=false) {
+      let obj = this;
+      let category = {
+        'common': []
+      };
+      for(let _key of Object.keys(obj.menus[name][d._type])){
+        let menuCategory = obj.menus[name][d._type][_key].category;
+        let menuItem = obj.menus[name][d._type][_key];
+
+        if(menuCategory in this.menu_categories) {
+          category[menuCategory] ? category[menuCategory].push(menuItem): category[menuCategory] = [menuItem];
+        } else if (!_.isUndefined(menuCategory)) {
+          category[menuCategory] ? category[menuCategory].push(menuItem): category[menuCategory] = [menuItem];
+        } else {
+          category['common'].push(menuItem);
+        }
+      }
+      let menuItemList = [];
+
+      for(let c in category) {
+
+        if((c in obj.menu_categories || category[c].length > 1) && c != 'common' ) {
+          let is_all_option_dis = true;
+          category[c].forEach((c)=> {
+            c.is_disabled = c.disabled(d, item);
+            if(is_all_option_dis)
+              is_all_option_dis = c.is_disabled;
+          });
+
+          let label = c in obj.menu_categories ? obj.menu_categories[c].label : c;
+          let priority = c in obj.menu_categories ? obj.menu_categories[c].priority || 10 : 10;
+          if(!is_all_option_dis && skipDisabled){
+            let _menuItem = MainMenuItemFactory.create({
+              name: c,
+              label: label,
+              module:c,
+              category: c,
+              menu_items: category[c],
+              priority: priority
+            });
+
+            menuItemList.push(_menuItem);
+          } else if(!skipDisabled){
+            let _menuItem = MainMenuItemFactory.create({
+              name: c,
+              label: label,
+              module:c,
+              category: c,
+              menu_items: category[c],
+              priority: priority
+            });
+
+            menuItemList.push(_menuItem);
+          }
+        } else {
+          category[c].forEach((c)=> {
+            c.is_disabled = c.disabled(d, item);
+          });
+
+          category[c].forEach((m)=> {
+            if(!skipDisabled) {
+              menuItemList.push(m);
+            } else if(skipDisabled && !m.is_disabled){
+              menuItemList.push(m);
+            }
+          });
+        }
+      }
+
+      return menuItemList;
+    },
     // Enable/disable menu options
     enable_disable_menus: function(item) {
       // Mechanism to enable/disable menus depending on the condition.
@@ -376,12 +454,13 @@ define('pgadmin.browser', [
         $obj_mnu = navbar.find('li#mnu_obj .dropdown-menu').first(),
         // data for current selected object
         d = item ? obj.tree.itemData(item) : undefined,
-        update_menuitem = function(m) {
+        update_menuitem = function(m, o) {
           if (m instanceof pgAdmin.Browser.MenuItem) {
             m.update(d, item);
-          } else {
+          }
+          else {
             for (let key in m) {
-              update_menuitem(m[key]);
+              update_menuitem(m[key], o);
             }
           }
         };
@@ -396,19 +475,38 @@ define('pgadmin.browser', [
       // All menus (except for the object menus) are already present.
       // They will just require to check, wheather they are
       // enabled/disabled.
-      _.each([
-        {m: 'file', id: '#mnu_file'},
-        {m: 'management', id: '#mnu_management'},
-        {m: 'tools', id: '#mnu_tools'},
-        {m: 'help', id:'#mnu_help'}], function(o) {
-        _.each( obj.menus[o.m], function(m) { update_menuitem(m); });
-      });
+      let {name: browser} = getBrowser();
+      if(browser == 'Nwjs') {
+        pgBrowser.MainMenus.forEach((menu) => {
+          menu.menuItems.forEach((item) => {
+            item.setDisabled(item.disabled(d, item));
+          });
+        });
+      }else {
+        _.each([
+          {name: 'file', id: '#mnu_file', label: gettext('File')},
+          {name: 'management', id: '#mnu_management', label: gettext('Management')},
+          {name: 'tools', id: '#mnu_tools', label: gettext('Tools')},
+          {name: 'help', id:'#mnu_help', label: gettext('Help')}], function(o) {
+          _.each( obj.menus[o.name], function(m) {
+            update_menuitem(m, o);
+          });
+        });
+      }
 
       // Create the object menu dynamically
       if (item && obj.menus['object'] && obj.menus['object'][d._type]) {
-        pgAdmin.Browser.MenuCreator(
-          obj.Nodes, $obj_mnu, obj.menus['object'][d._type], obj.menu_categories, d, item
-        );
+        if(browser == 'Nwjs') {
+          let menuItemList = obj.getMenuList('object', item, d);
+          let objectMenu = pgBrowser.MainMenus.filter((menu) => menu.name == 'object');
+          objectMenu.length > 0 && refreshMainMenuItems(objectMenu[0], menuItemList);
+          let ctxMenuList = obj.getMenuList('context', item, d, true);
+          obj.native_context_menus = getContextMenu(ctxMenuList, item, d);
+        } else {
+          pgAdmin.Browser.MenuCreator(
+            obj.Nodes, $obj_mnu, obj.menus['object'][d._type], obj.menu_categories, d, item
+          );
+        }
       } else {
         // Create a dummy 'no object seleted' menu
         let create_submenu = pgAdmin.Browser.MenuGroup(
@@ -465,7 +563,6 @@ define('pgadmin.browser', [
       initializeModalProvider();
       initializeNotifier();
 
-
       // Syntax highlight the SQL Pane
       if(document.getElementById('sql-textarea')){
         obj.editor = CodeMirror.fromTextArea(
@@ -517,9 +614,14 @@ define('pgadmin.browser', [
             context_menu = {};
 
           if(item) obj.tree.select(item);
-          pgAdmin.Browser.MenuCreator(
-            obj.Nodes, $div, menus, obj.menu_categories, d, item, context_menu
-          );
+          let {name: browser} = getBrowser();
+          if(browser == 'Nwjs'){
+            context_menu =  obj.native_context_menus;
+          } else {
+            pgAdmin.Browser.MenuCreator(
+              obj.Nodes, $div, menus, obj.menu_categories, d, item, context_menu
+            );
+          }
 
           return {
             autoHide: false,
@@ -677,12 +779,15 @@ define('pgadmin.browser', [
       let self = this,
         pgMenu = this.menus,
         MenuItem = pgAdmin.Browser.MenuItem;
+      let {name: browser} = getBrowser();
+      // MenuItem = pgAdmin.Browser.MenuItem;
       _.each(menus, function(m) {
         _.each(m.applies, function(a) {
           /* We do support menu type only from this list */
-          if ($.inArray(a, [
-            'context', 'file', 'edit', 'object',
-            'management', 'tools', 'help']) >= 0) {
+          // if ($.inArray(a, [
+          //   'context', 'file', 'edit', 'object',
+          //   'management', 'tools', 'help']) >= 0) {
+          if(['context', 'file', 'edit', 'object','management', 'tools', 'help'].indexOf(a) > -1){
             let _menus;
 
             // If current node is not visible in browser tree
@@ -714,14 +819,55 @@ define('pgadmin.browser', [
               } else if(_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') {
                 enable = false;
               }
-              return new MenuItem({
-                name: _m.name, label: _m.label, module: _m.module,
-                category: _m.category, callback: _m.callback,
-                priority: _m.priority, data: _m.data, url: _m.url || '#',
-                target: _m.target, icon: _m.icon,
-                enable,
-                node: _m.node, checked: _m.checked, below: _m.below,
-              });
+
+              // This is to handel quick search callback
+              if(gettext(_m.label) == gettext('Quick Search')) {
+                _m.callback = () => {
+                  // Render Search component
+                  Notify.showModal(gettext('Quick Search'), (closeModal) => {
+                    return <Search closeModal={closeModal}/>;
+                  },
+                  { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: false}
+                  );
+                };
+              }
+
+              if(browser == 'Nwjs') {
+                return MainMenuItemFactory.create({
+                  name: _m.name,
+                  label: _m.label,
+                  module: _m.module,
+                  category: _m.category,
+                  callback: typeof _m.module == 'object' && _m.module[_m.callback] && _m.callback in _m.module[_m.callback] ? _m.module[_m.callback] : _m.callback,
+                  priority: _m.priority,
+                  data: _m.data,
+                  url: _m.url || '#',
+                  target: _m.target,
+                  icon: _m.icon,
+                  enable: enable ? enable : true,
+                  node: _m.node,
+                  checked: _m.checked,
+                  below: _m.below,
+                  applies: _m.applies,
+                });
+              } else {
+                return new MenuItem({
+                  name: _m.name,
+                  label: _m.label,
+                  module: _m.module,
+                  category: _m.category,
+                  callback: _m.callback,
+                  priority: _m.priority,
+                  data: _m.data,
+                  url: _m.url || '#',
+                  target: _m.target,
+                  icon: _m.icon,
+                  enable,
+                  node: _m.node,
+                  checked: _m.checked,
+                  below: _m.below,
+                });
+              }
             };
 
             if (!_.has(_menus, m.name)) {
@@ -747,35 +893,41 @@ define('pgadmin.browser', [
       });
     },
     // Create the menus
-    create_menus: function() {
+    create_menus: function () {
+      let { name: browser } = getBrowser();
+      // Add Native menus if NWjs app
+      if (browser == 'Nwjs') {
+        createMainMenus();
+        this.enable_disable_menus();
+      } else {
+        /* Create menus */
+        let navbar = $('#navbar-menu > ul').first();
+        let obj = this;
 
-      /* Create menus */
-      let navbar = $('#navbar-menu > ul').first();
-      let obj = this;
+        _.each([
+          { menu: 'file', id: '#mnu_file' },
+          { menu: 'management', id: '#mnu_management' },
+          { menu: 'tools', id: '#mnu_tools' },
+          { menu: 'help', id: '#mnu_help' }],
+        function (o) {
+          let $mnu = navbar.children(o.id).first(),
+            $dropdown = $mnu.children('.dropdown-menu').first();
+          $dropdown.empty();
+          if (o.menu == 'help') {
+            $dropdown.append('<div id="quick-search-component"></div>');
+            $dropdown.append('<div class="menu-groups"><span class="fa fa-list" style="font-weight:900 !important;"></span> &nbsp;' + gettext('SUGGESTED SITES') + '</div>');
+          }
 
-      _.each([
-        {menu: 'file', id: '#mnu_file'},
-        {menu: 'management', id: '#mnu_management'},
-        {menu: 'tools', id: '#mnu_tools'},
-        {menu: 'help', id:'#mnu_help'}],
-      function(o) {
-        let $mnu = navbar.children(o.id).first(),
-          $dropdown = $mnu.children('.dropdown-menu').first();
-        $dropdown.empty();
-        if(o.menu == 'help'){
-          $dropdown.append('<div id="quick-search-component"></div>');
-          $dropdown.append('<div class="menu-groups"><span class="fa fa-list" style="font-weight:900 !important;"></span> &nbsp;' + gettext('SUGGESTED SITES') + '</div>');
-        }
+          if (pgAdmin.Browser.MenuCreator(
+            obj.Nodes, $dropdown, obj.menus[o.menu], obj.menu_categories
+          )) {
+            $mnu.removeClass('d-none');
+          }
+        });
 
-        if (pgAdmin.Browser.MenuCreator(
-          obj.Nodes, $dropdown, obj.menus[o.menu], obj.menu_categories
-        )) {
-          $mnu.removeClass('d-none');
-        }
-      });
-
-      navbar.children('#mnu_obj').removeClass('d-none');
-      obj.enable_disable_menus();
+        navbar.children('#mnu_obj').removeClass('d-none');
+        obj.enable_disable_menus();
+      }
     },
     // General function to handle callbacks for object or dialog help.
     showHelp: function(type, url, node, item) {

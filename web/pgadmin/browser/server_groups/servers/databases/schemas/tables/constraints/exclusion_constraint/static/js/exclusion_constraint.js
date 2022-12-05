@@ -45,8 +45,7 @@ define('pgadmin.node.exclusion_constraint', [
           name: 'create_exclusion_constraint_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Exclusion constraint...'),
-          icon: 'wcTabIcon icon-exclusion_constraint', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         }]);
       },
       is_not_valid: function(node) {

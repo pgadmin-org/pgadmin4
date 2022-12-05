@@ -130,7 +130,6 @@ define([
           callback: 'backupObjects',
           priority: 3,
           label: gettext('Backup...'),
-          icon: 'fa fa-save',
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.backupSupportedNodes
           ),

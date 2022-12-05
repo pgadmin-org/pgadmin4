@@ -52,20 +52,17 @@ define('pgadmin.node.fts_template', [
           name: 'create_fts_template_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Template...'),
-          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'create_fts_template_on_coll', node: 'coll-fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Template...'),
-          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'create_fts_template', node: 'fts_template', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Template...'),
-          icon: 'wcTabIcon icon-fts_template', data: {action: 'create'},
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         }]);
 
       },

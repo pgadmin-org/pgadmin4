@@ -57,20 +57,17 @@ define('pgadmin.node.foreign_table', [
           name: 'create_foreign_table_on_coll', node: 'coll-foreign_table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
-          icon: 'wcTabIcon icon-foreign_table', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_foreign_table', node: 'foreign_table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
-          icon: 'wcTabIcon icon-foreign_table', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_foreign_table', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Table...'),
-          icon: 'wcTabIcon icon-foreign_table', data: {action: 'create', check: false},
-          enable: 'canCreate',
+          data: {action: 'create', check: false}, enable: 'canCreate',
         },
         ]);
 

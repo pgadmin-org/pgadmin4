@@ -58,20 +58,17 @@ define('pgadmin.node.function', [
           name: 'create_function_on_coll', node: 'coll-function', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Function...'),
-          icon: 'wcTabIcon icon-function', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_function', node: 'function', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Function...'),
-          icon: 'wcTabIcon icon-function', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_function', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Function...'),
-          icon: 'wcTabIcon icon-function', data: {action: 'create', check: false},
-          enable: 'canCreate',
+          data: {action: 'create', check: false}, enable: 'canCreate',
         },
         ]);
 

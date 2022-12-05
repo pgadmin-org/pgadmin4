@@ -473,7 +473,6 @@ module.exports = [{
         options: {
           type: 'commonjs',
           imports: [
-            'pure|pgadmin.browser.quick_search',
             'pure|pgadmin.tools.user_management',
             'pure|pgadmin.browser.bgprocessmanager',
             'pure|pgadmin.node.server_group',

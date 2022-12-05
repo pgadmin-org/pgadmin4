@@ -54,20 +54,17 @@ define('pgadmin.node.domain', [
           name: 'create_domain_on_coll', node: 'coll-domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Domain...'),
-          icon: 'wcTabIcon icon-domain', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_domain', node: 'domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Domain...'),
-          icon: 'wcTabIcon icon-domain', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_domain', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Domain...'),
-          icon: 'wcTabIcon icon-domain', data: {action: 'create', check: false},
-          enable: 'canCreate',
+          data: {action: 'create', check: false}, enable: 'canCreate',
         },
         ]);
 

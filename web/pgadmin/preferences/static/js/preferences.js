@@ -41,7 +41,6 @@ export default class Preferences {
       enable: true,
       priority: 3,
       label: gettext('Preferences'),
-      icon: 'fa fa-cog',
     }];
 
     this.pgBrowser.add_menus(menus);
