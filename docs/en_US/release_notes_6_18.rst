@@ -26,3 +26,4 @@ Bug fixes
 
   | `Issue #5453 <https://github.com/pgadmin-org/pgadmin4/issues/5453>`_ -  Fixed an issue where Transaction IDs were not found in session in the Query Tool.
   | `Issue #5564 <https://github.com/pgadmin-org/pgadmin4/issues/5564>`_ -  Ensure that table statistics are sorted by size.
+  | `Issue #5603 <https://github.com/pgadmin-org/pgadmin4/issues/5603>`_ -  Fixed an issue where master password was not set correctly with external config database.

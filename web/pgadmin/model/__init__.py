@@ -92,10 +92,10 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
-    password = db.Column(db.String(256))
+    password = db.Column(PgAdminDbBinaryString())
     active = db.Column(db.Boolean(), nullable=False)
     confirmed_at = db.Column(db.DateTime())
-    masterpass_check = db.Column(db.String(256))
+    masterpass_check = db.Column(PgAdminDbBinaryString())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
     auth_source = db.Column(db.String(16), unique=True, nullable=False)
