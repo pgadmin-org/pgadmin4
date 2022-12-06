@@ -42,13 +42,12 @@ define('pgadmin.node.check_constraint', [
           name: 'create_check_constraint_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Check...'),
-          icon: 'wcTabIcon icon-check_constraint', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'validate_check_constraint', node: 'check_constraint', module: this,
           applies: ['object', 'context'], callback: 'validate_check_constraint',
           category: 'validate', priority: 4, label: gettext('Validate check constraint'),
-          icon: 'fa fa-link', enable : 'is_not_valid', data: {action: 'edit', check: true},
+          enable : 'is_not_valid', data: {action: 'edit', check: true},
         },
         ]);
 

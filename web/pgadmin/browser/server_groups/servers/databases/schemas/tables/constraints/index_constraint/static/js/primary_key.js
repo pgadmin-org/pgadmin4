@@ -45,9 +45,7 @@ define('pgadmin.node.primary_key', [
           name: 'create_primary_key_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Primary key'),
-          icon: 'wcTabIcon icon-primary_key', data: {action: 'create', check: true},
-          enable: 'canCreate',
-
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },
         ]);
       },

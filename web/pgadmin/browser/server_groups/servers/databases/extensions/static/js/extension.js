@@ -76,17 +76,17 @@ define('pgadmin.node.extension', [
           name: 'create_extension_on_coll', node: 'coll-extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_extension', node: 'extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_extension', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].is_conn_allow,
         },
         ]);

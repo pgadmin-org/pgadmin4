@@ -7,12 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 import React, {useRef,useState, useEffect} from 'react';
+import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import {useDelayDebounce} from 'sources/custom_hooks';
 import {onlineHelpSearch} from './online_help';
 import {menuSearch} from './menuitems_help';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
+import pgAdmin from 'sources/pgadmin';
+import { getBrowser } from '../../../../static/js/utils';
 
 function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
   return (isHelpLoading && !(isMenuLoading??true)) ? (
@@ -39,8 +43,17 @@ HelpArticleContents.propTypes = {
   isMenuLoading: PropTypes.bool
 };
 
-export function Search() {
+const useModalStyles = makeStyles(() => ({
+  setTop: {
+    marginTop: '-20px',
+  }
+}));
+
+export function Search({closeModal}) {
+  let {name: browser} = getBrowser();
+  const classes = useModalStyles();
   const wrapperRef = useRef(null);
+  const firstEleRef = useRef();
   const [searchTerm, setSearchTerm] = useState('');
   const [isShowMinLengthMsg, setIsShowMinLengthMsg] = useState(false);
   const [isMenuLoading, setIsMenuLoading] = useState(false);
@@ -64,6 +77,7 @@ export function Search() {
       fetched: false,
       data: [],
     }));
+
     setHelpSearchResult(state => ({
       ...state,
       fetched: false,
@@ -120,37 +134,37 @@ export function Search() {
   const refactorMenuItems = (items) => {
     if(items.length > 0){
       let menuItemsHtmlElement = [];
-      for(let i=0; i < items.length; i++){
-        Object.keys(items[i]).forEach( (value) => {
-          if(value != 'element' && value != 'No object selected'){
-            menuItemsHtmlElement.push( <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i } href={'#'} className={ (items[i]['element'].classList.contains('disabled') ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i } onClick={() => {items[i]['element'].click(); toggleDropdownMenu();}}>
-              {value}
-              <span key={ 'menu-span-' + i }>{refactorPathToMenu(items[i][value])}</span>
-            </a>
-            { ((items[i]['element'].classList.contains('disabled') && items[i]['element'].getAttribute('data-disabled') != undefined) ? <i className='fa fa-info-circle quick-search-tooltip' data-toggle='tooltip' title={items[i]['element'].getAttribute('data-disabled')} aria-label='Test data tooltip' aria-hidden='true'></i> : '' )}
-            </li>);
-          }
-        });
-      }
+      items.forEach((i) => {
+        menuItemsHtmlElement.push(
+          <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i.label } href={'#'} className={ (i.is_disabled ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i.label } onClick={
+            () => {
+              closeModal();
+              if(browser == 'Nwjs') {
+                i.callback();
+              } else {
+                // Some callbacks registered in 'callbacks' check and call specifiec callback function
+                if (i.module && 'callbacks' in i.module && i.module.callbacks[i.callback]) {
+                  i.module.callbacks[i.callback].apply(i.module, [i.data, pgAdmin.Browser.tree.selected()]);
+                } else if (i.module && i.module[i.callback]) {
+                  i.module[i.callback].apply(i.module, [i.data, pgAdmin.Browser.tree.selected()]);
+                } else if (i.callback) {
+                  i.callback(i);
+                } else {
+                  window.open(i.url);
+                }
+              }
+            }
+          }>
+            {i.label}
+            <span key={ 'menu-span-' + i.label }>{i.path}</span>
+          </a>
+          </li>);
+      });
       $('[data-toggle="tooltip"]').tooltip();
       return menuItemsHtmlElement;
     }
   };
 
-  const refactorPathToMenu = (path) => {
-    if(path){
-      let pathArray = path.split('/');
-      let spanElement = [];
-      for(let i = 0; i < pathArray.length; i++ ){
-        if(i == (pathArray.length -1)){
-          spanElement.push(pathArray[i]);
-        }else{
-          spanElement.push(<span key={ 'menu-span-sub' + i }> {pathArray[i]} <i className='fa fa-angle-right' aria-hidden='true'></i> </span>);
-        }
-      }
-      return spanElement;
-    }
-  };
 
   const onInputValueChange = (value) => {
     let pooling = window.pooling;
@@ -210,13 +224,19 @@ export function Search() {
     return loading ? <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div> : '';
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      firstEleRef.current && firstEleRef.current.focus();
+    }, 350);
+  }, [firstEleRef.current]);
+
   return (
     <div id='quick-search-container' onClick={setSearchTerm}></div>,
-    <ul id='quick-search-container' ref={wrapperRef} className='test' role="menu">
+    <ul id='quick-search-container' ref={wrapperRef} className={clsx('test', classes.setTop)} role="menu">
       <li>
         <ul id='myDropdown'>
           <li className='dropdown-item-input'>
-            <input tabIndex='0' autoFocus type='text' autoComplete='off' className='form-control live-search-field'
+            <input ref={firstEleRef} tabIndex='0' autoFocus type='text' autoComplete='off' className='form-control live-search-field'
               aria-label='live-search-field' id='live-search-field' placeholder={gettext('Quick Search')} onChange={(e) => {onInputValueChange(e.target.value);} } />
           </li>
           <div style={{marginBottom:0}}>
@@ -229,7 +249,6 @@ export function Search() {
                 </div>)
                 :''}
               <div >
-
                 { (menuSearchResult.fetched && !(isMenuLoading??true) ) ?
                   <div>
                     <div className='menu-groups'>
@@ -269,3 +288,8 @@ export function Search() {
     </ul>
   );
 }
+
+
+Search.propTypes = {
+  closeModal: PropTypes.func
+};

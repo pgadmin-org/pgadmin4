@@ -55,17 +55,17 @@ define('pgadmin.node.user_mapping', [
           name: 'create_user_mapping_on_coll', node: 'coll-user_mapping', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('User Mapping...'),
-          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_user_mapping', node: 'user_mapping', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('User Mapping...'),
-          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_user_mapping', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('User Mapping...'),
-          icon: 'wcTabIcon icon-user_mapping', data: {action: 'create'},
+          data: {action: 'create'},
         },
         ]);
       },

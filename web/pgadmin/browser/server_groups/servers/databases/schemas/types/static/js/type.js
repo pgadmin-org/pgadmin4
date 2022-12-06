@@ -53,19 +53,19 @@ define('pgadmin.node.type', [
           name: 'create_type_on_coll', node: 'coll-type', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Type...'),
-          icon: 'wcTabIcon icon-type', data: {action: 'create', check: true},
+          data: {action: 'create', check: true},
           enable: 'canCreate',
         },{
           name: 'create_type', node: 'type', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Type...'),
-          icon: 'wcTabIcon icon-type', data: {action: 'create', check: true},
+          data: {action: 'create', check: true},
           enable: 'canCreate',
         },{
           name: 'create_type', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Type...'),
-          icon: 'wcTabIcon icon-type', data: {action: 'create', check: false},
+          data: {action: 'create', check: false},
           enable: 'canCreate',
         },
         ]);

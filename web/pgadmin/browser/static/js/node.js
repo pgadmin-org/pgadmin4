@@ -111,7 +111,7 @@ define('pgadmin.browser.node', [
         callback: 'refresh',
         priority: 2,
         label: gettext('Refresh...'),
-        icon: 'fa fa-sync-alt',
+        enable: true,
       }]);
 
       if (self.canEdit) {
@@ -126,7 +126,6 @@ define('pgadmin.browser.node', [
           data: {
             'action': 'edit',
           },
-          icon: 'fa fa-edit',
           enable: _.isFunction(self.canEdit) ?
             function() {
               return !!(self.canEdit.apply(self, arguments));
@@ -147,7 +146,6 @@ define('pgadmin.browser.node', [
             'url': 'drop',
             data_disabled: gettext('The selected tree node does not support this option.'),
           },
-          icon: 'fa fa-trash-alt',
           enable: _.isFunction(self.canDrop) ?
             function() {
               return !!(self.canDrop.apply(self, arguments));
@@ -166,7 +164,6 @@ define('pgadmin.browser.node', [
             data: {
               'url': 'delete',
             },
-            icon: 'fa fa-trash-alt',
             enable: _.isFunction(self.canDropCascade) ?
               function() {
                 return self.canDropCascade.apply(self, arguments);
@@ -193,7 +190,6 @@ define('pgadmin.browser.node', [
           callback: 'show_query_tool',
           priority: 998,
           label: gettext('Query Tool'),
-          icon: 'pg-font-icon icon-query_tool',
           enable: enable,
         }]);
 
@@ -211,7 +207,6 @@ define('pgadmin.browser.node', [
             name: 'show_psql_tool', node: this.type, module: this,
             applies: ['context'], callback: 'show_psql_tool',
             priority: 998, label: gettext('PSQL Tool'),
-            icon: 'fas fa-terminal',
           }]);
         }
       }
@@ -240,7 +235,6 @@ define('pgadmin.browser.node', [
               'script': stype,
               data_disabled: gettext('The selected tree node does not support this option.'),
             },
-            icon: 'fa fa-pencil-alt',
             enable: self.check_user_permission,
           }]);
         });

@@ -55,18 +55,18 @@ define('pgadmin.node.publication', [
           name: 'create_publication_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Publication...'),
-          icon: 'wcTabIcon icon-publication', data: {action: 'create'},
+          data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].canCreate,
         },{
           name: 'create_publication_on_coll', node: 'coll-publication', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Publication...'),
-          icon: 'wcTabIcon icon-publication', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_publication', node: 'publication', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Publication...'),
-          icon: 'wcTabIcon icon-publication', data: {action: 'create'},
+          data: {action: 'create'},
         }]);
       },
 

@@ -55,17 +55,17 @@ define('pgadmin.node.foreign_server', [
           name: 'create_foreign_server_on_coll', node: 'coll-foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_foreign_server', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_foreign_server', node: 'foreign_data_wrapper', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+          data: {action: 'create'},
         },
         ]);
       },

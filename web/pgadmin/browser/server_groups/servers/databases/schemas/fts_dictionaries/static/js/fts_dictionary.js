@@ -55,19 +55,18 @@ define('pgadmin.node.fts_dictionary', [
           name: 'create_fts_dictionary_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Dictionary...'),
-          icon: 'wcTabIcon icon-fts_dictionary', data: {action: 'create'},
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'create_fts_dictionary_on_coll', node: 'coll-fts_dictionary',
           module: this, applies: ['object', 'context'],  priority: 4,
           callback: 'show_obj_properties', category: 'create',
           label: gettext('FTS Dictionary...'), data: {action: 'create'},
-          icon: 'wcTabIcon icon-fts_dictionary', enable: 'canCreate',
+          enable: 'canCreate',
         },{
           name: 'create_fts_dictionary', node: 'fts_dictionary', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Dictionary...'),
-          icon: 'wcTabIcon icon-fts_dictionary', data: {action: 'create'},
+          data: {action: 'create'},
           enable: 'canCreate',
         }]);
       },

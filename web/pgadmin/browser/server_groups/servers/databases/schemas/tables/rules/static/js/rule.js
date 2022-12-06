@@ -86,43 +86,38 @@ define('pgadmin.node.rule', [
           name: 'create_rule_on_coll', node: 'coll-rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },
         {
           name: 'enable_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'enable_rule',
           category: 'connect', priority: 3, label: gettext('Enable'),
-          icon: 'fa fa-check', enable: 'canCreate_with_rule_enable',
+          enable: 'canCreate_with_rule_enable',
         },{
           name: 'disable_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'disable_rule',
           category: 'drop', priority: 3, label: gettext('Disable'),
-          icon: 'fa fa-times', enable: 'canCreate_with_rule_disable'
+          enable: 'canCreate_with_rule_disable'
         }
         ]);
       },

@@ -51,26 +51,24 @@ define('pgadmin.node.server', [
           name: 'create_server_on_sg', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 1, label: gettext('Server...'),
-          data: {action: 'create'}, icon: 'wcTabIcon icon-server',
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'create_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'register', priority: 3, label: gettext('Server...'),
-          data: {action: 'create'}, icon: 'wcTabIcon icon-server',
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'connect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'connect_server',
           category: 'connect', priority: 4, label: gettext('Connect Server'),
-          icon: 'fa fa-link', enable : 'is_not_connected',data: {
+          enable : 'is_not_connected',data: {
             data_disabled: gettext('Database server is already connected.'),
           },
         },{
           name: 'disconnect_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'disconnect_server',
           category: 'drop', priority: 5, label: gettext('Disconnect from server'),
-          icon: 'fa fa-unlink', enable : 'is_connected',data: {
+          enable : 'is_connected',data: {
             data_disabled: gettext('Database server is already disconnected.'),
           },
         },
@@ -78,41 +76,41 @@ define('pgadmin.node.server', [
           name: 'reload_configuration', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 10, label: gettext('Reload Configuration'),
-          icon: 'fa fa-redo-alt', enable : 'enable_reload_config',data: {
+          enable : 'enable_reload_config',data: {
             data_disabled: gettext('Please select a server from the browser tree to reload the configuration files.'),
           },
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',
           category: 'restore', priority: 7, label: gettext('Add Named Restore Point...'),
-          icon: 'fa fa-anchor', enable : 'is_applicable',data: {
+          enable : 'is_applicable',data: {
             data_disabled: gettext('Please select any server from the browser tree to Add Named Restore Point.'),
           },
         },{
           name: 'change_password', node: 'server', module: this,
           applies: ['object'], callback: 'change_password',
           label: gettext('Change Password...'), priority: 10,
-          icon: 'fa fa-lock', enable : 'is_connected',data: {
+          enable : 'is_connected',data: {
             data_disabled: gettext('Please connect server to enable change password.'),
           },
         },{
           name: 'wal_replay_pause', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'pause_wal_replay',
           category: 'wal_replay_pause', priority: 8, label: gettext('Pause Replay of WAL'),
-          icon: 'fa fa-pause-circle', enable : 'wal_pause_enabled',data: {
+          enable : 'wal_pause_enabled',data: {
             data_disabled: gettext('Please select a connected database as a Super user and run in Recovery mode to Pause Replay of WAL.'),
           },
         },{
           name: 'wal_replay_resume', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'resume_wal_replay',
           category: 'wal_replay_resume', priority: 9, label: gettext('Resume Replay of WAL'),
-          icon: 'fa fa-play-circle', enable : 'wal_resume_enabled',data: {
+          enable : 'wal_resume_enabled',data: {
             data_disabled: gettext('Please select a connected database as a Super user and run in Recovery mode to Resume Replay of WAL.'),
           },
         },{
           name: 'clear_saved_password', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'clear_saved_password',
-          label: gettext('Clear Saved Password'), icon: 'fa fa-eraser',
+          label: gettext('Clear Saved Password'),
           priority: 11,
           enable: function(node) {
             return (node && node._type === 'server' &&
@@ -121,7 +119,7 @@ define('pgadmin.node.server', [
         },{
           name: 'clear_sshtunnel_password', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'clear_sshtunnel_password',
-          label: gettext('Clear SSH Tunnel Password'), icon: 'fa fa-eraser',
+          label: gettext('Clear SSH Tunnel Password'),
           priority: 12,
           enable: function(node) {
             return (node && node._type === 'server' &&

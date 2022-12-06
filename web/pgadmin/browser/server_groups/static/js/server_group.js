@@ -34,7 +34,7 @@ define('pgadmin.node.server_group', [
           name: 'create_server_group', node: 'server_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Server Group...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-server_group',
+          data: {'action': 'create'},
         }]);
       },
       getSchema: ()=>new ServerGroupSchema(),
