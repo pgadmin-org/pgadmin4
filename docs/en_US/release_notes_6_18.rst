@@ -16,6 +16,7 @@ New features
 ************
 
   | `Issue #4088 <https://github.com/pgadmin-org/pgadmin4/issues/4088>`_ -  Enhancements to the ERD when selecting a relationship.
+  | `Issue #5503 <https://github.com/pgadmin-org/pgadmin4/issues/5503>`_ -  Added native menu support in desktop mode.
 
 Housekeeping
 ************
