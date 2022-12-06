@@ -41,7 +41,8 @@ eventlet==0.33.0
 httpagentparser==1.9.*
 user-agents==2.2.0
 pywinpty==1.1.*; sys_platform=="win32"
-Authlib==0.15.*
+Authlib==0.15.*; python_version <= '3.6'
+Authlib==1.1.*; python_version >= '3.7'
 requests==2.25.*
 pyotp==2.*
 qrcode==7.*
