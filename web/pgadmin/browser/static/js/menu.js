@@ -7,6 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import _ from 'lodash';
+import {MenuItem as NewMenuItem} from './new_menu';
 
 define([
   'sources/pgadmin', 'jquery', 'sources/utils', 'sources/gettext',
@@ -334,7 +335,17 @@ define([
           let group = groups[m.category || 'common'] =
             groups[m.category || 'common'] || [];
           group.push(m);
-        } else {
+        } else if(m instanceof NewMenuItem) {
+          if (m.$el) {
+            m.$el.remove();
+            delete m.$el;
+          }
+          m.generate(this, self, this.context_menu_callback, item);
+          let group = groups[m.category || 'common'] =
+            groups[m.category || 'common'] || [];
+          group.push(m);
+        }
+        else {
           for (let key in m) {
             update_menuitem(m[key]);
           }
@@ -431,6 +442,7 @@ define([
     let d = this.$element.data('pgMenu');
     if (d.cb) {
       let cb = d.module && d.module['callbacks'] && d.module['callbacks'][d.cb] || d.module && d.module[d.cb];
+      cb = cb || d.cb;
       if (cb) {
         cb.apply(d.module, [d.data, pgAdmin.Browser.tree.selected()]);
         ev.preventDefault();

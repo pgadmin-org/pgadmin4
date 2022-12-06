@@ -43,13 +43,12 @@ define('pgadmin.node.foreign_key', [
           name: 'create_foreign_key_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign key...'),
-          icon: 'wcTabIcon icon-foreign_key', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'validate_foreign_key', node: 'foreign_key', module: this,
           applies: ['object', 'context'], callback: 'validate_foreign_key',
           category: 'validate', priority: 4, label: gettext('Validate foreign key'),
-          icon: 'fa fa-link', enable : 'is_not_valid',
+          enable : 'is_not_valid',
         },
         ]);
       },

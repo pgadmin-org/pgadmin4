@@ -49,17 +49,17 @@ define('pgadmin.node.pga_schedule', [
           name: 'create_pga_schedule_on_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schedule...'),
-          icon: 'wcTabIcon icon-pga_schedule', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_pga_schedule_on_coll', node: 'coll-pga_schedule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schedule...'),
-          icon: 'wcTabIcon icon-pga_schedule', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_pga_schedule', node: 'pga_schedule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schedule...'),
-          icon: 'wcTabIcon icon-pga_schedule', data: {action: 'create'},
+          data: {action: 'create'},
         }]);
       },
 

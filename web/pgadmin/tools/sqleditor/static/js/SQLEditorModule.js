@@ -123,7 +123,6 @@ export default class SQLEditor {
       enable: self.queryToolMenuEnabled,
       priority: 1,
       label: gettext('Query Tool'),
-      icon: 'pg-font-icon icon-query_tool',
       data:{
         applies: 'tools',
         data_disabled: gettext('Please select a database from the browser tree to access Query Tool.'),

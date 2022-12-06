@@ -55,20 +55,19 @@ define('pgadmin.node.fts_configuration', [
           module: this, category: 'create', priority: 4,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           label: gettext('FTS Configuration...'),
-          icon: 'wcTabIcon icon-fts_configuration', data: {action: 'create'},
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'create_fts_configuration_on_coll', module: this, priority: 4,
           node: 'coll-fts_configuration', applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create',
           label: gettext('FTS Configuration...'), data: {action: 'create'},
-          icon: 'wcTabIcon icon-fts_configuration', enable: 'canCreate',
+          enable: 'canCreate',
         },{
           name: 'create_fts_configuration', node: 'fts_configuration',
           module: this, applies: ['object', 'context'],
           callback: 'show_obj_properties', category: 'create', priority: 4,
           label: gettext('FTS Configuration...'), data: {action: 'create'},
-          icon: 'wcTabIcon icon-fts_configuration', enable: 'canCreate',
+          enable: 'canCreate',
         }]);
       },
 

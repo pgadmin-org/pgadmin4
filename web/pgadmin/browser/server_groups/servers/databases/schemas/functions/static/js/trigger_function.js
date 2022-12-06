@@ -65,20 +65,17 @@ define('pgadmin.node.trigger_function', [
           name: 'create_trigger_function_on_coll', node: 'coll-trigger_function', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Trigger function...'),
-          icon: 'wcTabIcon icon-trigger_function', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_trigger_function', node: 'trigger_function', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Trigger function...'),
-          icon: 'wcTabIcon icon-trigger_function', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_trigger_function', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Trigger function...'),
-          icon: 'wcTabIcon icon-trigger_function', data: {action: 'create', check: false},
-          enable: 'canCreate',
+          data: {action: 'create', check: false}, enable: 'canCreate',
         },
         ]);
       },

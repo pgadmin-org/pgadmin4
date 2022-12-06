@@ -55,17 +55,17 @@ define('pgadmin.node.pga_jobstep', [
           name: 'create_pga_jobstep_on_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Job Step...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep',
+          data: {'action': 'create'},
         },{
           name: 'create_pga_jobstep_on_coll', node: 'coll-pga_jobstep', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Job Step...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobsFtep',
+          data: {'action': 'create'},
         },{
           name: 'create_pga_jobstep', node: 'pga_jobstep', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Job Step...'),
-          data: {'action': 'create'}, icon: 'wcTabIcon icon-pga_jobstep',
+          data: {'action': 'create'},
         }]);
       },
 

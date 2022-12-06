@@ -8,6 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 import Notify from '../../../static/js/helpers/Notifier';
+import { getBrowser } from '../../../static/js/utils';
 
 define('pgadmin.settings', [
   'jquery', 'sources/pgadmin',
@@ -51,6 +52,11 @@ define('pgadmin.settings', [
               window.onbeforeunload = null;
               // Now reload page
               location.reload(true);
+              let {name: browser} = getBrowser();
+              if(browser == 'Nwjs') {
+                pgAdmin.Browser.create_menus();
+              }
+
             })
             .fail(function() {
               console.warn(

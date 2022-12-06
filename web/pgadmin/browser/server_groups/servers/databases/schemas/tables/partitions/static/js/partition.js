@@ -64,18 +64,18 @@ function(
           name: 'truncate_table', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table',
           category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
+          enable : 'canCreate',
         },{
           name: 'truncate_table_cascade', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table_cascade',
           category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
+          enable : 'canCreate',
         },{
           // To enable/disable all triggers for the table
           name: 'enable_all_triggers', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
-          icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
+          enable : 'canCreate_with_trigger_enable',
           data: {
             data_disabled: gettext('The selected tree node does not support this option.'),
           },
@@ -83,7 +83,7 @@ function(
           name: 'disable_all_triggers', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'disable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Disable All'),
-          icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
+          enable : 'canCreate_with_trigger_disable',
           data: {
             data_disabled: gettext('The selected tree node does not support this option.'),
           },
@@ -91,12 +91,11 @@ function(
           name: 'reset_table_stats', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
           category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
-          icon: 'fa fa-chart-bar', enable : 'canCreate',
+          enable : 'canCreate',
         },{
           name: 'detach_partition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'detach_partition',
           priority: 2, label: gettext('Detach Partition'),
-          icon: 'fa fa-remove',
         },{
           name: 'count_table_rows', node: 'partition', module: pgBrowser.Nodes['table'],
           applies: ['object', 'context'], callback: 'count_table_rows',

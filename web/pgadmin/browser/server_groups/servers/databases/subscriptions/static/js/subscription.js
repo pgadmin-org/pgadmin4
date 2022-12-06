@@ -58,19 +58,19 @@ define('pgadmin.node.subscription', [
           name: 'create_subscription_on_database', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Subscription...'),
-          icon: 'wcTabIcon icon-subscription', data: {action: 'create'},
+          data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].canCreate,
         },{
           name: 'create_subscription_on_coll', node: 'coll-subscription', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Subscription...'),
-          icon: 'wcTabIcon icon-subscription', data: {action: 'create'},
+          data: {action: 'create'},
           enable: 'canCreate',
         },{
           name: 'create_subscription', node: 'subscription', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Subscription...'),
-          icon: 'wcTabIcon icon-subscription', data: {action: 'create'},
+          data: {action: 'create'},
           enable: 'canCreate',
         }]);
       },

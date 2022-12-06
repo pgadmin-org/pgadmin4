@@ -59,20 +59,17 @@ define('pgadmin.node.procedure', [
           this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Procedure...'),
-          icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
-          false}, enable: 'canCreateProc',
+          data: {action: 'create', check: false}, enable: 'canCreateProc',
         },{
           name: 'create_procedure', node: 'procedure', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Procedure...'),
-          icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
-          true}, enable: 'canCreateProc',
+          data: {action: 'create', check: true}, enable: 'canCreateProc',
         },{
           name: 'create_procedure', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Procedure...'),
-          icon: 'wcTabIcon icon-procedure', data: {action: 'create', check:
-          true}, enable: 'canCreateProc',
+          data: {action: 'create', check: true}, enable: 'canCreateProc',
         },
         ]);
       },

@@ -23,6 +23,12 @@ class HelpModule(PgAdminModule):
         """Return a (set) of dicts of help menu items, with name, priority,
         URL, target and onclick code."""
         return {'help_items': [
+            MenuItem(name='mnu_quick_search_help',
+                     label=gettext('Quick Search'),
+                     priority=99,
+                     target='pgadmin_help',
+                     icon='fa fa-question',
+                     url='#'),
             MenuItem(name='mnu_online_help',
                      label=gettext('Online Help'),
                      priority=100,

@@ -64,7 +64,6 @@ define([
           callback: 'callback_maintenance',
           priority: 10,
           label: gettext('Maintenance...'),
-          icon: 'fa fa-wrench',
           enable: supportedNodes.enabled.bind(
             null, pgBrowser.tree, menuUtils.maintenanceSupportedNodes
           ),

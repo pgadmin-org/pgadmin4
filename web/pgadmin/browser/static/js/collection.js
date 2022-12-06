@@ -45,7 +45,6 @@ define([
           name: 'refresh', node: this.type, module: this,
           applies: ['object', 'context'], callback: 'refresh',
           priority: 2, label: gettext('Refresh'),
-          icon: 'fa fa-sync-alt',
         }]);
 
         // show query tool only in context menu of supported nodes.
@@ -55,7 +54,6 @@ define([
               name: 'show_query_tool', node: this.type, module: this,
               applies: ['context'], callback: 'show_query_tool',
               priority: 998, label: gettext('Query Tool'),
-              icon: 'pg-font-icon icon-query_tool',
             }]);
 
             // show search objects same as query tool
@@ -63,7 +61,6 @@ define([
               name: 'search_objects', node: this.type, module: this,
               applies: ['context'], callback: 'show_search_objects',
               priority: 997, label: gettext('Search Objects...'),
-              icon: 'fa fa-search',
             }]);
 
             // show psql tool same as query tool.
@@ -72,7 +69,6 @@ define([
                 name: 'show_psql_tool', node: this.type, module: this,
                 applies: ['context'], callback: 'show_psql_tool',
                 priority: 998, label: gettext('PSQL Tool'),
-                icon: 'fas fa-terminal',
               }]);
             }
           }

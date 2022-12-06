@@ -52,20 +52,17 @@ define('pgadmin.node.domain_constraints', [
           name: 'create_domain_on_coll', node: 'coll-domain_constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Domain Constraint...'),
-          icon: 'wcTabIcon icon-domain_constraints', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_domain_constraints', node: 'domain_constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Domain Constraint...'),
-          icon: 'wcTabIcon icon-domain_constraints', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_domain_constraints', node: 'domain', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Domain Constraint...'),
-          icon: 'wcTabIcon icon-domain_constraints', data: {action: 'create', check: false},
-          enable: 'canCreate',
+          data: {action: 'create', check: false}, enable: 'canCreate',
         },
         ]);
 

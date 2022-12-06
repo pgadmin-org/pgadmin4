@@ -47,7 +47,6 @@ define([
         category: 'import',
         priority: 3,
         label: gettext('Import/Export Data...'),
-        icon: 'fa fa-shopping-cart',
         enable: supportedNodes.enabled.bind(
           null, pgBrowser.tree, ['table']
         ),

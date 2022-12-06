@@ -98,6 +98,7 @@ window.onload = function(e){
     <div class="row"><div class="col-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
   </div>
 </div>
+{% if current_app.PGADMIN_RUNTIME | string() == 'False' %}
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark pg-navbar">
     <a class="navbar-brand pgadmin_header_logo" onClick="return false;" href="{{ '#' }}"
        title="{{ config.APP_NAME }} {{ _('logo') }}" aria-label="{ config.APP_NAME }} {{ _('logo') }}">
@@ -173,6 +174,9 @@ window.onload = function(e){
 </nav>
 
 <div id="dockerContainer" class="pg-docker"></div>
+{% else %}
+  <div id="dockerContainer" class="pg-docker pg-docker-native"></div>
+{% endif %}
 
 {% include 'browser/messages.html' %}
 

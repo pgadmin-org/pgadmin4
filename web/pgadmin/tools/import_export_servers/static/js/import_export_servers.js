@@ -38,7 +38,6 @@ export default class ImportExportServersModule {
       enable: true,
       priority: 3,
       label: gettext('Import/Export Servers...'),
-      icon: 'fa fa-shopping-cart',
     }];
 
     pgBrowser.add_menus(menus);
