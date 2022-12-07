@@ -37,7 +37,6 @@ class SettingsModule(PgAdminModule):
                     priority=998,
                     module="pgAdmin.Settings",
                     callback='show',
-                    icon='fa fa-retweet',
                     label=gettext('Reset Layout')
                 )
             ]

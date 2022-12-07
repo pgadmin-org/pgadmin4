@@ -478,8 +478,8 @@ define('pgadmin.browser', [
       let {name: browser} = getBrowser();
       if(browser == 'Nwjs') {
         pgBrowser.MainMenus.forEach((menu) => {
-          menu.menuItems.forEach((item) => {
-            item.setDisabled(item.disabled(d, item));
+          menu.menuItems.forEach((_item) => {
+            _item.setDisabled(_item.disabled(d, item));
           });
         });
       }else {

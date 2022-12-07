@@ -426,10 +426,10 @@ function addCommonMenus(pgBrowser, menu) {
 }
 
 function getSubMenu(pgBrowser, menuItem) {
-  var submenu = new gui.Menu();
+  let submenu = new gui.Menu();
   if (menuItem.menu_items) {
     menuItem.menu_items.forEach((item) => {
-      let menuType = typeof item.checked == 'boolean' ? 'checkbox' : item.type || 'normal';
+      let menuType = typeof item.checked == 'boolean' ? 'checkbox' : item.type;
       submenu.append(new gui.MenuItem({
         label: item.label,
         enabled: !item.is_disabled,

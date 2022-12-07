@@ -28,20 +28,20 @@ export default function createMainMenus() {
     // Don't add menuItems for Object menu as it's menuItems get changed on tree selection.
     if(_menu.name !== 'object') {
       menuObj.addMenuItems(Object.values(pgAdmin.Browser.menus[_menu.name]));
-      let priority = null;
       menuObj.menuItems.forEach((menuItem, index)=> {
-        if(index == 0) {
-          priority = menuItem.priority;
+        menuItem?.menu_items?.forEach((item, indx)=> {
+          item.below && menuItem?.menu_items.splice(indx+1, 0, getSeparator());
+        });
+        if(menuItem.below) {
+          menuObj.addMenuItem(getSeparator(), index+1);
         }
-
-        if(priority !== menuItem.priority) {
-          let separateMenuItem = new MenuItem({type: 'separator'});
-          menuObj.addMenuItem(separateMenuItem, index);
-        }
-
       });
     }
   });
+}
+
+function getSeparator() {
+  return new MenuItem({type: 'separator'});
 }
 
 export function refreshMainMenuItems(menu, menuItems) {

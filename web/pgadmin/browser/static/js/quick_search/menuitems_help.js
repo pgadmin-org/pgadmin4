@@ -55,7 +55,7 @@ export function menuSearch(param, props) {
 
   // Starting Point
   let {name: browser} = getBrowser();
-  const mainMenus = browser == 'Nwjs' ?pgAdmin.Browser.MainMenus : MainMenus;
+  const mainMenus = browser == 'Nwjs' ? pgAdmin.Browser.MainMenus : MainMenus;
   if(browser == 'Nwjs') {
     mainMenus.forEach((menu) => {
       let subMenus = menu.menuItems;
