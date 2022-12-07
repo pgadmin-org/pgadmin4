@@ -151,7 +151,8 @@
 }
 
 .pg-docker-native {
-  top: 0px !important
+  top: 0px !important;
+  border-top: 1px solid $border-color;
 }
 
 .pg-panel-content {

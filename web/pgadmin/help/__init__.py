@@ -26,7 +26,7 @@ class HelpModule(PgAdminModule):
             MenuItem(name='mnu_quick_search_help',
                      label=gettext('Quick Search'),
                      priority=99,
-                     target='pgadmin_help',
+                     target='pgadmin_quick_search_help',
                      icon='fa fa-question',
                      url='#'),
             MenuItem(name='mnu_online_help',
