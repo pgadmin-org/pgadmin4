@@ -248,8 +248,15 @@ function launchPgAdminWindow() {
         docsURLSubStrings.forEach(function (key) {
           if (url.indexOf(key) >= 0) {
             isDocURL = true;
+
+            if(key.indexOf('help') >= 0) {
+              url = url.slice(url.indexOf('/help'))
+              url = startPageUrl.slice(0, startPageUrl.indexOf('?') -1 ) + url;
+            }
           }
+
         });
+
 
         if (openDocsInBrowser && isDocURL) {
           // Do not open the window

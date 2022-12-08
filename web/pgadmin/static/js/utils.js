@@ -9,11 +9,13 @@
 
 import _ from 'lodash';
 import $ from 'jquery';
+import url_for from './url_for';
 import gettext from 'sources/gettext';
 import 'wcdocker';
 import Notify from './helpers/Notifier';
 import { hasTrojanSource } from 'anti-trojan-source';
 import convert from 'convert-units';
+import getApiInstance from './api_instance';
 
 let wcDocker = window.wcDocker;
 
@@ -664,4 +666,39 @@ export function fullHexColor(shortHex) {
     return shortHex.replace(RegExp('#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])'), '#$1$1$2$2$3$3').toUpperCase();
   }
   return shortHex;
+}
+
+export function openNewWindow(toolForm, title) {
+  let {name: browser} = getBrowser();
+  if(browser == 'Nwjs') {
+    let api = getApiInstance();
+    api({
+      url: url_for('tools.initialize', null),
+      method: 'GET',
+    })
+      .then(function () {
+        openWindow(toolForm, title);
+      })
+      .catch(function (error) {
+        Notify.error(gettext(`Error in Tool initialize ${error.response.data}`));
+      });
+  }
+  else {
+    openWindow(toolForm, title);
+  }
+}
+
+function openWindow(toolForm, title) {
+  let newWin = window.open('', '_blank');
+  if (newWin) {
+    newWin.document.write(toolForm);
+    newWin.document.title = title;
+    let pgBrowser = window.pgAdmin.Browser;
+    // Send the signal to runtime, so that proper zoom level will be set.
+    setTimeout(function() {
+      pgBrowser.send_signal_to_runtime('Runtime new window opened');
+    }, 500);
+  } else {
+    return false;
+  }
 }
