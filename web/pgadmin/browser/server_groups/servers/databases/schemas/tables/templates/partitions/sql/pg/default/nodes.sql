@@ -9,6 +9,11 @@ SELECT rel.oid, rel.relname AS name,
     (CASE WHEN rel.relkind = 'p' THEN pg_catalog.pg_get_partkeydef(rel.oid::oid) ELSE '' END) AS partition_scheme,
     (CASE WHEN rel.relkind = 'p' THEN pg_catalog.pg_get_partkeydef(rel.oid::oid) ELSE '' END) AS sub_partition_scheme,
     (CASE WHEN rel.relpersistence = 'u' THEN true ELSE false END) AS relpersistence,
+    (CASE WHEN length(spc.spcname::text) > 0 THEN spc.spcname ELSE
+    (SELECT sp.spcname FROM pg_catalog.pg_database dtb
+    JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
+    WHERE dtb.oid = {{ did }}::oid)
+  	END) as spcname,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'fillfactor=([0-9]*)') AS fillfactor,
 	(substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'autovacuum_enabled=([a-z|0-9]*)'))::BOOL AS autovacuum_enabled,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'autovacuum_vacuum_threshold=([0-9]*)') AS autovacuum_vacuum_threshold,
@@ -38,6 +43,7 @@ FROM
     LEFT JOIN pg_catalog.pg_namespace nsp ON rel.relnamespace = nsp.oid
     LEFT OUTER JOIN pg_catalog.pg_class tst ON tst.oid = rel.reltoastrelid
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=rel.oid AND des.objsubid=0 AND des.classoid='pg_class'::regclass)
+    LEFT OUTER JOIN pg_catalog.pg_tablespace spc on spc.oid=rel.reltablespace
     LEFT JOIN pg_catalog.pg_type typ ON rel.reloftype=typ.oid
     WHERE rel.relispartition
     {% if ptid %} AND rel.oid = {{ ptid }}::OID {% endif %}
