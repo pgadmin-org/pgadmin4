@@ -26,6 +26,7 @@ import QueryToolComponent from './components/QueryToolComponent';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
 import { showRenamePanel } from '../../../../static/js/Dialogs';
+import { openNewWindow } from '../../../../static/js/utils';
 
 const wcDocker = window.wcDocker;
 
@@ -340,17 +341,7 @@ export default class SQLEditor {
     let browser_preferences = pgBrowser.get_preferences_for_module('browser');
     let open_new_tab = browser_preferences.new_browser_tab_open;
     if (open_new_tab && open_new_tab.includes('qt')) {
-      let newWin = window.open('', '_blank');
-      if(newWin) {
-        newWin.document.write(queryToolForm);
-        newWin.document.title = panel_title;
-        // Send the signal to runtime, so that proper zoom level will be set.
-        setTimeout(function() {
-          pgBrowser.send_signal_to_runtime('Runtime new window opened');
-        }, 500);
-      } else {
-        return false;
-      }
+      openNewWindow(queryToolForm, panel_title);
     } else {
       /* On successfully initialization find the dashboard panel,
        * create new panel and add it to the dashboard panel.
@@ -359,7 +350,6 @@ export default class SQLEditor {
     }
     return true;
   }
-
   setupPreferencesWorker() {
     if (window.location == window.parent?.location) {
       /* Sync the local preferences with the main window if in new tab */

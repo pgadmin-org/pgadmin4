@@ -18,7 +18,7 @@ import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
 import Notify from '../../../../static/js/helpers/Notifier';
 import { copyToClipboard } from '../../../../static/js/clipboard';
-
+import { openNewWindow } from '../../../../static/js/utils';
 import {generateTitle, refresh_db_node} from 'tools/sqleditor/static/js/sqleditor_title';
 
 
@@ -167,9 +167,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       `;
       let open_new_tab = pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
       if (open_new_tab && open_new_tab.includes('psql_tool')) {
-        let newWin = window.open('', '_blank');
-        newWin.document.write(psqlToolForm);
-        newWin.document.title = panelTitle;
+        openNewWindow(psqlToolForm, panelTitle);
       } else {
         /* On successfully initialization find the properties panel,
          * create new panel and add it to the dashboard panel.

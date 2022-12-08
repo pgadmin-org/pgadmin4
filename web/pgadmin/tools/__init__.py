@@ -14,7 +14,7 @@ from flask import url_for
 from flask_babel import Domain, gettext
 
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import bad_request
+from pgadmin.utils.ajax import bad_request, make_json_response
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 MODULE_NAME = 'tools'
@@ -67,6 +67,15 @@ class ToolsModule(PgAdminModule):
         from .user_management import blueprint as module
         app.register_blueprint(module)
 
+    def get_exposed_url_endpoints(self):
+        """
+        Returns:
+        list: URL endpoints for tools module
+        """
+        return [
+            'tools.initialize',
+        ]
+
 
 # Initialise the module
 blueprint = ToolsModule(MODULE_NAME, __name__)
@@ -93,4 +102,15 @@ def translations():
         response=template,
         status=200,
         mimetype=MIMETYPE_APP_JS
+    )
+
+
+@blueprint.route(
+    '/initialize/',
+    methods=["GET"],
+    endpoint='initialize'
+)
+def initialize():
+    return make_json_response(
+        data={}
     )

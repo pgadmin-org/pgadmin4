@@ -17,6 +17,7 @@ import ReactDOM from 'react-dom';
 import ERDTool from './erd_tool/components/ERDTool';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import Theme from '../../../../static/js/Theme';
+import { openNewWindow } from '../../../../static/js/utils';
 import $ from 'jquery';
 
 const wcDocker = window.wcDocker;
@@ -131,13 +132,7 @@ export default class ERDModule {
 
     let open_new_tab = this.pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
     if (open_new_tab && open_new_tab.includes('erd_tool')) {
-      let newWin = window.open('', '_blank');
-      newWin.document.write(erdToolForm);
-      newWin.document.title = panelTitle;
-      // Send the signal to runtime, so that proper zoom level will be set.
-      setTimeout(function() {
-        this.pgBrowser.send_signal_to_runtime('Runtime new window opened');
-      }, 500);
+      openNewWindow(erdToolForm, panelTitle);
     } else {
       /* On successfully initialization find the dashboard panel,
        * create new panel and add it to the dashboard panel.
@@ -181,7 +176,6 @@ export default class ERDModule {
       openErdToolURL(erdToolPanel);
     }
   }
-
   getPanelUrl(transId, parentData, gen) {
     let openUrl = url_for('erd.panel', {
       trans_id: transId,
