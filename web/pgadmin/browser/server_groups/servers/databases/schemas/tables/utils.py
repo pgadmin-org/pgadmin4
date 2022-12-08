@@ -916,6 +916,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 part_data = dict()
                 part_data['partitioned_table_name'] = data['name']
                 part_data['parent_schema'] = data['schema']
+                part_data['spcname'] = row['spcname']
                 if not json_resp:
                     part_data['schema'] = data['schema']
                 else:
@@ -1074,7 +1075,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if is_partitioned:
             sql = render_template("/".join([self.partition_template_path,
                                             self._NODES_SQL]),
-                                  scid=scid, tid=tid)
+                                  scid=scid, tid=tid, did=did)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rset)
@@ -1769,7 +1770,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             partitions = []
             sql = render_template("/".join([self.partition_template_path,
                                             self._NODES_SQL]),
-                                  scid=scid, tid=tid)
+                                  scid=scid, tid=tid, did=did)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rset)
