@@ -22,7 +22,8 @@ COMMENT ON TABLE public."table_with_patition_$%{}[]()&*^!@""'`\/#"
 -- Partitions SQL
 
 CREATE TABLE IF NOT EXISTS public.cust_active PARTITION OF public."table_with_patition_$%{}[]()&*^!@""'`\/#"
-    FOR VALUES IN ('ACTIVE');
+    FOR VALUES IN ('ACTIVE')
+TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.cust_active
     OWNER to enterprisedb;
