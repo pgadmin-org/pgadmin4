@@ -10,6 +10,9 @@ import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import { getBrowser } from '../../../static/js/utils';
 import Menu, { MenuItem } from './new_menu';
+import getApiInstance from '../../../static/js/api_instance';
+import url_for from 'sources/url_for';
+import Notifier from '../../../static/js/helpers/Notifier';
 
 export let MainMenus = [
   { label: gettext('File'), name: 'file', id: 'mnu_file', index: 0,  addSepratior: true },
@@ -64,7 +67,14 @@ export class MainMenuItemFactory {
         options.callback(options);
       } else {
         if (options.url != '#') {
-          window.open(options.url);
+          let api = getApiInstance();
+          api(
+            url_for('tools.initialize')
+          ).then(()=>{
+            window.open(options.url);
+          }).catch(()=>{
+            Notifier.error(gettext('Error in opening window'));
+          });
         }
       }
     }}, (menu, item)=> {
