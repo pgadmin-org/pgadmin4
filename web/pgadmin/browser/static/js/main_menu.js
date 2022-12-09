@@ -79,6 +79,8 @@ export class MainMenuItemFactory {
       }
     }}, (menu, item)=> {
       pgAdmin.Browser.Events.trigger('pgadmin:nw-enable-disable-menu-items', menu, item);
+    }, (item) => {
+      pgAdmin.Browser.Events.trigger('pgadmin:nw-update-checked-menu-item', item);
     });
   }
 }

@@ -296,9 +296,10 @@ function launchPgAdminWindow() {
           if (pgadminWindow?.window?.pgAdmin?.Browser?.Events && pgadminWindow?.window?.pgAdmin?.Browser?.MainMenus?.length > 0) {
             pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', enableDisableMenuItem);
             pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item', refreshMenuItems);
+            pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-update-checked-menu-item', updateCheckedMenuItem);
             // Add Main Menus to native menu.
             pgadminWindow.window.pgAdmin.Browser.MainMenus.forEach((menu)=> {
-              addMenu(pgadminWindow.window.pgAdmin.Browser, menu)
+              addMenu(menu)
             })
             clearInterval(addMenuInterval);
           }
@@ -380,11 +381,11 @@ splashWindow.on('close', function () {
 });
 
 
-function addCommonMenus(pgBrowser, menu) {
+function addCommonMenus(menu) {
   let _menu = new gui.Menu();
 
   menu.menuItems.forEach((menuItem) => {
-    var submenu = getSubMenu(pgBrowser, menuItem);
+    var submenu = getSubMenu(menuItem);
 
     let _menuItem = new gui.MenuItem({
       label: menuItem.label,
@@ -427,7 +428,7 @@ function addCommonMenus(pgBrowser, menu) {
 
 }
 
-function getSubMenu(pgBrowser, menuItem) {
+function getSubMenu(menuItem) {
   let submenu = new gui.Menu();
   if (menuItem.menu_items) {
     menuItem.menu_items.forEach((item) => {
@@ -460,12 +461,12 @@ function getSubMenu(pgBrowser, menuItem) {
   return submenu;
 }
 
-function addMacMenu(pgBrowser, menu) {
+function addMacMenu(menu) {
   if (menu.name == 'file' && platform() === 'darwin') {
     var rootMenu = nativeMenu.items[0].submenu;
     let indx = 0;
     menu.menuItems.forEach((menuItem) => {
-      let submenu = getSubMenu(pgBrowser, menuItem);
+      let submenu = getSubMenu(menuItem);
 
       rootMenu.insert(
         new gui.MenuItem({
@@ -489,21 +490,21 @@ function addMacMenu(pgBrowser, menu) {
 
     pgAdminMainScreen.menu = nativeMenu;
   } else {
-    addCommonMenus(pgBrowser, menu)
+    addCommonMenus(menu)
   }
 }
 
-function addOtherOsMenu(pgBrowser, menu) {
-  addCommonMenus(pgBrowser, menu)
+function addOtherOsMenu(menu) {
+  addCommonMenus(menu)
 }
 
 
-function addMenu(pgBrowser, menu) {
+function addMenu(menu) {
   pgAdminMainScreen.isCustomMenusAdded = true;
   if (platform() === 'darwin') {
-    addMacMenu(pgBrowser, menu);
+    addMacMenu(menu);
   } else {
-    addOtherOsMenu(pgBrowser, menu);
+    addOtherOsMenu(menu);
   }
   addMenuCompleted = true;
 }
@@ -521,6 +522,25 @@ function enableDisableMenuItem(menu, menuItem) {
       }
     });
   }
+}
+
+function updateCheckedMenuItem(menuItem) {
+  // check/ uncheck specific menu item
+  pgAdminMainScreen.menu.items.forEach(el => {
+    el.submenu.items.forEach((sub) => {
+      if(sub.label == menuItem.parentMenu.label) {
+        sub.submenu.items.forEach((sm)=> {
+          if (sm.label == menuItem.label && sm.type == 'checkbox') {
+            sm.checked = menuItem.checked
+          }
+        })
+      } else {
+        if (sub.label == menuItem.label && type == 'checkbox') {
+          sub.checked = menuItem.checked
+        }
+      }
+    });
+  });
 }
 
 function refreshMenuItems(menu) {

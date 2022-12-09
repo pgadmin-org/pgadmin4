@@ -31,16 +31,7 @@ export default class Menu {
         this.menuItems.splice(index, 0, menuItem);
       } else {
         this.menuItems.push(menuItem);
-
-        // Sort by alphanumeric ordered first
-        this.menuItems.sort(function (a, b) {
-          return a.label.localeCompare(b.label);
-        });
-
-        // Sort by priority
-        this.menuItems.sort(function (a, b) {
-          return a.priority - b.priority;
-        });
+        Menu.sortMenus(this.menuItems);
       }
     } else {
       throw new Error(gettext('Invalid MenuItem instance'));
@@ -54,6 +45,12 @@ export default class Menu {
       if (item instanceof MenuItem) {
         item.parentMenu = this;
         this.menuItems.push(item);
+        if(item?.menu_items && item.menu_items.length > 0) {
+          item.menu_items.forEach((i)=> {
+            i.parentMenu = item;
+          });
+          Menu.sortMenus(item.menu_items);
+        }
       } else {
         let subItems = Object.values(item);
         subItems.forEach((subItem)=> {
@@ -81,16 +78,25 @@ export default class Menu {
 
   setMenuItems(menuItems) {
     this.menuItems = menuItems;
+    Menu.sortMenus(this.menuItems);
+
+    this.menuItems.forEach((item)=> {
+      if(item?.menu_items?.length > 0) {
+        Menu.sortMenus(item.menu_items);
+      }
+    });
+  }
+
+  static sortMenus(menuItems) {
     // Sort by alphanumeric ordered first
-    this.menuItems.sort(function (a, b) {
+    menuItems.sort(function (a, b) {
       return a.label.localeCompare(b.label);
     });
 
     // Sort by priority
-    this.menuItems.sort(function (a, b) {
+    menuItems.sort(function (a, b) {
       return a.priority - b.priority;
     });
-
   }
 
   getMenuItems() {
@@ -98,15 +104,7 @@ export default class Menu {
   }
 
   static getContextMenus(menuList, item, node) {
-    // Sort by alphanumeric ordered first
-    menuList.sort(function (a, b) {
-      return a.label.localeCompare(b.label);
-    });
-
-    // Sort by priority
-    menuList.sort(function (a, b) {
-      return a.priority - b.priority;
-    });
+    Menu.sortMenus(menuList);
 
     let ctxMenus = {};
     let ctxIndex = 1;
@@ -115,6 +113,7 @@ export default class Menu {
       let sub_ctx_item = {};
       ctx.is_disabled = ctx.disabled(node, item);
       if ('menu_items' in ctx && ctx.menu_items) {
+        Menu.sortMenus(ctx.menu_items);
         ctx.menu_items.forEach((c) => {
           c.is_disabled = c.disabled(node, item);
           if (!c.is_disabled) {
@@ -138,7 +137,7 @@ export default class Menu {
 
 
 export class MenuItem {
-  constructor(options, onDisableChange) {
+  constructor(options, onDisableChange, onChangeChacked) {
     let menu_opts = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
       'category', 'target', 'url', 'node',
@@ -159,10 +158,16 @@ export class MenuItem {
       };
     }
     this.onDisableChange = onDisableChange;
+    this.changeChecked = onChangeChacked;
   }
 
   static create(options) {
     return MenuItem(options);
+  }
+
+  change_checked(isChecked) {
+    this.checked = isChecked;
+    this.changeChecked?.(this);
   }
 
   contextMenuCallback(self) {
