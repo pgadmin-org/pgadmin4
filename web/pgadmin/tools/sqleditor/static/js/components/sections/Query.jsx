@@ -154,7 +154,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
           token.string = token.string.slice(0, cur.ch - token.start);
         }
 
-        if (token.string.match(/^[.`\w@]\w*$/)) {
+        if (token.string.match(/^[."`\w@]\w*$/)) {
           search = token.string;
           start = token.start;
           end = token.end;
@@ -179,7 +179,7 @@ function registerAutocomplete(api, transId, sqlEditorPref, onFailure) {
           self_local.editor.state.autoCompleteList = [];
 
         // Clear the auto complete list if previous token/search is blank or dot.
-        if (prevSearch == '' || prevSearch == '.')
+        if (prevSearch == '' || prevSearch == '.' || prevSearch == '"')
           self_local.editor.state.autoCompleteList = [];
 
         prevSearch = search;
