@@ -398,6 +398,9 @@ define('pgadmin.browser', [
           let is_all_option_dis = true;
           category[c].forEach((c)=> {
             c.is_disabled = c.disabled(d, item);
+
+            c.setDisabled( c.is_disabled);
+
             if(is_all_option_dis)
               is_all_option_dis = c.is_disabled;
           });
@@ -478,8 +481,8 @@ define('pgadmin.browser', [
       let {name: browser} = getBrowser();
       if(browser == 'Nwjs') {
         pgBrowser.MainMenus.forEach((menu) => {
-          menu.menuItems.forEach((_item) => {
-            _item.setDisabled(_item.disabled(d, item));
+          menu.menuItems.forEach((item) => {
+            item.setDisabled(item.disabled(d, item));
           });
         });
       }else {
