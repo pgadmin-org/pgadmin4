@@ -290,6 +290,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
     setErrMsg([MESSAGE_TYPE.INFO, gettext('EDB BigAnimal authentication process is in progress...') + '<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
     let child = window.open(verificationURI, 'edb_biganimal_authentication');
     let _url = url_for('biganimal.verification_ack') ;
+    let countdown = 60;
     const myInterval = setInterval(() => {
       axiosApi.get(_url)
         .then((res) => {
@@ -297,17 +298,15 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             setErrMsg([MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
             setVerificationIntiated(true);
             clearInterval(myInterval);
-          }
-          else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'access_denied') {
+          } else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'access_denied') {
             setErrMsg([MESSAGE_TYPE.INFO, gettext('Verification failed. Access Denied...')]);
             setVerificationIntiated(false);
             clearInterval(myInterval);
-          }
-          else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'forbidden') {
+          } else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'forbidden') {
             setErrMsg([MESSAGE_TYPE.INFO, gettext('Authentication completed successfully but you do not have permission to create the cluster.')]);
             setVerificationIntiated(false);
             clearInterval(myInterval);
-          }else if (child.closed) {
+          } else if (child.closed && !verificationIntiated && countdown <= 0) {
             setVerificationIntiated(false);
             setErrMsg([MESSAGE_TYPE.ERROR, gettext('Authentication is aborted.')]);
             clearInterval(myInterval);
@@ -316,6 +315,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         .catch((error) => {
           setErrMsg([MESSAGE_TYPE.ERROR, gettext(`Error while verifying EDB BigAnimal: ${error.response.data.errormsg}`)]);
         });
+      countdown = countdown - 1;
     }, 1000);
 
     cloudPanel.on(window.wcDocker.EVENT.CLOSED, function() {
