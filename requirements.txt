@@ -30,7 +30,8 @@ sqlparse==0.*
 psutil==5.9.3
 psycopg2==2.9.*
 python-dateutil==2.*
-SQLAlchemy==1.4.*
+SQLAlchemy==1.4.44; python_version <= '3.6'
+SQLAlchemy==1.4.*; python_version >= '3.7'
 bcrypt==3.*
 cryptography==3.*
 sshtunnel==0.*
