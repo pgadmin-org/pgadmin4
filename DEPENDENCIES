@@ -38,13 +38,13 @@ Flask-SocketIO                                                   5.2.0          
 WTForms                                                          3.0.1            BSD-3-Clause                         https://wtforms.readthedocs.io/
 passlib                                                          1.7.4            BSD                                  https://passlib.readthedocs.io
 pytz                                                             2021.3           MIT                                  http://pythonhosted.org/pytz
-simplejson                                                       3.17.6           MIT License                          https://github.com/simplejson/simplejson
+simplejson                                                       3.18.0           MIT License                          https://github.com/simplejson/simplejson
 speaklater3                                                      1.4              UNKNOWN                              https://github.com/ThomasWaldmann/speaklater
 sqlparse                                                         0.4.3            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
 psutil                                                           5.9.3            BSD-3-Clause                         https://github.com/giampaolo/psutil
 psycopg2                                                         2.9.5            LGPL with exceptions                 https://psycopg.org/
 python-dateutil                                                  2.8.2            Dual License                         https://github.com/dateutil/dateutil
-SQLAlchemy                                                       1.4.44           MIT                                  https://www.sqlalchemy.org
+SQLAlchemy                                                       1.4.45           MIT                                  https://www.sqlalchemy.org
 bcrypt                                                           3.2.2            Apache License, Version 2.0          https://github.com/pyca/bcrypt/
 cryptography                                                     3.4.8            BSD or Apache License, Version 2.0   https://github.com/pyca/cryptography
 sshtunnel                                                        0.4.0            MIT                                  https://github.com/pahaz/sshtunnel
@@ -61,7 +61,7 @@ qrcode                                                           7.3.1          
 Pillow                                                           9.3.0            HPND                                 https://python-pillow.org
 boto3                                                            1.20.54          Apache License 2.0                   https://github.com/boto/boto3
 botocore                                                         1.23.54          Apache License 2.0                   https://github.com/boto/botocore
-urllib3                                                          1.26.12          MIT                                  https://urllib3.readthedocs.io/
+urllib3                                                          1.26.13          MIT                                  https://urllib3.readthedocs.io/
 Werkzeug                                                         2.1.2            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
 azure-mgmt-rdbms                                                 10.1.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
 azure-mgmt-resource                                              21.0.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
