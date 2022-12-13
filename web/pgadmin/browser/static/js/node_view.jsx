@@ -223,6 +223,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
         getSQLValue={getSQLValue}
         disableSqlHelp={nodeObj.sqlAlterHelp == '' && nodeObj.sqlCreateHelp == '' && !nodeObj.epasHelp}
         disableDialogHelp={nodeObj.dialogHelp == undefined || nodeObj.dialogHelp == ''}
+        itemNodeData={itemNodeData}
       />
     </Theme>, container);
 }
