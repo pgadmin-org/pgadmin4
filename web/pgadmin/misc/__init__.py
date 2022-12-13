@@ -193,10 +193,10 @@ def shutdown():
 ##########################################################################
 # A special URL used to validate the binary path
 ##########################################################################
-@login_required
 @blueprint.route("/validate_binary_path",
                  endpoint="validate_binary_path",
                  methods=["POST"])
+@login_required
 def validate_binary_path():
     """
     This function is used to validate the specified utilities path by

@@ -32,3 +32,4 @@ Bug fixes
   | `Issue #5603 <https://github.com/pgadmin-org/pgadmin4/issues/5603>`_ -  Fixed an issue where master password was not set correctly with external config database.
   | `Issue #5606 <https://github.com/pgadmin-org/pgadmin4/issues/5606>`_ -  Fixed an error in the collation create script for PG-15.
   | `Issue #5629 <https://github.com/pgadmin-org/pgadmin4/issues/5629>`_ -  Fixed BigAnimal authentication aborted issue.
+  | `Issue #5637 <https://github.com/pgadmin-org/pgadmin4/issues/5637>`_ -  Ensure that the BigAnimal displays PG version 11-14 for Oracle compatible databases type.
