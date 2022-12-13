@@ -538,9 +538,16 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
         options: this.fieldOptions.db_types,
         noEmpty: true, orientation: 'vertical',
       },{
-        id: 'postgres_version', label: gettext('PostgreSQL version'), type: 'select',
-        mode: ['create'], noEmpty: true,
+        id: 'postgres_version', label: gettext('PostgreSQL version'),
+        mode: ['create'], noEmpty: true, deps: ['database_type'],
         options: this.fieldOptions.db_versions,
+        type: (state) => {
+          return {
+            type: 'select',
+            options: ()=>this.fieldOptions.db_versions(state.database_type),
+            optionsReloadBasis: state.database_type,
+          };
+        },
       },{
         id: 'password', label: gettext('Database password'), type: 'password',
         mode: ['create'], noEmpty: true,
