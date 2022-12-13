@@ -108,11 +108,11 @@ export function BigAnimalDatabase(props) {
           return url_for('biganimal.db_types');
         }
       }),
-      db_versions: ()=>getNodeAjaxOptions('biganimal_db_versions', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
+      db_versions: (db_type)=>getNodeAjaxOptions('biganimal_db_versions', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
         useCache:false,
         cacheNode: 'server',
         customGenerateUrl: ()=>{
-          return url_for('biganimal.db_versions');
+          return url_for('biganimal.db_versions', {'db_type': db_type || 'pg'});
         }
       }),
       server_groups: ()=>getNodeListById(pgAdmin.Browser.Nodes['server_group'], props.nodeInfo, props.nodeData),

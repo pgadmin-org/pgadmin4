@@ -103,13 +103,13 @@ def biganimal_db_types():
     return make_json_response(data=pg_types)
 
 
-@blueprint.route('/db_versions/',
+@blueprint.route('/db_versions/<db_type>',
                  methods=['GET'], endpoint='db_versions')
 @login_required
-def biganimal_db_versions():
+def biganimal_db_versions(db_type):
     """Get Database Version."""
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
-    pg_versions = biganimal_obj.get_postgres_versions()
+    pg_versions = biganimal_obj.get_postgres_versions(db_type)
     return make_json_response(data=pg_versions)
 
 
@@ -301,11 +301,12 @@ class BigAnimalProvider():
                     })
         return pg_types
 
-    def get_postgres_versions(self):
+    def get_postgres_versions(self, db_type):
         """Get Postgres Versions."""
-        _url = "{0}/{1}".format(
+        _url = "{0}/pg-versions?pgTypeIds={1}".format(
             self.BASE_URL,
-            'pg-versions')
+            db_type
+        )
         pg_versions = []
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
