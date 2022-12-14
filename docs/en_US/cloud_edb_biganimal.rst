@@ -23,6 +23,18 @@ will be redirected to the new tab for the verification.
 Once you confirm the one time code, the pgAdmin will automatically detect it
 and the next button will be enabled. To proceed further, click on the next button.
 
+.. image:: images/cloud_biganimal_cluster.png
+    :alt: Cloud Deployment Provider
+    :align: center
+
+
+* Use the *Cluster type* field to choose a cluster type.
+
+* Use the *No. of Standby Replicas* field to specify the replicas if you have selected the High Availability cluster.
+
+* Use the *Cluster provider* field to coose the provider.
+
+
 .. image:: images/cloud_biganimal_instance.png
     :alt: Cloud Deployment Provider
     :align: center
@@ -48,8 +60,11 @@ details.
 
 * Use the *Volume type* field to select the instance storage type.
 
-* Use the *Volume properties* field to specify the storage capacity.
+* Use the *Volume properties* field to specify the storage capacity. This field is specific to Azure.
 
+* Use the *Volume size* field to specify the storage size. This field is specific to AWS.
+
+* Use the *Volume IOPS* field to specify the storage IOPS. This field is specific to AWS.
 
 
 .. image:: images/cloud_biganimal_database.png
@@ -71,11 +86,6 @@ Use the fields from the Database Details tab to specify the Instance details.
   authenticating with the server.
 
 * Use the *Confirm password* field to repeat the password.
-
-* Use the *High Availability* field to create the cluster with high availability, which creates a cluster
-  with one primary and up to two standby replicas in different availability zones.
-
-* Use the *Number of standby replicas* field to specify the standby replicas.
 
 
 .. image:: images/cloud_biganimal_review.png

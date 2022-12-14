@@ -65,6 +65,12 @@ class BigAnimalProvider(AbsProvider):
         parser_create_instance.add_argument('--volume-properties',
                                             required=True,
                                             help='storage properties')
+        parser_create_instance.add_argument('--volume-size',
+                                            required=True,
+                                            help='storage Size')
+        parser_create_instance.add_argument('--volume-IOPS',
+                                            required=True,
+                                            help='storage IOPS')
         parser_create_instance.add_argument('--private-network', required=True,
                                             help='Private or Public Network')
         parser_create_instance.add_argument('--public-ip', default='',
@@ -76,6 +82,12 @@ class BigAnimalProvider(AbsProvider):
         parser_create_instance.add_argument('--nodes',
                                             required=True,
                                             help='No of Nodes')
+        parser_create_instance.add_argument('--replicas',
+                                            required=True,
+                                            help='No. of Stand By Replicas')
+        parser_create_instance.add_argument('--cloud-provider',
+                                            required=True,
+                                            help='Provider')
 
     def cmd_create_instance(self, args):
         """ Create a biganimal cluster """
@@ -105,12 +117,14 @@ class BigAnimalProvider(AbsProvider):
                 'pgType': {'pgTypeId': args.db_type},
                 'pgVersion': {'pgVersionId': args.db_version},
                 'privateNetworking': private_network,
-                'provider': {'cloudProviderId': 'azure'},
+                'provider': {'cloudProviderId': args.cloud_provider},
                 'region': {'regionId': args.region},
-                'replicas': 1,
+                'replicas': int(args.replicas),
                 'storage': {
                     'volumePropertiesId': args.volume_properties,
-                    'volumeTypeId': args.volume_type
+                    'volumeTypeId': args.volume_type,
+                    'iops': args.volume_IOPS,
+                    'size': args.volume_size + ' Gi'
                 },
                 'clusterArchitecture': {
                     'clusterArchitectureId': args.cluster_arch,
