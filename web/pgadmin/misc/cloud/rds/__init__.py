@@ -58,6 +58,7 @@ blueprint = RDSModule(MODULE_NAME, __name__,
 @login_required
 def verify_credentials():
     """Verify Credentials."""
+    msg = ''
     data = json.loads(request.data, encoding='utf-8')
 
     session_token = data['secret']['session_token'] if\

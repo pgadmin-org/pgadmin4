@@ -139,8 +139,12 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
   const handleNext = () => {
     // beforeNext should always return a promise
     if(props.beforeNext) {
-      props.beforeNext(activeStep).then(()=>{
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      props.beforeNext(activeStep).then((skipCurrentStep=false)=>{
+        if (skipCurrentStep) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 2);
+        } else {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
       }).catch(()=>{/*This is intentional (SonarQube)*/});
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);

@@ -22,7 +22,7 @@ import pgAdmin from 'sources/pgadmin';
 import {ToggleButtons, FinalSummary} from './cloud_components';
 import { PrimaryButton } from '../../../../static/js/components/Buttons';
 import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudStep1, validateCloudStep2, validateCloudStep3} from './aws';
-import {BigAnimalInstance, BigAnimalDatabase, validateBigAnimal,validateBigAnimalStep2, validateBigAnimalStep3} from './biganimal';
+import {BigAnimalInstance, BigAnimalDatabase, BigAnimalClusterType, validateBigAnimal, validateBigAnimalStep2, validateBigAnimalStep3, validateBigAnimalStep4} from './biganimal';
 import { isEmptyString } from 'sources/validators';
 import { AWSIcon, BigAnimalIcon, AzureIcon } from '../../../../static/js/components/ExternalIcon';
 import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClusternameAvailbility, validateAzureStep2, validateAzureStep3} from './azure';
@@ -67,7 +67,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
 
   const eventBus = React.useRef(new EventBus());
 
-  let steps = [gettext('Cloud Provider'), gettext('Credentials'),
+  let steps = [gettext('Cloud Provider'), gettext('Credentials'), gettext('Cluster Type'),
     gettext('Instance Specification'), gettext('Database Details'), gettext('Review')];
   const [currentStep, setCurrentStep] = React.useState('');
   const [selectionVal, setCloudSelection] = React.useState('');
@@ -81,6 +81,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
   const [verificationIntiated, setVerificationIntiated] = React.useState(false);
   const [bigAnimalInstanceData, setBigAnimalInstanceData] = React.useState({});
   const [bigAnimalDatabaseData, setBigAnimalDatabaseData] = React.useState({});
+  const [bigAnimalClusterTypeData, setBigAnimalClusterTypeData] = React.useState({});
 
   const [azureCredData, setAzureCredData] = React.useState({});
   const [azureInstanceData, setAzureInstanceData] = React.useState({});
@@ -145,7 +146,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
       post_data = {
         gid: nodeInfo.server_group._id,
         cloud: cloudProvider,
-        instance_details:bigAnimalInstanceData,
+        cluster_details: bigAnimalClusterTypeData,
+        instance_details: bigAnimalInstanceData,
         db_details: bigAnimalDatabaseData
       };
     }
@@ -174,9 +176,11 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         isError = validateCloudStep1(cloudDBCred);
         break;
       case 2:
-        isError = validateCloudStep2(cloudInstanceDetails, hostIP);
         break;
       case 3:
+        isError = validateCloudStep2(cloudInstanceDetails, hostIP);
+        break;
+      case 4:
         isError = validateCloudStep3(cloudDBDetails, nodeInfo);
         break;
       default:
@@ -192,10 +196,13 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         isError = !verificationIntiated;
         break;
       case 2:
-        isError = validateBigAnimalStep2(bigAnimalInstanceData);
+        isError = validateBigAnimalStep2(bigAnimalClusterTypeData);
         break;
       case 3:
-        isError = validateBigAnimalStep3(bigAnimalDatabaseData, nodeInfo);
+        isError = validateBigAnimalStep3(bigAnimalInstanceData);
+        break;
+      case 4:
+        isError = validateBigAnimalStep4(bigAnimalDatabaseData, nodeInfo);
         break;
       default:
         break;
@@ -239,7 +246,11 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
               reject();
             } else {
               setErrMsg(['', '']);
-              resolve();
+              if (activeStep == 1) {
+                resolve(true);
+              } else {
+                resolve(false);
+              }
             }
           })
           .catch(() => {
@@ -380,20 +391,31 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
           </WizardStep>
           <WizardStep stepId={2} >
-            {cloudProvider == 'rds' && callRDSAPI == 2 && <AwsInstanceDetails
+            {cloudProvider == 'biganimal' && callRDSAPI == 2 && <BigAnimalClusterType
+              cloudProvider={cloudProvider}
+              nodeInfo={nodeInfo}
+              nodeData={nodeData}
+              setBigAnimalClusterTypeData={setBigAnimalClusterTypeData}
+              hostIP={hostIP}
+            /> }
+            <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
+          </WizardStep>
+          <WizardStep stepId={3} >
+            {cloudProvider == 'rds' && callRDSAPI == 3 && <AwsInstanceDetails
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
               setCloudInstanceDetails={setCloudInstanceDetails}
               hostIP={hostIP} /> }
-            {cloudProvider == 'biganimal' && callRDSAPI == 2 && <BigAnimalInstance
+            {cloudProvider == 'biganimal' && callRDSAPI == 3 && <BigAnimalInstance
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
               setBigAnimalInstanceData={setBigAnimalInstanceData}
               hostIP={hostIP}
+              bigAnimalClusterTypeData={bigAnimalClusterTypeData}
             /> }
-            {cloudProvider == 'azure' && callRDSAPI == 2 && <AzureInstanceDetails
+            {cloudProvider == 'azure' && callRDSAPI == 3 && <AzureInstanceDetails
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
@@ -403,7 +425,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             /> }
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
           </WizardStep>
-          <WizardStep stepId={3} >
+          <WizardStep stepId={4} >
             {cloudProvider == 'rds' && <AwsDatabaseDetails
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
@@ -411,11 +433,12 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
               setCloudDBDetails={setCloudDBDetails}
             />
             }
-            {cloudProvider == 'biganimal' && callRDSAPI == 3 && <BigAnimalDatabase
+            {cloudProvider == 'biganimal' && callRDSAPI == 4 && <BigAnimalDatabase
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
               setBigAnimalDatabaseData={setBigAnimalDatabaseData}
+              bigAnimalClusterTypeData={bigAnimalClusterTypeData}
             />
             }
             {cloudProvider == 'azure' && <AzureDatabaseDetails
@@ -426,22 +449,23 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             />
             }
           </WizardStep>
-          <WizardStep stepId={4} >
+          <WizardStep stepId={5} >
             <Box className={classes.boxText}>{gettext('Please review the details before creating the cloud instance.')}</Box>
             <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
-              {cloudProvider == 'rds' && callRDSAPI == 4 && <FinalSummary
+              {cloudProvider == 'rds' && callRDSAPI == 5 && <FinalSummary
                 cloudProvider={cloudProvider}
                 instanceData={cloudInstanceDetails}
                 databaseData={cloudDBDetails}
               />
               }
-              {cloudProvider == 'biganimal' && callRDSAPI == 4 && <FinalSummary
+              {cloudProvider == 'biganimal' && callRDSAPI == 5 && <FinalSummary
                 cloudProvider={cloudProvider}
                 instanceData={bigAnimalInstanceData}
                 databaseData={bigAnimalDatabaseData}
+                clusterTypeData={bigAnimalClusterTypeData}
               />
               }
-              {cloudProvider == 'azure' && callRDSAPI == 4 && <FinalSummary
+              {cloudProvider == 'azure' && callRDSAPI == 5 && <FinalSummary
                 cloudProvider={cloudProvider}
                 instanceData={azureInstanceData}
                 databaseData={azureDatabaseData}

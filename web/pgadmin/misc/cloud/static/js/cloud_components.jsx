@@ -69,8 +69,8 @@ export function FinalSummary(props) {
     summaryHeader = ['Cloud Details', 'Version and Instance Details', 'Storage Details', 'Database Details'];
 
   if (props.cloudProvider == 'biganimal') {
-    summary = getBigAnimalSummary(props.cloudProvider, props.instanceData, props.databaseData);
-    summaryHeader[1] = 'Version Details';
+    summary = getBigAnimalSummary(props.cloudProvider, props.clusterTypeData, props.instanceData, props.databaseData);
+    summaryHeader = ['Cloud Details',  'Cluster Details' ,'Version Details', 'Storage Details', 'Database Details'];
   } else if(props.cloudProvider == 'azure') {
     summaryHeader.push('Network Connectivity','Availability');
     summary = getAzureSummary(props.cloudProvider, props.instanceData, props.databaseData);
@@ -107,4 +107,5 @@ FinalSummary.propTypes = {
   cloudProvider: PropTypes.string,
   instanceData: PropTypes.object,
   databaseData: PropTypes.object,
+  clusterTypeData: PropTypes.object,
 };
