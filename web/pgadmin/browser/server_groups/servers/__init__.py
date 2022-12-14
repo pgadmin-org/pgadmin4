@@ -806,6 +806,7 @@ class ServerNode(PGChildNodeView):
                 server_type='pg',  # default server type
                 user_name=server.username,
                 role=server.role,
+                is_password_saved=bool(server.save_password)
             )
         )
 
