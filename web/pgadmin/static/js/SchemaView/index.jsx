@@ -866,7 +866,7 @@ const usePropsStyles = makeStyles((theme)=>({
 
 /* If its the properties tab */
 function SchemaPropertiesView({
-  getInitData, viewHelperProps, schema={}, itemNodeData, ...props}) {
+  getInitData, viewHelperProps, schema={}, ...props}) {
   const classes = usePropsStyles();
   let defaultTab = 'General';
   let tabs = {};
@@ -888,7 +888,7 @@ function SchemaPropertiesView({
     }).catch(()=>{
       setLoaderText('');
     });
-  }, [itemNodeData]);
+  }, []);
 
 
   /* A simple loop to get all the controls for the fields */
