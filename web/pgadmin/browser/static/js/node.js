@@ -948,8 +948,6 @@ define('pgadmin.browser.node', [
 
       // Callback to show object properties
       let properties = function() {
-          /* Remove any dom rendered by getNodeView */
-          removeNodeView(j[0]);
           let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
           getNodeView(
             that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit

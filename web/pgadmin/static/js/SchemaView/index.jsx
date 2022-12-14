@@ -866,7 +866,7 @@ const usePropsStyles = makeStyles((theme)=>({
 
 /* If its the properties tab */
 function SchemaPropertiesView({
-  getInitData, viewHelperProps, schema={}, ...props}) {
+  getInitData, viewHelperProps, schema={}, itemNodeData, ...props}) {
   const classes = usePropsStyles();
   let defaultTab = 'General';
   let tabs = {};
@@ -888,7 +888,7 @@ function SchemaPropertiesView({
     }).catch(()=>{
       setLoaderText('');
     });
-  }, [getInitData]);
+  }, [itemNodeData]);
 
 
   /* A simple loop to get all the controls for the fields */
@@ -1020,6 +1020,7 @@ SchemaPropertiesView.propTypes = {
   onHelp: PropTypes.func,
   disableSqlHelp: PropTypes.bool,
   onEdit: PropTypes.func,
+  itemNodeData: PropTypes.object
 };
 
 export default function SchemaView({formType, ...props}) {
