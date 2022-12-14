@@ -5,7 +5,7 @@ export async function copyToClipboard(text) {
     await navigator.clipboard.writeText(text);
   } catch(err) {
     /* Suppress error */
-    Notifier.error('Does not have clipboard acccess');
+    Notifier.error('Does not have clipboard access');
   }
   localStorage.setItem('clipboard', text);
 }
