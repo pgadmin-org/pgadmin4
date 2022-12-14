@@ -305,11 +305,10 @@ class BigAnimalProvider():
 
     def get_postgres_versions(self, cluster_type, pg_type):
         """Get Postgres Versions."""
-        _url = "{0}/pg-versions?clusterArchitectureIds={1}&pgTypeIds={2}".format(
-            self.BASE_URL,
-            cluster_type,
-            pg_type
-            )
+        _url = "{0}/pg-versions?clusterArchitectureIds={1}" \
+               "&pgTypeIds={2}".format(self.BASE_URL,
+                                       cluster_type,
+                                       pg_type)
         pg_versions = []
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
