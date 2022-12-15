@@ -10,7 +10,7 @@ OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | s
 OS_ARCH=$(arch)
 
 # Make sure we get the right libpq
-export PATH=/usr/pgsql-14/bin:$PATH
+export PATH=/usr/pgsql-15/bin:$PATH
 
 # Stop creating pyc files.
 export PYTHONDONTWRITEBYTECODE=1
