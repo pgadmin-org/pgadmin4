@@ -134,6 +134,7 @@ _build_docs() {
     pip3 install --upgrade pip
     pip3 install -r "${SOURCE_DIR}/requirements.txt"
     pip3 install sphinx
+    pip3 install sphinxcontrib-youtube
 
     cd "${SOURCE_DIR}" || exit
     make docs
