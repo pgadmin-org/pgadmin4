@@ -1699,6 +1699,8 @@ define('pgadmin.browser', [
                 // If the current node's inode is false
                 if (__ctx.i && !__ctx.t.isInode(__ctx.i)) {
                   __ctx.t.setInode(__ctx.i, {success: _appendNode});
+                  // Open the collection node.
+                  pgBrowser.tree.open(__ctx.i);
                 } else {
                   // Handle case for node without parent i.e. server-group
                   // or if parent node's inode is true.
