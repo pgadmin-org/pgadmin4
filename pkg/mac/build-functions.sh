@@ -304,6 +304,10 @@ _complete_bundle() {
 
     # Remove the .pyc files if any
     find "${BUNDLE_DIR}" -name "*.pyc" -print0 | xargs -0 rm -f
+
+    # Update permissions to make sure all users can access installed pgadmin.
+    chmod -R og=u "${BUNDLE_DIR}"
+    chmod -R og-w "${BUNDLE_DIR}"
 }
 
 _codesign_binaries() {
