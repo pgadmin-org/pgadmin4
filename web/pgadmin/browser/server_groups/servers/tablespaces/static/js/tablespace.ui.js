@@ -10,6 +10,7 @@
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../static/js/sec_label.ui';
+import { isEmptyString } from '../../../../../../static/js/validators';
 
 export default class TablespaceSchema extends BaseUISchema {
   constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
@@ -61,7 +62,6 @@ export default class TablespaceSchema extends BaseUISchema {
         group: gettext('Definition'), type: 'text',
         mode: ['properties', 'edit','create'],
         readonly: function(state) {return !obj.isNew(state); },
-        noEmpty: true,
       }, {
         id: 'acl', label: gettext('Privileges'), type: 'text',
         group: gettext('Security'), mode: ['properties'],
@@ -87,5 +87,16 @@ export default class TablespaceSchema extends BaseUISchema {
         canAdd: true, canEdit: false, canDelete: true,
       }
     ];
+  }
+
+  validate(state, setError) {
+    let errmsg = null;
+
+    if (this.isNew() && isEmptyString(state.spclocation)) {
+      errmsg = gettext('\'Location\' cannot be empty.');
+      setError('spclocation', errmsg);
+      return true;
+    }
+    return null;
   }
 }
