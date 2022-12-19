@@ -40,12 +40,15 @@ yum groupinstall -y "Development Tools"
 if [ "${OS_VERSION}" == 7 ]; then
     yum install -y expect fakeroot httpd-devel postgresql14-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
     pip3 install sphinx
+    pip3 install sphinxcontrib-youtube
 elif [ "${OS_VERSION}" == 9 ]; then
     yum install -y expect postgresql14-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
     pip3 install sphinx
+    pip3 install sphinxcontrib-youtube
 else
     yum install -y expect fakeroot postgresql14-devel python3-devel nodejs yarn rpm-build rpm-sign yum-utils krb5-devel
     pip3 install sphinx
+    pip3 install sphinxcontrib-youtube
 fi
 
 # Setup RPM macros for signing
