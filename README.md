@@ -206,6 +206,7 @@ virtual environment. This can be installed with the pip package manager:
 ```bash
 $ source venv/bin/activate
 (venv) $ pip install Sphinx
+(venv) $ pip install sphinxcontrib-youtube
 ```
 
 The docs can then be built using the Makefile in *$PGADMIN4_SRC*, e.g.

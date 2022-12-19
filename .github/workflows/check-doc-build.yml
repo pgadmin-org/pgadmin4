@@ -32,5 +32,8 @@ jobs:
       - name: Install sphinx
         run: pip install sphinx
 
+      - name: Install sphinx youtube
+        run: pip install sphinxcontrib-youtube
+
       - name: Check the documentation
         run: make docs

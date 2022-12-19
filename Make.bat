@@ -247,6 +247,7 @@ REM Main build sequence Ends
 
     ECHO Building docs...
     CALL pip install sphinx || EXIT /B 1
+    CALL pip install sphinxcontrib-youtube || EXIT /B 1
     MKDIR "%BUILDROOT%\docs\en_US\html"
     CD "%WD%\docs\en_US"
     CALL "%TMPDIR%\venv\Scripts\python.exe" build_code_snippet.py || EXIT /B 1

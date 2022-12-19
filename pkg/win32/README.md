@@ -155,6 +155,7 @@ want to build an installer.
         python -m venv venv
         pip install -r web\regression\requirements.txt
         pip install sphinx
+        pip install sphinxcontrib-youtube
 
 You should now be able to run the pgAdmin Python application, or build the
 desktop runtime.
