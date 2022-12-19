@@ -33,5 +33,5 @@ apt update
 
 # Install pre-reqs
 echo "Installing build pre-requisites..."
-apt install -y build-essential python3-dev python3-venv python3-sphinx python3-wheel libpq-dev libffi-dev nodejs yarn libkrb5-dev
-
+apt install -y build-essential python3-dev python3-venv python3-sphinx python3-wheel python3-pip libpq-dev libffi-dev nodejs yarn libkrb5-dev
+python3 -m pip install sphinxcontrib-youtube
