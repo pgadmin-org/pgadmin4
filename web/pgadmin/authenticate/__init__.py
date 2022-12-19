@@ -14,10 +14,12 @@ import copy
 import functools
 
 from flask import current_app, flash, Response, request, url_for, \
-    session, redirect
+    session, redirect, render_template
 from flask_babel import gettext
-from flask_security.views import _security
-from flask_security.utils import get_post_logout_redirect, logout_user
+from flask_security.views import _security, _ctx
+from flask_security.utils import get_post_logout_redirect, logout_user,\
+    config_value
+
 from flask_login import current_user
 from flask_socketio import disconnect, ConnectionRefusedError
 
@@ -171,8 +173,12 @@ def login():
     if 'auth_obj' in session:
         session.pop('auth_obj')
     flash(msg, 'danger')
-    response = redirect(get_post_logout_redirect())
-    return response
+    form_class = _security.login_form
+    form = form_class()
+
+    return _security.render_template(
+        config_value('LOGIN_USER_TEMPLATE'),
+        login_user_form=form, **_ctx('login'))
 
 
 class AuthSourceManager:
