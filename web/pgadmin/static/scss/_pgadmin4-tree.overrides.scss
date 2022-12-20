@@ -19,6 +19,11 @@
     position: absolute !important;
     height: 100% !important;
     top: 0px !important;
+
+    > div {
+      scrollbar-gutter: stable;
+      overflow: overlay !important;
+    }
   }
 }
 
