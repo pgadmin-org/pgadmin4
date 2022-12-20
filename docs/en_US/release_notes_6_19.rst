@@ -25,4 +25,6 @@ Bug fixes
 *********
 
   | `Issue #5542 <https://github.com/pgadmin-org/pgadmin4/issues/5542>`_ -  Fixed an issue updating the schema node de-select the node in the tree if only one schema is present in the collection node.
+  | `Issue #5559 <https://github.com/pgadmin-org/pgadmin4/issues/5559>`_ -  Fixed tree flickering issue on scroll.
+  | `Issue #5586 <https://github.com/pgadmin-org/pgadmin4/issues/5586>`_ -  Fix the webserver and internal authentication setup issue.
   | `Issue #5613 <https://github.com/pgadmin-org/pgadmin4/issues/5613>`_ -  Ensure the appbundle has correct permissions so that pgAdmin can be accessed by users other than owner.
