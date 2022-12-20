@@ -7,6 +7,8 @@ import {
   MenuItem,
   ControlledMenu,
   applyStatics,
+  Menu,
+  SubMenu,
 } from '@szhsin/react-menu';
 export {MenuDivider as PgMenuDivider} from '@szhsin/react-menu';
 import { shortcutToString } from './ShortcutTitle';
@@ -25,14 +27,14 @@ const useStyles = makeStyles((theme)=>({
     '& .szh-menu__divider': {
       margin: 0,
       background: theme.otherVars.borderColor,
-    }
-  },
-  menuItem: {
-    display: 'flex',
-    padding: '4px 8px',
-    '&.szh-menu__item--active, &.szh-menu__item--hover': {
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.primary.contrastText,
+    },
+    '& .szh-menu__item': {
+      display: 'flex',
+      padding: '4px 8px',
+      '&.szh-menu__item--active, &.szh-menu__item--hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+      }
     }
   },
   checkIcon: {
@@ -48,10 +50,19 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-export function PgMenu({open, className, label, ...props}) {
+export function PgMenu({open, className, label, menuButton, ...props}) {
   const classes = useStyles();
   const state = open ? 'open' : 'closed';
   props.anchorRef?.current?.setAttribute('data-state', state);
+
+  if(menuButton) {
+    return <Menu
+      {...props}
+      menuButton={menuButton}
+      className={clsx(classes.menu, className)}
+      aria-label={label || 'Menu'}
+    />;
+  }
   return (
     <ControlledMenu
       state={state}
@@ -68,7 +79,14 @@ PgMenu.propTypes = {
   className: CustomPropTypes.className,
   label: PropTypes.string,
   anchorRef: CustomPropTypes.ref,
+  menuButton: PropTypes.oneOfType([React.ReactNode, undefined]),
 };
+
+export const PgSubMenu = applyStatics(SubMenu)(({label, ...props})=>{
+  return (
+    <SubMenu label={label}  itemProps={{'data-label': label}} {...props} />
+  );
+});
 
 export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false, accesskey, shortcut, children, ...props})=>{
   const classes = useStyles();
@@ -80,7 +98,7 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
     };
   }
   const dataLabel = typeof(children) == 'string' ? children : undefined;
-  return <MenuItem {...props} onClick={onClick} className={classes.menuItem} data-label={dataLabel} data-checked={checked}>
+  return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} />}
     {children}
     {(shortcut || accesskey) && <div className={classes.shortcut}>({shortcutToString(shortcut, accesskey)})</div>}

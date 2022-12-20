@@ -109,8 +109,8 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
                                            self.server['db_password'],
                                            self.database_name)
         self.page.retry_click(
-            (By.LINK_TEXT,
-             NavMenuLocators.tools_menu_link_text),
+            (By.CSS_SELECTOR,
+             NavMenuLocators.tools_menu_css),
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css))
         maintenance_obj = self.wait.until(EC.visibility_of_element_located(
             (By.CSS_SELECTOR, NavMenuLocators.maintenance_obj_css)))

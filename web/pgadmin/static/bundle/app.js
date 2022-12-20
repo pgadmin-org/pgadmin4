@@ -7,6 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MainMenuFactory from '../../browser/static/js/MainMenuFactory';
+import AppMenuBar from '../js/AppMenuBar';
+import Theme from '../js/Theme';
+
 define('app', [
   'sources/pgadmin', 'bundled_browser',
 ], function(pgAdmin) {
@@ -38,6 +44,14 @@ define('app', [
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
 
-  // create menus after all modules are initialized.
-  pgAdmin.Browser.create_menus();
+  // Add menus from back end.
+  pgAdmin.Browser.utils.addBackendMenus(pgAdmin.Browser);
+
+  // Create menus after all modules are initialized.
+  MainMenuFactory.createMainMenus();
+
+  const menuContainerEle = document.querySelector('#main-menu-container');
+  if(menuContainerEle) {
+    ReactDOM.render(<Theme><AppMenuBar /></Theme>, document.querySelector('#main-menu-container'));
+  }
 });

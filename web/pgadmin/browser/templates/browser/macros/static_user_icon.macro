@@ -1,3 +1,0 @@
-{% macro PREPARE_HTML() -%}
-'<i class="fa fa-user-circle pg-login-icon" aria-hidden="true"></i> {{ username }} <span class="caret"></span>';
-{%- endmacro %}

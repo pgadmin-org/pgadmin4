@@ -29,7 +29,7 @@ describe('layout related functions test', function() {
     };
 
     _.extend(pgBrowser,{
-      'menus': {
+      'all_menus_cache': {
         'file': {
           'mnu_locklayout': {
             'menu_items': [
@@ -42,7 +42,7 @@ describe('layout related functions test', function() {
       },
     });
 
-    menu_items = pgBrowser.menus.file.mnu_locklayout.menu_items;
+    menu_items = pgBrowser.all_menus_cache.file.mnu_locklayout.menu_items;
   });
 
   describe('for menu actions', function() {

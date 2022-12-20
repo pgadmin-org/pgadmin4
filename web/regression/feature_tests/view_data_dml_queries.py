@@ -335,14 +335,16 @@ CREATE TABLE public.nonintpkey
             return False
 
     def _view_data_grid(self, table_name):
-        self.page.driver.find_element(By.LINK_TEXT, "Object").click()
+        self.page.driver.find_element(By.CSS_SELECTOR,
+                                      NavMenuLocators.object_menu_css).click()
         ActionChains(
             self.page.driver
         ).move_to_element(
             self.page.driver.find_element(
-                By.LINK_TEXT, NavMenuLocators.view_data_link_text)
+                By.CSS_SELECTOR, NavMenuLocators.view_data_link_css)
         ).perform()
-        self.page.find_by_partial_link_text("All Rows").click()
+
+        self.page.find_by_css_selector("li[data-label='All Rows']").click()
 
         # wait until datagrid frame is loaded.
         self.page.wait_for_query_tool_loading_indicator_to_appear()

@@ -8,6 +8,7 @@
 ##########################################################################
 
 import secrets
+import time
 
 from selenium.webdriver import ActionChains
 from selenium.common.exceptions import TimeoutException
@@ -17,6 +18,7 @@ from regression.feature_utils.tree_area_locators import TreeAreaLocators
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from regression.feature_utils.locators import NavMenuLocators
 
 
 class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
@@ -66,13 +68,17 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
         function_node.click()
 
     def _debug_function(self):
-        self.page.driver.find_element(By.LINK_TEXT, "Object").click()
+        self.page.driver.find_element(By.CSS_SELECTOR,
+                                      NavMenuLocators.object_menu_css).click()
         ActionChains(
             self.page.driver
         ).move_to_element(
-            self.page.driver.find_element(By.LINK_TEXT, "Debugging")
+            self.page.driver.find_element(
+                By.CSS_SELECTOR, "div[data-label='Debugging']")
         ).perform()
-        self.page.driver.find_element(By.LINK_TEXT, "Debug").click()
+        time.sleep(2)
+        self.page.driver.find_element(
+            By.CSS_SELECTOR, "li[data-label='Debug']").click()
 
         # We need to check if debugger plugin is installed or not
         try:

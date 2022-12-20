@@ -131,7 +131,6 @@ let webpackShimConfig = {
     'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
     'pgadmin.browser.runtime': path.join(__dirname, './pgadmin/browser/static/js/runtime'),
     'pgadmin.browser.preferences': path.join(__dirname, './pgadmin/browser/static/js/preferences'),
-    'pgadmin.browser.menu': path.join(__dirname, './pgadmin/browser/static/js/menu'),
     'pgadmin.browser.activity': path.join(__dirname, './pgadmin/browser/static/js/activity'),
     'pgadmin.browser.messages': '/browser/js/messages',
     'pgadmin.browser.node': path.join(__dirname, './pgadmin/browser/static/js/node'),
@@ -238,7 +237,7 @@ let webpackShimConfig = {
   pgLibs: [
     'pgadmin.browser.error',
     'pgadmin.browser.collection',
-    'pgadmin.browser.events', 'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin',
+    'pgadmin.browser.events', 'pgadmin.browser.panel', 'pgadmin',
     'pgadmin.browser.frame', 'pgadmin.browser',
     'pgadmin.browser.node',
     'pgadmin.settings', 'pgadmin.preferences', 'pgadmin.sqlfoldcode',

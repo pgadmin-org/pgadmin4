@@ -30,23 +30,23 @@ class BrowserToolBarLocators():
 class NavMenuLocators:
     "This will contains element locators of navigation menu bar"
 
-    file_menu_css = "#mnu_file"
+    file_menu_css = "button[data-label='File']"
 
-    preference_menu_item_css = "#mnu_preferences"
+    preference_menu_item_css = "li[data-label='Preferences']"
 
-    tools_menu_link_text = "Tools"
+    tools_menu_css = "button[data-label='Tools']"
 
-    view_data_link_text = "View/Edit Data"
+    view_data_link_css = "div[data-label='View/Edit Data']"
 
-    object_menu_link_text = "Object"
+    object_menu_css = "button[data-label='Object']"
 
-    properties_obj_css = "#show_obj_properties.dropdown-item:not(.disabled)"
+    properties_obj_css = "li[data-label='Properties...']"
 
-    backup_obj_css = "#backup_object.dropdown-item:not(.disabled)"
+    backup_obj_css = "li[data-label='Backup...']"
 
-    restore_obj_css = "#restore_object.dropdown-item:not(.disabled)"
+    restore_obj_css = "li[data-label='Restore...']"
 
-    maintenance_obj_css = "#maintenance.dropdown-item:not(.disabled)"
+    maintenance_obj_css = "li[data-label='Maintenance...']"
 
     show_system_objects_pref_label_xpath = \
         "//label[contains(text(), 'Show system objects?')]"
