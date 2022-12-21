@@ -250,15 +250,23 @@ class BigAnimalProvider():
         """
         _url = "{0}/{1}".format(
             self.BASE_URL,
-            'permissions')
+            'user-info')
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code != 200:
             return False
         if resp.status_code == 200 and resp.content:
             content = json.loads(resp.content)
-            if 'data' in content and 'create:clusters' in content[
-                    'data']:
-                return True
+            if 'data' in content:
+                # BigAnimal introduced Project feature in v3,
+                # so all the existing clusters moved to the default Project.
+                # For now, we can get the Proj Id by replacing 'org' to 'prj'
+                # in organization ID: org_1234  -> prj_1234
+                proj_Id = content['data']['organizationId'].replace('org',
+                                                                    'prj')
+                for permission in content['data']['scopedPermissions']:
+                    if proj_Id == permission['scope'] and\
+                            'create:clusters' in permission['permissions']:
+                        return True
         return False
 
     def get_regions(self):
