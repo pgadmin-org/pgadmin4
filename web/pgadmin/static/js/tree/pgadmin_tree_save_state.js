@@ -316,7 +316,9 @@ _.extend(pgBrowser.browserTreeState, {
     }
 
     // Select the previously selected item
-    !this.is_selected && pgBrowser.tree.ensureVisible(item, 'center');
+    !this.is_selected && setTimeout(()=>{
+      pgBrowser.tree.ensureVisible(item, 'center');
+    }, 0);
     this.select_tree_item(item);
 
   },
@@ -382,7 +384,6 @@ _.extend(pgBrowser.browserTreeState, {
         if (tmpTreeData['selected'][selectedItem] == data.id) {
           this.is_selected = true;
           pgBrowser.tree.select(item, true, 'center');
-          pgBrowser.tree.ensureVisible(item, 'center');
         }
       }
     }
