@@ -1,8 +1,0 @@
-{##########################################################################
-We wrote separate macro because if user choose to disable Gravatar then
-we will not associate our application with Gravatar module which will make
-'gravatar' filter unavailable in Jinja templates
-###########################################################################}
-{% macro PREPARE_HTML() -%}
-'<img src = "{{ username | gravatar }}" width = "18" height = "18" alt = "Gravatar image for {{ username }}" > {{ username }} ({{auth_source}}) <span class="caret"></span>';
-{%- endmacro %}

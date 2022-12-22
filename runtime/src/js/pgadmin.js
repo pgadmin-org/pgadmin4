@@ -389,7 +389,7 @@ function addCommonMenus(menu) {
 
     let _menuItem = new gui.MenuItem({
       label: menuItem.label,
-      enabled: !menuItem.is_disabled,
+      enabled: !menuItem.isDisabled,
       type: menuItem.type || 'normal',
       priority: menuItem.priority,
       ...(submenu.items.length > 0) && {
@@ -435,7 +435,7 @@ function getSubMenu(menuItem) {
       let menuType = typeof item.checked == 'boolean' ? 'checkbox' : item.type;
       submenu.append(new gui.MenuItem({
         label: item.label,
-        enabled: !item.is_disabled,
+        enabled: !item.isDisabled,
         priority: item.priority,
         type: menuType,
         checked: item.checked,
@@ -472,7 +472,7 @@ function addMacMenu(menu) {
         new gui.MenuItem({
           label: menuItem.label,
           type: menuItem.type || 'normal',
-          enabled: !menuItem.is_disabled,
+          enabled: !menuItem.isDisabled,
           priority: menuItem.priority,
           ...(submenu.items.length > 0) && {
             submenu: submenu,
@@ -516,7 +516,7 @@ function enableDisableMenuItem(menu, menuItem) {
       if (el?.label == menu?.label) {
         el.submenu.items.forEach((sub) => {
           if (sub.label == menuItem.label) {
-            sub.enabled = !menuItem.is_disabled;
+            sub.enabled = !menuItem.isDisabled;
           }
         });
       }
@@ -560,7 +560,7 @@ function refreshMenuItems(menu) {
           item.menu_items.forEach((subItem) => {
             submenu.append(new gui.MenuItem({
               label: subItem.label,
-              enabled: !subItem.is_disabled,
+              enabled: !subItem.isDisabled,
               priority: subItem.priority,
               type: [true, false].includes(subItem.checked) ? 'checkbox' : 'normal',
               checked: subItem.checked,
@@ -572,8 +572,9 @@ function refreshMenuItems(menu) {
         }
         let _menuItem = new gui.MenuItem({
           label: item.label,
-          enabled: !item.is_disabled,
+          enabled: !item.isDisabled,
           priority: item.priority,
+          type: item.type,
           ...(submenu.items.length > 0) && {
             submenu: submenu,
           },
@@ -583,10 +584,6 @@ function refreshMenuItems(menu) {
         });
 
         el.submenu.append(_menuItem);
-        if (['create', 'register'].includes(item.category)) {
-          let separator_menu = new gui.MenuItem({ type: 'separator' });
-          el.submenu.append(separator_menu);
-        }
       });
     }
   });

@@ -160,8 +160,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
     def initiate_backup(self):
         self.page.retry_click(
-            (By.LINK_TEXT,
-             NavMenuLocators.tools_menu_link_text),
+            (By.CSS_SELECTOR,
+             NavMenuLocators.tools_menu_css),
             (By.CSS_SELECTOR,
              NavMenuLocators.backup_obj_css))
 
@@ -197,7 +197,7 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
 
     def initiate_restore(self):
         tools_menu = self.driver.find_element(
-            By.LINK_TEXT, NavMenuLocators.tools_menu_link_text)
+            By.CSS_SELECTOR, NavMenuLocators.tools_menu_css)
         tools_menu.click()
 
         restore_obj = self.page.find_by_css_selector(

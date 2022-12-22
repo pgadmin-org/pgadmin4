@@ -130,18 +130,6 @@
 .opacity-5 {
   opacity: 0.5;  }
 
-.pg-navbar {
-  font-size: $navbar-font-size;
-  background-color: $navbar-bg;
-  padding-left: 0rem;
-  padding-right: 0.5rem;
-  & .nav-item .nav-link{
-    line-height: 1;
-  }
-}
-
-
-
 .pg-docker {
   position:absolute;
   left:0px;
@@ -548,7 +536,7 @@ fieldset.inline-fieldset > div {
 .pg-panel-statistics-container,
 .pg-panel-dependencies-container,
 .pg-panel-dependents-container,
-.pg-prop-coll-container, {
+.pg-prop-coll-container {
     width: 100%;
     overflow: auto;
     border-radius: $card-border-radius;

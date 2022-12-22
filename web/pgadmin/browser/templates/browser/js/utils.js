@@ -95,25 +95,73 @@ define('pgadmin.browser.utils',
       // after they all were loaded completely.
     },
 
-    addMenus: function (obj) {
+    addBackendMenus: function (obj) {
       // Generate the menu items only when all the initial scripts
       // were loaded completely.
       //
       // First - register the menus from the other
       // modules/extensions.
-      let self = this;
-      if (this.counter.total == this.counter.loaded) {
-        {% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}
-        obj.add_menus({{ MENU_ITEMS(key, current_app.menu_items['%s_items' % key.lower()])}});
-        {% endfor %}
-        if('{{current_app.PGADMIN_RUNTIME}}' == 'False') {
-          obj.create_menus();
-        }
-      } else {
-         //recall after some time
-         setTimeout(function(){ self.addMenus(obj); }, 3000);
-      }
+      {% for key in ('File', 'Edit', 'Object' 'Tools', 'Management', 'Help') %}
+      obj.add_menus({{ MENU_ITEMS(key, current_app.menu_items['%s_items' % key.lower()])}});
+      {% endfor %}
     },
+
+    {% if current_app.config.get('SERVER_MODE') %}
+    userMenuInfo: {
+      username: '{{username}}',
+      auth_source: '{{auth_source}}',
+      gravatar: {% if config.SHOW_GRAVATAR_IMAGE %}'{{ username | gravatar }}'{% else %}''{% endif %},
+      menus: [
+        {% if auth_only_internal %}
+        {
+          label: '{{ _('Change Password') }}',
+          type: 'normal',
+          callback: ()=>{
+            pgAdmin.UserManagement.change_password(
+              '{{ url_for('browser.change_password') }}'
+            )
+          }
+        },
+        {
+          type: 'separator',
+        },
+        {% endif %}
+        {% if mfa_enabled is defined and mfa_enabled is true %}
+        {
+          label: '{{ _('Two-Factor Authentication') }}',
+          type: 'normal',
+          callback: ()=>{
+            pgAdmin.UserManagement.show_mfa(
+              '{{ login_url("mfa.register", next_url="internal") }}'
+            )
+          }
+        },
+        {
+          type: 'separator',
+        },
+        {% endif %}
+        {% if is_admin %}
+        {
+          label: '{{ _('Users') }}',
+          type: 'normal',
+          callback: ()=>{
+            pgAdmin.UserManagement.show_users()
+          }
+        },
+        {
+          type: 'separator',
+        },
+        {% endif %}
+        {
+          label: '{{ _('Logout') }}',
+          type: 'normal',
+          callback: ()=>{
+            window.location="{{ logout_url }}";
+          }
+        },
+      ],
+    },
+    {% endif %}
 
     // load the module right now
     load_module: function(name, path, c) {

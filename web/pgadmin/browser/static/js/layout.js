@@ -113,8 +113,8 @@ _.extend(pgBrowser, {
 
   lock_layout: function(docker, op) {
     let menu_items = [];
-    if('mnu_locklayout' in this.menus['file']) {
-      menu_items = this.menus['file']['mnu_locklayout']['menu_items'];
+    if('mnu_locklayout' in this.all_menus_cache['file']) {
+      menu_items = this.all_menus_cache['file']['mnu_locklayout']['menu_items'];
     }
 
     switch(op) {

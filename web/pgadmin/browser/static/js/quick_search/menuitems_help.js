@@ -6,8 +6,8 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import {MenuItem as NewMenuItem} from '../new_menu';
-import { MainMenus } from '../main_menu';
+import {MenuItem as NewMenuItem} from '../../../../static/js/helpers/Menu';
+import { MainMenus } from '../MainMenuFactory';
 import pgAdmin from 'sources/pgadmin';
 import { getBrowser } from '../../../../static/js/utils';
 
@@ -24,7 +24,7 @@ export function menuSearch(param, props) {
 
   const iterItem = (subMenus, path, parentPath) => {
     subMenus.forEach((subMenu) =>{
-      if(subMenu instanceof NewMenuItem || subMenu instanceof pgAdmin.Browser.MenuItem) {
+      if(subMenu instanceof NewMenuItem) {
         if(subMenu.type != 'separator' && subMenu?.label?.toLowerCase().indexOf(param.toLowerCase()) != -1){
           let localPath = path;
           if(parentPath) {
@@ -40,11 +40,11 @@ export function menuSearch(param, props) {
             result.push(subMenu);
           }
         }
-        if(subMenu.menu_items) {
-          iterItem(subMenu.menu_items, getMenuName(subMenu), path);
+        if(subMenu.getMenuItems()) {
+          iterItem(subMenu.getMenuItems(), getMenuName(subMenu), path);
         }
       } else {
-        if(typeof(subMenu) == 'object' && !(subMenu instanceof NewMenuItem || subMenu instanceof pgAdmin.Browser.MenuItem)) {
+        if(typeof(subMenu) == 'object' && !(subMenu instanceof NewMenuItem)) {
           iterItem(Object.values(subMenu), path, parentPath);
         } else {
           iterItem(subMenu, path, parentPath);
@@ -67,10 +67,10 @@ export function menuSearch(param, props) {
       if(menu.name == 'object') {
         let selectedNode = pgAdmin.Browser.tree.selected();
         if(selectedNode) {
-          subMenus = pgAdmin.Browser.menus[menu.name][selectedNode._metadata.data._type];
+          subMenus = pgAdmin.Browser.all_menus_cache[menu.name][selectedNode._metadata.data._type];
         }
       } else {
-        subMenus = pgAdmin.Browser.menus[menu.name];
+        subMenus = pgAdmin.Browser.all_menus_cache[menu.name];
       }
       iterItem(Object.values(subMenus), getMenuName(menu));
     });

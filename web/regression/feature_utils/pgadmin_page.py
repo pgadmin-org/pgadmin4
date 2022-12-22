@@ -40,8 +40,8 @@ class PgadminPage:
     # pgAdmin related methods
     def login_to_app(self, user_detail):
         self.driver.switch_to.default_content()
-        if not (self.check_if_element_exist_by_xpath(
-                '//a[@id="navbar-user"]', 1)):
+        if not (self.check_if_element_exist_by_css_selector(
+                'button[data-test="loggedin-username"]', 1)):
             user_edt_box_el = self.driver.find_element(By.NAME, 'email')
             user_edt_box_el.send_keys(user_detail['login_username'])
             password_edt_box_el = self.driver.find_element(By.NAME, 'password')
@@ -55,7 +55,8 @@ class PgadminPage:
         attempt = 0
         while attempt < 4:
             try:
-                self.click_element(self.find_by_partial_link_text("File"))
+                self.click_element(self.find_by_css_selector(
+                    "button[data-label='File']"))
                 break
             except (TimeoutException, NoSuchWindowException):
                 self.driver.refresh()
@@ -66,7 +67,8 @@ class PgadminPage:
                 except TimeoutException:
                     attempt = attempt + 1
 
-        self.find_by_partial_link_text("Reset Layout").click()
+        self.click_element(self.find_by_css_selector(
+            "li[data-label='Reset Layout']"))
         self.click_modal('OK')
         self.wait_for_reloading_indicator_to_disappear()
 
@@ -136,26 +138,26 @@ class PgadminPage:
                     (By.XPATH, server_tree_xpath)))
 
     def open_query_tool(self):
-        self.driver.find_element(By.LINK_TEXT, "Tools").click()
-        tools_menu = self.driver.find_element(By.ID, 'mnu_tools')
-
-        query_tool = tools_menu.find_element(By.ID, 'query_tool')
-
-        self.enable_menu_item(query_tool, 10)
-
-        self.find_by_partial_link_text("Query Tool").click()
+        self.click_element(self.find_by_css_selector(
+            "button[data-label='Tools']"))
+        self.click_element(self.find_by_css_selector(
+            "li[data-label='Query Tool']"))
 
         self.wait_for_element_to_be_visible(
             self.driver, "//div[@id='btn-conn-status']", 5)
 
     def open_view_data(self, table_name):
-        self.driver.find_element(By.LINK_TEXT, "Object").click()
+        self.click_element(self.find_by_css_selector(
+            NavMenuLocators.object_menu_css))
+
         ActionChains(
             self.driver
         ).move_to_element(
-            self.driver.find_element(By.LINK_TEXT, "View/Edit Data")
+            self.driver.find_element(
+                By.CSS_SELECTOR, NavMenuLocators.view_data_link_css)
         ).perform()
-        self.find_by_partial_link_text("All Rows").click()
+        self.click_element(self.find_by_css_selector(
+            "li[data-label='All Rows']"))
         time.sleep(1)
         # wait until datagrid frame is loaded.
 
@@ -327,10 +329,10 @@ class PgadminPage:
             self.driver.execute_script(
                 self.js_executor_scrollintoview_arg, server_to_remove)
             self.click_element(server_to_remove)
-            object_menu_item = self.find_by_partial_link_text("Object")
-            self.click_element(object_menu_item)
-            delete_menu_item = self.find_by_partial_link_text("Remove Server")
-            self.click_element(delete_menu_item)
+            self.click_element(self.find_by_css_selector(
+                "button[data-label='Object']"))
+            self.click_element(self.find_by_css_selector(
+                "li[data-label='Remove Server']"))
             self.driver.switch_to.default_content()
             self.click_modal('Yes')
             time.sleep(1)
@@ -964,6 +966,18 @@ class PgadminPage:
         try:
             WebDriverWait(self.driver, timeout, .01).until(
                 EC.visibility_of_element_located((By.XPATH, xpath)))
+            element_found = True
+        except Exception:
+            pass
+        return element_found
+
+    def check_if_element_exist_by_css_selector(self, selector, timeout=5):
+        """This function will verify if an element exist and on that basis
+        will return True or False. Will handle exception internally"""
+        element_found = False
+        try:
+            WebDriverWait(self.driver, timeout, .01).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
             element_found = True
         except Exception:
             pass

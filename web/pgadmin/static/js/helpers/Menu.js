@@ -12,7 +12,7 @@ import gettext from 'sources/gettext';
 export default class Menu {
   constructor(name, label, id, index, addSepratior) {
     this.label = label;
-    this.name =  name;
+    this.name = name;
     this.id = id;
     this.index = index || 1;
     this.menuItems = [],
@@ -102,42 +102,11 @@ export default class Menu {
   getMenuItems() {
     return this.menuItems;
   }
-
-  static getContextMenus(menuList, item, node) {
-    Menu.sortMenus(menuList);
-
-    let ctxMenus = {};
-    let ctxIndex = 1;
-    menuList.forEach(ctx => {
-      let ctx_uid = _.uniqueId('ctx_');
-      let sub_ctx_item = {};
-      ctx.is_disabled = ctx.disabled(node, item);
-      if ('menu_items' in ctx && ctx.menu_items) {
-        Menu.sortMenus(ctx.menu_items);
-        ctx.menu_items.forEach((c) => {
-          c.is_disabled = c.disabled(node, item);
-          if (!c.is_disabled) {
-            sub_ctx_item[ctx_uid + _.uniqueId('_sub_')] = c.getContextItem(c.label, c.is_disabled);
-          }
-        });
-      }
-      if (!ctx.is_disabled) {
-        ctxMenus[ctx_uid + '_' + ctx.priority + '_' + + ctxIndex + '_itm'] = ctx.getContextItem(ctx.label, ctx.is_disabled, sub_ctx_item);
-
-        if (_.size(sub_ctx_item) > 0 && ['register', 'create'].includes(ctx.category)) {
-          ctxMenus[ctx_uid + '_' + ctx.priority + '_' + + ctxIndex + '_sep'] = '----';
-        }
-      }
-      ctxIndex++;
-    });
-
-    return ctxMenus;
-  }
 }
 
 
 export class MenuItem {
-  constructor(options, onDisableChange, onChangeChacked) {
+  constructor(options, onDisableChange, onChangeChecked) {
     let menu_opts = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
       'category', 'target', 'url', 'node',
@@ -158,7 +127,9 @@ export class MenuItem {
       };
     }
     this.onDisableChange = onDisableChange;
-    this.changeChecked = onChangeChacked;
+    this.changeChecked = onChangeChecked;
+    this._isDisabled = true;
+    this.checkAndSetDisabled();
   }
 
   static create(options) {
@@ -168,6 +139,10 @@ export class MenuItem {
   change_checked(isChecked) {
     this.checked = isChecked;
     this.changeChecked?.(this);
+  }
+
+  getMenuItems() {
+    return this.menu_items;
   }
 
   contextMenuCallback(self) {
@@ -184,9 +159,17 @@ export class MenuItem {
     };
   }
 
-  setDisabled(disabled) {
-    this.is_disabled = disabled;
+  checkAndSetDisabled(node, item, forceDisable) {
+    if(!_.isUndefined(forceDisable)) {
+      this._isDisabled = forceDisable;
+    } else {
+      this._isDisabled = this.disabled(node, item);
+    }
     this.onDisableChange?.(this.parentMenu, this);
+  }
+
+  get isDisabled() {
+    return this._isDisabled;
   }
 
   /*
@@ -221,8 +204,4 @@ export class MenuItem {
 
     return false;
   }
-}
-
-export function getContextMenu(menu, item, node) {
-  return Menu.getContextMenus(menu, item, node);
 }

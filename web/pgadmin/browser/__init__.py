@@ -554,32 +554,18 @@ def index():
             check_browser_upgrade()
             store_setting('LastUpdateCheck', today)
 
-    auth_only_internal = False
-    auth_source = []
-
     session['allow_save_password'] = True
 
-    if config.SERVER_MODE:
-        if session['auth_source_manager']['current_source'] == INTERNAL:
-            auth_only_internal = True
-        auth_source = session['auth_source_manager'][
-            'source_friendly_name']
-
-        if not config.MASTER_PASSWORD_REQUIRED and 'pass_enc_key' in session:
-            session['allow_save_password'] = False
+    if config.SERVER_MODE and not config.MASTER_PASSWORD_REQUIRED and \
+            'pass_enc_key' in session:
+        session['allow_save_password'] = False
 
     response = Response(render_template(
         MODULE_NAME + "/index.html",
         username=current_user.username,
-        auth_source=auth_source,
-        is_admin=current_user.has_role("Administrator"),
-        logout_url=get_logout_url(),
         requirejs=True,
         basejs=True,
-        mfa_enabled=is_mfa_enabled(),
-        login_url=login_url,
-        _=gettext,
-        auth_only_internal=auth_only_internal,
+        _=gettext
     ))
 
     # Set the language cookie after login, so next time the user will have that
@@ -662,6 +648,16 @@ def utils():
 
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
+
+    auth_only_internal = False
+    auth_source = []
+
+    if config.SERVER_MODE:
+        if session['auth_source_manager']['current_source'] == INTERNAL:
+            auth_only_internal = True
+        auth_source = session['auth_source_manager'][
+            'source_friendly_name']
+
     return make_response(
         render_template(
             'browser/js/utils.js',
@@ -684,6 +680,13 @@ def utils():
             vw_edt_default_placeholder=VW_EDT_DEFAULT_PLACEHOLDER,
             enable_psql=config.ENABLE_PSQL,
             pgadmin_server_locale=default_locale,
+            _=gettext,
+            auth_only_internal=auth_only_internal,
+            mfa_enabled=is_mfa_enabled(),
+            is_admin=current_user.has_role("Administrator"),
+            login_url=login_url,
+            username=current_user.username,
+            auth_source=auth_source
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

@@ -88,6 +88,7 @@ basicSettings = createMuiTheme(basicSettings, {
       root: {
         textTransform: 'none',
         padding: basicSettings.spacing(0.5, 1.5),
+        fontSize: 'inherit',
         '&.Mui-disabled': {
           opacity: 0.60,
         },

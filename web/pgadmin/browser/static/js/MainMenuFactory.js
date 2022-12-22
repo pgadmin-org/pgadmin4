@@ -8,55 +8,51 @@
 //////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
-import { getBrowser } from '../../../static/js/utils';
-import Menu, { MenuItem } from './new_menu';
+import Menu, { MenuItem } from '../../../static/js/helpers/Menu';
 import getApiInstance from '../../../static/js/api_instance';
 import url_for from 'sources/url_for';
 import Notifier from '../../../static/js/helpers/Notifier';
 
-export let MainMenus = [
+const MAIN_MENUS = [
   { label: gettext('File'), name: 'file', id: 'mnu_file', index: 0,  addSepratior: true },
   { label: gettext('Object'), name: 'object', id: 'mnu_obj', index: 1, addSepratior: true },
   { label: gettext('Tools'), name: 'tools', id: 'mnu_tools', index: 2, addSepratior: true },
   { label: gettext('Help'), name: 'help', id: 'mnu_help', index: 5, addSepratior: false }
 ];
 
-let {name: browser} = getBrowser();
-
-export default function createMainMenus() {
-  pgAdmin.Browser.MainMenus = [];
-  MainMenus.forEach((_menu) => {
-    let menuObj = Menu.create(_menu.name, _menu.label, _menu.id, _menu.index, _menu.addSepratior);
-    pgAdmin.Browser.MainMenus.push(menuObj);
-    // Don't add menuItems for Object menu as it's menuItems get changed on tree selection.
-    if(_menu.name !== 'object') {
-      menuObj.addMenuItems(Object.values(pgAdmin.Browser.menus[_menu.name]));
-      menuObj.menuItems.forEach((menuItem, index)=> {
-        menuItem?.menu_items?.forEach((item, indx)=> {
-          item.below && menuItem?.menu_items.splice(indx+1, 0, getSeparator());
+export default class MainMenuFactory {
+  static createMainMenus() {
+    pgAdmin.Browser.MainMenus = [];
+    MAIN_MENUS.forEach((_menu) => {
+      let menuObj = Menu.create(_menu.name, _menu.label, _menu.id, _menu.index, _menu.addSepratior);
+      pgAdmin.Browser.MainMenus.push(menuObj);
+      // Don't add menuItems for Object menu as it's menuItems get changed on tree selection.
+      if(_menu.name !== 'object') {
+        menuObj.addMenuItems(Object.values(pgAdmin.Browser.all_menus_cache[_menu.name]));
+        menuObj.getMenuItems().forEach((menuItem, index)=> {
+          menuItem?.getMenuItems()?.forEach((item, indx)=> {
+            item.below && menuItem?.getMenuItems().splice(indx+1, 0, MainMenuFactory.getSeparator());
+          });
+          if(menuItem.below) {
+            menuObj.addMenuItem(MainMenuFactory.getSeparator(), index+1);
+          }
         });
-        if(menuItem.below) {
-          menuObj.addMenuItem(getSeparator(), index+1);
-        }
-      });
-    }
-  });
-}
+      }
+    });
 
-function getSeparator() {
-  return new MenuItem({type: 'separator'});
-}
+    pgAdmin.Browser.enable_disable_menus();
+  }
 
-export function refreshMainMenuItems(menu, menuItems) {
-  if(browser == 'Nwjs') {
+  static getSeparator(label, priority) {
+    return new MenuItem({type: 'separator', label, priority});
+  }
+
+  static refreshMainMenuItems(menu, menuItems) {
     menu.setMenuItems(menuItems);
     pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', menu);
   }
-}
 
-// Factory to create menu items for main menu.
-export class MainMenuItemFactory {
-  static create(options) {
+  static createMenuItem(options) {
     return new MenuItem({...options, callback: () => {
       // Some callbacks registered in 'callbacks' check and call specifiec callback function
       if (options.module && 'callbacks' in options.module && options.module.callbacks[options.callback]) {
@@ -82,5 +78,36 @@ export class MainMenuItemFactory {
     }, (item) => {
       pgAdmin.Browser.Events.trigger('pgadmin:nw-update-checked-menu-item', item);
     });
+  }
+
+  static getContextMenu(menuList, item, node) {
+    Menu.sortMenus(menuList);
+
+    let ctxMenus = {};
+    let ctxIndex = 1;
+    menuList.forEach(ctx => {
+      let ctx_uid = _.uniqueId('ctx_');
+      let sub_ctx_item = {};
+      ctx.checkAndSetDisabled(node, item);
+      if (ctx.getMenuItems()) {
+        // Menu.sortMenus(ctx.getMenuItems());
+        ctx.getMenuItems().forEach((c) => {
+          c.checkAndSetDisabled(node, item);
+          if (!c.isDisabled) {
+            sub_ctx_item[ctx_uid + _.uniqueId('_sub_')] = c.getContextItem(c.label, c.isDisabled);
+          }
+        });
+      }
+      if (!ctx.isDisabled) {
+        if(ctx.type == 'separator') {
+          ctxMenus[ctx_uid + '_' + ctx.priority + '_' + + ctxIndex + '_sep'] = '----';
+        } else {
+          ctxMenus[ctx_uid + '_' + ctx.priority + '_' + + ctxIndex + '_itm'] = ctx.getContextItem(ctx.label, ctx.isDisabled, sub_ctx_item);
+        }
+      }
+      ctxIndex++;
+    });
+
+    return ctxMenus;
   }
 }
