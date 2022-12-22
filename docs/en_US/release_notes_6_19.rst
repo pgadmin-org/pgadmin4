@@ -20,6 +20,7 @@ Housekeeping
 ************
 
   | `Issue #5563 <https://github.com/pgadmin-org/pgadmin4/issues/5563>`_ -  Allow YouTube video demo links to be added to appropriate pgAdmin documentation.
+  | `Issue #5615 <https://github.com/pgadmin-org/pgadmin4/issues/5615>`_ -  Rewrite pgAdmin main menu bar to use React.
 
 Bug fixes
 *********
