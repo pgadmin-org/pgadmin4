@@ -24,6 +24,8 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5487 <https://github.com/pgadmin-org/pgadmin4/issues/5487>`_ -  Fixed an issue where incorrect password used with shared server.
+  | `Issue #5541 <https://github.com/pgadmin-org/pgadmin4/issues/5541>`_ -  Ensure the browser tree does not freeze while rendering 10k+ nodes/objects.
   | `Issue #5542 <https://github.com/pgadmin-org/pgadmin4/issues/5542>`_ -  Fixed an issue updating the schema node de-select the node in the tree if only one schema is present in the collection node.
   | `Issue #5559 <https://github.com/pgadmin-org/pgadmin4/issues/5559>`_ -  Fixed tree flickering issue on scroll.
   | `Issue #5586 <https://github.com/pgadmin-org/pgadmin4/issues/5586>`_ -  Fix the webserver and internal authentication setup issue.
