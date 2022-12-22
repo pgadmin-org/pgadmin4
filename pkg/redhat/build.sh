@@ -9,8 +9,8 @@ trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COM
 OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g')
 OS_ARCH=$(arch)
 
-# Make sure we get the right libpq
-export PATH=/usr/pgsql-15/bin:$PATH
+# Make sure we get the latest libpq
+export PATH=$(ls -d /usr/pgsql-1* | sort -r | head -1)/bin:$PATH
 
 # Stop creating pyc files.
 export PYTHONDONTWRITEBYTECODE=1
@@ -68,7 +68,7 @@ Summary:	The core server package for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 
-Requires:	python3, postgresql-libs >= 11, krb5-libs
+Requires:	python3, libpq5 >= 11, krb5-libs
 
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -230,7 +230,7 @@ if [ "${OS_VERSION}" == 7 ]; then
 fi
 
 # Get the libpq we need
-yumdownloader -y --downloadonly --destdir="${DISTROOT}" postgresql15-libs
+yumdownloader -y --downloadonly --destdir="${DISTROOT}" libpq5 libpq5-devel
 
 #
 # Get the results!

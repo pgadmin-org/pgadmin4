@@ -122,7 +122,7 @@ fakeroot dpkg-deb --build "${METAROOT}" "${DISTROOT}/${APP_NAME}_${APP_LONG_VERS
 
 # Get the libpq package
 pushd "${DISTROOT}" 1> /dev/null
-apt-get download libpq5
+apt-get download libpq5 libpq-dev
 popd 1> /dev/null
 
 echo "Completed. DEBs created in ${DISTROOT}."
