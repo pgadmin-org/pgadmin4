@@ -162,6 +162,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.sslcert = sharedserver.sslcert
         server.username = sharedserver.username
         server.server_owner = sharedserver.server_owner
+        server.password = sharedserver.password
 
         return server
 
