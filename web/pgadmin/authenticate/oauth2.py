@@ -106,6 +106,8 @@ class OAuth2Authentication(BaseAuthentication):
                 api_base_url=oauth2_config['OAUTH2_API_BASE_URL'],
                 client_kwargs={'scope': oauth2_config.get(
                     'OAUTH2_SCOPE', 'email profile')},
+                server_metadata_url=oauth2_config.get(
+                    'OAUTH2_SERVER_METADATA_URL', None)
             )
 
     def get_source_name(self):
