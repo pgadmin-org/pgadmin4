@@ -935,13 +935,25 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            SQL = render_template(
+                "/".join([
+                    self.template_path, 'get_enabled_triggers.sql'
+                ]),
+                tid=tid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 success=1,
                 info="Trigger updated",
                 data={
                     'id': trid,
                     'tid': tid,
-                    'scid': scid
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
                 }
             )
         except Exception as e:

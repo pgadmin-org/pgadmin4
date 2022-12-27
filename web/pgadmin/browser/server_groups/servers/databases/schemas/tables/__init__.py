@@ -1186,6 +1186,17 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            SQL = render_template(
+                "/".join([
+                    self.trigger_template_path, 'get_enabled_triggers.sql'
+                ]),
+                tid=tid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 success=1,
                 info=gettext("Trigger(s) have been disabled")
@@ -1193,7 +1204,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 else gettext("Trigger(s) have been enabled"),
                 data={
                     'id': tid,
-                    'scid': scid
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
                 }
             )
 
