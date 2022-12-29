@@ -1,0 +1,400 @@
+.file-tree {
+    font-family: $font-family-primary !important;
+    font-size: $tree-font-size !important;
+    background-color: $color-bg !important;
+    display: inline-block;
+    color: $tree-text-fg !important;
+
+    &,
+    & * {
+        box-sizing: border-box;
+    }
+
+    width: 100%;
+}
+
+.browser-tree {
+    height: 100%;
+}
+
+.file-tree> {
+    div {
+        position: absolute !important;
+        height: 100% !important;
+        top: 0px !important;
+
+        >div {
+            scrollbar-gutter: stable;
+            overflow: overlay !important;
+        }
+    }
+}
+
+.file-entry {
+    font: inherit;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 2px 0;
+    cursor: pointer !important;
+    color: $tree-text-fg !important;
+
+    &:before {
+        content: '';
+        background: $color-gray-light;
+        position: absolute;
+        width: 1px;
+        height: 100%;
+        // set box-shadow to show tree indent guide.
+        box-shadow: -16px 0 0 0 $color-gray-light,
+            -32px 0 0 0 $color-gray-light,
+            -48px 0 0 0 $color-gray-light,
+            -64px 0 0 0 $color-gray-light,
+            -80px 0 0 0 $color-gray-light,
+            -96px 0 0 0 $color-gray-light,
+            -112px 0 0 0 $color-gray-light,
+            -128px 0 0 0 $color-gray-light,
+            -144px 0 0 0 $color-gray-light,
+            -160px 0 0 0 $color-gray-light,
+            -176px 0 0 0 $color-gray-light,
+            -192px 0 0 0 $color-gray-light,
+            -208px 0 0 0 $color-gray-light,
+            -224px 0 0 0 $color-gray-light,
+            -240px 0 0 0 $color-gray-light,
+            -256px 0 0 0 $color-gray-light,
+            -272px 0 0 0 $color-gray-light,
+            -288px 0 0 0 $color-gray-light,
+            -304px 0 0 0 $color-gray-light,
+            -320px 0 0 0 $color-gray-light,
+            -336px 0 0 0 $color-gray-light,
+            -352px 0 0 0 $color-gray-light,
+            -368px 0 0 0 $color-gray-light,
+            -384px 0 0 0 $color-gray-light,
+            -400px 0 0 0 $color-gray-light,
+            -416px 0 0 0 $color-gray-light,
+            -432px 0 0 0 $color-gray-light,
+            -448px 0 0 0 $color-gray-light,
+            -464px 0 0 0 $color-gray-light,
+            -480px 0 0 0 $color-gray-light,
+            -496px 0 0 0 $color-gray-light,
+            -512px 0 0 0 $color-gray-light,
+            -528px 0 0 0 $color-gray-light,
+            -544px 0 0 0 $color-gray-light,
+            -544px 0 0 0 $color-gray-light,
+            -560px 0 0 0 $color-gray-light;
+    }
+
+    &:hover,
+    &.pseudo-active {
+        background-color: $tree-bg-hover !important;
+        color: $tree-fg-hover !important;
+
+        span.file-label {
+            span.file-name {
+                color: $tree-text-hover-fg !important;
+            }
+        }
+    }
+
+    &.active,
+    &.prompt {
+        background-color: $tree-bg-selected !important;
+        border-color: $color-primary-light;
+        border-right: $active-border !important;
+        color: $tree-text-hover-fg !important;
+
+        span.file-label {
+            span.file-name {
+                color: $tree-text-hover-fg !important;
+            }
+        }
+    }
+
+    i {
+        display: inline-block;
+        font-size: 18px;
+        text-align: center;
+        height: 21px !important;
+        width: 20px !important;
+        flex-shrink: 0;
+
+        &:before {
+            height: inherit;
+            width: inherit;
+            display: inline-block;
+        }
+
+        &.directory-toggle {
+            &:before {
+                background-position: 6px center !important;
+                font-family: $font-family-icon;
+                content: "\f054" !important;
+                border-style: none;
+                margin-left: 5px;
+                font-weight: 900;
+                right: 15px;
+                top: 3px;
+                font-size: 0.6rem;
+                line-height: 2;
+            }
+
+            &.open:before {
+                background-position: -14px center !important;
+                font-family: $font-family-icon;
+                content: "\f078" !important;
+                border-style: none;
+                margin-left: 5px;
+                font-weight: 900;
+                transform: none !important;
+            }
+
+            &.loading:before {
+                content: '' !important;
+                font-family: $font-family-icon;
+                border-style: none;
+                background: $loader-icon-small 0 0 no-repeat;
+                background-position: center !important;
+            }
+        }
+    }
+
+    span.file-label {
+        display: flex;
+        align-items: center;
+        padding: 0 2px 0 2px;
+        border: 1px solid transparent;
+        height: auto;
+        white-space: normal;
+        cursor: pointer !important;
+        margin-left: 2px;
+
+        &:hover,
+        &.pseudo-active {
+            color: $tree-fg-hover !important;
+        }
+    }
+
+    &.prompt.new .file-label,
+    &.file .file-label {
+        margin-left: 18px;
+    }
+
+    span.file-name {
+        font: inherit;
+        flex-grow: 1;
+        user-select: none;
+        color: $tree-text-fg !important;
+        margin-left: 3px;
+        cursor: pointer !important;
+        white-space: nowrap;
+
+        &:hover,
+        &.pseudo-active {
+            color: $tree-fg-hover !important;
+        }
+    }
+}
+
+// Set the tree depth CSS from depth level 21 to 50 as in default CSS depth is set from 0 to 20.
+@for $i from 21 through 50 {
+    .file-entry.depth-#{$i} {
+        padding-left: 16px * ($i - 1);
+    }
+}
+
+.children-count {
+    margin-left: 3px;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+
+    &-track {
+        background: transparent;
+    }
+
+    &-corner {
+        background: transparent;
+    }
+
+    &-thumb {
+        background: #3a3a3a;
+
+        &:hover {
+            background: #424242;
+        }
+    }
+}
+
+.file-tree {
+    font-family: 'Segoe UI';
+    font-size: 15px;
+    color: #c1c1c1;
+    background-color: #1f1f1f;
+    display: inline-block;
+
+    &,
+    & * {
+        box-sizing: border-box;
+    }
+}
+
+.file-entry {
+    font: inherit;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 2px 0;
+    padding-left: 2px;
+    cursor: default;
+
+    &.red {
+        filter: saturate(.5);
+
+        .file-icon:after {
+            content: '';
+            height: 8px;
+            width: 8px;
+            font-weight: bold;
+            display: inline-block;
+            background: #da2d38;
+            position: relative;
+            border-radius: 4px;
+            left: -7px;
+            box-sizing: border-box;
+        }
+    }
+
+    &.magenta span.file-name {
+        color: magenta;
+    }
+
+    &.big {
+        font-family: monospace;
+    }
+
+    &:hover,
+    &.pseudo-active {
+        background-color: #2d2d2d;
+    }
+
+    &.active,
+    &.prompt {
+        background-color: #333333;
+    }
+
+    &.dragging {
+        background: #2a2a2a;
+    }
+
+    &.dragover {
+        background-color: #313131;
+    }
+
+    i {
+        display: inline-block;
+        font: normal normal normal 18px/1 "default-icons";
+        font-size: 18px;
+        text-align: center;
+        height: 18px;
+        width: 18px;
+
+        &:before {
+            height: inherit;
+            width: inherit;
+            display: inline-block;
+        }
+    }
+
+    span.file-label {
+        display: flex;
+        align-items: center;
+    }
+
+    &.prompt.new .file-label,
+    &.file .file-label {
+        margin-left: 18px;
+    }
+
+    span.file-name {
+        font: inherit;
+        flex-grow: 1;
+        user-select: none;
+        cursor: default;
+        color: #c1c1c1;
+        margin-left: 3px;
+
+        & input[type='text'] {
+            display: block;
+            width: 94%;
+            margin: 0;
+            font: inherit;
+            border-radius: 3px;
+            padding: 1px 2px;
+            border: 0;
+            background: #2d2d2d;
+            color: inherit;
+            outline: none;
+            position: relative;
+            z-index: 1;
+            margin-top: -2px;
+            top: 1px;
+            left: -2px;
+
+            &:focus {
+                box-shadow: 0px 0px 1px 1px #1ead7f;
+            }
+
+            &.invalid {
+                box-shadow: 0px 0px 1px 1px #a51c15;
+
+                &+span.prompt-err-msg {
+                    position: relative;
+                    display: block;
+
+                    &:after {
+                        content: 'Invalid filename';
+                        position: absolute;
+                        background: rgb(105, 30, 30);
+                        width: 94%;
+                        padding: 1px 2px;
+                        box-sizing: border-box;
+                        border-radius: 0px 0px 4px 4px;
+                        box-shadow: 0px 0px 0px 1px #a51c15;
+                        font-size: 14px;
+                        z-index: 2;
+                    }
+                }
+            }
+
+            &.invalid-input-pulse {
+                &+span.prompt-err-msg {
+                    animation: pulsate-err-msg .3s ease-in-out 2;
+                }
+            }
+        }
+    }
+}
+
+@for $i from 2 through 20 {
+    .file-entry.depth-#{$i} {
+        padding-left: 16px * ($i - 1);
+    }
+}
+
+@keyframes pulsate-err-msg {
+    0% {
+        color: #868686;
+    }
+
+    50% {
+        color: inherit;
+    }
+
+    100% {
+        color: #868686;
+    }
+}

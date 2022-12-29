@@ -30,7 +30,10 @@ const useStyles = makeStyles((theme)=>({
     },
     '& .szh-menu__item': {
       display: 'flex',
-      padding: '4px 8px',
+      padding: '4px 12px',
+      '&:after': {
+        right: '0.75rem',
+      },
       '&.szh-menu__item--active, &.szh-menu__item--hover': {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
@@ -50,7 +53,7 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-export function PgMenu({open, className, label, menuButton, ...props}) {
+export function PgMenu({open, className='', label, menuButton=null, ...props}) {
   const classes = useStyles();
   const state = open ? 'open' : 'closed';
   props.anchorRef?.current?.setAttribute('data-state', state);
@@ -67,6 +70,7 @@ export function PgMenu({open, className, label, menuButton, ...props}) {
     <ControlledMenu
       state={state}
       {...props}
+      portal
       className={clsx(classes.menu, className)}
       aria-label={label || 'Menu'}
       data-state={state}

@@ -468,7 +468,7 @@ define('pgadmin.browser', [
         let menuItemList = obj.getMenuList('object', item, d);
         objectMenu && MainMenuFactory.refreshMainMenuItems(objectMenu, menuItemList);
         let ctxMenuList = obj.getMenuList('context', item, d, true);
-        obj.BrowserContextMenu = MainMenuFactory.getContextMenu(ctxMenuList, item, d);
+        obj.BrowserContextMenu = MainMenuFactory.getContextMenu(ctxMenuList);
       } else {
         objectMenu && MainMenuFactory.refreshMainMenuItems(objectMenu, [
           MainMenuFactory.createMenuItem({
@@ -563,30 +563,6 @@ define('pgadmin.browser', [
         obj?.editor?.setValue('-- ' + select_object_msg);
         obj?.editor?.refresh();
       }, 10);
-
-      // Build the treeview context menu
-      $('#tree').contextMenu({
-        selector: '.file-entry',
-        autoHide: false,
-        build: function(element) {
-          let item = obj.tree.itemFrom(element),
-            context_menu = {};
-
-          if(item) obj.tree.select(item);
-          context_menu = obj.BrowserContextMenu;
-
-          return {
-            autoHide: false,
-            items: context_menu,
-          };
-        },
-        events: {
-          hide: function() {
-            // Return focus to the tree
-            obj.keyboardNavigation.bindLeftTree();
-          },
-        },
-      });
 
       // Register scripts and add menus
       pgBrowser.utils.registerScripts(this);

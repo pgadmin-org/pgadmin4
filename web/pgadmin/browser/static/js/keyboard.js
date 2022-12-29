@@ -15,6 +15,7 @@ import * as commonUtils from '../../../static/js/utils';
 import dialogTabNavigator from '../../../static/js/dialog_tab_navigator';
 import * as keyboardFunc from 'sources/keyboard_shortcuts';
 import pgWindow from 'sources/window';
+import gettext from 'sources/gettext';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -130,10 +131,27 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   bindMainMenu: function(event, combo) {
     const shortcut_obj = this.keyboardShortcut;
-    if (combo === shortcut_obj.file_shortcut) $('#mnu_file a.dropdown-toggle').dropdown('toggle');
-    if (combo === shortcut_obj.object_shortcut) $('#mnu_obj a.dropdown-toggle').first().dropdown('toggle');
-    if (combo === shortcut_obj.tools_shortcut) $('#mnu_tools a.dropdown-toggle').dropdown('toggle');
-    if (combo === shortcut_obj.help_shortcut) $('#mnu_help a.dropdown-toggle').dropdown('toggle');
+    let menuLabel = null;
+    switch (combo) {
+    case shortcut_obj.file_shortcut:
+      menuLabel = gettext('File');
+      break;
+    case shortcut_obj.object_shortcut:
+      menuLabel = gettext('Object');
+      break;
+    case shortcut_obj.tools_shortcut:
+      menuLabel = gettext('Tools');
+      break;
+    case shortcut_obj.help_shortcut:
+      menuLabel = gettext('Help');
+      break;
+    default:
+      break;
+    }
+
+    if(menuLabel) {
+      document.querySelector(`#main-menu-container button[data-label="${menuLabel}"]`)?.click();
+    }
   },
   bindRightPanel: function(event, combo) {
     let allPanels = pgAdmin.Browser.docker.findPanels();

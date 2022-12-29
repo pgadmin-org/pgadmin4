@@ -98,9 +98,9 @@ class PgadminPage:
         server_group_node = \
             self.find_by_xpath(TreeAreaLocators.server_group_node("Servers"))
         ActionChains(self.driver).context_click(server_group_node).perform()
-        ActionChains(self.driver).move_to_element(self.find_by_xpath(
+        ActionChains(self.driver).move_to_element(self.find_by_css_selector(
             TreeAreaLocators.context_menu_element('Register'))).perform()
-        ActionChains(self.driver).move_to_element(self.find_by_xpath(
+        ActionChains(self.driver).move_to_element(self.find_by_css_selector(
             TreeAreaLocators.context_menu_element('Server...'))) \
             .click().perform()
 

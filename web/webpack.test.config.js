@@ -139,7 +139,6 @@ module.exports = {
       'browser': path.resolve(__dirname, 'pgadmin/browser/static/js'),
       'pgadmin': sourcesDir + '/js/pgadmin',
       'pgadmin.sqlfoldcode': sourcesDir + '/js/codemirror/addon/fold/pgadmin-sqlfoldcode',
-      'pgadmin4-tree': path.join(__dirname, 'node_modules/pgadmin4-tree'),
       'pgbrowser': path.resolve(__dirname, 'regression/javascript/fake_browser'),
       'pgadmin.schema.dir': path.resolve(__dirname, 'pgadmin/browser/server_groups/servers/databases/schemas/static/js'),
       'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
