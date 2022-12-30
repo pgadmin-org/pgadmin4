@@ -26,6 +26,7 @@ import pgWindow from 'sources/window';
 import ModalProvider, { useModal } from './ModalProvider';
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
+const PERSIST_SNACK_BAR = false; // Snackbar stays on the screen, unless it is dismissed
 
 let snackbarRef;
 let notifierInitialized = false;
@@ -119,34 +120,35 @@ AlertContent.propTypes = {
 
 
 let Notifier = {
-  success(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.SUCCESS, autoHideDuration);
+  success(msg, autoHideDuration = AUTO_HIDE_DURATION, persist = PERSIST_SNACK_BAR) {
+    this._callNotify(msg, MESSAGE_TYPE.SUCCESS, autoHideDuration, persist);
   },
-  warning(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.WARNING, autoHideDuration);
+  warning(msg, autoHideDuration = AUTO_HIDE_DURATION, persist = PERSIST_SNACK_BAR) {
+    this._callNotify(msg, MESSAGE_TYPE.WARNING, autoHideDuration, persist);
   },
-  info(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.INFO, autoHideDuration);
+  info(msg, autoHideDuration = AUTO_HIDE_DURATION, persist = PERSIST_SNACK_BAR) {
+    this._callNotify(msg, MESSAGE_TYPE.INFO, autoHideDuration, persist);
   },
-  error(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.ERROR, autoHideDuration);
+  error(msg, autoHideDuration = AUTO_HIDE_DURATION, persist = PERSIST_SNACK_BAR) {
+    this._callNotify(msg, MESSAGE_TYPE.ERROR, autoHideDuration, persist);
   },
-  notify(content, autoHideDuration) {
+  notify(content, autoHideDuration, persist) {
     if (content) {
       if(!notifierInitialized) {
         initializeNotifier();
       }
       let  options = {autoHideDuration, content:(key) => (
         <FinalNotifyContent>{React.cloneElement(content, {onClose:()=>{snackbarRef.closeSnackbar(key);}})}</FinalNotifyContent>
-      )};
+      ), persist};
       options.content.displayName = 'content';
       snackbarRef.enqueueSnackbar(null, options);
     }
   },
-  _callNotify(msg, type, autoHideDuration) {
+  _callNotify(msg, type, autoHideDuration, persist) {
     this.notify(
       <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={true} />,
-      autoHideDuration
+      autoHideDuration,
+      persist
     );
   },
 
