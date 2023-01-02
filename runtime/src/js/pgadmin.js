@@ -287,6 +287,7 @@ function launchPgAdminWindow() {
       // Create Mac Builtin Menu
       if (platform() === 'darwin') {
         nativeMenu.createMacBuiltin('pgAdmin 4');
+        nativeMenu?.items[0].submenu.removeAt(0)
         pgAdminMainScreen.menu = nativeMenu;
       }
 
