@@ -29,5 +29,10 @@ Bug fixes
   | `Issue #5541 <https://github.com/pgadmin-org/pgadmin4/issues/5541>`_ -  Ensure the browser tree does not freeze while rendering 10k+ nodes/objects.
   | `Issue #5542 <https://github.com/pgadmin-org/pgadmin4/issues/5542>`_ -  Fixed an issue updating the schema node de-select the node in the tree if only one schema is present in the collection node.
   | `Issue #5559 <https://github.com/pgadmin-org/pgadmin4/issues/5559>`_ -  Fixed tree flickering issue on scroll.
+  | `Issue #5577 <https://github.com/pgadmin-org/pgadmin4/issues/5577>`_ -  Fixed an issue where the default value of string for columns should wrap in quotes in the create script.
   | `Issue #5586 <https://github.com/pgadmin-org/pgadmin4/issues/5586>`_ -  Fix the webserver and internal authentication setup issue.
   | `Issue #5613 <https://github.com/pgadmin-org/pgadmin4/issues/5613>`_ -  Ensure the appbundle has correct permissions so that pgAdmin can be accessed by users other than owner.
+  | `Issue #5626 <https://github.com/pgadmin-org/pgadmin4/issues/5626>`_ -  Fixed an issue where actions performed on the tree node should update the context menu options.
+  | `Issue #5627 <https://github.com/pgadmin-org/pgadmin4/issues/5627>`_ -  Ensure that the submenus under the trigger's context menu are enabled/disabled correctly.
+  | `Issue #5647 <https://github.com/pgadmin-org/pgadmin4/issues/5647>`_ -  Fixed an issue where row count notification was disappearing automatically.
+  | `Issue #5666 <https://github.com/pgadmin-org/pgadmin4/issues/5666>`_ -  Fixed a missing "jwks_uri" in metadata error that occurred when logging in with an oAuth2 provider like Azure or Google.
