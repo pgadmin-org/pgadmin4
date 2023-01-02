@@ -34,6 +34,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
   let isDirty = false; // usefull for warnings
   let warnOnCloseFlag = true;
   const confirmOnCloseReset = pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_properties_close;
+  let updatedData =  ['table', 'partition'].includes(nodeType) && !_.isEmpty(itemNodeData.rows_cnt) ? {rows_cnt: itemNodeData.rows_cnt} : undefined;
 
   let onError = (err)=> {
     if(err.response){
@@ -210,7 +211,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
         key={itemNodeData?._id}
         formType={formType}
         getInitData={initData}
-        updatedData={{rows_cnt: itemNodeData?.rows_cnt}}
+        updatedData={updatedData}
         schema={schema}
         viewHelperProps={viewHelperProps}
         onSave={onSaveClick}
