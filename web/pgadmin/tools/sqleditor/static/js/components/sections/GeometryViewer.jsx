@@ -158,7 +158,7 @@ function parseData(rows, columns, column) {
   });
 
   let getPopupContent;
-  if (columns.length >= 3) {
+  if (columns.length >= 2) {
     // add popup when geometry has properties
     getPopupContent = function (geojson) {
       let geometry = selectedGeometries[geoJSONs.indexOf(geojson)];
