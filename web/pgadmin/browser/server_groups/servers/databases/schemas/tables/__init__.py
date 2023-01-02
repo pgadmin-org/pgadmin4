@@ -438,8 +438,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     icon=icon,
                     tigger_count=row['triggercount'],
                     has_enable_triggers=row['has_enable_triggers'],
-                    is_partitioned=self.is_table_partitioned(row),
-                    rows_cnt=0
+                    is_partitioned=self.is_table_partitioned(row)
                 ))
 
         return make_json_response(

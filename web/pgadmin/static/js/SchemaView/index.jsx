@@ -882,7 +882,10 @@ function SchemaPropertiesView({
       data = data || {};
       schema.initialise(data);
       if(checkIsMounted()) {
-        setOrigData(data || {});
+        setOrigData({
+          ...data,
+          ...updatedData
+        });
         setLoaderText('');
       }
     }).catch(()=>{
