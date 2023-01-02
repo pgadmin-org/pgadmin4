@@ -253,7 +253,7 @@ export class Tree {
   }
 
   itemFrom(domElem) {
-    return this.tree.getItemFromDOM(domElem[0]);
+    return this.tree.getItemFromDOM(domElem);
   }
 
   DOMFrom(item) {

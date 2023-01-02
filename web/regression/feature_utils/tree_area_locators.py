@@ -159,7 +159,7 @@ class TreeAreaLocators:
     # Context element option
     @staticmethod
     def context_menu_element(schema_name):
-        return "//li/span[text()='%s']" % schema_name
+        return "[role='menuitem'][data-label='%s']" % schema_name
 
     # Old xpaths
     # server_group_sub_nodes_exp_status = \
