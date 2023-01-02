@@ -210,6 +210,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
         key={itemNodeData?._id}
         formType={formType}
         getInitData={initData}
+        updatedData={{rows_cnt: itemNodeData?.rows_cnt}}
         schema={schema}
         viewHelperProps={viewHelperProps}
         onSave={onSaveClick}

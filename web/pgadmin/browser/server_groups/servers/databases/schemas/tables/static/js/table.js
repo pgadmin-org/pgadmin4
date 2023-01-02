@@ -279,7 +279,7 @@ define('pgadmin.node.table', [
             type:'GET',
           })
             .done(function(res) {
-              Notify.success(res.info);
+              Notify.success(res.info, undefined, true);
               d.rows_cnt = res.data.total_rows;
               t.unload(i);
               t.setInode(i);

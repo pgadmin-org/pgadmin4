@@ -866,7 +866,7 @@ const usePropsStyles = makeStyles((theme)=>({
 
 /* If its the properties tab */
 function SchemaPropertiesView({
-  getInitData, viewHelperProps, schema={}, ...props}) {
+  getInitData, viewHelperProps, schema={}, updatedData, ...props}) {
   const classes = usePropsStyles();
   let defaultTab = 'General';
   let tabs = {};
@@ -890,6 +890,14 @@ function SchemaPropertiesView({
     });
   }, []);
 
+  useEffect(()=>{
+    if(updatedData) {
+      setOrigData(prevData => ({
+        ...prevData,
+        ...updatedData
+      }));
+    }
+  },[updatedData]);
 
   /* A simple loop to get all the controls for the fields */
   schema.fields.forEach((field)=>{
@@ -1008,6 +1016,7 @@ function SchemaPropertiesView({
 
 SchemaPropertiesView.propTypes = {
   getInitData: PropTypes.func.isRequired,
+  updatedData: PropTypes.object,
   viewHelperProps: PropTypes.shape({
     mode: PropTypes.string.isRequired,
     serverInfo: PropTypes.shape({
