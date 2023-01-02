@@ -123,6 +123,7 @@ define('pgadmin.node.trigger', [
                 t.unload(i);
                 t.setInode(false);
                 t.deselect(i);
+                i.parent.parent._metadata.data.has_enable_triggers = res.data.has_enable_triggers;
                 // Fetch updated data from server
                 setTimeout(function() {
                   t.select(i);
@@ -161,6 +162,7 @@ define('pgadmin.node.trigger', [
                 t.unload(i);
                 t.setInode(false);
                 t.deselect(i);
+                i.parent.parent._metadata.data.has_enable_triggers = res.data.has_enable_triggers;
                 // Fetch updated data from server
                 setTimeout(function() {
                   t.select(i);
