@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -20,7 +20,7 @@ import codecs
 ALLOWED_FILE_EXTENSIONS = (
     ".py", ".js", ".sql", ".cpp", ".h", ".rc", ".am", ".wsgi", ".pro",
     ".plist", ".rst", ".sh", ".in", ".mako", ".ini", ".jsx", ".rtf", ".rst",
-    "LICENSE"
+    "LICENSE", ".ts", ".tsx"
 )
 
 EXCLUDE_DIR = ("node_modules")
