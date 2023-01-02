@@ -292,7 +292,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                 # Add submodules into the ignore keys so that directory
                 # difference won't include those in added, deleted and changed
                 sub_module = ['index', 'rule', 'trigger', 'compound_trigger']
-                temp_ignore_keys = view_object.keys_to_ignore + sub_module
+                temp_ignore_keys = ignore_keys + sub_module
 
                 diff_dict = directory_diff(
                     dict1[key], dict2[key],
@@ -421,8 +421,8 @@ def compare_dictionaries(**kwargs):
     # ignore keys.
     if ignore_owner:
         owner_keys = ['owner', 'eventowner', 'funcowner', 'fdwowner',
-                      'fsrvowner', 'lanowner', 'relowner', 'seqowner',
-                      'typeowner']
+                      'fsrvowner', 'lanowner', 'relowner', 'relacl', 'acl',
+                      'seqowner', 'typeowner']
         ignore_keys = ignore_keys + owner_keys
 
     # Compare the values of duplicates keys.

@@ -310,7 +310,6 @@ export function SchemaDiffCompare({ params }) {
       } catch (error) {
         setLoaderText(null);
         setShowResultGrid(false);
-        console.error(error);
         Notifier.alert(gettext('Error'), parseApiError(error));
       }
       socket?.disconnect();
