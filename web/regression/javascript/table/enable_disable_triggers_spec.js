@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -97,6 +97,9 @@ describe('#enableTriggers', () => {
             return [200, {
               success: 1,
               info: 'some information',
+              data: {
+                has_enable_triggers: '1'
+              }
             }];
           });
         });
@@ -226,6 +229,9 @@ describe('#disableTriggers', () => {
             return [200, {
               success: 1,
               info: 'some information',
+              data: {
+                has_enable_triggers: '0'
+              }
             }];
           });
         });

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,7 +11,7 @@ from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
     PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER, VW_EDT_DEFAULT_PLACEHOLDER
-from flask_security import current_user
+from flask import current_app
 import config
 
 LOCK_LAYOUT_LEVEL = {
@@ -181,65 +181,66 @@ def register_browser_preferences(self):
         fields=fields
     )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_file',
-        gettext('File main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 70, 'char': 'f'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+    if not current_app.PGADMIN_RUNTIME:
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_file',
+            gettext('File main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 70, 'char': 'f'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_object',
-        gettext('Object main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 79, 'char': 'o'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_object',
+            gettext('Object main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 79, 'char': 'o'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_tools',
-        gettext('Tools main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 76, 'char': 'l'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_tools',
+            gettext('Tools main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 76, 'char': 'l'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_help',
-        gettext('Help main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 72, 'char': 'h'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_help',
+            gettext('Help main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 72, 'char': 'h'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
     self.preference.register(
         'keyboard_shortcuts',

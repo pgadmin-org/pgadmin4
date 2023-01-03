@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -80,34 +80,8 @@ export default class MainMenuFactory {
     });
   }
 
-  static getContextMenu(menuList, item, node) {
+  static getContextMenu(menuList) {
     Menu.sortMenus(menuList);
-
-    let ctxMenus = {};
-    let ctxIndex = 1;
-    menuList.forEach(ctx => {
-      let ctx_uid = _.uniqueId('ctx_');
-      let sub_ctx_item = {};
-      ctx.checkAndSetDisabled(node, item);
-      if (ctx.getMenuItems()) {
-        // Menu.sortMenus(ctx.getMenuItems());
-        ctx.getMenuItems().forEach((c) => {
-          c.checkAndSetDisabled(node, item);
-          if (!c.isDisabled) {
-            sub_ctx_item[ctx_uid + _.uniqueId('_sub_')] = c.getContextItem(c.label, c.isDisabled);
-          }
-        });
-      }
-      if (!ctx.isDisabled) {
-        if(ctx.type == 'separator') {
-          ctxMenus[ctx_uid + '_' + ctx.priority + '_' + + ctxIndex + '_sep'] = '----';
-        } else {
-          ctxMenus[ctx_uid + '_' + ctx.priority + '_' + + ctxIndex + '_itm'] = ctx.getContextItem(ctx.label, ctx.isDisabled, sub_ctx_item);
-        }
-      }
-      ctxIndex++;
-    });
-
-    return ctxMenus;
+    return menuList;
   }
 }

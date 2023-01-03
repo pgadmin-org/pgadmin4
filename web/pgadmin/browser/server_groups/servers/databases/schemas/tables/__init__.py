@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -438,8 +438,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     icon=icon,
                     tigger_count=row['triggercount'],
                     has_enable_triggers=row['has_enable_triggers'],
-                    is_partitioned=self.is_table_partitioned(row),
-                    rows_cnt=0
+                    is_partitioned=self.is_table_partitioned(row)
                 ))
 
         return make_json_response(
@@ -1186,6 +1185,17 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            SQL = render_template(
+                "/".join([
+                    self.trigger_template_path, 'get_enabled_triggers.sql'
+                ]),
+                tid=tid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 success=1,
                 info=gettext("Trigger(s) have been disabled")
@@ -1193,7 +1203,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 else gettext("Trigger(s) have been enabled"),
                 data={
                     'id': tid,
-                    'scid': scid
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
                 }
             )
 

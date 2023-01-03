@@ -2,7 +2,7 @@
 // //
 // // pgAdmin 4 - PostgreSQL Tools
 // //
-// // Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// // Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // // This software is released under the PostgreSQL Licence
 // //
 // //////////////////////////////////////////////////////////////
@@ -11,10 +11,10 @@ import gettext from 'sources/gettext';
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { Directory} from 'react-aspen';
-import { FileTreeX, TreeModelX } from 'pgadmin4-tree';
 import { Tree } from '../../../../static/js/tree/tree';
 import { ManagePreferenceTreeNodes } from '../../../../static/js/tree/preference_nodes';
 import pgAdmin from 'sources/pgadmin';
+import { FileTreeX, TreeModelX } from '../../../../static/js/components/PgTree';
 
 
 export default function PreferencesTree({ pgBrowser, data }) {
@@ -36,7 +36,7 @@ export default function PreferencesTree({ pgBrowser, data }) {
       pathStyle: 'unix',
       getItems: (path) => {
         return ptree.readNode(path);
-        
+
       },
       sortComparator: (a, b) => {
         // No nee to sort Query tool options.
@@ -63,7 +63,7 @@ export default function PreferencesTree({ pgBrowser, data }) {
       pTreeModelX.current.root._children.forEach((_d)=> {
         _d.root.expandDirectory(_d);
       });
-      
+
       return true;
     };
 

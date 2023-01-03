@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -1560,6 +1560,12 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             sql = ''
             if with_drop:
                 sql = self.get_delete_sql(data) + '\n\n'
+
+            if 'columns' in data and data['columns']:
+                for col in data['columns']:
+                    if col and 'defval' in col and col['defval']:
+                        col['defval'] = int(col['defval']) if col[
+                            'defval'].isnumeric() else col['defval']
 
             sql += render_template("/".join([self.table_template_path,
                                             self._CREATE_SQL]),

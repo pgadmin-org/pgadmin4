@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
@@ -253,7 +253,7 @@ export class Tree {
   }
 
   itemFrom(domElem) {
-    return this.tree.getItemFromDOM(domElem[0]);
+    return this.tree.getItemFromDOM(domElem);
   }
 
   DOMFrom(item) {

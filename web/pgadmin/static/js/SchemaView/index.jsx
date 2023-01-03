@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -866,7 +866,7 @@ const usePropsStyles = makeStyles((theme)=>({
 
 /* If its the properties tab */
 function SchemaPropertiesView({
-  getInitData, viewHelperProps, schema={}, ...props}) {
+  getInitData, viewHelperProps, schema={}, updatedData, ...props}) {
   const classes = usePropsStyles();
   let defaultTab = 'General';
   let tabs = {};
@@ -882,7 +882,10 @@ function SchemaPropertiesView({
       data = data || {};
       schema.initialise(data);
       if(checkIsMounted()) {
-        setOrigData(data || {});
+        setOrigData({
+          ...data,
+          ...updatedData
+        });
         setLoaderText('');
       }
     }).catch(()=>{
@@ -890,6 +893,14 @@ function SchemaPropertiesView({
     });
   }, []);
 
+  useEffect(()=>{
+    if(updatedData) {
+      setOrigData(prevData => ({
+        ...prevData,
+        ...updatedData
+      }));
+    }
+  },[updatedData]);
 
   /* A simple loop to get all the controls for the fields */
   schema.fields.forEach((field)=>{
@@ -1008,6 +1019,7 @@ function SchemaPropertiesView({
 
 SchemaPropertiesView.propTypes = {
   getInitData: PropTypes.func.isRequired,
+  updatedData: PropTypes.object,
   viewHelperProps: PropTypes.shape({
     mode: PropTypes.string.isRequired,
     serverInfo: PropTypes.shape({

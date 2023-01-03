@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ function parseData(rows, columns, column) {
   });
 
   let getPopupContent;
-  if (columns.length >= 3) {
+  if (columns.length >= 2) {
     // add popup when geometry has properties
     getPopupContent = function (geojson) {
       let geometry = selectedGeometries[geoJSONs.indexOf(geojson)];

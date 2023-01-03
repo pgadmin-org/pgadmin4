@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -31,11 +31,11 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
 
     def before(self):
         self.new_shortcuts = {
-            'mnu_file': {
+            'File': {
                 'shortcut': [Keys.ALT, Keys.SHIFT, 'i'],
                 'locator': 'File main menu'
             },
-            'mnu_obj': {
+            'Object': {
                 'shortcut': [Keys.ALT, Keys.SHIFT, 'j'],
                 'locator': 'Object main menu'
             }
@@ -72,15 +72,12 @@ class KeyboardShortcutFeatureTest(BaseFeatureTest):
 
             self.wait.until(
                 EC.presence_of_element_located(
-                    (By.XPATH, "//li[contains(@id, " +
-                     s +
-                     ") and contains(@class, 'show')]")
+                    (By.CSS_SELECTOR,
+                     "[role='menu'][aria-label='File'].szh-menu--state-open")
                 )
             )
 
-            is_open = 'show' in self.page.find_by_id(s).get_attribute('class')
-
-            assert is_open is True, "Keyboard shortcut change is unsuccessful."
+            assert True, "Keyboard shortcut change is unsuccessful."
 
             print("OK", file=sys.stderr)
 

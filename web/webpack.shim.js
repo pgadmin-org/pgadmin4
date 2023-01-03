@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -102,7 +102,6 @@ let webpackShimConfig = {
     'react-dom': path.join(__dirname, 'node_modules/react-dom'),
     'stylis': path.join(__dirname, 'node_modules/stylis'),
     'popper.js': path.join(__dirname, 'node_modules/popper.js'),
-    'pgadmin4-tree': path.join(__dirname, 'node_modules/pgadmin4-tree'),
 
     //xterm
     'xterm': path.join(__dirname, './node_modules/xterm/lib/xterm.js'),
@@ -283,6 +282,7 @@ let webpackShimConfig = {
 
   /* These will be included in array formed by recursive traversing for css/scss files */
   css_bundle_include: [
+    './pgadmin/static/js/components/PgTree/scss/styles.scss',
     './pgadmin/static/scss/pgadmin.scss',
     './pgadmin/static/css/pgadmin.css',
   ],

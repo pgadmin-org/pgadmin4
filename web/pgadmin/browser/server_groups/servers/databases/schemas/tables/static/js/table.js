@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2022, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -279,7 +279,7 @@ define('pgadmin.node.table', [
             type:'GET',
           })
             .done(function(res) {
-              Notify.success(res.info);
+              Notify.success(res.info, null);
               d.rows_cnt = res.data.total_rows;
               t.unload(i);
               t.setInode(i);
@@ -306,18 +306,17 @@ define('pgadmin.node.table', [
         return getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser);
       },
       // Check to whether table has disable trigger(s)
-      canCreate_with_trigger_enable: function(itemData, item, data) {
-        return itemData.tigger_count > 0 &&
-          this.canCreate.apply(this, [itemData, item, data]);
+      canCreate_with_trigger_enable: function(itemData) {
+        return itemData.tigger_count > 0 && (itemData.has_enable_triggers == 0 || itemData.has_enable_triggers <  itemData.tigger_count);
       },
       // Check to whether table has enable trigger(s)
-      canCreate_with_trigger_disable: function(itemData, item, data) {
-        return itemData.tigger_count > 0 && itemData.has_enable_triggers > 0 &&
-          this.canCreate.apply(this, [itemData, item, data]);
+      canCreate_with_trigger_disable: function(itemData) {
+        return itemData.tigger_count > 0 && itemData.has_enable_triggers > 0;
       },
       onTableUpdated: function(_node, _oldNodeData, _newNodeData) {
         let key, childIDs;
         if (
+
           _newNodeData.is_partitioned &&
             'affected_partitions' in _newNodeData
         ) {

@@ -1,7 +1,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -159,7 +159,7 @@ class TreeAreaLocators:
     # Context element option
     @staticmethod
     def context_menu_element(schema_name):
-        return "//li/span[text()='%s']" % schema_name
+        return "[role='menuitem'][data-label='%s']" % schema_name
 
     # Old xpaths
     # server_group_sub_nodes_exp_status = \

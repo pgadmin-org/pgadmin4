@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # config.py - Core application configuration settings
@@ -62,7 +62,7 @@ else:
     APP_VERSION = '%s.%s-%s' % (APP_RELEASE, APP_REVISION, APP_SUFFIX)
 
 # Copyright string for display in the app
-APP_COPYRIGHT = 'Copyright (C) 2013 - 2022, The pgAdmin Development Team'
+APP_COPYRIGHT = 'Copyright (C) 2013 - 2023, The pgAdmin Development Team'
 
 ##########################################################################
 # Misc stuff

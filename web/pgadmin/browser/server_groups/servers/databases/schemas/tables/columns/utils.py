@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2022, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -217,6 +217,10 @@ def get_formatted_columns(conn, tid, data, other_columns,
     edit_types = {}
     # Add inherited from details from other columns - type, table
     for col in all_columns:
+        if col and 'defval' in col and col['defval']:
+            col['defval'] = int(col['defval']) if col[
+                'defval'].isnumeric() else col['defval']
+
         edit_types[col['atttypid']] = []
         for other_col in other_columns:
             if col['name'] == other_col['name']:
