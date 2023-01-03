@@ -97,6 +97,9 @@ describe('#enableTriggers', () => {
             return [200, {
               success: 1,
               info: 'some information',
+              data: {
+                has_enable_triggers: '1'
+              }
             }];
           });
         });
@@ -226,6 +229,9 @@ describe('#disableTriggers', () => {
             return [200, {
               success: 1,
               info: 'some information',
+              data: {
+                has_enable_triggers: '0'
+              }
             }];
           });
         });
