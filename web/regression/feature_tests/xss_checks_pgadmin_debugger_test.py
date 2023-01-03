@@ -65,6 +65,10 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
                                            self.test_db, 'public', "Functions")
         function_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.function_node(self.function_name + "()"))
+
+        self.assertTrue(bool(function_node),
+                        self.function_name + ' function node not found.')
+
         function_node.click()
 
     def _debug_function(self):

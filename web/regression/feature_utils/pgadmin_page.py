@@ -337,7 +337,7 @@ class PgadminPage:
             self.click_modal('Yes')
             time.sleep(1)
         else:
-            print("%s Server is not removed", server_config['name'],
+            print(server_config['name'] + " server is not removed",
                   file=sys.stderr)
 
     def click_to_expand_tree_node(self, tree_node_web_element,
@@ -580,7 +580,7 @@ class PgadminPage:
                 server_child_expanded = self.click_to_expand_tree_node(
                     child_node_ele, server_child_node_exp_status_xpath)
                 if not server_child_expanded:
-                    print("Child not is not expanded after clicking ",
+                    print("Child is not expanded after clicking ",
                           file=sys.stderr)
         else:
             print("The server/previous nodes not expanded", file=sys.stderr)
@@ -1154,7 +1154,7 @@ class PgadminPage:
                 else:
                     break
         else:
-            print("check_if_element_exists_with_scroll > Element NOT found",
+            print("check_if_element_exists_with_scroll > Element NOT found" +
                   xpath, file=sys.stderr)
             return False
 

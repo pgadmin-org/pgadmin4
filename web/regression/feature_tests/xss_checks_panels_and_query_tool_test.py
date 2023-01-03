@@ -75,6 +75,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         while retry > 0:
             try:
                 self.page.refresh_page()
+                self.page.wait_for_spinner_to_disappear()
                 self._tables_node_expandable()
                 self._check_xss_in_dependents_tab()
                 retry = 0
@@ -112,6 +113,10 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
+
+        self.assertTrue(bool(table_node),
+                        self.test_table_name + ' table node not found.')
+
         table_node.click()
 
     def _check_xss_in_browser_tree(self):

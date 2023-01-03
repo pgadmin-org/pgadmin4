@@ -65,6 +65,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                     "Server", self.server['name'], self.server['db_password'],
                     'Login/Group Roles'):
                 retry = 0
+            else:
+                retry -= 1
 
         role_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.role_node(role))
