@@ -315,10 +315,6 @@ _.extend(pgBrowser.browserTreeState, {
       });
     }
 
-    // Select the previously selected item
-    !this.is_selected && setTimeout(()=>{
-      pgBrowser.tree.ensureVisible(item, 'center');
-    }, 0);
     this.select_tree_item(item);
 
   },
