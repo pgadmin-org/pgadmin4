@@ -35,6 +35,7 @@ Bug fixes
   | `Issue #5622 <https://github.com/pgadmin-org/pgadmin4/issues/5622>`_ -  Fixed an issue where the ignore owner flag is not working for some cases in the Schema Diff.
   | `Issue #5626 <https://github.com/pgadmin-org/pgadmin4/issues/5626>`_ -  Fixed an issue where actions performed on the tree node should update the context menu options.
   | `Issue #5627 <https://github.com/pgadmin-org/pgadmin4/issues/5627>`_ -  Ensure that the submenus under the trigger's context menu are enabled/disabled correctly.
+  | `Issue #5640 <https://github.com/pgadmin-org/pgadmin4/issues/5640>`_ -  Update boto3 & botocore to the latest version.
   | `Issue #5641 <https://github.com/pgadmin-org/pgadmin4/issues/5641>`_ -  Fixed an issue where Geometry viewer does not show popup when columns are less than 3.
   | `Issue #5647 <https://github.com/pgadmin-org/pgadmin4/issues/5647>`_ -  Fixed an issue where row count notification was disappearing automatically.
   | `Issue #5666 <https://github.com/pgadmin-org/pgadmin4/issues/5666>`_ -  Fixed a missing "jwks_uri" in metadata error that occurred when logging in with an oAuth2 provider like Azure or Google.
