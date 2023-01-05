@@ -927,7 +927,7 @@ define('pgadmin.browser.node', [
             };
           }
 
-        } else {
+        } else if(tree.children(item).length == 1) {
           const first_child = tree.first(item);
           tree.select(first_child);
         }
