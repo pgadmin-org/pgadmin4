@@ -59,8 +59,8 @@ requests                                                         2.25.1         
 pyotp                                                            2.7.0            MIT License                          https://github.com/pyotp/pyotp
 qrcode                                                           7.3.1            BSD                                  https://github.com/lincolnloop/python-qrcode
 Pillow                                                           9.3.0            HPND                                 https://python-pillow.org
-boto3                                                            1.20.54          Apache License 2.0                   https://github.com/boto/boto3
-botocore                                                         1.23.54          Apache License 2.0                   https://github.com/boto/botocore
+boto3                                                            1.26.42          Apache License 2.0                   https://github.com/boto/boto3
+botocore                                                         1.29.42          Apache License 2.0                   https://github.com/boto/botocore
 urllib3                                                          1.26.13          MIT                                  https://urllib3.readthedocs.io/
 Werkzeug                                                         2.1.2            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
 azure-mgmt-rdbms                                                 10.1.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
@@ -229,7 +229,6 @@ color-name                                                       1.1.3          
 colord                                                           2.9.3            MIT                                  https://github.com/omgovich/colord.git
 commander                                                        7.2.0            MIT                                  https://github.com/tj/commander.js.git
 concat-map                                                       0.0.1            MIT                                  git://github.com/substack/node-concat-map.git
-context-menu                                                     2.0.0            MIT                                  https://github.com/chipto/context-menu.git
 convert-source-map                                               1.9.0            MIT                                  git://github.com/thlorenz/convert-source-map.git
 convert-units                                                    2.3.4            MIT                                  git://github.com/ben-ng/convert-units.git
 core-js                                                          3.26.1           MIT                                  https://github.com/zloirock/core-js.git
@@ -305,7 +304,6 @@ is-unc-path                                                      1.0.0          
 javascript-natural-sort                                          0.7.1            MIT                                  https://github.com/Bill4Time/javascript-natural-sort.git
 jquery                                                           3.6.1            MIT                                  https://github.com/jquery/jquery.git
 jquery-contextmenu                                               2.9.2            MIT                                  git://github.com/swisnl/jQuery-contextMenu.git
-jquery-ui                                                        1.13.2           MIT                                  git://github.com/jquery/jquery-ui.git
 js-tokens                                                        4.0.0            MIT                                  https://github.com/lydell/js-tokens.git
 jsbn                                                             1.1.0            MIT                                  https://github.com/andyperlitch/jsbn.git
 jsesc                                                            2.5.2            MIT                                  https://github.com/mathiasbynens/jsesc.git
@@ -314,7 +312,7 @@ json-parse-even-better-errors                                    2.3.1          
 json-schema-traverse                                             1.0.0            MIT                                  git+https://github.com/epoberezkin/json-schema-traverse.git
 json-schema-traverse                                             0.4.1            MIT                                  git+https://github.com/epoberezkin/json-schema-traverse.git
 json-source-map                                                  0.6.1            MIT                                  git+https://github.com/epoberezkin/json-source-map.git
-json5                                                            2.2.1            MIT                                  git+https://github.com/json5/json5.git
+json5                                                            2.2.3            MIT                                  git+https://github.com/json5/json5.git
 jsoneditor-react                                                 3.1.2            MIT                                  git+https://github.com/vankop/jsoneditor-react.git
 jss                                                              10.9.2           MIT                                  https://github.com/cssinjs/jss.git
 jss-plugin-camel-case                                            10.9.2           MIT                                  https://github.com/cssinjs/jss.git
@@ -389,7 +387,6 @@ path-parse                                                       1.0.7          
 path-type                                                        4.0.0            MIT                                  https://github.com/sindresorhus/path-type.git
 pathfinding                                                      0.4.18           MIT                                  git://github.com/qiao/PathFinding.js.git
 performance-now                                                  2.1.0            MIT                                  git://github.com/braveg1rl/performance-now.git
-pgadmin4-tree                                                    1.0.0            MIT                                  Unknown
 picomatch                                                        2.3.1            MIT                                  https://github.com/micromatch/picomatch.git
 picomodal                                                        3.0.0            MIT                                  https://github.com/Nycto/PicoModal.git
 popper.js                                                        1.16.1-lts       MIT                                  git+https://github.com/FezVrasta/popper.js.git
@@ -441,14 +438,12 @@ rc-tabs                                                          11.16.1        
 rc-trigger                                                       5.3.4            MIT                                  https://github.com/react-component/trigger.git
 rc-util                                                          5.24.6           MIT                                  git@github.com:react-component/util.git
 re-resizable                                                     6.9.6            MIT                                  https://github.com/bokuweb/react-resizable-box.git
-react                                                            16.14.0          MIT                                  git+https://github.com/facebook/react.git
 react                                                            17.0.2           MIT                                  https://github.com/facebook/react.git
 react-aspen                                                      1.2.0            MIT                                  https://github.com/neeksandhu/react-aspen.git
 react-checkbox-tree                                              1.8.0            MIT                                  https://github.com/jakezatecky/react-checkbox-tree
 react-data-grid                                                  7.0.0-beta.14    MIT                                  https://github.com/adazzle/react-data-grid.git
 react-dnd                                                        16.0.1           MIT                                  https://github.com/react-dnd/react-dnd.git
 react-dnd-html5-backend                                          16.0.1           MIT                                  https://github.com/react-dnd/react-dnd.git
-react-dom                                                        16.14.0          MIT                                  git+https://github.com/facebook/react.git
 react-dom                                                        17.0.2           MIT                                  https://github.com/facebook/react.git
 react-draggable                                                  4.4.5            MIT                                  https://github.com/react-grid-layout/react-draggable.git
 react-draggable                                                  4.4.4            MIT                                  https://github.com/react-grid-layout/react-draggable.git
@@ -476,7 +471,6 @@ resolve-from                                                     4.0.0          
 reusify                                                          1.0.4            MIT                                  git+https://github.com/mcollina/reusify.git
 rifm                                                             0.7.0            MIT                                  https://github.com/istarkov/rifm.git
 run-parallel                                                     1.2.0            MIT                                  git://github.com/feross/run-parallel.git
-scheduler                                                        0.19.1           MIT                                  https://github.com/facebook/react.git
 scheduler                                                        0.20.2           MIT                                  https://github.com/facebook/react.git
 select2                                                          4.0.13           MIT                                  git://github.com/select2/select2.git
 shallowequal                                                     1.1.0            MIT                                  https://github.com/dashed/shallowequal.git
@@ -498,7 +492,6 @@ svgo                                                             2.8.0          
 tempusdominus-bootstrap-4                                        5.39.2           MIT                                  https://github.com/tempusdominus/bootstrap-4.git
 tempusdominus-core                                               5.19.3           MIT                                  https://github.com/tempusdominus/core.git
 text-segmentation                                                1.0.3            MIT                                  git+ssh://git@github.com/niklasvh/text-segmentation.git
-tiny-emitter                                                     2.1.0            MIT                                  https://github.com/scottcorgan/tiny-emitter.git
 tiny-warning                                                     1.0.3            MIT                                  https://github.com/alexreardon/tiny-warning.git
 to-fast-properties                                               2.0.0            MIT                                  https://github.com/sindresorhus/to-fast-properties.git
 to-regex-range                                                   5.0.1            MIT                                  https://github.com/micromatch/to-regex-range.git
@@ -575,5 +568,5 @@ tslib                                                            2.3.1          
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 
-496 dependencies listed.
+489 dependencies listed.
 
