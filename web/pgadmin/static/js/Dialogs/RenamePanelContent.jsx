@@ -57,7 +57,12 @@ export default function RenamePanelContent({ closeModal, panel, title, preferenc
 
   useEffect(() => {
     setHeight?.(containerRef.current?.offsetHeight);
-  }, [containerRef.current, formData]);
+    let focusTimeout = setTimeout(() => {
+      firstEleRef.current && firstEleRef.current.focus();
+    }, 150);
+    
+    return () => clearTimeout(focusTimeout);
+  }, [containerRef.current, firstEleRef.current, formData]);
 
   return (
     <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
