@@ -18,6 +18,7 @@ import { isEmptyString } from 'sources/validators';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
 import { makeStyles } from '@material-ui/core/styles';
+import { AWSIcon, MSAzureIcon } from '../../../../static/js/components/ExternalIcon';
 
 
 const useStyles = makeStyles(() =>
@@ -32,6 +33,30 @@ const useStyles = makeStyles(() =>
 );
 
 const axiosApi = getApiInstance();
+
+export function getProviderOptions() {
+  return new Promise((resolve, reject) => {
+    axiosApi.get(url_for('biganimal.providers'))
+      .then((res) => {
+        if (res.data.data) {
+          let _options= [],
+            _options_label = {'azure': <MSAzureIcon  key='1' />,
+              'aws': <AWSIcon style={{width: '6rem'}} key = '2'/>};
+          _.forEach(res.data.data, (val) => {
+            _options.push({
+              'label': _options_label[val['value']],
+              'value': val['value'],
+              'disabled': !val['connected']
+            });
+          });
+          resolve(_options);
+        }
+      })
+      .catch((error) => {
+        reject(gettext(`Error while getting the biganimal providers: ${error.response.data.errormsg}`));
+      });
+  });
+}
 
 // BigAnimal Cluster Type
 export function BigAnimalClusterType(props) {
@@ -52,6 +77,7 @@ export function BigAnimalClusterType(props) {
       nodeData: props.nodeData,
       hostIP: props.hostIP,
       classes: classes,
+      bigAnimalProviders: props.bigAnimalProviders,
     });
     setBigAnimalClusterType(bigAnimalClusterTypeSchema);
   }, [props.cloudProvider]);
@@ -74,6 +100,7 @@ BigAnimalClusterType.propTypes = {
   cloudProvider: PropTypes.string,
   setBigAnimalClusterTypeData: PropTypes.func,
   hostIP: PropTypes.string,
+  bigAnimalProviders: PropTypes.object,
 };
 
 
@@ -205,7 +232,7 @@ BigAnimalDatabase.propTypes = {
 
 export function validateBigAnimal() {
   return new Promise((resolve, reject)=>{
-    let _url = url_for('biganimal.verification') ;
+    let _url = url_for('biganimal.verification');
     axiosApi.get(_url)
       .then((res) => {
         if (res.data.data) {

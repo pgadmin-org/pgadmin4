@@ -6,12 +6,11 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React from 'react';
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
-import { AWSIcon, MSAzureIcon } from '../../../../static/js/components/ExternalIcon';
+import { CLOUD_PROVIDERS } from './cloud_constants';
 
 class BigAnimalClusterTypeSchema extends BaseUISchema {
 
@@ -69,29 +68,8 @@ class BigAnimalClusterTypeSchema extends BaseUISchema {
           return state.cluster_type != 'ha';
         }
       }, { id: 'provider', label: gettext('Cluster provider'),  noEmpty: true,
-        type: () => {
-          return {
-            type: 'toggle', className: this.initValues.classes.providerHeight,
-            options: ()=>this.fieldOptions.regions(this.initValues.provider),
-            controlProps: {
-              allowClear: false,
-              filter: (options) => {
-                if (options.length == 0) return;
-                let _options= [],
-                  _options_label = {'azure': <MSAzureIcon  key='1' />,
-                    'aws': <AWSIcon style={{width: '6rem'}} key = '2'/>};
-                _.forEach(options, (val) => {
-                  _options.push({
-                    'label': _options_label[val['value']],
-                    'value': val['value'],
-                    'disabled': !val['connected']
-                  });
-                });
-                return _options;
-              },
-            }
-          };
-        },
+        type: 'toggle', className: this.initValues.classes.providerHeight,
+        options: this.initValues.bigAnimalProviders,
       },
     ];
   }
@@ -229,11 +207,11 @@ class BigAnimalVolumeSchema extends BaseUISchema {
   }
 
   validate(data, setErrMsg) {
-    if (data.provider != 'aws' && isEmptyString(data.volume_properties)) {
+    if (data.provider != CLOUD_PROVIDERS.AWS && isEmptyString(data.volume_properties)) {
       setErrMsg('replicas', gettext('Please select volume properties.'));
       return true;
     }
-    if (data.provider == 'aws') {
+    if (data.provider == CLOUD_PROVIDERS.AWS) {
       if (isEmptyString(data.volume_IOPS)) {
         setErrMsg('replicas', gettext('Please select volume IOPS.'));
         return true;
@@ -295,7 +273,7 @@ class BigAnimalVolumeSchema extends BaseUISchema {
           };
         },
         visible: (state) => {
-          return state.provider !== 'aws';
+          return state.provider !== CLOUD_PROVIDERS.AWS;
         },
       }, {
         id: 'volume_size', label: gettext('Size'), type: 'text',
@@ -303,7 +281,7 @@ class BigAnimalVolumeSchema extends BaseUISchema {
         depChange: (state, source)=> {
           obj.volumeType = state.volume_type;
           if (source[0] !== 'volume_size') {
-            if(state.volume_type == 'io2' || state.provider === 'azure') {
+            if(state.volume_type == 'io2' || state.provider === CLOUD_PROVIDERS.AZURE) {
               return {volume_size: 4};
             } else {
               return {volume_size: 1};
@@ -311,7 +289,7 @@ class BigAnimalVolumeSchema extends BaseUISchema {
           }
         },
         visible: (state) => {
-          return state.provider === 'aws';
+          return state.provider === CLOUD_PROVIDERS.AWS;
         },
         helpMessage: obj.volumeType == 'io2' ? gettext('Size (4-16,384 GiB)') : gettext('Size (1-16,384 GiB)')
       }, {
@@ -319,12 +297,12 @@ class BigAnimalVolumeSchema extends BaseUISchema {
         mode: ['create'],
         helpMessage: obj.volumeType == 'io2' ? gettext('IOPS (100-2,000)') : gettext('IOPS (3,000-3,000)'),
         visible: (state) => {
-          return state.provider === 'aws';
+          return state.provider === CLOUD_PROVIDERS.AWS;
         }, deps: ['volume_type'],
         depChange: (state, source) => {
           obj.volumeType = state.volume_type;
           if (source[0] !== 'volume_IOPS') {
-            if (state.provider === 'aws') {
+            if (state.provider === CLOUD_PROVIDERS.AWS) {
               if(state.volume_type === 'io2') {
                 return {volume_IOPS: 100};
               } else {

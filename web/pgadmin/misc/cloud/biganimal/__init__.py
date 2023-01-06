@@ -129,7 +129,7 @@ def biganimal_db_versions(cluster_type, pg_type):
 @login_required
 def biganimal_instance_types(region_id, provider_id):
     """Get Instance Types."""
-    if not region_id:
+    if not region_id or not provider_id:
         return make_json_response(data=[])
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
     biganimal_instances = biganimal_obj.get_instance_types(region_id,
@@ -142,7 +142,7 @@ def biganimal_instance_types(region_id, provider_id):
 @login_required
 def biganimal_volume_types(region_id, provider_id):
     """Get Volume Types."""
-    if not region_id:
+    if not region_id or not provider_id:
         return make_json_response(data=[])
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
     biganimal_volumes = biganimal_obj.get_volume_types(region_id, provider_id)
@@ -154,7 +154,7 @@ def biganimal_volume_types(region_id, provider_id):
 @login_required
 def biganimal_volume_properties(region_id, provider_id, volume_type):
     """Get Volume Properties."""
-    if not region_id:
+    if not region_id or not provider_id:
         return make_json_response(data=[])
     biganimal_obj = pickle.loads(session['biganimal']['provider_obj'])
     biganimal_volume_properties = biganimal_obj.get_volume_properties(
@@ -274,10 +274,10 @@ class BigAnimalProvider():
                 # so all the existing clusters moved to the default Project.
                 # For now, we can get the Proj Id by replacing 'org' to 'prj'
                 # in organization ID: org_1234  -> prj_1234
-                proj_Id = content['data']['organizationId'].replace('org',
+                proj_id = content['data']['organizationId'].replace('org',
                                                                     'prj')
                 for permission in content['data']['scopedPermissions']:
-                    if proj_Id == permission['scope'] and\
+                    if proj_id == permission['scope'] and\
                             'create:clusters' in permission['permissions']:
                         return True
         return False
@@ -305,6 +305,8 @@ class BigAnimalProvider():
 
     def get_regions(self, provider_id):
         """Get regions"""
+        if not provider_id:
+            return False, gettext('Provider not provided.')
         _url = '{0}/cloud-providers/{1}/regions'.format(
             self.BASE_URL,
             provider_id)
@@ -345,6 +347,9 @@ class BigAnimalProvider():
 
     def get_postgres_versions(self, cluster_type, pg_type):
         """Get Postgres Versions."""
+        if not cluster_type or not pg_type:
+            return []
+
         _url = "{0}/pg-versions?clusterArchitectureIds={1}" \
                "&pgTypeIds={2}".format(self.BASE_URL,
                                        cluster_type,
@@ -362,16 +367,18 @@ class BigAnimalProvider():
 
     def get_instance_types(self, region_id, provider_id):
         """GEt Instance Types."""
-        if region_id not in self.regions:
+        if region_id not in self.regions or not provider_id:
             return []
-        _url = '{0}/cloud-providers/{1}/regions/{2}/instance-types'.format(
-            self.BASE_URL,
-            provider_id,
-            region_id)
+        _url = '{0}/cloud-providers/{1}/regions/{2}/instance-types?' \
+               'sort=instanceTypeName'.format(self.BASE_URL,
+                                              provider_id,
+                                              region_id)
         resp = requests.get(_url, headers=self._get_headers())
         if resp.status_code == 200 and resp.content:
             pg_types = json.loads(resp.content)
-            return pg_types['data']
+            _sorted_data = sorted(pg_types['data'], key=lambda x: int(x['cpu'])
+                                  )
+            return _sorted_data
         return []
 
     def get_volume_types(self, region_id, provider_id):
