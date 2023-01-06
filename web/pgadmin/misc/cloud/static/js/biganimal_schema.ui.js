@@ -375,7 +375,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
         noEmpty: true, orientation: 'vertical',
       },{
         id: 'postgres_version', label: gettext('Database version'),
-        mode: ['create'], noEmpty: true,
+        mode: ['create'], noEmpty: true, deps: ['database_type'],
         type: (state) => {
           return {
             type: 'select',

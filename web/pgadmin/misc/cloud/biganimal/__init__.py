@@ -443,7 +443,7 @@ def deploy_on_biganimal(data):
     nodes = 1
 
     if data['cluster_details']['cluster_type'] == HA_CLUSTER_ARCH:
-        nodes = int(data['db_details']['replicas']) + nodes
+        nodes = int(data['cluster_details']['replicas']) + nodes
     elif data['cluster_details']['cluster_type'] == EHA_CLUSTER_ARCH:
         nodes = 5
 
