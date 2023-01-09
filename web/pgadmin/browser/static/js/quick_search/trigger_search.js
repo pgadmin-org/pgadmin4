@@ -15,8 +15,6 @@ import {menuSearch} from './menuitems_help';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import pgAdmin from 'sources/pgadmin';
-import { getBrowser } from '../../../../static/js/utils';
 
 function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
   return (isHelpLoading && !(isMenuLoading??true)) ? (
@@ -50,7 +48,6 @@ const useModalStyles = makeStyles(() => ({
 }));
 
 export function Search({closeModal}) {
-  let {name: browser} = getBrowser();
   const classes = useModalStyles();
   const wrapperRef = useRef(null);
   const firstEleRef = useRef();
@@ -136,23 +133,10 @@ export function Search({closeModal}) {
       let menuItemsHtmlElement = [];
       items.forEach((i) => {
         menuItemsHtmlElement.push(
-          <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i.label } href={'#'} className={ (i.is_disabled ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i.label } onClick={
+          <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i.label } href={'#'} className={ (i.isDisabled ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i.label } onClick={
             () => {
               closeModal();
-              if(browser == 'Nwjs') {
-                i.callback();
-              } else {
-                // Some callbacks registered in 'callbacks' check and call specifiec callback function
-                if (i.module && 'callbacks' in i.module && i.module.callbacks[i.callback]) {
-                  i.module.callbacks[i.callback].apply(i.module, [i.data, pgAdmin.Browser.tree.selected()]);
-                } else if (i.module && i.module[i.callback]) {
-                  i.module[i.callback].apply(i.module, [i.data, pgAdmin.Browser.tree.selected()]);
-                } else if (i.callback) {
-                  i.callback(i);
-                } else {
-                  window.open(i.url);
-                }
-              }
+              i.callback();
             }
           }>
             {i.label}

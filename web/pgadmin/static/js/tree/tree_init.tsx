@@ -107,6 +107,9 @@ function BrowserTree(props) {
     if(menuItem.type == 'separator') {
         return <PgMenuDivider key={i}/>;
     }
+    if(menuItem.isDisabled) {
+      return <></>;
+    }
     const hasCheck = typeof menuItem.checked == 'boolean';
 
     return <PgMenuItem

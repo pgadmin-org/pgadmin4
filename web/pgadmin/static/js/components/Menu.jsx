@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme)=>({
   menu: {
     '& .szh-menu': {
       padding: '4px 0px',
-      zIndex: 1000,
+      zIndex: 1005,
       backgroundColor: theme.palette.background.default,
       color: theme.palette.text.primary,
       border: `1px solid ${theme.otherVars.borderColor}`
