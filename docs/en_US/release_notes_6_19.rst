@@ -39,5 +39,6 @@ Bug fixes
   | `Issue #5640 <https://github.com/pgadmin-org/pgadmin4/issues/5640>`_ -  Update boto3 & botocore to the latest version.
   | `Issue #5641 <https://github.com/pgadmin-org/pgadmin4/issues/5641>`_ -  Fixed an issue where Geometry viewer does not show popup when columns are less than 3.
   | `Issue #5647 <https://github.com/pgadmin-org/pgadmin4/issues/5647>`_ -  Fixed an issue where row count notification was disappearing automatically.
+  | `Issue #5661 <https://github.com/pgadmin-org/pgadmin4/issues/5661>`_ -  Fix select dropdown border issue.
   | `Issue #5666 <https://github.com/pgadmin-org/pgadmin4/issues/5666>`_ -  Fixed a missing "jwks_uri" in metadata error that occurred when logging in with an oAuth2 provider like Azure or Google.
   | `Issue #5675 <https://github.com/pgadmin-org/pgadmin4/issues/5675>`_ -  Fixed an issue where rename panel was losing focus when trying to add name if input box is empty.
