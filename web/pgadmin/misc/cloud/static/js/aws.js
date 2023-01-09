@@ -10,7 +10,7 @@
 import React from 'react';
 import pgAdmin from 'sources/pgadmin';
 import { getNodeAjaxOptions, getNodeListById } from 'pgbrowser/node_ajax';
-import {CloudInstanceDetailsSchema, CloudDBCredSchema, DatabaseSchema} from './cloud_db_details_schema.ui';
+import {CloudInstanceDetailsSchema, CloudDBCredSchema, DatabaseSchema} from './aws_schema.ui';
 import SchemaView from '../../../../static/js/SchemaView';
 import url_for from 'sources/url_for';
 import getApiInstance from '../../../../static/js/api_instance';

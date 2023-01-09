@@ -19,6 +19,7 @@ import BigAnimal from '../../img/biganimal.svg?svgr';
 import Azure from '../../img/azure.svg?svgr';
 import SQLFileSvg from '../../img/sql_file.svg?svgr';
 import MagicSvg from '../../img/magic.svg?svgr';
+import MsAzure from '../../img/ms_azure.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -84,3 +85,6 @@ SQLFileIcon.propTypes = {style: PropTypes.object};
 
 export const MagicIcon = ({style})=><ExternalIcon Icon={MagicSvg} style={{height: '1rem', ...style}} data-label="MagicIcon" />;
 MagicIcon.propTypes = {style: PropTypes.object};
+
+export const MSAzureIcon = ({style})=><ExternalIcon Icon={MsAzure} style={{height: '6rem', width: '7rem', ...style}} data-label="MSAzureIcon" />;
+MSAzureIcon.propTypes = {style: PropTypes.object};
