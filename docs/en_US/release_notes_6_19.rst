@@ -15,6 +15,7 @@ Supported Database Servers
 New features
 ************
 
+  | `Issue #5569 <https://github.com/pgadmin-org/pgadmin4/issues/5569>`_ -  Added support of AWS provider for BigAnimal cloud deployment.
 
 Housekeeping
 ************
