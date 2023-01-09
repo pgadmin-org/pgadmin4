@@ -774,6 +774,16 @@ OptionView.propTypes = {
   label: PropTypes.string,
 };
 
+function CustomSelectInput(props) {
+  const { maxLength } = props.selectProps;
+  return (
+    <RSComponents.Input {...props} maxLength={maxLength} />
+  );
+}
+CustomSelectInput.propTypes = {
+  selectProps: PropTypes.object,
+};
+
 function CustomSelectOption(props) {
   return (
     <RSComponents.Option {...props}>
@@ -918,9 +928,9 @@ export const InputSelect = forwardRef(({
     components: {
       Option: CustomSelectOption,
       SingleValue: CustomSelectSingleValue,
-      IndicatorSeparator: (props) => controlProps.noDropdown ? null: <RSComponents.IndicatorSeparator {...props} />,
-      DropdownIndicator: (props) => controlProps.noDropdown ? null: <RSComponents.DropdownIndicator {...props} />,
-      Input: props => <RSComponents.Input {...props} maxLength={controlProps.maxLength} />
+      IndicatorSeparator: controlProps.noDropdown ? null: RSComponents.IndicatorSeparator,
+      DropdownIndicator: controlProps.noDropdown ? null: RSComponents.DropdownIndicator,
+      Input: CustomSelectInput,
     },
     isMulti: Boolean(controlProps.multiple),
     openMenuOnClick: !readonly,
@@ -932,6 +942,7 @@ export const InputSelect = forwardRef(({
     styles: styles,
     inputId: cid,
     placeholder: (readonly || disabled) ? '' : controlProps.placeholder || gettext('Select an item...'),
+    maxLength: controlProps.maxLength,
     ...otherProps,
     ...props,
   };
