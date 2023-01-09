@@ -297,6 +297,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
           });
       } else if (cloudProvider == CLOUD_PROVIDERS.AZURE) {
         if (activeStep == 1) {
+          // Skip the current step
           resolve(true);
         } else if (activeStep == 2) {
           setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
