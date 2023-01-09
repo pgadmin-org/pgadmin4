@@ -220,9 +220,11 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         isError = !verificationIntiated;
         break;
       case 2:
-        isError = validateAzureStep2(azureInstanceData);
         break;
       case 3:
+        isError = validateAzureStep2(azureInstanceData);
+        break;
+      case 4:
         isError = validateAzureStep3(azureDatabaseData, nodeInfo);
         break;
       default:
@@ -231,6 +233,15 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
       break;
     }
     return isError;
+  };
+
+  const onBeforeBack = (activeStep) => {
+    return new Promise((resolve)=>{
+      if(activeStep == 3 && (cloudProvider == CLOUD_PROVIDERS.RDS || cloudProvider == CLOUD_PROVIDERS.AZURE)) {
+        resolve(true);
+      }
+      resolve();
+    });
   };
 
   const onBeforeNext = (activeStep) => {
@@ -284,20 +295,26 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
             reject();
           });
-      } else if(activeStep == 2 && cloudProvider == CLOUD_PROVIDERS.AZURE) {
-        setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
-        checkClusternameAvailbility(azureInstanceData.name)
-          .then((res)=>{
-            if (res.data && res.data.success == 0 ) {
-              setErrMsg([MESSAGE_TYPE.ERROR, gettext('Specified cluster name is already used.')]);
-            }else{
-              setErrMsg(['', '']);
-            }
-            resolve();
-          }).catch((error)=>{
-            setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
-            reject();
-          });
+      } else if (cloudProvider == CLOUD_PROVIDERS.AZURE) {
+        if (activeStep == 1) {
+          resolve(true);
+        } else if (activeStep == 2) {
+          setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
+          checkClusternameAvailbility(azureInstanceData.name)
+            .then((res)=>{
+              if (res.data && res.data.success == 0 ) {
+                setErrMsg([MESSAGE_TYPE.ERROR, gettext('Specified cluster name is already used.')]);
+              }else{
+                setErrMsg(['', '']);
+              }
+              resolve();
+            }).catch((error)=>{
+              setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
+              reject();
+            });
+        } else {
+          resolve();
+        }
       }
       else {
         setErrMsg(['', '']);
@@ -371,7 +388,8 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
           onStepChange={wizardStepChange}
           onSave={onSave}
           onHelp={onDialogHelp}
-          beforeNext={onBeforeNext}>
+          beforeNext={onBeforeNext}
+          beforeBack={onBeforeBack}>
           <WizardStep stepId={0}>
             <Box className={classes.messageBox}>
               <Box className={classes.messagePadding}>{gettext('Select a cloud provider.')}</Box>
