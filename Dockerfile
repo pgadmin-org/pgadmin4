@@ -91,7 +91,7 @@ RUN     apk add --no-cache \
 FROM env-builder as docs-builder
 
 # Install Sphinx
-RUN /venv/bin/python3 -m pip install --no-cache-dir sphinx
+RUN /venv/bin/python3 -m pip install --no-cache-dir sphinx==6.1.1
 RUN /venv/bin/python3 -m pip install --no-cache-dir sphinxcontrib-youtube
 
 # Copy the docs from the local tree. Explicitly remove any existing builds that

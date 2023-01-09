@@ -246,7 +246,7 @@ REM Main build sequence Ends
     ECHO } >> "%BUILDROOT%\web\config_distro.py"
 
     ECHO Building docs...
-    CALL pip install sphinx || EXIT /B 1
+    CALL pip install sphinx==6.1.1 || EXIT /B 1
     CALL pip install sphinxcontrib-youtube || EXIT /B 1
     MKDIR "%BUILDROOT%\docs\en_US\html"
     CD "%WD%\docs\en_US"
