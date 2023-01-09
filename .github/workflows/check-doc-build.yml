@@ -28,9 +28,9 @@ jobs:
 
       - name: Install requirements
         run: pip install -r requirements.txt
-        
+
       - name: Install sphinx
-        run: pip install sphinx
+        run: pip install sphinx==6.1.1
 
       - name: Install sphinx youtube
         run: pip install sphinxcontrib-youtube
