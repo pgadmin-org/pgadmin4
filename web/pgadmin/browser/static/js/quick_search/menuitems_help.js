@@ -7,9 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import {MenuItem as NewMenuItem} from '../../../../static/js/helpers/Menu';
-import { MainMenus } from '../MainMenuFactory';
 import pgAdmin from 'sources/pgadmin';
-import { getBrowser } from '../../../../static/js/utils';
 
 
 //  Allow us to
@@ -53,28 +51,19 @@ export function menuSearch(param, props) {
     });
   };
 
-  // Starting Point
-  let {name: browser} = getBrowser();
-  const mainMenus = browser == 'Nwjs' ? pgAdmin.Browser.MainMenus : MainMenus;
-  if(browser == 'Nwjs') {
-    mainMenus.forEach((menu) => {
-      let subMenus = menu.menuItems;
-      iterItem(subMenus, getMenuName(menu));
-    });
-  } else {
-    mainMenus.forEach((menu) => {
-      let subMenus = [];
-      if(menu.name == 'object') {
-        let selectedNode = pgAdmin.Browser.tree.selected();
-        if(selectedNode) {
-          subMenus = pgAdmin.Browser.all_menus_cache[menu.name][selectedNode._metadata.data._type];
-        }
-      } else {
-        subMenus = pgAdmin.Browser.all_menus_cache[menu.name];
+  const mainMenus = pgAdmin.Browser.MainMenus;
+  mainMenus.forEach((menu) => {
+    let subMenus = [];
+    if(menu.name == 'object') {
+      let selectedNode = pgAdmin.Browser.tree.selected();
+      if(selectedNode) {
+        subMenus = pgAdmin.Browser.all_menus_cache[menu.name][selectedNode._metadata.data._type];
       }
-      iterItem(Object.values(subMenus), getMenuName(menu));
-    });
-  }
+    } else {
+      subMenus = pgAdmin.Browser.all_menus_cache[menu.name];
+    }
+    iterItem(Object.values(subMenus), getMenuName(menu));
+  });
 
   setState(state => ({
     ...state,
