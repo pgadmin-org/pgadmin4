@@ -8517,9 +8517,9 @@ react-checkbox-tree@^1.7.2:
     nanoid "^3.0.0"
     prop-types "^15.5.8"
 
-"react-data-grid@git+https://github.com/EnterpriseDB/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8":
+"react-data-grid@git+https://github.com/pgadmin-org/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8":
   version "7.0.0-beta.14"
-  resolved "git+https://github.com/EnterpriseDB/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8"
+  resolved "git+https://github.com/pgadmin-org/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8"
   dependencies:
     clsx "^1.1.1"
 
@@ -10337,9 +10337,9 @@ watchpack@^2.4.0:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
-"webcabin-docker@git+https://github.com/EnterpriseDB/wcDocker/#3df8aac825ee2892f4d824de273b779cc6dbcad8":
+"webcabin-docker@git+https://github.com/pgadmin-org/wcdocker/#3df8aac825ee2892f4d824de273b779cc6dbcad8":
   version "2.2.5"
-  resolved "git+https://github.com/EnterpriseDB/wcDocker/#3df8aac825ee2892f4d824de273b779cc6dbcad8"
+  resolved "git+https://github.com/pgadmin-org/wcdocker/#3df8aac825ee2892f4d824de273b779cc6dbcad8"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"

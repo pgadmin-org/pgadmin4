@@ -260,6 +260,45 @@ def get_complete_file_path(file, validate=True):
         return file
 
 
+def filename_with_file_manager_path(_file, create_file=False,
+                                    skip_permission_check=False):
+    """
+    Args:
+        file: File name returned from client file manager
+        create_file: Set flag to False when file creation doesn't required
+    Returns:
+        Filename to use for backup with full path taken from preference
+    """
+    # Set file manager directory from preference
+    storage_dir = get_storage_directory()
+
+    from pgadmin.misc.file_manager import Filemanager
+    Filemanager.check_access_permission(
+        storage_dir, _file, skip_permission_check)
+    if storage_dir:
+        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
+    elif not os.path.isabs(_file):
+        _file = os.path.join(document_dir(), _file)
+
+    def short_filepath():
+        short_path = fs_short_path(_file)
+        # fs_short_path() function may return empty path on Windows
+        # if directory doesn't exists. In that case we strip the last path
+        # component and get the short path.
+        if os.name == 'nt' and short_path == '':
+            base_name = os.path.basename(_file)
+            dir_name = os.path.dirname(_file)
+            short_path = fs_short_path(dir_name) + '\\' + base_name
+        return short_path
+
+    if create_file:
+        # Touch the file to get the short path of the file on windows.
+        with open(_file, 'a'):
+            return short_filepath()
+
+    return short_filepath()
+
+
 def does_utility_exist(file):
     """
     This function will check the utility file exists on given path.
@@ -434,26 +473,11 @@ def dump_database_servers(output_file, selected_servers,
 
     object_dict["Servers"] = server_dict
 
-    # retrieve storage directory path
-    storage_manager_path = None
-    if not from_setup:
-        storage_manager_path = get_storage_directory(user)
-
-    # generate full path of file
-    file_path = unquote(output_file)
-
-    from pgadmin.misc.file_manager import Filemanager
     try:
-        Filemanager.check_access_permission(storage_manager_path, file_path,
-                                            from_setup)
+        file_path = filename_with_file_manager_path(
+            unquote(output_file), skip_permission_check=from_setup)
     except Exception as e:
         return _handle_error(str(e), from_setup)
-
-    if storage_manager_path is not None:
-        file_path = os.path.join(
-            storage_manager_path,
-            file_path.lstrip('/').lstrip('\\')
-        )
 
     # write to file
     file_content = json.dumps(object_dict, indent=4)
@@ -548,19 +572,12 @@ def load_database_servers(input_file, selected_servers,
     if user is None:
         return False, USER_NOT_FOUND % load_user
 
-    # retrieve storage directory path
-    storage_manager_path = None
-    if not from_setup:
-        storage_manager_path = get_storage_directory(user)
-
     # generate full path of file
-    file_path = unquote(input_file)
-    if storage_manager_path:
-        # generate full path of file
-        file_path = os.path.join(
-            storage_manager_path,
-            file_path.lstrip('/').lstrip('\\')
-        )
+    try:
+        file_path = filename_with_file_manager_path(
+            unquote(input_file), skip_permission_check=from_setup)
+    except Exception as e:
+        return _handle_error(str(e), from_setup)
 
     try:
         with open(file_path) as f:
