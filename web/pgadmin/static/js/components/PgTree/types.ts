@@ -85,6 +85,7 @@ export interface IFileTreeXProps {
     onReady?: (handle: IFileTreeXHandle) => void
     onEvent?: (event: IFileTreeXTriggerEvents) => void
     onContextMenu?: (ev: React.MouseEvent, item?: FileOrDir) => void
+    onScroll?: (ev: React.UIEvent<HTMLDivElement>) => void
 }
 
 export enum FileTreeXEvent {
