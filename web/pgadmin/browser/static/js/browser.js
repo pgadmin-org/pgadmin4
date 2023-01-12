@@ -25,7 +25,7 @@ define('pgadmin.browser', [
   'pgadmin.browser.utils', 'wcdocker', 'jquery.contextmenu',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
   'pgadmin.browser.panel', 'pgadmin.browser.layout',
-  'pgadmin.browser.runtime', 'pgadmin.browser.error', 'pgadmin.browser.frame',
+  'pgadmin.browser.error', 'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state'

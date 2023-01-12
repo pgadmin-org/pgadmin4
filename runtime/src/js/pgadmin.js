@@ -100,41 +100,7 @@ function startDesktopMode() {
 
   pgadminServerProcess.stderr.setEncoding('utf8');
   pgadminServerProcess.stderr.on('data', (chunk) => {
-    if (chunk.indexOf('Runtime Open Configuration') > -1) {
-      // Create and launch new window and open pgAdmin url
-      nw.Window.open('src/html/configure.html', {
-        'frame': true,
-        'width': 600,
-        'height': 585,
-        'position': 'center',
-        'resizable': false,
-        'focus': true,
-        'show': true,
-      });
-    } else if (chunk.indexOf('Runtime Open View Log') > -1) {
-      // Create and launch new window and open pgAdmin url
-      nw.Window.open('src/html/view_log.html', {
-        'frame': true,
-        'width': 790,
-        'height': 425,
-        'position': 'center',
-        'resizable': false,
-        'focus': true,
-        'show': true,
-      });
-    } else if (chunk.indexOf('Runtime Zoom In') >= 0) {
-      misc.zoomIn();
-    } else if (chunk.indexOf('Runtime Zoom Out') >= 0) {
-      misc.zoomOut();
-    } else if (chunk.indexOf('Runtime Actual Size') >= 0) {
-      misc.actualSize();
-    } else if (chunk.indexOf('Runtime Toggle Full Screen') >= 0) {
-      misc.toggleFullScreen();
-    } else if (chunk.indexOf('Runtime new window opened') >= 0) {
-      misc.setZoomLevelForAllWindows();
-    } else {
-      misc.writeServerLog(chunk);
-    }
+    misc.writeServerLog(chunk);
   });
 
   // This function is used to ping the pgAdmin4 server whether it
@@ -298,6 +264,7 @@ function launchPgAdminWindow() {
             pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', enableDisableMenuItem);
             pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item', refreshMenuItems);
             pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-update-checked-menu-item', updateCheckedMenuItem);
+            pgadminWindow.window.pgAdmin.Browser.Events.on('pgadmin:nw-set-new-window-open-size', setNewWindowSize)
             // Add Main Menus to native menu.
             pgadminWindow.window.pgAdmin.Browser.MainMenus.forEach((menu)=> {
               addMenu(menu)
@@ -381,6 +348,10 @@ splashWindow.on('close', function () {
   misc.cleanupAndQuitApp();
 });
 
+function setNewWindowSize(){
+  misc.setZoomLevelForAllWindows();
+}
+
 
 function addCommonMenus(menu) {
   let _menu = new gui.Menu();
@@ -402,6 +373,11 @@ function addCommonMenus(menu) {
     });
     _menu.append(_menuItem);
   });
+
+  if (menu.name == 'file') {
+    let runtimeMenu = getRuntimeMenu();
+    _menu.append(runtimeMenu);
+  }
 
   if (menu.menuItems.length == 0) {
     let _menuItem = new gui.MenuItem({
@@ -426,6 +402,113 @@ function addCommonMenus(menu) {
     }));
     pgAdminMainScreen.menu = nativeMenu;
   }
+
+}
+
+function getRuntimeMenu() {
+  let controlKey = platform() === 'darwin' ? 'cmd' : 'ctrl';
+  let fullScreenKey =  platform() === 'darwin' ? 'F' : 'F10';
+  let subMenus = new gui.Menu();
+  let rtmenudt = pgAdminMainScreen.window.pgAdmin.Browser.RUNTIME_MENUS_OPTIONS['runtime']
+  let runtimeSubMenus = pgAdminMainScreen.window.pgAdmin.Browser.RUNTIME_MENUS_OPTIONS['runtime']['submenus']
+  subMenus.append(new gui.MenuItem({
+    label: runtimeSubMenus['configure'].label,
+    enabled: runtimeSubMenus['configure'].enable,
+    priority: runtimeSubMenus['configure'].priority,
+    type: 'normal',
+    checked: false,
+    click: function () {
+      // Create and launch new window and open pgAdmin url
+      nw.Window.open('src/html/configure.html', {
+        'frame': true,
+        'width': 600,
+        'height': 585,
+        'position': 'center',
+        'resizable': false,
+        'focus': true,
+        'show': true,
+      });
+    },
+  }));
+  subMenus.append(new gui.MenuItem({
+    label: runtimeSubMenus['view_log'].label,
+    enabled: runtimeSubMenus['view_log'].enable,
+    priority: runtimeSubMenus['view_log'].priority,
+    type: 'normal',
+    checked: false,
+    click: function () {
+      // Create and launch new window and open pgAdmin url
+      nw.Window.open('src/html/view_log.html', {
+        'frame': true,
+        'width': 790,
+        'height': 425,
+        'position': 'center',
+        'resizable': false,
+        'focus': true,
+        'show': true,
+      });
+    },
+  }));
+  subMenus.append(new nw.MenuItem({ type: 'separator' }));
+  subMenus.append(new gui.MenuItem({
+    label: runtimeSubMenus['enter_full_screen'].label,
+    enabled: runtimeSubMenus['enter_full_screen'].enable,
+    priority: runtimeSubMenus['enter_full_screen'].priority,
+    type: 'normal',
+    checked: false,
+    key: runtimeSubMenus['enter_full_screen'].key,
+    modifiers: runtimeSubMenus['enter_full_screen'].modifiers,
+    click: function () {
+      misc.toggleFullScreen();
+    },
+  }));
+  subMenus.append(new gui.MenuItem({
+    label: runtimeSubMenus['actual_size'].label,
+    enabled: runtimeSubMenus['actual_size'].enable,
+    priority: runtimeSubMenus['actual_size'].priority,
+    type: 'normal',
+    checked: false,
+    key: runtimeSubMenus['actual_size'].key,
+    modifiers: runtimeSubMenus['actual_size'].modifiers,
+    click: function () {
+      misc.actualSize();
+    },
+  }));
+  subMenus.append(new gui.MenuItem({
+    label: runtimeSubMenus['zoom_in'].label,
+    enabled: runtimeSubMenus['zoom_in'].enable,
+    priority: runtimeSubMenus['zoom_in'].priority,
+    type: 'normal',
+    checked: false,
+    key: runtimeSubMenus['zoom_in'].key,
+    modifiers: runtimeSubMenus['zoom_in'].modifiers,
+    click: function () {
+      misc.zoomIn();
+    },
+  }));
+  subMenus.append(new gui.MenuItem({
+    label: runtimeSubMenus['zoom_out'].label,
+    enabled: runtimeSubMenus['zoom_out'].enable,
+    priority: runtimeSubMenus['zoom_out'].priority,
+    type: 'normal',
+    checked: false,
+    key: runtimeSubMenus['zoom_out'].key,
+    modifiers: runtimeSubMenus['zoom_out'].modifiers,
+    click: function () {
+      misc.zoomOut();
+    },
+  }));
+
+  let runtimeMenu = new gui.MenuItem({
+    label: rtmenudt.label,
+    enabled: true,
+    priority: rtmenudt.priority,
+    type: 'normal',
+    checked: false,
+    submenu: subMenus,
+})
+
+  return runtimeMenu;
 
 }
 
@@ -485,6 +568,8 @@ function addMacMenu(menu) {
         }), indx);
       indx++;
     });
+    let runtimeMenu = getRuntimeMenu();
+    rootMenu.insert(runtimeMenu, indx++);
     let separator_menu = new nw.MenuItem({ type: 'separator' });
     rootMenu.insert(separator_menu, indx);
     indx++;
