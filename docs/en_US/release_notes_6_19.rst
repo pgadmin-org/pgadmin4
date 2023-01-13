@@ -2,7 +2,7 @@
 Version 6.19
 ************
 
-Release date: 2023-01-12
+Release date: 2023-01-16
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v6.18.
 
@@ -42,3 +42,4 @@ Bug fixes
   | `Issue #5661 <https://github.com/pgadmin-org/pgadmin4/issues/5661>`_ -  Fix select dropdown border issue.
   | `Issue #5666 <https://github.com/pgadmin-org/pgadmin4/issues/5666>`_ -  Fixed a missing "jwks_uri" in metadata error that occurred when logging in with an oAuth2 provider like Azure or Google.
   | `Issue #5675 <https://github.com/pgadmin-org/pgadmin4/issues/5675>`_ -  Fixed an issue where rename panel was losing focus when trying to add name if input box is empty.
+  | `Issue #5734 <https://github.com/pgadmin-org/pgadmin4/issues/5734>`_ -  Ensure that the authenticated users can't access each other's directories and files by providing relative paths.(CVE-2023-0241)
