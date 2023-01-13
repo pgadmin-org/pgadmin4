@@ -18,8 +18,10 @@ from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, does_utility_exist, get_server
-from pgadmin.utils.ajax import make_json_response, bad_request
+    fs_short_path, document_dir, does_utility_exist, get_server, \
+    filename_with_file_manager_path
+from pgadmin.utils.ajax import make_json_response, bad_request, \
+    internal_server_error
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
@@ -129,28 +131,6 @@ def script():
     )
 
 
-def filename_with_file_manager_path(_file):
-    """
-    Args:
-        file: File name returned from client file manager
-
-    Returns:
-        Filename to use for backup with full path taken from preference
-    """
-    # Set file manager directory from preference
-    storage_dir = get_storage_directory()
-
-    if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
-    elif not os.path.isabs(_file):
-        _file = os.path.join(document_dir(), _file)
-
-    if not os.path.isfile(_file) and not os.path.exists(_file):
-        return None
-
-    return fs_short_path(_file)
-
-
 def _get_create_req_data():
     """
     Get data from request for create restore job.
@@ -164,7 +144,7 @@ def _get_create_req_data():
     try:
         _file = filename_with_file_manager_path(data['file'])
     except Exception as e:
-        return True, bad_request(errormsg=str(e)), data
+        return True, internal_server_error(errormsg=str(e)), data, None
 
     if _file is None:
         return True, make_json_response(

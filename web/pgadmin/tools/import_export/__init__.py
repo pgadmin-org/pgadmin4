@@ -17,8 +17,9 @@ from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, IS_WIN, does_utility_exist
-from pgadmin.utils.ajax import make_json_response, bad_request
+    fs_short_path, document_dir, IS_WIN, does_utility_exist, \
+    filename_with_file_manager_path
+from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server
@@ -143,33 +144,6 @@ def script():
         status=200,
         mimetype=MIMETYPE_APP_JS
     )
-
-
-def filename_with_file_manager_path(_file, _present=False):
-    """
-    Args:
-        file: File name returned from client file manager
-
-    Returns:
-        Filename to use for backup with full path taken from preference
-    """
-    # Set file manager directory from preference
-    storage_dir = get_storage_directory()
-
-    if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
-    elif not os.path.isabs(_file):
-        _file = os.path.join(document_dir(), _file)
-
-    if not _present:
-        # Touch the file to get the short path of the file on windows.
-        with open(_file, 'a'):
-            return fs_short_path(_file)
-    else:
-        if not os.path.isfile(_file):
-            return None
-
-    return fs_short_path(_file)
 
 
 def _get_ignored_column_list(data, driver, conn):
@@ -297,7 +271,9 @@ def create_import_export_job(sid):
     if 'filename' in data:
         try:
             _file = filename_with_file_manager_path(
-                data['filename'], data['is_import'])
+                data['filename'], not data['is_import'])
+        except PermissionError as e:
+            return unauthorized(errormsg=str(e))
         except Exception as e:
             return bad_request(errormsg=str(e))
 

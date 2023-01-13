@@ -20,10 +20,11 @@ from flask_security import login_required, current_user
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import bad_request
 from pgadmin.utils.constants import MIMETYPE_APP_JS
-from pgadmin.utils.ajax import make_json_response, internal_server_error
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    unauthorized
 from pgadmin.model import ServerGroup, Server
 from pgadmin.utils import clear_database_servers, dump_database_servers,\
-    load_database_servers, validate_json_data
+    load_database_servers, validate_json_data, filename_with_file_manager_path
 from urllib.parse import unquote
 from pgadmin.utils.paths import get_storage_directory
 
@@ -118,6 +119,14 @@ def load_servers():
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()
+
+    try:
+        file_path = filename_with_file_manager_path(file_path)
+    except PermissionError as e:
+        return unauthorized(errormsg=str(e))
+    except Exception as e:
+        return bad_request(errormsg=str(e))
+
     if storage_manager_path:
         # generate full path of file
         file_path = os.path.join(
