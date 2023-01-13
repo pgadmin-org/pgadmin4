@@ -46,6 +46,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
             className='file-tree'
             onBlur={this.handleBlur}
             onClick={this.handleClick}
+            onScroll={this.props.onScroll}
             ref={this.wrapperRef}
             style={{
               height: height ? height : "calc(100vh - 60px)",
@@ -99,6 +100,10 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
 
     private handleTreeReady = (handle: IFileTreeHandle) => {
         const { onReady, model } = this.props
+        const scrollDiv = this.wrapperRef.current?.querySelector('div')?.querySelector('div')
+        if(this.props.onScroll) {
+            scrollDiv?.addEventListener('scroll', (ev: any)=>this.props.onScroll?.(ev));
+        }
 
         this.fileTreeHandle = {
             ...handle,

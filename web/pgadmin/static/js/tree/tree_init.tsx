@@ -108,7 +108,7 @@ function BrowserTree(props) {
         return <PgMenuDivider key={i}/>;
     }
     if(menuItem.isDisabled) {
-      return <></>;
+      return <React.Fragment key={i}></React.Fragment>;
     }
     const hasCheck = typeof menuItem.checked == 'boolean';
 
@@ -134,7 +134,11 @@ function BrowserTree(props) {
   return (
     <Theme>
       <FileTreeX
-      {...props} height={'100%'} disableCache={true} onContextMenu={onContextMenu} />
+      {...props} height={'100%'} disableCache={true} onContextMenu={onContextMenu}
+      onScroll={()=>{
+        contextPos && setContextPos(null);
+      }}
+      />
       <PgMenu
           anchorPoint={{
               x: contextPos?.x,
@@ -149,7 +153,7 @@ function BrowserTree(props) {
             if(submenus) {
                 return <PgSubMenu key={i} label={menuItem.label}>
                 {submenus.map((submenuItem, si)=>{
-                    return getPgMenuItem(submenuItem, si);
+                    return getPgMenuItem(submenuItem, i+'-'+si);
                 })}
                 </PgSubMenu>;
             }

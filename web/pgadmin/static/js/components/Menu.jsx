@@ -64,6 +64,8 @@ export function PgMenu({open, className='', label, menuButton=null, ...props}) {
       menuButton={menuButton}
       className={clsx(classes.menu, className)}
       aria-label={label || 'Menu'}
+      onContextMenu={(e)=>e.preventDefault()}
+      viewScroll='close'
     />;
   }
   return (
@@ -74,6 +76,8 @@ export function PgMenu({open, className='', label, menuButton=null, ...props}) {
       className={clsx(classes.menu, className)}
       aria-label={label || 'Menu'}
       data-state={state}
+      onContextMenu={(e)=>e.preventDefault()}
+      viewScroll='close'
     />
   );
 }
@@ -92,12 +96,12 @@ export const PgSubMenu = applyStatics(SubMenu)(({label, ...props})=>{
   );
 });
 
-export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false, accesskey, shortcut, children, ...props})=>{
+export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false, accesskey, shortcut, children, closeOnCheck=false, ...props})=>{
   const classes = useStyles();
   let onClick = props.onClick;
   if(hasCheck) {
     onClick = (e)=>{
-      e.keepOpen = true;
+      e.keepOpen = !closeOnCheck;
       props.onClick(e);
     };
   }
@@ -115,6 +119,7 @@ PgMenuItem.propTypes = {
   accesskey: PropTypes.string,
   shortcut: CustomPropTypes.shortcut,
   children: CustomPropTypes.children,
+  closeOnCheck: PropTypes.bool,
   onClick: PropTypes.func,
 };
 
