@@ -72,7 +72,6 @@ export function PgMenu({open, className='', label, menuButton=null, ...props}) {
     <ControlledMenu
       state={state}
       {...props}
-      portal
       className={clsx(classes.menu, className)}
       aria-label={label || 'Menu'}
       data-state={state}

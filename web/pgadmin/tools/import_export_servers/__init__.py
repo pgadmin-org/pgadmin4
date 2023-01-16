@@ -127,13 +127,6 @@ def load_servers():
     except Exception as e:
         return bad_request(errormsg=str(e))
 
-    if storage_manager_path:
-        # generate full path of file
-        file_path = os.path.join(
-            storage_manager_path,
-            file_path.lstrip('/').lstrip('\\')
-        )
-
     if file_path and os.path.exists(file_path):
         try:
             with open(file_path, 'r') as j:
