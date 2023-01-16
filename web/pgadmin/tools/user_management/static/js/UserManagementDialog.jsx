@@ -172,7 +172,7 @@ class UserManagementCollection extends BaseUISchema {
       if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
         for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
           if (obj.top._sessData.userManagement[i]?.id &&
-            obj.top._sessData.userManagement[i].email.toLowerCase() == state.email.toLowerCase()) {
+            obj.top._sessData.userManagement[i].email?.toLowerCase() == state.email?.toLowerCase()) {
             msg = gettext('Email address \'%s\' already exists', state.email);
             setError('email', msg);
             return true;
