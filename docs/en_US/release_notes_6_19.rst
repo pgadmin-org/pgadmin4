@@ -2,7 +2,7 @@
 Version 6.19
 ************
 
-Release date: 2023-01-16
+Release date: 2023-01-17
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v6.18.
 
