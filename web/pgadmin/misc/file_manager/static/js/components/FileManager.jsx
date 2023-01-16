@@ -305,14 +305,18 @@ export class FileManagerUtils {
   }
 
   async checkPermission(path) {
-    let res = await this.api.post(this.fileConnectorUrl, {
-      'path': path,
-      'mode': 'permission',
-    });
-    if (res.data.data.result.Code === 1) {
-      return null;
-    } else {
-      return res.data.data.result.Error;
+    try {
+      let res = await this.api.post(this.fileConnectorUrl, {
+        'path': path,
+        'mode': 'permission',
+      });
+      if (res.data.data.result.Code === 1) {
+        return null;
+      } else {
+        return res.data.data.result.Error;
+      }
+    } catch (error) {
+      return parseApiError(error);
     }
   }
 

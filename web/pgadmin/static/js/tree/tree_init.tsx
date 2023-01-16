@@ -147,6 +147,7 @@ function BrowserTree(props) {
           open={Boolean(contextPos) && contextMenuItems.length !=0}
           onClose={()=>setContextPos(null)}
           label="context"
+          portal
       >
         {contextMenuItems.length !=0 && contextMenuItems.map((menuItem, i)=>{
             const submenus = menuItem.getMenuItems();
