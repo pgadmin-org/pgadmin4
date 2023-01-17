@@ -135,66 +135,6 @@ class BrowserModule(PgAdminModule):
             ]
         }
 
-        # We need 'Configure...' and 'View log...' Menu only in runtime.
-        if current_app.PGADMIN_RUNTIME:
-            full_screen_label = gettext('Enter Full Screen  (F10)')
-            actual_size_label = gettext('Actual Size (Ctrl 0)')
-            zoom_in_label = gettext('Zoom In (Ctrl +)')
-            zoom_out_label = gettext('Zoom Out (Ctrl -)')
-
-            if sys.platform == 'darwin':
-                full_screen_label = gettext('Enter Full Screen  (Cmd Ctrl F)')
-                actual_size_label = gettext('Actual Size (Cmd 0)')
-                zoom_in_label = gettext('Zoom In (Cmd +)')
-                zoom_out_label = gettext('Zoom Out (Cmd -)')
-
-            menus['file_items'].append(
-                MenuItem(
-                    name='mnu_runtime',
-                    module=PGADMIN_BROWSER,
-                    label=gettext('Runtime'),
-                    priority=999,
-                    menu_items=[MenuItem(
-                        name='mnu_configure_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_configure_runtime',
-                        priority=0,
-                        label=gettext('Configure...')
-                    ), MenuItem(
-                        name='mnu_viewlog_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_viewlog_runtime',
-                        priority=1,
-                        label=gettext('View log...'),
-                        below=True,
-                    ), MenuItem(
-                        name='mnu_toggle_fullscreen_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_toggle_fullscreen_runtime',
-                        priority=2,
-                        label=full_screen_label
-                    ), MenuItem(
-                        name='mnu_actual_size_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_actual_size_runtime',
-                        priority=3,
-                        label=actual_size_label
-                    ), MenuItem(
-                        name='mnu_zoomin_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_zoomin_runtime',
-                        priority=4,
-                        label=zoom_in_label
-                    ), MenuItem(
-                        name='mnu_zoomout_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_zoomout_runtime',
-                        priority=5,
-                        label=zoom_out_label
-                    )]
-                )
-            )
-
         return menus
 
     def register_preferences(self):
@@ -211,7 +151,7 @@ class BrowserModule(PgAdminModule):
                 'browser.set_master_password',
                 'browser.reset_master_password',
                 'browser.lock_layout',
-                'browser.signal_runtime']
+                ]
 
     def register(self, app, options):
         """
@@ -906,30 +846,6 @@ def lock_layout():
 
     return make_json_response()
 
-
-@blueprint.route("/signal_runtime", endpoint="signal_runtime",
-                 methods=["POST"])
-def signal_runtime():
-    # If not runtime then no need to send signal
-    if current_app.PGADMIN_RUNTIME:
-        data = None
-
-        if hasattr(request.data, 'decode'):
-            data = request.data.decode('utf-8')
-
-        if data != '':
-            data = json.loads(data)
-
-        # Add Info Handler to current app just to send signal to runtime
-        tmp_handler = logging.StreamHandler()
-        tmp_handler.setLevel(logging.INFO)
-        current_app.logger.addHandler(tmp_handler)
-        # Send signal to runtime
-        current_app.logger.info(data['command'])
-        # Remove the temporary handler
-        current_app.logger.removeHandler(tmp_handler)
-
-    return make_json_response()
 
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot

@@ -120,7 +120,7 @@ export default class SchemaDiff {
       window.open(baseUrl, '_blank');
       // Send the signal to runtime, so that proper zoom level will be set.
       setTimeout(function () {
-        this.pgBrowser.send_signal_to_runtime('Runtime new window opened');
+        self.pgBrowser.Events.trigger('pgadmin:nw-set-new-window-open-size');
       }, 500);
     } else {
       this.pgBrowser.Events.once(

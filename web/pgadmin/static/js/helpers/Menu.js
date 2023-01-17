@@ -110,7 +110,7 @@ export class MenuItem {
     let menu_opts = [
       'name', 'label', 'priority', 'module', 'callback', 'data', 'enable',
       'category', 'target', 'url', 'node',
-      'checked', 'below', 'menu_items', 'is_checkbox', 'action', 'applies', 'is_native_only', 'type'
+      'checked', 'below', 'menu_items', 'is_checkbox', 'action', 'applies', 'is_native_only', 'type',
     ];
     let defaults = {
       url: '#',

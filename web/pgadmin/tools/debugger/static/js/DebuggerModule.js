@@ -400,7 +400,7 @@ export default class DebuggerModule {
               window.open(url, '_blank');
               // Send the signal to runtime, so that proper zoom level will be set.
               setTimeout(function () {
-                self.pgBrowser.send_signal_to_runtime('Runtime new window opened');
+                self.pgBrowser.Events.trigger('pgadmin:nw-set-new-window-open-size');
               }, 500);
             } else {
               self.pgBrowser.Events.once(
@@ -582,7 +582,7 @@ export default class DebuggerModule {
           window.open(url, '_blank');
           // Send the signal to runtime, so that proper zoom level will be set.
           setTimeout(function () {
-            self.pgBrowser.send_signal_to_runtime('Runtime new window opened');
+            self.pgBrowser.Browser.Events.trigger('pgadmin:nw-set-new-window-open-size');
           }, 500);
         } else {
           self.pgBrowser.Events.once(

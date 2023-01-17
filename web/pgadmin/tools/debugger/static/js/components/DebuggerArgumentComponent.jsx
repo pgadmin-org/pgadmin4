@@ -722,7 +722,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               window.open(url, '_blank');
               // Send the signal to runtime, so that proper zoom level will be set.
               setTimeout(function () {
-                pgAdmin.Browser.send_signal_to_runtime('Runtime new window opened');
+                pgAdmin.Browser.Events.trigger('pgadmin:nw-set-new-window-open-size');
               }, 500);
             } else {
               pgAdmin.Browser.Events.once(

@@ -696,7 +696,7 @@ function openWindow(toolForm, title) {
     let pgBrowser = window.pgAdmin.Browser;
     // Send the signal to runtime, so that proper zoom level will be set.
     setTimeout(function() {
-      pgBrowser.send_signal_to_runtime('Runtime new window opened');
+      pgBrowser.Events.trigger('pgadmin:nw-set-new-window-open-size');
     }, 500);
   } else {
     return false;
