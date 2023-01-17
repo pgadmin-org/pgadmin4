@@ -208,21 +208,6 @@
       }
     },
     {
-      "name": "Add server with advanced properties",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "owner_server": true,
-      "test_data": {
-        "passfile": "test.pgpass",
-        "hostaddr": "127.0.0.1"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
       "name": "Add server with background/foreground color",
       "url": "/browser/server/obj/",
       "is_positive_test": true,
@@ -806,22 +791,6 @@
       }
     },
     {
-      "name": "Update server with incorrect hostaddr",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "test_data": {
-        "comment": "PLACE_HOLDER",
-        "hostaddr": "PLACE_HOLDER",
-        "db_res": "PLACE_HOLDER",
-        "id": "PLACE_HOLDER"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 400
-      }
-    },
-    {
       "name": "update a server , make server shared",
       "url": "/browser/server/obj/",
       "is_positive_test": true,
@@ -939,21 +908,6 @@
       }
     },
     {
-      "name": "update advanced properties of server",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "owner_server": true,
-      "test_data": {
-        "passfile": "test_01.pgpass",
-        "hostaddr": "127.0.0.1"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
       "name": "remove ssl properties from server",
       "url": "/browser/server/obj/",
       "is_positive_test": true,
@@ -965,21 +919,6 @@
         "sslmode": "prefer",
         "sslcompression": false,
         "sslcrl": ""
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
-      "name": "remove advanced properties from server",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "owner_server": true,
-      "test_data": {
-        "passfile": "",
-        "hostaddr": ""
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1044,22 +983,6 @@
       "mock_data": {},
       "expected_data": {
         "status_code": 410
-      }
-    },
-    {
-      "name": "Update server with incorrect hostaddr",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "test_data": {
-        "comment": "PLACE_HOLDER",
-        "hostaddr": "PLACE_HOLDER",
-        "db_res": "PLACE_HOLDER",
-        "id": "PLACE_HOLDER"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 400
       }
     },
     {

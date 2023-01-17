@@ -54,14 +54,9 @@ describe('ServerSchema', ()=>{
     let setError = jasmine.createSpy('setError');
 
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('host', 'Either Host name, Address or Service must be specified.');
-
-    state.hostaddr = 'incorrectip';
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('hostaddr', 'Host address must be valid IPv4 or IPv6 address.');
+    expect(setError).toHaveBeenCalledWith('host', 'Either Host name or Service must be specified.');
 
     state.host = '127.0.0.1';
-    state.hostaddr = null;
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('username', 'Username must be specified.');
 

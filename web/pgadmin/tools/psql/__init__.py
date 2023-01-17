@@ -394,6 +394,18 @@ def get_conn_str_win(manager, db):
     manager.export_password_env('PGPASSWORD')
     db = db.replace('"', '\\"')
     db = db.replace("'", "\\'")
+
+    hostaddr = manager.get_connection_param_value('hostaddr')
+    sslmode = manager.get_connection_param_value('sslmode')
+    sslcert = manager.get_connection_param_value('sslcert')
+    sslkey = manager.get_connection_param_value('sslkey')
+    sslrootcert = manager.get_connection_param_value('sslrootcert')
+    sslcrl = manager.get_connection_param_value('sslcrl')
+    sslcompression = False \
+        if manager.get_connection_param_value('sslcompression') is None else \
+        True
+    passfile = manager.get_connection_param_value('passfile')
+
     conn_attr =\
         'host=\'{0}\' port=\'{1}\' dbname=\'{2}\' user=\'{3}\' ' \
         'sslmode=\'{4}\' sslcompression=\'{5}\' ' \
@@ -404,33 +416,32 @@ def get_conn_str_win(manager, db):
             manager.port,
             db if db != '' else 'postgres',
             underscore_unescape(manager.user) if manager.user else 'postgres',
-            manager.ssl_mode,
-            True if manager.sslcompression else False,
+            sslmode,
+            sslcompression,
         )
 
-    if manager.hostaddr:
-        conn_attr = " {0} hostaddr='{1}'".format(conn_attr, manager.hostaddr)
+    if hostaddr:
+        conn_attr = " {0} hostaddr='{1}'".format(conn_attr, hostaddr)
 
-    if manager.passfile:
-        conn_attr = " {0} passfile='{1}'".format(conn_attr,
-                                                 get_complete_file_path(
-                                                     manager.passfile))
+    if passfile:
+        conn_attr = " {0} passfile='{1}'".format(
+            conn_attr, get_complete_file_path(passfile))
 
-    if get_complete_file_path(manager.sslcert):
+    if get_complete_file_path(sslcert):
         conn_attr = " {0} sslcert='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslcert))
+            conn_attr, get_complete_file_path(sslcert))
 
-    if get_complete_file_path(manager.sslkey):
+    if get_complete_file_path(sslkey):
         conn_attr = " {0} sslkey='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslkey))
+            conn_attr, get_complete_file_path(sslkey))
 
-    if get_complete_file_path(manager.sslrootcert):
+    if get_complete_file_path(sslrootcert):
         conn_attr = " {0} sslrootcert='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslrootcert))
+            conn_attr, get_complete_file_path(sslrootcert))
 
-    if get_complete_file_path(manager.sslcrl):
+    if get_complete_file_path(sslcrl):
         conn_attr = " {0} sslcrl='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslcrl))
+            conn_attr, get_complete_file_path(sslcrl))
 
     if manager.service:
         conn_attr = " {0} service='{1}'".format(

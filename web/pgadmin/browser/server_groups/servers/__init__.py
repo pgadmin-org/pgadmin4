@@ -157,9 +157,19 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.tunnel_username = sharedserver.tunnel_username
         server.tunnel_password = sharedserver.tunnel_password
         server.save_password = sharedserver.save_password
-        server.passfile = sharedserver.passfile
+        if hasattr(server, 'connection_params') and \
+            hasattr(sharedserver, 'connection_params') and \
+            'passfile' in server.connection_params and \
+                'passfile' in sharedserver.connection_params:
+            server.connection_params['passfile'] = \
+                sharedserver.connection_params['passfile']
         server.servergroup_id = sharedserver.servergroup_id
-        server.sslcert = sharedserver.sslcert
+        if hasattr(server, 'connection_params') and \
+            hasattr(sharedserver, 'connection_params') and \
+            'sslcert' in server.connection_params and \
+                'sslcert' in sharedserver.connection_params:
+            server.connection_params['sslcert'] = \
+                sharedserver.connection_params['sslcert']
         server.username = sharedserver.username
         server.server_owner = sharedserver.server_owner
         server.password = sharedserver.password
@@ -346,29 +356,23 @@ class ServerModule(sg.ServerGroupPluginModule):
                 servergroup_id=gid,
                 name=data.name,
                 host=data.host,
-                hostaddr=data.hostaddr,
                 port=data.port,
                 maintenance_db=data.maintenance_db,
                 username=None,
                 save_password=0,
-                ssl_mode=data.ssl_mode,
                 comment=None,
                 role=data.role,
-                sslcert=None,
-                sslkey=None,
-                sslrootcert=None,
-                sslcrl=None,
                 bgcolor=data.bgcolor if data.bgcolor else None,
                 fgcolor=data.fgcolor if data.fgcolor else None,
                 service=data.service if data.service else None,
-                connect_timeout=0,
                 use_ssh_tunnel=data.use_ssh_tunnel,
                 tunnel_host=data.tunnel_host,
                 tunnel_port=22,
                 tunnel_username=None,
                 tunnel_authentication=0,
                 tunnel_identity_file=None,
-                shared=True
+                shared=True,
+                connection_params=data.connection_params
             )
             db.session.add(shared_server)
             db.session.commit()
@@ -486,10 +490,52 @@ class ServerNode(PGChildNodeView):
                     )
                     data[field] = dummy_ssl_file
                     # For Desktop mode, we will allow to default
-                else:
-                    data[field] = None
 
         return flag, data
+
+    def convert_connection_parameter(self, params):
+        """
+        This function is used to convert the connection parameter based
+        on the instance type.
+        """
+        conn_params = None
+        # if params is of type list then it is coming from the frontend,
+        # and we have to convert it into the dict and store it into the
+        # database
+        if isinstance(params, list):
+            conn_params = {}
+            for item in params:
+                conn_params[item['name']] = item['value']
+        # if params is of type dict then it is coming from the database,
+        # and we have to convert it into the list of params to show on GUI.
+        elif isinstance(params, dict):
+            conn_params = []
+            for key, value in params.items():
+                if value is not None:
+                    conn_params.append(
+                        {'name': key, 'keyword': key, 'value': value})
+
+        return conn_params
+
+    def update_connection_parameter(self, data, server):
+        """
+        This function is used to update the connection parameters.
+        """
+        if 'connection_params' in data and \
+                hasattr(server, 'connection_params'):
+            existing_conn_params = getattr(server, 'connection_params')
+            new_conn_params = data['connection_params']
+            if 'deleted' in new_conn_params:
+                for item in new_conn_params['deleted']:
+                    del existing_conn_params[item['name']]
+            if 'added' in new_conn_params:
+                for item in new_conn_params['added']:
+                    existing_conn_params[item['name']] = item['value']
+            if 'changed' in new_conn_params:
+                for item in new_conn_params['changed']:
+                    existing_conn_params[item['name']] = item['value']
+
+            data['connection_params'] = existing_conn_params
 
     @login_required
     def nodes(self, gid):
@@ -701,27 +747,18 @@ class ServerNode(PGChildNodeView):
         config_param_map = {
             'name': 'name',
             'host': 'host',
-            'hostaddr': 'hostaddr',
             'port': 'port',
             'db': 'maintenance_db',
             'username': 'username',
-            'sslmode': 'ssl_mode',
             'gid': 'servergroup_id',
             'comment': 'comment',
             'role': 'role',
             'db_res': 'db_res',
-            'passfile': 'passfile',
             'passexec_cmd': 'passexec_cmd',
             'passexec_expiration': 'passexec_expiration',
-            'sslcert': 'sslcert',
-            'sslkey': 'sslkey',
-            'sslrootcert': 'sslrootcert',
-            'sslcrl': 'sslcrl',
-            'sslcompression': 'sslcompression',
             'bgcolor': 'bgcolor',
             'fgcolor': 'fgcolor',
             'service': 'service',
-            'connect_timeout': 'connect_timeout',
             'use_ssh_tunnel': 'use_ssh_tunnel',
             'tunnel_host': 'tunnel_host',
             'tunnel_port': 'tunnel_port',
@@ -730,15 +767,14 @@ class ServerNode(PGChildNodeView):
             'tunnel_identity_file': 'tunnel_identity_file',
             'shared': 'shared',
             'kerberos_conn': 'kerberos_conn',
+            'connection_params': 'connection_params'
         }
 
         disp_lbl = {
             'name': gettext('name'),
-            'hostaddr': gettext('Host name/address'),
             'port': gettext('Port'),
             'db': gettext('Maintenance database'),
             'username': gettext('Username'),
-            'sslmode': gettext('SSL Mode'),
             'comment': gettext('Comments'),
             'role': gettext('Role')
         }
@@ -750,12 +786,16 @@ class ServerNode(PGChildNodeView):
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
 
-        hostaddr = data.get('hostaddr')
-        if hostaddr and not is_valid_ipaddress(hostaddr):
+        # Update connection parameter if any.
+        self.update_connection_parameter(data, server)
+
+        if 'connection_params' in data and \
+            'hostaddr' in data['connection_params'] and \
+                not is_valid_ipaddress(data['connection_params']['hostaddr']):
             return make_json_response(
                 success=0,
                 status=400,
-                errormsg=gettext('Host address not valid')
+                errormsg=gettext('Not a valid Host address')
             )
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -849,8 +889,7 @@ class ServerNode(PGChildNodeView):
 
         if connected:
             for arg in (
-                    'hostaddr', 'db', 'sslmode',
-                    'role', 'service'
+                    'db', 'role', 'service'
             ):
                 if arg in data:
                     return forbidden(
@@ -911,10 +950,6 @@ class ServerNode(PGChildNodeView):
     def properties(self, gid, sid):
         """Return list of attributes of a server"""
 
-        sslcert = None
-        sslkey = None
-        sslrootcert = None
-        sslcrl = None
         server = Server.query.filter_by(
             id=sid).first()
 
@@ -941,19 +976,13 @@ class ServerNode(PGChildNodeView):
                                                                shared_server)
             server_owner = server.server_owner
 
-        is_ssl = True if server.ssl_mode in self.SSL_MODES else False
-
-        if is_ssl:
-            sslcert = server.sslcert
-            sslkey = server.sslkey
-            sslrootcert = server.sslrootcert
-            sslcrl = server.sslcrl
-
         use_ssh_tunnel = 0
         tunnel_host = None
         tunnel_port = 22
         tunnel_username = None
         tunnel_authentication = 0
+        connection_params = \
+            self.convert_connection_parameter(server.connection_params)
 
         if server.use_ssh_tunnel:
             use_ssh_tunnel = server.use_ssh_tunnel
@@ -968,7 +997,6 @@ class ServerNode(PGChildNodeView):
             'server_owner': server_owner,
             'user_id': server.user_id,
             'host': server.host,
-            'hostaddr': server.hostaddr,
             'port': server.port,
             'db': server.maintenance_db,
             'shared': server.shared if config.SERVER_MODE else None,
@@ -979,26 +1007,16 @@ class ServerNode(PGChildNodeView):
             'role': server.role,
             'connected': connected,
             'version': manager.ver,
-            'sslmode': server.ssl_mode,
             'server_type': manager.server_type if connected else 'pg',
             'bgcolor': server.bgcolor,
             'fgcolor': server.fgcolor,
             'db_res': server.db_res.split(',') if server.db_res else None,
-            'passfile': server.passfile if server.passfile else None,
             'passexec_cmd':
                 server.passexec_cmd if server.passexec_cmd else None,
             'passexec_expiration':
                 server.passexec_expiration if server.passexec_expiration
                 else None,
-            'sslcert': sslcert,
-            'sslkey': sslkey,
-            'sslrootcert': sslrootcert,
-            'sslcrl': sslcrl,
-            'sslcompression': True if is_ssl and server.sslcompression
-            else False,
             'service': server.service if server.service else None,
-            'connect_timeout':
-                server.connect_timeout if server.connect_timeout else 0,
             'use_ssh_tunnel': use_ssh_tunnel,
             'tunnel_host': tunnel_host,
             'tunnel_port': tunnel_port,
@@ -1009,7 +1027,9 @@ class ServerNode(PGChildNodeView):
             'kerberos_conn': bool(server.kerberos_conn),
             'gss_authenticated': manager.gss_authenticated,
             'gss_encrypted': manager.gss_encrypted,
-            'cloud_status': server.cloud_status
+            'cloud_status': server.cloud_status,
+            'connection_params': connection_params,
+            'connection_string': manager.connection_string
         }
 
         return ajax_response(response)
@@ -1017,11 +1037,7 @@ class ServerNode(PGChildNodeView):
     @login_required
     def create(self, gid):
         """Add a server node to the settings database"""
-        required_args = [
-            'name',
-            'db',
-            'sslmode',
-        ]
+        required_args = ['name', 'db']
 
         data = request.form if request.form else json.loads(
             request.data, encoding='utf-8'
@@ -1057,8 +1073,11 @@ class ServerNode(PGChildNodeView):
                     ).format(arg)
                 )
 
-        hostaddr = data.get('hostaddr')
-        if hostaddr and not is_valid_ipaddress(data['hostaddr']):
+        connection_params = self.convert_connection_parameter(
+            data.get('connection_params', []))
+
+        if 'hostaddr' in connection_params and \
+                not is_valid_ipaddress(connection_params['hostaddr']):
             return make_json_response(
                 success=0,
                 status=400,
@@ -1066,7 +1085,10 @@ class ServerNode(PGChildNodeView):
             )
 
         # To check ssl configuration
-        is_ssl, data = self.check_ssl_fields(data)
+        is_ssl, connection_params = self.check_ssl_fields(connection_params)
+        # set the connection params again in the data
+        if 'connection_params' in data:
+            data['connection_params'] = connection_params
 
         server = None
 
@@ -1076,26 +1098,18 @@ class ServerNode(PGChildNodeView):
                 servergroup_id=data.get('gid', gid),
                 name=data.get('name'),
                 host=data.get('host', None),
-                hostaddr=hostaddr,
                 port=data.get('port'),
                 maintenance_db=data.get('db', None),
                 username=data.get('username'),
                 save_password=1 if data.get('save_password', False) and
                 config.ALLOW_SAVE_PASSWORD else 0,
-                ssl_mode=data.get('sslmode'),
                 comment=data.get('comment', None),
                 role=data.get('role', None),
                 db_res=','.join(data['db_res'])
                 if 'db_res' in data else None,
-                sslcert=data.get('sslcert', None),
-                sslkey=data.get('sslkey', None),
-                sslrootcert=data.get('sslrootcert', None),
-                sslcrl=data.get('sslcrl', None),
-                sslcompression=1 if is_ssl and data['sslcompression'] else 0,
                 bgcolor=data.get('bgcolor', None),
                 fgcolor=data.get('fgcolor', None),
                 service=data.get('service', None),
-                connect_timeout=data.get('connect_timeout', 0),
                 use_ssh_tunnel=1 if data.get('use_ssh_tunnel', False) else 0,
                 tunnel_host=data.get('tunnel_host', None),
                 tunnel_port=data.get('tunnel_port', 22),
@@ -1104,10 +1118,10 @@ class ServerNode(PGChildNodeView):
                                                     False) else 0,
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
                 shared=data.get('shared', None),
-                passfile=data.get('passfile', None),
                 passexec_cmd=data.get('passexec_cmd', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
+                connection_params=connection_params
             )
             db.session.add(server)
             db.session.commit()
@@ -1131,10 +1145,9 @@ class ServerNode(PGChildNodeView):
                     have_password = True
                     password = data['password']
                     password = encrypt(password, crypt_key)
-                elif 'passfile' in data and data["passfile"] != '':
+                elif 'passfile' in data['connection_params'] and \
+                        data['connection_params']['passfile'] != '':
                     passfile = data['passfile']
-                    setattr(server, 'passfile', passfile)
-                    db.session.commit()
 
                 if 'tunnel_password' in data and data["tunnel_password"] != '':
                     have_tunnel_password = True
@@ -1391,14 +1404,20 @@ class ServerNode(PGChildNodeView):
                     return internal_server_error(errormsg=str(e))
         if 'password' not in data and (server.kerberos_conn is False or
                                        server.kerberos_conn is None):
+
+            passfile_param = None
+            if hasattr(server, 'connection_params') and \
+                    'passfile' in server.connection_params:
+                passfile_param = server.connection_params['passfile']
+
             conn_passwd = getattr(conn, 'password', None)
             if conn_passwd is None and not server.save_password and \
-                    server.passfile is None and \
+                    passfile_param is None and \
                     server.passexec_cmd is None and \
                     server.service is None:
                 prompt_password = True
-            elif server.passfile and server.passfile != '':
-                passfile = server.passfile
+            elif passfile_param and passfile_param != '':
+                passfile = passfile_param
             else:
                 password = conn_passwd or server.password
         else:
@@ -1657,8 +1676,11 @@ class ServerNode(PGChildNodeView):
             # If there is no password found for the server
             # then check for pgpass file
             if not server.password and not manager.password and \
-                    server.passfile and manager.passfile and \
-                    server.passfile == manager.passfile:
+                hasattr(server, 'connection_params') and \
+                'passfile' in server.connection_params and \
+                manager.get_connection_param_value('passfile') and \
+                server.connection_params['passfile'] == \
+                    manager.get_connection_param_value('passfile'):
                 is_passfile = True
 
             # Check for password only if there is no pgpass file used
@@ -1859,8 +1881,11 @@ class ServerNode(PGChildNodeView):
                 )
 
             if (not server.password or not manager.password) and \
-                server.passfile and manager.passfile and \
-                    server.passfile == manager.passfile:
+                hasattr(server, 'connection_params') and \
+                'passfile' in server.connection_params and \
+                manager.get_connection_param_value('passfile') and \
+                server.connection_params['passfile'] == \
+                    manager.get_connection_param_value('passfile'):
                 is_pgpass = True
             return make_json_response(
                 success=1,

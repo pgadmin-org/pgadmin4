@@ -20,11 +20,11 @@ def create_server(server, SERVER_GROUP):
             server['shared'] = False
         server_details = (1, SERVER_GROUP, server['name'], server['host'],
                           server['port'], server['db'], server['username'],
-                          server['role'], server['sslmode'], server['comment'],
+                          server['role'], server['comment'],
                           server['shared'])
         cur.execute('INSERT INTO server (user_id, servergroup_id, name, host, '
-                    'port, maintenance_db, username, role, ssl_mode,'
-                    ' comment, shared) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+                    'port, maintenance_db, username, role,'
+                    ' comment, shared) VALUES (?,?,?,?,?,?,?,?,?,?)',
                     server_details)
         server_id = cur.lastrowid
         conn.commit()
