@@ -192,6 +192,9 @@ ALLOWED_HOSTS = []
 # Hashing algorithm used for password storage
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
 
+# Minimum password length
+SECURITY_PASSWORD_LENGTH_MIN = 6
+
 # Reverse Proxy parameters
 # You must tell the middleware how many proxies set each header
 # so it knows what values to trust.
