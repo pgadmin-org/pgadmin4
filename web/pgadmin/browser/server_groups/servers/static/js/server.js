@@ -786,6 +786,10 @@ define('pgadmin.node.server', [
             if(data.errmsg) {
               Notify.error(data.errmsg);
             }
+            // Generate the event that server is connected
+            pgBrowser.Events.trigger(
+              'pgadmin:server:connected', data._id, item, data
+            );
           }
         })
         .fail(function(xhr, status, error) {

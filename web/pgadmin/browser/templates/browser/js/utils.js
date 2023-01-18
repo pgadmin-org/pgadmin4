@@ -66,6 +66,9 @@ define('pgadmin.browser.utils',
   /* GET the pgadmin server's locale */
   pgAdmin['pgadmin_server_locale'] =  '{{pgadmin_server_locale}}';
 
+   /* Server Heartbeat Timeout */
+  pgAdmin['heartbeat_timeout'] =  '{{heartbeat_timeout}}';
+
   // Define list of nodes on which Query tool option doesn't appears
   let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',
