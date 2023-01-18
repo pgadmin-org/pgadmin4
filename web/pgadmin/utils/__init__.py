@@ -574,8 +574,10 @@ def load_database_servers(input_file, selected_servers,
 
     # generate full path of file
     try:
-        file_path = filename_with_file_manager_path(
-            unquote(input_file), skip_permission_check=from_setup)
+        if from_setup:
+            file_path = unquote(input_file)
+        else:
+            file_path = filename_with_file_manager_path(unquote(input_file))
     except Exception as e:
         return _handle_error(str(e), from_setup)
 
