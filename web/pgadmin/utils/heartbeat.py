@@ -36,7 +36,8 @@ def log_server_heartbeat(data):
     setattr(current_app, '_pgadmin_server_heartbeat', _server_heartbeat)
 
     current_app.logger.debug(
-        "Heartbeat logged for the server id : %s" % data['sid'])
+        "Heartbeat logged for the session id##server id: {0}##{1}".format(
+            session.sid, data['sid']))
 
 
 def get_server_heartbeat(server_id):
@@ -49,7 +50,7 @@ def get_server_heartbeat(server_id):
         return None
 
 
-class startServerHeartbeatTimer():
+class ServerHeartbeatTimer():
     def __init__(self, sec, _app):
         def func_wrapper():
             self.t = threading.Timer(sec, func_wrapper)
@@ -74,18 +75,27 @@ class startServerHeartbeatTimer():
                         # Wait for 4 times then the timeout
                         if diff.total_seconds() > (
                                 config.SERVER_HEARTBEAT_TIMEOUT * 4):
-                            server_conn = _server_heartbeat[sess_id
-                                                            ][sid]['conn']
-                            for d in server_conn:
-                                server_conn[d]._release()
-                                current_app.logger.debug(
-                                    "Heartbeat not received. Released"
-                                    " connection for the server id : %s" % sid)
+                            self._release_connections(
+                                _server_heartbeat[sess_id][sid]['conn'],
+                                sess_id, sid)
                             _server_heartbeat[sess_id].pop(sid)
                             if len(_server_heartbeat[sess_id]) == 0:
                                 _server_heartbeat.pop(sess_id)
                 setattr(self._app, '_pgadmin_server_heartbeat',
                         _server_heartbeat)
+
+    @staticmethod
+    def _release_connections(server_conn, sess_id, sid):
+        for d in server_conn:
+            # Release the connection
+            server_conn[d]._release()
+            # Reconnect on the reload
+            server_conn[d].wasConnected = True
+            current_app.logger.debug(
+                "Heartbeat not received. Released "
+                "connection for the session "
+                "id##server id: {0}##{1}".format(
+                    sess_id, sid))
 
     def cancel(self):
         self.t.cancel()
@@ -93,5 +103,5 @@ class startServerHeartbeatTimer():
 
 def init_app(app):
     setattr(app, '_pgadmin_server_heartbeat', {})
-    startServerHeartbeatTimer(sec=config.SERVER_HEARTBEAT_TIMEOUT,
-                              _app=app)
+    ServerHeartbeatTimer(sec=config.SERVER_HEARTBEAT_TIMEOUT,
+                         _app=app)
