@@ -24,4 +24,6 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5567 <https://github.com/pgadmin-org/pgadmin4/issues/5567>`_ -  Fix orphan database connections resulting in an inability to connect to databases.
   | `Issue #5705 <https://github.com/pgadmin-org/pgadmin4/issues/5705>`_ -  Ensure that all parts of the application recommend and enforce the same length of passwords.
+  | `Issue #5751 <https://github.com/pgadmin-org/pgadmin4/issues/5751>`_ -  Fix failing import servers CLI due to vulnerability fix.
