@@ -15,6 +15,7 @@ import Notify, {initializeModalProvider, initializeNotifier} from '../../../stat
 import { checkMasterPassword } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
 import { Search } from './quick_search/trigger_search';
+import { send_heartbeat } from './heartbeat';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery',
@@ -580,6 +581,10 @@ define('pgadmin.browser', [
           .done(function() {/*This is intentional (SonarQube)*/})
           .fail(function() {/*This is intentional (SonarQube)*/});
       }, 300000);
+
+      obj.Events.on(
+        'pgadmin:server:connected', send_heartbeat.bind(obj)
+      );
 
       obj.set_master_password('');
       obj.check_corrupted_db_file();

@@ -37,7 +37,7 @@ from jinja2 import select_autoescape
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin.utils import PgAdminModule, driver, KeyManager
+from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -48,6 +48,7 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
 from pgadmin.utils.constants import KERBEROS, OAUTH2, INTERNAL, LDAP, WEBSERVER
+
 
 # Explicitly set the mime-types so that a corrupted windows registry will not
 # affect pgAdmin 4 to be load properly. This will avoid the issues that may
@@ -541,6 +542,7 @@ def create_app(app_name=None):
     ##########################################################################
     driver.init_app(app)
     authenticate.init_app(app)
+    heartbeat.init_app(app)
 
     ##########################################################################
     # Register language to the preferences after login

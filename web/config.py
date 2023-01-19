@@ -837,6 +837,13 @@ ENABLE_BINARY_PATH_BROWSING = False
 #############################################################################
 AUTO_DISCOVER_SERVERS = True
 
+#############################################################################
+# SERVER_HEARTBEAT_TIMEOUT is used to send the server heartbeat to server
+# from the client. This will resolve the orphan database issue once
+# browser tab is closed.
+#############################################################################
+SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
+
 ##########################################################################
 # Local config settings
 ##########################################################################

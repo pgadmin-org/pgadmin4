@@ -30,7 +30,5 @@ def init_app(app):
 
 
 def ping():
-    drivers = getattr(current_app, '_pgadmin_server_drivers', None)
-
-    for type in drivers:
-        drivers[type].gc_timeout()
+    for type in DriverRegistry._registry:
+        DriverRegistry._objects[type].gc_timeout()

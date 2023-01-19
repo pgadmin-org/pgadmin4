@@ -19,6 +19,7 @@ from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 from pgadmin.utils.constants import MIMETYPE_APP_JS, UTILITIES_ARRAY
 from pgadmin.utils.ajax import precondition_required, make_json_response
+from pgadmin.utils.heartbeat import log_server_heartbeat, get_server_heartbeat
 import config
 import subprocess
 import os
@@ -93,7 +94,8 @@ class MiscModule(PgAdminModule):
             list: a list of url endpoints exposed to the client.
         """
         return ['misc.ping', 'misc.index', 'misc.cleanup',
-                'misc.validate_binary_path']
+                'misc.validate_binary_path', 'misc.heartbeat',
+                'misc.get_heartbeat']
 
     def register(self, app, options):
         """
@@ -154,6 +156,29 @@ def cleanup():
     # Cleanup session files.
     cleanup_session_files()
     return ""
+
+
+@blueprint.route("/heartbeat", methods=['POST'])
+@pgCSRFProtect.exempt
+def heartbeat():
+    data = None
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    log_server_heartbeat(data)
+    return make_json_response(data=gettext('Heartbeat logged successfully.'),
+                              status=200)
+
+
+@blueprint.route("/get_heartbeat/<int:sid>", methods=['GET'])
+@pgCSRFProtect.exempt
+def get_heartbeat(sid):
+    heartbeat_data = get_server_heartbeat(sid)
+    return make_json_response(data=heartbeat_data,
+                              status=200)
 
 
 @blueprint.route("/explain/explain.js")
