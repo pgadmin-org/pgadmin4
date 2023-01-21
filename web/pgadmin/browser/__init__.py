@@ -627,7 +627,8 @@ def utils():
             login_url=login_url,
             username=current_user.username,
             auth_source=auth_source,
-            heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT
+            heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
+            password_length_min=config.PASSWORD_LENGTH_MIN
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 
