@@ -86,6 +86,7 @@ def upgrade():
     migrate_connection_params('server')
     migrate_connection_params('sharedserver')
 
+    # Increasing the length of the value column of the setting table.
     with op.batch_alter_table("setting") as batch_op:
         batch_op.alter_column('value',
                               existing_type=sa.String(length=1024),

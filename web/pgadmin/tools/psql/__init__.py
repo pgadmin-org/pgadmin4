@@ -377,77 +377,17 @@ def get_connection_str(psql_utility, db, manager):
     :param db: database name to connect specific db.
     :return: connection attribute list for PSQL connection.
     """
-    conn_attr = get_conn_str_win(manager, db)
+    manager.export_password_env('PGPASSWORD')
+    db = db.replace('"', '\\"')
+    db = db.replace("'", "\\'")
+    database = db if db != '' else 'postgres'
+    user = underscore_unescape(manager.user) if manager.user else 'postgres'
+    conn_attr = manager.create_connection_string(database, user)
+
     conn_attr_list = list()
     conn_attr_list.append(psql_utility)
     conn_attr_list.append(conn_attr)
     return conn_attr_list
-
-
-def get_conn_str_win(manager, db):
-    """
-    Get connection attributes for psql connection.
-    :param manager:
-    :param db:
-    :return:
-    """
-    manager.export_password_env('PGPASSWORD')
-    db = db.replace('"', '\\"')
-    db = db.replace("'", "\\'")
-
-    hostaddr = manager.get_connection_param_value('hostaddr')
-    sslmode = manager.get_connection_param_value('sslmode')
-    sslcert = manager.get_connection_param_value('sslcert')
-    sslkey = manager.get_connection_param_value('sslkey')
-    sslrootcert = manager.get_connection_param_value('sslrootcert')
-    sslcrl = manager.get_connection_param_value('sslcrl')
-    sslcompression = False \
-        if manager.get_connection_param_value('sslcompression') is None else \
-        True
-    passfile = manager.get_connection_param_value('passfile')
-
-    conn_attr =\
-        'host=\'{0}\' port=\'{1}\' dbname=\'{2}\' user=\'{3}\' ' \
-        'sslmode=\'{4}\' sslcompression=\'{5}\' ' \
-        ''.format(
-            manager.local_bind_host if manager.use_ssh_tunnel else
-            manager.host,
-            manager.local_bind_port if manager.use_ssh_tunnel else
-            manager.port,
-            db if db != '' else 'postgres',
-            underscore_unescape(manager.user) if manager.user else 'postgres',
-            sslmode,
-            sslcompression,
-        )
-
-    if hostaddr:
-        conn_attr = " {0} hostaddr='{1}'".format(conn_attr, hostaddr)
-
-    if passfile:
-        conn_attr = " {0} passfile='{1}'".format(
-            conn_attr, get_complete_file_path(passfile))
-
-    if get_complete_file_path(sslcert):
-        conn_attr = " {0} sslcert='{1}'".format(
-            conn_attr, get_complete_file_path(sslcert))
-
-    if get_complete_file_path(sslkey):
-        conn_attr = " {0} sslkey='{1}'".format(
-            conn_attr, get_complete_file_path(sslkey))
-
-    if get_complete_file_path(sslrootcert):
-        conn_attr = " {0} sslrootcert='{1}'".format(
-            conn_attr, get_complete_file_path(sslrootcert))
-
-    if get_complete_file_path(sslcrl):
-        conn_attr = " {0} sslcrl='{1}'".format(
-            conn_attr, get_complete_file_path(sslcrl))
-
-    if manager.service:
-        conn_attr = " {0} service='{1}'".format(
-            conn_attr, get_complete_file_path(manager.service))
-
-    return conn_attr
 
 
 def enter_key_press(data):

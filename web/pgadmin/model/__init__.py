@@ -75,6 +75,8 @@ class PgAdminDbBinaryString(types.TypeDecorator):
 
 class PgAdminJSONString(types.TypeDecorator):
     """
+    This function is used to return a string representing a json object from
+    an object and vise versa.
     """
 
     impl = types.String

@@ -76,11 +76,11 @@ export default class VariableSchema extends BaseUISchema {
   getPlaceHolderMsg(variable) {
     let msg = '';
     if (variable?.min_server_version && variable?.max_server_version) {
-      msg = gettext(variable?.max_server_version + ' <= Supported version >= ' + variable?.min_server_version );
+      msg = gettext('%s <= Supported version >= %s', variable?.max_server_version, variable?.min_server_version);
     } else if (variable?.min_server_version) {
-      msg = gettext('Supported version >= ' + variable?.min_server_version);
+      msg = gettext('Supported version >= %s', variable?.min_server_version);
     } else if (variable?.max_server_version) {
-      msg = gettext('Supported version <= ' + variable?.max_server_version);
+      msg = gettext('Supported version <= %s', variable?.max_server_version);
     }
 
     return msg;
