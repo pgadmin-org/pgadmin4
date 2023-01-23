@@ -254,8 +254,6 @@ class Connection(BaseConnection):
             else:
                 return True, None
 
-        pg_conn = None
-        passfile = None
         manager = self.manager
         crypt_key_present, crypt_key = get_crypt_key()
 
@@ -299,7 +297,7 @@ class Connection(BaseConnection):
         # we will check for pgpass file availability from connection manager
         # if it's present then we will use it
         if not password and not encpass and not passfile:
-            passfile = manager.passfile if manager.passfile else None
+            passfile = manager.get_connection_param_value('passfile')
             if manager.passexec:
                 password = manager.passexec.get()
 
@@ -315,8 +313,10 @@ class Connection(BaseConnection):
             os.environ['PGAPPNAME'] = '{0} - {1}'.format(
                 config.APP_NAME, conn_id)
 
-            ssl_key = get_complete_file_path(manager.sslkey)
-            if ssl_key and manager.ssl_mode in \
+            ssl_key = get_complete_file_path(
+                manager.get_connection_param_value('sslkey'))
+            sslmode = manager.get_connection_param_value('sslmode')
+            if ssl_key and sslmode in \
                     ['require', 'verify-ca', 'verify-full']:
                 ssl_key_file_permission = \
                     int(oct(os.stat(ssl_key).st_mode)[-3:])
@@ -324,27 +324,12 @@ class Connection(BaseConnection):
                     os.chmod(ssl_key, 0o600)
 
             with ConnectionLocker(manager.kerberos_conn):
-                pg_conn = psycopg2.connect(
-                    host=manager.local_bind_host if manager.use_ssh_tunnel
-                    else manager.host,
-                    hostaddr=manager.local_bind_host if manager.use_ssh_tunnel
-                    else manager.hostaddr,
-                    port=manager.local_bind_port if manager.use_ssh_tunnel
-                    else manager.port,
-                    database=database,
-                    user=user,
-                    password=password,
-                    async_=self.async_,
-                    passfile=get_complete_file_path(passfile),
-                    sslmode=manager.ssl_mode,
-                    sslcert=get_complete_file_path(manager.sslcert),
-                    sslkey=ssl_key,
-                    sslrootcert=get_complete_file_path(manager.sslrootcert),
-                    sslcrl=get_complete_file_path(manager.sslcrl),
-                    sslcompression=True if manager.sslcompression else False,
-                    service=manager.service,
-                    connect_timeout=manager.connect_timeout
-                )
+                # Create the connection string
+                connection_string = manager.create_connection_string(
+                    database, user, password)
+
+                pg_conn = psycopg2.connect(connection_string,
+                                           async_=self.async_)
 
                 # If connection is asynchronous then we will have to wait
                 # until the connection is ready to use.
@@ -1413,7 +1398,6 @@ WHERE db.datname = current_database()""")
     def reset(self):
         if self.conn and self.conn.closed:
             self.conn = None
-        pg_conn = None
         manager = self.manager
 
         is_return, return_value, password = self._decrypt_password(manager)
@@ -1422,26 +1406,11 @@ WHERE db.datname = current_database()""")
 
         try:
             with ConnectionLocker(manager.kerberos_conn):
-                pg_conn = psycopg2.connect(
-                    host=manager.local_bind_host if manager.use_ssh_tunnel
-                    else manager.host,
-                    hostaddr=manager.local_bind_host if manager.use_ssh_tunnel
-                    else manager.hostaddr,
-                    port=manager.local_bind_port if manager.use_ssh_tunnel
-                    else manager.port,
-                    database=self.db,
-                    user=manager.user,
-                    password=password,
-                    passfile=get_complete_file_path(manager.passfile),
-                    sslmode=manager.ssl_mode,
-                    sslcert=get_complete_file_path(manager.sslcert),
-                    sslkey=get_complete_file_path(manager.sslkey),
-                    sslrootcert=get_complete_file_path(manager.sslrootcert),
-                    sslcrl=get_complete_file_path(manager.sslcrl),
-                    sslcompression=True if manager.sslcompression else False,
-                    service=manager.service,
-                    connect_timeout=manager.connect_timeout
-                )
+                # Create the connection string
+                connection_string = manager.create_connection_string(
+                    self.db, manager.user, password)
+
+                pg_conn = psycopg2.connect(connection_string)
 
         except psycopg2.Error as e:
             if e.pgerror:
@@ -1725,30 +1694,12 @@ Failed to reset the connection to the server due to following error:
 
             try:
                 with ConnectionLocker(self.manager.kerberos_conn):
-                    pg_conn = psycopg2.connect(
-                        host=self.manager.local_bind_host if
-                        self.manager.use_ssh_tunnel else self.manager.host,
-                        hostaddr=self.manager.local_bind_host if
-                        self.manager.use_ssh_tunnel else
-                        self.manager.hostaddr,
-                        port=self.manager.local_bind_port if
-                        self.manager.use_ssh_tunnel else self.manager.port,
-                        database=self.db,
-                        user=self.manager.user,
-                        password=password,
-                        passfile=get_complete_file_path(self.manager.passfile),
-                        sslmode=self.manager.ssl_mode,
-                        sslcert=get_complete_file_path(self.manager.sslcert),
-                        sslkey=get_complete_file_path(self.manager.sslkey),
-                        sslrootcert=get_complete_file_path(
-                            self.manager.sslrootcert
-                        ),
-                        sslcrl=get_complete_file_path(self.manager.sslcrl),
-                        sslcompression=True if self.manager.sslcompression
-                        else False,
-                        service=self.manager.service,
-                        connect_timeout=self.manager.connect_timeout
-                    )
+                    # Create the connection string
+                    connection_string = \
+                        self.manager.create_connection_string(
+                            self.db, self.manager.user, password)
+
+                    pg_conn = psycopg2.connect(connection_string)
 
                 # Get the cursor and run the query
                 cur = pg_conn.cursor()
@@ -1756,7 +1707,6 @@ Failed to reset the connection to the server due to following error:
 
                 # Close the connection
                 pg_conn.close()
-                pg_conn = None
 
             except psycopg2.Error as e:
                 status = False

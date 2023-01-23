@@ -608,7 +608,8 @@ def create_app(app_name=None):
                          port=port,
                          maintenance_db='postgres',
                          username=superuser,
-                         ssl_mode='prefer',
+                         connection_params={'sslmode': 'prefer',
+                                            'connect_timeout': 10},
                          comment=comment,
                          discovery_id=discovery_id)
 

@@ -441,31 +441,26 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "Name", server.name)
             add_value(attr_dict, "Group", group_name)
             add_value(attr_dict, "Host", server.host)
-            add_value(attr_dict, "HostAddr", server.hostaddr)
             add_value(attr_dict, "Port", server.port)
             add_value(attr_dict, "MaintenanceDB", server.maintenance_db)
             add_value(attr_dict, "Username", server.username)
             add_value(attr_dict, "Role", server.role)
-            add_value(attr_dict, "SSLMode", server.ssl_mode)
             add_value(attr_dict, "Comment", server.comment)
             add_value(attr_dict, "Shared", server.shared)
             add_value(attr_dict, "DBRestriction", server.db_res)
-            add_value(attr_dict, "PassFile", server.passfile)
-            add_value(attr_dict, "SSLCert", server.sslcert)
-            add_value(attr_dict, "SSLKey", server.sslkey)
-            add_value(attr_dict, "SSLRootCert", server.sslrootcert)
-            add_value(attr_dict, "SSLCrl", server.sslcrl)
-            add_value(attr_dict, "SSLCompression", server.sslcompression)
             add_value(attr_dict, "BGColor", server.bgcolor)
             add_value(attr_dict, "FGColor", server.fgcolor)
             add_value(attr_dict, "Service", server.service)
-            add_value(attr_dict, "Timeout", server.connect_timeout)
             add_value(attr_dict, "UseSSHTunnel", server.use_ssh_tunnel)
             add_value(attr_dict, "TunnelHost", server.tunnel_host)
             add_value(attr_dict, "TunnelPort", server.tunnel_port)
             add_value(attr_dict, "TunnelUsername", server.tunnel_username)
             add_value(attr_dict, "TunnelAuthentication",
                       server.tunnel_authentication)
+            add_value(attr_dict, "KerberosAuthentication",
+                      server.kerberos_conn),
+            add_value(attr_dict, "ConnectionParameters",
+                      server.connection_params)
 
             servers_dumped = servers_dumped + 1
 
@@ -549,14 +544,12 @@ def validate_json_data(data, is_admin):
                     if errmsg:
                         return errmsg
 
-        for attrib in ("SSLMode", "MaintenanceDB"):
-            errmsg = check_attrib(attrib)
-            if errmsg:
-                return errmsg
+        errmsg = check_attrib("MaintenanceDB")
+        if errmsg:
+            return errmsg
 
-        if "Host" not in obj and "HostAddr" not in obj and not \
-                is_service_attrib_available:
-            return gettext("'Host', 'HostAddr' or 'Service' attribute not "
+        if "Host" not in obj and not is_service_attrib_available:
+            return gettext("'Host' or 'Service' attribute not "
                            "found for server '%s'" % server)
 
     for server in skip_servers:
@@ -639,12 +632,9 @@ def load_database_servers(input_file, selected_servers,
             new_server.name = obj["Name"]
             new_server.servergroup_id = group_id
             new_server.user_id = user_id
-            new_server.ssl_mode = obj["SSLMode"]
             new_server.maintenance_db = obj["MaintenanceDB"]
 
             new_server.host = obj.get("Host", None)
-
-            new_server.hostaddr = obj.get("HostAddr", None)
 
             new_server.port = obj.get("Port", None)
 
@@ -652,31 +642,33 @@ def load_database_servers(input_file, selected_servers,
 
             new_server.role = obj.get("Role", None)
 
-            new_server.ssl_mode = obj["SSLMode"]
-
             new_server.comment = obj.get("Comment", None)
 
             new_server.db_res = obj.get("DBRestriction", None)
 
-            new_server.passfile = obj.get("PassFile", None)
+            if 'ConnectionParameters' in obj:
+                new_server.connection_params = \
+                    obj.get("ConnectionParameters", None)
+            else:
+                # JSON file format is old before introduction of the
+                # connection parameters.
+                conn_param = dict()
+                for item in ['HostAddr', 'SSLMode', 'PassFile', 'SSLCert',
+                             'SSLKey', 'SSLRootCert', 'SSLCrl', 'Timeout',
+                             'SSLCompression']:
+                    if item in obj:
+                        key = item.lower()
+                        if item == 'Timeout':
+                            key = 'connect_timeout'
+                        conn_param[key] = obj.get(item)
 
-            new_server.sslcert = obj.get("SSLCert", None)
-
-            new_server.sslkey = obj.get("SSLKey", None)
-
-            new_server.sslrootcert = obj.get("SSLRootCert", None)
-
-            new_server.sslcrl = obj.get("SSLCrl", None)
-
-            new_server.sslcompression = obj.get("SSLCompression", None)
+                new_server.connection_params = conn_param
 
             new_server.bgcolor = obj.get("BGColor", None)
 
             new_server.fgcolor = obj.get("FGColor", None)
 
             new_server.service = obj.get("Service", None)
-
-            new_server.connect_timeout = obj.get("Timeout", None)
 
             new_server.use_ssh_tunnel = obj.get("UseSSHTunnel", None)
 
@@ -689,8 +681,9 @@ def load_database_servers(input_file, selected_servers,
             new_server.tunnel_authentication = \
                 obj.get("TunnelAuthentication", None)
 
-            new_server.shared = \
-                obj.get("Shared", None)
+            new_server.shared = obj.get("Shared", None)
+
+            new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 
             db.session.add(new_server)
 

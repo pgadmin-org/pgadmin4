@@ -74,9 +74,18 @@ describe('VariableSchema', ()=>{
     expect(schemaObj.getValueFieldProps({vartype: 'enum', enumvals: []})).toEqual(jasmine.objectContaining({
       cell: 'select',
     }));
-    expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toBe('int');
-    expect(schemaObj.getValueFieldProps({vartype: 'real'})).toBe('numeric');
-    expect(schemaObj.getValueFieldProps({vartype: 'string'})).toBe('text');
+    expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toEqual(jasmine.objectContaining({
+      cell: 'int',
+    }));
+    expect(schemaObj.getValueFieldProps({vartype: 'real'})).toEqual(jasmine.objectContaining({
+      cell: 'numeric',
+    }));
+    expect(schemaObj.getValueFieldProps({vartype: 'string'})).toEqual(jasmine.objectContaining({
+      cell: 'text',
+    }));
+    expect(schemaObj.getValueFieldProps({vartype: 'file'})).toEqual(jasmine.objectContaining({
+      cell: 'file',
+    }));
     expect(schemaObj.getValueFieldProps({})).toBe('');
   });
 

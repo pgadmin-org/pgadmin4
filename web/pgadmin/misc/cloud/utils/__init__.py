@@ -48,9 +48,8 @@ def _create_server(data):
         name=data.get('name'),
         maintenance_db=data.get('db'),
         username=data.get('username'),
-        ssl_mode='prefer',
         cloud_status=data.get('cloud_status'),
-        connect_timeout=30,
+        connection_params={'sslmode': 'prefer', 'connect_timeout': 30}
     )
 
     db.session.add(server)

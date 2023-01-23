@@ -29,6 +29,7 @@ define('pgadmin.node.server', [
       type: 'server',
       dialogHelp: url_for('help.static', {'filename': 'server_dialog.html'}),
       label: gettext('Server'),
+      width: pgBrowser.stdW.md + 'px',
       canDrop: function(node){
         let serverOwner = node.user_id;
         return !(serverOwner != current_user.id && !_.isUndefined(serverOwner));

@@ -49,6 +49,7 @@ class ServerManager():
         self.local_bind_port = None
         self.tunnel_object = None
         self.tunnel_created = False
+        self.connection_string = ''
 
         self.update(server)
 
@@ -65,7 +66,6 @@ class ServerManager():
 
         self.sid = server.id
         self.host = server.host
-        self.hostaddr = server.hostaddr
         self.port = server.port
         self.db = server.maintenance_db
         self.shared = server.shared
@@ -73,23 +73,14 @@ class ServerManager():
         self.user = server.username
         self.password = server.password
         self.role = server.role
-        self.ssl_mode = server.ssl_mode
         self.pinged = datetime.datetime.now()
         self.db_info = dict()
         self.server_types = None
         self.db_res = server.db_res
-        self.passfile = server.passfile
         self.passexec = \
             PasswordExec(server.passexec_cmd, server.passexec_expiration) \
             if server.passexec_cmd else None
-        self.sslcert = server.sslcert
-        self.sslkey = server.sslkey
-        self.sslrootcert = server.sslrootcert
-        self.sslcrl = server.sslcrl
-        self.sslcompression = True if server.sslcompression else False
         self.service = server.service
-        self.connect_timeout = \
-            server.connect_timeout if server.connect_timeout else 0
         if config.SUPPORT_SSH_TUNNEL:
             self.use_ssh_tunnel = server.use_ssh_tunnel
             self.tunnel_host = server.tunnel_host
@@ -113,6 +104,9 @@ class ServerManager():
         self.kerberos_conn = server.kerberos_conn
         self.gss_authenticated = False
         self.gss_encrypted = False
+        self.connection_params = server.connection_params
+        self.connection_string = self.create_connection_string(self.db,
+                                                               self.user)
 
         for con in self.connections:
             self.connections[con]._release()
@@ -623,3 +617,53 @@ WHERE db.oid = {0}""".format(did))
             self.local_bind_port = None
             self.tunnel_object = None
             self.tunnel_created = False
+
+    def get_connection_param_value(self, param_name):
+        """
+        This function return the value of param_name if found in the
+        connection parameter.
+        """
+        value = None
+        if self.connection_params and param_name in self.connection_params:
+            value = self.connection_params[param_name]
+
+        return value
+
+    def create_connection_string(self, database, user, password=None):
+        """
+        This function is used to create connection string based on the
+        parameters.
+        """
+        full_connection_string = \
+            'host=\'{0}\' port=\'{1}\' dbname=\'{2}\' user=\'{3}\''.format(
+                self.local_bind_host if self.use_ssh_tunnel else self.host,
+                self.local_bind_port if self.use_ssh_tunnel else self.port,
+                database, user)
+
+        # Loop through all the connection parameters set in the server dialog.
+        if self.connection_params and isinstance(self.connection_params, dict):
+            for key, value in self.connection_params.items():
+                # Getting complete file path if the key is one of the below.
+                if key in ['passfile', 'sslcert', 'sslkey', 'sslrootcert',
+                           'sslcrl', 'service', 'sslcrldir']:
+                    value = get_complete_file_path(value)
+
+                # In case of host address need to check ssh tunnel flag.
+                if key == 'hostaddr':
+                    value = self.local_bind_host if self.use_ssh_tunnel else \
+                        value
+
+                full_connection_string = \
+                    "{0} {1}='{2}'".format(full_connection_string, key, value)
+
+        # Password should not be visible into the connection string, so
+        # setting the class variable with password to 'xxxxxxx'.
+        if password:
+            self.connection_string = "{0} password='xxxxxxx'".format(
+                full_connection_string)
+
+        if password:
+            full_connection_string = "{0} password='{1}'".format(
+                full_connection_string, password)
+
+        return full_connection_string

@@ -808,13 +808,22 @@ class BatchProcess():
         """Set environment variables"""
         if server:
             # Set SSL related ENV variables
-            if server.sslcert and server.sslkey and server.sslrootcert:
+            if hasattr(server, 'connection_params') and \
+                server.connection_params and \
+                'sslcert' in server.connection_params and \
+                'sslkey' in server.connection_params and \
+                    'sslrootcert' in server.connection_params:
                 # SSL environment variables
-                sslcert = get_complete_file_path(server.sslcert)
-                sslkey = get_complete_file_path(server.sslkey)
-                sslrootcert = get_complete_file_path(server.sslrootcert)
+                sslcert = get_complete_file_path(
+                    server.connection_params['sslcert'])
+                sslkey = get_complete_file_path(
+                    server.connection_params['sslkey'])
+                sslrootcert = get_complete_file_path(
+                    server.connection_params['sslrootcert'])
 
-                self.env['PGSSLMODE'] = server.ssl_mode
+                self.env['PGSSLMODE'] = server.connection_params['sslmode'] \
+                    if hasattr(server, 'connection_params') and \
+                    'sslmode' in server.connection_params else 'prefer'
                 self.env['PGSSLCERT'] = '' if sslcert is None else sslcert
                 self.env['PGSSLKEY'] = '' if sslkey is None else sslkey
                 self.env['PGSSLROOTCERT'] = \

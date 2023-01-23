@@ -405,9 +405,10 @@ def create_backup_objects_job(sid):
         manager.export_password_env(p.id)
         # Check for connection timeout and if it is greater than 0 then
         # set the environment variable PGCONNECT_TIMEOUT.
-        if manager.connect_timeout > 0:
+        timeout = manager.get_connection_param_value('connect_timeout')
+        if timeout and timeout > 0:
             env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+            env['PGCONNECT_TIMEOUT'] = str(timeout)
             p.set_env_variables(server, env=env)
         else:
             p.set_env_variables(server)

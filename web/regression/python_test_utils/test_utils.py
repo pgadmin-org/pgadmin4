@@ -611,10 +611,10 @@ def create_server(server):
     cur = conn.cursor()
     server_details = (1, SERVER_GROUP, server['name'], server['host'],
                       server['port'], server['db'], server['username'],
-                      server['role'], server['sslmode'], server['comment'])
+                      server['role'], server['comment'])
     cur.execute('INSERT INTO server (user_id, servergroup_id, name, host, '
-                'port, maintenance_db, username, role, ssl_mode,'
-                ' comment) VALUES (?,?,?,?,?,?,?,?,?,?)', server_details)
+                'port, maintenance_db, username, role,'
+                ' comment) VALUES (?,?,?,?,?,?,?,?,?)', server_details)
     server_id = cur.lastrowid
     conn.commit()
     conn.close()
@@ -776,7 +776,7 @@ def get_db_server(sid):
     cur = conn.cursor()
     server = cur.execute(
         'SELECT name, host, port, maintenance_db,'
-        ' username, ssl_mode FROM server where id=%s' % sid
+        ' username FROM server where id=%s' % sid
     )
     server = server.fetchone()
     if server:
@@ -785,14 +785,13 @@ def get_db_server(sid):
         db_port = server[2]
         db_name = server[3]
         username = server[4]
-        ssl_mode = server[5]
         config_servers = test_setup.config_data['server_credentials']
         # Get the db password from config file for appropriate server
         db_password = get_db_password(config_servers, name, host, db_port)
         if db_password:
             # Drop database
             connection = get_db_connection(
-                db_name, username, db_password, host, db_port, ssl_mode
+                db_name, username, db_password, host, db_port
             )
     conn.close()
     return connection
