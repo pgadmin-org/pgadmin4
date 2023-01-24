@@ -49,7 +49,7 @@ class ServerManager():
         self.local_bind_port = None
         self.tunnel_object = None
         self.tunnel_created = False
-        self.connection_string = ''
+        self.display_connection_string = ''
 
         self.update(server)
 
@@ -105,8 +105,7 @@ class ServerManager():
         self.gss_authenticated = False
         self.gss_encrypted = False
         self.connection_params = server.connection_params
-        self.connection_string = self.create_connection_string(self.db,
-                                                               self.user)
+        self.create_connection_string(self.db, self.user)
 
         for con in self.connections:
             self.connections[con]._release()
@@ -640,12 +639,26 @@ WHERE db.oid = {0}""".format(did))
                 self.local_bind_port if self.use_ssh_tunnel else self.port,
                 database, user)
 
+        self.display_connection_string = full_connection_string
+
+        # Password should not be visible into the connection string, so
+        # setting the value with password to 'xxxxxxx'.
+        if password:
+            self.display_connection_string = "{0} password='xxxxxxx'".format(
+                self.display_connection_string)
+
+            full_connection_string = "{0} password='{1}'".format(
+                full_connection_string, password)
+
         # Loop through all the connection parameters set in the server dialog.
         if self.connection_params and isinstance(self.connection_params, dict):
             for key, value in self.connection_params.items():
+                with_complete_path = False
+                orig_value = value
                 # Getting complete file path if the key is one of the below.
                 if key in ['passfile', 'sslcert', 'sslkey', 'sslrootcert',
                            'sslcrl', 'service', 'sslcrldir']:
+                    with_complete_path = True
                     value = get_complete_file_path(value)
 
                 # In case of host address need to check ssh tunnel flag.
@@ -653,17 +666,11 @@ WHERE db.oid = {0}""".format(did))
                     value = self.local_bind_host if self.use_ssh_tunnel else \
                         value
 
+                self.display_connection_string = "{0} {1}='{2}'".format(
+                    self.display_connection_string, key,
+                    orig_value if with_complete_path else value)
+
                 full_connection_string = \
                     "{0} {1}='{2}'".format(full_connection_string, key, value)
-
-        # Password should not be visible into the connection string, so
-        # setting the class variable with password to 'xxxxxxx'.
-        if password:
-            self.connection_string = "{0} password='xxxxxxx'".format(
-                full_connection_string)
-
-        if password:
-            full_connection_string = "{0} password='{1}'".format(
-                full_connection_string, password)
 
         return full_connection_string

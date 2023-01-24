@@ -1029,7 +1029,7 @@ class ServerNode(PGChildNodeView):
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
             'connection_params': connection_params,
-            'connection_string': manager.connection_string
+            'connection_string': manager.display_connection_string
         }
 
         return ajax_response(response)

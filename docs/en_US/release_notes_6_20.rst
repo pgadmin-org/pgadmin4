@@ -26,6 +26,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5532 <https://github.com/pgadmin-org/pgadmin4/issues/5532>`_ -  Fixed an issue where the client cert location was not stored on the shared servers.
   | `Issue #5567 <https://github.com/pgadmin-org/pgadmin4/issues/5567>`_ -  Fix orphan database connections resulting in an inability to connect to databases.
   | `Issue #5705 <https://github.com/pgadmin-org/pgadmin4/issues/5705>`_ -  Ensure that all parts of the application recommend and enforce the same length of passwords.
   | `Issue #5732 <https://github.com/pgadmin-org/pgadmin4/issues/5732>`_ -  Fixed an issue where Kerberos authentication to the server is not imported/exported.
