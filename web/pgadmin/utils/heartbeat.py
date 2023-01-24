@@ -57,6 +57,7 @@ class ServerHeartbeatTimer():
             self.t.start()
             self.release_server_heartbeat()
         self.t = threading.Timer(sec, func_wrapper)
+        self.t.daemon = True
         self.t.start()
         self._app = _app
 
@@ -87,15 +88,18 @@ class ServerHeartbeatTimer():
     @staticmethod
     def _release_connections(server_conn, sess_id, sid):
         for d in server_conn:
-            # Release the connection
-            server_conn[d]._release()
-            # Reconnect on the reload
-            server_conn[d].wasConnected = True
-            current_app.logger.debug(
-                "Heartbeat not received. Released "
-                "connection for the session "
-                "id##server id: {0}##{1}".format(
-                    sess_id, sid))
+            try:
+                # Release the connection
+                server_conn[d]._release()
+                # Reconnect on the reload
+                server_conn[d].wasConnected = True
+                current_app.logger.debug(
+                    "Heartbeat not received. Released "
+                    "connection for the session "
+                    "id##server id: {0}##{1}".format(
+                        sess_id, sid))
+            except Exception as e:
+                current_app.logger.exception(e)
 
     def cancel(self):
         self.t.cancel()
