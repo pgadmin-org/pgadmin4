@@ -14,21 +14,32 @@ import os
 from flask import current_app, url_for
 from flask_security import current_user
 from werkzeug.exceptions import InternalServerError
+from pgadmin.utils.constants import MY_STORAGE
 
 
-def get_storage_directory(user=current_user):
+def get_storage_directory(user=current_user, shared_storage=''):
     import config
     if config.SERVER_MODE is not True:
         return None
 
-    storage_dir = getattr(
-        config, 'STORAGE_DIR',
-        os.path.join(
-            os.path.realpath(
-                os.path.expanduser('~/.pgadmin/')
-            ), 'storage'
+    is_shared_storage = False
+    if shared_storage != MY_STORAGE and shared_storage:
+        is_shared_storage = True
+        selectedDir = [sdir for sdir in config.SHARED_STORAGE if
+                       sdir['name'] == shared_storage]
+        storage_dir = None
+        if len(selectedDir) > 0:
+            the_dir = selectedDir[0]['path']
+            storage_dir = the_dir
+    else:
+        storage_dir = getattr(
+            config, 'STORAGE_DIR',
+            os.path.join(
+                os.path.realpath(
+                    os.path.expanduser('~/.pgadmin/')
+                ), 'storage'
+            )
         )
-    )
 
     if storage_dir is None:
         return None
@@ -55,12 +66,19 @@ def get_storage_directory(user=current_user):
 
     username = _preprocess_username(user.username)
 
-    # Figure out the new style storage directory name
-    storage_dir = os.path.join(
-        storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
-        else storage_dir,
-        username
-    )
+    if is_shared_storage:
+        # Figure out the new style storage directory name
+        storage_dir = os.path.join(
+            storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
+            else storage_dir
+        )
+    else:
+        # Figure out the new style storage directory name
+        storage_dir = os.path.join(
+            storage_dir.decode('utf-8') if hasattr(storage_dir, 'decode')
+            else storage_dir,
+            username
+        )
 
     # Rename an old-style storage directory, if the new style doesn't exist
     if os.path.exists(old_storage_dir) and not os.path.exists(storage_dir):

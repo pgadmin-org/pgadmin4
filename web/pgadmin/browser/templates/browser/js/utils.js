@@ -56,6 +56,7 @@ define('pgadmin.browser.utils',
 
   /* GET PSQL Tool related config */
   pgAdmin['enable_psql'] =  '{{enable_psql}}' == 'True';
+  pgAdmin['shared_storage'] = {{shared_storage_list}}
   pgAdmin['platform'] =  '{{platform}}';
   pgAdmin['qt_default_placeholder'] = '{{qt_default_placeholder}}'
   pgAdmin['vw_edt_default_placeholder'] = '{{vw_edt_default_placeholder}}'

@@ -200,7 +200,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
   'mode', 'value', 'readonly', 'disabled', 'hasError', 'id',
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
   'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
-  'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton', 'btnName'
+  'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton', 'btnName', 'hidden'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
@@ -208,7 +208,7 @@ const ALLOWED_PROPS_FIELD_FORM = [
 ];
 
 const ALLOWED_PROPS_FIELD_CELL = [
-  'cell', 'onCellChange', 'row', 'reRenderRow', 'validate', 'disabled', 'readonly', 'radioType', 'hideBrowseButton'
+  'cell', 'onCellChange', 'row', 'reRenderRow', 'validate', 'disabled', 'readonly', 'radioType', 'hideBrowseButton', 'hidden'
 ];
 
 

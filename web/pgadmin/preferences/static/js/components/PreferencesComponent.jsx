@@ -369,7 +369,7 @@ export default function PreferencesComponent({ ...props }) {
     pgAdmin.Browser.Events.on('preferences:tree:selected', (event, item) => {
       if (item.type == FileType.File) {
         prefSchema.current.schemaFields.forEach((field) => {
-          field.visible = field.parentId === item._metadata.data.id;
+          field.visible = field.parentId === item._metadata.data.id && !field?.hidden ;
           if(field.visible && _.isNull(firstElement)) {
             firstElement = field;
           }

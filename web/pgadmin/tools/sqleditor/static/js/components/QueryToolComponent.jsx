@@ -439,8 +439,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           'supported_types': ['*', 'sql'], // file types allowed
           'dialog_type': 'select_file', // open select file dialog
         };
-        pgAdmin.Tools.FileManager.show(fileParams, (fileName)=>{
-          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName);
+        pgAdmin.Tools.FileManager.show(fileParams, (fileName, storage)=>{
+          eventBus.current.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE, fileName, storage);
         }, null, modal);
       }],
       [QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE, (isSaveAs=false)=>{
