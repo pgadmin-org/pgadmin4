@@ -388,6 +388,8 @@ def create_app(app_name=None):
             db_upgrade(app)
             os.environ['CORRUPTED_DB_BACKUP_FILE'] = ''
         except Exception:
+            app.logger.error('Database migration failed')
+            app.logger.error(traceback.format_exc())
             backup_db_file()
 
         # check all tables are present in the db.

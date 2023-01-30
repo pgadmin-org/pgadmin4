@@ -1147,7 +1147,7 @@ class ServerNode(PGChildNodeView):
                     password = encrypt(password, crypt_key)
                 elif 'passfile' in data['connection_params'] and \
                         data['connection_params']['passfile'] != '':
-                    passfile = data['passfile']
+                    passfile = data['connection_params']['passfile']
 
                 if 'tunnel_password' in data and data["tunnel_password"] != '':
                     have_tunnel_password = True

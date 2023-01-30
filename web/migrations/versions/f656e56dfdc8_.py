@@ -67,10 +67,15 @@ def migrate_connection_params(table_name):
             .values(connection_params=connection_params)
         )
 
+    # Drop constraint on ssl_mode column.
+    try:
+        with op.batch_alter_table(table_name) as batch_op:
+            batch_op.drop_constraint('ck_ssl_mode')
+    except Exception:
+        pass
+
     # Drop unused columns
     with op.batch_alter_table(table_name) as batch_op:
-        if table_name == 'server':
-            batch_op.drop_constraint('ck_ssl_mode')
         batch_op.drop_column('ssl_mode')
         batch_op.drop_column('sslcert')
         batch_op.drop_column('sslkey')
@@ -90,8 +95,8 @@ def upgrade():
     with op.batch_alter_table("setting") as batch_op:
         batch_op.alter_column('value',
                               existing_type=sa.String(length=1024),
-                              type_=sa.String(length=2048),
-                              existing_nullable=False)
+                              type_=sa.Text(),
+                              postgresql_using='value::text')
 
 
 def downgrade():

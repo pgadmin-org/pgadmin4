@@ -132,7 +132,7 @@ class Setting(db.Model):
     __tablename__ = 'setting'
     user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
     setting = db.Column(db.String(256), primary_key=True)
-    value = db.Column(db.String(1024))
+    value = db.Column(db.Text())
 
 
 class ServerGroup(db.Model):
@@ -371,7 +371,7 @@ class QueryHistoryModel(db.Model):
         db.Integer(), db.ForeignKey(SERVER_ID), nullable=False,
         primary_key=True)
     dbname = db.Column(db.String(), nullable=False, primary_key=True)
-    query_info = db.Column(db.String(), nullable=False)
+    query_info = db.Column(PgAdminDbBinaryString(), nullable=False)
     last_updated_flag = db.Column(db.String(), nullable=False)
 
 

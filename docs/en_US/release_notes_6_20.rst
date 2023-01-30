@@ -32,3 +32,4 @@ Bug fixes
   | `Issue #5732 <https://github.com/pgadmin-org/pgadmin4/issues/5732>`_ -  Fixed an issue where Kerberos authentication to the server is not imported/exported.
   | `Issue #5751 <https://github.com/pgadmin-org/pgadmin4/issues/5751>`_ -  Fix failing import servers CLI due to vulnerability fix.
   | `Issue #5746 <https://github.com/pgadmin-org/pgadmin4/issues/5746>`_ -  Increase the length of the value column of the setting table.
+  | `Issue #5781 <https://github.com/pgadmin-org/pgadmin4/issues/5781>`_ -  Fixed an issue where Query history is not getting loaded with external database.
