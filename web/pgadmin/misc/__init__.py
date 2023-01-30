@@ -19,7 +19,8 @@ from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 from pgadmin.utils.constants import MIMETYPE_APP_JS, UTILITIES_ARRAY
 from pgadmin.utils.ajax import precondition_required, make_json_response
-from pgadmin.utils.heartbeat import log_server_heartbeat, get_server_heartbeat
+from pgadmin.utils.heartbeat import log_server_heartbeat,\
+    get_server_heartbeat, stop_server_heartbeat
 import config
 import subprocess
 import os
@@ -94,8 +95,8 @@ class MiscModule(PgAdminModule):
             list: a list of url endpoints exposed to the client.
         """
         return ['misc.ping', 'misc.index', 'misc.cleanup',
-                'misc.validate_binary_path', 'misc.heartbeat',
-                'misc.get_heartbeat']
+                'misc.validate_binary_path', 'misc.log_heartbeat',
+                'misc.stop_heartbeat', 'misc.get_heartbeat']
 
     def register(self, app, options):
         """
@@ -158,9 +159,9 @@ def cleanup():
     return ""
 
 
-@blueprint.route("/heartbeat", methods=['POST'])
+@blueprint.route("/heartbeat/log", methods=['POST'])
 @pgCSRFProtect.exempt
-def heartbeat():
+def log_heartbeat():
     data = None
     if hasattr(request.data, 'decode'):
         data = request.data.decode('utf-8')
@@ -168,8 +169,25 @@ def heartbeat():
     if data != '':
         data = json.loads(data)
 
-    log_server_heartbeat(data)
-    return make_json_response(data=gettext('Heartbeat logged successfully.'),
+    status, msg = log_server_heartbeat(data)
+    if status:
+        return make_json_response(data=msg, status=200)
+    else:
+        return make_json_response(data=msg, status=404)
+
+
+@blueprint.route("/heartbeat/stop", methods=['POST'])
+@pgCSRFProtect.exempt
+def stop_heartbeat():
+    data = None
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    status, msg = stop_server_heartbeat(data)
+    return make_json_response(data=msg,
                               status=200)
 
 
