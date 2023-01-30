@@ -15,7 +15,7 @@ import Notify, {initializeModalProvider, initializeNotifier} from '../../../stat
 import { checkMasterPassword } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
 import { Search } from './quick_search/trigger_search';
-import { send_heartbeat } from './heartbeat';
+import { send_heartbeat, stop_heartbeat } from './heartbeat';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'require', 'jquery',
@@ -584,6 +584,10 @@ define('pgadmin.browser', [
 
       obj.Events.on(
         'pgadmin:server:connected', send_heartbeat.bind(obj)
+      );
+
+      obj.Events.on(
+        'pgadmin:server:disconnect', stop_heartbeat.bind(obj)
       );
 
       obj.set_master_password('');

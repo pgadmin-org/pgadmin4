@@ -14,6 +14,7 @@ import threading
 import datetime
 import config
 from flask import session, current_app
+from flask_babel import gettext
 
 
 def log_server_heartbeat(data):
@@ -28,16 +29,37 @@ def log_server_heartbeat(data):
     if session.sid not in _server_heartbeat:
         _server_heartbeat[session.sid] = {}
 
-    _server_heartbeat[session.sid][data['sid']] = {
-        'timestamp': datetime.datetime.now(),
-        'conn': manager.connections
-    }
+    if not manager:
+        stop_server_heartbeat(data)
+        return False, gettext("Manager not found. Stopped Heartbeat logging.")
+    else:
+        _server_heartbeat[session.sid][data['sid']] = {
+            'timestamp': datetime.datetime.now(),
+            'conn': manager.connections
+        }
+        current_app.logger.debug(
+            "Heartbeat logged for the session id##server id: {0}##{1}".format(
+                session.sid, data['sid']))
 
-    setattr(current_app, '_pgadmin_server_heartbeat', _server_heartbeat)
+        setattr(current_app, '_pgadmin_server_heartbeat', _server_heartbeat)
+        return True, gettext("Heartbeat logged successfully.")
 
-    current_app.logger.debug(
-        "Heartbeat logged for the session id##server id: {0}##{1}".format(
-            session.sid, data['sid']))
+
+def stop_server_heartbeat(data):
+    """Stop logging server heartbeat."""
+    _server_heartbeat = getattr(current_app, '_pgadmin_server_heartbeat', {})
+
+    if session.sid in _server_heartbeat and \
+            data['sid'] in _server_heartbeat[session.sid]:
+        _server_heartbeat[session.sid].pop(data['sid'])
+
+        current_app.logger.debug(
+            "Heartbeat logging stopped for the session"
+            " id##server id: {0}##{1}".format(session.sid, data['sid']))
+
+        setattr(current_app, '_pgadmin_server_heartbeat', _server_heartbeat)
+
+    return True, gettext("Stopped Heartbeat logging.")
 
 
 def get_server_heartbeat(server_id):
