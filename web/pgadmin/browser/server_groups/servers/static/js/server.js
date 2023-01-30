@@ -228,9 +228,8 @@ define('pgadmin.node.server', [
                       t.unload(i);
                     }
                     pgBrowser.Events.trigger(
-                    'pgadmin:server:disconnect',
-                    {item: i, data: d}, false
-                  );
+                      'pgadmin:server:disconnect', {item: i, data: d}, false
+                    );
                   }})
                 .fail(function(xhr, status, error) {
                   Notify.pgRespErrorNotify(xhr, error);

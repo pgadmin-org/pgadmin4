@@ -41,7 +41,7 @@ export function send_heartbeat(_server_id, _item) {
 
 export function stop_heartbeat(_obj) {
   let _item = _obj.item || _obj,
-    _id = _item.getMetadata('data')._id
+    _id = _item.getMetadata('data')._id;
   clearInterval(_item.heartbeat);
   axiosApi.post(url_for('misc.stop_heartbeat'), {'sid': _id});
 }
