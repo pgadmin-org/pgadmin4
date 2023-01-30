@@ -2166,8 +2166,8 @@ class MViewNode(ViewNode, VacuumSettings):
             request.data, encoding='utf-8'
         )
 
-        is_concurrent = json.loads(data['concurrent'])
-        with_data = json.loads(data['with_data'])
+        is_concurrent = data['concurrent']
+        with_data = data['with_data']
         data = dict()
         data['is_concurrent'] = is_concurrent
         data['is_with_data'] = with_data

@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import $ from 'jquery';
 import url_for from './url_for';
 import gettext from 'sources/gettext';
 import 'wcdocker';
@@ -26,64 +25,6 @@ export function parseShortcutValue(obj) {
   if (obj.control) { shortcut += 'ctrl+'; }
   shortcut += obj.key.char.toLowerCase();
   return shortcut;
-}
-
-export function handleKeyNavigation(event) {
-  let wizardHeader = $(event.currentTarget).find('.wizard-header');
-  let wizardFooter = $(event.currentTarget).find('.wizard-footer');
-  let gridElement = $(event.currentTarget).find('.select-row-cell:first');
-  let gridElementLast = $(event.currentTarget).find('.select-row-cell:last');
-
-  let firstWizardHeaderButton = $(wizardHeader).find('button:enabled:first');
-  let lastWizardHeaderButton = $(wizardHeader).find('button:enabled:last');
-  let lastWizardFooterBtn = $(wizardFooter).find('button:enabled:last');
-  let firstWizardFooterBtn = $(wizardFooter).find('button:enabled:first');
-
-
-  if (event.shiftKey && event.keyCode === 9) {
-    // Move backwards
-    if(firstWizardHeaderButton && $(firstWizardHeaderButton).is($(event.target))) {
-      if (lastWizardFooterBtn) {
-        $(lastWizardFooterBtn).focus();
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    }
-    else if ($(firstWizardFooterBtn).is($(event.target))){
-      if ($(gridElement).find('.custom-control-input').is(':visible')){
-        $(gridElementLast).find('.custom-control-input').focus();
-        event.preventDefault();
-        event.stopPropagation();
-      }else if ($(event.currentTarget).find('.wizard-content').find('.CodeMirror-scroll').is(':visible')){
-        $(lastWizardHeaderButton).focus();
-      }
-    }
-  } else if (event.keyCode === 9) {
-    // Move forwards
-    // If taget is last button then goto first element
-    if(lastWizardFooterBtn && $(lastWizardFooterBtn).is($(event.target))) {
-      $(firstWizardHeaderButton).focus();
-      event.preventDefault();
-      event.stopPropagation();
-    }else if (event.target.innerText == 'Name'){
-      if ($(gridElement).find('.custom-control-input').is(':visible')){
-        $(gridElement).find('.custom-control-input').focus();
-      }else {
-        $(firstWizardFooterBtn).focus();
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    } else if(event.target.tagName == 'DIV') {
-      $(event.currentTarget).find('.custom-control-input:first').trigger('focus');
-      event.preventDefault();
-      event.stopPropagation();
-    } else if(event.target.tagName == 'TEXTAREA'){
-      $(firstWizardFooterBtn).focus();
-    }
-  } else if (event.keyCode === 27){
-    //close the wizard when esc key is pressed
-    $(wizardHeader).find('button.ajs-close').click();
-  }
 }
 
 export function findAndSetFocus(container) {
@@ -425,25 +366,28 @@ export function evalFunc(obj, func, param) {
 }
 
 export function registerDetachEvent(panel){
-  panel.on(wcDocker.EVENT.DETACHED, function() {
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
-      style: 'z-index: 1200'
-    });
-  });
-  panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
+  function updateIframePosition() {
     let docker = this.docker(this._panel);
     let dockerPos = docker.$container.offset();
     let pos = this.$container.offset();
     let width = this.$container.width();
     let height = this.$container.height();
+    let zIndex = window.getComputedStyle(this._parent.$frame[0]).getPropertyValue('z-index');
 
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('top', pos.top - dockerPos.top);
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('left', pos.left - dockerPos.left);
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').css('width', width);
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').find('.wcIFrameFloating').css('height', height);
-    $((this.$container)[0].ownerDocument).find('.wcIFrameFloating').attr({
-      style: 'z-index: 1200'
-    });
+    let ele = this.$container[0].ownerDocument.querySelector('.wcIFrameFloating');
+    if(ele) {
+      ele.style.top = pos.top - dockerPos.top;
+      ele.style.left = pos.left - dockerPos.left;
+      ele.style.width = width;
+      ele.style.height = height;
+      ele.style.zIndex = parseInt(zIndex)+1;
+    }
+  }
+  panel.on(wcDocker.EVENT.DETACHED, function() {
+    updateIframePosition.call(this);
+  });
+  panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
+    updateIframePosition.call(this);
   });
 }
 
@@ -537,127 +481,123 @@ export function calcFontSize(fontSize) {
   return '1em';
 }
 
-export function pgHandleItemError(xhr, args) {
+export function pgHandleItemError(error, args) {
   let pgBrowser = window.pgAdmin.Browser;
 
-  if (!xhr || !pgBrowser) {
+  if (!error || !pgBrowser) {
     return;
   }
 
-  let contentType = xhr.getResponseHeader('Content-Type'),
-    jsonResp = contentType &&
-    contentType.indexOf('application/json') == 0 &&
-    JSON.parse(xhr.responseText);
-
-  if (
-    jsonResp && (
-      xhr.status == 503 ? (
-        jsonResp.info == 'CONNECTION_LOST' &&
-        'server' in args.info && jsonResp.data.sid >= 0 &&
-        jsonResp.data.sid == args.info.server._id
-      ) : (
-        xhr.status == 428 &&
-        jsonResp.errormsg &&
-        jsonResp.errormsg == gettext('Connection to the server has been lost.')
-      )
-    )
-  ) {
+  if(error.response.headers['content-type'] == 'application/json') {
+    let jsonResp = error.response.data;
     if (
-      args.preHandleConnectionLost &&
-      typeof(args.preHandleConnectionLost) == 'function'
+      jsonResp && (
+        error.response.status == 503 ? (
+          jsonResp.info == 'CONNECTION_LOST' &&
+          'server' in args.info && jsonResp.data.sid >= 0 &&
+          jsonResp.data.sid == args.info.server._id
+        ) : (
+          error.response.status == 428 &&
+          jsonResp.errormsg &&
+          jsonResp.errormsg == gettext('Connection to the server has been lost.')
+        )
+      )
     ) {
-      args.preHandleConnectionLost.apply(this, arguments);
-    }
+      if (
+        args.preHandleConnectionLost &&
+        typeof(args.preHandleConnectionLost) == 'function'
+      ) {
+        args.preHandleConnectionLost.apply(this, arguments);
+      }
 
-    // Check the status of the maintenance server connection.
-    let server = pgBrowser.Nodes['server'],
-      ctx = {
-        resp: jsonResp,
-        xhr: xhr,
-        args: args,
-      },
-      reconnectServer = function() {
-        let ctx_local = this,
-          onServerConnect = function(_sid, _i, _d) {
-            // Yay - server is reconnected.
-            if (this.args.info.server._id == _sid) {
-              pgBrowser.Events.off(
-                'pgadmin:server:connected', onServerConnect
-              );
-              pgBrowser.Events.off(
-                'pgadmin:server:connect:cancelled', onConnectCancel
-              );
+      // Check the status of the maintenance server connection.
+      let server = pgBrowser.Nodes['server'],
+        ctx = {
+          resp: jsonResp,
+          error: error,
+          args: args,
+        },
+        reconnectServer = function() {
+          let ctx_local = this,
+            onServerConnect = function(_sid, _i, _d) {
+              // Yay - server is reconnected.
+              if (this.args.info.server._id == _sid) {
+                pgBrowser.Events.off(
+                  'pgadmin:server:connected', onServerConnect
+                );
+                pgBrowser.Events.off(
+                  'pgadmin:server:connect:cancelled', onConnectCancel
+                );
 
-              // Do we need to connect the disconnected server now?
-              if (
-                this.resp.data.database &&
-                this.resp.data.database != _d.db
-              ) {
-                // Server is connected now, we will need to inform the
-                // database to connect it now.
+                // Do we need to connect the disconnected server now?
+                if (
+                  this.resp.data.database &&
+                  this.resp.data.database != _d.db
+                ) {
+                  // Server is connected now, we will need to inform the
+                  // database to connect it now.
+                  pgBrowser.Events.trigger(
+                    'pgadmin:database:connection:lost', this.args.item,
+                    this.resp, true
+                  );
+                }
+              }
+            }.bind(ctx_local),
+            onConnectCancel = function(_sid, _item, _data) {
+              // User has cancelled the operation in between.
+              if (_sid == this.args.info.server.id) {
+                pgBrowser.Events.off('pgadmin:server:connected', onServerConnect);
+                pgBrowser.Events.off('pgadmin:server:connect:cancelled', onConnectCancel);
+
+                // Connection to the database will also be cancelled
                 pgBrowser.Events.trigger(
-                  'pgadmin:database:connection:lost', this.args.item,
-                  this.resp, true
+                  'pgadmin:database:connect:cancelled', _sid,
+                  this.resp.data.database || _data.db, _item, _data
                 );
               }
-            }
-          }.bind(ctx_local),
-          onConnectCancel = function(_sid, _item, _data) {
-            // User has cancelled the operation in between.
-            if (_sid == this.args.info.server.id) {
-              pgBrowser.Events.off('pgadmin:server:connected', onServerConnect);
-              pgBrowser.Events.off('pgadmin:server:connect:cancelled', onConnectCancel);
+            }.bind(ctx_local);
 
-              // Connection to the database will also be cancelled
-              pgBrowser.Events.trigger(
-                'pgadmin:database:connect:cancelled', _sid,
-                this.resp.data.database || _data.db, _item, _data
-              );
-            }
-          }.bind(ctx_local);
+          pgBrowser.Events.on('pgadmin:server:connected', onServerConnect);
+          pgBrowser.Events.on('pgadmin:server:connect:cancelled', onConnectCancel);
 
-        pgBrowser.Events.on('pgadmin:server:connected', onServerConnect);
-        pgBrowser.Events.on('pgadmin:server:connect:cancelled', onConnectCancel);
+          // Connection to the server has been lost, we need to inform the
+          // server first to take the action first.
+          pgBrowser.Events.trigger(
+            'pgadmin:server:connection:lost', this.args.item, this.resp
+          );
+        }.bind(ctx);
 
-        // Connection to the server has been lost, we need to inform the
-        // server first to take the action first.
-        pgBrowser.Events.trigger(
-          'pgadmin:server:connection:lost', this.args.item, this.resp
-        );
-      }.bind(ctx);
-
-    $.ajax({
-      url: server.generate_url(
+      getApiInstance().get(server.generate_url(
         null, 'connect', args.info.server, true, args.info
-      ),
-      dataType: 'json',
-    })
-      .done(function(res) {
-        if (res.success && 'connected' in res.data) {
-          if (res.data.connected) {
-          // Server is connected, but - the connection with the
-          // particular database has been lost.
-            pgBrowser.Events.trigger(
-              'pgadmin:database:connection:lost', args.item, jsonResp
-            );
-            return;
+      ))
+        .then(({data: res})=>{
+          if (res.success && 'connected' in res.data) {
+            if (res.data.connected) {
+              // Server is connected, but - the connection with the
+              // particular database has been lost.
+              pgBrowser.Events.trigger(
+                'pgadmin:database:connection:lost', args.item, jsonResp
+              );
+              return;
+            }
           }
-        }
 
-        // Server was not connected, we should first try to connect
-        // the server.
-        reconnectServer();
-      })
-      .fail(function() {
-        reconnectServer();
-      });
-    return true;
-  } else if (jsonResp && jsonResp.info == 'CRYPTKEY_MISSING' && xhr.status == 503) {
-    /* Suppress the error here and handle in pgNotifier wherever
-     * required, as it has callback option
-     */
-    return false;
+          // Server was not connected, we should first try to connect
+          // the server.
+          reconnectServer();
+        })
+        .catch(()=>{
+          reconnectServer();
+        });
+      return true;
+    } else if (jsonResp && jsonResp.info == 'CRYPTKEY_MISSING' && error.response.status == 503) {
+      /* Suppress the error here and handle in pgNotifier wherever
+       * required, as it has callback option
+       */
+      return false;
+    }
   }
+
   return false;
 }
 

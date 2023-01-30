@@ -9,6 +9,7 @@
 import { getNodeTableSchema } from './table.ui';
 import Notify from '../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.table', [
   'pgadmin.tables.js/enable_disable_triggers',
@@ -187,13 +188,8 @@ define('pgadmin.node.table', [
             gettext('Are you sure you want to truncate table %s?', d.label),
             function () {
               let data = d;
-              $.ajax({
-                url: obj.generate_url(i, 'truncate' , d, true),
-                type:'PUT',
-                data: params,
-                dataType: 'json',
-              })
-                .done(function(res) {
+              getApiInstance().put(obj.generate_url(i, 'truncate' , d, true), params)
+                .then(({data: res})=>{
                   if (res.success == 1) {
                     Notify.success(res.info);
                     t.removeIcon(i);
@@ -211,8 +207,8 @@ define('pgadmin.node.table', [
                     Notify.error(res.info);
                   }
                 })
-                .fail(function(xhr, status, error) {
-                  Notify.pgRespErrorNotify(xhr, error);
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
                   t.unload(i);
                 });
             }, function() {/*This is intentional (SonarQube)*/}
@@ -233,11 +229,8 @@ define('pgadmin.node.table', [
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function () {
               let data = d;
-              $.ajax({
-                url: obj.generate_url(i, 'reset' , d, true),
-                type:'DELETE',
-              })
-                .done(function(res) {
+              getApiInstance().delete(obj.generate_url(i, 'reset' , d, true))
+                .then(({data: res})=>{
                   if (res.success == 1) {
                     Notify.success(res.info);
                     t.removeIcon(i);
@@ -252,8 +245,8 @@ define('pgadmin.node.table', [
                     }, 10);
                   }
                 })
-                .fail(function(xhr, status, error) {
-                  Notify.pgRespErrorNotify(xhr, error);
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
                   t.unload(i);
                 });
             },
@@ -274,11 +267,8 @@ define('pgadmin.node.table', [
             ...d, _type: this.type,
           };
           // Fetch the total rows of a table
-          $.ajax({
-            url: obj.generate_url(i, 'count_rows' , newD, true),
-            type:'GET',
-          })
-            .done(function(res) {
+          getApiInstance().get(obj.generate_url(i, 'count_rows' , newD, true))
+            .then(({data: res})=>{
               Notify.success(res.info, null);
               d.rows_cnt = res.data.total_rows;
               t.unload(i);
@@ -288,8 +278,8 @@ define('pgadmin.node.table', [
                 t.select(i);
               }, 10);
             })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
               t.unload(i);
             });
         },

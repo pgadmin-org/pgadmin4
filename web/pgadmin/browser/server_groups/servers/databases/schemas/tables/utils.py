@@ -1965,8 +1965,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             request.data, encoding='utf-8'
         )
         # Convert str 'true' to boolean type
-        is_cascade = json.loads(data.get('cascade') or 'false')
-        is_identity = json.loads(data.get('identity') or 'false')
+        is_cascade = data.get('cascade') or False
+        is_identity = data.get('identity') or False
 
         data = res['rows'][0]
 

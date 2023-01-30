@@ -4,6 +4,7 @@ import {mount} from 'enzyme';
 import '../helper/enzyme.helper';
 
 import {GraphsWrapper, X_AXIS_LENGTH, POINT_SIZE} from '../../../pgadmin/dashboard/static/js/Graphs';
+import { withTheme } from '../fake_theme';
 
 describe('<GraphsWrapper /> component', ()=>{
   let graphComp = null;
@@ -24,29 +25,32 @@ describe('<GraphsWrapper /> component', ()=>{
     }],
     refreshRate: 1,
   };
+  let ThemedGraphsWrapper = withTheme(GraphsWrapper);
   beforeEach(()=>{
     jasmineEnzyme();
-    graphComp = mount(<GraphsWrapper sessionStats={defaultStats}
-      tpsStats={defaultStats}
-      tiStats={defaultStats}
-      toStats={defaultStats}
-      bioStats={defaultStats}
-      errorMsg={null}
-      showTooltip={true}
-      showDataPoints={true}
-      lineBorderWidth={2}
-      isDatabase={false}
-      isTest={true} />);
+    graphComp = mount(
+      <ThemedGraphsWrapper sessionStats={defaultStats}
+        tpsStats={defaultStats}
+        tiStats={defaultStats}
+        toStats={defaultStats}
+        bioStats={defaultStats}
+        errorMsg={null}
+        showTooltip={true}
+        showDataPoints={true}
+        lineBorderWidth={2}
+        isDatabase={false}
+        isTest={true} />
+    );
   });
 
   it('graph containers are rendered', (done)=>{
-    let found = graphComp.find('.card.dashboard-graph');
+    let found = graphComp.find('ChartContainer');
     expect(found.length).toBe(5);
     done();
   });
 
   it('graph headers are correct', (done)=>{
-    let found = graphComp.find('.card.dashboard-graph');
+    let found = graphComp.find('ChartContainer');
     expect(found.at(0)).toIncludeText('Server sessions');
     expect(found.at(1)).toIncludeText('Transactions per second');
     expect(found.at(2)).toIncludeText('Tuples in');
@@ -56,7 +60,7 @@ describe('<GraphsWrapper /> component', ()=>{
   });
 
   it('graph headers when database', (done)=>{
-    let found = graphComp.find('.card.dashboard-graph');
+    let found = graphComp.find('ChartContainer');
     graphComp.setProps({isDatabase: true});
     expect(found.at(0)).toIncludeText('Database sessions');
     done();
@@ -64,14 +68,15 @@ describe('<GraphsWrapper /> component', ()=>{
 
   it('graph body shows the error', (done)=>{
     graphComp.setProps({errorMsg: 'Some error occurred'});
-    let found = graphComp.find('.card.dashboard-graph .dashboard-graph-body');
-
-    found = graphComp.find('.card.dashboard-graph .dashboard-graph-body .pg-panel-error.pg-panel-message');
-    expect(found.at(0)).toIncludeText('Some error occurred');
-    expect(found.at(1)).toIncludeText('Some error occurred');
-    expect(found.at(2)).toIncludeText('Some error occurred');
-    expect(found.at(3)).toIncludeText('Some error occurred');
-    expect(found.at(4)).toIncludeText('Some error occurred');
-    done();
+    setTimeout(()=>{
+      graphComp.update();
+      let found = graphComp.find('ChartContainer');
+      expect(found.at(0)).toIncludeText('Some error occurred');
+      expect(found.at(1)).toIncludeText('Some error occurred');
+      expect(found.at(2)).toIncludeText('Some error occurred');
+      expect(found.at(3)).toIncludeText('Some error occurred');
+      expect(found.at(4)).toIncludeText('Some error occurred');
+      done();
+    }, 500);
   });
 });

@@ -52,6 +52,10 @@ samp,
   border-style: solid;
   border-width: 1px;
   font-size: 1.15em;
+
+  color: $color-fg !important;
+  border-color: $border-color !important;
+  background-color: $color-secondary;
 }
 
 .pg-toolbar-psql {

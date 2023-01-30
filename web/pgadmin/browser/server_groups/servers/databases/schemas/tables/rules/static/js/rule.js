@@ -9,6 +9,7 @@
 import RuleSchema from './rule.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.rule', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -134,13 +135,8 @@ define('pgadmin.node.rule', [
             return false;
 
           let data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'obj' , d, true),
-            type:'PUT',
-            data: {'is_enable_rule' : 'O'},
-            dataType: 'json',
-          })
-            .done(function() {
+          getApiInstance().put(obj.generate_url(i, 'obj' , d, true), {'is_enable_rule' : 'O'})
+            .then(()=>{
               Notify.success('Rule updated.');
               t.removeIcon(i);
               data.icon = 'icon-rule';
@@ -153,9 +149,8 @@ define('pgadmin.node.rule', [
                 t.select(i);
               }, 10);
             })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
             });
         },
         /* Disable rule */
@@ -170,13 +165,8 @@ define('pgadmin.node.rule', [
             return false;
 
           let data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'obj' , d, true),
-            type:'PUT',
-            data: {'is_enable_rule' : 'D'},
-            dataType: 'json',
-          })
-            .done(function() {
+          getApiInstance().put(obj.generate_url(i, 'obj' , d, true), {'is_enable_rule' : 'D'})
+            .then(()=>{
               Notify.success('Rule updated');
               t.removeIcon(i);
               data.icon = 'icon-rule-bad';
@@ -189,9 +179,8 @@ define('pgadmin.node.rule', [
                 t.select(i);
               }, 10);
             })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error, gettext('Disable rule failed'));
-              t.unload(i);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
             });
         },
       },

@@ -10,6 +10,7 @@
 import { getNodePartitionTableSchema } from './partition.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define([
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -166,13 +167,8 @@ function(
           if (!d)
             return false;
 
-          $.ajax({
-            url: obj.generate_url(i, 'set_trigger' , d, true),
-            type:'PUT',
-            data: params,
-            dataType: 'json',
-          })
-            .done(function(res) {
+          getApiInstance().put(obj.generate_url(i, 'set_trigger' , d, true), params)
+            .then(({data: res})=>{
               if (res.success == 1) {
                 Notify.success(res.info);
                 t.unload(i);
@@ -183,8 +179,8 @@ function(
                 }, 10);
               }
             })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
               t.unload(i);
             });
         },
@@ -213,17 +209,12 @@ function(
             gettext('Are you sure you want to truncate table %s?', d.label),
             function () {
               let data = d;
-              $.ajax({
-                url: obj.generate_url(i, 'truncate' , d, true),
-                type:'PUT',
-                data: params,
-                dataType: 'json',
-              })
-                .done(function(res) {
+              getApiInstance().put(obj.generate_url(i, 'truncate' , d, true), params)
+                .then(({data: res})=>{
                   obj.on_done(res, data, t, i);
                 })
-                .fail(function(xhr, status, error) {
-                  Notify.pgRespErrorNotify(xhr, error);
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
                   t.unload(i);
                 });
             },
@@ -244,15 +235,12 @@ function(
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function () {
               let data = d;
-              $.ajax({
-                url: obj.generate_url(i, 'reset' , d, true),
-                type:'DELETE',
-              })
-                .done(function(res) {
+              getApiInstance().delete(obj.generate_url(i, 'reset' , d, true))
+                .then(({data: res})=>{
                   obj.on_done(res, data, t, i);
                 })
-                .fail(function(xhr, status, error) {
-                  Notify.pgRespErrorNotify(xhr, error);
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
                   t.unload(i);
                 });
             },
@@ -273,11 +261,8 @@ function(
             gettext('Detach Partition'),
             gettext('Are you sure you want to detach the partition %s?', d._label),
             function () {
-              $.ajax({
-                url: obj.generate_url(i, 'detach' , d, true),
-                type:'PUT',
-              })
-                .done(function(res) {
+              getApiInstance().put(obj.generate_url(i, 'detach' , d, true))
+                .then(({data: res})=>{
                   if (res.success == 1) {
                     Notify.success(res.info);
                     let n = t.next(i);
@@ -293,8 +278,8 @@ function(
                     }
                   }
                 })
-                .fail(function(xhr, status, error) {
-                  Notify.pgRespErrorNotify(xhr, error);
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
                 });
             },
             function() {/*This is intentional (SonarQube)*/}

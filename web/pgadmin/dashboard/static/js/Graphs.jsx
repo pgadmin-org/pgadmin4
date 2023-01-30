@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React, { useEffect, useRef, useState, useReducer, useMemo } from 'react';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
-import {ChartContainer, DashboardRowCol, DashboardRow} from './Dashboard';
+import {ChartContainer} from './Dashboard';
 import url_for from 'sources/url_for';
 import axios from 'axios';
 import gettext from 'sources/gettext';
@@ -16,6 +16,7 @@ import {getGCD, getEpoch} from 'sources/utils';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
 import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
+import { Grid } from '@material-ui/core';
 
 export const X_AXIS_LENGTH = 75;
 
@@ -208,7 +209,7 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
 
   return (
     <>
-      <div data-testid='graph-poll-delay' className='d-none'>{pollDelay}</div>
+      <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <GraphsWrapper
           sessionStats={transformData(sessionStats, preferences['session_stats_refresh'], preferences['use_diff_point_style'])}
@@ -252,36 +253,36 @@ export function GraphsWrapper(props) {
 
   return (
     <>
-      <DashboardRow>
-        <DashboardRowCol breakpoint='md' parts={6}>
+      <Grid container spacing={1}>
+        <Grid item md={6}>
           <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')}
             datasets={props.sessionStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.sessionStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
-        </DashboardRowCol>
-        <DashboardRowCol breakpoint='md' parts={6}>
+        </Grid>
+        <Grid item md={6}>
           <ChartContainer id='tps-graph' title={gettext('Transactions per second')} datasets={props.tpsStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.tpsStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
-        </DashboardRowCol>
-      </DashboardRow>
-      <DashboardRow>
-        <DashboardRowCol breakpoint='md' parts={4}>
+        </Grid>
+      </Grid>
+      <Grid container spacing={1} style={{marginTop: '4px', marginBottom: '4px'}}>
+        <Grid item md={4}>
           <ChartContainer id='ti-graph' title={gettext('Tuples in')} datasets={props.tiStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.tiStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
-        </DashboardRowCol>
-        <DashboardRowCol breakpoint='md' parts={4}>
+        </Grid>
+        <Grid item md={4}>
           <ChartContainer id='to-graph' title={gettext('Tuples out')} datasets={props.toStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.toStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
-        </DashboardRowCol>
-        <DashboardRowCol breakpoint='md' parts={4}>
+        </Grid>
+        <Grid item md={4}>
           <ChartContainer id='bio-graph' title={gettext('Block I/O')} datasets={props.bioStats.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.bioStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
-        </DashboardRowCol>
-      </DashboardRow>
+        </Grid>
+      </Grid>
     </>
   );
 }

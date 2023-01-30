@@ -99,8 +99,7 @@ export function showServerPassword() {
             })
             .catch((err)=>{
               return onFailure(
-                err.response.request, status, err, nodeObj, nodeData, treeNodeInfo,
-                itemNodeData, status
+                err, nodeObj, nodeData, treeNodeInfo, itemNodeData, status
               );
             });
         }}
@@ -141,7 +140,7 @@ export function showSchemaDiffServerPassword() {
             })
             .catch((err)=>{
               return onFailure(
-                err.response.request, status, err, serverID, successCallback
+                err, serverID, successCallback
               );
             });
         }}
@@ -165,8 +164,8 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
     } else {
       masterPassCallbacks(masterpass_callback_queue);
     }
-  }).catch(function(xhr, status, error) {
-    Notify.pgRespErrorNotify(xhr, error);
+  }).catch(function(error) {
+    Notify.pgRespErrorNotify(error);
   });
 }
 
@@ -288,8 +287,8 @@ export function showNamedRestorePoint() {
               onClose();
               Notify.success(res.data.data.result);
             })
-            .catch(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
+            .catch(function(error) {
+              Notify.pgRespErrorNotify(error);
             });
         }}
       />

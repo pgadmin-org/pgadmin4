@@ -12,6 +12,7 @@ import ServerSchema from './server.ui';
 import Notify from '../../../../../static/js/helpers/Notifier';
 import { showServerPassword, showChangeServerPassword, showNamedRestorePoint } from '../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
+import getApiInstance, { parseApiError } from '../../../../../static/js/api_instance';
 
 define('pgadmin.node.server', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -196,45 +197,40 @@ define('pgadmin.node.server', [
             notify = notify || _.isUndefined(notify) || _.isNull(notify);
 
             let disconnect = function() {
-              $.ajax({
-                url: obj.generate_url(i, 'connect', d, true),
-                type:'DELETE',
-              })
-                .done(function(res) {
-                  if (res.success == 1) {
-                    Notify.success(res.info);
-                    d = t.itemData(i);
-                    t.removeIcon(i);
-                    d.connected = false;
-                    if (d.shared && pgAdmin.server_mode == 'True'){
-                      d.icon = 'icon-shared-server-not-connected';
-                    }else{
-                      d.icon = 'icon-server-not-connected';
+              getApiInstance().delete(
+                obj.generate_url(i, 'connect', d, true),
+              ).then(({data: res})=> {
+                if (res.success == 1) {
+                  Notify.success(res.info);
+                  d = t.itemData(i);
+                  t.removeIcon(i);
+                  d.connected = false;
+                  if (d.shared && pgAdmin.server_mode == 'True'){
+                    d.icon = 'icon-shared-server-not-connected';
+                  }else{
+                    d.icon = 'icon-server-not-connected';
+                  }
+                  t.addIcon(i, {icon: d.icon});
+                  obj.callbacks.refresh.apply(obj, [null, i]);
+                  setTimeout(() => {
+                    t.close(i);
+                  }, 10);
+                  if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
+                    delete pgBrowser.serverInfo[d._id];
+                  }
+                  else {
+                    try {
+                      Notify.error(res.errormsg);
+                    } catch (e) {
+                      console.warn(e.stack || e);
                     }
-                    t.addIcon(i, {icon: d.icon});
-                    obj.callbacks.refresh.apply(obj, [null, i]);
-                    setTimeout(() => {
-                      t.close(i);
-                    }, 10);
-                    if (pgBrowser.serverInfo && d._id in pgBrowser.serverInfo) {
-                      delete pgBrowser.serverInfo[d._id];
-                    }
-                    else {
-                      try {
-                        Notify.error(res.errormsg);
-                      } catch (e) {
-                        console.warn(e.stack || e);
-                      }
-                      t.unload(i);
-                    }
-                    pgBrowser.Events.trigger(
-                      'pgadmin:server:disconnect', {item: i, data: d}, false
-                    );
-                  }})
-                .fail(function(xhr, status, error) {
-                  Notify.pgRespErrorNotify(xhr, error);
-                  t.unload(i);
-                });
+                    t.unload(i);
+                  }
+                }
+              }).catch(function(error) {
+                Notify.pgRespErrorNotify(error);
+                t.unload(i);
+              });
             };
 
             if (notify) {
@@ -295,22 +291,19 @@ define('pgadmin.node.server', [
               gettext('Reload server configuration'),
               gettext('Are you sure you want to reload the server configuration on %s?', d.label),
               function() {
-                $.ajax({
-                  url: obj.generate_url(i, 'reload', d, true),
-                  method:'GET',
-                })
-                  .done(function(res) {
-                    if (res.data.status) {
-                      Notify.success(res.data.result);
-                    }
-                    else {
-                      Notify.error(res.data.result);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  });
+                getApiInstance().get(
+                  obj.generate_url(i, 'reload', d, true),
+                ).then(({data: res})=> {
+                  if (res.data.status) {
+                    Notify.success(res.data.result);
+                  }
+                  else {
+                    Notify.error(res.data.result);
+                  }
+                }).catch(function(error) {
+                  Notify.pgRespErrorNotify(error);
+                  t.unload(i);
+                });
               },
               function() { return true; },
             );
@@ -344,19 +337,16 @@ define('pgadmin.node.server', [
 
           if (d) {
             // Call to check if server is using pgpass file or not
-            $.ajax({
-              url: check_pgpass_url,
-              method:'GET',
-            })
-              .done(function(res) {
-                if (res.success && res.data.is_pgpass) {
-                  is_pgpass_file_used = true;
-                }
-                showChangeServerPassword(gettext('Change Password'), d, obj, i, is_pgpass_file_used);
-              })
-              .fail(function(xhr, status, error) {
-                Notify.pgRespErrorNotify(xhr, error);
-              });
+            getApiInstance().get(
+              check_pgpass_url
+            ).then(({data: res})=> {
+              if (res.success && res.data.is_pgpass) {
+                is_pgpass_file_used = true;
+              }
+              showChangeServerPassword(gettext('Change Password'), d, obj, i, is_pgpass_file_used);
+            }).catch(function(error) {
+              Notify.pgRespErrorNotify(error);
+            });
           }
 
           return false;
@@ -387,18 +377,14 @@ define('pgadmin.node.server', [
           if (!d)
             return false;
 
-          $.ajax({
-            url: obj.generate_url(i, 'wal_replay' , d, true),
-            type:'DELETE',
-            dataType: 'json',
-          })
-            .done(function(res) {
-              obj.on_done(res, t, i);
-            })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            });
+          getApiInstance().delete(
+            obj.generate_url(i, 'wal_replay' , d, true)
+          ).then(({data: res})=> {
+            obj.on_done(res, t, i);
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         },
 
         /* Resume WAL Replay */
@@ -412,18 +398,14 @@ define('pgadmin.node.server', [
           if (!d)
             return false;
 
-          $.ajax({
-            url: obj.generate_url(i, 'wal_replay' , d, true),
-            type:'PUT',
-            dataType: 'json',
-          })
-            .done(function(res) {
-              obj.on_done(res, t, i);
-            })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            });
+          getApiInstance().put(
+            obj.generate_url(i, 'wal_replay' , d, true)
+          ).then(({data: res})=> {
+            obj.on_done(res, t, i);
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         },
 
         /* Cleat saved database server password */
@@ -439,22 +421,19 @@ define('pgadmin.node.server', [
               gettext('Clear saved password'),
               gettext('Are you sure you want to clear the saved password for server %s?', d.label),
               function() {
-                $.ajax({
-                  url: obj.generate_url(i, 'clear_saved_password', d, true),
-                  method:'PUT',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      t.itemData(i).is_password_saved=res.data.is_password_saved;
-                    }
-                    else {
-                      Notify.error(res.info);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                  });
+                getApiInstance().put(
+                  obj.generate_url(i, 'clear_saved_password' , d, true)
+                ).then(({data: res})=> {
+                  if (res.success == 1) {
+                    Notify.success(res.info);
+                    t.itemData(i).is_password_saved=res.data.is_password_saved;
+                  }
+                  else {
+                    Notify.error(res.info);
+                  }
+                }).catch(function(error) {
+                  Notify.pgRespErrorNotify(error);
+                });
               },
               function() { return true; }
             );
@@ -476,22 +455,19 @@ define('pgadmin.node.server', [
               gettext('Clear SSH Tunnel password'),
               gettext('Are you sure you want to clear the saved password of SSH Tunnel for server %s?', d.label),
               function() {
-                $.ajax({
-                  url: obj.generate_url(i, 'clear_sshtunnel_password', d, true),
-                  method:'PUT',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Notify.success(res.info);
-                      t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
-                    }
-                    else {
-                      Notify.error(res.info);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
-                  });
+                getApiInstance().put(
+                  obj.generate_url(i, 'clear_sshtunnel_password' , d, true)
+                ).then(({data: res})=> {
+                  if (res.success == 1) {
+                    Notify.success(res.info);
+                    t.itemData(i).is_tunnel_password_saved=res.data.is_tunnel_password_saved;
+                  }
+                  else {
+                    Notify.error(res.info);
+                  }
+                }).catch(function(error) {
+                  Notify.pgRespErrorNotify(error);
+                });
               },
               function() { return true; }
             );
@@ -595,8 +571,8 @@ define('pgadmin.node.server', [
     // Open properties dialog in edit mode
       let server_url = obj.generate_url(item, 'obj', data, true);
       // Fetch the updated data
-      $.get(server_url)
-        .done(function(res) {
+      getApiInstance().get(server_url)
+        .then(({data: res})=>{
           if (res.shared && _.isNull(res.username) && data.user_id != current_user.id) {
             if (!res.service) {
               pgAdmin.Browser.Node.callbacks.show_obj_properties.call(
@@ -617,13 +593,14 @@ define('pgadmin.node.server', [
           else if (res.cloud_status == -1) {
             pgAdmin.Browser.BgProcessManager.recheckCloudServer(data._id);
           }
-        }).always(function(){
+        })
+        .then(()=>{
           data.is_connecting = false;
         });
 
       let wasConnected = reconnect || data.connected,
         onFailure = function(
-          xhr, status, error, _node, _data, _tree, _item, _wasConnected
+          xhr, error, _node, _data, _tree, _item, _wasConnected
         ) {
           data.connected = false;
 
@@ -647,7 +624,7 @@ define('pgadmin.node.server', [
               },
               function() {
                 tree.addIcon(_item, {icon: 'icon-server-not-connected'});
-                Notify.pgNotifier('Connection error', xhr, gettext('Connect to server.'));
+                Notify.pgNotifier('error', 'Connection error', xhr, gettext('Connect to server.'));
               }
             );
           } else {
@@ -750,20 +727,20 @@ define('pgadmin.node.server', [
       tree.removeIcon(item);
       tree.addIcon(item, {icon: 'icon-server-connecting'});
       let url = obj.generate_url(item, 'connect', data, true);
-      $.post(url)
-        .done(function(res) {
+      getApiInstance().post(url)
+        .then(({data: res})=>{
           if (res.success == 1) {
             return onSuccess(
               res, obj, data, tree, item, wasConnected
             );
           }
         })
-        .fail(function(xhr, status, error) {
+        .catch((xhr)=>{
           return onFailure(
-            xhr, status, error, obj, data, tree, item, wasConnected
+            xhr.response?.request, parseApiError(xhr), obj, data, tree, item, wasConnected
           );
         })
-        .always(function(){
+        .then(()=>{
           data.is_connecting = false;
         });
     };
@@ -773,8 +750,9 @@ define('pgadmin.node.server', [
       tree.setLeaf(item);
       tree.removeIcon(item);
       tree.addIcon(item, {icon: 'icon-server-connecting'});
-      $.get(url)
-        .done(function(res) {
+
+      getApiInstance().get(url)
+        .then(({data: res})=>{
           tree.setInode(item);
           if (res && res.data) {
             if (typeof res.data.icon == 'string') {
@@ -796,14 +774,14 @@ define('pgadmin.node.server', [
             );
           }
         })
-        .fail(function(xhr, status, error) {
+        .catch((error)=>{
           tree.setInode(item);
           if (data.shared && pgAdmin.server_mode == 'True'){
             tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
           }else{
             tree.addIcon(item, {icon: 'icon-server-not-connected'});
           }
-          Notify.pgRespErrorNotify(xhr, error);
+          Notify.pgRespErrorNotify(error);
         });
     };
   }

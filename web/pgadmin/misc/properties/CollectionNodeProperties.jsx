@@ -167,7 +167,7 @@ export function CollectionNodeView({
         })
         .then(function (res) {
           if (res.success == 0) {
-            pgBrowser.report_error(res.errormsg, res.info);
+            Notify.alert(res.errormsg, res.info);
           }
           pgAdmin.Browser.tree.refresh(selItem);
           setReload(!reload);

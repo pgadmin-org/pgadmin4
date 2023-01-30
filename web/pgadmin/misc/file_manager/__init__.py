@@ -117,11 +117,6 @@ class FileManagerModule(PgAdminModule):
 
     LABEL = gettext("Storage")
 
-    def get_own_stylesheets(self):
-        return [
-            url_for('static', filename='vendor/jquery.dropzone/dropzone.css')
-        ]
-
     def get_own_menuitems(self):
         return {
             'file_items': []
@@ -182,9 +177,9 @@ blueprint = FileManagerModule(MODULE_NAME, __name__)
 @blueprint.route("/", endpoint='index')
 @login_required
 def index():
-    """Render the preferences dialog."""
-    return render_template(
-        MODULE_NAME + "/index.html", _=gettext)
+    return bad_request(
+        errormsg=gettext("This URL cannot be called directly.")
+    )
 
 
 @blueprint.route("/utility.js")

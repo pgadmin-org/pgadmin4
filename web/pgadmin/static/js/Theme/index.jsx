@@ -515,6 +515,7 @@ function getFinalTheme(baseTheme) {
         root: {
           padding: '4px 8px',
           backgroundColor: baseTheme.otherVars.cardHeaderBg,
+          fontWeight: 'bold',
           ...mixins.panelBorder.bottom,
         }
       },

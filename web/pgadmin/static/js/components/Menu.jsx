@@ -86,7 +86,7 @@ PgMenu.propTypes = {
   className: CustomPropTypes.className,
   label: PropTypes.string,
   anchorRef: CustomPropTypes.ref,
-  menuButton: PropTypes.oneOfType([React.ReactNode, undefined]),
+  menuButton: PropTypes.element,
 };
 
 export const PgSubMenu = applyStatics(SubMenu)(({label, ...props})=>{

@@ -6,6 +6,7 @@ import { DATA_POINT_SIZE } from 'sources/chartjs';
 
 import Graphs, {GraphsWrapper, transformData,
   getStatsUrl, statsReducer} from '../../../pgadmin/dashboard/static/js/Graphs';
+import { withTheme } from '../fake_theme';
 
 describe('Graphs.js', ()=>{
   it('transformData', ()=>{
@@ -93,6 +94,7 @@ describe('Graphs.js', ()=>{
     let graphComp = null;
     let sid = 1;
     let did = 1;
+    let ThemedGraphs = withTheme(Graphs);
     beforeEach(()=>{
       jasmineEnzyme();
       let dashboardPref = {
@@ -107,7 +109,7 @@ describe('Graphs.js', ()=>{
         graph_line_border_width: 2
       };
 
-      graphComp = mount(<Graphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
+      graphComp = mount(<ThemedGraphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
     });
 
     it('GraphsWrapper is rendered',  (done)=>{
@@ -118,7 +120,6 @@ describe('Graphs.js', ()=>{
 
     it('pollDelay is set',  (done)=>{
       let found = graphComp.find('[data-testid="graph-poll-delay"]');
-      expect(found).toHaveClassName('d-none');
       expect(found).toHaveText('1000');
       done();
     });
@@ -136,9 +137,12 @@ describe('Graphs.js', ()=>{
         graph_line_border_width: 2
       };
       graphComp.setProps({preferences: dashboardPref});
-      let found = graphComp.find('[data-testid="graph-poll-delay"]');
-      expect(found).toHaveText('5000');
-      done();
+      setTimeout(()=>{
+        graphComp.update();
+        let found = graphComp.find('[data-testid="graph-poll-delay"]');
+        expect(found).toHaveText('5000');
+        done();
+      }, 500);
     });
   });
 });

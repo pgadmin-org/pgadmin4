@@ -168,28 +168,6 @@ define('pgadmin.browser.utils',
       ],
     },
     {% endif %}
-
-    // load the module right now
-    load_module: function(name, path, c) {
-      let obj = this;
-      require([name],function(m) {
-        try {
-          // initialize the module (if 'init' function present).
-          if (m.init && typeof(m.init) == 'function')
-            m.init();
-        } catch (e) {
-          // Log this exception on console to understand the issue properly.
-          console.log(e);
-          obj.report_error(gettext('Error loading script - ') + path);
-        }
-        if (c)
-        c.loaded += 1;
-      }, function() {
-        // Log the arguments on console to understand the issue properly.
-        console.log(arguments);
-        obj.report_error(gettext('Error loading script - ') + path);
-      });
-    }
   };
   return pgBrowser;
 });

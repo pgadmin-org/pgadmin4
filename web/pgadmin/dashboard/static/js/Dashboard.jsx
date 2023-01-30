@@ -16,7 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
 import Notify from '../../../static/js/helpers/Notifier';
-import { Box, Tab, Tabs } from '@material-ui/core';
+import { Box, Card, CardContent, CardHeader, Tab, Tabs } from '@material-ui/core';
 import { PgIconButton } from '../../../static/js/components/Buttons';
 import CancelIcon from '@material-ui/icons/Cancel';
 import StopSharpIcon from '@material-ui/icons/StopSharp';
@@ -108,6 +108,28 @@ const useStyles = makeStyles((theme) => ({
     height:  '1.9rem',
     width:  '2.2rem',
     ...theme.mixins.panelBorder,
+  },
+  chartCard: {
+    border: '1px solid '+theme.otherVars.borderColor,
+  },
+  chartCardContent: {
+    padding: '0.25rem 0.5rem',
+    height: '165px',
+    display: 'flex',
+  },
+  chartLegend: {
+    marginLeft: 'auto',
+    '& > div': {
+      display: 'flex',
+      fontWeight: 'normal',
+
+      '& .legend-value': {
+        marginLeft: '4px',
+        '& .legend-label': {
+          marginLeft: '4px',
+        }
+      }
+    }
   }
 }));
 
@@ -901,33 +923,27 @@ Dashboard.propTypes = {
 };
 
 export function ChartContainer(props) {
+  const classes = useStyles();
+
   return (
-    <div
-      className="card dashboard-graph"
-      role="object-document"
-      tabIndex="0"
-      aria-labelledby={props.id}
-    >
-      <div className="card-header">
-        <div className="d-flex">
-          <div id={props.id}>{props.title}</div>
-          <div className="ml-auto my-auto legend">
-            <div className="d-flex">
-              {props.datasets?.map((datum, i)=>(
-                <div className="legend-value" key={i}>
-                  <span style={{backgroundColor: datum.borderColor}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                  <span className="legend-label">{datum.label}</span>
-                </div>
-              ))}
-            </div>
+    <Card className={classes.chartCard} elevation={0}>
+      <CardHeader title={<Box display="flex" justifyContent="space-between">
+        <div id={props.id}>{props.title}</div>
+        <div className={classes.chartLegend}>
+          <div className="d-flex">
+            {props.datasets?.map((datum, i)=>(
+              <div className="legend-value" key={i}>
+                <span style={{backgroundColor: datum.borderColor}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span className="legend-label">{datum.label}</span>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-      <div className="card-body dashboard-graph-body">
-        {!props.errorMsg && !props.isTest && props.children}
-        <ChartError message={props.errorMsg} />
-      </div>
-    </div>
+      </Box>} />
+      <CardContent className={classes.chartCardContent}>
+        {!props.errorMsg ? props.children : <EmptyPanelMessage text={props.errorMsg}/>}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -938,36 +954,4 @@ ChartContainer.propTypes = {
   children: PropTypes.node.isRequired,
   errorMsg: PropTypes.string,
   isTest: PropTypes.bool
-};
-
-export function ChartError(props) {
-  if (props.message === null) {
-    return <></>;
-  }
-  return (
-    <div className="pg-panel-error pg-panel-message" role="alert">
-      {props.message}
-    </div>
-  );
-}
-
-ChartError.propTypes = {
-  message: PropTypes.string,
-};
-
-export function DashboardRow({ children }) {
-  return <div className="row dashboard-row">{children}</div>;
-}
-DashboardRow.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export function DashboardRowCol({ breakpoint, parts, children }) {
-  return <div className={`col-${breakpoint}-${parts}`}>{children}</div>;
-}
-
-DashboardRowCol.propTypes = {
-  breakpoint: PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl']).isRequired,
-  parts: PropTypes.number.isRequired,
-  children: PropTypes.node.isRequired,
 };

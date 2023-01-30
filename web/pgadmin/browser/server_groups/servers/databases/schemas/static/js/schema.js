@@ -12,9 +12,9 @@ import { getNodePrivilegeRoleSchema } from '../../../../static/js/privilege.ui';
 import { getNodeListByName } from '../../../../../../static/js/node_ajax';
 
 define('pgadmin.node.schema', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for schema collection
   if (!pgBrowser.Nodes['coll-schema']) {

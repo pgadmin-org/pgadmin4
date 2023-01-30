@@ -125,6 +125,9 @@ const useStyles = makeStyles((theme) =>
       padding: '8px',
       display: 'flex',
       flexDirection: 'column',
+    },
+    hidden: {
+      display: 'none',
     }
   }),
 );
@@ -198,7 +201,7 @@ function Wizard({ stepList, onStepChange, onSave, className, ...props }) {
             {
               React.Children.map(props.children, (child) => {
                 return (
-                  <div hidden={child.props.stepId !== activeStep} className={clsx(classes.stepDefaultStyle, child.props.className)}>
+                  <div className={clsx(classes.stepDefaultStyle, child.props.className, (child.props.stepId !== activeStep ? classes.hidden : ''))}>
                     {child}
                   </div>
                 );

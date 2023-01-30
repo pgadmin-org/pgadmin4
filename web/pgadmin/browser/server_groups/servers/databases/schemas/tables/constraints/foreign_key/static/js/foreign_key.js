@@ -10,12 +10,13 @@
 import { getNodeForeignKeySchema } from './foreign_key.ui';
 import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.foreign_key', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, pgAdmin, pgBrowser
+  gettext, url_for, pgAdmin, pgBrowser
 ) {
   // Extend the browser's node class for foreign key node
   if (!pgBrowser.Nodes['foreign_key']) {
@@ -65,11 +66,8 @@ define('pgadmin.node.foreign_key', [
 
           if (d) {
             let data = d;
-            $.ajax({
-              url: obj.generate_url(i, 'validate', d, true),
-              type:'GET',
-            })
-              .done(function(res) {
+            getApiInstance().get(obj.generate_url(i, 'validate', d, true))
+              .then(({data: res})=>{
                 if (res.success == 1) {
                   Notify.success(res.info);
                   t.removeIcon(i);
@@ -80,8 +78,8 @@ define('pgadmin.node.foreign_key', [
                   setTimeout(function() {t.select(i);}, 100);
                 }
               })
-              .fail(function(xhr, status, error) {
-                Notify.pgRespErrorNotify(xhr, error);
+              .catch((error)=>{
+                Notify.pgRespErrorNotify(error);
                 t.unload(i);
               });
           }

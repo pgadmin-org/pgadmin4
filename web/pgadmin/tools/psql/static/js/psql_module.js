@@ -28,7 +28,7 @@ export function setPanelTitle(psqlToolPanel, panelTitle) {
 
 let wcDocker = window.wcDocker;
 
-export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) {
+export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
   let pgBrowser = Browser;
   let terminal = Terminal;
   let parentData = null;
@@ -184,23 +184,23 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
 
         let openPSQLToolURL = function(j) {
           // add spinner element
-          let $spinner_el =
-            $(`<div class="pg-sp-container">
-                  <div class="pg-sp-content">
-                      <div class="row">
-                          <div class="col-12 pg-sp-icon"></div>
-                      </div>
-                  </div>
-              </div>`).appendTo($(j).data('embeddedFrame').$container);
+          const frame = j.frameData.embeddedFrame;
+          const spinner = document.createElement('div');
+          spinner.setAttribute('class', 'pg-sp-container');
+          spinner.innerHTML = `
+            <div class="pg-sp-content">
+              <div class="pg-sp-icon"></div>
+            </div>
+          `;
+
+          frame.$container[0].appendChild(spinner);
 
           let init_poller_id = setInterval(function() {
-            let frameInitialized = $(j).data('frameInitialized');
-            if (frameInitialized) {
+            if (j.frameData.frameInitialized) {
               clearInterval(init_poller_id);
-              let frame = $(j).data('embeddedFrame');
               if (frame) {
                 frame.onLoaded(()=>{
-                  $spinner_el.remove();
+                  spinner.remove();
                 });
                 frame.openHTML(psqlToolForm);
               }

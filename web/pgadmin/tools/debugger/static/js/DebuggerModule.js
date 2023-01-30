@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import $ from 'jquery';
 import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -613,7 +612,7 @@ export default class DebuggerModule {
             let closeUrl = url_for('debugger.close', {
               'trans_id': res.data.data.debuggerTransId,
             });
-            $.ajax({
+            self.api({
               url: closeUrl,
               method: 'DELETE',
             });

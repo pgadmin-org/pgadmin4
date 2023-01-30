@@ -9,12 +9,10 @@
 
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
-import $ from 'jquery';
-import pgWindow from 'sources/window';
 import Notify from '../../../static/js/helpers/Notifier';
-import { calcFontSize } from '../../../static/js/utils';
 import { shortcutToString } from '../../../static/js/components/ShortcutTitle';
 import gettext from 'sources/gettext';
+import getApiInstance from '../../../static/js/api_instance';
 
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -78,16 +76,11 @@ _.extend(pgBrowser, {
 
   // Get and cache the preferences
   cache_preferences: function (modulesChanged) {
-    let self = this,
-      headers = {};
-    headers[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+    let self = this;
 
     setTimeout(function() {
-      $.ajax({
-        url: url_for('preferences.get_all'),
-        headers: headers,
-      })
-        .done(function(res) {
+      getApiInstance().get(url_for('preferences.get_all'))
+        .then(({data: res})=>{
           self.preferences_cache = res;
           self.preference_version(self.generate_preference_version());
 
@@ -97,43 +90,30 @@ _.extend(pgBrowser, {
           pgBrowser.browserTreeState.init();
 
           /* Once the cache is loaded after changing the preferences,
-         * notify the modules of the change
-         */
+          * notify the modules of the change
+          */
           if(modulesChanged) {
             if(typeof modulesChanged === 'string'){
-              $.event.trigger('prefchange:'+modulesChanged);
+              pgBrowser.Events.trigger('prefchange:'+modulesChanged);
             } else {
               _.each(modulesChanged, (val, key)=> {
-                $.event.trigger('prefchange:'+key);
+                pgBrowser.Events.trigger('prefchange:'+key);
               });
             }
           }
         })
-        .fail(function(xhr, status, error) {
-          Notify.pgRespErrorNotify(xhr, error);
+        .catch(function(error) {
+          Notify.pgRespErrorNotify(error);
         });
     }, 500);
   },
 
   triggerPreferencesChange: function(moduleChanged) {
-    $.event.trigger('prefchange:'+moduleChanged);
+    pgBrowser.Events.trigger('prefchange:'+moduleChanged);
   },
 
   reflectPreferences: function(module) {
     let obj = this;
-
-    if(module === 'sqleditor' || module === null || typeof module === 'undefined') {
-      let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
-
-      $(obj?.editor?.getWrapperElement()).css(
-        'font-size', calcFontSize(sqlEditPreferences.sql_font_size)
-      );
-      obj?.editor?.setOption('tabSize', sqlEditPreferences.tab_size);
-      obj?.editor?.setOption('lineWrapping', sqlEditPreferences.wrap_code);
-      obj?.editor?.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
-      obj?.editor?.setOption('matchBrackets', sqlEditPreferences.brace_matching);
-      obj?.editor?.refresh();
-    }
     //browser preference
     if(module === 'browser') {
       let browserPreferences = obj.get_preferences_for_module('browser');
@@ -158,13 +138,7 @@ _.extend(pgBrowser, {
   },
 
   onPreferencesChange: function(module, eventHandler) {
-    let eventWindow = pgWindow;
-    if (window.location === window.parent?.location ) {
-      // The page is in a new tab
-      eventWindow = window;
-    }
-
-    $(eventWindow).on('prefchange:'+module, function(event) {
+    pgBrowser.Events.on('prefchange:'+module, function(event) {
       eventHandler(event);
     });
   },

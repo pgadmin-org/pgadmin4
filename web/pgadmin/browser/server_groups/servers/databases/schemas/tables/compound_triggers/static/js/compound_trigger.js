@@ -10,14 +10,15 @@
 import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import CompoundTriggerSchema from './compound_trigger.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.compound_trigger', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-compound_trigger']) {
@@ -112,31 +113,27 @@ define('pgadmin.node.compound_trigger', [
             return false;
 
           let data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'enable' , d, true),
-            type:'PUT',
-            data: {'is_enable_trigger' : 'O'},
-            dataType: 'json',
-          })
-            .done(function(res) {
-              if (res.success == 1) {
-                Notify.success(res.info);
-                t.removeIcon(i);
-                data.icon = 'icon-compound_trigger';
-                t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
+          getApiInstance().put(
+            obj.generate_url(i, 'enable' , d, true),
+            {'is_enable_trigger' : 'O'}
+          ).then(({data: res})=> {
+            if(res.success == 1) {
+              Notify.success(res.info);
+              t.removeIcon(i);
+              data.icon = 'icon-compound_trigger';
+              t.addIcon(i, {icon: data.icon});
               t.unload(i);
-            });
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         },
         /* Disable compound trigger */
         disable_compound_trigger: function(args) {
@@ -150,31 +147,27 @@ define('pgadmin.node.compound_trigger', [
             return false;
 
           let data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'enable' , d, true),
-            type:'PUT',
-            data: {'is_enable_trigger' : 'D'},
-            dataType: 'json',
-          })
-            .done(function(res) {
-              if (res.success == 1) {
-                Notify.success(res.info);
-                t.removeIcon(i);
-                data.icon = 'icon-compound_trigger-bad';
-                t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error, gettext('Disable compound trigger failed'));
+          getApiInstance().put(
+            obj.generate_url(i, 'enable' , d, true),
+            {'is_enable_trigger' : 'D'}
+          ).then(({data: res})=> {
+            if(res.success == 1) {
+              Notify.success(res.info);
+              t.removeIcon(i);
+              data.icon = 'icon-compound_trigger-bad';
+              t.addIcon(i, {icon: data.icon});
               t.unload(i);
-            });
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         },
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
