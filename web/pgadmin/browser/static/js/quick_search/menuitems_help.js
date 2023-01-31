@@ -57,7 +57,7 @@ export function menuSearch(param, props) {
     if(menu.name == 'object') {
       let selectedNode = pgAdmin.Browser.tree.selected();
       if(selectedNode) {
-        subMenus = pgAdmin.Browser.all_menus_cache[menu.name][selectedNode._metadata.data._type];
+        subMenus = menu.getMenuItems();
       }
     } else {
       subMenus = pgAdmin.Browser.all_menus_cache[menu.name];
