@@ -33,3 +33,4 @@ Bug fixes
   | `Issue #5751 <https://github.com/pgadmin-org/pgadmin4/issues/5751>`_ -  Fix failing import servers CLI due to vulnerability fix.
   | `Issue #5746 <https://github.com/pgadmin-org/pgadmin4/issues/5746>`_ -  Increase the length of the value column of the setting table.
   | `Issue #5781 <https://github.com/pgadmin-org/pgadmin4/issues/5781>`_ -  Fixed an issue where Query history is not getting loaded with external database.
+  | `Issue #5796 <https://github.com/pgadmin-org/pgadmin4/issues/5796>`_ -  Ensure nested menu items are shown in quick search result.
