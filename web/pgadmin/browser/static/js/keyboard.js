@@ -26,10 +26,10 @@ _.extend(pgBrowser.keyboardNavigation, {
     Mousetrap.reset();
     if (pgBrowser.preferences_cache.length > 0) {
       this.keyboardShortcut = {
-        'file_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_file').value),
-        'object_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_object').value),
-        'tools_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_tools').value),
-        'help_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_help').value),
+        ...(pgBrowser.get_preference('browser', 'main_menu_file')?.value) && {'file_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_file')?.value)},
+        ...(pgBrowser.get_preference('browser', 'main_menu_object')?.value) && {'object_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_object')?.value)},
+        ...(pgBrowser.get_preference('browser', 'main_menu_tools')?.value) && {'tools_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_tools')?.value)},
+        ...(pgBrowser.get_preference('browser', 'main_menu_help')?.value) && {'help_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_help')?.value)},
         'left_tree_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'browser_tree').value),
         'tabbed_panel_backward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_backward').value),
         'tabbed_panel_forward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_forward').value),
@@ -49,11 +49,11 @@ _.extend(pgBrowser.keyboardNavigation, {
 
       };
       this.shortcutMethods = {
-        'bindMainMenu': {
+        ...(pgBrowser.get_preference('browser', 'main_menu_file')?.value) && {'bindMainMenu': {
           'shortcuts': [this.keyboardShortcut.file_shortcut,
             this.keyboardShortcut.object_shortcut, this.keyboardShortcut.tools_shortcut,
             this.keyboardShortcut.help_shortcut],
-        }, // Main menu
+        }}, // Main menu
         'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
         'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
         'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
@@ -108,7 +108,7 @@ _.extend(pgBrowser.keyboardNavigation, {
   },
   _bindWithMousetrap: function(shortcuts, callback, bindElem) {
     const self = this;
-    Mousetrap.unbind(shortcuts);
+    shortcuts ?? Mousetrap.unbind(shortcuts);
     if (bindElem) {
       const elem = document.querySelector(bindElem);
       Mousetrap(elem).bind(shortcuts, function() {
@@ -403,7 +403,7 @@ _.extend(pgBrowser.keyboardNavigation, {
     return new dialogTabNavigator.dialogTabNavigator(dialogContainer, backward_shortcut, forward_shortcut);
   },
   bindOpenQuickSearch: function() {
-    $('#search_icon').trigger('click');
+    pgWindow.pgAdmin.Browser.all_menus_cache.help.mnu_quick_search_help.callback();
   },
 });
 
