@@ -132,7 +132,6 @@ _build_docs() {
     # shellcheck disable=SC1091
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
-    pip3 install --upgrade setuptools
     pip3 install -r "${SOURCE_DIR}/requirements.txt"
     pip3 install sphinx
     pip3 install sphinxcontrib-youtube
