@@ -68,11 +68,12 @@ def migrate_connection_params(table_name):
         )
 
     # Drop constraint on ssl_mode column.
-    try:
-        with op.batch_alter_table(table_name) as batch_op:
-            batch_op.drop_constraint('ck_ssl_mode')
-    except Exception:
-        pass
+    if table_name == 'server':
+        try:
+            with op.batch_alter_table(table_name) as batch_op:
+                batch_op.drop_constraint('ck_ssl_mode')
+        except Exception:
+            pass
 
     # Drop unused columns
     with op.batch_alter_table(table_name) as batch_op:
