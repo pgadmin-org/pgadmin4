@@ -133,6 +133,7 @@ class UserManagementCollection extends BaseUISchema {
   validate(state, setError) {
     let msg = undefined;
     let obj = this;
+    let minPassLen = pgAdmin.password_length_min;
     if (obj.isUserNameEnabled(state) && isEmptyString(state.username)) {
       msg = gettext('Username cannot be empty');
       setError('username', msg);
@@ -184,8 +185,8 @@ class UserManagementCollection extends BaseUISchema {
         msg = gettext('Password cannot be empty for user %s', state.email);
         setError('newPassword', msg);
         return true;
-      } else if (state.newPassword?.length < 6) {
-        msg = gettext('Password must be at least 6 characters for user %s', state.email);
+      } else if (state.newPassword?.length < minPassLen) {
+        msg = gettext('Password must be at least %s characters for user %s', minPassLen, state.email);
         setError('newPassword', msg);
         return true;
       } else {

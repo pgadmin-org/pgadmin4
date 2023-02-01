@@ -69,6 +69,9 @@ define('pgadmin.browser.utils',
    /* Server Heartbeat Timeout */
   pgAdmin['heartbeat_timeout'] =  '{{heartbeat_timeout}}';
 
+  /* Minimum password length */
+  pgAdmin['password_length_min'] = '{{password_length_min}}';
+
   // Define list of nodes on which Query tool option doesn't appears
   let unsupported_nodes = pgAdmin.unsupported_nodes = [
      'server_group', 'server', 'coll-tablespace', 'tablespace',

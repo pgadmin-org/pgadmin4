@@ -13,6 +13,9 @@ Please consider the following guidelines when selecting a password:
 
 * Ensure that your password is an adequate length; 6 characters should be the
   absolute minimum number of characters in the password.
+* The minimum password length is set by default to six characters. This value 
+  can be changed by setting the *PASSWORD_LENGTH_MIN* option to desired length 
+  in pgAdmin configuration; see :ref:`config_py` for more information.
 * Ensure that your password is not open to dictionary attacks. Use a mixture of
   upper and lower case letters and numerics, and avoid words or names. Consider
   using the first letter from each word in a phrase that you will remember

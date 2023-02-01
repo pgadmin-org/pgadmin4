@@ -350,6 +350,7 @@ def create_app(app_name=None):
     app.config['SECURITY_MSG_USER_DOES_NOT_EXIST'] = \
         app.config['SECURITY_MSG_INVALID_PASSWORD'] = \
         (gettext("Incorrect username or password."), "error")
+    app.config['SECURITY_PASSWORD_LENGTH_MIN'] = config.PASSWORD_LENGTH_MIN
 
     # Create database connection object and mailer
     db.init_app(app)

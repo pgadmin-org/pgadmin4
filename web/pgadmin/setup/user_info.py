@@ -55,13 +55,13 @@ def user_info_server():
             email = input(ENTER_EMAIL_ADDRESS)
 
         p1, p2 = pprompt()
-        while p1 != p2 or len(p1) < 6:
+        while p1 != p2 or len(p1) < config.PASSWORD_LENGTH_MIN:
             if p1 != p2:
                 print('Passwords do not match. Please try again.')
             else:
                 print(
-                    'Password must be at least 6 characters. '
-                    'Please try again.'
+                    'Password must be at least {} characters. '
+                    'Please try again.'.format(config.PASSWORD_LENGTH_MIN)
                 )
             p1, p2 = pprompt()
 
