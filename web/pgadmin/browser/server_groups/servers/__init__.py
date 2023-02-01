@@ -268,7 +268,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 was_connected=was_connected,
                 errmsg=errmsg,
                 user_id=server.user_id,
-                user_name=server.username,
+                username=server.username,
                 shared=server.shared,
                 is_kerberos_conn=bool(server.kerberos_conn),
                 gss_authenticated=manager.gss_authenticated,
@@ -593,7 +593,7 @@ class ServerNode(PGChildNodeView):
                     is_tunnel_password_saved=True
                     if server.tunnel_password is not None else False,
                     errmsg=errmsg,
-                    user_name=server.username,
+                    username=server.username,
                     shared=server.shared,
                     is_kerberos_conn=bool(server.kerberos_conn),
                     gss_authenticated=manager.gss_authenticated
@@ -663,7 +663,7 @@ class ServerNode(PGChildNodeView):
                 if server.tunnel_password is not None else False,
                 errmsg=errmsg,
                 shared=server.shared,
-                user_name=server.username,
+                username=server.username,
                 is_kerberos_conn=bool(server.kerberos_conn),
                 gss_authenticated=manager.gss_authenticated
             ),
@@ -845,7 +845,7 @@ class ServerNode(PGChildNodeView):
                 user_id=server.user_id,
                 user=manager.user_info if connected else None,
                 server_type='pg',  # default server type
-                user_name=server.username,
+                username=server.username,
                 role=server.role,
                 is_password_saved=bool(server.save_password)
             )

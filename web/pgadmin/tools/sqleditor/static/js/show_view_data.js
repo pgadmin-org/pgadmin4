@@ -136,7 +136,7 @@ function generateUrl(trans_id, connectionData, nodeData, parentData) {
     +`&did=${parentData.database._id}`
     +`&server_type=${parentData.server.server_type}`;
 
-  if(!parentData.server.user_name && parentData.server.user?.name) {
+  if(!parentData.server.username && parentData.server.user?.name) {
     url_endpoint += `&user=${parentData.server.user?.name}`;
   }
 
