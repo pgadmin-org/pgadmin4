@@ -15,6 +15,7 @@ import sys
 import re
 import ipaddress
 import traceback
+import shutil
 
 from types import MethodType
 from collections import defaultdict
@@ -423,7 +424,15 @@ def create_app(app_name=None):
 
                 # Run migration if current schema version is greater than the
                 # schema version stored in version table
-                if CURRENT_SCHEMA_VERSION >= schema_version:
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    # Take a backup of the old database file.
+                    try:
+                        prev_database_file_name = \
+                            "{0}.prev.bak".format(SQLITE_PATH)
+                        shutil.copyfile(SQLITE_PATH, prev_database_file_name)
+                    except Exception as e:
+                        app.logger.error(e)
+
                     upgrade_db()
                 else:
                     # check all tables are present in the db.
@@ -454,12 +463,10 @@ def create_app(app_name=None):
                     schema_version = get_version()
 
                     # Run migration if current schema version is greater than
-                    # the schema version stored in version table
-                    if CURRENT_SCHEMA_VERSION >= schema_version:
-                        db_upgrade(app)
-
-                    # Update schema version to the latest
+                    # the schema version stored in version table.
                     if CURRENT_SCHEMA_VERSION > schema_version:
+                        db_upgrade(app)
+                        # Update schema version to the latest
                         set_version(CURRENT_SCHEMA_VERSION)
                         db.session.commit()
             except Exception as e:
