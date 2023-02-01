@@ -24,7 +24,7 @@ describe('SubscriptionSchema', ()=>{
         connected: true,
         user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
         user_id: 1,
-        user_name: 'postgres',
+        username: 'postgres',
         version: 130005,
         server: {host: '127.0.0.1', port: 5432},
       },

@@ -24,7 +24,7 @@ describe('PublicationSchema', ()=>{
         connected: true,
         user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
         user_id: 1,
-        user_name: 'postgres',
+        username: 'postgres',
         version: 130005,
       },
     },
