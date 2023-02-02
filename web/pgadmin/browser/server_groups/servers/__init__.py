@@ -1194,6 +1194,7 @@ class ServerNode(PGChildNodeView):
                     server_icon_and_background(connected, manager, server),
                     True,
                     self.node_type,
+                    username=server.username,
                     user=user,
                     connected=connected,
                     shared=server.shared,
