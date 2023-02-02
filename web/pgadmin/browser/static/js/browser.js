@@ -1937,7 +1937,7 @@ define('pgadmin.browser', [
     addChildTreeNodes: function(_treeHierarchy, _node, _type, _arrayIds, _callback) {
       let module = _type in pgBrowser.Nodes && pgBrowser.Nodes[_type],
         childTreeInfo = _arrayIds.length && _.extend(
-          {}, _.mapObject(_treeHierarchy, function(_val) {
+          {}, _.mapValues(_treeHierarchy, function(_val) {
             _val.priority -= 1; return _val;
           })),
         arrayChildNodeData = [],
