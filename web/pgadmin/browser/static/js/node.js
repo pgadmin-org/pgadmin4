@@ -175,9 +175,9 @@ define('pgadmin.browser.node', [
       // Show query tool only in context menu of supported nodes.
       if (_.indexOf(pgAdmin.unsupported_nodes, self.type) == -1) {
         let enable = function(itemData) {
-          if (itemData._type == 'database' && itemData.allowConn)
+          if (itemData?._type == 'database' && itemData?.allowConn)
             return true;
-          else if (itemData._type != 'database')
+          else if (itemData?._type != 'database')
             return true;
           else
             return false;

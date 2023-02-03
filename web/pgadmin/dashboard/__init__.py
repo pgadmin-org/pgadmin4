@@ -75,7 +75,7 @@ class DashboardModule(PgAdminModule):
         self.session_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'session_stats_refresh',
             gettext("Session statistics refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
+            5, min_val=1, max_val=999999,
             category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
@@ -83,7 +83,7 @@ class DashboardModule(PgAdminModule):
         self.tps_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'tps_stats_refresh',
             gettext("Transaction throughput refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
+            5, min_val=1, max_val=999999,
             category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
@@ -91,7 +91,7 @@ class DashboardModule(PgAdminModule):
         self.ti_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'ti_stats_refresh',
             gettext("Tuples in refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
+            5, min_val=1, max_val=999999,
             category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
@@ -99,7 +99,7 @@ class DashboardModule(PgAdminModule):
         self.to_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'to_stats_refresh',
             gettext("Tuples out refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
+            5, min_val=1, max_val=999999,
             category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
@@ -107,7 +107,7 @@ class DashboardModule(PgAdminModule):
         self.bio_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'bio_stats_refresh',
             gettext("Block I/O statistics refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
+            5, min_val=1, max_val=999999,
             category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
