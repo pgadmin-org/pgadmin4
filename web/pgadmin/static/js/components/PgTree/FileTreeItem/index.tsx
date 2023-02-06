@@ -4,6 +4,7 @@ import { ClasslistComposite } from 'aspen-decorations'
 import { Directory, FileEntry, IItemRendererProps, ItemType, PromptHandle, RenamePromptHandle, FileType, FileOrDir} from 'react-aspen'
 import {IFileTreeXTriggerEvents, FileTreeXEvent } from '../types'
 import _ from 'lodash'
+import { Notificar } from 'notificar'
 
 interface IItemRendererXProps {
     /**
@@ -17,6 +18,7 @@ interface IItemRendererXProps {
     decorations: ClasslistComposite
     onClick: (ev: React.MouseEvent, item: FileEntry | Directory, type: ItemType) => void
     onContextMenu: (ev: React.MouseEvent, item: FileEntry | Directory) => void
+    events: Notificar<FileTreeXEvent>
 }
 
 // DO NOT EXTEND FROM PureComponent!!! You might miss critical changes made deep within `item` prop
@@ -80,9 +82,10 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
                 onContextMenu={this.handleContextMenu}
                 onClick={this.handleClick}
                 onDoubleClick={this.handleDoubleClick}
+                onDragStart={this.handleDragStartItem}
                 // required for rendering context menus when opened through context menu button on keyboard
                 ref={this.handleDivRef}
-                draggable={false}>
+                draggable={true}>
 
                 {!isNewPrompt && fileOrDir === 'directory' ?
                     <i className={cn('directory-toggle', isDirExpanded ? 'open' : '')} />
@@ -162,6 +165,16 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
         const { item, itemType, onDoubleClick } = this.props
         if (itemType === ItemType.File || itemType === ItemType.Directory) {
             onDoubleClick(ev, item as FileEntry, itemType)
+        }
+    }
+
+    private handleDragStartItem = (e: React.DragEvent) => {
+        const { item, itemType, events } = this.props
+        if (itemType === ItemType.File || itemType === ItemType.Directory) {
+            const ref = FileTreeItem.itemIdToRefMap.get(item.id)
+            if (ref) {
+                events.dispatch(FileTreeXEvent.onTreeEvents, e, 'dragstart', item)
+            }
         }
     }
 }
