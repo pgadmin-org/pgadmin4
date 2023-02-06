@@ -288,8 +288,8 @@ _.extend(pgBrowser.keyboardNavigation, {
     if (!tree.d)
       return;
 
-    // Call data grid method to render view data
-    pgAdmin.SearchObjects.show_search_objects('', tree.i);
+    // Call show search object to open the search object dialog.
+    pgAdmin.Tools.SearchObjects.show_search_objects('', tree.i);
   },
   bindSubMenuProperties: function() {
     const tree = this.getTreeDetails();
