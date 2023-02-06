@@ -259,7 +259,7 @@ describe('ERDCore', ()=>{
         return new FakeNode({}, `id-${data.name}`);
       });
       spyOn(erdCoreObj, 'addLink');
-      spyOn(erdCoreObj, 'dagreDistributeNodes');
+      spyOn(erdCoreObj, 'dagreDistributeNodes').and.callFake(()=>{/* intentionally empty */});
 
       erdCoreObj.deserializeData(TEST_TABLES_DATA);
       expect(erdCoreObj.addNode).toHaveBeenCalledTimes(TEST_TABLES_DATA.length);

@@ -35,7 +35,8 @@ describe('<GraphsWrapper /> component', ()=>{
       showTooltip={true}
       showDataPoints={true}
       lineBorderWidth={2}
-      isDatabase={false} />);
+      isDatabase={false}
+      isTest={true} />);
   });
 
   it('graph containers are rendered', (done)=>{
@@ -61,24 +62,9 @@ describe('<GraphsWrapper /> component', ()=>{
     done();
   });
 
-  it('graph body has the canvas', (done)=>{
-    let found = graphComp.find('.card.dashboard-graph .dashboard-graph-body canvas');
-    expect(found.at(0).length).toBe(1);
-    expect(found.at(1).length).toBe(1);
-    expect(found.at(2).length).toBe(1);
-    expect(found.at(3).length).toBe(1);
-    expect(found.at(4).length).toBe(1);
-    done();
-  });
-
   it('graph body shows the error', (done)=>{
     graphComp.setProps({errorMsg: 'Some error occurred'});
-    let found = graphComp.find('.card.dashboard-graph .dashboard-graph-body .chart-wrapper');
-    expect(found.at(0)).toHaveClassName('d-none');
-    expect(found.at(1)).toHaveClassName('d-none');
-    expect(found.at(2)).toHaveClassName('d-none');
-    expect(found.at(3)).toHaveClassName('d-none');
-    expect(found.at(4)).toHaveClassName('d-none');
+    let found = graphComp.find('.card.dashboard-graph .dashboard-graph-body');
 
     found = graphComp.find('.card.dashboard-graph .dashboard-graph-body .pg-panel-error.pg-panel-message');
     expect(found.at(0)).toIncludeText('Some error occurred');

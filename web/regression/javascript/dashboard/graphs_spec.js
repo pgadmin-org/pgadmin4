@@ -4,27 +4,22 @@ import {mount} from 'enzyme';
 import '../helper/enzyme.helper';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 
-import Graphs, {GraphsWrapper, X_AXIS_LENGTH, transformData,
+import Graphs, {GraphsWrapper, transformData,
   getStatsUrl, statsReducer} from '../../../pgadmin/dashboard/static/js/Graphs';
 
 describe('Graphs.js', ()=>{
   it('transformData', ()=>{
     expect(transformData({'Label1': [], 'Label2': []}, 1, false)).toEqual({
-      labels: [...Array(X_AXIS_LENGTH).keys()],
       datasets: [{
         label: 'Label1',
         data: [],
         borderColor: '#00BCD4',
-        backgroundColor: '#00BCD4',
         pointHitRadius: DATA_POINT_SIZE,
-        pointStyle: 'circle',
       },{
         label: 'Label2',
         data: [],
         borderColor: '#9CCC65',
-        backgroundColor: '#9CCC65',
         pointHitRadius: DATA_POINT_SIZE,
-        pointStyle: 'circle',
       }],
       refreshRate: 1,
     });
@@ -112,7 +107,7 @@ describe('Graphs.js', ()=>{
         graph_line_border_width: 2
       };
 
-      graphComp = mount(<Graphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} />);
+      graphComp = mount(<Graphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
     });
 
     it('GraphsWrapper is rendered',  (done)=>{

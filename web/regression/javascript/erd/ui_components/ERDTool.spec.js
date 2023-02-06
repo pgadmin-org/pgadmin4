@@ -319,7 +319,7 @@ describe('ERDTool', ()=>{
   });
 
   it('onAutoDistribute', ()=>{
-    spyOn(bodyInstance.diagram, 'dagreDistributeNodes');
+    spyOn(bodyInstance.diagram, 'dagreDistributeNodes').and.callFake(()=>{/* intentionally empty */});
     bodyInstance.onAutoDistribute();
     expect(bodyInstance.diagram.dagreDistributeNodes).toHaveBeenCalled();
   });

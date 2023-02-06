@@ -21,6 +21,7 @@ import getDarkTheme from './dark';
 import getHightContrastTheme from './high_contrast';
 import { CssBaseline } from '@material-ui/core';
 import pickrOverride from './overrides/pickr.override';
+import uplotOverride from './overrides/uplot.override';
 
 /* Common settings across all themes */
 let basicSettings = createMuiTheme();
@@ -313,6 +314,7 @@ function getFinalTheme(baseTheme) {
             padding: 0,
           },
           ...pickrOverride(baseTheme),
+          ...uplotOverride(baseTheme),
         },
       },
       MuiOutlinedInput:  {

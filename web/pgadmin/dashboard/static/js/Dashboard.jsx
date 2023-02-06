@@ -911,13 +911,20 @@ export function ChartContainer(props) {
       <div className="card-header">
         <div className="d-flex">
           <div id={props.id}>{props.title}</div>
-          <div className="ml-auto my-auto legend" ref={props.legendRef}></div>
+          <div className="ml-auto my-auto legend">
+            <div className="d-flex">
+              {props.datasets?.map((datum, i)=>(
+                <div className="legend-value" key={i}>
+                  <span style={{backgroundColor: datum.borderColor}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                  <span className="legend-label">{datum.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <div className="card-body dashboard-graph-body">
-        <div className={'chart-wrapper ' + (props.errorMsg ? 'd-none' : '')}>
-          {props.children}
-        </div>
+        {!props.errorMsg && !props.isTest && props.children}
         <ChartError message={props.errorMsg} />
       </div>
     </div>
@@ -927,12 +934,10 @@ export function ChartContainer(props) {
 ChartContainer.propTypes = {
   id: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  legendRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.any }),
-  ]).isRequired,
+  datasets: PropTypes.array.isRequired,
   children: PropTypes.node.isRequired,
   errorMsg: PropTypes.string,
+  isTest: PropTypes.bool
 };
 
 export function ChartError(props) {

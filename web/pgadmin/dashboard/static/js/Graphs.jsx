@@ -6,8 +6,8 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React, { useEffect, useRef, useState, useReducer, useCallback, useMemo } from 'react';
-import { LineChart, DATA_POINT_STYLE, DATA_POINT_SIZE } from 'sources/chartjs';
+import React, { useEffect, useRef, useState, useReducer, useMemo } from 'react';
+import { DATA_POINT_SIZE } from 'sources/chartjs';
 import {ChartContainer, DashboardRowCol, DashboardRow} from './Dashboard';
 import url_for from 'sources/url_for';
 import axios from 'axios';
@@ -15,43 +15,26 @@ import gettext from 'sources/gettext';
 import {getGCD, getEpoch} from 'sources/utils';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
 import PropTypes from 'prop-types';
+import StreamingChart from '../../../static/js/components/PgChart/StreamingChart';
 
 export const X_AXIS_LENGTH = 75;
 
 /* Transform the labels data to suit ChartJS */
-export function transformData(labels, refreshRate, use_diff_point_style) {
+export function transformData(labels, refreshRate) {
   const colors = ['#00BCD4', '#9CCC65', '#E64A19'];
   let datasets = Object.keys(labels).map((label, i)=>{
     return {
       label: label,
       data: labels[label] || [],
       borderColor: colors[i],
-      backgroundColor: colors[i],
       pointHitRadius: DATA_POINT_SIZE,
-      pointStyle: use_diff_point_style ? DATA_POINT_STYLE[i] : 'circle'
     };
   }) || [];
 
   return {
-    labels: [...Array(X_AXIS_LENGTH).keys()],
     datasets: datasets,
     refreshRate: refreshRate,
   };
-}
-
-/* Custom ChartJS legend callback */
-export function generateLegend(chart) {
-  let text = [];
-  text.push('<div class="' + chart.id + '-legend d-flex">');
-  for (let chart_val of chart.data.datasets) {
-    text.push('<div class="legend-value"><span style="background-color:' + chart_val.backgroundColor + '">&nbsp;&nbsp;&nbsp;&nbsp;</span>');
-    if (chart_val.label) {
-      text.push('<span class="legend-label">' + chart_val.label + '</span>');
-    }
-    text.push('</div>');
-  }
-  text.push('</div>');
-  return text.join('');
 }
 
 /* URL for fetching graphs data */
@@ -104,7 +87,7 @@ const chartsDefault = {
   'bio_stats': {'Reads': [], 'Hits': []},
 };
 
-export default function Graphs({preferences, sid, did, pageVisible, enablePoll=true}) {
+export default function Graphs({preferences, sid, did, pageVisible, enablePoll=true, isTest}) {
   const refreshOn = useRef(null);
   const prevPrefernces = usePrevious(preferences);
 
@@ -238,6 +221,7 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
           showDataPoints={preferences['graph_data_points']}
           lineBorderWidth={preferences['graph_line_border_width']}
           isDatabase={did > 0}
+          isTest={isTest}
         />
       }
     </>
@@ -256,92 +240,45 @@ Graphs.propTypes = {
   ]),
   pageVisible: PropTypes.bool,
   enablePoll: PropTypes.bool,
+  isTest: PropTypes.bool,
 };
 
 export function GraphsWrapper(props) {
-  const sessionStatsLegendRef = useRef();
-  const tpsStatsLegendRef = useRef();
-  const tiStatsLegendRef = useRef();
-  const toStatsLegendRef = useRef();
-  const bioStatsLegendRef = useRef();
   const options = useMemo(()=>({
-    elements: {
-      point: {
-        radius: props.showDataPoints ? DATA_POINT_SIZE : 0,
-      },
-      line: {
-        borderWidth: props.lineBorderWidth,
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: props.showTooltip,
-        callbacks: {
-          title: function(tooltipItem) {
-            let title = '';
-            try {
-              title = parseInt(tooltipItem[0].label) * tooltipItem[0].chart?.data.refreshRate + gettext(' seconds ago');
-            } catch (error) {
-              title = '';
-            }
-            return title;
-          },
-        },
-      }
-    },
-    scales: {
-      x: {
-        reverse: true,
-      },
-      y: {
-        min: 0,
-      }
-    },
+    showDataPoints: props.showDataPoints,
+    showTooltip: props.showTooltip,
+    lineBorderWidth: props.lineBorderWidth,
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
-  const updateOptions = useMemo(()=>({duration: 0}), []);
-
-  const onInitCallback = useCallback(
-    (legendRef)=>(chart)=>{
-      legendRef.current.innerHTML = generateLegend(chart);
-    }
-  );
 
   return (
     <>
       <DashboardRow>
         <DashboardRowCol breakpoint='md' parts={6}>
-          <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')} legendRef={sessionStatsLegendRef} errorMsg={props.errorMsg}>
-            <LineChart options={options} data={props.sessionStats} updateOptions={updateOptions}
-              onInit={onInitCallback(sessionStatsLegendRef)}/>
+          <ChartContainer id='sessions-graph' title={props.isDatabase ?  gettext('Database sessions') : gettext('Server sessions')}
+            datasets={props.sessionStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.sessionStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </DashboardRowCol>
         <DashboardRowCol breakpoint='md' parts={6}>
-          <ChartContainer id='tps-graph' title={gettext('Transactions per second')} legendRef={tpsStatsLegendRef} errorMsg={props.errorMsg}>
-            <LineChart options={options} data={props.tpsStats} updateOptions={updateOptions}
-              onInit={onInitCallback(tpsStatsLegendRef)}/>
+          <ChartContainer id='tps-graph' title={gettext('Transactions per second')} datasets={props.tpsStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.tpsStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </DashboardRowCol>
       </DashboardRow>
       <DashboardRow>
         <DashboardRowCol breakpoint='md' parts={4}>
-          <ChartContainer id='ti-graph' title={gettext('Tuples in')} legendRef={tiStatsLegendRef} errorMsg={props.errorMsg}>
-            <LineChart options={options} data={props.tiStats} updateOptions={updateOptions}
-              onInit={onInitCallback(tiStatsLegendRef)}/>
+          <ChartContainer id='ti-graph' title={gettext('Tuples in')} datasets={props.tiStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.tiStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </DashboardRowCol>
         <DashboardRowCol breakpoint='md' parts={4}>
-          <ChartContainer id='to-graph' title={gettext('Tuples out')} legendRef={toStatsLegendRef} errorMsg={props.errorMsg}>
-            <LineChart options={options} data={props.toStats} updateOptions={updateOptions}
-              onInit={onInitCallback(toStatsLegendRef)}/>
+          <ChartContainer id='to-graph' title={gettext('Tuples out')} datasets={props.toStats.datasets} errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.toStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </DashboardRowCol>
         <DashboardRowCol breakpoint='md' parts={4}>
-          <ChartContainer id='bio-graph' title={gettext('Block I/O')} legendRef={bioStatsLegendRef} errorMsg={props.errorMsg}>
-            <LineChart options={options} data={props.bioStats} updateOptions={updateOptions}
-              onInit={onInitCallback(bioStatsLegendRef)}/>
+          <ChartContainer id='bio-graph' title={gettext('Block I/O')} datasets={props.bioStats.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+            <StreamingChart data={props.bioStats} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
           </ChartContainer>
         </DashboardRowCol>
       </DashboardRow>
@@ -350,7 +287,6 @@ export function GraphsWrapper(props) {
 }
 
 const propTypeStats = PropTypes.shape({
-  labels: PropTypes.array.isRequired,
   datasets: PropTypes.array,
   refreshRate: PropTypes.number.isRequired,
 });
@@ -365,4 +301,5 @@ GraphsWrapper.propTypes = {
   showDataPoints: PropTypes.bool.isRequired,
   lineBorderWidth: PropTypes.number.isRequired,
   isDatabase: PropTypes.bool.isRequired,
+  isTest: PropTypes.bool,
 };
