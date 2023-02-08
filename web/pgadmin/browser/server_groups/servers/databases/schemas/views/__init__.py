@@ -252,6 +252,14 @@ def check_precondition(f):
         self.column_template_path = 'columns/sql/#{0}#'.format(
             self.manager.version)
 
+        try:
+            self.allowed_acls = render_template(
+                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
+            )
+            self.allowed_acls = json.loads(self.allowed_acls, encoding='utf-8')
+        except Exception as e:
+            current_app.logger.exception(e)
+
         return f(*args, **kwargs)
 
     return wrap
@@ -370,6 +378,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.template_initial = 'views'
+        self.allowed_acls = []
 
     @staticmethod
     def ppas_template_path(ver):
@@ -793,22 +802,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
             ViewNode._get_info_from_data(data, res)
 
-            try:
-                acls = render_template(
-                    "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
-                )
-                acls = json.loads(acls, encoding='utf-8')
-            except Exception as e:
-                current_app.logger.exception(e)
-
             # Privileges
-            ViewNode._parse_privilege_data(acls, data)
+            ViewNode._parse_privilege_data(self.allowed_acls, data)
 
             data['del_sql'] = False
             old_data['acl_sql'] = ''
 
             is_error, errmsg = self._get_definition_data(vid, data, old_data,
-                                                         res, acls)
+                                                         res,
+                                                         self.allowed_acls)
             if is_error:
                 return None, errmsg
 
@@ -866,17 +868,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         if 'schema' in data and isinstance(data['schema'], int):
             data['schema'] = self._get_schema(data['schema'])
 
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
         # Privileges
-        ViewNode._parse_priv_data(acls, data)
+        ViewNode._parse_priv_data(self.allowed_acls, data)
 
         sql = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
@@ -1361,6 +1354,43 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     self._UPDATE_SQL.format(self.manager.version)]),
                 o_data=o_data, data=res, is_view_only=True)
             sql_data += SQL
+
+        # Get Column Grant SQL
+        for rows in data['rows']:
+            res = {
+                'name': rows['name'],
+                'table': rows['relname'],
+                'schema': self.view_schema
+            }
+
+            if 'attacl' in rows and rows['attacl']:
+                # We need to parse & convert ACL coming from database to json
+                # format
+                SQL = render_template(
+                    "/".join([self.column_template_path, 'acl.sql']),
+                    tid=vid, clid=rows['attnum'])
+                status, acl = self.conn.execute_dict(SQL)
+
+                if not status:
+                    return internal_server_error(errormsg=acl)
+
+                allowed_acls = []
+                if self.allowed_acls and 'datacl' in self.allowed_acls and \
+                        'acl' in self.allowed_acls['datacl']:
+                    allowed_acls = self.allowed_acls['datacl']['acl']
+
+                for row in acl['rows']:
+                    priv = parse_priv_from_db(row)
+                    res.setdefault(row['deftype'], []).append(priv)
+                    res[row['deftype']] = \
+                        parse_priv_to_db(res[row['deftype']], allowed_acls)
+
+                grant_sql = render_template("/".join(
+                    [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
+                    data=res)
+
+                sql_data += grant_sql
+
         return sql_data
 
     @check_precondition
@@ -1414,19 +1444,10 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         result.update(res['rows'][0])
 
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
         # Privileges
-        for aclcol in acls:
+        for aclcol in self.allowed_acls:
             if aclcol in result:
-                allowedacl = acls[aclcol]
+                allowedacl = self.allowed_acls[aclcol]
                 result[aclcol] = parse_priv_to_db(
                     result[aclcol], allowedacl['acl']
                 )
@@ -1766,6 +1787,7 @@ class MViewNode(ViewNode, VacuumSettings):
         super().__init__(*args, **kwargs)
 
         self.template_initial = 'mviews'
+        self.allowed_acls = []
 
     @staticmethod
     def ppas_template_path(ver):
@@ -1834,19 +1856,10 @@ class MViewNode(ViewNode, VacuumSettings):
         # table vacuum toast: separate list of changed and reset data for
         self.merge_to_vacuum_data(old_data, data, 'vacuum_toast')
 
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
         # Privileges
-        for aclcol in acls:
+        for aclcol in self.allowed_acls:
             if aclcol in data:
-                allowedacl = acls[aclcol]
+                allowedacl = self.allowed_acls[aclcol]
 
                 for key in ['added', 'changed', 'deleted']:
                     if key in data[aclcol]:
@@ -1902,19 +1915,10 @@ class MViewNode(ViewNode, VacuumSettings):
         if data.get('toast_autovacuum', False):
             data['vacuum_data'] += vacuum_toast
 
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
         # Privileges
-        for aclcol in acls:
+        for aclcol in self.allowed_acls:
             if aclcol in data:
-                allowedacl = acls[aclcol]
+                allowedacl = self.allowed_acls[aclcol]
                 data[aclcol] = parse_priv_to_db(
                     data[aclcol], allowedacl['acl']
                 )
@@ -1970,19 +1974,10 @@ class MViewNode(ViewNode, VacuumSettings):
 
         result['vacuum_data'] = vacuum_table + vacuum_toast
 
-        acls = []
-        try:
-            acls = render_template(
-                "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
-            )
-            acls = json.loads(acls, encoding='utf-8')
-        except Exception as e:
-            current_app.logger.exception(e)
-
         # Privileges
-        for aclcol in acls:
+        for aclcol in self.allowed_acls:
             if aclcol in result:
-                allowedacl = acls[aclcol]
+                allowedacl = self.allowed_acls[aclcol]
                 result[aclcol] = parse_priv_to_db(
                     result[aclcol], allowedacl['acl']
                 )
