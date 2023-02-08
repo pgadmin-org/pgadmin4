@@ -20,7 +20,7 @@ import codecs
 ALLOWED_FILE_EXTENSIONS = (
     ".py", ".js", ".sql", ".cpp", ".h", ".rc", ".am", ".wsgi", ".pro",
     ".plist", ".rst", ".sh", ".in", ".mako", ".ini", ".jsx", ".rtf", ".rst",
-    "LICENSE", ".ts", ".tsx"
+    "LICENSE", "Dockerfile", "Makefile", ".ts", ".tsx"
 )
 
 EXCLUDE_DIR = ("node_modules")
