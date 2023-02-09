@@ -157,6 +157,7 @@ class OAuth2Authentication(BaseAuthentication):
                 username=username, auth_source=OAUTH2).first()
             current_app.login_manager.logout_view = \
                 OAuth2Authentication.LOGOUT_VIEW
+            current_app.logger.info("OAUTH2 user {0} logged in.".format(username))
             return login_user(user), None
         return False, msg
 

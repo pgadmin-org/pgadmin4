@@ -104,6 +104,8 @@ class WebserverAuthentication(BaseAuthentication):
             if not status:
                 current_app.logger.exception(self.messages('LOGIN_FAILED'))
                 return False, self.messages('LOGIN_FAILED')
+            current_app.logger.info(
+                "Webserver user {0} logged in.".format(username))
             return True, None
         return False, self.messages('LOGIN_FAILED')
 

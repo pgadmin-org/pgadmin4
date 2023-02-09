@@ -175,6 +175,7 @@ class LDAPAuthentication(BaseAuthentication):
         if not status:
             current_app.logger.exception(self.messages('LOGIN_FAILED'))
             return False, self.messages('LOGIN_FAILED')
+        current_app.logger.info("LDAP user {0} logged in.".format(user))
         return True, None
 
     def __auto_create_user(self, user_email):
