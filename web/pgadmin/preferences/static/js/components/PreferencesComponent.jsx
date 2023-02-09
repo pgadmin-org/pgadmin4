@@ -574,6 +574,19 @@ export default function PreferencesComponent({ ...props }) {
             gettext('Later')
           );
         }
+        // Sync the lock layout menu with preferences
+        if (pref.name == 'lock_layout') {
+          let fileMenu = pgAdmin.Browser.MainMenus.find((menu) => menu.name == 'file');
+          let layoutSubMenu = fileMenu['menuItems'].find(menu => menu.name == 'mnu_locklayout');
+          layoutSubMenu['menu_items'].forEach(item => {
+            if (item.name === 'mnu_lock_'+save_data[0]['value']) {
+              item.checked = true;
+            } else {
+              item.checked = false;
+            }
+          });
+          pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', 'lock_layout');
+        }
       }
 
       if (requires_refresh) {
