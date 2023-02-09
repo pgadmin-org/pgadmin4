@@ -202,6 +202,17 @@ const styles = (theme)=>({
     padding: '0.125rem 0.25rem',
     display: 'flex',
   },
+  columnSection: {
+    display:'flex',
+    width: '100%' ,
+    ...theme.mixins.panelBorder.bottom,
+  },
+  columnName: {
+    display:'flex',
+    width: '100%' ,
+    padding: '0.125rem 0.25rem',
+    wordBreak: 'break-all',
+  },
   tableToolbar: {
     background: theme.otherVars.editorToolbarBg,
     borderTopLeftRadius: 'inherit',
@@ -269,11 +280,11 @@ class TableNodeWidgetRaw extends React.Component {
 
     const {classes} = this.props;
     return (
-      <div className={classes.tableSection} key={col.attnum} data-test="column-row">
+      <Box className={classes.columnSection} key={col.attnum} data-test="column-row">
         <Box marginRight="auto" padding="0" minHeight="0" display="flex" alignItems="center">
           {this.generatePort(leftPort)}
         </Box>
-        <Box display="flex" width="100%" style={{wordBreak: 'break-all'}}>
+        <Box className={classes.columnName}>
           <RowIcon icon={icon} />
           <Box margin="auto 0">
             <span data-test="column-name">{col.name}</span>&nbsp;
@@ -284,7 +295,7 @@ class TableNodeWidgetRaw extends React.Component {
         <Box marginLeft="auto" padding="0" minHeight="0" display="flex" alignItems="center">
           {this.generatePort(rightPort)}
         </Box>
-      </div>
+      </Box>
     );
   }
 
