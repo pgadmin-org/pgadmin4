@@ -189,6 +189,8 @@ class LDAPAuthentication(BaseAuthentication):
                         self.username)).first()
 
             if user is None:
+                current_app.logger.info(
+                    "Creating user {0} with email {1} from auth source LDAP.".format(self.username, user_email))
                 return create_user({
                     'username': self.username,
                     'email': user_email,

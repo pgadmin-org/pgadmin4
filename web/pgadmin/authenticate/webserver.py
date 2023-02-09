@@ -114,6 +114,8 @@ class WebserverAuthentication(BaseAuthentication):
         if config.WEBSERVER_AUTO_CREATE_USER:
             user = User.query.filter_by(username=username).first()
             if not user:
+                current_app.logger.info(
+                    "Creating user {0} with email {1} from auth source Webserver.".format(username, useremail))
                 return create_user({
                     'username': username,
                     'email': useremail,

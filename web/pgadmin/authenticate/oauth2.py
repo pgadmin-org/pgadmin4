@@ -190,6 +190,8 @@ class OAuth2Authentication(BaseAuthentication):
             user = User.query.filter_by(username=username,
                                         auth_source=OAUTH2).first()
             if not user:
+                current_app.logger.info(
+                    "Creating user {0} with email {1} from auth source OAUTH2.".format(username, email))
                 return create_user({
                     'username': username,
                     'email': email,

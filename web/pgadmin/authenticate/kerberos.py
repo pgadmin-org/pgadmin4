@@ -273,6 +273,8 @@ class KerberosAuthentication(BaseAuthentication):
             user = User.query.filter_by(
                 username=username, auth_source=KERBEROS).first()
             if user is None:
+                current_app.logger.info(
+                    "Creating user {0} with email {1} from auth source KERBEROS.".format(username, username))
                 return create_user({
                     'username': username,
                     'email': username,
