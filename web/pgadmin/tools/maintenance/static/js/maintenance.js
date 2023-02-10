@@ -99,7 +99,12 @@ define([
       extraData['database'] = treeInfo.database._label;
       if(treeInfo?.schema) {
         extraData['schema'] = treeInfo?.schema._label;
+      }
+      if(treeInfo?.table) {
         extraData['table'] = treeInfo?.table._label;
+      }
+      if(treeInfo?.mview) {
+        extraData['table'] = treeInfo?.mview._label;
       }
       extraData['save_btn_icon'] = 'done';
       return extraData;
