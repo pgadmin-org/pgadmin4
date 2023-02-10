@@ -20,12 +20,15 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #5832 <https://github.com/pgadmin-org/pgadmin4/issues/5832>`_ -  Allow changing cardinality notation in ERD to use Chen notation.
 
 Housekeeping
 ************
 
+  | `Issue #5701 <https://github.com/pgadmin-org/pgadmin4/issues/5701>`_ -  Remove Bootstrap and jQuery usage.
 
 Bug fixes
 *********
 
   | `Issue #5685 <https://github.com/pgadmin-org/pgadmin4/issues/5685>`_ -  Ensure that Grant column permission to a view is visible in the SQL tab.
+  | `Issue #5758 <https://github.com/pgadmin-org/pgadmin4/issues/5758>`_ -  Fixed an issue where lock layout menu was not in sync with preferences.
