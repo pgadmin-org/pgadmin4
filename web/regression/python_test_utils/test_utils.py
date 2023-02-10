@@ -1371,6 +1371,7 @@ def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=50):
             driver_instance.get(url)
             wait = WebDriverWait(driver_instance, 10)
             wait.until(ec.title_is(title))
+            print("pgAdmin launched in browser", file=sys.stderr)
             break
         except WebDriverException as e:
             time.sleep(6)

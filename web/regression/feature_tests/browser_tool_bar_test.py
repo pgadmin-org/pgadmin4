@@ -31,10 +31,12 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
     def before(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
+        print("Added server", file=sys.stderr)
         self.test_table_name = "test_table" + str(
             secrets.choice(range(1000, 3000)))
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
+        print("before completed", file=sys.stderr)
 
     def runTest(self):
         # Check for query tool button
