@@ -566,6 +566,8 @@ def utils():
     # This will be opposite of use_space option
     editor_indent_with_tabs = False if editor_use_spaces else True
 
+    prefs = Preferences.module('browser')
+    current_ui_lock = prefs.preference('lock_layout').get()
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -628,7 +630,8 @@ def utils():
             username=current_user.username,
             auth_source=auth_source,
             heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
-            password_length_min=config.PASSWORD_LENGTH_MIN
+            password_length_min=config.PASSWORD_LENGTH_MIN,
+            current_ui_lock=current_ui_lock
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 
