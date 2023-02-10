@@ -135,18 +135,21 @@ Utility Options
    :class: longtable
    :widths: 1 4 1
 
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | Icon                 | Behavior                                                                                          | Shortcut       |
-   +======================+===================================================================================================+================+
-   | *Add/Edit note*      | Click this button to make notes on tables nodes while designing the database.                     | Option/Alt +   |
-   |                      |                                                                                                   | Ctrl + N       |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Auto align*         | Click this button to auto align all tables and links to make it look more cleaner.                | Option/Alt +   |
-   |                      |                                                                                                   | Ctrl + L       |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Show details*       | Click this button to toggle the column details visibility. It allows you to show few or more      | Option/Alt +   |
-   |                      | column details.                                                                                   | Shift + D      |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | Icon                    | Behavior                                                                                       | Shortcut       |
+   +=========================+================================================================================================+================+
+   | *Add/Edit note*         | Click this button to make notes on tables nodes while designing the database.                  | Option/Alt +   |
+   |                         |                                                                                                | Ctrl + N       |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | *Auto align*            | Click this button to auto align all tables and links to make it look more cleaner.             | Option/Alt +   |
+   |                         |                                                                                                | Ctrl + L       |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | *Show details*          | Click this button to toggle the column details visibility. It allows you to show few or more   | Option/Alt +   |
+   |                         | column details.                                                                                | Shift + D      |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | *Cardinality Notation*  | Change the cardinality notation format used to present relationship links. Options available   |                |
+   |                         | are - Crow's Foot Notation and Chen Notation.                                                  |                |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
 
 Zoom Options
 ************

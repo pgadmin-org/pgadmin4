@@ -27,6 +27,7 @@ import VisibilityOffRoundedIcon from '@material-ui/icons/VisibilityOffRounded';
 import ImageRoundedIcon from '@material-ui/icons/ImageRounded';
 import FormatColorFillRoundedIcon from '@material-ui/icons/FormatColorFillRounded';
 import FormatColorTextRoundedIcon from '@material-ui/icons/FormatColorTextRounded';
+import AccountTreeOutlinedIcon from '@material-ui/icons/AccountTreeOutlined';
 
 import { PgMenu, PgMenuItem, usePgMenuGroup } from '../../../../../../static/js/components/Menu';
 import gettext from 'sources/gettext';
@@ -69,7 +70,7 @@ const useStyles = makeStyles((theme)=>({
   }),
 }));
 
-export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
+export function MainToolBar({preferences, eventBus, fillColor, textColor, notation, onNotationChange}) {
   const classes = useStyles({fillColor,textColor});
   const theme = useTheme();
   const [buttonsDisabled, setButtonsDisabled] = useState({
@@ -86,6 +87,7 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
   const {openMenuName, toggleMenu, onMenuClose} = usePgMenuGroup();
   const saveAsMenuRef = React.useRef(null);
   const sqlMenuRef = React.useRef(null);
+  const notationMenuRef = React.useRef(null);
   const isDirtyRef = React.useRef(null);
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
   const modal = useModal();
@@ -283,6 +285,9 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
               eventBus.fireEvent(ERD_EVENTS.TOGGLE_DETAILS);
               setShowDetails((prev)=>!prev);
             }} />
+          <PgIconButton title={gettext('Cardinality Notation')} icon={
+            <><AccountTreeOutlinedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>}
+          name="menu-notation" ref={notationMenuRef} onClick={toggleMenu} />
         </PgButtonGroup>
         <PgButtonGroup size="small">
           <PgIconButton title={gettext('Zoom In')} icon={<ZoomInIcon />}
@@ -323,6 +328,16 @@ export function MainToolBar({preferences, eventBus, fillColor, textColor}) {
       >
         <PgMenuItem hasCheck value="sql_with_drop" checked={checkedMenuItems['sql_with_drop']} onClick={checkMenuClick}>{gettext('With DROP Table')}</PgMenuItem>
       </PgMenu>
+      <PgMenu
+        anchorRef={notationMenuRef}
+        open={openMenuName=='menu-notation'}
+        onClose={onMenuClose}
+        label={gettext('Cardinality Notation')}
+
+      >
+        <PgMenuItem hasCheck closeOnCheck value="crows" checked={notation == 'crows'} onClick={onNotationChange}>{gettext('Crow\'s Foot Notation')}</PgMenuItem>
+        <PgMenuItem hasCheck closeOnCheck value="chen" checked={notation == 'chen'} onClick={onNotationChange}>{gettext('Chen Notation')}</PgMenuItem>
+      </PgMenu>
     </>
   );
 }
@@ -332,6 +347,8 @@ MainToolBar.propTypes = {
   eventBus: PropTypes.object,
   fillColor: PropTypes.string,
   textColor: PropTypes.string,
+  notation: PropTypes.string,
+  onNotationChange: PropTypes.func,
 };
 
 const ColorButton = withColorPicker(PgIconButton);

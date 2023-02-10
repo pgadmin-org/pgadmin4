@@ -291,13 +291,6 @@ describe('ERDCore', ()=>{
       ]));
     });
 
-    it('dagreDistributeNodes', ()=>{
-      spyOn(erdCoreObj.dagre_engine, 'redistribute');
-      erdCoreObj.dagreDistributeNodes();
-      expect(erdEngine.getLinkFactories().getFactory().calculateRoutingMatrix).toHaveBeenCalled();
-      expect(erdCoreObj.dagre_engine.redistribute).toHaveBeenCalledWith(erdEngine.getModel());
-    });
-
     it('zoomIn', ()=>{
       spyOn(erdEngine.getModel(), 'getZoomLevel').and.returnValue(100);
       spyOn(erdCoreObj, 'repaint');

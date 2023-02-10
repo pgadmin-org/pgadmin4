@@ -141,7 +141,7 @@ class ERDTool extends React.Component {
     _.bindAll(this, ['onLoadDiagram', 'onSaveDiagram', 'onSaveAsDiagram', 'onSQLClick',
       'onImageClick', 'onAddNewNode', 'onEditTable', 'onCloneNode', 'onDeleteNode', 'onNoteClick',
       'onNoteClose', 'onOneToManyClick', 'onManyToManyClick', 'onAutoDistribute', 'onDetailsToggle',
-      'onDetailsToggle', 'onChangeColors', 'onHelpClick', 'onDropNode', 'onBeforeUnload',
+      'onChangeColors', 'onHelpClick', 'onDropNode', 'onBeforeUnload', 'onNotationChange',
     ]);
 
     this.diagram.zoomToFit = this.diagram.zoomToFit.bind(this.diagram);
@@ -293,11 +293,13 @@ class ERDTool extends React.Component {
     this.setLoading(gettext('Preparing...'));
     this.registerEvents();
 
+    const erdPref = this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd');
     this.setState({
-      preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
+      preferences: erdPref,
       is_new_tab: (this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').new_browser_tab_open || '')
         .includes('erd_tool'),
       is_close_tab_warning: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_refresh_close,
+      cardinality_notation: erdPref.cardinality_notation,
     }, ()=>{
       this.registerKeyboardShortcuts();
       this.setTitle(this.state.current_file);
@@ -557,6 +559,10 @@ class ERDTool extends React.Component {
         node.fireEvent({show_details: this.state.show_details}, 'toggleDetails');
       });
     });
+  }
+
+  onNotationChange(e) {
+    this.setState({cardinality_notation: e.value});
   }
 
   onHelpClick() {
@@ -948,12 +954,17 @@ class ERDTool extends React.Component {
           fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
+          notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange}
         />
         <FloatingNote open={this.state.note_open} onClose={this.onNoteClose}
           anchorEl={this.noteRefEle} noteNode={this.state.note_node} appendTo={this.diagramContainerRef.current} rows={8}/>
         <div className={this.props.classes.diagramContainer} data-test="diagram-container" ref={this.diagramContainerRef} onDrop={this.onDropNode} onDragOver={e => {e.preventDefault();}}>
           <Loader message={this.state.loading_msg} autoEllipsis={true}/>
-          <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
+          <ERDCanvasSettings.Provider value={{
+            cardinality_notation: this.state.cardinality_notation
+          }}>
+            <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
+          </ERDCanvasSettings.Provider>
         </div>
       </Box>
     );
@@ -981,3 +992,5 @@ ERDTool.propTypes = {
   panel: PropTypes.object,
   classes: PropTypes.object,
 };
+
+export const ERDCanvasSettings = React.createContext({});
