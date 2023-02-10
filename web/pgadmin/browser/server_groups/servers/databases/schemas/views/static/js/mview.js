@@ -13,6 +13,7 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui';
 import Notify from '../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.mview', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -86,39 +87,39 @@ define('pgadmin.node.mview', [
         pgBrowser.add_menus([{
           name: 'create_mview_on_coll', node: 'coll-mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, 
+          category: 'create', priority: 1,
           data: {action: 'create', check: true}, enable: 'canCreate',
           label: gettext('Materialized View...'),
         },{
           name: 'create_mview', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 1, 
+          category: 'create', priority: 1,
           data: {action: 'create', check: true}, enable: 'canCreate',
           label: gettext('Materialized View...'),
         },{
           name: 'create_mview', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
-          category: 'create', priority: 18, 
+          category: 'create', priority: 18,
           data: {action: 'create', check: false}, enable: 'canCreate',
           label: gettext('Materialized View...'),
         },{
           name: 'refresh_mview_data', node: 'mview', module: this,
           priority: 1, callback: 'refresh_mview', category: 'refresh_mview',
           applies: ['object', 'context'], label: gettext('With data'),
-          data: {concurrent: false, with_data: true}, 
+          data: {concurrent: false, with_data: true},
         },{
           name: 'refresh_mview_nodata', node: 'mview',
           callback: 'refresh_mview', priority: 2, module: this,
           category: 'refresh_mview', applies: ['object', 'context'],
           label: gettext('With no data'), data: {
             concurrent: false, with_data: false,
-          }, 
+          },
         },{
           name: 'refresh_mview_concurrent', node: 'mview', module: this,
           category: 'refresh_mview', enable: 'is_version_supported',
           data: {concurrent: true, with_data: true}, priority: 3,
           applies: ['object', 'context'], callback: 'refresh_mview',
-          label: gettext('With data (concurrently)'), 
+          label: gettext('With data (concurrently)'),
         },{
           name: 'refresh_mview_concurrent_nodata', node: 'mview', module: this,
           category: 'refresh_mview', enable: 'is_version_supported',
@@ -181,47 +182,41 @@ define('pgadmin.node.mview', [
           return;
         }
 
-        $.ajax({
-          url: obj.generate_url(i, 'check_utility_exists' , d, true),
-          type: 'GET',
-          dataType: 'json',
-        }).done(function(res) {
-          if (!res.success) {
+        const api = getApiInstance();
+        api.get(obj.generate_url(i, 'check_utility_exists' , d, true))
+          .then(({data: res})=>{
+            if (!res.success) {
+              Notify.alert(
+                gettext('Utility not found'),
+                res.errormsg
+              );
+              return;
+            }
+
+            api.put(obj.generate_url(i, 'refresh_data' , d, true), {'concurrent': args.concurrent, 'with_data': args.with_data})
+              .then(({data: refreshed_res})=>{
+                if (refreshed_res.data && refreshed_res.data.status) {
+                  //Do nothing as we are creating the job and exiting from the main dialog
+                  pgBrowser.BgProcessManager.startProcess(refreshed_res.data.job_id, refreshed_res.data.desc);
+                } else {
+                  Notify.alert(
+                    gettext('Failed to create materialized view refresh job.'),
+                    refreshed_res.errormsg
+                  );
+                }
+              })
+              .catch((error)=>{
+                Notify.pgRespErrorNotify(
+                  error, gettext('Failed to create materialized view refresh job.')
+                );
+              });
+          })
+          .catch(()=>{
             Notify.alert(
               gettext('Utility not found'),
-              res.errormsg
+              gettext('Failed to fetch Utility information')
             );
-            return;
-          }
-          // Make ajax call to refresh mview data
-          $.ajax({
-            url: obj.generate_url(i, 'refresh_data' , d, true),
-            type: 'PUT',
-            data: {'concurrent': args.concurrent, 'with_data': args.with_data},
-            dataType: 'json',
-          })
-            .done(function(refreshed_res) {
-              if (refreshed_res.data && refreshed_res.data.status) {
-                //Do nothing as we are creating the job and exiting from the main dialog
-                pgBrowser.BgProcessManager.startProcess(refreshed_res.data.job_id, refreshed_res.data.desc);
-              } else {
-                Notify.alert(
-                  gettext('Failed to create materialized view refresh job.'),
-                  refreshed_res.errormsg
-                );
-              }
-            })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(
-                xhr, error, gettext('Failed to create materialized view refresh job.')
-              );
-            });
-        }).fail(function() {
-          Notify.alert(
-            gettext('Utility not found'),
-            gettext('Failed to fetch Utility information')
-          );
-        });
+          });
       },
 
       is_version_supported: function(data, item) {

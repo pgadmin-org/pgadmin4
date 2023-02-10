@@ -22,49 +22,6 @@ let webpackShimConfig = {
     'bootstrap': {
       'deps': ['jquery'],
     },
-    'select2': {
-      'deps': ['jquery'],
-      'exports': '$.fn.select2',
-    },
-    'bootstrap.datepicker': {
-      'deps': ['jquery', 'bootstrap'],
-      'exports': 'jQuery.fn.datepicker',
-    },
-    'bootstrap.datetimepicker': {
-      'deps': ['moment'],
-      'exports': 'jQuery.fn.datetimepicker',
-    },
-    'bootstrap.toggle': {
-      deps: ['jquery', 'bootstrap'],
-      'exports': '$.fn.bootstrapToggle',
-    },
-    'jquery.event.drag': {
-      'deps': ['jquery'], 'exports': 'jQuery.fn.drag',
-    },
-    'jquery.ui': {'deps': ['jquery']},
-    'jqueryui.position': {
-      'deps': ['jquery'],
-      'exports': 'jQuery.ui.position',
-    },
-    'jquery.contextmenu': {
-      'deps': ['jquery', 'jqueryui.position'],
-      'exports': 'jQuery.contextMenu',
-    },
-    'jquery.aciplugin': {
-      'deps': ['jquery'],
-      'exports': 'aciPluginClass',
-    },
-    'jquery.acisortable': {
-      'deps': ['jquery', 'jquery.aciplugin'],
-      'exports': 'aciPluginClass.plugins.aciSortable',
-    },
-    'jquery.acifragment': {
-      'deps': ['jquery', 'jquery.aciplugin'],
-      'exports': 'aciPluginClass.plugins.aciFragment',
-    },
-    'wcdocker': {
-      'deps': ['jquery.contextmenu'],
-    },
   },
 
   // Map module id to file path used in 'define(['baseurl', 'misc']). It is
@@ -82,10 +39,8 @@ let webpackShimConfig = {
     'pgbrowser': path.join(__dirname, './pgadmin/browser/static/js/'),
 
     // Vendor JS
-    'jquery': path.join(__dirname, './node_modules/jquery/dist/jquery'),
     'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker.min'),
     'moment': path.join(__dirname, './node_modules/moment/moment'),
-    'jqueryui.position': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.ui.position'),
     'jquery.contextmenu': path.join(__dirname, './node_modules/jquery-contextmenu/dist/jquery.contextMenu'),
     'dropzone': path.join(__dirname, './node_modules/dropzone/dist/dropzone'),
     'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
@@ -112,10 +67,6 @@ let webpackShimConfig = {
     //socket
     'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),
 
-    'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
-    'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min'),
-    'select2': path.join(__dirname, './node_modules/select2/dist/js/select2.full'),
-
     'pgadmin.about': path.join(__dirname, './pgadmin/about/static/js/about'),
     'pgadmin.authenticate.kerberos': path.join(__dirname, './pgadmin/authenticate/static/js/kerberos'),
     'pgadmin.browser': path.join(__dirname, './pgadmin/browser/static/js/browser'),
@@ -124,7 +75,6 @@ let webpackShimConfig = {
     'pgadmin.browser.events': path.join(__dirname, './pgadmin/browser/static/js/events'),
     'pgadmin.browser.endpoints': '/browser/js/endpoints',
     'pgadmin.browser.constants': '/browser/js/constants',
-    'pgadmin.browser.error': path.join(__dirname, './pgadmin/browser/static/js/error'),
     'pgadmin.browser.frame': path.join(__dirname, './pgadmin/browser/static/js/frame'),
     'pgadmin.browser.keyboard': path.join(__dirname, './pgadmin/browser/static/js/keyboard'),
     'pgadmin.browser.layout': path.join(__dirname, './pgadmin/browser/static/js/layout'),
@@ -233,7 +183,6 @@ let webpackShimConfig = {
   // Define list of pgAdmin common libraries to bundle them separately
   // into commons JS from app.bundle.js
   pgLibs: [
-    'pgadmin.browser.error',
     'pgadmin.browser.collection',
     'pgadmin.browser.events', 'pgadmin.browser.panel', 'pgadmin',
     'pgadmin.browser.frame', 'pgadmin.browser',

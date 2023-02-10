@@ -46,7 +46,6 @@ define([
           isPrivate: that.isPrivate,
           isLayoutMember: that.isLayoutMember,
           onCreate: function(myPanel) {
-            $(myPanel).data('pgAdminName', that.name);
             myPanel.initSize(that.width, that.height);
 
             if (!(myPanel.showTitle??true))
@@ -61,13 +60,17 @@ define([
             myPanel.layout().addItem($frameArea);
             that.panel = myPanel;
             let frame = new wcIFrame($frameArea, myPanel);
-            $(myPanel).data('frameInitialized', false);
-            $(myPanel).data('embeddedFrame', frame);
+
+            myPanel.frameData = {
+              pgAdminName: that.name,
+              frameInitialized: false,
+              embeddedFrame: frame,
+            };
 
             if (that.url != '' && that.url != 'about:blank') {
               setTimeout(function() {
                 frame.openURL(that.url);
-                $(myPanel).data('frameInitialized', true);
+                myPanel.frameData.frameInitialized = true;
                 pgBrowser.Events.trigger(
                   'pgadmin-browser:frame:urlloaded:' + that.name, frame,
                   that.url, self
@@ -75,7 +78,7 @@ define([
               }, 50);
             } else {
               frame.openURL('about:blank');
-              $(myPanel).data('frameInitialized', true);
+              myPanel.frameData.frameInitialized = true;
               pgBrowser.Events.trigger(
                 'pgadmin-browser:frame:urlloaded:' + that.name, frame,
                 that.url, self
@@ -112,7 +115,7 @@ define([
       }
     },
     eventFunc: function(eventName) {
-      let name = $(this).data('pgAdminName');
+      let name = this.frameData.pgAdminName;
 
       try {
         pgBrowser.Events.trigger('pgadmin-browser:frame', eventName, this, arguments);

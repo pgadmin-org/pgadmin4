@@ -68,7 +68,7 @@ export default class BinaryPathSchema extends BaseUISchema {
                 Notify.alert(gettext('Validate binary path'), gettext(res.data.data));
               })
               .catch(function (error) {
-                Notify.pgNotifier(error, gettext('Failed to validate binary path.'));
+                Notify.pgNotifier('error', error, gettext('Failed to validate binary path.'));
               });
           }
           return true;

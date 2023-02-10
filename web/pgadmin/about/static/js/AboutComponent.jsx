@@ -58,7 +58,7 @@ export default function AboutComponent() {
 
   return (
     <Box className={classes.container} ref={containerRef}>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Version')}</InputLabel>
         </Grid>
@@ -66,7 +66,7 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.version}</InputLabel>
         </Grid>
       </Grid>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Application Mode')}</InputLabel>
         </Grid>
@@ -74,7 +74,7 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.app_mode}</InputLabel>
         </Grid>
       </Grid>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Current User')}</InputLabel>
         </Grid>
@@ -83,7 +83,7 @@ export default function AboutComponent() {
         </Grid>
       </Grid>
       { aboutData.nwjs &&
-        <Grid container spacing={0}>
+        <Grid container spacing={0} style={{marginBottom: '8px'}}>
           <Grid item lg={3} md={3} sm={3} xs={12}>
             <InputLabel style={{fontWeight: 'bold'}}>{gettext('NW.js Version')}</InputLabel>
           </Grid>
@@ -92,7 +92,7 @@ export default function AboutComponent() {
           </Grid>
         </Grid>
       }
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Browser')}</InputLabel>
         </Grid>
@@ -100,7 +100,7 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.browser_details}</InputLabel>
         </Grid>
       </Grid>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Operating System')}</InputLabel>
         </Grid>
@@ -108,7 +108,7 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.os_details}</InputLabel>
         </Grid>
       </Grid>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('pgAdmin Database File')}</InputLabel>
         </Grid>
@@ -116,7 +116,7 @@ export default function AboutComponent() {
           <InputLabel>{aboutData.config_db}</InputLabel>
         </Grid>
       </Grid>
-      <Grid container spacing={0}>
+      <Grid container spacing={0} style={{marginBottom: '8px'}}>
         <Grid item lg={3} md={3} sm={3} xs={12}>
           <InputLabel style={{fontWeight: 'bold'}}>{gettext('Log File')}</InputLabel>
         </Grid>

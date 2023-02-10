@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import $ from 'jquery';
 import pgAdmin from 'sources/pgadmin';
 
 import { FileType } from 'react-aspen';
@@ -533,17 +532,15 @@ export class Tree {
       }
 
       /* setDragImage is not supported in IE. We leave it to
-         * its default look and feel
-         */
+      * its default look and feel
+      */
       if (e.dataTransfer.setDragImage) {
-        let dragItem = $(`
-            <div class="drag-tree-node">
-              <span>${_.escape(dropDetails.text)}</span>
-            </div>`
-        );
+        const dragItem = document.createElement('div');
+        dragItem.setAttribute('drag-tree-node');
+        dragItem.innerHTML = `<span>${_.escape(dropDetails.text)}</span>`;
 
-        $('body .drag-tree-node').remove();
-        $('body').append(dragItem);
+        document.querySelector('body .drag-tree-node').remove();
+        document.body.appendChild(dragItem);
 
         e.dataTransfer.setDragImage(dragItem[0], 0, 0);
       }

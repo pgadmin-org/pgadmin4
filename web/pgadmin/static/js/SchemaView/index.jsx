@@ -20,6 +20,7 @@ import HelpIcon from '@material-ui/icons/HelpRounded';
 import EditIcon from '@material-ui/icons/Edit';
 import diffArray from 'diff-arrays-of-objects';
 import _ from 'lodash';
+import clsx from 'clsx';
 
 import {FormFooterMessage, MESSAGE_TYPE } from 'sources/components/FormComponents';
 import { PrimaryButton, DefaultButton, PgIconButton } from 'sources/components/Buttons';
@@ -51,6 +52,9 @@ const useDialogStyles = makeStyles((theme)=>({
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
+  },
+  formProperties: {
+    backgroundColor: theme.palette.grey[400],
   },
   footer: {
     padding: theme.spacing(1),
@@ -990,7 +994,7 @@ function SchemaPropertiesView({
         <PgIconButton data-test="edit"
           onClick={props.onEdit} icon={<EditIcon />} title="Edit the object" />
       </Box>
-      <Box className={classes.form}>
+      <Box className={clsx(classes.form, classes.formProperties)}>
         <Box>
           {Object.keys(finalTabs).map((tabName)=>{
             let id = tabName.replace(' ', '');

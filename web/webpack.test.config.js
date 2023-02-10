@@ -124,8 +124,6 @@ module.exports = {
       'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker'),
       'color-picker': path.join(__dirname, './node_modules/@simonwep/pickr/dist/pickr.min'),
       'bignumber': path.join(__dirname, './node_modules/bignumber.js/bignumber'),
-      'bootstrap.datetimepicker': path.join(__dirname, './node_modules/tempusdominus-bootstrap-4/build/js/tempusdominus-bootstrap-4.min'),
-      'bootstrap.toggle': path.join(__dirname, './node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min'),
       'react': path.join(__dirname, 'node_modules/react'),
       'react-dom': path.join(__dirname, 'node_modules/react-dom'),
       'socketio': path.join(__dirname, './node_modules/socket.io-client/dist/socket.io.js'),

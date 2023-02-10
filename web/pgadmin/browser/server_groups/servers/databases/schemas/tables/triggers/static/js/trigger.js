@@ -10,6 +10,7 @@ import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../../s
 import TriggerSchema from './trigger.ui';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.trigger', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -108,13 +109,8 @@ define('pgadmin.node.trigger', [
             return false;
 
           let data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'enable' , d, true),
-            type:'PUT',
-            data: {'is_enable_trigger' : 'O'},
-            dataType: 'json',
-          })
-            .done(function(res) {
+          getApiInstance().put(obj.generate_url(i, 'enable' , d, true), {'is_enable_trigger' : 'O'})
+            .then(({data: res})=>{
               if (res.success == 1) {
                 Notify.success(res.info);
                 t.removeIcon(i);
@@ -130,8 +126,8 @@ define('pgadmin.node.trigger', [
                 }, 10);
               }
             })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
               t.unload(i);
             });
         },
@@ -147,13 +143,8 @@ define('pgadmin.node.trigger', [
             return false;
 
           let data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'enable' , d, true),
-            type:'PUT',
-            data: {'is_enable_trigger' : 'D'},
-            dataType: 'json',
-          })
-            .done(function(res) {
+          getApiInstance().put(obj.generate_url(i, 'enable' , d, true), {'is_enable_trigger' : 'D'})
+            .then(({data: res})=>{
               if (res.success == 1) {
                 Notify.success(res.info);
                 t.removeIcon(i);
@@ -169,8 +160,8 @@ define('pgadmin.node.trigger', [
                 }, 10);
               }
             })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error, gettext('Disable trigger failed'));
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
               t.unload(i);
             });
         },

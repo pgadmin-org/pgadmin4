@@ -9,11 +9,11 @@
 
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
-import $ from 'jquery';
 import gettext from 'sources/gettext';
 import 'wcdocker';
 import pgWindow from 'sources/window';
 import Notify from '../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../static/js/api_instance';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -50,11 +50,8 @@ _.extend(pgBrowser, {
     if(docker) {
       let layout = docker.save(),
         settings = { setting: layout_id, value: layout };
-      $.ajax({
-        type: 'POST',
-        url: url_for('settings.store_bulk'),
-        data: settings,
-      });
+
+      getApiInstance().post(url_for('settings.store_bulk'), settings);
     }
   },
 
@@ -143,17 +140,15 @@ _.extend(pgBrowser, {
   save_lock_layout: function(op) {
     let browser = pgWindow.pgAdmin.Browser;
 
-    $.ajax({
-      url: url_for('browser.lock_layout'),
-      method: 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify({
+    getApiInstance().put(
+      url_for('browser.lock_layout'),
+      JSON.stringify({
         'value': op,
-      }),
-    }).done(function() {
+      })
+    ).then(()=> {
       browser.cache_preferences('browser');
-    }).fail(function(xhr, error) {
-      Notify.pgNotifier(error, xhr, gettext('Failed to save the lock layout setting.'));
+    }).catch(function(error) {
+      Notify.pgNotifier('error', error, gettext('Failed to save the lock layout setting.'));
     });
   },
 

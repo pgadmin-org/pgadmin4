@@ -9,7 +9,7 @@
 
 import $ from 'jquery';
 window.jQuery = window.$ = $;
-
+import 'bootstrap';
 import 'wcdocker';
 import '../helper/enzyme.helper';
 

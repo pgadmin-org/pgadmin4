@@ -10,13 +10,14 @@
 import CheckConstraintSchema from './check_constraint.ui';
 import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../../static/js/api_instance';
 
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, pgAdmin, pgBrowser, schemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChildTreeNode) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {
@@ -69,11 +70,8 @@ define('pgadmin.node.check_constraint', [
 
           if (d) {
             let data = d;
-            $.ajax({
-              url: obj.generate_url(i, 'validate', d, true),
-              type:'GET',
-            })
-              .done(function(res) {
+            getApiInstance().get(obj.generate_url(i, 'validate', d, true))
+              .then(({data: res})=>{
                 if (res.success == 1) {
                   Notify.success(res.info);
                   t.removeIcon(i);
@@ -84,8 +82,8 @@ define('pgadmin.node.check_constraint', [
                   setTimeout(function() {t.select(i);}, 100);
                 }
               })
-              .fail(function(xhr, status, error) {
-                Notify.pgRespErrorNotify(xhr, error);
+              .catch((error)=>{
+                Notify.pgRespErrorNotify(error);
                 t.unload(i);
               });
           }

@@ -10,13 +10,14 @@
 import {getNodeView, removeNodeView} from './node_view';
 import Notify from '../../../static/js/helpers/Notifier';
 import _ from 'lodash';
+import getApiInstance from '../../../static/js/api_instance';
 
 define('pgadmin.browser.node', [
-  'sources/gettext', 'jquery', 'sources/pgadmin',
+  'sources/gettext', 'sources/pgadmin',
   'sources/browser/generate_url', 'sources/utils',
   'pgadmin.browser.utils', 'pgadmin.browser.events',
 ], function(
-  gettext, $, pgAdmin, generateUrl, commonUtils
+  gettext, pgAdmin, generateUrl, commonUtils
 ) {
 
   let wcDocker = window.wcDocker;
@@ -354,9 +355,9 @@ define('pgadmin.browser.node', [
         isLayoutMember: false,
         canMaximise: true,
         elContainer: true,
-        content: '<div class="obj_properties container-fluid h-100"><div role="status" class="pg-panel-message">' + gettext('Please wait while we fetch information ...') + '</div></div>',
-        onCreate: function(myPanel, $container) {
-          $container.addClass('pg-no-overflow');
+        content: '<div class="obj_properties"></div>',
+        onCreate: function(myPanel, container) {
+          container.classList.add('pg-no-overflow');
         },
         events: events,
       });
@@ -379,9 +380,9 @@ define('pgadmin.browser.node', [
         isLayoutMember: false,
         canMaximise: true,
         elContainer: true,
-        content: '<div class="obj_properties container-fluid h-100"><div role="status" class="pg-panel-message">' + gettext('Please wait while we fetch information about the node from the server...') + '</div></div>',
-        onCreate: function(myPanel, $container) {
-          $container.addClass('pg-no-overflow');
+        content: '<div class="obj_properties"></div>',
+        onCreate: function(myPanel, container) {
+          container.classList.add('pg-no-overflow');
         },
         events: events,
       });
@@ -688,45 +689,41 @@ define('pgadmin.browser.node', [
         }
         Notify.confirm(title, msg,
           function() {
-            $.ajax({
-              url: obj.generate_url(i, input.url, d, true),
-              type: 'DELETE',
-            })
-              .done(function(res) {
-                if(res.success == 2){
-                  Notify.error(res.info, null);
-                  return;
+            getApiInstance().delete(
+              obj.generate_url(i, input.url, d, true),
+            ).then(({data: res})=> {
+              if(res.success == 2){
+                Notify.error(res.info, null);
+                return;
+              }
+              if (res.success == 0) {
+                Notify.alert(res.errormsg, res.info);
+              } else {
+                // Remove the node from tree and set collection node as selected.
+                let selectNextNode = true;
+                if(obj.selectParentNodeOnDelete) {
+                  let prv_i = t.parent(i);
+                  setTimeout(function() {
+                    t.select(prv_i);
+                  }, 10);
+                  selectNextNode = false;
                 }
-                if (res.success == 0) {
-                  pgBrowser.report_error(res.errormsg, res.info);
-                } else {
-                  // Remove the node from tree and set collection node as selected.
-                  let selectNextNode = true;
-                  if(obj.selectParentNodeOnDelete) {
-                    let prv_i = t.parent(i);
-                    setTimeout(function() {
-                      t.select(prv_i);
-                    }, 10);
-                    selectNextNode = false;
-                  }
-                  pgBrowser.removeTreeNode(i, selectNextNode);
+                pgBrowser.removeTreeNode(i, selectNextNode);
+              }
+              return true;
+            }).catch(function(xhr) {
+              let errmsg = xhr.responseText;
+              /* Error from the server */
+              if (xhr.status == 417 || xhr.status == 410 || xhr.status == 500) {
+                try {
+                  let data = JSON.parse(xhr.responseText);
+                  errmsg = data.info || data.errormsg;
+                } catch (e) {
+                  console.warn(e.stack || e);
                 }
-                return true;
-              })
-              .fail(function(jqx) {
-                let errmsg = jqx.responseText;
-                /* Error from the server */
-                if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-                  try {
-                    let data = JSON.parse(jqx.responseText);
-                    errmsg = data.info || data.errormsg;
-                  } catch (e) {
-                    console.warn(e.stack || e);
-                  }
-                }
-                pgBrowser.report_error(
-                  gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
-              });
+              }
+              Notify.alert(gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
+            });
           }
         );
       },
@@ -822,23 +819,27 @@ define('pgadmin.browser.node', [
             fgcolor = serverData.icon.split(' ')[2] || '';
 
           if (bgcolor) {
-            let dynamic_class = 'pga_server_' + serverData._id + '_bgcolor',
-              style_tag;
-
+            let dynamic_class = 'pga_server_' + serverData._id + '_bgcolor';
             // Prepare dynamic style tag
-            style_tag = '<style id=' + dynamic_class + ' type=\'text/css\'> \n';
-            style_tag += '.' + dynamic_class + ' .file-label {';
-            style_tag += ' border-radius: 3px; margin-bottom: 2px;';
-            style_tag += ' background: ' + bgcolor + ' !important;} \n';
-            if (fgcolor) {
-              style_tag += '.' + dynamic_class + ' span.file-name {';
-              style_tag += ' color: ' + fgcolor + ' !important;} \n';
-            }
-            style_tag += '</style>';
+            const styleTag = document.createElement('style');
+            styleTag.setAttribute('id', dynamic_class);
+            styleTag.setAttribute('type', 'text/css');
+            styleTag.innerText = `
+              .${dynamic_class} .file-label {
+                border-radius: 3px;
+                margin-bottom: 2px;
+                background: ${bgcolor} !important;
+              }
+              ${fgcolor ? `
+              .${dynamic_class} span.file-name {
+                color: ${fgcolor} !important;
+              }
+              `:''}
+            `;
 
             // Prepare dynamic style tag using template
-            $('#' + dynamic_class).remove();
-            $(style_tag).appendTo('head');
+            document.querySelector(`style[id="${dynamic_class}"]`).remove();
+            document.head.appendChild(styleTag);
             // Add dynamic class to the tree node.
             pgBrowser.tree.addCssClass(item, dynamic_class);
           }
@@ -895,7 +896,6 @@ define('pgadmin.browser.node', [
           t = pgBrowser.tree,
           data = _item && t.itemData(_item);
 
-        $(pgBrowser.panels['properties'].panel).removeData('node-prop');
         pgBrowser.Events.trigger(
           'pgadmin:browser:tree:refresh', _item || pgBrowser.tree.selected(), {
             success: function() {

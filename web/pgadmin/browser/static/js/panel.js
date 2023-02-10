@@ -11,8 +11,8 @@ import { getPanelView } from './panel_view';
 import _ from 'lodash';
 
 define(
-  ['sources/pgadmin', 'jquery', 'wcdocker'],
-  function(pgAdmin, $) {
+  ['sources/pgadmin', 'wcdocker'],
+  function(pgAdmin) {
 
     let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
       wcDocker = window.wcDocker;
@@ -52,7 +52,9 @@ define(
             limit: that.limit,
             isLayoutMember: that.isLayoutMember,
             onCreate: function(myPanel) {
-              $(myPanel).data('pgAdminName', that.name);
+              myPanel.panelData = {
+                pgAdminName: that.name,
+              };
               myPanel.initSize(that.width, that.height);
 
               if (!that.showTitle)
@@ -64,18 +66,18 @@ define(
                   myPanel.icon(that.icon);
               }
 
-              let $container = $('<div>', {
-                'class': 'pg-panel-content',
-              }).append($(that.content));
+              let container = document.createElement('div');
+              container.setAttribute('class', 'pg-panel-content');
+              container.innerHTML = that.content;
 
               // Add extra classes
               if (!_.isNull('extraClasses')) {
-                $container.addClass(that.extraClasses);
+                container.classList.add(that.extraClasses);
               }
 
               myPanel.maximisable(!!that.canMaximise);
               myPanel.closeable(!!that.isCloseable);
-              myPanel.layout().addItem($container);
+              myPanel.layout().addItem(container);
               that.panel = myPanel;
               if (that.events && _.isObject(that.events)) {
                 _.each(that.events, function(v, k) {
@@ -99,21 +101,20 @@ define(
               });
 
               if (that.onCreate && _.isFunction(that.onCreate)) {
-                that.onCreate.apply(that, [myPanel, $container]);
+                that.onCreate.apply(that, [myPanel, container]);
               }
 
               // Prevent browser from opening the drag file.
               // Using addEventListener to avoid conflict with jquery.drag
               ['dragover', 'drop'].forEach((eventName)=>{
-                $container[0].addEventListener(eventName, function(event) {
+                container.addEventListener(eventName, function(event) {
                   event.stopPropagation();
                   event.preventDefault();
                 });
               });
 
               if (that.elContainer) {
-                myPanel.pgElContainer = $container;
-                $container.addClass('pg-el-container');
+                myPanel.pgElContainer = container;
                 _.each([
                   wcDocker.EVENT.RESIZED, wcDocker.EVENT.ATTACHED,
                   wcDocker.EVENT.DETACHED, wcDocker.EVENT.VISIBILITY_CHANGED,
@@ -126,7 +127,7 @@ define(
               if (myPanel._type == 'dashboard' || myPanel._type == 'processes') {
                 getPanelView(
                   pgBrowser.tree,
-                  $container[0],
+                  container,
                   pgBrowser,
                   myPanel._type
                 );
@@ -136,7 +137,7 @@ define(
               pgBrowser.onPreferencesChange('dashboards', function() {
                 getPanelView(
                   pgBrowser.tree,
-                  $container[0],
+                  container,
                   pgBrowser,
                   myPanel._type
                 );
@@ -146,7 +147,7 @@ define(
               pgBrowser.onPreferencesChange('graphs', function() {
                 getPanelView(
                   pgBrowser.tree,
-                  $container[0],
+                  container,
                   pgBrowser,
                   myPanel._type
                 );
@@ -162,7 +163,7 @@ define(
                 if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
-                    $container[0],
+                    container,
                     pgBrowser,
                     myPanel._type
                   );
@@ -174,7 +175,7 @@ define(
                 if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
-                    $container[0],
+                    container,
                     pgBrowser,
                     myPanel._type
                   );
@@ -186,7 +187,7 @@ define(
                 if(myPanel.isVisible() && myPanel._type !== 'properties') {
                   getPanelView(
                     pgBrowser.tree,
-                    $container[0],
+                    container,
                     pgBrowser,
                     myPanel._type
                   );
@@ -197,7 +198,7 @@ define(
         }
       },
       eventFunc: function(eventName) {
-        let name = $(this).data('pgAdminName');
+        let name = this.panelData.pgAdminName;
         try {
           pgBrowser.Events.trigger(
             'pgadmin-browser:panel', eventName, this, arguments
@@ -248,18 +249,16 @@ define(
                 elAttr = 'xl';
               }
 
-              p.pgElContainer.attr('el', elAttr);
+              p.pgElContainer.setAttribute('el', elAttr);
             },
             100
           );
         }
       },
       handleVisibility: function(eventName) {
-        if (_.isNull(pgBrowser.tree)) return;
-
         let selectedPanel = pgBrowser.docker.findPanels(this._type)[0];
         let isPanelVisible = selectedPanel.isVisible();
-        let $container = selectedPanel
+        let container = selectedPanel
           .layout()
           .scene()
           .find('.pg-panel-content');
@@ -268,7 +267,7 @@ define(
           if (eventName == 'panelVisibilityChanged') {
             getPanelView(
               pgBrowser.tree,
-              $container[0],
+              container[0],
               pgBrowser,
               this._type
             );
@@ -277,7 +276,7 @@ define(
         if (eventName == 'panelClosed' && selectedPanel._type == 'dashboard') {
           getPanelView(
             pgBrowser.tree,
-            $container[0],
+            container[0],
             pgBrowser,
             this._type,
             false

@@ -11,6 +11,7 @@ import { getNodeAjaxOptions } from '../../../../../static/js/node_ajax';
 import PgaJobSchema from './pga_job.ui';
 import { getNodePgaJobStepSchema } from '../../steps/static/js/pga_jobstep.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../../../../static/js/api_instance';
 
 define('pgadmin.node.pga_job', [
   'sources/gettext', 'sources/url_for', 'jquery', 'pgadmin.browser',
@@ -91,17 +92,15 @@ define('pgadmin.node.pga_job', [
           d = i  ? t.itemData(i) : undefined;
 
         if (d) {
-          $.ajax({
-            url: obj.generate_url(i, 'run_now', d, true),
-            method:'PUT',
-          })
-          // 'pgagent.pga_job' table updated with current time to run the job
-          // now.
-            .done(function() { t.unload(i); })
-            .fail(function(xhr, status, error) {
-              Notify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            });
+          getApiInstance().put(
+            obj.generate_url(i, 'run_now', d, true),
+          ).then(({data: res})=> {
+            Notify.success(res.info);
+            t.unload(i);
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         }
 
         return false;

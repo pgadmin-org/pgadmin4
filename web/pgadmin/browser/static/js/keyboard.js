@@ -9,13 +9,10 @@
 
 import _ from 'lodash';
 import pgAdmin from '../../../static/js/pgadmin';
-import $ from 'jquery';
 import Mousetrap from 'mousetrap';
 import * as commonUtils from '../../../static/js/utils';
-import dialogTabNavigator from '../../../static/js/dialog_tab_navigator';
-import * as keyboardFunc from 'sources/keyboard_shortcuts';
-import pgWindow from 'sources/window';
 import gettext from 'sources/gettext';
+import pgWindow from 'sources/window';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -77,33 +74,6 @@ _.extend(pgBrowser.keyboardNavigation, {
     const self = this;
     _.each(self.shortcutMethods, (keyCombo, callback) => {
       self._bindWithMousetrap(keyCombo.shortcuts, self[callback], keyCombo.bindElem);
-    });
-
-
-    /* Dropdown submenu was not working properly for up/down arrow keys.
-     * So up/down/right/left events for dropdown were removed from Mousetrap and were
-     * handled manually.
-     */
-    const LEFT_KEY = 37,
-      UP_KEY = 38,
-      RIGHT_KEY = 39,
-      DOWN_KEY = 40;
-
-    $('.pg-navbar').on('keydown', (event)=> {
-      switch(event.keyCode) {
-      case LEFT_KEY:
-        self.bindMainMenuLeft(event);
-        break;
-      case UP_KEY:
-        self.bindMainMenuUpDown(event, 'up');
-        break;
-      case RIGHT_KEY:
-        self.bindMainMenuRight(event);
-        break;
-      case DOWN_KEY:
-        self.bindMainMenuUpDown(event, 'down');
-        break;
-      }
     });
   },
   _bindWithMousetrap: function(shortcuts, callback, bindElem) {
@@ -179,89 +149,10 @@ _.extend(pgBrowser.keyboardNavigation, {
       }
     }, 1000);
   },
-  bindMainMenuLeft: function(event) {
-    if ($(event.target).hasClass('nav-link')) { // Menu items
-      let currNavMenu = $(event.target).closest('.nav-item');
-      keyboardFunc._stopEventPropagation(event);
-
-      currNavMenu = currNavMenu.prev('.nav-item');
-      // Skip hidden menus
-      while(currNavMenu.hasClass('d-none')) {
-        currNavMenu = currNavMenu.prev('.nav-item');
-      }
-
-      currNavMenu.find('.dropdown-toggle').first().dropdown('toggle');
-
-    } else if($(event.target).closest('.dropdown-menu').length > 0) {
-      let currLi = $(event.target).closest('li');
-      keyboardFunc._stopEventPropagation(event);
-      /*close submenu*/
-      let currMenu = currLi.closest('.dropdown-menu');
-      if(currMenu.closest('.dropdown-submenu').length > 0) {
-        currMenu.removeClass('show');
-        currMenu.closest('.dropdown-submenu').removeClass('dropdown-submenu-visible');
-        currLi = currMenu.closest('.dropdown-submenu');
-        currLi.find('.dropdown-item').trigger('focus');
-      }
-    }
-  },
-  bindMainMenuRight: function(event) {
-    if ($(event.target).hasClass('nav-link')) { // Menu items
-      let currNavMenu = $(event.target).closest('.nav-item');
-      keyboardFunc._stopEventPropagation(event);
-
-      currNavMenu = currNavMenu.next('.nav-item');
-      // Skip hidden menus
-      while(currNavMenu.hasClass('d-none')) {
-        currNavMenu = currNavMenu.next('.nav-item');
-      }
-
-      currNavMenu.find('.dropdown-toggle').first().dropdown('toggle');
-    } else if($(event.target).closest('.dropdown-menu').length > 0) {
-      let currLi = $(event.target).closest('li');
-      keyboardFunc._stopEventPropagation(event);
-
-      /*open submenu if any*/
-      if(currLi.hasClass('dropdown-submenu')){
-        currLi.addClass('dropdown-submenu-visible');
-        currLi.find('.dropdown-menu').addClass('show');
-        currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
-      }
-    }
-  },
-  bindMainMenuUpDown: function(event, combo) {
-    // Handle Sub-menus
-    if($(event.target).closest('.dropdown-menu').length > 0) {
-      keyboardFunc._stopEventPropagation(event);
-      let currLi = $(event.target).closest('li');
-      /*close all the submenus on movement*/
-      let dropMenu = $(event.target).closest('.dropdown-menu');
-      dropMenu.find('.show').removeClass('show');
-      dropMenu.find('.dropdown-submenu').removeClass('dropdown-submenu-visible');
-      if(combo === 'up') {
-        currLi = currLi.prev();
-      }
-      else if(combo === 'down'){
-        currLi = currLi.next();
-      }
-
-      /*do not focus on divider and disabled */
-      while(currLi.hasClass('dropdown-divider')
-        || currLi.find('.dropdown-item').first().hasClass('disabled')) {
-        if(combo === 'up') {
-          currLi = currLi.prev();
-        }
-        else if(combo === 'down'){
-          currLi = currLi.next();
-        }
-      }
-      currLi.find('.dropdown-item').trigger('focus');
-    }
-  },
   bindLeftTree: function() {
     const tree = this.getTreeDetails();
 
-    $('#tree').trigger('focus');
+    document.querySelector('[id="tree"]').focus();
     tree.t.select(tree.i);
   },
   bindSubMenuQueryTool: function() {
@@ -336,17 +227,6 @@ _.extend(pgBrowser.keyboardNavigation, {
     // Call refresh object callback
     pgAdmin.Browser.Node.callbacks.refresh.call(pgAdmin.Browser.Nodes[tree.t.itemData(tree.i)._type]);
   },
-  bindContextMenu: function(event) {
-    const tree = this.getTreeDetails();
-    let _srcElement = event.srcElement || event.target;
-    const left = $(_srcElement).find('.aciTreeEntry').position().left + 70;
-    const top = $(_srcElement).find('.aciTreeEntry').position().top + 70;
-
-    tree.t.blur(tree.i);
-    $('#tree').trigger('blur');
-    // Call context menu and set position
-    tree.i.children().contextMenu({x: left, y: top});
-  },
   bindDirectDebugging: function() {
     const tree = this.getTreeDetails();
     const type = tree.t.itemData(tree.i)._type;
@@ -357,24 +237,6 @@ _.extend(pgBrowser.keyboardNavigation, {
     if (pgAdmin.Tools.Debugger.can_debug(tree.d, tree.i, {'debug_type': 'direct'})) {
       // Call debugger callback
       pgAdmin.Tools.Debugger.get_function_information(pgAdmin.Browser.Nodes[type]);
-    }
-  },
-  bindDropMultipleObjects: function() {
-    let isPropertyPanelVisible = this.isPropertyPanelVisible();
-    if (isPropertyPanelVisible === true && $('button.delete_multiple').length > 0) {
-      $('button.delete_multiple').click();
-    }
-  },
-  bindDropCascadeMultipleObjects: function() {
-    let isPropertyPanelVisible = this.isPropertyPanelVisible();
-    if (isPropertyPanelVisible === true && $('button.delete_multiple_cascade').length > 0) {
-      $('button.delete_multiple_cascade').click();
-    }
-  },
-  bindAddGridRow: function() {
-    let subNode = $(document.activeElement).closest('.object.subnode');
-    if ($(subNode).length) {
-      $(subNode).find('.add').click();
     }
   },
   isPropertyPanelVisible: function() {
@@ -395,12 +257,6 @@ _.extend(pgBrowser.keyboardNavigation, {
       i: selectedTreeNode,
       d: selectedTreeNodeData,
     };
-  },
-  getDialogTabNavigator: function(dialogContainer) {
-    const backward_shortcut = pgWindow.pgAdmin.Browser.get_preference('browser', 'dialog_tab_backward').value;
-    const forward_shortcut = pgWindow.pgAdmin.Browser.get_preference('browser', 'dialog_tab_forward').value;
-
-    return new dialogTabNavigator.dialogTabNavigator(dialogContainer, backward_shortcut, forward_shortcut);
   },
   bindOpenQuickSearch: function() {
     pgWindow.pgAdmin.Browser.all_menus_cache.help.mnu_quick_search_help.callback();

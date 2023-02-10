@@ -7,7 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import $ from 'jquery';
 import axios from 'axios';
 
 export function setPGCSRFToken(header, token) {
@@ -15,14 +14,6 @@ export function setPGCSRFToken(header, token) {
     // Throw error message.
     throw new Error('csrf-token meta tag has not been set');
   }
-
-  // Configure jquery.ajax to set 'X-CSRFToken' request header for
-  // every requests.
-  $.ajaxSetup({
-    beforeSend: function(xhr) {
-      xhr.setRequestHeader(header, token);
-    },
-  });
 
   // Configure axios to set 'X-CSRFToken' request header for
   // every requests.

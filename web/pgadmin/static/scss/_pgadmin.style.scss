@@ -221,45 +221,18 @@
     height: auto !important;
 }
 
-.obj_properties .backform-tab {
-    position: absolute;
-    margin: 0px 0px;
-    padding: 0px;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-}
-
-.obj_properties .backform-tab > .tab-content {
-    padding: 0px;
-    overflow-y: auto;
-    background-color: $color-gray-light;
-}
-
 .obj_properties {
     padding: 0px;
-}
-
-.obj_properties .pgadmin-control .uneditable-input {
-    border: 0px !important;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    -webkit-transition: none !important;
-    -o-transition: none !important;
-    transition: none !important;
-    background-color: transparent !important;
-    height: 20px;
-    padding: 0px;
-    margin-top: 2px;
-    vertical-align: middle;
+    height: 100%;
+    width: 100%;
+    background-color: $color-gray-light;
 }
 
 /* Message panel shown on browser tabs */
 .pg-panel-message {
     width: 80%;
     margin: 0 auto;
-    margin-top: 25px !important;
+    padding-top: 25px !important;
     position: relative;
     text-align: center;
     font-size: $font-size-base;
@@ -328,78 +301,6 @@
 
 .pgadmin-controls > span.select2 {
     width: 100%;
-}
-
-.obj_properties fieldset > div > .pgadmin-control-group > label {
-    min-height: 28px;
-}
-
-.obj_properties fieldset > .fieldset-content {
-  padding: 5px 10px;
-}
-
-.obj_properties .accordian-group > .accordian-content {
-  padding: 5px 10px;
-}
-
-.obj_properties .badge {
-  display: block;
-  text-align: left;
-  cursor: pointer;
-  background-color: $badge-header-bg;
-  padding: 7px;
-  font-size: inherit;
-  border-bottom: $panel-border;
-  border-radius: 0rem;
-  border-top-left-radius: $card-border-radius;
-  border-top-right-radius: $card-border-radius;
-
-  &.collapsed {
-    border-bottom: none !important;
-    border-radius: $card-border-radius;
-  }
-}
-.obj_properties .badge .caret {
-  display: inline-block;
-  margin-left: 2px;
-  margin-right: 4px;
-  width: 0.7rem;
-}
-
-.obj_properties .badge .caret::before {
-  font-family: $font-family-icon;
-	content: "\f078";
-	font-size: 0.7rem;
-	margin-left: 0rem;
-	font-weight: 900;
-}
-
-.obj_properties .collapsed .caret::before {
-  font-family: $font-family-icon;
-	content: "\f054";
-	font-size: 0.7rem;
-	border: none;
-	font-weight: 900;
-}
-
-.obj_properties table td {
-    vertical-align: top;
-}
-
-.obj_properties .set-group {
-  margin: 0.5rem 0rem;
-  padding: 0rem;
-}
-
-.obj_properties .accordian-group {
-  margin: 0.5rem 0rem;
-  padding: 0rem;
-  border: $panel-border;
-  border-radius: $card-border-radius;
-  background-color: $color-bg;
-  fieldset.inline-fieldset {
-    background: $color-bg;
-  }
 }
 
 fieldset.inline-fieldset {
@@ -797,6 +698,7 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-size: 0.875rem;
 }
 
 /* Security label's label column font size */
@@ -821,10 +723,6 @@ body {
 .multi-checkbox .check.partial:after {
   content: "\003F";
   font-weight: 900;
-}
-
-.pg-el-container {
-  background-color: $negative-bg;
 }
 
 .nav-tabs {

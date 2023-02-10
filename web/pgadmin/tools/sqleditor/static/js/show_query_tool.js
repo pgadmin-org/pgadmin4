@@ -11,7 +11,6 @@ import gettext from '../../../../static/js/gettext';
 import url_for from '../../../../static/js/url_for';
 import {getPanelTitle} from './sqleditor_title';
 import {getRandomInt} from 'sources/utils';
-import $ from 'jquery';
 import Notify from '../../../../static/js/helpers/Notifier';
 
 function hasDatabaseInformation(parentData) {
@@ -130,9 +129,9 @@ export function _set_dynamic_tab(pgBrowser, value){
   let sqleditor_panels = pgBrowser.docker.findPanels('frm_sqleditor');
   const process = panel => {
     if(value) {
-      $('#' + panel.$title.index() + ' div:first').addClass('wcPanelTab-dynamic');
+      document.querySelector(`.wcPanelTab[id="${panel.$title.index()}"] div`).classList.add('wcPanelTab-dynamic');
     } else {
-      $('#' + panel.$title.index() + ' div:first').removeClass('wcPanelTab-dynamic');
+      document.querySelector(`.wcPanelTab[id="${panel.$title.index()}"] div`).classList.remove('wcPanelTab-dynamic');
     }
   };
   sqleditor_panels.forEach(process);

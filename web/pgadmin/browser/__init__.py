@@ -66,7 +66,6 @@ except ImportError as e:
 
 MODULE_NAME = 'browser'
 BROWSER_STATIC = 'browser.static'
-JQUERY_ACIPLUGIN = 'jquery.aciplugin'
 BROWSER_INDEX = 'browser.index'
 PGADMIN_BROWSER = 'pgAdmin.Browser'
 PASS_ERROR_MSG = gettext('Your password has not been changed.')

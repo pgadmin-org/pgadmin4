@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import $ from 'jquery';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
+import getApiInstance from '../api_instance';
 
 export const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -72,23 +72,10 @@ _.extend(pgBrowser.browserTreeState, {
       pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
         this.update_cache.bind(this));
     } else if (!_.isUndefined(save_tree_state_period)) {
-      $.ajax({
-        url: url_for('settings.reset_tree_state'),
-        type: 'DELETE',
-      })
-        .fail(function(jqx) {
-          let msg = jqx.responseText;
-          /* Error from the server */
-          if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-            try {
-              let data = JSON.parse(jqx.responseText);
-              msg = data.errormsg;
-            } catch (e) {
-              console.warn(e.stack || e);
-            }
-          }
+      getApiInstance().delete(url_for('settings.reset_tree_state'))
+        .catch(function(error) {
           console.warn(
-            gettext('Error resetting the tree saved state."'), msg);
+            gettext('Error resetting the tree saved state."'), error);
         });
     }
 
@@ -99,58 +86,29 @@ _.extend(pgBrowser.browserTreeState, {
     if(self.last_state == JSON.stringify(self.current_state))
       return;
 
-    $.ajax({
-      url: url_for('settings.save_tree_state'),
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(self.current_state),
-    })
-      .done(function() {
-        self.last_state = JSON.stringify(self.current_state);
-        self.fetch_state();
-      })
-      .fail(function(jqx) {
-        let msg = jqx.responseText;
-        /* Error from the server */
-        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-          try {
-            let data = JSON.parse(jqx.responseText);
-            msg = data.errormsg;
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
-        }
-        console.warn(
-          gettext('Error saving the tree state."'), msg);
-      });
-
+    getApiInstance().post(
+      url_for('settings.save_tree_state'),
+      JSON.stringify(self.current_state)
+    ).then(()=> {
+      self.last_state = JSON.stringify(self.current_state);
+      self.fetch_state();
+    }).catch(function(error) {
+      console.warn(
+        gettext('Error resetting the tree saved state."'), error);
+    });
   },
   fetch_state: function() {
 
     let self = this;
-    $.ajax({
-      url: url_for('settings.get_tree_state'),
-      type: 'GET',
-      dataType: 'json',
-      contentType: 'application/json',
-    })
-      .done(function(res) {
-        self.stored_state = res;
-      })
-      .fail(function(jqx) {
-        let msg = jqx.responseText;
-        /* Error from the server */
-        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-          try {
-            let data = JSON.parse(jqx.responseText);
-            msg = data.errormsg;
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
-        }
-        console.warn(
-          gettext('Error fetching the tree state.'), msg);
-      });
+
+    getApiInstance().get(
+      url_for('settings.get_tree_state'),
+    ).then((res)=> {
+      self.stored_state = res.data;
+    }).catch(function(error) {
+      console.warn(
+        gettext('Error resetting the tree saved state."'), error);
+    });
   },
   update_cache: function(item) {
     let data = item && pgBrowser.tree.itemData(item),

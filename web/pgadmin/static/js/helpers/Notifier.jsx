@@ -24,6 +24,7 @@ import gettext from 'sources/gettext';
 import _ from 'lodash';
 import pgWindow from 'sources/window';
 import ModalProvider, { useModal } from './ModalProvider';
+import { parseApiError } from '../api_instance';
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
@@ -150,76 +151,45 @@ let Notifier = {
     );
   },
 
-  pgRespErrorNotify(xhr, error, prefixMsg='') {
-    let contentType = xhr.getResponseHeader('Content-Type');
-    if (xhr.status === 410) {
-      const pgBrowser = window.pgAdmin.Browser;
-      pgBrowser.report_error(gettext('Error: Object not found - %s.', xhr.statusText), xhr.responseJSON.errormsg);
+  pgRespErrorNotify(error, prefixMsg='') {
+    if (error.response?.status === 410) {
+      this.alert(gettext('Error: Object not found - %s.', error.response.statusText), parseApiError(error));
     } else {
-      try {
-        if (xhr.status === 0) {
-          error = gettext('Connection to the server has been lost.');
-        } else {
-          if(contentType){
-            if(contentType.indexOf('application/json') >= 0) {
-              let resp = JSON.parse(xhr.responseText);
-              error = _.escape(resp.result) || _.escape(resp.errormsg) || gettext('Unknown error');
-            }
-          }
-          if (contentType.indexOf('text/html') >= 0) {
-            error = gettext('INTERNAL SERVER ERROR');
-            console.warn(xhr.responseText);
-          }
-        }
-      }
-      catch(e){
-        error = e.message;
-      }
-
-      this.error(prefixMsg + ' ' + error);
+      this.error(prefixMsg + ' ' + parseApiError(error));
     }
   },
 
-  pgNotifier(type, xhr, promptmsg, onJSONResult) {
-    let msg = xhr.responseText,
-      contentType = xhr.getResponseHeader('Content-Type');
+  pgNotifier(type, error, promptmsg, onJSONResult) {
+    let msg;
 
-    if (xhr.status == 0) {
-      msg = gettext('Connection to the server has been lost.');
+    if(!error.response) {
+      msg = parseApiError(error);
       promptmsg = gettext('Connection Lost');
     } else {
-      if (contentType) {
-        try {
-          if (contentType.indexOf('application/json') == 0) {
-            let resp = JSON.parse(msg);
-
-            if(resp.info == 'CRYPTKEY_MISSING') {
-              let pgBrowser = window.pgAdmin.Browser;
-              pgBrowser.set_master_password('', ()=> {
-                if(onJSONResult && typeof(onJSONResult) == 'function') {
-                  onJSONResult('CRYPTKEY_SET');
-                }
-              }, ()=> {
-                if(onJSONResult && typeof(onJSONResult) == 'function') {
-                  onJSONResult('CRYPTKEY_NOT_SET');
-                }
-              });
-              return;
-            } else if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
-              onJSONResult && typeof(onJSONResult) == 'function') {
-              return onJSONResult(resp.result);
+      if(error.response.headers['content-type'] == 'application/json') {
+        let resp = error.response.data;
+        if(resp.info == 'CRYPTKEY_MISSING') {
+          let pgBrowser = window.pgAdmin.Browser;
+          pgBrowser.set_master_password('', ()=> {
+            if(onJSONResult && typeof(onJSONResult) == 'function') {
+              onJSONResult('CRYPTKEY_SET');
             }
-            msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
-          }
-          if (contentType.indexOf('text/html') == 0) {
-            if (type === 'error') {
-              this.alert('Error', promptmsg);
+          }, ()=> {
+            if(onJSONResult && typeof(onJSONResult) == 'function') {
+              onJSONResult('CRYPTKEY_NOT_SET');
             }
-            return;
-          }
-        } catch (e) {
-          this.alert('Error', e.message);
+          });
+          return;
+        } else if (resp.result != null && (!resp.errormsg || resp.errormsg == '') &&
+          onJSONResult && typeof(onJSONResult) == 'function') {
+          return onJSONResult(resp.result);
         }
+        msg = _.escape(resp.result) || _.escape(resp.errormsg) || 'Unknown error';
+      } else {
+        if (type === 'error') {
+          this.alert('Error', promptmsg);
+        }
+        return;
       }
     }
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));

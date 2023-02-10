@@ -14,6 +14,7 @@ import DatabaseSchema from './database.ui';
 import Notify from '../../../../../../static/js/helpers/Notifier';
 import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
+import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 
 define('pgadmin.node.database', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -228,41 +229,38 @@ define('pgadmin.node.database', [
               gettext('Are you sure you want to disconnect from database - %s?', d.label),
               function() {
                 let data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'connect', d, true),
-                  type:'DELETE',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      let prv_i = t.parent(i);
-                      if(res.data.info_prefix) {
-                        res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
-                      }
-                      Notify.success(res.info);
-                      t.removeIcon(i);
-                      data.connected = false;
-                      data.icon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
-
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state', i);
-                      setTimeout(function() {
-                        t.select(prv_i);
-                      }, 10);
-
-                    } else {
-                      try {
-                        Notify.error(res.errormsg);
-                      } catch (e) {
-                        console.warn(e.stack || e);
-                      }
-                      t.unload(i);
+                getApiInstance().delete(
+                  obj.generate_url(i, 'connect', d, true),
+                ).then(({data: res})=> {
+                  if (res.success == 1) {
+                    let prv_i = t.parent(i);
+                    if(res.data.info_prefix) {
+                      res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
                     }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Notify.pgRespErrorNotify(xhr, error);
+                    Notify.success(res.info);
+                    t.removeIcon(i);
+                    data.connected = false;
+                    data.icon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
+
+                    t.addIcon(i, {icon: data.icon});
                     t.unload(i);
-                  });
+                    pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state', i);
+                    setTimeout(function() {
+                      t.select(prv_i);
+                    }, 10);
+
+                  } else {
+                    try {
+                      Notify.error(res.errormsg);
+                    } catch (e) {
+                      console.warn(e.stack || e);
+                    }
+                    t.unload(i);
+                  }
+                }).catch(function(error) {
+                  Notify.pgRespErrorNotify(error);
+                  t.unload(i);
+                });
               },
               function() { return true; }
             );
@@ -372,16 +370,17 @@ define('pgadmin.node.database', [
       },
     };
 
+    let api = getApiInstance();
     let connect_to_database = function(obj, data, tree, item, _wasConnected) {
         connect(obj, data, tree, item, _wasConnected);
       },
       connect = function (obj, data, tree, item, _wasConnected) {
         let wasConnected = _wasConnected || data.connected,
           onFailure = function(
-            xhr, status, error, _model, _data, _tree, _item, _status
+            error, _model, _data, _tree, _item, _status
           ) {
             data.is_connecting = false;
-            if (xhr.status != 200 && xhr.responseText.search('Ticket expired') !== -1) {
+            if (error.response?.status != 200 && error.response?.request?.responseText?.search('Ticket expired') !== -1) {
               tree.addIcon(_item, {icon: 'icon-server-connecting'});
               let fetchTicket = Kerberos.fetch_ticket();
               fetchTicket.then(
@@ -392,7 +391,7 @@ define('pgadmin.node.database', [
                   tree.setInode(_item);
                   let dbIcon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
                   tree.addIcon(_item, {icon: dbIcon});
-                  Notify.pgNotifier(fun_error, xhr, gettext('Connect  to database.'));
+                  Notify.pgNotifier(fun_error, error, gettext('Connect to database.'));
                 }
               );
             } else {
@@ -402,7 +401,7 @@ define('pgadmin.node.database', [
                 tree.addIcon(_item, {icon: dbIcon});
               }
 
-              Notify.pgNotifier('error', xhr, error, function(msg) {
+              Notify.pgNotifier('error', error, 'Error', function(msg) {
                 setTimeout(function() {
                   if (msg == 'CRYPTKEY_SET') {
                     connect_to_database(_model, _data, _tree, _item, _wasConnected);
@@ -473,21 +472,21 @@ define('pgadmin.node.database', [
             _tree.select(server);
           };
 
-        $.post(
-          obj.generate_url(item, 'connect', data, true)
-        ).done(function(res) {
-          if (res.success == 1) {
-            return onSuccess(res, obj, data, tree, item, wasConnected);
-          }
-        }).fail(function(xhr, status, error) {
-          if (xhr.status === 410) {
-            error = gettext('Error: Object not found - %s.', error);
-          }
+        api.post(obj.generate_url(item, 'connect', data, true))
+          .then(({data: res})=>{
+            if (res.success == 1) {
+              return onSuccess(res, obj, data, tree, item, wasConnected);
+            }
+          })
+          .catch((error)=>{
+            if (error.response?.status === 410) {
+              error = gettext('Error: Object not found - %s.', parseApiError(error));
+            }
 
-          return onFailure(
-            xhr, status, error, obj, data, tree, item, wasConnected
-          );
-        });
+            return onFailure(
+              error, obj, data, tree, item, wasConnected
+            );
+          });
       };
   }
 
