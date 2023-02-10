@@ -99,7 +99,6 @@ define([
       extraData['database'] = treeInfo.database._label;
       if(treeInfo?.schema) {
         extraData['schema'] = treeInfo?.schema._label;
-        
       }
       if(treeInfo?.table) {
         extraData['table'] = treeInfo?.table._label;
