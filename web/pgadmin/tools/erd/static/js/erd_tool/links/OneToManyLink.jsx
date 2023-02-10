@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useContext } from 'react';
 import {
   RightAngleLinkModel,
   RightAngleLinkWidget,
@@ -21,6 +21,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
+import { ERDCanvasSettings } from '../components/ERDTool';
 
 export const POINTER_SIZE = 30;
 
@@ -81,6 +82,7 @@ export class OneToManyLinkModel extends RightAngleLinkModel {
 const useStyles = makeStyles((theme)=>({
   svgLink: {
     stroke: theme.palette.text.primary,
+    fontSize: '0.8em',
   },
   '@keyframes svgLinkSelected': {
     'from': { strokeDashoffset: 24},
@@ -99,15 +101,37 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-const CustomLinkEndWidget = props => {
+function ChenNotation({rotation, type}) {
+  const classes = useStyles();
+  const textX = Math.sign(rotation) > 0 ? -14 : 8;
+  const textY = -5;
+  return (
+    <>
+      <text className={classes.svgLink} x={textX} y={textY} transform={'rotate(' + -rotation + ')' }>
+        {type == 'one' ? '1' : 'N'}
+      </text>
+      <line className={classes.svgLink} x1="0" y1="0" x2="0" y2="30"></line>
+    </>
+  );
+}
+ChenNotation.propTypes = {
+  rotation: PropTypes.number,
+  type: PropTypes.string,
+};
+
+function CustomLinkEndWidget(props) {
   const { point, rotation, tx, ty, type } = props;
   const classes = useStyles();
+  const settings = useContext(ERDCanvasSettings);
 
   const svgForType = (itype) => {
+    if(settings.cardinality_notation == 'chen') {
+      return <ChenNotation rotation={rotation} type={itype} />;
+    }
     if(itype == 'many') {
       return (
         <>
-          <circle className={clsx(classes.svgLink, classes.svgLinkCircle)} cx="0" cy="16" r={props.width*1.75} strokeWidth={props.width} />
+          <circle className={clsx(classes.svgLink, classes.svgLinkCircle)} cx="0" cy="16" r={props.width*2.5} strokeWidth={props.width} />
           <polyline className={classes.svgLink} points="-8,0 0,15 0,0 0,30 0,15 8,0" fill="none" strokeWidth={props.width} />
         </>
       );
@@ -127,7 +151,7 @@ const CustomLinkEndWidget = props => {
       </g>
     </g>
   );
-};
+}
 
 CustomLinkEndWidget.propTypes = {
   point: PropTypes.instanceOf(PointModel).isRequired,
