@@ -115,10 +115,12 @@ export default class MaintenanceSchema extends BaseUISchema {
           {
             'label': gettext('REINDEX'),
             value: 'REINDEX',
+            disabled: obj.nodeInfo?.mview?true:false
           },
           {
             'label': gettext('CLUSTER'),
             value: 'CLUSTER',
+            disabled: obj.nodeInfo?.mview?true:false
           },
         ],
       },
