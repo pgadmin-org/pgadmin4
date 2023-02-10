@@ -38,6 +38,7 @@ class BaseFeatureTest(BaseTestGenerator):
         try:
             if self.parallel_ui_tests:
                 self.page.login_to_app(self.server['login_details'])
+                print("Login successful", file=sys.stderr)
             test_utils.reset_layout_db()
             self.page.driver.switch_to.default_content()
             self.page.wait_for_app()
