@@ -20,7 +20,7 @@
   {% endif %}label: "{{ item.label }}", applies: ["{{ key.lower() }}"],
   priority: {{ item.priority }},
   enable: "{{ item.enable }}",
-  {% if item.checked is defined %}checked: {% if item.checked %}true{% else %}false{% endif %},
+  {% if item.checked is defined %}checked: {% if (item.checked || item.name == 'mnu_lock_'+current_ui_lock) %}true{% else %}false{% endif %},
   {% endif %}
   {% if item.below is defined %}below: {% if item.below %}true{% else %}false{% endif %},
   {% endif %}
