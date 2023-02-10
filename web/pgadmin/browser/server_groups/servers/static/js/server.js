@@ -600,7 +600,7 @@ define('pgadmin.node.server', [
 
       let wasConnected = reconnect || data.connected,
         onFailure = function(
-          xhr, error, _node, _data, _tree, _item, _wasConnected
+          error, errormsg, _node, _data, _tree, _item, _wasConnected
         ) {
           data.connected = false;
 
@@ -615,7 +615,7 @@ define('pgadmin.node.server', [
             }
 
           }
-          if (xhr.status != 200 && xhr.responseText.search('Ticket expired') !== -1) {
+          if (error.response?.status != 200 && error.response?.request?.responseText?.search('Ticket expired') !== -1) {
             tree.addIcon(_item, {icon: 'icon-server-connecting'});
             let fetchTicket = Kerberos.fetch_ticket();
             fetchTicket.then(
@@ -624,11 +624,11 @@ define('pgadmin.node.server', [
               },
               function() {
                 tree.addIcon(_item, {icon: 'icon-server-not-connected'});
-                Notify.pgNotifier('error', 'Connection error', xhr, gettext('Connect to server.'));
+                Notify.pgNotifier('error', error, 'Connection error', gettext('Connect to server.'));
               }
             );
           } else {
-            Notify.pgNotifier('error', xhr, error, function(msg) {
+            Notify.pgNotifier('error', error, errormsg, function(msg) {
               setTimeout(function() {
                 if (msg == 'CRYPTKEY_SET') {
                   connect_to_server(_node, _data, _tree, _item, _wasConnected);
@@ -735,9 +735,9 @@ define('pgadmin.node.server', [
             );
           }
         })
-        .catch((xhr)=>{
+        .catch((error)=>{
           return onFailure(
-            xhr.response?.request, parseApiError(xhr), obj, data, tree, item, wasConnected
+            error, parseApiError(error), obj, data, tree, item, wasConnected
           );
         })
         .then(()=>{
