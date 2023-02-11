@@ -17,11 +17,11 @@ Flask-Migrate==3.*
 dnspython==2.2.1
 greenlet==1.1.2;  python_version <= '3.10'
 Flask-SQLAlchemy==2.5.*
-Flask-WTF==1.0.1
+Flask-WTF==1.1.1
 Flask-Compress==1.*
 Flask-Paranoid==0.*
 Flask-Babel==2.*
-Flask-Security-Too==4.1.*
+Flask-Security-Too==5.1.0
 Flask-SocketIO<=5.2.0
 WTForms==3.*
 passlib==1.*
