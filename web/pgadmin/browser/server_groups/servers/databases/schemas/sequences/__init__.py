@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
 from flask_babel import gettext as _
 
@@ -388,7 +388,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -469,7 +469,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if seid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [seid]}
@@ -533,7 +533,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         sql, name = self.get_SQL(gid, sid, did, data, scid, seid)
         # Most probably this is due to error
@@ -585,7 +585,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

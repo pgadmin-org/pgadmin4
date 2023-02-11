@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import simplejson as json
+import json
 import re
 from functools import wraps
 
@@ -387,7 +387,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         required_args = {
@@ -461,7 +461,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -521,7 +521,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if etid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [etid]}
 
@@ -606,7 +606,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:

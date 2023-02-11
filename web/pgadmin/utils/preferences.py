@@ -13,7 +13,7 @@ module within the system.
 """
 
 import decimal
-import simplejson as json
+import json
 
 import dateutil.parser as dateutil_parser
 from flask import current_app

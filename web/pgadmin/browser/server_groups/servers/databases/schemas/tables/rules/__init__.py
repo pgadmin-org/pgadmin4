@@ -9,7 +9,7 @@
 
 """Implements Rule Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers.databases import schemas
@@ -326,7 +326,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -368,7 +368,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will update a rule object
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             SQL, name = self.getSQL(gid, sid, data, tid, rid)
@@ -402,7 +402,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if rid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [rid]}

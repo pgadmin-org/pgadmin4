@@ -9,7 +9,7 @@
 
 """Implements Cast Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
@@ -378,7 +378,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -436,7 +436,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             sql, name = self.get_sql(gid, sid, did, data, cid)
@@ -476,7 +476,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if cid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [cid]}
 
@@ -624,7 +624,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         sql = render_template("/".join([self.template_path,

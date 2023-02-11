@@ -9,7 +9,7 @@
 
 """Implements Language Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
@@ -418,7 +418,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             lid: Language ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -457,7 +457,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -516,7 +516,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if lid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [lid]}
@@ -577,7 +577,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:

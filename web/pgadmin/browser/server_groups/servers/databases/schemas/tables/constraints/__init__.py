@@ -9,7 +9,7 @@
 
 """Implements Constraint Node"""
 
-import simplejson as json
+import json
 from flask import request
 from functools import wraps
 from pgadmin.utils.driver import get_driver
@@ -172,7 +172,7 @@ def delete(**kwargs):
 
     """
     data = request.form if request.form else json.loads(
-        request.data, encoding='utf-8')
+        request.data)
 
     if 'delete' in request.base_url:
         cmd = {"cmd": "delete"}

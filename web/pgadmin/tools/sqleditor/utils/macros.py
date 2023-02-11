@@ -9,7 +9,7 @@
 
 """Handle Macros for SQL Editor."""
 
-import simplejson as json
+import json
 from flask_babel import gettext
 from flask import current_app, request
 from flask_security import login_required, current_user
@@ -100,7 +100,7 @@ def set_macros():
     """
 
     data = request.form if request.form else json.loads(
-        request.data, encoding='utf-8'
+        request.data
     )
 
     if 'changed' not in data:

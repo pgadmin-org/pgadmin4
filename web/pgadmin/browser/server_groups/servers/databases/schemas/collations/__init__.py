@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 
@@ -449,7 +449,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         required_args = [
@@ -523,7 +523,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
            coid: Collation ID
            only_sql: Return only sql if True
         """
-        data = json.loads(request.data, encoding='utf-8') if coid is None \
+        data = json.loads(request.data) if coid is None \
             else {'ids': [coid]}
 
         # Below will decide if it's simple drop or drop with cascade call
@@ -580,7 +580,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
            coid: Collation ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         SQL, name = self.get_sql(gid, sid, data, scid, coid)
         # Most probably this is due to error
@@ -631,7 +631,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

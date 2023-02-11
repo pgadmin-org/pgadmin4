@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 
@@ -349,7 +349,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -415,7 +415,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         :param tid: fts tempate id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         # Fetch sql query to update fts template
@@ -460,7 +460,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if tid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tid]}
@@ -526,7 +526,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

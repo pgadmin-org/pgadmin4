@@ -9,7 +9,7 @@
 
 """ Implements Trigger Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -564,7 +564,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -574,7 +574,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -644,7 +644,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if trid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [trid]}
@@ -710,7 +710,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
            trid: Trigger ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -790,7 +790,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -897,7 +897,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_enable_trigger = data['is_enable_trigger']

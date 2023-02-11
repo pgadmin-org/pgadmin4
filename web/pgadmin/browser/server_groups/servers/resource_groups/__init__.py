@@ -9,7 +9,7 @@
 
 """Implements Resource Groups for PPAS 9.4 and above"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups import servers
@@ -388,7 +388,7 @@ class ResourceGroupView(NodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_error, errmsg = ResourceGroupView._check_req_parameters(
@@ -484,7 +484,7 @@ class ResourceGroupView(NodeView):
             'name', 'cpu_rate_limit', 'dirty_rate_limit'
         ]
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -539,7 +539,7 @@ class ResourceGroupView(NodeView):
         """
         if rg_id is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [rg_id]}
@@ -598,7 +598,7 @@ class ResourceGroupView(NodeView):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

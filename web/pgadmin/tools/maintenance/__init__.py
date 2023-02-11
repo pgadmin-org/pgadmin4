@@ -9,7 +9,7 @@
 
 """A blueprint module implementing the maintenance tool for vacuum"""
 
-import simplejson as json
+import json
 
 from flask import url_for, Response, render_template, request, current_app
 from flask_babel import gettext as _
@@ -190,9 +190,9 @@ def create_maintenance_job(sid, did):
         None
     """
     if request.form:
-        data = json.loads(request.form['data'], encoding='utf-8')
+        data = json.loads(request.form['data'])
     else:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     index_name = get_index_name(data)
 

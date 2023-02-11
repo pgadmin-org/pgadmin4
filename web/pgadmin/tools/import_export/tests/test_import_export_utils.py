@@ -9,7 +9,7 @@
 
 import time
 import secrets
-import simplejson as json
+import json
 import uuid
 
 from regression import parent_node_dict

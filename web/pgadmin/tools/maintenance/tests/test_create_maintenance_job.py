@@ -9,7 +9,7 @@
 
 import time
 import secrets
-import simplejson as json
+import json
 import os
 
 from pgadmin.utils.route import BaseTestGenerator

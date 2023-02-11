@@ -9,7 +9,7 @@
 
 """Implements Restore Utility"""
 
-import simplejson as json
+import json
 import os
 
 from flask import render_template, request, current_app, \
@@ -137,9 +137,9 @@ def _get_create_req_data():
     :return: return data if no error occurred.
     """
     if request.form:
-        data = json.loads(request.form['data'], encoding='utf-8')
+        data = json.loads(request.form['data'])
     else:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     try:
         _file = filename_with_file_manager_path(data['file'])

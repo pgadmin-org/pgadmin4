@@ -12,7 +12,7 @@
 import datetime
 import decimal
 
-import simplejson as json
+import json
 from flask import Response
 from flask_babel import gettext as _
 
@@ -58,8 +58,7 @@ def get_no_cache_header():
 
 
 def make_json_response(
-        success=1, errormsg='', info='', result=None, data=None, status=200,
-        encoding='utf-8'
+        success=1, errormsg='', info='', result=None, data=None, status=200
 ):
     """Create a HTML response document describing the results of a request and
     containing the data."""
@@ -72,7 +71,7 @@ def make_json_response(
 
     return Response(
         response=json.dumps(doc, cls=DataTypeJSONEncoder,
-                            separators=(',', ':'), encoding=encoding),
+                            separators=(',', ':')),
         status=status,
         mimetype="application/json",
         headers=get_no_cache_header()

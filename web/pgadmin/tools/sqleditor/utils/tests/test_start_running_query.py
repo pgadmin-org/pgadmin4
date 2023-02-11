@@ -8,7 +8,7 @@
 ##########################################################################
 
 from flask import Response
-import simplejson as json
+import json
 
 from pgadmin.tools.sqleditor.utils.start_running_query import StartRunningQuery
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost

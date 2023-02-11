@@ -8,7 +8,7 @@
 ##########################################################################
 
 import os
-import simplejson as json
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict

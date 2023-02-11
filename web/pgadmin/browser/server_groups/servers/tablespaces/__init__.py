@@ -6,7 +6,7 @@
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import simplejson as json
+import json
 import re
 from functools import wraps
 
@@ -292,7 +292,7 @@ class TablespaceView(PGChildNodeView):
         }
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -375,7 +375,7 @@ class TablespaceView(PGChildNodeView):
         This function will update tablespace object
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -408,7 +408,7 @@ class TablespaceView(PGChildNodeView):
         """
         if tsid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tsid]}
@@ -469,7 +469,7 @@ class TablespaceView(PGChildNodeView):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError as ve:
                 current_app.logger.exception(ve)
                 data[k] = v

@@ -9,7 +9,7 @@
 
 """ Implements Table Node """
 
-import simplejson as json
+import json
 import re
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -884,7 +884,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         if 'coll_inherits' in data and \
                 isinstance(data['coll_inherits'], str):
             data['coll_inherits'] = json.loads(
-                data['coll_inherits'], encoding='utf-8'
+                data['coll_inherits']
             )
 
         if 'foreign_key' in data:
@@ -920,7 +920,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
            scid: Schema ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -930,7 +930,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -1024,7 +1024,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -1034,7 +1034,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -1067,7 +1067,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         """
         if tid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tid]}
@@ -1159,7 +1159,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         """
         # Below will decide if it's simple drop or drop with cascade call
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Convert str 'true' to boolean type
         is_enable_trigger = data['is_enable_trigger']
@@ -1294,7 +1294,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 

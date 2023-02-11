@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext as _
 
@@ -378,7 +378,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -444,7 +444,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param pid: fts parser id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Fetch sql query to update fts parser
         sql, name = self.get_sql(gid, sid, did, scid, data, pid)
@@ -495,7 +495,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if pid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [pid]}
@@ -568,7 +568,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

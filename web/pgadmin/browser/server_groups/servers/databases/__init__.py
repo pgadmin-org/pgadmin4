@@ -12,7 +12,7 @@
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, current_app, request, jsonify
 from flask_babel import gettext as _
 from flask_security import current_user
@@ -661,7 +661,7 @@ class DatabaseView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -823,7 +823,7 @@ class DatabaseView(PGChildNodeView):
 
     def _get_data_from_request(self):
         return request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
     @check_precondition(action='update')
@@ -960,7 +960,7 @@ class DatabaseView(PGChildNodeView):
 
         if did is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [did]}
@@ -1028,7 +1028,7 @@ class DatabaseView(PGChildNodeView):
                 if k in ('comments',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         status, res = self.get_sql(gid, sid, data, did)
@@ -1096,7 +1096,7 @@ class DatabaseView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls, encoding='utf-8')
+            acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -1132,7 +1132,7 @@ class DatabaseView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls, encoding='utf-8')
+            acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
 

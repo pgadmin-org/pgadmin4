@@ -15,7 +15,7 @@ import secrets
 from urllib.parse import unquote
 from threading import Lock
 
-import simplejson as json
+import json
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT,\
     ALLOW_SAVE_PASSWORD
 from werkzeug.user_agent import UserAgent
@@ -198,7 +198,7 @@ def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
     """
 
     if request.data:
-        filter_sql = json.loads(request.data, encoding='utf-8')
+        filter_sql = json.loads(request.data)
     else:
         filter_sql = request.args or request.form
 
@@ -363,7 +363,7 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
     # reset error if data is sent from the client
     data = {}
     if request.data:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     req_args = request.args
     if ('recreate' in req_args and
@@ -497,7 +497,7 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
 def update_sqleditor_connection(trans_id, sgid, sid, did):
     # Remove transaction Id.
     with sqleditor_close_session_lock:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
         if 'gridData' not in session:
             return make_json_response(data={'status': True})
@@ -612,7 +612,7 @@ def validate_filter(sid, did, obj_id):
         obj_id: Id of currently selected object
     """
     if request.data:
-        filter_data = json.loads(request.data, encoding='utf-8')
+        filter_data = json.loads(request.data)
     else:
         filter_data = request.args or request.form
 
@@ -836,7 +836,7 @@ def start_query_tool(trans_id):
 def extract_sql_from_network_parameters(request_data, request_arguments,
                                         request_form_data):
     if request_data:
-        sql_parameters = json.loads(request_data, encoding='utf-8')
+        sql_parameters = json.loads(request_data)
 
         if isinstance(sql_parameters, str):
             return dict(sql=str(sql_parameters), explain_plan=None)
@@ -1249,7 +1249,7 @@ def save(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        changed_data = json.loads(request.data, encoding='utf-8')
+        changed_data = json.loads(request.data)
     else:
         changed_data = request.args or request.form
 
@@ -1321,7 +1321,7 @@ def append_filter_inclusive(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_data = json.loads(request.data, encoding='utf-8')
+        filter_data = json.loads(request.data)
     else:
         filter_data = request.args or request.form
 
@@ -1376,7 +1376,7 @@ def append_filter_exclusive(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_data = json.loads(request.data, encoding='utf-8')
+        filter_data = json.loads(request.data)
     else:
         filter_data = request.args or request.form
 
@@ -1472,7 +1472,7 @@ def set_limit(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        limit = json.loads(request.data, encoding='utf-8')
+        limit = json.loads(request.data)
     else:
         limit = request.args or request.form
 
@@ -1650,7 +1650,7 @@ def set_auto_commit(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        auto_commit = json.loads(request.data, encoding='utf-8')
+        auto_commit = json.loads(request.data)
     else:
         auto_commit = request.args or request.form
 
@@ -1695,7 +1695,7 @@ def set_auto_rollback(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        auto_rollback = json.loads(request.data, encoding='utf-8')
+        auto_rollback = json.loads(request.data)
     else:
         auto_rollback = request.args or request.form
 
@@ -1743,7 +1743,7 @@ def auto_complete(trans_id):
     text_before_cursor = ''
 
     if request.data:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
     else:
         data = request.args or request.form
 
@@ -1803,7 +1803,7 @@ def load_file():
     reads the data and sends back in response
     """
     if request.data:
-        file_data = json.loads(request.data, encoding='utf-8')
+        file_data = json.loads(request.data)
 
     file_path = unquote(file_data['file_name'])
 
@@ -1847,7 +1847,7 @@ def save_file():
     and then save the data to the file
     """
     if request.data:
-        file_data = json.loads(request.data, encoding='utf-8')
+        file_data = json.loads(request.data)
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory()

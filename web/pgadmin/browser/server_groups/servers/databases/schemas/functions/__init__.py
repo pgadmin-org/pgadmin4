@@ -15,7 +15,7 @@ import sys
 import traceback
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, \
     current_app
 from flask_babel import gettext
@@ -263,7 +263,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         if key in list_params and req[key] != '' and req[key] is not None:
             # Coverts string into python list as expected.
-            data[key] = json.loads(req[key], encoding='utf-8')
+            data[key] = json.loads(req[key])
         elif (key == 'proretset' or key == 'proisstrict' or
               key == 'prosecdef' or key == 'proiswindow' or
               key == 'proleakproof'):
@@ -294,7 +294,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return:
         """
         if request.data:
-            req = json.loads(request.data, encoding='utf-8')
+            req = json.loads(request.data)
         else:
             req = request.args or request.form
         return req
@@ -882,7 +882,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if fnid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [fnid]}

@@ -9,7 +9,7 @@
 
 """Implements User Mapping Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups import servers
@@ -412,7 +412,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -489,7 +489,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             sql, name = self.get_sql(data=data, fsid=fsid, umid=umid)
@@ -530,7 +530,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if umid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [umid]}
 
@@ -652,7 +652,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:
