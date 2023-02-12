@@ -175,7 +175,8 @@ class LDAPAuthentication(BaseAuthentication):
         if not status:
             current_app.logger.exception(self.messages('LOGIN_FAILED'))
             return False, self.messages('LOGIN_FAILED')
-        current_app.logger.info("LDAP user {0} logged in.".format(user))
+        current_app.logger.info(
+            "LDAP user {0} logged in.".format(user))
         return True, None
 
     def __auto_create_user(self, user_email):
@@ -189,8 +190,10 @@ class LDAPAuthentication(BaseAuthentication):
                         self.username)).first()
 
             if user is None:
-                current_app.logger.info(
-                    "Creating user {0} with email {1} from auth source LDAP.".format(self.username, user_email))
+                create_msg = ("Creating user {0} with email {1} "
+                              "from auth source LDAP.")
+                current_app.logger.info(create_msg.format(self.username,
+                                                          user_email))
                 return create_user({
                     'username': self.username,
                     'email': user_email,
