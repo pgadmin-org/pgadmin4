@@ -31,12 +31,10 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
     def before(self):
         self.page.wait_for_spinner_to_disappear()
         self.page.add_server(self.server)
-        print("Added server", file=sys.stderr)
         self.test_table_name = "test_table" + str(
             secrets.choice(range(1000, 3000)))
         test_utils.create_table(self.server, self.test_db,
                                 self.test_table_name)
-        print("before completed", file=sys.stderr)
 
     def runTest(self):
         # Check for query tool button
@@ -63,9 +61,12 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
                                 self.test_table_name)
 
     def test_query_tool_button(self):
-        self.page.expand_database_node("Servers", self.server['name'],
-                                       self.server['db_password'],
-                                       self.test_db)
+        self.assertTrue(self.page.expand_database_node("Servers",
+                                                       self.server['name'],
+                                                       self.server[
+                                                           'db_password'],
+                                                       self.test_db),
+                        'Tree is not expanded to database node')
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.open_query_tool_button_css),
@@ -74,9 +75,12 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.page.close_query_tool(prompt=False)
 
     def test_view_data_tool_button(self):
-        self.page.expand_tables_node("Servers", self.server['name'],
-                                     self.server['db_password'], self.test_db,
-                                     "public")
+        self.assertTrue(
+            self.page.expand_tables_node("Servers", self.server['name'],
+                                         self.server['db_password'],
+                                         self.test_db,
+                                         "public"),
+            'Tree is not expanded to table node')
 
         table_node = self.page.check_if_element_exists_with_scroll(
             TreeAreaLocators.table_node(self.test_table_name))
