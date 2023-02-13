@@ -13,7 +13,6 @@ import requests
 import json
 import pickle
 from flask_babel import gettext
-import simplejson as json
 from flask import session, current_app
 from flask_security import login_required
 from werkzeug.datastructures import Headers

@@ -15,7 +15,7 @@ from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin import make_json_response
 from pgadmin.utils import PgAdminModule
 from flask_security import login_required
-import simplejson as json
+import json
 from flask import session, current_app, request
 from flask_login import current_user
 from config import root
@@ -69,7 +69,7 @@ blueprint = AzurePostgresqlModule(MODULE_NAME, __name__,
 @login_required
 def verify_credentials():
     """Verify Credentials."""
-    data = json.loads(request.data, encoding='utf-8')
+    data = json.loads(request.data)
     session_token = data['secret']['session_token'] if \
         'session_token' in data['secret'] else None
     tenant_id = data['secret']['azure_tenant_id'] if \

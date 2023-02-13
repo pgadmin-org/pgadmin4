@@ -9,7 +9,7 @@
 
 """Implements Cloud Deployment"""
 
-import simplejson as json
+import json
 from flask import Response, url_for
 from flask import render_template, request
 from flask_babel import gettext
@@ -128,7 +128,7 @@ def get_host_ip():
 def deploy_on_cloud():
     """Deploy on Cloud."""
 
-    data = json.loads(request.data, encoding='utf-8')
+    data = json.loads(request.data)
     if data['cloud'] == 'rds':
         status, p, resp = deploy_on_rds(data)
     elif data['cloud'] == 'biganimal':
@@ -237,7 +237,7 @@ def update_cloud_process(sid):
 @login_required
 def update_cloud_server():
     """Update Cloud Server."""
-    server_data = json.loads(request.data, encoding='utf-8')
+    server_data = json.loads(request.data)
     status, server = update_server(server_data)
 
     if not status:
