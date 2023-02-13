@@ -31,6 +31,7 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5269 <https://github.com/pgadmin-org/pgadmin4/issues/5269>`_ -  Ensure that the schema diff tool should pick up the change in the column grants.
   | `Issue #5685 <https://github.com/pgadmin-org/pgadmin4/issues/5685>`_ -  Ensure that Grant column permission to a view is visible in the SQL tab.
   | `Issue #5758 <https://github.com/pgadmin-org/pgadmin4/issues/5758>`_ -  Fixed an issue where lock layout menu was not in sync with preferences.
   | `Issue #5764 <https://github.com/pgadmin-org/pgadmin4/issues/5764>`_ -  Fix an issue where the maintenance dialog for Materialized View gives an error.
