@@ -104,6 +104,8 @@ class WebserverAuthentication(BaseAuthentication):
             if not status:
                 current_app.logger.exception(self.messages('LOGIN_FAILED'))
                 return False, self.messages('LOGIN_FAILED')
+            current_app.logger.info(
+                "Webserver user {0} logged in.".format(username))
             return True, None
         return False, self.messages('LOGIN_FAILED')
 
@@ -112,6 +114,10 @@ class WebserverAuthentication(BaseAuthentication):
         if config.WEBSERVER_AUTO_CREATE_USER:
             user = User.query.filter_by(username=username).first()
             if not user:
+                create_msg = ("Creating user {0} with email {1} "
+                              "from auth source Webserver.")
+                current_app.logger.info(create_msg.format(username,
+                                                          useremail))
                 return create_user({
                     'username': username,
                     'email': useremail,
