@@ -29,6 +29,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import PasswordExec
+from psycopg2.extensions import make_dsn
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
@@ -633,22 +634,21 @@ WHERE db.oid = {0}""".format(did))
         This function is used to create connection string based on the
         parameters.
         """
-        full_connection_string = \
-            'host=\'{0}\' port=\'{1}\' dbname=\'{2}\' user=\'{3}\''.format(
-                self.local_bind_host if self.use_ssh_tunnel else self.host,
-                self.local_bind_port if self.use_ssh_tunnel else self.port,
-                database, user)
+        dsn_args = dict()
+        dsn_args['host'] = \
+            self.local_bind_host if self.use_ssh_tunnel else self.host
+        dsn_args['port'] = \
+            self.local_bind_port if self.use_ssh_tunnel else self.port
+        dsn_args['dbname'] = database
+        dsn_args['user'] = user
 
-        self.display_connection_string = full_connection_string
-
+        # Make a copy to display the connection string on GUI.
+        display_dsn_args = dsn_args.copy()
         # Password should not be visible into the connection string, so
         # setting the value with password to 'xxxxxxx'.
         if password:
-            self.display_connection_string = "{0} password='xxxxxxx'".format(
-                self.display_connection_string)
-
-            full_connection_string = "{0} password='{1}'".format(
-                full_connection_string, password)
+            display_dsn_args['password'] = 'xxxxxxx'
+            dsn_args['password'] = password
 
         # Loop through all the connection parameters set in the server dialog.
         if self.connection_params and isinstance(self.connection_params, dict):
@@ -666,11 +666,10 @@ WHERE db.oid = {0}""".format(did))
                     value = self.local_bind_host if self.use_ssh_tunnel else \
                         value
 
-                self.display_connection_string = "{0} {1}='{2}'".format(
-                    self.display_connection_string, key,
-                    orig_value if with_complete_path else value)
+                dsn_args[key] = value
+                display_dsn_args[key] = orig_value if with_complete_path else \
+                    value
 
-                full_connection_string = \
-                    "{0} {1}='{2}'".format(full_connection_string, key, value)
+        self.display_connection_string = make_dsn(**display_dsn_args)
 
-        return full_connection_string
+        return make_dsn(**dsn_args)

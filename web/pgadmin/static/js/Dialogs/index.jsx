@@ -99,7 +99,7 @@ export function showServerPassword() {
             })
             .catch((err)=>{
               return onFailure(
-                err, nodeObj, nodeData, treeNodeInfo, itemNodeData, status
+                err, null, nodeObj, nodeData, treeNodeInfo, itemNodeData, status
               );
             });
         }}
