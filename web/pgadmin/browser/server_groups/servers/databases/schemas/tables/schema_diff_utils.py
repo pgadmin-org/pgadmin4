@@ -176,6 +176,20 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                 source['attnum'] = tmp['attnum']
 
         if tmp and source != tmp:
+            # check column level grants
+            acl_dict = dict()
+            if 'attacl' in source and 'attacl' in tmp and \
+                    source['attacl'] != tmp['attacl']:
+                if len(source['attacl']) > 0 and len(tmp['attacl']) < 1:
+                    acl_dict['added'] = source['attacl'].copy()
+                    source['attacl'] = acl_dict
+                elif len(source['attacl']) < 1 and len(tmp['attacl']) > 0:
+                    acl_dict['deleted'] = tmp['attacl'].copy()
+                    source['attacl'] = acl_dict
+                else:
+                    acl_dict['changed'] = source['attacl'].copy()
+                    source['attacl'] = acl_dict
+
             updated.append(source)
             target_cols.remove(tmp)
         elif tmp and source == tmp:
