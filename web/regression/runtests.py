@@ -599,11 +599,9 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
         threads_list = []
         # Create thread for each server
         for ser in servers_details:
-            print("Running for ser", ser['name'], file=sys.stderr)
             while True:
                 # If active thread count <= max_thread_count, add new thread
                 if threading.active_count() <= max_thread_count:
-                    print("Created a thread", file=sys.stderr)
                     # Get remote web-driver instance at server level
                     driver_object = \
                         test_utils.get_remote_webdriver(hub_url,
@@ -865,17 +863,12 @@ if __name__ == '__main__':
                                       file=sys.stderr)
 
                                 time.sleep(int(pgAdmin_wait_time))
-                                print('pgAdmin sleep for debug over',
-                                      file=sys.stderr)
 
                             # Running Parallel tests
                             if len(parallel_tests) > 0:
                                 parallel_sessions = \
                                     int(selenoid_config[
                                         'max_parallel_sessions'])
-                                print("Running parallel test", file=sys.stderr)
-                                print("parallel_sessions  = ",
-                                      parallel_sessions, file=sys.stderr)
 
                                 run_parallel_tests(
                                     client_url, servers_info, parallel_tests,

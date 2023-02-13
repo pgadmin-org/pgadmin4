@@ -40,6 +40,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     query_history_tab_id = "id-history"
     query_editor_tab_name = "Query Editor"
     query_editor_tab_id = "id-query"
+    query_tool_opened = False
 
     def before(self):
         self.test_table_name = "test_table" + str(
@@ -421,10 +422,12 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_modal('Yes')
 
     def _navigate_to_query_tool(self):
-        self.page.expand_database_node("Server", self.server['name'],
-                                       self.server['db_password'],
-                                       self.test_db)
-        self.page.open_query_tool()
+        self.assertTrue(
+            self.page.expand_database_node("Server", self.server['name'],
+                                           self.server['db_password'],
+                                           self.test_db),
+            'Tree is not expanded to database node')
+        self.query_tool_opened = self.page.open_query_tool()
         self.page.wait_for_spinner_to_disappear()
 
     def _explain_query(self, query):
@@ -498,7 +501,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
             QueryToolLocators.new_row_xpath)
 
     def after(self):
-        self.page.close_query_tool()
+        if self.query_tool_opened:
+            self.page.close_query_tool()
         test_utils.delete_table(
             self.server, self.test_db, self.test_table_name)
         test_utils.delete_table(
