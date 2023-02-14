@@ -33,7 +33,9 @@ Bug fixes
 
   | `Issue #5269 <https://github.com/pgadmin-org/pgadmin4/issues/5269>`_ -  Ensure that the schema diff tool should pick up the change in the column grants.
   | `Issue #5685 <https://github.com/pgadmin-org/pgadmin4/issues/5685>`_ -  Ensure that Grant column permission to a view is visible in the SQL tab.
+  | `Issue #5747 <https://github.com/pgadmin-org/pgadmin4/issues/5747>`_ -  Ensure that content on the DDL comparison panel should get refreshed on selecting the object using the up and down arrow keys.
   | `Issue #5756 <https://github.com/pgadmin-org/pgadmin4/issues/5756>`_ -  Fix for query tool prompting for unsaved changes even if no changes have been made.
   | `Issue #5758 <https://github.com/pgadmin-org/pgadmin4/issues/5758>`_ -  Fixed an issue where lock layout menu was not in sync with preferences.
   | `Issue #5764 <https://github.com/pgadmin-org/pgadmin4/issues/5764>`_ -  Fix an issue where the maintenance dialog for Materialized View gives an error.
+  | `Issue #5773 <https://github.com/pgadmin-org/pgadmin4/issues/5773>`_ -  Fixed an issue where Clear Saved Password should be disabled if the password is already cleared.
   | `Issue #5847 <https://github.com/pgadmin-org/pgadmin4/issues/5847>`_ -  Fixed an issue where pgAdmin failed to connect when the Postgres password included special characters.
