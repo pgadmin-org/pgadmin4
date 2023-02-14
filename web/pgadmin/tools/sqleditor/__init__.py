@@ -1043,8 +1043,7 @@ def poll(trans_id):
             'oids': oids,
             'transaction_status': transaction_status,
             'data_obj': data_obj,
-        },
-        encoding=conn.python_encoding
+        }
     )
 
 
@@ -1100,8 +1099,7 @@ def fetch(trans_id, fetch_all=None):
             'has_more_rows': has_more_rows,
             'rows_fetched_from': rows_fetched_from,
             'rows_fetched_to': rows_fetched_to
-        },
-        encoding=conn.python_encoding
+        }
     )
 
 
@@ -1303,8 +1301,7 @@ def save(trans_id):
             'query_results': query_results,
             '_rowid': _rowid,
             'transaction_status': transaction_status
-        },
-        encoding=conn.python_encoding
+        }
     )
 
 

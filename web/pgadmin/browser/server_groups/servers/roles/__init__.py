@@ -1319,12 +1319,12 @@ WHERE
             data = dict()
 
             if request.data:
-                data = json.loads(request.data, encoding='utf-8')
+                data = json.loads(request.data)
             else:
                 rargs = request.args or request.form
                 for k, v in rargs.items():
                     try:
-                        data[k] = json.loads(v, encoding='utf-8')
+                        data[k] = json.loads(v)
                     except ValueError:
                         data[k] = v
 
@@ -1369,7 +1369,7 @@ WHERE
         Returns: Json object with success/failure status
         """
         if request.data:
-            data = json.loads(request.data, encoding='utf-8')
+            data = json.loads(request.data)
         else:
             data = request.args or request.form
 
