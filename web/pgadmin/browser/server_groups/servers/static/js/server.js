@@ -427,6 +427,10 @@ define('pgadmin.node.server', [
                   if (res.success == 1) {
                     Notify.success(res.info);
                     t.itemData(i).is_password_saved=res.data.is_password_saved;
+                    t.deselect(i);
+              setTimeout(function() {
+                t.select(i);
+              });
                   }
                   else {
                     Notify.error(res.info);
