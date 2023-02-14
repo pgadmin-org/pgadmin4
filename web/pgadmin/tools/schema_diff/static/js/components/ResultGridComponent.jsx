@@ -661,38 +661,49 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
   }, [filterParams]);
 
   const eventBus = useContext(SchemaDiffEventsContext);
+  const rowSelectionTimeoutRef = useRef();
 
-  const rowSelection = (row) => {
-
-    if (row.ddlData != undefined && row.status != FILTER_NAME.IDENTICAL) {
-      eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
-    } else if (row.status == FILTER_NAME.IDENTICAL) {
-      let url_params = {
-        'trans_id': transId,
-        'source_sid': sourceData.sid,
-        'source_did': sourceData.did,
-        'source_scid': row.source_scid,
-        'target_sid': targetData.sid,
-        'target_did': targetData.did,
-        'target_scid': row.target_scid,
-        'comp_status': row.status,
-        'source_oid': row.source_oid,
-        'target_oid': row.target_oid,
-        'node_type': row.itemType,
-      };
-
-      let baseUrl = url_for('schema_diff.ddl_compare', url_params);
-      schemaDiffToolContext.api.get(baseUrl).then((res) => {
-        row.ddlData = {
-          'SQLdiff': res.data.diff_ddl,
-          'sourceSQL': res.data.source_ddl,
-          'targetSQL': res.data.target_ddl
-        };
-        eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
-      }).catch((err) => {
-        Notifier.alert(err.message);
-      });
+  const rowSelection = (rowIdx) => {
+    if (rowSelectionTimeoutRef.current) {
+      clearTimeout(rowSelectionTimeoutRef.current);
+      rowSelectionTimeoutRef.current = null;
     }
+
+    rowSelectionTimeoutRef.current = setTimeout(()=> {
+      rowSelectionTimeoutRef.current = null;
+      const row = rows[rowIdx];
+      if (row.ddlData != undefined && row.status != FILTER_NAME.IDENTICAL) {
+        eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
+      } else if (row.status == FILTER_NAME.IDENTICAL) {
+        let url_params = {
+          'trans_id': transId,
+          'source_sid': sourceData.sid,
+          'source_did': sourceData.did,
+          'source_scid': row.source_scid,
+          'target_sid': targetData.sid,
+          'target_did': targetData.did,
+          'target_scid': row.target_scid,
+          'comp_status': row.status,
+          'source_oid': row.source_oid,
+          'target_oid': row.target_oid,
+          'node_type': row.itemType,
+        };
+
+        let baseUrl = url_for('schema_diff.ddl_compare', url_params);
+        schemaDiffToolContext.api.get(baseUrl).then((res) => {
+          row.ddlData = {
+            'SQLdiff': res.data.diff_ddl,
+            'sourceSQL': res.data.source_ddl,
+            'targetSQL': res.data.target_ddl
+          };
+          eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
+        }).catch((err) => {
+          Notifier.alert(err.message);
+        });
+      } else {
+        eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, {});
+      }
+    }, 250);
   };
 
   function rowKeyGetter(row) {
@@ -714,7 +725,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
             }}
             headerRowHeight={28}
             rowHeight={28}
-            onRowClick={rowSelection}
+            onItemSelect={rowSelection}
             enableCellSelect={false}
             rowKeyGetter={rowKeyGetter}
             direction={'vertical-lr'}
