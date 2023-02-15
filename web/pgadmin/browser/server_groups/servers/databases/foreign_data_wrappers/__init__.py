@@ -9,7 +9,7 @@
 
 """Implements Foreign Data Wrapper Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
@@ -425,7 +425,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -493,7 +493,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             fid: foreign data wrapper ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -533,7 +533,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if fid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [fid]}
 
@@ -620,7 +620,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:

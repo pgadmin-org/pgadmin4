@@ -11,7 +11,7 @@
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext as _
 
@@ -386,7 +386,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -448,7 +448,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if pkgid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [pkgid]}
@@ -514,7 +514,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         sql, name = self.getSQL(data=data, scid=scid, pkgid=pkgid)
@@ -552,7 +552,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 

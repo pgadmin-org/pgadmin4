@@ -11,7 +11,7 @@
 
 import re
 import secrets
-import simplejson as json
+import json
 import pgadmin.browser.server_groups.servers.databases.schemas as schema
 from flask import render_template, request, current_app
 from flask_babel import gettext
@@ -634,7 +634,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -668,7 +668,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
            ptid: Partition Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -678,7 +678,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -738,7 +738,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if ptid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [ptid]}
@@ -794,7 +794,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
            ptid: Partition Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Convert str 'true' to boolean type
         is_enable_trigger = data['is_enable_trigger']

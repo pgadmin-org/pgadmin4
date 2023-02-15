@@ -9,7 +9,7 @@
 
 """Defines views for management of server groups"""
 
-import simplejson as json
+import json
 from abc import ABCMeta, abstractmethod
 
 from flask import request, jsonify, render_template
@@ -235,7 +235,7 @@ class ServerGroupView(NodeView):
             id=gid).first()
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         if servergroup is None:
@@ -294,7 +294,7 @@ class ServerGroupView(NodeView):
     def create(self):
         """Creates new server-group """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         if data['name'] != '':
             try:

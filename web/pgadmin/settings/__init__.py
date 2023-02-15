@@ -254,7 +254,7 @@ def get_file_format_setting():
     data = dict()
     for k, v in request.args.items():
         try:
-            data[k] = json.loads(v, encoding='utf-8')
+            data[k] = json.loads(v)
         except (ValueError, TypeError, KeyError):
             data[k] = v
 

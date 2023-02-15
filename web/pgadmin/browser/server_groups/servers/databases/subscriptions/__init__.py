@@ -9,7 +9,7 @@
 
 """Implements Subscription Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
@@ -402,7 +402,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             subid: Subscription ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -441,7 +441,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -497,7 +497,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if subid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [subid]}
@@ -558,7 +558,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:

@@ -8,7 +8,7 @@
 ##########################################################################
 """Implements Backup Utility"""
 
-import simplejson as json
+import json
 import os
 import functools
 import operator
@@ -328,7 +328,7 @@ def create_backup_objects_job(sid):
         None
     """
 
-    data = json.loads(request.data, encoding='utf-8')
+    data = json.loads(request.data)
     backup_obj_type = data.get('type', 'objects')
 
     try:

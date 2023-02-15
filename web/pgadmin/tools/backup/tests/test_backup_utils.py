@@ -9,7 +9,7 @@
 
 import time
 import secrets
-import simplejson as json
+import json
 
 
 def create_backup_job(tester, url, params, assert_equal):

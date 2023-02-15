@@ -9,7 +9,7 @@
 
 """Implements Primary key constraint Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -498,7 +498,7 @@ class IndexConstraintView(PGChildNodeView):
         return: data.
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -508,7 +508,7 @@ class IndexConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -658,7 +658,7 @@ class IndexConstraintView(PGChildNodeView):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -713,7 +713,7 @@ class IndexConstraintView(PGChildNodeView):
         """
         if cid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [cid]}
@@ -794,7 +794,7 @@ class IndexConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

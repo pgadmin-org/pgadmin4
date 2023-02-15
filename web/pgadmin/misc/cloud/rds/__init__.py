@@ -24,7 +24,7 @@ from pgadmin.misc.bgprocess.processes import BatchProcess
 from pgadmin.utils.ajax import make_json_response,\
     internal_server_error, bad_request, success_return
 from .regions import AWS_REGIONS
-import simplejson as json
+import json
 
 from config import root
 
@@ -59,7 +59,7 @@ blueprint = RDSModule(MODULE_NAME, __name__,
 def verify_credentials():
     """Verify Credentials."""
     msg = ''
-    data = json.loads(request.data, encoding='utf-8')
+    data = json.loads(request.data)
 
     session_token = data['secret']['session_token'] if\
         'session_token' in data['secret'] else None

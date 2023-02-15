@@ -9,7 +9,7 @@
 
 """Implements pgAdmin4 User Management Utility"""
 
-import simplejson as json
+import json
 from flask import render_template, request, \
     Response, abort, current_app, session
 from flask_babel import gettext as _
@@ -181,7 +181,7 @@ def change_owner():
     """
 
     data = request.form if request.form else json.loads(
-        request.data, encoding='utf-8'
+        request.data
     )
     try:
         new_user = User.query.get(data['new_owner'])
@@ -396,7 +396,7 @@ def save():
     This function is used to add/update/delete users.
     """
     data = request.form if request.form else json.loads(
-        request.data, encoding='utf-8'
+        request.data
     )
 
     try:

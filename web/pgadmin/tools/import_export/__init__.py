@@ -9,7 +9,7 @@
 
 """A blueprint module implementing the import and export functionality"""
 
-import simplejson as json
+import json
 import os
 import copy
 from flask import url_for, Response, render_template, request, current_app
@@ -233,9 +233,9 @@ def create_import_export_job(sid):
         None
     """
     if request.form:
-        data = json.loads(request.form['data'], encoding='utf-8')
+        data = json.loads(request.form['data'])
     else:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     # Fetch the server details like hostname, port, roles etc
     server = Server.query.filter_by(

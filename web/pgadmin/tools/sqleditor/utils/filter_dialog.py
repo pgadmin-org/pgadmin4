@@ -9,7 +9,7 @@
 
 """Code to handle data sorting in view data mode."""
 import pickle
-import simplejson as json
+import json
 from flask_babel import gettext
 from flask import current_app
 from pgadmin.utils.ajax import make_json_response, internal_server_error
@@ -73,7 +73,7 @@ class FilterDialog():
         request = kwargs['request']
 
         if request.data:
-            data = json.loads(request.data, encoding='utf-8')
+            data = json.loads(request.data)
         else:
             data = request.args or request.form
 

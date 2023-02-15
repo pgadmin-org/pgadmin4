@@ -9,7 +9,7 @@
 
 """ Implements Synonym Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -344,7 +344,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -443,7 +443,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         required_args = [
@@ -506,7 +506,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if syid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [syid]}
@@ -561,7 +561,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            syid: Synonym ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         SQL, name = self.get_sql(gid, sid, data, scid, syid)
         # Most probably this is due to error
@@ -600,7 +600,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

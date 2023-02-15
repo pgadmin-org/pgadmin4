@@ -40,7 +40,6 @@ Flask-SocketIO                                                   5.2.0          
 WTForms                                                          3.0.1            BSD-3-Clause                         https://wtforms.readthedocs.io/
 passlib                                                          1.7.4            BSD                                  https://passlib.readthedocs.io
 pytz                                                             2021.3           MIT                                  http://pythonhosted.org/pytz
-simplejson                                                       3.18.3           MIT License                          https://github.com/simplejson/simplejson
 speaklater3                                                      1.4              UNKNOWN                              https://github.com/ThomasWaldmann/speaklater
 sqlparse                                                         0.4.3            BSD-3-Clause                         https://github.com/andialbrecht/sqlparse
 psutil                                                           5.9.3            BSD-3-Clause                         https://github.com/giampaolo/psutil

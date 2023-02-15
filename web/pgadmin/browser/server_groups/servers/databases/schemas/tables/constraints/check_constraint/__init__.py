@@ -9,7 +9,7 @@
 
 """Implements the Check Constraint Module."""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -460,7 +460,7 @@ class CheckConstraintView(PGChildNodeView):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for k, v in data.items():
             try:
@@ -469,7 +469,7 @@ class CheckConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -610,7 +610,7 @@ class CheckConstraintView(PGChildNodeView):
         """
         if cid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [cid]}
@@ -668,7 +668,7 @@ class CheckConstraintView(PGChildNodeView):
             cid: Check Constraint Id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -778,7 +778,7 @@ class CheckConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

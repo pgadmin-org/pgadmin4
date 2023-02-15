@@ -9,7 +9,7 @@
 
 """Implements pgAgent Job Schedule Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from flask import render_template, request, jsonify
@@ -341,7 +341,7 @@ class JobScheduleView(PGChildNodeView):
             sid: Server ID
             jid: Job ID
         """
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
         # convert python list literal to postgres array literal.
         format_schedule_data(data)
 
@@ -460,7 +460,7 @@ class JobScheduleView(PGChildNodeView):
 
         if jscid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [jscid]}

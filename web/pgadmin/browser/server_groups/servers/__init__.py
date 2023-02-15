@@ -7,7 +7,7 @@
 #
 ##########################################################################
 
-import simplejson as json
+import json
 import pgadmin.browser.server_groups as sg
 from flask import render_template, request, make_response, jsonify, \
     current_app, url_for, session
@@ -781,7 +781,7 @@ class ServerNode(PGChildNodeView):
 
         idx = 0
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
@@ -1040,7 +1040,7 @@ class ServerNode(PGChildNodeView):
         required_args = ['name', 'db']
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         # Loop through data and if found any value is blank string then
@@ -1357,7 +1357,7 @@ class ServerNode(PGChildNodeView):
         if request.form:
             data = request.form
         elif request.data:
-            data = json.loads(request.data, encoding='utf-8')
+            data = json.loads(request.data)
 
         if data is None:
             data = {}
@@ -1656,7 +1656,7 @@ class ServerNode(PGChildNodeView):
             if request.form:
                 data = request.form
             elif request.data:
-                data = json.loads(request.data, encoding='utf-8')
+                data = json.loads(request.data)
 
             crypt_key = get_crypt_key()[1]
 

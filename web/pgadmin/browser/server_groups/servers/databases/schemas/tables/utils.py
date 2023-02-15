@@ -12,7 +12,7 @@
 import re
 import copy
 from functools import wraps
-import simplejson as json
+import json
 from flask import render_template, jsonify, request
 from flask_babel import gettext
 
@@ -1962,7 +1962,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         """
         # Below will decide if it's simple drop or drop with cascade call
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Convert str 'true' to boolean type
         is_cascade = data.get('cascade') or False

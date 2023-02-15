@@ -9,7 +9,7 @@
 
 """ Implements Column Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -364,7 +364,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -373,8 +373,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if k in ('description',):
                 data[k] = v
             else:
-                data[k] = json.loads(v, encoding='utf-8',
-                                     cls=ColParamsJSONDecoder)
+                data[k] = json.loads(v, cls=ColParamsJSONDecoder)
 
         required_args = {
             'name': 'Name',
@@ -446,7 +445,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         if clid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [clid]}
@@ -512,7 +511,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            clid: Column ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         # Adding parent into data dict, will be using it while creating sql
@@ -556,7 +555,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         data = dict()
         for k, v in request.args.items():
-            data[k] = json.loads(v, encoding='utf-8', cls=ColParamsJSONDecoder)
+            data[k] = json.loads(v, cls=ColParamsJSONDecoder)
 
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema

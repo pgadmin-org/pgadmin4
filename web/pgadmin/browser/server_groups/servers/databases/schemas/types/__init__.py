@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 import re
@@ -1001,7 +1001,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
            tid: Type ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_error, errmsg = TypeView._checks_for_create_type(data)
@@ -1078,7 +1078,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             SQL, name = self.get_sql(gid, sid, data, scid, tid)
@@ -1118,7 +1118,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if tid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tid]}
@@ -1214,7 +1214,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # converting nested request data in proper json format
         for key, val in req.items():
             if key in ['composite', 'enum', 'seclabels', 'typacl']:
-                data[key] = json.loads(val, encoding='utf-8')
+                data[key] = json.loads(val)
             else:
                 data[key] = val
 

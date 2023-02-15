@@ -13,7 +13,7 @@ import sys
 import traceback
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify, \
     current_app
 from flask_babel import gettext
@@ -237,7 +237,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         def wrap(self, **kwargs):
 
             if request.data:
-                req = json.loads(request.data, encoding='utf-8')
+                req = json.loads(request.data)
             else:
                 req = request.args or request.form
 
@@ -336,7 +336,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
 
         if not isinstance(req[key], list) and req[key]:
-            data[key] = json.loads(req[key], encoding='utf-8')
+            data[key] = json.loads(req[key])
         elif req[key]:
             data[key] = req[key]
 
@@ -748,7 +748,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         if foid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [foid]}

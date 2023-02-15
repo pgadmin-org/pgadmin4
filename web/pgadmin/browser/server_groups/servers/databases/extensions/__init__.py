@@ -9,7 +9,7 @@
 
 """ Implements Extension Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
@@ -267,7 +267,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -311,7 +311,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will update an extension object
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -343,7 +343,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if eid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [eid]}

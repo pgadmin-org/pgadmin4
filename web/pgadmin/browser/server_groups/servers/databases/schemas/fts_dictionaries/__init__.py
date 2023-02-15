@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask_babel import gettext as _
 
@@ -432,7 +432,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -498,7 +498,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         :param dcid: fts dictionary id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         # Fetch sql query to update fts dictionary
@@ -549,7 +549,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if dcid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [dcid]}
@@ -623,7 +623,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

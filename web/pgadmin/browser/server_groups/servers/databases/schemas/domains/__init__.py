@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify
 from flask_babel import gettext
 
@@ -193,7 +193,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return: if any error return error, else return req.
         """
         if request.data:
-            req = json.loads(request.data, encoding='utf-8')
+            req = json.loads(request.data)
         else:
             req = request.args or request.form
 
@@ -232,7 +232,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 req[key] is not None
             ):
                 # Coverts string into python list as expected.
-                data[key] = json.loads(req[key], encoding='utf-8')
+                data[key] = json.loads(req[key])
             elif key == 'typnotnull':
                 if req[key] == 'true' or req[key] is True:
                     data[key] = True
@@ -634,7 +634,7 @@ AND relkind != 'c'))"""
         """
         if doid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [doid]}

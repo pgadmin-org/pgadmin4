@@ -9,7 +9,7 @@
 
 """ Implements Index Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -564,7 +564,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -574,7 +574,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -678,7 +678,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if idx is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [idx]}
@@ -744,7 +744,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
            idx: Index ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         data['schema'] = self.schema
         data['table'] = self.table
@@ -791,7 +791,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

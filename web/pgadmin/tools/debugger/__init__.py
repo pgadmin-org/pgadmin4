@@ -9,7 +9,7 @@
 
 """A blueprint module implementing the debugger"""
 
-import simplejson as json
+import json
 import secrets
 import re
 import copy
@@ -827,7 +827,7 @@ def initialize_target(debug_type, trans_id, sid, did,
     # be be required
     if request.data:
         de_inst.function_data['args_value'] = \
-            json.loads(request.data, encoding='utf-8')
+            json.loads(request.data)
 
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
@@ -984,7 +984,7 @@ def start_debugger_listener(trans_id):
     # If user again start the same debug function with different arguments
     # then we need to save that values to session variable and database.
     if request.data:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
         if data:
             de_inst.function_data['args_value'] = data
             de_inst.update_session()
@@ -1609,7 +1609,7 @@ def deposit_parameter_value(trans_id):
 
     if conn.connected():
         # get the data sent through post from client
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
         if data:
             sql = render_template(
@@ -1815,7 +1815,7 @@ def set_arguments_sqlite(sid, did, scid, func_id):
     """
 
     if request.data:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     try:
         for i in range(0, len(data)):

@@ -20,7 +20,7 @@ import config
 import codecs
 import pathlib
 
-import simplejson as json
+import json
 from flask import render_template, Response, session, request as req, \
     url_for, current_app, send_from_directory
 from flask_babel import gettext

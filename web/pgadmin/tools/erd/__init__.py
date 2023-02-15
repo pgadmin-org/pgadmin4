@@ -8,7 +8,7 @@
 ##########################################################################
 
 """A blueprint module implementing the erd tool."""
-import simplejson as json
+import json
 
 from flask import url_for, request, Response
 from flask import render_template, current_app as app
@@ -615,7 +615,7 @@ def translate_foreign_keys(tab_fks, tab_data, all_nodes):
                  endpoint='sql')
 @login_required
 def sql(trans_id, sgid, sid, did):
-    data = json.loads(request.data, encoding='utf-8')
+    data = json.loads(request.data)
     with_drop = False
     if request.args and 'with_drop' in request.args:
         with_drop = True if request.args.get('with_drop') == 'true' else False

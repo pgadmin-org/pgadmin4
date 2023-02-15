@@ -13,7 +13,7 @@ import copy
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
 from flask_security import current_user
@@ -256,7 +256,7 @@ def check_precondition(f):
             self.allowed_acls = render_template(
                 "/".join([self.template_path, self._ALLOWED_PRIVS_JSON])
             )
-            self.allowed_acls = json.loads(self.allowed_acls, encoding='utf-8')
+            self.allowed_acls = json.loads(self.allowed_acls)
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -547,7 +547,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -601,7 +601,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         This function will update a view object
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             SQL, name = self.getSQL(gid, sid, did, data, vid)
@@ -649,7 +649,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         """
         if vid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [vid]}
@@ -735,7 +735,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -2158,7 +2158,7 @@ class MViewNode(ViewNode, VacuumSettings):
 
         # Below will decide if it's refresh data or refresh concurrently
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_concurrent = data['concurrent']

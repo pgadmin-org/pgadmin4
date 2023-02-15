@@ -11,7 +11,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, current_app, request, jsonify
 from flask_babel import gettext as _
 
@@ -423,7 +423,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -503,7 +503,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         :param cfgid: fts Configuration id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Fetch sql query to update fts Configuration
         sql, name = self.get_sql(gid, sid, did, scid, data, cfgid)
@@ -553,7 +553,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if cfgid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [cfgid]}
@@ -627,7 +627,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

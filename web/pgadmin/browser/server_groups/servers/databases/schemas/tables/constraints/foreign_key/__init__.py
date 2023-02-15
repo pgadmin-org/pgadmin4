@@ -9,7 +9,7 @@
 
 """Implements Foreign key constraint Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -492,7 +492,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         return: Data.
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -502,7 +502,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -670,7 +670,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -731,7 +731,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         if fkid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [fkid]}
@@ -802,7 +802,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -993,7 +993,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         index = None
         try:
             if data and 'cols' in data:
-                cols = set(json.loads(data['cols'], encoding='utf-8'))
+                cols = set(json.loads(data['cols']))
                 index = fkey_utils.search_coveringindex(self.conn, tid, cols)
 
             return make_json_response(

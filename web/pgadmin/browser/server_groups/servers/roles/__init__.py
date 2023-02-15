@@ -10,7 +10,7 @@ import re
 from functools import wraps
 
 import pgadmin.browser.server_groups as sg
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext as _
 import dateutil.parser as dateutil_parser
@@ -526,7 +526,7 @@ rolmembership:{
         @wraps(f)
         def wrap(self, **kwargs):
             if request.data:
-                data = json.loads(request.data, encoding='utf-8')
+                data = json.loads(request.data)
             else:
                 data = dict()
                 req = request.args or request.form
@@ -540,7 +540,7 @@ rolmembership:{
                         'rolcatupdate', 'variables', 'rolmembership',
                         'seclabels', 'rolmembers'
                     ]:
-                        data[key] = json.loads(val, encoding='utf-8')
+                        data[key] = json.loads(val)
                     else:
                         data[key] = val
 
@@ -854,7 +854,7 @@ rolmembership:{
 
         if rid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [rid]}
@@ -1319,12 +1319,12 @@ WHERE
             data = dict()
 
             if request.data:
-                data = json.loads(request.data, encoding='utf-8')
+                data = json.loads(request.data)
             else:
                 rargs = request.args or request.form
                 for k, v in rargs.items():
                     try:
-                        data[k] = json.loads(v, encoding='utf-8')
+                        data[k] = json.loads(v)
                     except ValueError:
                         data[k] = v
 
@@ -1369,7 +1369,7 @@ WHERE
         Returns: Json object with success/failure status
         """
         if request.data:
-            data = json.loads(request.data, encoding='utf-8')
+            data = json.loads(request.data)
         else:
             data = request.args or request.form
 

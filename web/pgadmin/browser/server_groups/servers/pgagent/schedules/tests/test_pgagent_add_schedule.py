@@ -7,7 +7,7 @@
 #
 ##########################################################################
 from unittest.mock import patch
-import simplejson as json
+import json
 import uuid
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils

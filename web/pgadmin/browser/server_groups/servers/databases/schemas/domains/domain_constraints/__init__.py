@@ -12,7 +12,7 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
 from flask_babel import gettext
 
@@ -188,7 +188,7 @@ class DomainConstraintView(PGChildNodeView):
         :return: if any error return error with error msg else return req data
         """
         if request.data:
-            req = json.loads(request.data, encoding='utf-8')
+            req = json.loads(request.data)
         else:
             req = request.args or request.form
 
@@ -484,7 +484,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         if coid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [coid]}

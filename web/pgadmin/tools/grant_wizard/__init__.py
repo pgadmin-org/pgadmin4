@@ -9,7 +9,7 @@
 
 """Implements Grant Wizard"""
 
-import simplejson as json
+import json
 from flask import Response, url_for
 from flask import render_template, request, current_app
 from flask_babel import gettext

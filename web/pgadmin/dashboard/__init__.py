@@ -13,7 +13,7 @@ from functools import wraps
 from flask import render_template, url_for, Response, g, request
 from flask_babel import gettext
 from flask_security import login_required
-import simplejson as json
+import json
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
     internal_server_error

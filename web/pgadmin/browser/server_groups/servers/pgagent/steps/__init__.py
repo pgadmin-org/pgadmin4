@@ -9,7 +9,7 @@
 
 """Implements pgAgent Job Step Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from flask import render_template, request, jsonify
@@ -480,7 +480,7 @@ SELECT EXISTS(
 
         if jstid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [jstid]}

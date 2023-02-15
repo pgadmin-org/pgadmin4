@@ -8,7 +8,7 @@
 ##########################################################################
 
 """A blueprint module implementing the schema_diff frame."""
-import simplejson as json
+import json
 import pickle
 import secrets
 import copy

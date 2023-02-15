@@ -9,7 +9,7 @@
 
 """Implements policy Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
@@ -350,7 +350,7 @@ class RowSecurityView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         data['schema'] = self.schema
         data['table'] = self.table
@@ -405,7 +405,7 @@ class RowSecurityView(PGChildNodeView):
         :return:
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             sql, name = row_security_policies_utils.get_sql(
@@ -441,7 +441,7 @@ class RowSecurityView(PGChildNodeView):
         """
         if plid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [plid]}

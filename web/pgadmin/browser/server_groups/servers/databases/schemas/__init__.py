@@ -10,7 +10,7 @@
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
 from flask_babel import gettext
 
@@ -344,7 +344,7 @@ class SchemaView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls, encoding='utf-8')
+            acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -660,7 +660,7 @@ It may have been removed by another user.
            did: Database ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         required_args = {
@@ -726,7 +726,7 @@ It may have been removed by another user.
            scid: Schema ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             SQL, name = self.get_sql(gid, sid, data, scid)
@@ -761,7 +761,7 @@ It may have been removed by another user.
 
         if scid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [scid]}
@@ -832,7 +832,7 @@ It may have been removed by another user.
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
