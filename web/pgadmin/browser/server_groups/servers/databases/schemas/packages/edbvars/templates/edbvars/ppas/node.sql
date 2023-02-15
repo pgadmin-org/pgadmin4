@@ -3,6 +3,6 @@ SELECT  oid,
 FROM pg_catalog.edb_variable
 WHERE varpackage = {{pkgid}}::oid
 {% if varid %}
-AND oid = {{ varid|qtLiteral }}
+AND oid = {{ varid|qtLiteral(conn) }}
 {% endif %}
 ORDER BY varname

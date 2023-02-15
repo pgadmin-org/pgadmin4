@@ -32,6 +32,7 @@ class IndexesDeleteTestCase(BaseTestGenerator):
                                          indexes_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         """ This function will set up pre-requisite
         creating index to delete."""
         self.data = self.test_data

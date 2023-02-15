@@ -11,5 +11,5 @@ SELECT
 FROM
     pg_catalog.pg_namespace ns
 WHERE
-    ns.nspname = {{schema|qtLiteral}}::text;
+    ns.nspname = {{schema|qtLiteral(conn)}}::text;
 {% endif %}

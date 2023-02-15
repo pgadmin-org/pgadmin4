@@ -444,7 +444,8 @@ class DomainConstraintView(PGChildNodeView):
             # Get the recently added constraints oid
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  doid=doid, name=data['name'])
+                                  doid=doid, name=data['name'],
+                                  conn=self.conn)
             status, coid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=coid)

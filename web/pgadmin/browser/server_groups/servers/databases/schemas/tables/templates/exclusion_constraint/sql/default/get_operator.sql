@@ -26,7 +26,7 @@ FROM pg_catalog.pg_operator op,
       UNION SELECT 'smallserial', 0
       UNION SELECT 'bigserial', 0
       UNION SELECT 'serial', 0) t1
-      WHERE typname = {{type|qtLiteral}}) AS types
+      WHERE typname = {{type|qtLiteral(conn)}}) AS types
 WHERE oprcom > 0 AND
       (op.oprleft=types.oid OR op.oprright=types.oid)
 {% else %}

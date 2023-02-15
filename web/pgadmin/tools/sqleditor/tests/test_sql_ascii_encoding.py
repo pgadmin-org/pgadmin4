@@ -10,8 +10,10 @@
 import secrets
 
 from pgadmin.utils.route import BaseTestGenerator
+from pgadmin.utils.constants import PSYCOPG3
 from regression.python_test_utils import test_utils
 from pgadmin.utils import server_utils
+import config
 
 
 class TestSQLASCIIEncoding(BaseTestGenerator):
@@ -64,6 +66,9 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
     ]
 
     def setUp(self):
+        if config.PG_DEFAULT_DRIVER == PSYCOPG3:
+            self.skipTest('SQL_ASCII encoding: skipping for psycopg3.')
+
         self.encode_db_name = 'test_encoding_' + self.db_encoding + \
                               str(secrets.choice(range(1000, 65535)))
         self.encode_sid = self.server_information['server_id']
@@ -97,13 +102,13 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
         )
 
         old_isolation_level = db_con.isolation_level
-        db_con.set_isolation_level(0)
-        db_con.set_client_encoding(self.db_encoding)
+        test_utils.set_isolation_level(db_con, 0)
         pg_cursor = db_con.cursor()
+        pg_cursor.execute("SET client_encoding='{0}'".format(self.db_encoding))
         query = """INSERT INTO {0} VALUES('{1}')""".format(
             self.table_name, self.test_str)
         pg_cursor.execute(query)
-        db_con.set_isolation_level(old_isolation_level)
+        test_utils.set_isolation_level(db_con, old_isolation_level)
         db_con.commit()
 
         query = """SELECT * FROM {0}""".format(self.table_name)

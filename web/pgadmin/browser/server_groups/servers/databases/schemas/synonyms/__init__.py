@@ -365,7 +365,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template("/".join([self.template_path,
                                             'get_objects.sql']),
                                   trgTyp=data['trgTyp'],
-                                  trgSchema=data['trgSchema'])
+                                  trgSchema=data['trgSchema'],
+                                  conn=self.conn)
             status, rset = self.conn.execute_dict(sql)
 
             if not status:

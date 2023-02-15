@@ -40,6 +40,6 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(data.schema, data.name) }}
 {% if data.comment %}
 
 COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(data.schema, data.name) }}
-    IS {{ data.comment|qtLiteral }};
+    IS {{ data.comment|qtLiteral(conn) }};
 {% endif %}
 {% endif %}

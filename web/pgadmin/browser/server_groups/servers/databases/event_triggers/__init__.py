@@ -428,7 +428,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
-                data=data
+                data=data, conn=self.conn
             )
             status, etid = self.conn.execute_scalar(sql)
             if not status:
@@ -477,7 +477,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
-                    data=data
+                    data=data, conn=self.conn
                 )
                 status, etid = self.conn.execute_scalar(sql)
 

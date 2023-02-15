@@ -782,7 +782,7 @@ export function ResultSet() {
       setSelectedRows(new Set());
       setSelectedColumns(new Set());
       setLoaderText(gettext('Waiting for the query to complete...'));
-      let goForPoll = await rsu.current.startExecution(
+      await rsu.current.startExecution(
         query, explainObject,
         ()=>{
           setColumns([]);
@@ -790,32 +790,33 @@ export function ResultSet() {
         },
         {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
       );
-      if(goForPoll) {
-        rsu.current.pollForResult(
-          (procQueryData, procColumns, procRows)=>{
-            setRowsResetKey((prev)=>prev+1);
-            setQueryData(procQueryData);
-            setRows(procRows);
-            setColumns(procColumns);
-          },
-          (planJson)=>{
-            /* No need to open if plan is empty */
-            if(!LayoutHelper.isTabOpen(queryToolCtx.docker, PANELS.EXPLAIN) && !planJson) {
-              return;
-            }
-            LayoutHelper.openTab(queryToolCtx.docker, {
-              id: PANELS.EXPLAIN,
-              title: gettext('Explain'),
-              content: <Explain plans={planJson} />,
-              closable: true,
-            }, PANELS.MESSAGES, 'after-tab', true);
-          },
-          ()=>{
-            setColumns([]);
-            setRows([]);
+    };
+
+    const pollCallback = async ()=>{
+      rsu.current.pollForResult(
+        (procQueryData, procColumns, procRows)=>{
+          setRowsResetKey((prev)=>prev+1);
+          setQueryData(procQueryData);
+          setRows(procRows);
+          setColumns(procColumns);
+        },
+        (planJson)=>{
+          /* No need to open if plan is empty */
+          if(!LayoutHelper.isTabOpen(queryToolCtx.docker, PANELS.EXPLAIN) && !planJson) {
+            return;
           }
-        );
-      }
+          LayoutHelper.openTab(queryToolCtx.docker, {
+            id: PANELS.EXPLAIN,
+            title: gettext('Explain'),
+            content: <Explain plans={planJson} />,
+            closable: true,
+          }, PANELS.MESSAGES, 'after-tab', true);
+        },
+        ()=>{
+          setColumns([]);
+          setRows([]);
+        }
+      );
     };
 
     if(isDataChanged()) {
@@ -828,7 +829,8 @@ export function ResultSet() {
         }
       );
     } else {
-      yesCallback();
+      await yesCallback();
+      pollCallback();
     }
   };
 

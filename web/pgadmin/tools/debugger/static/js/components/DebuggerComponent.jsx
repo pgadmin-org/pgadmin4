@@ -360,6 +360,8 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
           }
         })
         .catch(raiseJSONError);
+      enableToolbarButtons();
+      pollResult(params.transId);
     } else if (params.transId != undefined) {
       // Make api call to execute the and start the target for execution
       baseUrl = url_for('debugger.start_listener', {
@@ -376,6 +378,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
           }
         })
         .catch(raiseJSONError);
+      messages(params.transId);
     }
   }, []);
 

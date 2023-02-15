@@ -13,7 +13,7 @@ ALTER EVENT TRIGGER {{ conn|qtIdent(data.name) }}
 
 {% if data.comment %}
 COMMENT ON EVENT TRIGGER {{ conn|qtIdent(data.name) }}
-    IS {{ data.comment|qtLiteral }};
+    IS {{ data.comment|qtLiteral(conn) }};
 {% endif %}
 {% if data.seclabels and data.seclabels|length > 0 %}
 

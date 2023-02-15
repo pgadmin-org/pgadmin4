@@ -19,7 +19,7 @@ WHERE
     tmpl.tmplnamespace = {{scid}}::OID
 {% endif %}
 {% if name %}
-    {% if scid %}AND {% endif %}tmpl.tmplname = {{name|qtLiteral}}
+    {% if scid %}AND {% endif %}tmpl.tmplname = {{name|qtLiteral(conn)}}
 {% endif %}
 {% if tid %}
     {% if name %}AND {% else %}{% if scid %}AND {% endif %}{% endif %}tmpl.oid = {{tid}}::OID

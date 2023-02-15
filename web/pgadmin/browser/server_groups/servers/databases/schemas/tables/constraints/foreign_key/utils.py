@@ -243,7 +243,7 @@ def get_sql(conn, data, tid, fkid=None, template_path=None):
                                                       template_path, conn)
 
         sql = render_template("/".join([template_path, 'update.sql']),
-                              data=data, o_data=old_data)
+                              data=data, o_data=old_data, conn=conn)
 
         if 'autoindex' in data and data['autoindex'] and \
                 ('coveringindex' in data and data['coveringindex'] != ''):

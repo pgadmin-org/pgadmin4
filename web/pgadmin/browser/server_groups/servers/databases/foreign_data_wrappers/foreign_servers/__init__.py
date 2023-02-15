@@ -382,7 +382,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),
-                              fsid=fsid
+                              fsid=fsid, conn=self.conn
                               )
         status, fs_rv_acl_res = self.conn.execute_dict(sql)
         if not status:
@@ -930,7 +930,7 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
-                              schema_diff=True)
+                              schema_diff=True, conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

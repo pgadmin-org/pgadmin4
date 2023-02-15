@@ -23,7 +23,7 @@ CACHE {{data.seqcache|int}} {% endif %}
 {###  Add comments ###}
 {% if data and data.description and data.description != None %}
 COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.table, data.name)}}
-    IS {{data.description|qtLiteral}};
+    IS {{data.description|qtLiteral(conn)}};
 
 {% endif %}
 {###  Add variables to column ###}

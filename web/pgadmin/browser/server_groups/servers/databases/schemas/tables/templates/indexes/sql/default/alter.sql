@@ -8,4 +8,4 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.description is defined and data.description %}
 
 COMMENT ON INDEX {{conn|qtIdent(data.schema, data.name)}}
-    IS {{data.description|qtLiteral}};{% endif %}
+    IS {{data.description|qtLiteral(conn)}};{% endif %}

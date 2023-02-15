@@ -412,7 +412,8 @@ class SchemaView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'sql/acl.sql']),
             _=gettext,
-            scid=scid
+            scid=scid,
+            conn=self.conn
         )
         status, acl = self.conn.execute_dict(SQL)
         if not status:
@@ -518,7 +519,8 @@ class SchemaView(PGChildNodeView):
             show_sysobj=show_system_objects,
             _=gettext,
             scid=scid,
-            schema_restrictions=param
+            schema_restrictions=param,
+            conn=self.conn
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -578,7 +580,8 @@ class SchemaView(PGChildNodeView):
             "/".join([self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
-            scid=scid
+            scid=scid,
+            conn=self.conn
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -663,6 +666,17 @@ It may have been removed by another user.
             request.data
         )
 
+        for k, v in data.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data[k] = v
+
         required_args = {
             'name': 'Name'
         }
@@ -695,7 +709,7 @@ It may have been removed by another user.
             # below sql will gives the same
             SQL = render_template(
                 "/".join([self.template_path, 'sql/oid.sql']),
-                schema=data['name'], _=gettext
+                schema=data['name'], _=gettext, conn=self.conn
             )
 
             status, scid = self.conn.execute_scalar(SQL)
@@ -991,7 +1005,7 @@ It may have been removed by another user.
 
         SQL = render_template(
             "/".join([self.template_path, 'sql/is_catalog.sql']),
-            scid=kwargs['scid'], _=gettext
+            scid=kwargs['scid'], _=gettext, conn=self.conn
         )
 
         status, res = self.conn.execute_dict(SQL)

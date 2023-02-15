@@ -568,7 +568,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             SQL = render_template("/".join(
-                [self.template_path, 'sql/view_id.sql']), data=data)
+                [self.template_path, 'sql/view_id.sql']), data=data,
+                conn=self.conn)
             status, view_id = self.conn.execute_scalar(SQL)
 
             if not status:
@@ -613,7 +614,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             SQL = render_template("/".join(
-                [self.template_path, 'sql/view_id.sql']), data=data)
+                [self.template_path, 'sql/view_id.sql']), data=data,
+                conn=self.conn)
             status, res_data = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -873,7 +875,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
         sql = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
-            data=data)
+            data=data, conn=self.conn)
         if data['definition']:
             sql += "\n"
             sql += render_template("/".join(
@@ -1068,7 +1070,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                 SQL = render_template("/".join(
                     [self.rule_temp_path,
                      self._SQL_PREFIX + self._CREATE_SQL]),
-                    data=res, display_comments=display_comments)
+                    data=res, display_comments=display_comments,
+                    conn=self.conn)
                 sql_data += '\n'
                 sql_data += SQL
         return sql_data
@@ -1245,7 +1248,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             # Format arguments
             if len(res_rows['custom_tgargs']) > 0:
                 driver = get_driver(PG_DEFAULT_DRIVER)
-                formatted_args = [driver.qtLiteral(arg)
+                formatted_args = [driver.qtLiteral(arg, self.conn)
                                   for arg in res_rows['custom_tgargs']]
                 res_rows['tgargs'] = ', '.join(formatted_args)
             else:
@@ -1925,7 +1928,7 @@ class MViewNode(ViewNode, VacuumSettings):
 
         SQL = render_template("/".join(
             [self.template_path, self._SQL_PREFIX + self._CREATE_SQL]),
-            data=data)
+            data=data, conn=self.conn)
         if data['definition']:
             SQL += "\n"
             SQL += render_template("/".join(

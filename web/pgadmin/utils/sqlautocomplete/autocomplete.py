@@ -91,7 +91,7 @@ class SQLAutoComplete():
     class SQLAutoComplete
 
         This class is used to provide the postgresql's autocomplete feature.
-        This class used sqlparse to parse the given sql and psycopg2 to make
+        This class used sqlparse to parse the given sql and psycopg to make
         the connection and get the tables, schemas, functions etc. based on
         the query.
     """

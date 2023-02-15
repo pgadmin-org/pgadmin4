@@ -7,11 +7,11 @@ CREATE DATABASE {{ conn|qtIdent(data.name) }}
 
     TEMPLATE = {{ conn|qtIdent(data.template) }}{% endif %}{% if data.encoding %}
 
-    ENCODING = {{ data.encoding|qtLiteral }}{% endif %}{% if data.datcollate %}
+    ENCODING = {{ data.encoding|qtLiteral(conn) }}{% endif %}{% if data.datcollate %}
 
-    LC_COLLATE = {{ data.datcollate|qtLiteral }}{% endif %}{% if data.datctype %}
+    LC_COLLATE = {{ data.datcollate|qtLiteral(conn) }}{% endif %}{% if data.datctype %}
 
-    LC_CTYPE = {{ data.datctype|qtLiteral }}{% endif %}{% if data.spcname %}
+    LC_CTYPE = {{ data.datctype|qtLiteral(conn) }}{% endif %}{% if data.spcname %}
 
     TABLESPACE = {{ conn|qtIdent(data.spcname) }}{% endif %}{% if data.datconnlimit %}
 

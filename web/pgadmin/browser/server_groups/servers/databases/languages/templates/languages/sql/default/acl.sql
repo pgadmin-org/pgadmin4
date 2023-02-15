@@ -10,7 +10,7 @@ FROM
     FROM
         (SELECT lanacl FROM pg_catalog.pg_language lan
             LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (lan.oid=descr.objoid AND descr.classoid='pg_language'::regclass)
-        WHERE lan.oid = {{ lid|qtLiteral }}::OID
+        WHERE lan.oid = {{ lid|qtLiteral(conn) }}::OID
         ) acl,
         pg_catalog.aclexplode(lanacl) d
     ) d

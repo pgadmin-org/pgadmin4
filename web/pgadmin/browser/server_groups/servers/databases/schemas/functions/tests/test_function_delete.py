@@ -49,7 +49,7 @@ class FunctionDeleteTestCase(BaseTestGenerator):
             without_functions_id=False,
             test_data={},
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_2darray",
                 "return_value": "(False, 'Mocked Internal Server "
                                 "Error while delete function.')"
@@ -65,7 +65,7 @@ class FunctionDeleteTestCase(BaseTestGenerator):
             mock_empty_result=True,
             test_data={},
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_2darray",
                 "return_value": "(True, {'rows': []})"
             },

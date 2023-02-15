@@ -10,4 +10,4 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
 
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(name) }} ON DOMAIN {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
-    IS {{ data.description|qtLiteral }};{% endif %}
+    IS {{ data.description|qtLiteral(conn) }};{% endif %}

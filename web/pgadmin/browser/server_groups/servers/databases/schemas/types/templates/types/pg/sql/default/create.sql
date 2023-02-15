@@ -13,7 +13,7 @@ CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% els
 {###  Enum Type ###}
 {% if data and data.typtype == 'e' %}
 CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% else %}{{ conn|qtIdent(data.name) }}{% endif %} AS ENUM
-    ({% for e in data.enum %}{% if loop.index != 1 %}, {% endif %}{{ e.label|qtLiteral }}{% endfor %});
+    ({% for e in data.enum %}{% if loop.index != 1 %}, {% endif %}{{ e.label|qtLiteral(conn) }}{% endfor %});
 {% endif %}
 {###  Range Type ###}
 {% if data and data.typtype == 'r' %}
@@ -43,11 +43,11 @@ CREATE TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% els
     PASSEDBYVALUE{% endif %}{% if data.typalign %},
     ALIGNMENT =  {{data.typalign}}{% endif %}{% if data.typstorage %},
     STORAGE =  {{data.typstorage}}{% endif %}{% if data.typcategory %},
-    CATEGORY = {{data.typcategory|qtLiteral}}{% endif %}{% if data.typispreferred %},
+    CATEGORY = {{data.typcategory|qtLiteral(conn)}}{% endif %}{% if data.typispreferred %},
     PREFERRED =  {{data.typispreferred}}{% endif %}{% if data.typdefault %},
-    DEFAULT = {{data.typdefault|qtLiteral}}{% endif %}{% if data.element %},
+    DEFAULT = {{data.typdefault|qtLiteral(conn)}}{% endif %}{% if data.element %},
     ELEMENT = {{data.element}}{% endif %}{% if data.typdelim %},
-    DELIMITER = {{data.typdelim|qtLiteral}}{% endif %}{% if data.is_collatable %},
+    DELIMITER = {{data.typdelim|qtLiteral(conn)}}{% endif %}{% if data.is_collatable %},
     COLLATABLE = {{data.is_collatable}}{% endif %}
 
 );
@@ -64,7 +64,7 @@ ALTER TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% else
 
 COMMENT ON TYPE {% if data.schema %}{{ conn|qtIdent(data.schema, data.name) }}{% else %}{{ conn|qtIdent(data.name) }}{% endif %}
 
-    IS {{data.description|qtLiteral}};
+    IS {{data.description|qtLiteral(conn)}};
 {% endif %}
 {###  ACL ###}
 {% if data.typacl %}

@@ -13,6 +13,6 @@ FROM
 JOIN
     pg_catalog.pg_namespace bn ON bn.oid=d.typnamespace
 WHERE
-    bn.nspname = {{ basensp|qtLiteral }}
-    AND d.typname={{ name|qtLiteral }};
+    bn.nspname = {{ basensp|qtLiteral(conn) }}
+    AND d.typname={{ name|qtLiteral(conn) }};
 {% endif %}

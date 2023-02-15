@@ -70,7 +70,20 @@
         "current_value": "7", "increment": "12", "minimum": "2", "maximum": "9992", "cache": "2", "cycled": true
       },
       "expected_sql_file": "alter_seq_props.sql",
-      "expected_msql_file": "alter_seq_props_msql.sql"
+      "expected_msql_file": "alter_seq_props_msql_psycopg2.sql",
+      "pg_driver": "psycopg2"
+    },{
+      "type": "alter",
+      "name": "Alter Sequence properties",
+      "endpoint": "NODE-sequence.obj_id",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "msql_endpoint": "NODE-sequence.msql_id",
+      "data": {
+        "current_value": "7", "increment": "12", "minimum": "2", "maximum": "9992", "cache": "2", "cycled": true
+      },
+      "expected_sql_file": "alter_seq_props.sql",
+      "expected_msql_file": "alter_seq_props_msql.sql",
+      "pg_driver": "psycopg3"
     },{
       "type": "alter",
       "name": "Alter Sequence add privileges",

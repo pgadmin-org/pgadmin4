@@ -59,7 +59,7 @@ def create_subscription(server, db_name, subscription_name):
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = """CREATE SUBSCRIPTION "%s" """ \
                 """CONNECTION 'host=192.168.1.50 port=5432 user=foo """ \
@@ -68,7 +68,7 @@ def create_subscription(server, db_name, subscription_name):
                 """enabled = false, slot_name=NONE, connect=false);""" % (
                     subscription_name)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get role oid of newly added subscription
         pg_cursor.execute("select oid from pg_catalog.pg_subscription sub "
@@ -143,12 +143,12 @@ def delete_subscription(server, db_name, subscription_name):
         subscription_count = pg_cursor.fetchone()
         if subscription_count:
             old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
+            utils.set_isolation_level(connection, 0)
             pg_cursor = connection.cursor()
             query = "DROP subscription %s" % \
                     (subscription_name)
             pg_cursor.execute(query)
-            connection.set_isolation_level(old_isolation_level)
+            utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
         connection.close()
     except Exception:

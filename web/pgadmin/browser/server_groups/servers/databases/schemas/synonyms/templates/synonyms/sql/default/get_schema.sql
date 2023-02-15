@@ -4,4 +4,4 @@ SELECT
 FROM
     pg_catalog.pg_class c
 WHERE
-    c.oid = {{syid|qtLiteral}}::oid;
+    c.oid = {{syid|qtLiteral(conn)}}::oid;

@@ -11,7 +11,6 @@
 a webserver, this will provide the WSGI interface, otherwise, we're going
 to start a web server."""
 
-
 import sys
 
 if sys.version_info < (3, 4):
@@ -34,6 +33,17 @@ if 'PGADMIN_SERVER_MODE' in os.environ:
         builtins.SERVER_MODE = True
 else:
     builtins.SERVER_MODE = None
+
+if (3, 10) > sys.version_info > (3, 8) and os.name == 'posix':
+    # Fix eventlet issue with Python 3.9.
+    # Ref: https://github.com/eventlet/eventlet/issues/670
+    # This was causing issue in psycopg3
+    from eventlet import hubs
+    hubs.use_hub("poll")
+    # Ref: https://github.com/miguelgrinberg/python-socketio/issues/567
+    # Resolve BigAnimal API issue
+    import selectors
+    selectors.DefaultSelector = selectors.PollSelector
 
 import config
 import setup

@@ -540,7 +540,7 @@ class TablespaceView(PGChildNodeView):
 
             SQL = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data
+                data=data, o_data=old_data, conn=self.conn
             )
         else:
             # To format privileges coming from client
@@ -549,7 +549,7 @@ class TablespaceView(PGChildNodeView):
             # If the request for new object which do not have tsid
             SQL = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
-                data=data
+                data=data, conn=self.conn
             )
             SQL += "\n"
             SQL += render_template(

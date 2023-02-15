@@ -102,7 +102,7 @@ COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.table, data.name)}}
 {% else %}
 COMMENT ON COLUMN {{conn|qtIdent(data.schema, data.table, o_data.name)}}
 {% endif %}
-    IS {{data.description|qtLiteral}};
+    IS {{data.description|qtLiteral(conn)}};
 
 {% endif %}
 {### Update column variables ###}

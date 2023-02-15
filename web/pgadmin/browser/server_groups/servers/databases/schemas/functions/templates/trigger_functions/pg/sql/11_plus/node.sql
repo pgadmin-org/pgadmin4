@@ -12,7 +12,7 @@ LEFT OUTER JOIN
 WHERE
     pr.prokind IN ('f', 'w')
 {% if fnid %}
-    AND pr.oid = {{ fnid|qtLiteral }}
+    AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
 {% if scid %}
     AND pronamespace = {{scid}}::oid

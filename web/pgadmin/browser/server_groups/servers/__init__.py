@@ -28,7 +28,6 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import CryptKeyMissing
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from psycopg2 import Error as psycopg2_Error, OperationalError
 from pgadmin.browser.server_groups.servers.utils import is_valid_ipaddress
 from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED
@@ -242,7 +241,7 @@ class ServerModule(sg.ServerGroupPluginModule):
             except CryptKeyMissing:
                 # show the nodes at least even if not able to connect.
                 pass
-            except psycopg2_Error as e:
+            except Exception as e:
                 current_app.logger.exception(e)
                 errmsg = str(e)
 
@@ -1451,8 +1450,6 @@ class ServerNode(PGChildNodeView):
                 tunnel_password=tunnel_password,
                 server_types=ServerType.types()
             )
-        except OperationalError as e:
-            return internal_server_error(errormsg=str(e))
         except Exception as e:
             current_app.logger.exception(e)
             return self.get_response_for_password(

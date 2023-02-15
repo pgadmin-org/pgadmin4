@@ -40,7 +40,7 @@ class FunctionGetTestCase(BaseTestGenerator):
                 is_positive_test=False,
                 mocking_required=True,
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_dict",
                     "return_value": "(False, 'Mocked Internal Server "
                                     "Error while get properties.')"
@@ -57,7 +57,7 @@ class FunctionGetTestCase(BaseTestGenerator):
                 is_positive_test=False,
                 mocking_required=True,
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_dict",
                     "return_value": "(False, {'rows': []})"
                 },

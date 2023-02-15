@@ -213,7 +213,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([self.template_path, self._NODES_SQL]),
             scid=scid,
             seid=seid,
-            show_internal=show_internal
+            show_internal=show_internal,
+            conn=self.conn
         )
         status, rset = self.conn.execute_dict(SQL)
         if not status:
@@ -433,7 +434,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._OID_SQL]),
             name=data['name'],
-            schema=data['schema']
+            schema=data['schema'],
+            conn=self.conn
         )
         sql = sql.strip('\n').strip(' ')
 
@@ -548,7 +550,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
-            seid=seid
+            seid=seid,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
@@ -899,7 +902,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     'schemas/pg/#{0}#/sql/get_name.sql'.format(
                         self.manager.version
                     ),
-                    scid=scid
+                    scid=scid,
+                    conn=self.conn
                 )
             )
             if not status:
@@ -935,7 +939,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
         sql = render_template("/".join([self.template_path,
                                         self._NODES_SQL]), scid=scid,
-                              schema_diff=True)
+                              schema_diff=True,
+                              conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=res)

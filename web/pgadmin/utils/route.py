@@ -14,9 +14,11 @@ from importlib import import_module
 
 from werkzeug.utils import find_modules
 from pgadmin.utils import server_utils
+from pgadmin.utils.constants import PSYCOPG2, PSYCOPG3
 from .. import socketio
 
 import unittest
+import config
 
 
 class TestsGeneratorRegistry(ABCMeta):
@@ -65,7 +67,16 @@ class TestsGeneratorRegistry(ABCMeta):
 
         all_modules = []
 
-        all_modules += find_modules(pkg_root, False, True)
+        try:
+            for module_name in find_modules(pkg_root, True, True):
+                if module_name.find(PSYCOPG2) != -1:
+                    print("Skipping ", module_name)
+                    continue
+                all_modules.append(module_name)
+            TestsGeneratorRegistry._exclude_packages(all_modules,
+                                                     exclude_pkgs)
+        except Exception:
+            pass
 
         if 'resql' not in exclude_pkgs:
             # Append reverse engineered test case module
@@ -100,11 +111,11 @@ class TestsGeneratorRegistry(ABCMeta):
                 traceback.print_exc(file=sys.stderr)
         else:
             # Check for SERVER mode
-            TestsGeneratorRegistry._check_server_mode(all_modules,
-                                                      exclude_pkgs)
+            TestsGeneratorRegistry._exclude_packages(all_modules,
+                                                     exclude_pkgs)
 
     @staticmethod
-    def _check_server_mode(all_modules, exclude_pkgs):
+    def _exclude_packages(all_modules, exclude_pkgs):
         """
         This function check for server mode test cases.
         :param all_modules: all modules.
@@ -133,6 +144,10 @@ class BaseTestGenerator(unittest.TestCase, metaclass=TestsGeneratorRegistry):
             'data' in server_con and 'type' in server_con['data'] and \
                 server_con['data']['type'] in self.skip_on_database:
             self.skipTest('cannot run in: %s' % server_con['data']['type'])
+        if hasattr(self, 'mock_data') and 'function_name' in self.mock_data:
+            self.mock_data['function_name'] =\
+                self.mock_data['function_name'].replace(
+                    PSYCOPG3, config.PG_DEFAULT_DRIVER)
 
     def setTestServer(self, server):
         self.server = server

@@ -3,7 +3,7 @@
 {# ==== To update catalog comments ==== #}
 {% if data.description and data.description != o_data.description %}
 COMMENT ON SCHEMA {{ conn|qtIdent(o_data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {# ==== To update catalog securitylabel ==== #}

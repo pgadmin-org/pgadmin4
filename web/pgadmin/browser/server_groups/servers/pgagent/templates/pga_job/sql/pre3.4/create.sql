@@ -11,7 +11,7 @@ BEGIN
 INSERT INTO pgagent.pga_job(
     jobjclid, jobname, jobdesc, jobhostagent, jobenabled
 ) VALUES (
-    {{ data.jobjclid|qtLiteral }}::integer, {{ data.jobname|qtLiteral }}::text, {{ data.jobdesc|qtLiteral }}::text, {{ data.jobhostagent|qtLiteral }}::text, {% if data.jobenabled %}true{% else %}false{% endif %}
+    {{ data.jobjclid|qtLiteral(conn) }}::integer, {{ data.jobname|qtLiteral(conn) }}::text, {{ data.jobdesc|qtLiteral(conn) }}::text, {{ data.jobhostagent|qtLiteral(conn) }}::text, {% if data.jobenabled %}true{% else %}false{% endif %}
 
 ) RETURNING jobid INTO jid;{% if 'jsteps' in data and data.jsteps|length > 0 %}
 

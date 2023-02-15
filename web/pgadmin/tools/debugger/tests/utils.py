@@ -2,7 +2,6 @@ import os
 import sys
 import json
 import uuid
-import traceback
 
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -126,8 +125,8 @@ def initialize_target(self, utils, close_debugger_instance=True):
                       'for indirect debugging.')
 
 
-def start_listener(self, utils, db_utils):
-    response = self.tester.post(
+async def start_listener(self, utils, db_utils):
+    response = self.tester.get(
         'debugger/start_listener/' + str(self.trans_id),
         content_type='application/json')
     if response.status_code != 200:

@@ -28,6 +28,7 @@ class DomainConstraintPutTestCase(BaseTestGenerator):
                                          domain_cons_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.schema_id = schema_info["schema_id"]

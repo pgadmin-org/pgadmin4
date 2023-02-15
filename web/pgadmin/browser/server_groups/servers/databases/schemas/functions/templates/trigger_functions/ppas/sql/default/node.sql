@@ -12,7 +12,7 @@ LEFT OUTER JOIN
 WHERE
     proisagg = FALSE
 {% if fnid %}
-    AND pr.oid = {{ fnid|qtLiteral }}
+    AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
 {% if scid %}
     AND pronamespace = {{scid}}::oid

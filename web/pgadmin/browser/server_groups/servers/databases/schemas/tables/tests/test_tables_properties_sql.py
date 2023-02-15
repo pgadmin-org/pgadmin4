@@ -38,17 +38,20 @@ class TestTablesPropertiesSql(SQLTemplateTestBase):
         self.assertEqual(None, first_row['typname'])
         self.assertEqual([], first_row['coll_inherits'])
 
-    def generate_sql(self, version):
+    def generate_sql(self, connection):
         file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
                                  "tables", "sql")
-        template_file = self.get_template_file(version, file_path,
-                                               "properties.sql")
+        template_file = self.get_template_file(
+            self.get_server_version(connection),
+            file_path,
+            "properties.sql")
         template = file_as_template(template_file)
         public_schema_id = 2200
         sql = template.render(scid=public_schema_id,
                               did=self.database_id,
                               datlastsysoid=DATABASE_LAST_SYSTEM_OID,
-                              tid=self.table_id
+                              tid=self.table_id,
+                              conn=connection
                               )
         return sql
 

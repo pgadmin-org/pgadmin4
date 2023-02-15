@@ -41,7 +41,7 @@ class FunctionGetFunctionStatisticsTestCase(BaseTestGenerator):
                 is_positive_test=False,
                 mocking_required=True,
                 mock_data={
-                    "function_name": 'pgadmin.utils.driver.psycopg2.'
+                    "function_name": 'pgadmin.utils.driver.psycopg3.'
                                      'connection.Connection.execute_dict',
                     "return_value": "(False, 'Mocked Internal Server Error "
                                     "while get function statistics.')"
@@ -72,7 +72,7 @@ class FunctionGetFunctionStatisticsTestCase(BaseTestGenerator):
                 mocking_required=True,
                 without_function_id=True,
                 mock_data={
-                    "function_name": 'pgadmin.utils.driver.psycopg2.'
+                    "function_name": 'pgadmin.utils.driver.psycopg3.'
                                      'connection.Connection.execute_scalar',
                     "return_value": "(False, 'Mocked Internal Server Error "
                                     "while get function statistics.')"

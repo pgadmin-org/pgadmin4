@@ -28,6 +28,7 @@ class TypesAddTestCase(BaseTestGenerator):
                                          types_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.data = self.test_data
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]

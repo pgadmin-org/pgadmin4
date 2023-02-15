@@ -23,7 +23,6 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-import psycopg2
 from pgadmin.utils import get_complete_file_path
 
 
@@ -659,7 +658,10 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             'passfile' in connection_details and \
             connection_details['passfile'] != '' else None
         try:
-            conn = psycopg2.connect(
+            from pgadmin.utils.driver import get_driver
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            conn = driver.get_connection(
+                sid=0,
                 host=connection_details['host'],
                 database=connection_details['db'],
                 user=connection_details['username'],

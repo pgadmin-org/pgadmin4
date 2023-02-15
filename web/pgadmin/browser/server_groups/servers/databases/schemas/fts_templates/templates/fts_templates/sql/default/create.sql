@@ -7,5 +7,5 @@ CREATE TEXT SEARCH TEMPLATE {{ conn|qtIdent(data.schema, data.name) }} (
 {# Description for TEXT SEARCH TEMPLATE #}
 {% if data.description %}
 COMMENT ON TEXT SEARCH TEMPLATE {{ conn|qtIdent(data.schema, data.name) }}
-      IS {{ data.description|qtLiteral }};
+      IS {{ data.description|qtLiteral(conn) }};
 {% endif %}{% endif %}

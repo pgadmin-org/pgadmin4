@@ -11,7 +11,7 @@ FROM
             LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (
             fsrv.oid=descr.objoid AND descr.classoid='pg_foreign_server'::regclass)
 {% if fsid %}
-  WHERE fsrv.oid = {{ fsid|qtLiteral }}::OID
+  WHERE fsrv.oid = {{ fsid|qtLiteral(conn) }}::OID
 {% endif %}
         ) acl,
         pg_catalog.aclexplode(srvacl) d

@@ -10,12 +10,14 @@
 from unittest.mock import patch
 
 from pgadmin.utils.route import BaseTestGenerator
+from pgadmin.utils.constants import PSYCOPG2
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from regression.python_test_utils import test_utils
 import json
 from pgadmin.utils import server_utils
 import secrets
+import config
 
 
 class TestDownloadCSV(BaseTestGenerator):
@@ -151,9 +153,13 @@ class TestDownloadCSV(BaseTestGenerator):
         # Disable the console logging from Flask logger
         self.app.logger.disabled = True
         if not self.is_valid and self.is_valid_tx:
-            # When user enters wrong query, poll will throw 500, so expecting
-            # 500, as poll is never called for a wrong query.
-            self.assertEqual(res.status_code, 500)
+            if config.PG_DEFAULT_DRIVER == PSYCOPG2:
+                # When user enters wrong query, poll will throw 500,
+                # so expecting 500, as poll is never called for a wrong query.
+                self.assertEqual(res.status_code, 500)
+            else:
+                # The result will be null but status code will be 200
+                self.assertEqual(res.status_code, 200)
         elif self.filename is None:
             if self.download_as_txt:
                 with patch('pgadmin.tools.sqleditor.blueprint.'

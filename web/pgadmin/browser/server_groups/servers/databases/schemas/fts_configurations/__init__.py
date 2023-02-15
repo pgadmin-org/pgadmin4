@@ -257,7 +257,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid
+            scid=scid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -373,7 +373,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            cfgid=cfgid
+            cfgid=cfgid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -475,7 +476,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
-            scid=data['schema']
+            scid=data['schema'],
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
         if not status:
@@ -505,6 +507,12 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         data = request.form if request.form else json.loads(
             request.data
         )
+
+        if cfgid == 0 or cfgid is None:
+            return gone(
+                _("Could not find the FTS Configuration node to update.")
+            )
+
         # Fetch sql query to update fts Configuration
         sql, name = self.get_sql(gid, sid, did, scid, data, cfgid)
         # Most probably this is due to error
@@ -571,8 +579,9 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
-                elif not res['rows']:
+                elif not res['rows'] or len(res['rows']) == 0:
                     return make_json_response(
+                        status=410,
                         success=0,
                         errormsg=_(
                             'Error: Object not found.'
@@ -694,7 +703,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 cfgid=cfgid,
-                scid=scid
+                scid=scid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -737,7 +747,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=new_data, o_data=old_data
+                data=new_data, o_data=old_data, conn=self.conn
             )
             # Fetch sql query for modified data
             if 'name' in data:

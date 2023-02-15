@@ -199,7 +199,7 @@ begin
   else
   begin
     // Suppose system is running a 32-bit version of Windows then no need to check HKLM64 in RegQueryStringValue
-    // So IsWin64 - will make sure its should only execute on 64-bit veersion of windows.
+    // So IsWin64 - will make sure its should only execute on 64-bit version of windows.
     if IsWin64 then
 	begin
         // Check if pgAdmin 64 bit is already installed

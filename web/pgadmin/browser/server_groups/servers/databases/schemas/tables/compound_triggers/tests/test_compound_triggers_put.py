@@ -24,6 +24,7 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as compound_triggers_utils
 
 import sys
+from config import PG_DEFAULT_DRIVER
 
 
 class CompoundTriggersUpdateTestCase(BaseTestGenerator):
@@ -122,8 +123,8 @@ class CompoundTriggersUpdateTestCase(BaseTestGenerator):
 
             with patch(self.mock_data["function_name"],
                        side_effect=self.mock_data["return_value"]), patch(
-                'pgadmin.utils.driver.psycopg2.connection.Connection.'
-                'execute_scalar',
+                'pgadmin.utils.driver.{0}.connection.Connection.'
+                'execute_scalar'.format(PG_DEFAULT_DRIVER),
                 side_effect=[(True, True),
                              (True, "Mocked response")]):
                 response = self.update_compound_trigger()

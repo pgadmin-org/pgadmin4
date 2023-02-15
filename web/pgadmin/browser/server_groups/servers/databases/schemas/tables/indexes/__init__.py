@@ -634,7 +634,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             # we need oid to add object in tree at browser
             SQL = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
-                tid=tid, data=data
+                tid=tid, data=data, conn=self.conn
             )
             status, idx = self.conn.execute_scalar(SQL)
             if not status:

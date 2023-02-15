@@ -22,14 +22,17 @@ class TestTablesNodeSql(SQLTemplateTestBase):
     def test_setup(self, connection, cursor):
         pass
 
-    def generate_sql(self, version):
+    def generate_sql(self, connection):
         file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
                                  "tables", "sql")
-        template_file = self.get_template_file(version, file_path,
-                                               "nodes.sql")
+        template_file = self.get_template_file(
+            self.get_server_version(connection),
+            file_path,
+            "nodes.sql")
         template = file_as_template(template_file)
         public_schema_id = 2200
-        sql = template.render(scid=public_schema_id)
+        sql = template.render(scid=public_schema_id,
+                              conn=connection)
         return sql
 
     def assertions(self, fetch_result, descriptions):

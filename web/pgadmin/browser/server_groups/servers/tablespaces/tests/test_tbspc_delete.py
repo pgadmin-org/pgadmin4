@@ -25,6 +25,7 @@ class TableSpaceDeleteTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        super().setUp()
         if not self.server['tablespace_path']\
                 or self.server['tablespace_path'] is None:
             message = "Tablespace delete test case. Tablespace path" \

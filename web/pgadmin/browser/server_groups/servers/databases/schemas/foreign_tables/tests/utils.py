@@ -12,7 +12,8 @@ import sys
 import traceback
 from urllib.parse import urlencode
 
-from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection,\
+    set_isolation_level
 from regression.python_test_utils import test_utils as utils
 
 # Load test data from json file.
@@ -88,10 +89,10 @@ def create_foreign_table(server, db_name, schema_name, fsrv_name,
                                        server['host'],
                                        server['port'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
         # Get 'oid' from newly created foreign table

@@ -17,7 +17,7 @@ ALTER SCHEMA {{ conn|qtIdent(data.name) }}
 {### To update SCHEMA comments ###}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {### Change the security labels ###}

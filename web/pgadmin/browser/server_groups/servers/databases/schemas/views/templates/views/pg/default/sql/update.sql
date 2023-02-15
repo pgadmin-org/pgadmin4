@@ -49,10 +49,10 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% if (data.comment is defined and (data.comment != old_comment)) %}
 
 COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
-    IS {{ data.comment|qtLiteral }};
+    IS {{ data.comment|qtLiteral(conn) }};
 {% elif  data.del_sql == True and old_comment != '' %}
 COMMENT ON VIEW {{ conn|qtIdent(view_schema, view_name) }}
-    IS {{ old_comment|qtLiteral }};
+    IS {{ old_comment|qtLiteral(conn) }};
 {% endif %}
 {# The SQL generated below will change privileges #}
 {% if o_data.acl_sql and o_data.acl_sql != '' %}

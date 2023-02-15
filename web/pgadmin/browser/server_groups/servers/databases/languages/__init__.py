@@ -260,7 +260,8 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
             did: Database ID
         """
         sql = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]))
+                                        self._PROPERTIES_SQL]),
+                              conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -283,7 +284,8 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         sql = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]))
+                                        self._PROPERTIES_SQL]),
+                              conn=self.conn)
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -315,7 +317,8 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
-                              lid=lid)
+                              lid=lid,
+                              conn=self.conn)
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -362,7 +365,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            lid=lid
+            lid=lid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -378,7 +381,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._ACL_SQL]),
-            lid=lid
+            lid=lid, conn=self.conn
         )
         status, result = self.conn.execute_dict(sql)
         if not status:
@@ -631,7 +634,8 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if lid is not None:
             sql = render_template(
-                "/".join([self.template_path, self._PROPERTIES_SQL]), lid=lid
+                "/".join([self.template_path, self._PROPERTIES_SQL]), lid=lid,
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -722,7 +726,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            lid=lid
+            lid=lid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -736,7 +740,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._ACL_SQL]),
-            lid=lid
+            lid=lid, conn=self.conn
         )
         status, result = self.conn.execute_dict(sql)
         if not status:
@@ -826,7 +830,8 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
         sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
-                              schema_diff=True)
+                              schema_diff=True,
+                              conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

@@ -22,6 +22,10 @@ import secrets
 import threading
 import time
 import unittest
+import asyncio
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 if sys.version_info < (3, 4):
     raise RuntimeError('The test suite must be run under Python 3.4 or later.')
@@ -495,7 +499,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         )
 
         # Add the server version in server information
-        server_information['server_version'] = connection.server_version
+        server_information['server_version'] = connection.info.server_version
         server_information['type'] = server_passed['type']
 
         # Drop the database if already exists.

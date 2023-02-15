@@ -4,7 +4,7 @@ FROM
     pgagent.pga_jobstep
 WHERE
 {% if jstid %}
-    jstid = {{ jstid|qtLiteral }}::integer AND
+    jstid = {{ jstid|qtLiteral(conn) }}::integer AND
 {% endif %}
-    jstjobid = {{ jid|qtLiteral }}::integer
+    jstjobid = {{ jid|qtLiteral(conn) }}::integer
 ORDER BY jstname;

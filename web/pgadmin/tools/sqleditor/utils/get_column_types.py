@@ -20,7 +20,8 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
     query = render_template(
         "/".join([nodes_sqlpath, 'nodes.sql']),
         tid=table_oid,
-        has_oids=has_oids
+        has_oids=has_oids,
+        conn=conn
     )
 
     colst, rset = conn.execute_2darray(query)

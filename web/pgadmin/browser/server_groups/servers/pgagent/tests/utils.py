@@ -150,7 +150,7 @@ def create_pgagent_job(self, name):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             """
@@ -162,7 +162,7 @@ def create_pgagent_job(self, name):
             """.format(name)
         )
         job_id = pg_cursor.fetchone()
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
         return job_id[0]
@@ -186,13 +186,13 @@ def delete_pgagent_job(self, job_id=None):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "DELETE FROM pgagent.pga_job "
             "WHERE jobid = '%s'::integer;" % job_id
         )
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
     except Exception:
@@ -239,7 +239,7 @@ def create_pgagent_schedule(self, sch_name, jobid):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = """
             INSERT INTO pgagent.pga_schedule(
@@ -252,7 +252,7 @@ def create_pgagent_schedule(self, sch_name, jobid):
             """.format(sch_name, jobid)
         pg_cursor.execute(query)
         sch_id = pg_cursor.fetchone()
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
         return sch_id[0]
@@ -274,13 +274,13 @@ def delete_pgagent_schedule(self):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "DELETE FROM pgagent.pga_schedule "
             "WHERE jscid = '%s'::integer;" % self.schedule_id
         )
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
     except Exception:
@@ -353,7 +353,7 @@ def create_pgagent_exception(self, schid, date, time):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = """
             INSERT INTO pgagent.pga_exception(jexscid, jexdate, jextime
@@ -363,7 +363,7 @@ def create_pgagent_exception(self, schid, date, time):
             """.format(schid, date, time)
         pg_cursor.execute(query)
         excep_id = pg_cursor.fetchone()
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
         return excep_id[0]
@@ -385,7 +385,7 @@ def create_pgagent_step(self, step_name, jobid):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = """
             INSERT INTO pgagent.pga_jobstep(
@@ -397,7 +397,7 @@ def create_pgagent_step(self, step_name, jobid):
             """.format(step_name, jobid)
         pg_cursor.execute(query)
         step_id = pg_cursor.fetchone()
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
         return step_id[0]
@@ -419,13 +419,13 @@ def delete_pgagent_step(self):
             self.server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             "DELETE FROM pgagent.pga_jobstep "
             "WHERE jstid = '%s'::integer;" % self.step_id
         )
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
     except Exception:

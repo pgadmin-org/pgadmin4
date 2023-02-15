@@ -409,7 +409,7 @@ def _connect(conn, **kwargs):
         status, msg = conn.connect(user=user, role=role,
                                    password=password)
     else:
-        status, msg = conn.connect()
+        status, msg = conn.connect(**kwargs)
 
     return status, msg, is_ask_password, user, role, password
 
@@ -436,7 +436,11 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
                                   use_binary_placeholder=True,
                                   array_to_string=True)
 
+        pref = Preferences.module('sqleditor')
         if connect:
+            kwargs['auto_commit'] = pref.preference('auto_commit').get()
+            kwargs['auto_rollback'] = pref.preference('auto_rollback').get()
+
             status, msg, is_ask_password, user, role, password = _connect(
                 conn, **kwargs)
             if not status:
@@ -472,7 +476,6 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
         sql_grid_data = session['gridData']
 
     # Set the value of auto commit and auto rollback specified in Preferences
-    pref = Preferences.module('sqleditor')
     command_obj.set_auto_commit(pref.preference('auto_commit').get())
     command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
 
@@ -971,7 +974,7 @@ def poll(trans_id):
                                 col_info['type_name'] = typname
 
                         # Using characters %, (, ) in the argument names is not
-                        # supported in psycopg2
+                        # supported in psycopg
                         col_info['pgadmin_alias'] = \
                             re.sub("[%()]+", "|", col_name).\
                             encode('unicode_escape').decode('utf-8')
@@ -1175,7 +1178,7 @@ def fetch_pg_types(columns_info, trans_obj):
     if oids:
         status, res = default_conn.execute_dict(
             "SELECT oid, pg_catalog.format_type(oid, NULL) AS typname FROM "
-            "pg_catalog.pg_type WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
+            "pg_catalog.pg_type WHERE oid = ANY(%s) ORDER BY oid;", [oids]
         )
 
         if not status:
@@ -1345,7 +1348,7 @@ def append_filter_inclusive(trans_id):
             else:
                 filter_sql = driver.qtIdent(
                     conn, column_name
-                ) + ' = ' + driver.qtLiteral(column_value)
+                ) + ' = ' + driver.qtLiteral(column_value, conn)
 
         trans_obj.append_filter(filter_sql)
 
@@ -1924,7 +1927,7 @@ def start_query_download_tool(trans_id):
 
         # This returns generator of records.
         status, gen, conn_obj = \
-            sync_conn.execute_on_server_as_csv(records=2000)
+            sync_conn.execute_on_server_as_csv(records=10)
 
         if not status:
             return make_json_response(
@@ -1939,8 +1942,7 @@ def start_query_download_tool(trans_id):
                 quote=blueprint.csv_quoting.get(),
                 quote_char=blueprint.csv_quote_char.get(),
                 field_separator=blueprint.csv_field_separator.get(),
-                replace_nulls_with=blueprint.replace_nulls_with.get()
-                ),
+                replace_nulls_with=blueprint.replace_nulls_with.get()),
             mimetype='text/csv' if
             blueprint.csv_field_separator.get() == ','
             else 'text/plain'
@@ -1990,7 +1992,7 @@ def query_tool_status(trans_id):
     Returns:
         Response with the connection status
 
-        Psycopg2 Status Code Mapping:
+        Psycopg Status Code Mapping:
         -----------------------------
         TRANSACTION_STATUS_IDLE     = 0
         TRANSACTION_STATUS_ACTIVE   = 1
@@ -2011,7 +2013,6 @@ def query_tool_status(trans_id):
 
         if status is not None:
             # Check for the asynchronous notifies statements.
-            conn.check_notifies(True)
             notifies = conn.get_notifies()
 
             return make_json_response(

@@ -7,7 +7,7 @@ CREATE SCHEMA{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtI
 {% endif %}
 {% if data.description %}
 COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {% if data.nspacl %}

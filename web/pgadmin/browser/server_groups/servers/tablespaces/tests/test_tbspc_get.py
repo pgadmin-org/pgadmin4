@@ -25,6 +25,7 @@ class TablespaceGetTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        super().setUp()
         if not self.server['tablespace_path']\
                 or self.server['tablespace_path'] is None:
             message = "Tablespace get test case. Tablespace path" \

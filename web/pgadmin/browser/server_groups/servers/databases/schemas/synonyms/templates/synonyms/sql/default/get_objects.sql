@@ -5,7 +5,7 @@
 SELECT DISTINCT proname AS name
     FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n
 WHERE p.pronamespace = n.oid AND
-    n.nspname = {{  trgSchema|qtLiteral }} AND
+    n.nspname = {{  trgSchema|qtLiteral(conn) }} AND
     p.protype  = '0'
 ORDER BY proname;
 {###########################################}
@@ -15,7 +15,7 @@ ORDER BY proname;
 SELECT DISTINCT proname AS name
     FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n
 WHERE p.pronamespace = n.oid AND
-    n.nspname = {{  trgSchema|qtLiteral }} AND
+    n.nspname = {{  trgSchema|qtLiteral(conn) }} AND
     p.protype  = '1'
 ORDER BY proname;
 {###########################################}
@@ -34,7 +34,7 @@ SELECT nspname AS name
 WHERE nspparent IN (
                     SELECT oid
                         FROM pg_catalog.pg_namespace
-                    WHERE nspname = {{ trgSchema|qtLiteral }} LIMIT 1
+                    WHERE nspname = {{ trgSchema|qtLiteral(conn) }} LIMIT 1
                    )
       AND nspobjecttype = 0
 ORDER BY nspname;
@@ -45,12 +45,12 @@ ORDER BY nspname;
 SELECT relname AS name
     FROM pg_catalog.pg_class c, pg_catalog.pg_namespace n
 WHERE c.relnamespace = n.oid AND
-    n.nspname = {{  trgSchema|qtLiteral }} AND
+    n.nspname = {{  trgSchema|qtLiteral(conn) }} AND
 {% if trgTyp == 'v' %}
 {# If view is select then we need to fetch both view and materialized view #}
  (c.relkind = 'v' OR c.relkind = 'm')
 {% else %}
-    c.relkind = {{ trgTyp|qtLiteral }}
+    c.relkind = {{ trgTyp|qtLiteral(conn) }}
 {% endif %}
 ORDER BY relname;
 {% endif %}

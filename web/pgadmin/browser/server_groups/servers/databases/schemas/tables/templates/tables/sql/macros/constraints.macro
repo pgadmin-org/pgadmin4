@@ -106,7 +106,7 @@
 {% for d in data %}
 {% if d.name and d.comment %}
 COMMENT ON CONSTRAINT {{ conn|qtIdent(d.name) }} ON {{ conn|qtIdent(schema, table) }}
-    IS {{ d.comment|qtLiteral }};
+    IS {{ d.comment|qtLiteral(conn) }};
 {% endif %}
 {% endfor %}
 {%- endmacro %}

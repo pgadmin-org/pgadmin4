@@ -745,7 +745,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  subtype=True)
+                                  subtype=True, conn=self.conn)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -775,7 +775,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  subtype_opclass=True, data=data)
+                                  subtype_opclass=True, data=data,
+                                  conn=self.conn)
             if SQL:
                 status, rset = self.conn.execute_2darray(SQL)
                 if not status:
@@ -806,7 +807,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  get_opcintype=True, data=data)
+                                  get_opcintype=True, data=data,
+                                  conn=self.conn)
             if SQL:
                 status, opcintype = self.conn.execute_scalar(SQL)
                 if not status:
@@ -847,7 +849,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # else we will disable the combobox
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  getoid=True, data=data)
+                                  getoid=True, data=data, conn=self.conn)
             if SQL:
                 status, oid = self.conn.execute_scalar(SQL)
                 if not status:
@@ -1040,7 +1042,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 # we need scid to update in browser tree
                 SQL = render_template("/".join([self.template_path,
                                                 'get_scid.sql']),
-                                      schema=data['schema'])
+                                      schema=data['schema'], conn=self.conn)
                 status, scid = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=scid)
@@ -1048,7 +1050,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # we need oid to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  scid=scid, data=data)
+                                  scid=scid, data=data, conn=self.conn)
             status, tid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=tid)
@@ -1091,7 +1093,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             SQL = render_template("/".join([self.template_path,
-                                            'get_scid.sql']), tid=tid)
+                                            'get_scid.sql']),
+                                  tid=tid, conn=self.conn)
 
             # Get updated schema oid
             status, scid = self.conn.execute_scalar(SQL)

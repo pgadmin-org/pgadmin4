@@ -44,7 +44,7 @@ ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
 
 {% if c.description is defined and c.description != '' %}
 COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
-    IS {{ c.description|qtLiteral }};{% endif %}
+    IS {{ c.description|qtLiteral(conn) }};{% endif %}
 {% endfor -%}
 {% else %}
 {% for c in data.constraints.changed %}
@@ -92,7 +92,7 @@ COMMENT ON CONSTRAINT {{ conn|qtIdent(c.conname) }} ON DOMAIN {{ conn|qtIdent(o_
 {% endif -%}{% if data.description is defined and data.description != o_data.description %}
 
 COMMENT ON DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif -%}{% if data.basensp %}
 
 ALTER DOMAIN {{ conn|qtIdent(o_data.basensp, name) }}

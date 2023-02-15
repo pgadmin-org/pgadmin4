@@ -39,7 +39,7 @@ class FunctionPutTestCase(BaseTestGenerator):
             mocking_required=True,
             is_mock_function=False,
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_scalar",
                 "return_value": "(False, 'Mocked Internal Server "
                                 "Error while create new function get sql.')"

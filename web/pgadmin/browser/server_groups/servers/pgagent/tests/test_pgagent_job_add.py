@@ -23,6 +23,7 @@ class PgAgentAddTestCase(BaseTestGenerator):
 
     def setUp(self):
         # Load test data
+        super().setUp()
         self.data = self.test_data
 
         flag, msg = pgagent_utils.is_valid_server_to_run_pgagent(self)

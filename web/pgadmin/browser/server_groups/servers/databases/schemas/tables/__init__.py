@@ -697,7 +697,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                         self.table_template_path,
                         self._GET_COLUMNS_FOR_TABLE_SQL
                     ]),
-                    tid=data['tid']
+                    tid=data['tid'], conn=self.conn
                 )
             elif data and 'tname' in data:
                 SQL = render_template(
@@ -705,7 +705,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                         self.table_template_path,
                         self._GET_COLUMNS_FOR_TABLE_SQL
                     ]),
-                    tname=data['tname']
+                    tname=data['tname'], conn=self.conn
                 )
 
             if SQL:
@@ -746,7 +746,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     "/".join(
                         [self.table_template_path,
                          self._GET_COLUMNS_FOR_TABLE_SQL]
-                    ), tid=row['oid']
+                    ), tid=row['oid'], conn=self.conn
                 )
 
                 status, type_cols = self.conn.execute_dict(SQL)
@@ -982,7 +982,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             # Get updated schema oid
             sql = render_template(
                 "/".join([self.table_template_path, self._GET_SCHEMA_OID_SQL]),
-                tname=data['name']
+                tname=data['name'],
+                conn=self.conn
             )
 
             status, new_scid = self.conn.execute_scalar(sql)
@@ -992,7 +993,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             # we need oid to add object in tree at browser
             sql = render_template(
                 "/".join([self.table_template_path, self._OID_SQL]),
-                scid=new_scid, data=data
+                scid=new_scid, data=data, conn=self.conn
             )
 
             status, tid = self.conn.execute_scalar(sql)
@@ -1498,7 +1499,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:

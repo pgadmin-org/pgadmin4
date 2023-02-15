@@ -414,8 +414,8 @@ def dashboard_stats(sid=None, did=None):
         status, res = g.conn.execute_dict(sql)
 
         for chart_row in res['rows']:
-            resp_data[chart_row['chart_name']] = \
-                json.loads(chart_row['chart_data'])
+            resp_data[chart_row['chart_name']] = json.loads(
+                chart_row['chart_data'])
 
     return ajax_response(
         response=resp_data,

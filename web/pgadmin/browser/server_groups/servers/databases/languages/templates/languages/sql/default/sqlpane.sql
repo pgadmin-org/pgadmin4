@@ -24,7 +24,7 @@ ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
 {% if data.description %}
 
 COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {# ============= PRIVILEGES on LANGUAGE ============= #}
 {% if data.lanacl and data.lanacl|length > 0 %}

@@ -714,7 +714,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
                                   basensp=basensp,
-                                  name=self.request['name'])
+                                  name=self.request['name'],
+                                  conn=self.conn)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -826,7 +827,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  foid=foid)
+                                  foid=foid,
+                                  conn=self.conn)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -884,7 +886,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
                               data=data, is_sql=True,
-                              add_not_exists_clause=True
+                              add_not_exists_clause=True,
+                              conn=self.conn
                               )
 
         if not json_resp:
@@ -1071,11 +1074,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 sql = render_template(
                     "/".join([self.template_path,
                               'foreign_table_schema_diff.sql']),
-                    data=data, o_data=old_data)
+                    data=data, o_data=old_data, conn=self.conn)
             else:
                 sql = render_template(
                     "/".join([self.template_path, self._UPDATE_SQL]),
-                    data=data, o_data=old_data
+                    data=data, o_data=old_data, conn=self.conn
                 )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
@@ -1087,7 +1090,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                                ["a", "r", "w", "x"])
 
             sql = render_template("/".join([self.template_path,
-                                            self._CREATE_SQL]), data=data)
+                                            self._CREATE_SQL]), data=data,
+                                  conn=self.conn)
             return sql, data['name']
 
     @check_precondition

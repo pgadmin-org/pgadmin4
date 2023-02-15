@@ -13,6 +13,7 @@ import traceback
 from urllib.parse import urlencode
 from flask import url_for
 import regression
+import config
 from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -20,6 +21,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
+from config import PG_DEFAULT_DRIVER
 
 
 def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
@@ -99,13 +101,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         # Schema ID placeholder in JSON file which needs to be replaced
         # while running the test cases
+
         self.JSON_PLACEHOLDERS = {'schema_id': '<SCHEMA_ID>',
                                   'owner': '<OWNER>',
                                   'timestamptz_1': '<TIMESTAMPTZ_1>',
                                   'password': '<PASSWORD>',
                                   'pga_job_id': '<PGA_JOB_ID>',
                                   'timestamptz_2': '<TIMESTAMPTZ_2>',
-                                  'db_name': '<TEST_DB_NAME>'}
+                                  'db_name': '<TEST_DB_NAME>',
+                                  'db_driver': '<DB_DRIVER>'}
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
@@ -232,6 +236,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 elif self.check_precondition(
                         scenario['precondition_sql'], False):
                     skip_test_case = False
+            elif 'pg_driver' in scenario and\
+                    scenario['pg_driver'] != PG_DEFAULT_DRIVER:
+                skip_test_case = True
             else:
                 skip_test_case = False
 
@@ -272,6 +279,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 try:
                     self.assertEqual(response.status_code, 200)
                 except Exception as e:
+                    response = self.tester.post(create_url,
+                                                data=json.dumps(
+                                                    scenario['data']),
+                                                content_type='html/json')
                     self.final_test_status = False
                     print(scenario['name'] + "... FAIL")
                     traceback.print_exc()
@@ -307,6 +318,11 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                     self.assertEqual(response.status_code, 200)
                 except Exception as e:
                     self.final_test_status = False
+                    alter_url = self.get_url(scenario['endpoint'], object_id)
+                    response = self.tester.put(alter_url,
+                                               data=json.dumps(
+                                                   scenario['data']),
+                                               follow_redirects=True)
                     print(scenario['name'] + "... FAIL")
                     traceback.print_exc()
                     continue
@@ -493,7 +509,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         try:
             self.assertEqual(response.status_code, 200)
         except Exception as e:
-
             self.final_test_status = False
             traceback.print_exc()
             return False
@@ -522,6 +537,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 try:
                     self.assertEqual(sql, resp_sql)
                 except Exception as e:
+                    print(sql)
+                    print(resp_sql)
                     self.final_test_status = False
                     traceback.print_exc()
                     return False
@@ -636,6 +653,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                      scenario['data'][key_attr]['added'][0]):
                     self.get_db_connection()
                     pg_cursor = self.connection.cursor()
+                    pg_cursor.execute("SET DateStyle=ISO;")
+
                     try:
                         if is_tz_columns_list:
                             query = "SELECT timestamp with time zone '" \

@@ -10,9 +10,9 @@ JOIN
     pg_catalog.pg_language lng ON lng.oid=prolang
 JOIN
     pg_catalog.pg_namespace nsp ON nsp.oid=pr.pronamespace
-    AND nsp.nspname={{ nspname|qtLiteral }}
+    AND nsp.nspname={{ nspname|qtLiteral(conn) }}
 WHERE
     pr.prokind IN ('f', 'w')
     AND typname IN ('trigger', 'event_trigger')
     AND lanname NOT IN ('sql', 'internal')
-    AND pr.proname = {{ name|qtLiteral }};
+    AND pr.proname = {{ name|qtLiteral(conn) }};

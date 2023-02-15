@@ -520,7 +520,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             # we need oid to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  tid=tid, data=data)
+                                  tid=tid, data=data, conn=self.conn)
             status, trid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=tid)
@@ -642,7 +642,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             # so we need to return new OID of compound trigger.
             SQL = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
-                tid=tid, data=data
+                tid=tid, data=data, conn=self.conn
             )
             status, new_trid = self.conn.execute_scalar(SQL)
             if not status:

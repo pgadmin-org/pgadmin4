@@ -29,6 +29,7 @@ class EventTriggerFunctionsTestCase(BaseTestGenerator):
                                          event_trigger_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']

@@ -367,7 +367,7 @@ class RowSecurityView(PGChildNodeView):
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
                                   data=data,
-                                  conn=self.conn,
+                                  conn=self.conn
                                   )
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -376,7 +376,7 @@ class RowSecurityView(PGChildNodeView):
             # we need oid to add object in tree at browser
             sql = render_template(
                 "/".join([self.template_path, 'get_position.sql']),
-                tid=tid, data=data
+                tid=tid, data=data, conn=self.conn
             )
             status, plid = self.conn.execute_scalar(sql)
             if not status:

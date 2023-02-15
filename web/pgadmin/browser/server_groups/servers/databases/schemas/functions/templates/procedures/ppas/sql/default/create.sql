@@ -24,7 +24,7 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} PROCEDURE {{ conn|qtIden
 
     ROWS {{data.prorows}}{% endif -%}{% if data.variables %}{% for v in data.variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor -%}
 {% endif %}
 
 AS {{ data.prosrc }};
@@ -46,7 +46,7 @@ ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}
 {% if data.description %}
 
 COMMENT ON PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}
-    IS {{ data.description|qtLiteral  }};
+    IS {{ data.description|qtLiteral(conn)  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}

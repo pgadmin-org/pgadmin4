@@ -22,6 +22,7 @@ class LanguagesDeleteTestCase(BaseTestGenerator):
         'language_delete', language_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.server_data = parent_node_dict["database"][-1]
         self.server_id = self.server_data["server_id"]
         self.db_id = self.server_data['db_id']
@@ -53,10 +54,6 @@ class LanguagesDeleteTestCase(BaseTestGenerator):
                 expected_status_code = self.expected_data['status_code']
 
         elif self.error_in_deleting_language:
-            # with patch('pgadmin.utils.driver.psycopg2.connection.Connection'
-            #            '.execute_scalar',
-            #            side_effect=[(True, True), (
-            #                False, self.expected_data["message"])]):
             with patch(self.mock_data["function_name"],
                        side_effect=[eval(self.mock_data["return_value"])]):
                 response = self.delete_language()

@@ -89,13 +89,13 @@ def get_sql(conn, **kwargs):
         old_data['table'] = table
         sql = render_template(
             "/".join([template_path, 'update.sql']),
-            data=data, o_data=old_data
+            data=data, o_data=old_data, conn=conn
         )
     else:
         data['schema'] = schema
         data['table'] = table
         sql = render_template("/".join(
-            [template_path, 'create.sql']), data=data)
+            [template_path, 'create.sql']), data=data, conn=conn)
 
     return sql, data['name'] if 'name' in data else old_data['name']
 

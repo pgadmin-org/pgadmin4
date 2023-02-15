@@ -29,6 +29,7 @@ class ViewsDeleteTestCase(BaseTestGenerator):
                                          views_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         # Load test data
         self.data = self.test_data
 

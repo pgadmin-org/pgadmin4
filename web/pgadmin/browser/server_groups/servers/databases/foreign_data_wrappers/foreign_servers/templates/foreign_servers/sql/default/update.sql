@@ -20,14 +20,14 @@ DROP SERVER {{ conn|qtIdent(o_data.name) }};
 
 CREATE SERVER {{ conn|qtIdent(o_data.name) }}{% if fsrvtype %}
 
-    TYPE {{ fsrvtype|qtLiteral }}{% endif %}{% if fsrvversion %}
+    TYPE {{ fsrvtype|qtLiteral(conn) }}{% endif %}{% if fsrvversion %}
 
-    VERSION {{ fsrvversion|qtLiteral }}{%-endif %}{% if fdwname %}
+    VERSION {{ fsrvversion|qtLiteral(conn) }}{%-endif %}{% if fdwname %}
 
     FOREIGN DATA WRAPPER {{ conn|qtIdent(fdwname) }}{% endif %}{% if o_data.fsrvoptions %}
 
     OPTIONS ({% for variable in o_data.fsrvoptions %}{% if loop.index != 1 %}, {% endif %}
-{{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}){% endif %};
+{{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral(conn) }}{% endfor %}){% endif %};
 
 ALTER SERVER {{ conn|qtIdent(o_data.name) }}
     OWNER TO {{ conn|qtIdent(o_data.fsrvowner) }};
@@ -49,13 +49,13 @@ ALTER SERVER {{ conn|qtIdent(data.name) }}
 {# ============= Update foreign server version ============= #}
 {% if data.fsrvversion is defined and data.fsrvversion is not none and data.fsrvversion != o_data.fsrvversion %}
 ALTER SERVER {{ conn|qtIdent(data.name) }}
-    VERSION {{ data.fsrvversion|qtLiteral }};
+    VERSION {{ data.fsrvversion|qtLiteral(conn) }};
 
 {% endif %}
 {# ============= Update foreign server comments ============= #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON SERVER {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {# ============= Update foreign server options and values ============= #}
@@ -70,7 +70,7 @@ DROP {{ conn|qtIdent(variable.fsrvoption) }}{% endfor %}
 {% if is_valid_added_options %}
 ALTER SERVER {{ conn|qtIdent(data.name) }}
     OPTIONS ({% for variable in data.fsrvoptions.added %}{% if loop.index != 1 %}, {% endif %}
-ADD {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}
+ADD {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral(conn) }}{% endfor %}
 );
 
 {% endif %}
@@ -79,7 +79,7 @@ ADD {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{%
 {% if is_valid_changed_options %}
 ALTER SERVER {{ conn|qtIdent(data.name) }}
     OPTIONS ({% for variable in data.fsrvoptions.changed %}{% if loop.index != 1 %}, {% endif %}
-SET {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral }}{% endfor %}
+SET {{ conn|qtIdent(variable.fsrvoption) }} {{ variable.fsrvvalue|qtLiteral(conn) }}{% endfor %}
 );
 
 {% endif %}

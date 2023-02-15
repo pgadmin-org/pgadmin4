@@ -1001,6 +1001,9 @@ WHERE db.datname = current_database()""")
                     None if self.conn_id[0:3] == 'DB:' else self.conn_id[5:]
                 )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
+
+            if errmsg == "can\'t execute an empty query":
+                return True, {'rows': []}
             current_app.logger.error(
                 "Failed to execute query (execute_scalar) for the server "
                 "#{server_id} - {conn_id} (Query-id: {query_id}):\n"
@@ -1293,6 +1296,8 @@ WHERE db.datname = current_database()""")
                     None if self.conn_id[0:3] == 'DB:' else self.conn_id[5:]
                 )
             errmsg = self._formatted_exception_msg(pe, formatted_exception_msg)
+            if errmsg == "can\'t execute an empty query":
+                return True, {'rows': []}
             current_app.logger.error(
                 "Failed to execute query (execute_dict) for the server "
                 "#{server_id}- {conn_id} (Query-id: {query_id}):\n"

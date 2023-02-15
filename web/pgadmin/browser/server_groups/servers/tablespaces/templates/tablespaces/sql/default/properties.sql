@@ -11,6 +11,6 @@ SELECT
 FROM
     pg_catalog.pg_tablespace ts
 {% if tsid %}
-WHERE ts.oid={{ tsid|qtLiteral }}::OID
+WHERE ts.oid={{ tsid|qtLiteral(conn) }}::OID
 {% endif %}
 ORDER BY name

@@ -411,7 +411,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([
                 self.template_path, self._OID_SQL
             ]),
-            name=data['name'], scid=scid
+            name=data['name'], scid=scid, conn=self.conn
         )
 
         sql = sql.strip('\n').strip(' ')

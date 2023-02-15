@@ -11,5 +11,5 @@ CREATE CAST ({{ conn|qtTypeIdent(data.srctyp) }} AS {{ conn|qtTypeIdent(data.trg
 {# Description for CAST #}
 {% if data.description %}
 COMMENT ON CAST ({{ conn|qtTypeIdent(data.srctyp) }} AS {{ conn|qtTypeIdent(data.trgtyp) }})
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}{% endif %}

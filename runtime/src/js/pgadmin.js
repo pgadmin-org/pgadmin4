@@ -78,6 +78,12 @@ function startDesktopMode() {
       let updated_path = process.env[key] + ':/usr/local/bin';
       process.env[key] = updated_path;
     }
+
+    if (platform() === 'win32' && (key === 'PATH' || key == 'Path')) {
+      let _libpq_path = path.join(path.dirname(path.dirname(path.resolve(pgadminFile))), 'runtime');
+      process.env[key] = _libpq_path + ';' + process.env[key];
+    }
+
     misc.writeServerLog('  - ' + key + ': ' + process.env[key]);
   });
   misc.writeServerLog('--------------------------------------------------------\n');

@@ -12,14 +12,14 @@ FROM
     (SELECT ts.spcacl
         FROM pg_catalog.pg_tablespace ts
         {% if tsid %}
-        WHERE ts.oid={{ tsid|qtLiteral }}::OID
+        WHERE ts.oid={{ tsid|qtLiteral(conn) }}::OID
         {% endif %}
     ) acl,
     (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable
         AS is_grantable, (d).privilege_type AS privilege_type FROM (SELECT
         pg_catalog.aclexplode(ts.spcacl) as d FROM pg_catalog.pg_tablespace ts
         {% if tsid %}
-        WHERE ts.oid={{ tsid|qtLiteral }}::OID
+        WHERE ts.oid={{ tsid|qtLiteral(conn) }}::OID
         {% endif %}
         ) a) d
     ) d

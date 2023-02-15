@@ -20,7 +20,7 @@ WHERE
     proisagg = FALSE
     AND pr.protype = '1'::char
 {% if fnid %}
-    AND pr.oid = {{ fnid|qtLiteral }}
+    AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
 {% if scid %}
     AND pronamespace = {{scid}}::oid

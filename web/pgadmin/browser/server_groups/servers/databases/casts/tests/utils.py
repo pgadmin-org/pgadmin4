@@ -158,11 +158,11 @@ def create_cast(server, source_type, target_type):
                                        server['port'],
                                        server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute("CREATE CAST (%s AS %s) WITHOUT"
                           " FUNCTION AS IMPLICIT" % (source_type, target_type))
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
         # Get 'oid' from newly created cast

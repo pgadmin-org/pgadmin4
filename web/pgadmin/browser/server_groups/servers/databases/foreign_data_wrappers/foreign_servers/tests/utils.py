@@ -13,7 +13,8 @@ import sys
 import uuid
 import json
 
-from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection,\
+    set_isolation_level
 
 file_name = os.path.basename(__file__)
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -74,14 +75,14 @@ def create_fsrv(server, db_name, fsrv_name, fdw_name):
                                        server['port'],
                                        server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute("CREATE SERVER {0} FOREIGN DATA WRAPPER {1} OPTIONS "
                           "(host '{2}', dbname '{3}', port '{4}')".format
                           (fsrv_name, fdw_name, server['host'], db_name,
                            server['port']))
 
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
         # Get 'oid' from newly created foreign server

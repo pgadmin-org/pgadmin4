@@ -31,7 +31,10 @@ class SQLTemplateTestBase(BaseTestGenerator):
         # To be implemented by child classes
         pass
 
-    def generate_sql(self, version):
+    def get_server_version(self, connection):
+        return connection.info.server_version
+
+    def generate_sql(self, connection):
         # To be implemented by child classes
         pass
 
@@ -50,7 +53,7 @@ class SQLTemplateTestBase(BaseTestGenerator):
             cursor = connection.cursor()
             self.test_setup(connection, cursor)
 
-            sql = self.generate_sql(connection.server_version)
+            sql = self.generate_sql(connection)
 
             cursor = connection.cursor()
             cursor.execute(sql)

@@ -28,6 +28,7 @@ class ReassignRoleTestCase(BaseTestGenerator):
                                          roles_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.server_id = parent_node_dict["server"][-1]["server_id"]
 
         self.data = self.test_data

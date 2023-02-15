@@ -6,10 +6,10 @@ LEFT JOIN pg_catalog.pg_depend d1 ON d1.refobjid = cl.oid AND d1.deptype = 'i'
 WHERE
     relkind = 'S'
 {% if scid %}
-    AND relnamespace = {{scid|qtLiteral}}::oid
+    AND relnamespace = {{scid|qtLiteral(conn)}}::oid
 {% endif %}
 {% if seid %}
-    AND cl.oid = {{seid|qtLiteral}}::oid
+    AND cl.oid = {{seid|qtLiteral(conn)}}::oid
 {% endif %}
 {% if schema_diff %}
     AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend

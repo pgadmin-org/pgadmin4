@@ -36,6 +36,7 @@ from pgadmin.browser.server_groups.servers.databases.extensions.utils \
 from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
     SERVER_CONNECTION_CLOSED
 from pgadmin.preferences import preferences
+from pgadmin.utils.constants import PSYCOPG2
 
 MODULE_NAME = 'debugger'
 
@@ -245,13 +246,27 @@ def index():
 
 
 def execute_dict_search_path(conn, sql, search_path):
-    sql = "SET search_path={0};".format(search_path) + sql
+    sql_search = "SET search_path={0};".format(search_path)
+    status, res = conn.execute_void(sql_search)
+
+    if not status:
+        current_app.logger.debug(
+            "Error setting the search path.")
+        return False, res
+
     status, res = conn.execute_dict(sql)
     return status, res
 
 
 def execute_async_search_path(conn, sql, search_path):
-    sql = "SET search_path={0};".format(search_path) + sql
+    sql_search = "SET search_path={0};".format(search_path)
+    status, res = conn.execute_void(sql_search)
+
+    if not status:
+        current_app.logger.debug(
+            "Error setting the search path.")
+        return False, res
+
     status, res = conn.execute_async(sql)
     return status, res
 
@@ -650,12 +665,16 @@ def get_debugger_version(conn, search_path):
     :return:
     """
     debugger_version = 0
+    status, res = conn.execute_void("SET search_path={0};".format(search_path))
+
+    if not status:
+        return False, internal_server_error(errormsg=res)
+
     status, rid = conn.execute_scalar(
-        "SET search_path={0};"
         "SELECT COUNT(*) FROM pg_catalog.pg_proc p"
         " LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid"
         " WHERE n.nspname = ANY(current_schemas(false)) AND"
-        " p.proname = 'pldbg_get_proxy_info';".format(search_path)
+        " p.proname = 'pldbg_get_proxy_info';"
     )
 
     if not status:
@@ -1083,7 +1102,8 @@ def start_debugger_listener(trans_id):
                     ret_type=de_inst.function_data['return_type'],
                     data=debugger_args_values,
                     arg_type=arg_type,
-                    args_mode=arg_mode
+                    args_mode=arg_mode,
+                    conn=conn
                 )
             else:
                 str_query = render_template(
@@ -1092,11 +1112,13 @@ def start_debugger_listener(trans_id):
                     is_func=de_inst.function_data['is_func'],
                     ret_type=de_inst.function_data['return_type'],
                     data=debugger_args_values,
-                    is_ppas_database=de_inst.function_data['is_ppas_database']
+                    is_ppas_database=de_inst.function_data['is_ppas_database'],
+                    conn=conn
                 )
 
             status, result = execute_async_search_path(
                 conn, str_query, de_inst.debugger_data['search_path'])
+
             if not status:
                 return internal_server_error(errormsg=result)
         else:
@@ -1148,17 +1170,18 @@ def start_debugger_listener(trans_id):
                 session_id=int_session_id
             )
 
-            status, res = execute_async_search_path(
-                conn, sql, de_inst.debugger_data['search_path'])
-            if not status:
-                return internal_server_error(errormsg=res)
-
             de_inst.debugger_data['exe_conn_id'] = \
                 de_inst.debugger_data['conn_id']
             de_inst.debugger_data['restart_debug'] = 1
             de_inst.debugger_data['frame_id'] = 0
             de_inst.debugger_data['session_id'] = int_session_id
             de_inst.update_session()
+
+            status, res = execute_async_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 data={'status': status, 'result': res}
             )
@@ -1276,7 +1299,6 @@ def messages(trans_id):
         trans_id
         - unique transaction id.
     """
-
     de_inst = DebuggerInstance(trans_id)
     if de_inst.debugger_data is None:
         return make_json_response(
@@ -1296,7 +1318,11 @@ def messages(trans_id):
 
     if conn.connected():
         status = 'Busy'
-        _, result = conn.poll()
+        if PG_DEFAULT_DRIVER == PSYCOPG2:
+            # psycopg3 doesn't require polling to get the
+            # messages as debugger connection is already open
+            # Remove this block while removing psucopg2 completely
+            _, result = conn.poll()
         notify = conn.messages()
         if notify:
             # In notice message we need to find "PLDBGBREAK" string to find
@@ -1616,7 +1642,7 @@ def deposit_parameter_value(trans_id):
                 "/".join([template_path, "deposit_value.sql"]),
                 session_id=de_inst.debugger_data['session_id'],
                 var_name=data[0]['name'], line_number=-1,
-                val=data[0]['value']
+                val=data[0]['value'], conn=conn
             )
 
             status, result = execute_dict_search_path(

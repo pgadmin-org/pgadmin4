@@ -16,6 +16,7 @@ from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from unittest.mock import patch, MagicMock
+from config import PG_DEFAULT_DRIVER
 
 
 class BackupCreateJobTest(BaseTestGenerator):
@@ -709,8 +710,8 @@ class BackupCreateJobTest(BaseTestGenerator):
     @patch('pgadmin.tools.backup.BackupMessage')
     @patch('pgadmin.tools.backup.filename_with_file_manager_path')
     @patch('pgadmin.tools.backup.BatchProcess')
-    @patch('pgadmin.utils.driver.psycopg2.server_manager.ServerManager.'
-           'export_password_env')
+    @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
+           'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
                 filename_mock, backup_message_mock, server_mock):
         class TestMockServer():

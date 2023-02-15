@@ -37,7 +37,7 @@ ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
 {# ============= Update foreign data wrapper comments ============= #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {# ============= Update foreign data wrapper options and values ============= #}
@@ -52,7 +52,7 @@ DROP {{ conn|qtIdent(variable.fdwoption) }}{% endfor %}
 {% if is_valid_added_options %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     OPTIONS ({% for variable in data.fdwoptions.added %}{% if loop.index != 1 %}, {% endif %}
-ADD {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% endfor %}
+ADD {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral(conn) }}{% endfor %}
 );
 
 {% endif %}
@@ -61,7 +61,7 @@ ADD {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% e
 {% if is_valid_changed_options %}
 ALTER FOREIGN DATA WRAPPER {{ conn|qtIdent(data.name) }}
     OPTIONS ({% for variable in data.fdwoptions.changed %}{% if loop.index != 1 %}, {% endif %}
-SET {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral }}{% endfor %}
+SET {{ conn|qtIdent(variable.fdwoption) }} {{ variable.fdwvalue|qtLiteral(conn) }}{% endfor %}
 );
 
 {% endif %}

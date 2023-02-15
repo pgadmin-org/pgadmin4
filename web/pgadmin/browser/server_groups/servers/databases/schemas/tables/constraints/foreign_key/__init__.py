@@ -593,7 +593,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
             else:
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
-                    name=data['name']
+                    name=data['name'], conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -688,7 +688,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
             sql = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
                 tid=tid,
-                name=data['name']
+                name=data['name'],
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -880,7 +881,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['remote_table'] = table
 
         SQL = render_template(
-            "/".join([self.template_path, self._CREATE_SQL]), data=data)
+            "/".join([self.template_path, self._CREATE_SQL]), data=data,
+            conn=self.conn)
 
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

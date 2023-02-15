@@ -38,10 +38,10 @@ ALTER ROLE {{ conn|qtIdent(rolname) }}{% if 'rolcanlogin' in data %}
 	CONNECTION LIMIT {{ data.rolconnlimit }}
 {% endif %}{% if 'rolvaliduntil' in data %}
 
-	VALID UNTIL {% if data.rolvaliduntil %}{{ data.rolvaliduntil|qtLiteral }}{% else %}'infinity'
+	VALID UNTIL {% if data.rolvaliduntil %}{{ data.rolvaliduntil|qtLiteral(conn) }}{% else %}'infinity'
 {% endif %}{% endif %}{% if 'rolpassword' in data %}
 
-	PASSWORD{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral }}{% endif %}{% endif %}{% endif %};{% endif %}
+	PASSWORD{% if data.rolpassword is none %} NULL{% else %}{% if dummy %} 'xxxxxx'{% else %} {{ data.rolpassword|qtLiteral(conn) }}{% endif %}{% endif %}{% endif %};{% endif %}
 
 {% if 'revoked_admins' in data and
 	data.revoked_admins|length > 0
@@ -97,7 +97,7 @@ GRANT {{ conn|qtIdent(data.members)|join(', ') }} TO {{ conn|qtIdent(rolname) }}
 {% if 'description' in data %}
 
 
-COMMENT ON ROLE {{ conn|qtIdent(rolname) }} IS {{ data.description|qtLiteral }};
+COMMENT ON ROLE {{ conn|qtIdent(rolname) }} IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 
 {% if 'rol_revoked_admins' in data and

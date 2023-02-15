@@ -213,7 +213,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if data['typoid']:
             sql = render_template("/".join([self.table_template_path,
                                             'get_columns_for_table.sql']),
-                                  tid=data['typoid'])
+                                  tid=data['typoid'], conn=self.conn)
 
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -257,7 +257,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 sql = render_template("/".join(
                     [self.table_template_path,
                      'get_columns_for_table.sql']),
-                    tid=row['oid']
+                    tid=row['oid'], conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -586,7 +586,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         sql = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -1609,7 +1610,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 return internal_server_error(errormsg=rest)
 
             sql = render_template("/".join([self.table_template_path,
-                                  self._GET_SCHEMA_OID_SQL]), tid=tid)
+                                  self._GET_SCHEMA_OID_SQL]), tid=tid,
+                                  conn=self.conn)
             status, rest = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rest)
@@ -1658,7 +1660,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                                 self.table_template_path,
                                 self._GET_SCHEMA_OID_SQL
                             ]),
-                            tid=row['oid']
+                            tid=row['oid'],
+                            conn=self.conn
                         )
                     )
                     if not status:
@@ -1691,7 +1694,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                                 self.table_template_path,
                                 self._GET_SCHEMA_OID_SQL
                             ]),
-                            tid=row['partition_name']
+                            tid=row['partition_name'],
+                            conn=self.conn
                         )
                     )
                     if not status:
@@ -1709,7 +1713,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                         "/".join([
                             self.table_template_path, self._OID_SQL
                         ]),
-                        scid=scid, data=tmp_data
+                        scid=scid, data=tmp_data, conn=self.conn
                     )
 
                     status, ptid = self.conn.execute_scalar(sql)
@@ -2069,7 +2073,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # Get schema oid
         status, scid = self.conn.execute_scalar(
             render_template("/".join([self.table_template_path,
-                                      self._GET_SCHEMA_OID_SQL]), tid=tid))
+                                      self._GET_SCHEMA_OID_SQL]),
+                            tid=tid,
+                            conn=self.conn))
         if not status:
             return internal_server_error(errormsg=scid)
         if scid is None:

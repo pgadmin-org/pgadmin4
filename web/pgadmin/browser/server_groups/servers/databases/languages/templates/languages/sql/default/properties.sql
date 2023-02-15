@@ -18,7 +18,7 @@ WHERE lanispl IS TRUE
     lan.oid={{lid}}::oid
 {% endif %}
 {% if lanname %} AND
-    lanname={{ lanname|qtLiteral }}::text
+    lanname={{ lanname|qtLiteral(conn) }}::text
 {% endif %}
 {% if schema_diff %}
     AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend

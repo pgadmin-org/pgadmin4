@@ -22,7 +22,7 @@ WHERE
     prs.prsnamespace = {{scid}}::OID
 {% endif %}
 {% if name %}
-    {% if scid %}AND {% endif %}prs.prsname = {{name|qtLiteral}}
+    {% if scid %}AND {% endif %}prs.prsname = {{name|qtLiteral(conn)}}
 {% endif %}
 {% if pid %}
     {% if name %}AND {% else %}{% if scid %}AND {% endif %}{% endif %}prs.oid = {{pid}}::OID

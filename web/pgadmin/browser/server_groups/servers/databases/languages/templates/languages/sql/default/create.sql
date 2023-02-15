@@ -23,7 +23,7 @@ ALTER LANGUAGE {{ conn|qtIdent(data.name) }}
 {# ============= Comment on of language object ============= #}
 {% if data.description %}
 COMMENT ON LANGUAGE {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {# ============= Create ACL for language ============= #}
 {% if data.lanacl %}

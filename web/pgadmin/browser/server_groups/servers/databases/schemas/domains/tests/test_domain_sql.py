@@ -29,6 +29,7 @@ class DomainReverseEngineeredSQLTestCase(BaseTestGenerator):
                                          domain_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         self.schema_info = parent_node_dict["schema"][-1]

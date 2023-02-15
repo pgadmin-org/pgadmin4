@@ -23,6 +23,7 @@ class LanguagesGetTestCase(BaseTestGenerator):
                                          language_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.server_data = parent_node_dict["database"][-1]
         self.server_id = self.server_data["server_id"]
         self.db_id = self.server_data['db_id']
@@ -110,6 +111,7 @@ class LanguagesGetNodesTestCase(BaseTestGenerator):
                                          language_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.server_data = parent_node_dict["database"][-1]
         self.server_id = self.server_data["server_id"]
         self.db_id = self.server_data['db_id']

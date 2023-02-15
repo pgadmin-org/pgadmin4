@@ -273,7 +273,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             "/".join([self.template_path, self._NODES_SQL]),
             tid=tid,
             clid=clid,
-            show_sys_objects=self.blueprint.show_system_objects
+            show_sys_objects=self.blueprint.show_system_objects,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -415,7 +416,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         # we need oid to add object in tree at browser
         SQL = render_template(
             "/".join([self.template_path, 'get_position.sql']),
-            tid=tid, data=data
+            tid=tid, data=data, conn=self.conn
         )
         status, clid = self.conn.execute_scalar(SQL)
         if not status:

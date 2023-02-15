@@ -29,6 +29,7 @@ class ViewsGetTestCase(BaseTestGenerator):
     scenarios = utils.generate_scenarios("view_get", views_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         # Load test data
         self.data = self.test_data
 

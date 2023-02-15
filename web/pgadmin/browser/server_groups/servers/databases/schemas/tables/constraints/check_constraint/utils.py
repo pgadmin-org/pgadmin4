@@ -181,6 +181,6 @@ def get_sql(conn, data, tid, cid=None, template_path=None):
             return _('-- definition incomplete'), name
 
         sql = render_template("/".join([template_path, 'create.sql']),
-                              data=data)
+                              data=data, conn=conn)
 
     return sql, name

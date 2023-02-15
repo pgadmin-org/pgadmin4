@@ -17,7 +17,7 @@ WHERE
     dict.dictnamespace = {{scid}}::OID
 {% endif %}
 {% if name %}
-    {% if scid %}AND {% endif %}dict.dictname = {{name|qtLiteral}}
+    {% if scid %}AND {% endif %}dict.dictname = {{name|qtLiteral(conn)}}
 {% endif %}
 {% if dcid %}
     {% if scid %}AND {% else %}{% if name %}AND {% endif %}{% endif %}dict.oid = {{dcid}}::OID

@@ -21,7 +21,7 @@ FROM pg_catalog.pg_foreign_data_wrapper fdw
 WHERE fdw.oid={{fid}}::oid
 {% endif %}
 {% if fname %}
-WHERE fdw.fdwname={{ fname|qtLiteral }}::text
+WHERE fdw.fdwname={{ fname|qtLiteral(conn) }}::text
 {% endif %}
 {% if schema_diff %}
 WHERE CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend

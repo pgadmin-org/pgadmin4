@@ -129,7 +129,7 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "CREATE TRIGGER %s INSTEAD OF DELETE ON %s.%s FOR EACH ROW " \
                 "EXECUTE PROCEDURE %s.%s(%s)" % (trigger_name, schema_name,
@@ -137,7 +137,7 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
                                                  trigger_func_name,
                                                  trigger_func_arg)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
                           "where tgname='%s'" % trigger_name)
@@ -177,11 +177,11 @@ def create_view(server, db_name, schema_name, view_name, sql_query=None,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = eval(sql_query)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created view
         pg_cursor.execute("select oid from pg_catalog.pg_class "
@@ -233,7 +233,7 @@ def get_view_id(server, db_name, view_name):
                                              server['host'],
                                              server['port'],
                                              server['sslmode'])
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         # Get 'oid' from newly created view
         pg_cursor.execute("select oid from pg_catalog.pg_class "

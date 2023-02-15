@@ -30,14 +30,17 @@ class TestDependentsSql(SQLTemplateTestBase):
                        "WHERE pg_class.relname='test_table'")
         self.table_id = cursor.fetchone()[0]
 
-    def generate_sql(self, version):
+    def generate_sql(self, connection):
         file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
                                  "depends", self.server['type'])
-        template_file = self.get_template_file(version, file_path,
-                                               "dependents.sql")
+        template_file = self.get_template_file(
+            self.get_server_version(connection),
+            file_path,
+            "dependents.sql")
         template = file_as_template(template_file)
         sql = template.render(
-            where_clause="WHERE dep.objid=%s::oid" % self.table_id)
+            where_clause="WHERE dep.objid=%s::oid" % self.table_id,
+            conn=connection)
 
         return sql
 

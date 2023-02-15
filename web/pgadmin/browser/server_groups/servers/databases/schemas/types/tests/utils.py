@@ -55,14 +55,14 @@ def create_type(server, db_name, schema_name, type_name):
                                              server['host'],
                                              server['port'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = 'CREATE TYPE %s.%s AS  (one "char", two "char"[]); ' \
                 'ALTER TYPE %s.%s  OWNER TO %s' % (schema_name, type_name,
                                                    schema_name, type_name,
                                                    server['username'])
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created type
         pg_cursor.execute("select oid from pg_catalog.pg_type "

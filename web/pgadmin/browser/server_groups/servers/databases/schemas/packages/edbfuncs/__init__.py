@@ -247,7 +247,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
 
         SQL = render_template("/".join([self.sql_template_path,
                                         self._NODE_SQL]),
-                              pkgid=pkgid)
+                              pkgid=pkgid,
+                              conn=self.conn)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -273,7 +274,8 @@ class EdbFuncView(PGChildNodeView, DataTypeReader):
         SQL = render_template(
             "/".join([self.sql_template_path, self._NODE_SQL]),
             pkgid=pkgid,
-            fnid=edbfnid
+            fnid=edbfnid,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(SQL)
 

@@ -33,5 +33,5 @@ CREATE{% if data.is_constraint_trigger %} CONSTRAINT{% endif %} TRIGGER {{ conn|
 
 {% if data.description %}
 COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
-    IS {{data.description|qtLiteral}};
+    IS {{data.description|qtLiteral(conn)}};
 {% endif %}

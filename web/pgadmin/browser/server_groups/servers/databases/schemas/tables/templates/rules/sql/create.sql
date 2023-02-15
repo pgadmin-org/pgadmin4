@@ -23,5 +23,5 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} RULE {{ conn|qtIdent(dat
 {% endif %}
 {% if data.comment %}
 
-COMMENT ON RULE {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.view) }} IS {{ data.comment|qtLiteral }};{% endif %}
+COMMENT ON RULE {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.view) }} IS {{ data.comment|qtLiteral(conn) }};{% endif %}
 {% endif %}

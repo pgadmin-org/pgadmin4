@@ -25,5 +25,5 @@ FROM
 JOIN
     pg_catalog.pg_class cl on cl.oid=st.relid
 WHERE
-    schemaname = {{schema_name|qtLiteral}}
+    schemaname = {{schema_name|qtLiteral(conn)}}
 ORDER BY st.relname;

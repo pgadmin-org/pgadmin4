@@ -46,6 +46,6 @@ ALTER TEXT SEARCH CONFIGURATION {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(n
 {% endif %}
 {% if 'description' in data and data.description != o_data.description %}
 COMMENT ON TEXT SEARCH CONFIGURATION {{conn|qtIdent(schema)}}.{{conn|qtIdent(name)}}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {% endif %}

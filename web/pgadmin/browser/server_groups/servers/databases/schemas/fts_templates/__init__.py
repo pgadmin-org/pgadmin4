@@ -228,7 +228,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
     def list(self, gid, sid, did, scid):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid
+            scid=scid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -318,7 +318,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            tid=tid
+            tid=tid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -389,7 +390,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
-            scid=data['schema'] if 'schema' in data else scid
+            scid=data['schema'] if 'schema' in data else scid,
+            conn=self.conn
         )
         status, tid = self.conn.execute_scalar(sql)
         if not status:
@@ -479,6 +481,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
 
             if not res['rows']:
                 return make_json_response(
+                    status=410,
                     success=0,
                     errormsg=gettext(
                         'Error: Object not found.'
@@ -609,7 +612,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 tid=tid,
-                scid=scid
+                scid=scid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -644,7 +648,7 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=new_data, o_data=old_data
+                data=new_data, o_data=old_data, conn=self.conn
             )
 
             # Fetch sql query for modified data

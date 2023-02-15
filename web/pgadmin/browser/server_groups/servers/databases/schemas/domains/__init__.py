@@ -597,7 +597,8 @@ AND relkind != 'c'))"""
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),
                               basensp=data['basensp'],
-                              name=data['name'])
+                              name=data['name'],
+                              conn=self.conn)
         status, doid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=doid)
@@ -605,7 +606,8 @@ AND relkind != 'c'))"""
         # Get updated schema oid
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),
-                              doid=doid)
+                              doid=doid,
+                              conn=self.conn)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=scid)
@@ -705,7 +707,8 @@ AND relkind != 'c'))"""
         # Get Schema Id
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),
-                              doid=doid)
+                              doid=doid,
+                              conn=self.conn)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=scid)
@@ -835,7 +838,7 @@ AND relkind != 'c'))"""
 
             SQL = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data)
+                data=data, o_data=old_data, conn=self.conn)
         return SQL, data
 
     def get_sql(self, gid, sid, data, scid, doid=None, is_schema_diff=False):

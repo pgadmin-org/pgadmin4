@@ -348,7 +348,8 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             cid=cid,
             datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects
+            showsysobj=self.blueprint.show_system_objects,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -408,7 +409,8 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
                 srctyp=data['srctyp'],
                 trgtyp=data['trgtyp'],
                 datlastsysoid=last_system_oid,
-                showsysobj=self.blueprint.show_system_objects
+                showsysobj=self.blueprint.show_system_objects,
+                conn=self.conn
             )
             status, cid = self.conn.execute_scalar(sql)
             if not status:
@@ -584,7 +586,8 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 cid=cid,
                 datlastsysoid=last_system_oid,
-                showsysobj=self.blueprint.show_system_objects
+                showsysobj=self.blueprint.show_system_objects,
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
 
@@ -599,7 +602,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             old_data = res['rows'][0]
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data
+                data=data, o_data=old_data, conn=self.conn
             )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
@@ -630,7 +633,8 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template("/".join([self.template_path,
                                         self._FUNCTIONS_SQL]),
                               srctyp=data['srctyp'],
-                              trgtyp=data['trgtyp'])
+                              trgtyp=data['trgtyp'],
+                              conn=self.conn)
         status, rset = self.conn.execute_dict(sql)
 
         if not status:

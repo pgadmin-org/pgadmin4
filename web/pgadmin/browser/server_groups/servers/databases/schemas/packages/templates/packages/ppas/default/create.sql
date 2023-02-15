@@ -20,6 +20,6 @@ END {{ conn|qtIdent(data.name) }};
 {% endfor %}
 {% endif %}{% if data.description %}
 COMMENT ON PACKAGE {{ conn|qtIdent(data.schema,data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {% endif %}

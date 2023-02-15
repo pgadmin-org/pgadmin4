@@ -9,6 +9,6 @@ SELECT
 FROM
     pgagent.pga_jobsteplog
 WHERE
-    jsljstid = {{ jstid|qtLiteral }}::integer
+    jsljstid = {{ jstid|qtLiteral(conn) }}::integer
 ORDER BY jslid DESC
 LIMIT {{ rows_threshold }};

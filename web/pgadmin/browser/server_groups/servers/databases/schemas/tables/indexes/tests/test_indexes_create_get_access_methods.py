@@ -31,6 +31,7 @@ class IndexesAddTestCase(BaseTestGenerator):
                                          indexes_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         """ This function will set up pre-requisite """
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]

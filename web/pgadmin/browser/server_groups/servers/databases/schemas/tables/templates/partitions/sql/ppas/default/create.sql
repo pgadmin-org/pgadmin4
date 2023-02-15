@@ -61,5 +61,5 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
 {### SQL for COMMENT ###}
 {% if data.description %}
 COMMENT ON TABLE {{conn|qtIdent(data.schema, data.name)}}
-    IS {{data.description|qtLiteral}};
+    IS {{data.description|qtLiteral(conn)}};
 {% endif %}

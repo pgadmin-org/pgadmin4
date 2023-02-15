@@ -7,6 +7,6 @@ SELECT
 FROM
     pgagent.pga_joblog
 WHERE
-    jlgjobid = {{ jid|qtLiteral }}::integer
+    jlgjobid = {{ jid|qtLiteral(conn) }}::integer
 ORDER BY jlgid DESC
 LIMIT {{ rows_threshold }};

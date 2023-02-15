@@ -25,6 +25,7 @@ class SchemaNodeAndNodesTestCase(BaseTestGenerator):
                                          schema_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         # Change the db name, so that schema will create in newly created db

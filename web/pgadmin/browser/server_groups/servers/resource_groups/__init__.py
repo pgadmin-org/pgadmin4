@@ -424,7 +424,7 @@ class ResourceGroupView(NodeView):
             # resource group
             sql = render_template(
                 "/".join([self.sql_path, 'getoid.sql']),
-                rgname=data['name']
+                rgname=data['name'], conn=self.conn
             )
             # Checking if we are not executing empty query
             rg_id = 0

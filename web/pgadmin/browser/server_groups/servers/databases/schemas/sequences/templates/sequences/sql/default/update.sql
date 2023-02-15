@@ -20,7 +20,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
 {% endif %}
 {% if data.current_value is defined %}
 {% set seqname = conn|qtIdent(o_data.schema, data.name) %}
-SELECT setval({{ seqname|qtLiteral }}, {{ data.current_value }}, true);
+SELECT setval({{ seqname|qtLiteral(conn) }}, {{ data.current_value }}, true);
 
 {% endif %}
 {% set defquery = '' %}
@@ -60,7 +60,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
 {% endif %}
 {% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON SEQUENCE {{ seqname }}
-    IS {{ data.comment|qtLiteral }};
+    IS {{ data.comment|qtLiteral(conn) }};
 
 {% endif %}
 {% if data.securities and data.securities|length > 0 %}

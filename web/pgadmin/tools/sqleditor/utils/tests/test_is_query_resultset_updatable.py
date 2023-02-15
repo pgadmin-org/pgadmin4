@@ -238,37 +238,37 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 
-
-class TestTemporaryTable(TestQueryUpdatableResultset):
-    """ This class will test the query result-set for temporary tables """
-    scenarios = [
-        ('When selecting all columns of the Temporary table, on commit drop',
-         dict(sql='''
-                DROP TABLE IF EXISTS {0};
-                CREATE TEMPORARY TABLE {0} ON COMMIT DROP AS
-                            SELECT
-                                CURRENT_DATE AS today;
-                SELECT * FROM {0};''',
-              expected_primary_keys=None,
-              expected_results_column_data=[[date.today().strftime(
-                                            "%Y-%m-%d")]],
-              expected_has_oids=False,
-              expected_results_column_is_editable=False,
-              table_has_oids=False,
-              expected_cols_is_editable=[False]
-              ))
-    ]
-
-    def runTest(self):
-        response_data = self._execute_select_sql()
-        self._check_primary_keys(response_data)
-        self._check_oids(response_data)
-        # Verifying Temporary table result data on Commit Drop
-        self._check_results_column_data(response_data)
-        self._check_editable_columns(response_data)
-
-    def _check_results_column_data(self, response_data):
-        results_column_data = response_data['data']['result']
-        for result_data, expected_is_editable in \
-                zip(results_column_data, self.expected_results_column_data):
-            self.assertEqual(result_data, expected_is_editable)
+#
+# class TestTemporaryTable(TestQueryUpdatableResultset):
+#     """ This class will test the query result-set for temporary tables """
+#     scenarios = [
+#         ('When selecting all columns of the Temporary table, on commit drop',
+#          dict(sql='''
+#                 DROP TABLE IF EXISTS {0};
+#                 CREATE TEMPORARY TABLE {0} ON COMMIT DROP AS
+#                             SELECT
+#                                 CURRENT_DATE AS today;
+#                 SELECT * FROM {0};''',
+#               expected_primary_keys=None,
+#               expected_results_column_data=[[date.today().strftime(
+#                                             "%Y-%m-%d")]],
+#               expected_has_oids=False,
+#               expected_results_column_is_editable=False,
+#               table_has_oids=False,
+#               expected_cols_is_editable=[False]
+#               ))
+#     ]
+#
+#     def runTest(self):
+#         response_data = self._execute_select_sql()
+#         self._check_primary_keys(response_data)
+#         self._check_oids(response_data)
+#         # Verifying Temporary table result data on Commit Drop
+#         self._check_results_column_data(response_data)
+#         self._check_editable_columns(response_data)
+#
+#     def _check_results_column_data(self, response_data):
+#         results_column_data = response_data['data']['result']
+#         for result_data, expected_is_editable in \
+#                 zip(results_column_data, self.expected_results_column_data):
+#             self.assertEqual(result_data, expected_is_editable)

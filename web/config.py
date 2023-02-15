@@ -303,7 +303,10 @@ LOG_ROTATION_MAX_LOG_FILES = 90  # Maximum number of backups to retain
 ##########################################################################
 
 # The default driver used for making connection with PostgreSQL
-PG_DEFAULT_DRIVER = 'psycopg2'
+if sys.version_info < (3, 7):
+    PG_DEFAULT_DRIVER = 'psycopg2'
+else:
+    PG_DEFAULT_DRIVER = 'psycopg3'
 
 # Maximum allowed idle time in minutes before which releasing the connection
 # for the particular session. (in minutes)

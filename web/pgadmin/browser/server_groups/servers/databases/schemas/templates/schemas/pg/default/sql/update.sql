@@ -16,7 +16,7 @@ ALTER SCHEMA {{ conn|qtIdent(data.name) }}
 {# Update the comments/description #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {# Change the privileges #}

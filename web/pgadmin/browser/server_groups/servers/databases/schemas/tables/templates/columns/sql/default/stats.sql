@@ -9,6 +9,6 @@ SELECT
 FROM
     pg_catalog.pg_stats
 WHERE
-    schemaname = {{schema|qtLiteral}}
-    AND tablename = {{table|qtLiteral}}
-    AND attname = {{column|qtLiteral}};
+    schemaname = {{schema|qtLiteral(conn)}}
+    AND tablename = {{table|qtLiteral(conn)}}
+    AND attname = {{column|qtLiteral(conn)}};

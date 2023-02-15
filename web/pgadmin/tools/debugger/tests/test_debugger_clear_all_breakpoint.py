@@ -18,6 +18,7 @@ from pgadmin.browser.server_groups.servers.databases.schemas.functions \
     .tests import utils as funcs_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as db_utils
+import asyncio
 
 
 class DebuggerClearAllBreakpoint(BaseTestGenerator):
@@ -51,10 +52,23 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
         if self.init_target:
             debugger_utils.initialize_target(self, utils)
 
-            debugger_utils.start_listener(self, utils, db_utils)
-            self.port_no = debugger_utils.messages(self, utils, db_utils)
-            debugger_utils.start_execution(self, utils, db_utils)
-            breakpoint = debugger_utils.set_breakpoint(self)
+            self._start_debugger()
+
+    def _start_debugger(self):
+        asyncio.run(self.start_debugger())
+
+    async def messages_test(self):
+        self.port_no = debugger_utils.messages(self, utils, db_utils)
+        debugger_utils.start_execution(self, utils, db_utils)
+        breakpoint = debugger_utils.set_breakpoint(self)
+
+    async def start_debugger(self):
+        # Schedule three calls *concurrently*:
+        await asyncio.gather(
+            debugger_utils.start_listener(self, utils, db_utils),
+            asyncio.sleep(15),
+            self.messages_test()
+        )
 
     def clear_all_breakpoint(self):
         if hasattr(self, 'no_breakpoint') and self.no_breakpoint:

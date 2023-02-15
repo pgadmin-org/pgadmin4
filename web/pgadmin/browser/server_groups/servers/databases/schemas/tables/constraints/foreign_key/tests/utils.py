@@ -126,11 +126,11 @@ def create_foreignkey(server, db_name, schema_name, local_table_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
 
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get oid of newly added foreign key
         pg_cursor.execute("SELECT oid FROM pg_catalog.pg_constraint "

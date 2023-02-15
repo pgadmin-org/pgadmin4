@@ -25,10 +25,10 @@ WHERE
      db.datistemplate = {{show_user_defined_templates}} AND
 {% endif %}
 {% if did %}
-    db.oid = {{ did|qtLiteral }}::OID
+    db.oid = {{ did|qtLiteral(conn) }}::OID
 {% else %}
     {% if name %}
-        db.datname = {{ name|qtLiteral }}::text
+        db.datname = {{ name|qtLiteral(conn) }}::text
     {% endif %}
 {% endif %}
 

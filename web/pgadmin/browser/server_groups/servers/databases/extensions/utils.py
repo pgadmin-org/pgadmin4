@@ -28,7 +28,7 @@ def get_extension_details(conn, ename, properties_sql=None):
             [ExtensionView.EXT_TEMPLATE_PATH, 'properties.sql'])
 
     status, rset = conn.execute_dict(
-        render_template(properties_sql, ename=ename)
+        render_template(properties_sql, ename=ename, conn=conn)
     )
 
     if status:

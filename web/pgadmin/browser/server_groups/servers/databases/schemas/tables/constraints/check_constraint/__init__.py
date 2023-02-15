@@ -540,7 +540,7 @@ class CheckConstraintView(PGChildNodeView):
             # The below SQL will execute CREATE DDL only
             sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
-                data=data
+                data=data, conn=self.conn
             )
 
             status, msg = self.conn.execute_scalar(sql)
@@ -568,7 +568,8 @@ class CheckConstraintView(PGChildNodeView):
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
                     tid=tid,
-                    name=data['name']
+                    name=data['name'],
+                    conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -741,7 +742,7 @@ class CheckConstraintView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
-                              data=data)
+                              data=data, conn=self.conn)
 
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

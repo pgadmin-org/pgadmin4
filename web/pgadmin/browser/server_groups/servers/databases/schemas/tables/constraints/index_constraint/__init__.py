@@ -616,7 +616,8 @@ class IndexConstraintView(PGChildNodeView):
                     "/".join([self.template_path, self._OID_SQL]),
                     tid=tid,
                     constraint_type=self.constraint_type,
-                    name=data['name']
+                    name=data['name'],
+                    conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -678,7 +679,8 @@ class IndexConstraintView(PGChildNodeView):
                 "/".join([self.template_path, self._OID_SQL]),
                 tid=tid,
                 constraint_type=self.constraint_type,
-                name=data['name']
+                name=data['name'],
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -881,7 +883,9 @@ class IndexConstraintView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._CREATE_SQL]),
             data=data,
-            constraint_name=self.constraint_name)
+            constraint_name=self.constraint_name,
+            conn=self.conn
+        )
 
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

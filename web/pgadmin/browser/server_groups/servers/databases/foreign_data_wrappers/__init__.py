@@ -394,7 +394,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),
-                              fid=fid
+                              fid=fid, conn=self.conn
                               )
 
         status, fdw_acl_res = self.conn.execute_dict(sql)
@@ -815,7 +815,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                 is_valid_options = True
 
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),
-                              fid=fid)
+                              fid=fid, conn=self.conn)
         status, fdw_acl_res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=fdw_acl_res)
@@ -969,7 +969,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
-                              schema_diff=True)
+                              schema_diff=True, conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

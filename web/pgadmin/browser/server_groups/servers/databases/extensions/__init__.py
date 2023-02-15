@@ -158,7 +158,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         Fetches all extensions properties and render into properties tab
         """
         SQL = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]))
+                                        self._PROPERTIES_SQL]),
+                              conn=self.conn)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -175,7 +176,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         SQL = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]))
+                                        self._PROPERTIES_SQL]),
+                              conn=self.conn)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -201,7 +203,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
-                              eid=eid)
+                              eid=eid, conn=self.conn)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -241,7 +243,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         SQL = render_template("/".join(
-            [self.template_path, self._PROPERTIES_SQL]), eid=eid)
+            [self.template_path, self._PROPERTIES_SQL]), eid=eid,
+            conn=self.conn)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return False, internal_server_error(errormsg=res)
@@ -424,7 +427,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         if eid is not None:
             SQL = render_template("/".join(
                 [self.template_path, self._PROPERTIES_SQL]
-            ), eid=eid)
+            ), eid=eid, conn=self.conn)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -483,7 +486,7 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template("/".join(
             [self.template_path, self._PROPERTIES_SQL]
-        ), eid=eid)
+        ), eid=eid, conn=self.conn)
         status, res = self.conn.execute_dict(SQL)
         if not status:
             return internal_server_error(errormsg=res)
@@ -557,7 +560,8 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
 
         sql = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]))
+                                        self._PROPERTIES_SQL]),
+                              conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

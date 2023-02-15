@@ -11,7 +11,7 @@ FROM
             LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (
             fdw.oid=descr.objoid AND descr.classoid='pg_foreign_data_wrapper'::regclass)
 {% if fid %}
-    WHERE fdw.oid = {{ fid|qtLiteral }}::OID
+    WHERE fdw.oid = {{ fid|qtLiteral(conn) }}::OID
 {% endif %}
         ) acl,
         pg_catalog.aclexplode(fdwacl) d

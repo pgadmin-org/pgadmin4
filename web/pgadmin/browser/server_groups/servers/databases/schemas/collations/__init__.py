@@ -486,7 +486,8 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # We need oid to add object in tree at browser
         SQL = render_template(
-            "/".join([self.template_path, self._OID_SQL]), data=data
+            "/".join([self.template_path, self._OID_SQL]), data=data,
+            conn=self.conn
         )
         status, coid = self.conn.execute_scalar(SQL)
         if not status:
@@ -494,7 +495,8 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         # Get updated schema oid
         SQL = render_template(
-            "/".join([self.template_path, self._OID_SQL]), coid=coid
+            "/".join([self.template_path, self._OID_SQL]), coid=coid,
+            conn=self.conn
         )
 
         status, new_scid = self.conn.execute_scalar(SQL)

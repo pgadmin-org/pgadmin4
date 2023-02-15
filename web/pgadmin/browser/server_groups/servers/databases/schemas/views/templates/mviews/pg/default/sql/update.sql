@@ -57,7 +57,7 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(view_schema, view_name) }}
 {% endif %}
 {% if o_data.comment and not data.comment  %}
 COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-    IS {{ o_data.comment|qtLiteral }};
+    IS {{ o_data.comment|qtLiteral(conn) }};
 {% endif %}
 {% else %}
 {# ======= Alter Tablespace ========= #}
@@ -157,7 +157,7 @@ ALTER MATERIALIZED VIEW IF EXISTS {{ conn|qtIdent(view_schema, view_name) }} RES
 {% if (data.comment is defined and (data.comment != old_comment)) %}
 
 COMMENT ON MATERIALIZED VIEW {{ conn|qtIdent(view_schema, view_name) }}
-  IS {{ data.comment|qtLiteral }};
+  IS {{ data.comment|qtLiteral(conn) }};
 {% endif %}
 {# ============= The SQL generated below will change privileges ============= #}
 {% if data.datacl %}

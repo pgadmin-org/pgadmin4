@@ -27,7 +27,7 @@ FROM
             (d).privilege_type AS privilege_type
         FROM
             (SELECT pg_catalog.aclexplode(db.datacl) AS d FROM pg_catalog.pg_database db
-            WHERE db.oid = {{ did|qtLiteral }}::OID) a
+            WHERE db.oid = {{ did|qtLiteral(conn) }}::OID) a
         ) d
     ) d
     LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)

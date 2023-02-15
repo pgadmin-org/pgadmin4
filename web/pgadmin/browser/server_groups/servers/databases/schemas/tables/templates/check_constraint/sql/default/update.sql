@@ -9,5 +9,5 @@ ALTER TABLE IF EXISTS {{ conn|qtIdent(o_data.nspname, data.table) }}
 {% if data.comment is defined and data.comment != o_data.comment %}
 
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(o_data.nspname, data.table) }}
-    IS {{ data.comment|qtLiteral }};{% endif %}
+    IS {{ data.comment|qtLiteral(conn) }};{% endif %}
 {% endif -%}

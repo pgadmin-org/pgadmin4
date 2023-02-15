@@ -88,7 +88,7 @@ class FtsDictionaryDeleteTestCase(BaseTestGenerator):
             str(0),
             follow_redirects=True)
 
-        self.assertEqual(negative_delete_response.status_code, 500)
+        self.assertEqual(negative_delete_response.status_code, 410)
 
     def tearDown(self):
         """This function disconnect the test database."""

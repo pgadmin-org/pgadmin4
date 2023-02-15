@@ -24,6 +24,7 @@ class PgAgentPutScheduleTestCase(BaseTestGenerator):
                                          schedules_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         flag, msg = pgagent_utils.is_valid_server_to_run_pgagent(self)
         if not flag:
             self.skipTest(msg)

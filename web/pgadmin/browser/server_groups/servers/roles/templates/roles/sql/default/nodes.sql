@@ -3,6 +3,6 @@ SELECT
 FROM
 	pg_catalog.pg_roles r
 {% if rid %}
-WHERE r.oid = {{ rid|qtLiteral }}::oid
+WHERE r.oid = {{ rid|qtLiteral(conn) }}::oid
 {% endif %}
 ORDER BY r.rolcanlogin, r.rolname

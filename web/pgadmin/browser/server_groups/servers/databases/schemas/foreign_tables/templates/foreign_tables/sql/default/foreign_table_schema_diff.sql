@@ -18,7 +18,7 @@ CREATE FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}(
 {% if is_columns.append('1') %}{% endif %}
     {{conn|qtIdent(c.attname)}} {% if is_sql %}{{ c.fulltype }}{% else %}{{c.datatype }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}{% endif %}{% if c.coloptions %}
 {% for o in c.coloptions %}{% if o.option is defined and o.value is defined %}
-{% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
+{% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %}
 {% if c.attnotnull %} NOT NULL{% else %} NULL{% endif %}
 {% if c.typdefault is defined and c.typdefault is not none %} DEFAULT {{c.typdefault}}{% endif %}
@@ -37,7 +37,7 @@ CREATE FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, o_data.name) }}(
 
 {% for o in ftoptions %}
 {% if o.option is defined and o.value is defined %}
-{% if loop.first %}    OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral}}{% if loop.last %}){% endif %}{% endif %}
+{% if loop.first %}    OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %};
 {% if data.owner or o_data.owner%}
 

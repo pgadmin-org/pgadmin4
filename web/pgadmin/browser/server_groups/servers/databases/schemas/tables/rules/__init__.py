@@ -339,7 +339,9 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
         try:
             SQL = render_template("/".join(
-                [self.template_path, self._CREATE_SQL]), data=data)
+                [self.template_path, self._CREATE_SQL]),
+                data=data,
+                conn=self.conn)
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -347,7 +349,8 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             # Fetch the rule id against rule name to display node
             # in tree browser
             SQL = render_template("/".join(
-                [self.template_path, 'rule_id.sql']), rule_name=data['name'])
+                [self.template_path, 'rule_id.sql']),
+                rule_name=data['name'], conn=self.conn)
             status, rule_id = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=rule_id)
@@ -487,7 +490,8 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
         SQL = render_template("/".join(
             [self.template_path, self._CREATE_SQL]),
             data=res_data, display_comments=True,
-            add_replace_clause=True
+            add_replace_clause=True,
+            conn=self.conn
         )
 
         return ajax_response(response=SQL)
@@ -510,11 +514,12 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             old_data = res_data
             SQL = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data
+                data=data, o_data=old_data, conn=self.conn
             )
         else:
             SQL = render_template("/".join(
-                [self.template_path, self._CREATE_SQL]), data=data)
+                [self.template_path, self._CREATE_SQL]),
+                data=data, conn=self.conn)
         return SQL, data['name'] if 'name' in data else old_data['name']
 
     @check_precondition
@@ -552,13 +557,15 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                 old_data = res_data
                 sql = render_template(
                     "/".join([self.template_path, self._UPDATE_SQL]),
-                    data=data, o_data=old_data
+                    data=data, o_data=old_data, conn=self.conn
                 )
             else:
                 RuleView._check_schema_diff(target_schema, res_data)
                 sql = render_template("/".join(
                     [self.template_path, self._CREATE_SQL]),
-                    data=res_data, display_comments=True)
+                    data=res_data,
+                    display_comments=True,
+                    conn=self.conn)
 
         return sql
 

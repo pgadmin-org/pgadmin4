@@ -27,6 +27,7 @@ class DomainPutTestCase(BaseTestGenerator):
                                          domain_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_id = self.database_info["db_id"]
         self.server_id = self.database_info["server_id"]

@@ -36,7 +36,7 @@
 {% if arg_mode == 'b' %}
 {### Handle Null parameters received from client ###}
 {% if data[input_value_index]['type'] == 'text' and data[input_value_index]['value'] != 'NULL' %}
-{% set tmp_val = data[input_value_index]['value']|qtLiteral %}
+{% set tmp_val = data[input_value_index]['value']|qtLiteral(conn) %}
 {% set str_declare = str_declare ~ " := " ~ strParam ~ " " ~ tmp_val ~ "::" ~ data[input_value_index]['type'] %}
 {% else %}
 {% set str_declare = str_declare ~ " := " ~ strParam ~ " " ~ data[input_value_index]['value'] ~ "::" ~ data[input_value_index]['type'] %}
@@ -63,7 +63,7 @@
 
 {### Handle Null parameters received from client ###}
 {% if data[input_value_index]['type'] == 'text' and data[input_value_index]['value'] != 'NULL' %}
-{% set tmp_var = data[input_value_index]['value']|qtLiteral %}
+{% set tmp_var = data[input_value_index]['value']|qtLiteral(conn) %}
 {% set str_statement = str_statement ~ tmp_var ~ "::" ~ data[input_value_index]['type'] %}
 {% else %}
 {% set str_statement = str_statement ~ data[input_value_index]['value'] ~ "::" ~ data[input_value_index]['type'] %}

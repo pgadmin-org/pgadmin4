@@ -32,10 +32,10 @@ def create_resource_groups(server, resource_group_name):
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute("CREATE RESOURCE GROUP %s" % resource_group_name)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get oid of newly created resource group
         pg_cursor.execute("SELECT oid FROM edb_resource_group WHERE "
@@ -84,11 +84,11 @@ def delete_resource_group(connection, resource_group_name):
         resource_group_name_count = len(pg_cursor.fetchall())
         if resource_group_name_count:
             old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
+            utils.set_isolation_level(connection, 0)
             pg_cursor.execute("DELETE FROM edb_resource_group where "
                               "rgrpname='%s'" %
                               resource_group_name)
-            connection.set_isolation_level(old_isolation_level)
+            utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
         connection.close()
     except Exception:

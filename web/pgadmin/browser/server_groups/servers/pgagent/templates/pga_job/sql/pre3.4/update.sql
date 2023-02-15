@@ -2,10 +2,10 @@
 {% import 'macros/pga_schedule.macros' as SCHEDULE %}
 {% if 'jobjclid' in data or 'jobname' in data or 'jobdesc' in data or 'jobhostagent' in data or 'jobenabled' in data %}
 UPDATE pgagent.pga_job
-SET {% if 'jobjclid' in data %}jobjclid={{ data.jobjclid|qtLiteral }}::integer{% if 'jobname' in data or 'jobdesc' in data or 'jobhostagent' in data or 'jobenabled' in data %}, {% endif %}{% endif %}
-{% if 'jobname' in data %}jobname={{ data.jobname|qtLiteral }}::text{%if 'jobdesc' in data or 'jobhostagent' in data or 'jobenabled' in data %}, {% endif %}{% endif %}
-{% if 'jobdesc' in data %}jobdesc={{ data.jobdesc|qtLiteral }}::text{%if 'jobhostagent' in data or 'jobenabled' in data %}, {% endif %}{% endif %}
-{%if 'jobhostagent' in data %}jobhostagent={{ data.jobhostagent|qtLiteral }}::text{% if 'jobenabled' in data %}, {% endif %}{% endif %}
+SET {% if 'jobjclid' in data %}jobjclid={{ data.jobjclid|qtLiteral(conn) }}::integer{% if 'jobname' in data or 'jobdesc' in data or 'jobhostagent' in data or 'jobenabled' in data %}, {% endif %}{% endif %}
+{% if 'jobname' in data %}jobname={{ data.jobname|qtLiteral(conn) }}::text{%if 'jobdesc' in data or 'jobhostagent' in data or 'jobenabled' in data %}, {% endif %}{% endif %}
+{% if 'jobdesc' in data %}jobdesc={{ data.jobdesc|qtLiteral(conn) }}::text{%if 'jobhostagent' in data or 'jobenabled' in data %}, {% endif %}{% endif %}
+{%if 'jobhostagent' in data %}jobhostagent={{ data.jobhostagent|qtLiteral(conn) }}::text{% if 'jobenabled' in data %}, {% endif %}{% endif %}
 {% if 'jobenabled' in data %}jobenabled={% if data.jobenabled %}true{% else %}false{% endif %}{% endif %}
 
 WHERE jobid = {{ jid }};

@@ -5,5 +5,5 @@ SELECT
 FROM
     pg_catalog.pg_statio_all_sequences
 WHERE
-    schemaname = {{ schema_name|qtLiteral }}
+    schemaname = {{ schema_name|qtLiteral(conn) }}
 ORDER BY relname;

@@ -100,7 +100,7 @@ class PGChildModule():
     ------
     * backend_supported(manager)
     - Return True when it supports certain version.
-      Uses the psycopg2 server connection manager as input for checking the
+      Uses the psycopg server connection manager as input for checking the
       compatibility of the current module.
     """
 
@@ -490,7 +490,7 @@ class PGChildNodeView(NodeView):
         if where_clause.find('subid') < 0:
             sql = render_template(
                 "/".join([sql_path, 'role_dependencies.sql']),
-                where_clause=where_clause, db_name=conn.db)
+                where_clause=where_clause, conn=conn)
 
             status, result = conn.execute_dict(sql)
             if not status:

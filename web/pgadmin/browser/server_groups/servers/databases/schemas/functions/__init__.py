@@ -385,7 +385,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         sql = render_template("/".join([self.sql_template_path,
                                         self._NODE_SQL]),
-                              scid=scid)
+                              scid=scid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -411,7 +411,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.sql_template_path, self._NODE_SQL]),
             scid=scid,
-            fnid=fnid
+            fnid=fnid,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(sql)
 
@@ -849,7 +850,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 [self.sql_template_path, self._OID_SQL]
             ),
             nspname=self.request['pronamespace'],
-            name=self.request['name']
+            name=self.request['name'],
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -1094,7 +1096,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                    data=resp_data, query_type="create",
                                    func_def=name_with_default_args,
                                    query_for="sql_panel",
-                                   add_replace_clause=True
+                                   add_replace_clause=True,
+                                   conn=self.conn
                                    )
 
         return func_def
@@ -1127,7 +1130,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                              self._CREATE_SQL]),
                                    data=resp_data, query_type="create",
                                    func_def=name_with_default_args,
-                                   query_for="sql_panel")
+                                   query_for="sql_panel",
+                                   conn=self.conn)
 
         return func_def
 
@@ -1454,7 +1458,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.sql_template_path, self._UPDATE_SQL]),
-            data=data, o_data=old_data
+            data=data, o_data=old_data, conn=self.conn
         )
         return True, '', sql
 
@@ -1553,7 +1557,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Create mode
             sql = render_template("/".join([self.sql_template_path,
                                             self._CREATE_SQL]),
-                                  data=data, is_sql=is_sql)
+                                  data=data, is_sql=is_sql, conn=self.conn)
         return True, sql.strip('\n')
 
     def _fetch_properties(self, gid, sid, did, scid, fnid=None):
@@ -1953,7 +1957,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         if not oid:
             sql = render_template("/".join([self.sql_template_path,
                                             self._NODE_SQL]), scid=scid,
-                                  schema_diff=True)
+                                  schema_diff=True, conn=self.conn)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)

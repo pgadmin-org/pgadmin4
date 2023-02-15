@@ -290,7 +290,8 @@ def get_sql(conn, data, did, tid, ctype, cid=None, template_path=None):
 
         sql = render_template("/".join([template_path, 'update.sql']),
                               data=data,
-                              o_data=old_data)
+                              o_data=old_data,
+                              conn=conn)
     else:
         is_error, errmsg, name = _check_required_args(data, name)
         if is_error:

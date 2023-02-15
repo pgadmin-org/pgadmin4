@@ -6,7 +6,7 @@ SELECT
 FROM
     pg_catalog.pg_stat_user_functions
 WHERE
-    schemaname = {{schema_name|qtLiteral}}
+    schemaname = {{schema_name|qtLiteral(conn)}}
     AND funcid IN (
         SELECT p.oid
         FROM

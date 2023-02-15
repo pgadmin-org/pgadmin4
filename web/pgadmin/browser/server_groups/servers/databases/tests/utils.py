@@ -84,12 +84,12 @@ def create_database(connection, db_name):
     """This function used to create database"""
     try:
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name
         )
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         return pg_cursor
     except Exception as exception:
@@ -126,6 +126,18 @@ def connect_database(self, server_group, server_id, db_id):
         ),
         follow_redirects=True
     )
+
+    if db_con.status_code != 200:
+        db_con = self.tester.post(
+            '{0}{1}/{2}/{3}'.format(
+                DATABASE_CONNECT_URL,
+                server_group,
+                server_id,
+                db_id
+            ),
+            follow_redirects=True
+        )
+
     assert db_con.status_code == 200
     db_con = json.loads(db_con.data.decode('utf-8'))
     return db_con

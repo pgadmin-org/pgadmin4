@@ -13,7 +13,8 @@ import traceback
 import os
 import json
 
-from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection,\
+    set_isolation_level
 from regression.python_test_utils import test_utils as utils
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -46,12 +47,12 @@ def create_event_trigger(server, db_name, schema_name, func_name,
                                        server['port'],
                                        server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute('''CREATE EVENT TRIGGER "%s" ON DDL_COMMAND_END
          EXECUTE PROCEDURE "%s"."%s"()''' % (trigger_name, schema_name,
                                              func_name))
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created event trigger
         pg_cursor.execute(
