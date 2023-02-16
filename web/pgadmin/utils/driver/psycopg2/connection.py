@@ -1987,8 +1987,6 @@ Failed to reset the connection to the server due to following error:
 
             if parameters:
                 mogrified_sql = cursor.mogrify(query, parameters)
-                if isinstance(mogrified_sql, bytes):
-                    mogrified_sql = mogrified_sql.decode(self.python_encoding)
                 return mogrified_sql
             else:
                 return query
