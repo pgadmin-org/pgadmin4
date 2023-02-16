@@ -69,6 +69,7 @@ export default function StreamingChart({xRange=75, data, options}) {
       alpha: 0.3,
     },
     cursor: {
+      y: false,
       drag: {
         setScale: false,
       }

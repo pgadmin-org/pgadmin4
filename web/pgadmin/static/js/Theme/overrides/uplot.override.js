@@ -21,6 +21,7 @@ export default function uplotOverride(theme) {
       borderRadius: theme.shape.borderRadius,
       color: theme.palette.background.default,
       backgroundColor: theme.palette.text.primary,
+      zIndex: 9999,
 
       '& .uplot-tooltip-label': {
         display: 'flex',
