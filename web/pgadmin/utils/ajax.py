@@ -27,7 +27,12 @@ class DataTypeJSONEncoder(json.JSONEncoder):
         if isinstance(obj, decimal.Decimal):
             return float(obj)
 
-        return json.JSONEncoder.default(self, obj)
+        try:
+            retval = json.JSONEncoder.default(self, obj)
+        except TypeError:
+            retval = obj
+
+        return retval
 
 
 class ColParamsJSONDecoder(json.JSONDecoder):

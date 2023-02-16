@@ -374,7 +374,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if k in ('description',):
                 data[k] = v
             else:
-                data[k] = json.loads(v, cls=ColParamsJSONDecoder)
+                try:
+                    data[k] = json.loads(v, cls=ColParamsJSONDecoder)
+                except TypeError:
+                    data[k] = v
 
         required_args = {
             'name': 'Name',
