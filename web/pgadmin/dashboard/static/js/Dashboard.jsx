@@ -942,7 +942,7 @@ export function ChartContainer(props) {
       </Box>} />
       <CardContent className={classes.chartCardContent}>
         {!props.errorMsg && !props.isTest && props.children}
-        <EmptyPanelMessage text={props.errorMsg}/>
+        {props.errorMsg && <EmptyPanelMessage text={props.errorMsg}/>}
       </CardContent>
     </Card>
   );
