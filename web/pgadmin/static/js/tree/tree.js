@@ -536,13 +536,13 @@ export class Tree {
       */
       if (e.dataTransfer.setDragImage) {
         const dragItem = document.createElement('div');
-        dragItem.setAttribute('drag-tree-node');
+        dragItem.classList.add('drag-tree-node');
         dragItem.innerHTML = `<span>${_.escape(dropDetails.text)}</span>`;
 
-        document.querySelector('body .drag-tree-node').remove();
+        document.querySelector('body .drag-tree-node')?.remove();
         document.body.appendChild(dragItem);
 
-        e.dataTransfer.setDragImage(dragItem[0], 0, 0);
+        e.dataTransfer.setDragImage(dragItem, 0, 0);
       }
     }
   }
