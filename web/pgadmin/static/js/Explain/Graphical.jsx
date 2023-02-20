@@ -92,7 +92,7 @@ function Multitext({currentXpos, currentYpos, label, maxWidth}) {
     wordBreakIndex = Math.round((maxWidth / letterWidth)) - 1;
   svgElem.remove();
 
-  let words = label.split(' '),
+  let words = label?.split(' ') ?? '',
     widthSoFar = 0,
     lines = [],
     currLine = '',

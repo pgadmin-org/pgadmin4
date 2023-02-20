@@ -168,6 +168,11 @@ const ImageMapper = {
         'image': 'ex_delete.svg',
         'image_text': 'Delete',
       };
+    case 'Merge':
+      return {
+        'image': 'ex_merge.svg',
+        'image_text': 'Merge',
+      };
     }
   },
   'Named Tuplestore Scan': {
