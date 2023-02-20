@@ -122,7 +122,7 @@ ExplainRow.propTypes = {
       Plans: PropTypes.array,
       level: PropTypes.array,
       _serial: PropTypes.number,
-      parent_node: PropTypes.number,
+      parent_node: PropTypes.string,
       exclusive: PropTypes.number,
       exclusive_flag: PropTypes.string,
       inclusive: PropTypes.number,
