@@ -368,8 +368,8 @@ function calcFontSize(fontSize) {
   return '1em';
 }
 
-function handlePaste(_editor, e) {
-  let copiedText = e.clipboardData.getData('text');
+async function handlePaste(_editor, e) {
+  let copiedText = await e.clipboardData.getData('text');
   checkTrojanSource(copiedText, true);
 }
 
