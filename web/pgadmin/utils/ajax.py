@@ -26,7 +26,8 @@ class DataTypeJSONEncoder(json.JSONEncoder):
             return (datetime.datetime.min + obj).time().isoformat()
         if isinstance(obj, decimal.Decimal):
             return float(obj)
-
+        if isinstance(obj, bytes):
+            return obj.decode('utf-8')
         try:
             retval = json.JSONEncoder.default(self, obj)
         except TypeError:
