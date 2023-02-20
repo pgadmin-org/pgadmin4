@@ -181,10 +181,6 @@ export default class TriggerSchema extends BaseUISchema {
       flag = (state.evnt_update && (_.size(state.columns) >= 1 && state.columns[0] != ''));
     }
 
-    if(flag && state.name) {
-      state.name = null;
-    }
-
     return flag;
   }
 
