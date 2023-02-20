@@ -349,6 +349,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
     return newVal;
   });
   const [localVal, setLocalVal] = React.useState(value);
+  const [hasError, setHasError] = React.useState(false);
 
   const onChange = React.useCallback((newVal)=>{
     setLocalVal(newVal);
@@ -356,6 +357,10 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
   const onOK = ()=>{
     if(value == localVal) {
       onClose(false);
+      return;
+    }
+    if(hasError) {
+      Notifier.error(gettext('Invalid JSON input'));
       return;
     }
     onRowChange({ ...row, [column.key]: localVal}, true);
@@ -370,7 +375,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
           value={localVal}
           options={{
             onChange: onChange,
-            onError: (error)=>Notifier.error('Invalid Json: ' + error.message.split(':')[0]),
+            onValidationError: (errors)=>{setHasError(Boolean(errors.length));}
           }}
           className={'jsoneditor-div'}
         />
