@@ -51,6 +51,13 @@ export class OwnedBySchema extends BaseUISchema {
             optionsReloadBasis: state.owned_table,
           };
         },
+        depChange: (state)=>{
+          if(!state.owned_table) {
+            return {
+              owned_column: null,
+            };
+          }
+        }
       }
     ];
   }
