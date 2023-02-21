@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme)=>({
       ...theme.mixins.panelBorder.right,
       ...theme.mixins.panelBorder.bottom,
       fontWeight: 'abc',
+      whiteSpace: 'pre',
       '&[aria-colindex="1"]': {
         padding: 0,
       },
