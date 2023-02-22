@@ -11,7 +11,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.seqowner) }};
 
 {% endif %}
-{% if (data.owned_table == None or data.owned_table is not defined) and (o_data.owned_table is defined and o_data.owned_table != None) and (data.owned_column == None or data.owned_column is not defined) %}
+{% if (data.owned_table == None) and (data.owned_column == None) %}
 ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
     OWNED BY NONE;
 {% elif (data.owned_table is defined or data.owned_column is defined) and (data.owned_table != o_data.owned_table or data.owned_column != o_data.owned_column) %}
