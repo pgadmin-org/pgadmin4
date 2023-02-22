@@ -711,12 +711,12 @@ define('pgadmin.browser.node', [
                 pgBrowser.removeTreeNode(i, selectNextNode);
               }
               return true;
-            }).catch(function(xhr) {
-              let errmsg = xhr.responseText;
+            }).catch(function(error) {
+              let errmsg = error.request?.responseText;
               /* Error from the server */
-              if (xhr.status == 417 || xhr.status == 410 || xhr.status == 500) {
+              if (error.request?.status == 417 || error.request?.status == 410 || error.request?.status == 500) {
                 try {
-                  let data = JSON.parse(xhr.responseText);
+                  let data = error.response.data;
                   errmsg = data.info || data.errormsg;
                 } catch (e) {
                   console.warn(e.stack || e);

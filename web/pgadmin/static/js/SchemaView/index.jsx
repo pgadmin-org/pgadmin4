@@ -77,7 +77,7 @@ function getForQueryParams(data) {
   let retData = {...data};
   Object.keys(retData).forEach((key)=>{
     let value = retData[key];
-    if(_.isObject(value)) {
+    if(_.isObject(value) || _.isNull(value)) {
       retData[key] = JSON.stringify(value);
     }
   });
