@@ -782,7 +782,7 @@ export function ResultSet() {
       setSelectedRows(new Set());
       setSelectedColumns(new Set());
       setLoaderText(gettext('Waiting for the query to complete...'));
-      await rsu.current.startExecution(
+      return await rsu.current.startExecution(
         query, explainObject,
         ()=>{
           setColumns([]);
@@ -829,8 +829,8 @@ export function ResultSet() {
         }
       );
     } else {
-      await yesCallback();
-      pollCallback();
+      let goForPoll = await yesCallback();
+      if (goForPoll) pollCallback();
     }
   };
 
