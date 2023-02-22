@@ -41,6 +41,8 @@ Bug fixes
   | `Issue #5764 <https://github.com/pgadmin-org/pgadmin4/issues/5764>`_ -  Fix an issue where the maintenance dialog for Materialized View gives an error.
   | `Issue #5773 <https://github.com/pgadmin-org/pgadmin4/issues/5773>`_ -  Fixed an issue where Clear Saved Password should be disabled if the password is already cleared.
   | `Issue #5790 <https://github.com/pgadmin-org/pgadmin4/issues/5790>`_ -  Fixed an issue where the user can't create trigger AFTER UPDATE OF.
+  | `Issue #5803 <https://github.com/pgadmin-org/pgadmin4/issues/5803>`_ -  Fix an issue where query tool is stripping spaces in grid cell.
+  | `Issue #5810 <https://github.com/pgadmin-org/pgadmin4/issues/5810>`_ -  Fix an issue where sequence owner is remove on sequence edit.
   | `Issue #5822 <https://github.com/pgadmin-org/pgadmin4/issues/5822>`_ -  Do not allow to save invalid JSON in query tool JSON editor.
   | `Issue #5847 <https://github.com/pgadmin-org/pgadmin4/issues/5847>`_ -  Fixed an issue where pgAdmin failed to connect when the Postgres password included special characters.
   | `Issue #5872 <https://github.com/pgadmin-org/pgadmin4/issues/5872>`_ -  Handle MERGE operation in query tool explain introduced in PostgreSQL 15.
