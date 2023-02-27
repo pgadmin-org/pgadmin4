@@ -111,7 +111,6 @@ const useStyles = makeStyles((theme) => ({
     blockSize: '100%',
 
     '& span': {
-      display: 'table-cell',
       verticalAlign: 'middle',
       cursor: 'pointer',
     }
