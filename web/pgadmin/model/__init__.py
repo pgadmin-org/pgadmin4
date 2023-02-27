@@ -490,3 +490,7 @@ class UserMFA(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
     mfa_auth = db.Column(db.String(64), primary_key=True)
     options = db.Column(db.Text(), nullable=True)
+    user = db.relationship(
+        'User',
+        backref=db.backref('user', cascade="all, delete-orphan")
+    )
