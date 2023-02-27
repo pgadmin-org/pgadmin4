@@ -20,13 +20,23 @@ import { commonTableStyles } from '../../../../static/js/Theme';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import clsx from 'clsx';
 import gettext from 'sources/gettext';
-
+import { getGoogleSummary } from './google';
+import { CLOUD_PROVIDERS_LABELS } from './cloud_constants';
 
 const useStyles = makeStyles(() =>
   ({
-    toggleButton: {
+    toggleButtonGroup: {
       height: '100px',
+      flexGrow: '1'
     },
+    toggleButtonMargin:{
+      marginTop: '0px !important',
+      padding: '12px'
+    },
+    gcpiconpadding:{
+      paddingLeft: '1.5rem'
+    }
+
   }),
 );
 
@@ -43,13 +53,14 @@ export function ToggleButtons(props) {
       color="primary"
       value={props.cloudProvider}
       onChange={handleCloudProvider}
-      className={classes.toggleButton}
+      className={classes.toggleButtonGroup}
+      orientation="vertical"
       exclusive>
       {
         (props.options||[]).map((option)=>{
-          return (<ToggleButton value={option.value} key={option.label} aria-label={option.label} component={props.cloudProvider == option.value ? PrimaryButton : DefaultButton}>
+          return (<ToggleButton value={option.value} key={option.label} aria-label={option.label} className={clsx(classes.toggleButtonMargin, option.label==gettext(CLOUD_PROVIDERS_LABELS.GOOGLE) ? classes.gcpiconpadding : null )} component={props.cloudProvider == option.value ? PrimaryButton : DefaultButton}>
             <CheckRoundedIcon style={{visibility: props.cloudProvider == option.value  ? 'visible': 'hidden'}}/>&nbsp;
-            {option.icon}&nbsp;&nbsp;{option.label}
+            {option.icon}&nbsp;&nbsp;&nbsp;&nbsp;{option.label}
           </ToggleButton>);
         })
       }
@@ -74,6 +85,9 @@ export function FinalSummary(props) {
   } else if(props.cloudProvider == 'azure') {
     summaryHeader.push('Network Connectivity','Availability');
     summary = getAzureSummary(props.cloudProvider, props.instanceData, props.databaseData);
+  }else if(props.cloudProvider == 'google') {
+    summaryHeader.push('Network Connectivity','Availability');
+    summary = getGoogleSummary(props.cloudProvider, props.instanceData, props.databaseData);
   }else {
     summaryHeader.push('Availability');
     summary = getAWSSummary(props.cloudProvider, props.instanceData, props.databaseData);

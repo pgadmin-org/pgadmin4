@@ -24,10 +24,11 @@ import { PrimaryButton } from '../../../../static/js/components/Buttons';
 import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudStep1, validateCloudStep2, validateCloudStep3} from './aws';
 import {BigAnimalInstance, BigAnimalDatabase, BigAnimalClusterType, getProviderOptions, validateBigAnimal, validateBigAnimalStep2, validateBigAnimalStep3, validateBigAnimalStep4} from './biganimal';
 import { isEmptyString } from 'sources/validators';
-import { AWSIcon, BigAnimalIcon, AzureIcon } from '../../../../static/js/components/ExternalIcon';
+import { AWSIcon, BigAnimalIcon, AzureIcon, GoogleCloudIcon } from '../../../../static/js/components/ExternalIcon';
 import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClusternameAvailbility, validateAzureStep2, validateAzureStep3} from './azure';
+import { GoogleCredentials, GoogleInstanceDetails, GoogleDatabaseDetails, validateGoogleStep2, validateGoogleStep3 } from './google';
 import EventBus from '../../../../static/js/helpers/EventBus';
-import { CLOUD_PROVIDERS } from './cloud_constants';
+import { CLOUD_PROVIDERS, CLOUD_PROVIDERS_LABELS } from './cloud_constants';
 
 
 const useStyles = makeStyles(() =>
@@ -63,10 +64,8 @@ const useStyles = makeStyles(() =>
 
 export const CloudWizardEventsContext = React.createContext();
 
-
 export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) {
   const classes = useStyles();
-
   const eventBus = React.useRef(new EventBus());
 
   let steps = [gettext('Cloud Provider'), gettext('Credentials'), gettext('Cluster Type'),
@@ -81,6 +80,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
   const [hostIP, setHostIP] = React.useState('127.0.0.1/32');
   const [cloudProvider, setCloudProvider] = React.useState('');
   const [verificationIntiated, setVerificationIntiated] = React.useState(false);
+
   const [bigAnimalInstanceData, setBigAnimalInstanceData] = React.useState({});
   const [bigAnimalDatabaseData, setBigAnimalDatabaseData] = React.useState({});
   const [bigAnimalClusterTypeData, setBigAnimalClusterTypeData] = React.useState({});
@@ -89,6 +89,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
   const [azureCredData, setAzureCredData] = React.useState({});
   const [azureInstanceData, setAzureInstanceData] = React.useState({});
   const [azureDatabaseData, setAzureDatabaseData] = React.useState({});
+
+  const [googleCredData, setGoogleCredData] = React.useState({});
+  const [googleInstanceData, setGoogleInstanceData] = React.useState({});
+  const [googleDatabaseData, setGoogleDatabaseData] = React.useState({});
 
   const axiosApi = getApiInstance();
 
@@ -128,7 +132,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
     let _url = url_for('cloud.deploy_on_cloud'),
       post_data = {};
 
-    if (cloudProvider == CLOUD_PROVIDERS.RDS) {
+    if (cloudProvider == CLOUD_PROVIDERS.AWS) {
       post_data = {
         gid: nodeInfo.server_group._id,
         cloud: cloudProvider,
@@ -143,6 +147,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         cloud: cloudProvider,
         instance_details:azureInstanceData,
         db_details: azureDatabaseData
+      };
+    }else if(cloudProvider == CLOUD_PROVIDERS.GOOGLE){
+      post_data = {
+        gid: nodeInfo.server_group._id,
+        secret: googleCredData,
+        cloud: cloudProvider,
+        instance_details:googleInstanceData,
+        db_details: googleDatabaseData
       };
 
     }else {
@@ -170,10 +182,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
     setCallRDSAPI(currentStep);
     let isError = (cloudProvider == '');
     switch(cloudProvider) {
-    case CLOUD_PROVIDERS.RDS:
+    case CLOUD_PROVIDERS.AWS:
       switch (currentStep) {
       case 0:
-        setCloudSelection(CLOUD_PROVIDERS.RDS);
+        setCloudSelection(CLOUD_PROVIDERS.AWS);
         break;
       case 1:
         isError = validateCloudStep1(cloudDBCred);
@@ -231,13 +243,32 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         break;
       }
       break;
+    case CLOUD_PROVIDERS.GOOGLE:
+      switch (currentStep) {
+      case 0:
+        setCloudSelection(CLOUD_PROVIDERS.GOOGLE);
+        break;
+      case 1:
+        isError = !verificationIntiated;
+        break;
+      case 2:
+        break;
+      case 3:
+        isError = validateGoogleStep2(googleInstanceData);
+        break;
+      case 4:
+        isError = validateGoogleStep3(googleDatabaseData, nodeInfo);
+        break;
+      default:
+        break;
+      }
     }
     return isError;
   };
 
   const onBeforeBack = (activeStep) => {
     return new Promise((resolve)=>{
-      if(activeStep == 3 && (cloudProvider == CLOUD_PROVIDERS.RDS || cloudProvider == CLOUD_PROVIDERS.AZURE)) {
+      if(activeStep == 3 && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
         resolve(true);
       }
       resolve();
@@ -246,7 +277,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
 
   const onBeforeNext = (activeStep) => {
     return new Promise((resolve, reject)=>{
-      if(activeStep == 1 && cloudProvider == CLOUD_PROVIDERS.RDS) {
+      if(activeStep == 1 && cloudProvider == CLOUD_PROVIDERS.AWS) {
         setErrMsg([MESSAGE_TYPE.INFO, gettext('Validating credentials...')]);
         let _url = url_for('rds.verify_credentials');
         const post_data = {
@@ -298,6 +329,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
       } else if (cloudProvider == CLOUD_PROVIDERS.AZURE) {
         if (activeStep == 1) {
           // Skip the current step
+          setErrMsg(['', '']);
           resolve(true);
         } else if (activeStep == 2) {
           setErrMsg([MESSAGE_TYPE.INFO, gettext('Checking cluster name availability...')]);
@@ -314,6 +346,14 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
               reject();
             });
         } else {
+          resolve();
+        }
+      }else if (cloudProvider == CLOUD_PROVIDERS.GOOGLE) {
+        if (activeStep == 1) {
+          // Skip the current step
+          setErrMsg(['', '']);
+          resolve(true);
+        } else if (activeStep == 2) { resolve(true);} else {
           resolve();
         }
       }
@@ -375,9 +415,11 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
     setErrMsg([]);
   });
 
-  let cloud_providers = [{label: gettext('Amazon RDS'), value: CLOUD_PROVIDERS.RDS, icon: <AWSIcon className={classes.icon} />},
-    {label: gettext('EDB BigAnimal'), value: CLOUD_PROVIDERS.BIGANIMAL, icon: <BigAnimalIcon className={classes.icon} />},
-    {'label': gettext('Azure PostgreSQL'), value: CLOUD_PROVIDERS.AZURE, icon: <AzureIcon className={classes.icon} /> }];
+  let cloud_providers = [
+    {label: gettext(CLOUD_PROVIDERS_LABELS.AWS), value: CLOUD_PROVIDERS.AWS, icon: <AWSIcon className={classes.icon} />},
+    {label: gettext(CLOUD_PROVIDERS_LABELS.BIGANIMAL), value: CLOUD_PROVIDERS.BIGANIMAL, icon: <BigAnimalIcon className={classes.icon} />},
+    {label: gettext(CLOUD_PROVIDERS_LABELS.AZURE), value: CLOUD_PROVIDERS.AZURE, icon: <AzureIcon className={classes.icon} /> },
+    {label: gettext(CLOUD_PROVIDERS_LABELS.GOOGLE), value: CLOUD_PROVIDERS.GOOGLE, icon: <GoogleCloudIcon className={classes.icon} /> }];
 
   return (
     <CloudWizardEventsContext.Provider value={eventBus.current}>
@@ -393,7 +435,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
           beforeBack={onBeforeBack}>
           <WizardStep stepId={0}>
             <Box className={classes.messageBox}>
-              <Box className={classes.messagePadding}>{gettext('Select a cloud provider.')}</Box>
+              <Box className={classes.messagePadding}>{gettext('Select a cloud provider for PostgreSQL database.')}</Box>
             </Box>
             <Box className={classes.messageBox}>
               <ToggleButtons cloudProvider={cloudProvider} setCloudProvider={setCloudProvider}
@@ -416,9 +458,13 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
                 <Box ></Box>
               </Box>}
             </Box>
-            {cloudProvider == CLOUD_PROVIDERS.RDS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
+            {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setCloudDBCred={setCloudDBCred}/>}
+            { cloudProvider == CLOUD_PROVIDERS.AZURE &&
             <Box flexGrow={1}>
-              {cloudProvider == CLOUD_PROVIDERS.AZURE && <AzureCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setAzureCredData={setAzureCredData}/>}
+              <AzureCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setAzureCredData={setAzureCredData}/>
+            </Box>}
+            <Box flexGrow={1}>
+              {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleCredentials cloudProvider={cloudProvider} nodeInfo={nodeInfo} nodeData={nodeData} setGoogleCredData={setGoogleCredData}/>}
             </Box>
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
           </WizardStep>
@@ -434,7 +480,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
           </WizardStep>
           <WizardStep stepId={3} >
-            {cloudProvider == CLOUD_PROVIDERS.RDS && callRDSAPI == 3 && <AwsInstanceDetails
+            {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 3 && <AwsInstanceDetails
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
@@ -456,10 +502,18 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
               hostIP={hostIP}
               azureInstanceData = {azureInstanceData}
             /> }
+            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 3 && <GoogleInstanceDetails
+              cloudProvider={cloudProvider}
+              nodeInfo={nodeInfo}
+              nodeData={nodeData}
+              setGoogleInstanceData={setGoogleInstanceData}
+              hostIP={hostIP}
+              googleInstanceData = {googleInstanceData}
+            /> }
             <FormFooterMessage type={errMsg[0]} message={errMsg[1]} onClose={onErrClose} />
           </WizardStep>
           <WizardStep stepId={4} >
-            {cloudProvider == CLOUD_PROVIDERS.RDS && <AwsDatabaseDetails
+            {cloudProvider == CLOUD_PROVIDERS.AWS && <AwsDatabaseDetails
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
@@ -481,11 +535,18 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
               setAzureDatabaseData={setAzureDatabaseData}
             />
             }
+            {cloudProvider == CLOUD_PROVIDERS.GOOGLE && <GoogleDatabaseDetails
+              cloudProvider={cloudProvider}
+              nodeInfo={nodeInfo}
+              nodeData={nodeData}
+              setGoogleDatabaseData={setGoogleDatabaseData}
+            />
+            }
           </WizardStep>
           <WizardStep stepId={5} >
             <Box className={classes.boxText}>{gettext('Please review the details before creating the cloud instance.')}</Box>
             <Paper variant="outlined" elevation={0} className={classes.summaryContainer}>
-              {cloudProvider == CLOUD_PROVIDERS.RDS && callRDSAPI == 5 && <FinalSummary
+              {cloudProvider == CLOUD_PROVIDERS.AWS && callRDSAPI == 5 && <FinalSummary
                 cloudProvider={cloudProvider}
                 instanceData={cloudInstanceDetails}
                 databaseData={cloudDBDetails}
@@ -502,6 +563,12 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
                 cloudProvider={cloudProvider}
                 instanceData={azureInstanceData}
                 databaseData={azureDatabaseData}
+              />
+              }
+              {cloudProvider == CLOUD_PROVIDERS.GOOGLE && callRDSAPI == 5 && <FinalSummary
+                cloudProvider={cloudProvider}
+                instanceData={googleInstanceData}
+                databaseData={googleDatabaseData}
               />
               }
             </Paper>

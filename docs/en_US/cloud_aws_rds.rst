@@ -1,12 +1,12 @@
 .. _cloud_aws_rds:
 
 ******************************************
-`Amazon AWS RDS Cloud Deployment`:index:
+`Amazon RDS Cloud Deployment`:index:
 ******************************************
 
-To deploy a PostgreSQL server on the Amazon AWS cloud, follow the below steps.
+To deploy a PostgreSQL server on the Amazon cloud, follow the below steps.
 
-.. image:: images/cloud_aws_provider.png
+.. image:: images/cloud_provider_for_postgresql.png
     :alt: Cloud Deployment Provider
     :align: center
 

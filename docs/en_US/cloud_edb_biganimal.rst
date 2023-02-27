@@ -6,7 +6,7 @@
 
 To deploy a PostgreSQL server on the EDB BigAnimal cloud, follow the below steps.
 
-.. image:: images/cloud_biganimal_provider.png
+.. image:: images/cloud_provider_for_postgresql.png
     :alt: Cloud Deployment Provider
     :align: center
 

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import {AzureCredSchema, AzureClusterSchema, AzureDatabaseSchema} from './azure_schema.ui';
+import {GoogleCredSchema, GoogleClusterSchema, GoogleDatabaseSchema} from './google_schema.ui';
 import pgAdmin from 'sources/pgadmin';
 import { getNodeAjaxOptions, getNodeListById } from 'pgbrowser/node_ajax';
 import SchemaView from '../../../../static/js/SchemaView';
@@ -28,29 +28,31 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-// Azure credentials
-export function AzureCredentials(props) {
+
+export function GoogleCredentials(props) {
   const [cloudDBCredInstance, setCloudDBCredInstance] = React.useState();
 
   let _eventBus = React.useContext(CloudWizardEventsContext);
+  let child = null;
   React.useMemo(() => {
-    const azureCloudDBCredSchema = new AzureCredSchema({
-      authenticateAzure:(auth_type, azure_tenant_id) => {
+    const googleCredSchema = new GoogleCredSchema({
+      authenticateGoogle:(client_secret_file) => {
         let loading_icon_url = url_for(
           'static', { 'filename': 'img/loading.gif'}
         );
         const axiosApi = getApiInstance();
-        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Microsoft Azure authentication process is in progress..<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
-        let _url = url_for('azure.verify_credentials');
+        _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', [MESSAGE_TYPE.INFO, 'Google authentication process is in progress..<img src="' + loading_icon_url + '" alt="' + gettext('Loading...') + '">']);
+        let _url = url_for('google.verify_credentials');
         const post_data = {
-          cloud: 'azure',
-          secret: {'auth_type':auth_type, 'azure_tenant_id':azure_tenant_id}
+          cloud: 'google',
+          secret: {'client_secret_file':client_secret_file}
         };
         return new Promise((resolve, reject)=>{axiosApi.post(_url, post_data)
           .then((res) => {
             if (res.data && res.data.success == 1 ) {
-              _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
               _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',true);
+              let params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=550,height=650,left=600,top=150';
+              child = window.open(res.data.data.auth_url, 'google_authentication', params);
               resolve(true);
             }
             else if (res.data && res.data.success == 0) {
@@ -60,34 +62,48 @@ export function AzureCredentials(props) {
             }
           })
           .catch((error) => {
-            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while verifying Microsoft Azure: ${error}`)]);
+            _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, gettext(`Error while authentication: ${error}`)]);
             reject(false);
           });
         });
       },
-      getAuthCode:()=>{
-        let _url_get_azure_verification_codes = url_for('azure.get_azure_verification_codes');
+      verification_ack:()=>{
+        let auth_url = url_for('google.verification_ack');
+        let countdown = 90;
         const axiosApi = getApiInstance();
         return new Promise((resolve, reject)=>{
           const interval = setInterval(()=>{
-            axiosApi.get(_url_get_azure_verification_codes)
+            axiosApi.get(auth_url)
               .then((res)=>{
-                if (res.data.success){
+                if (res.data.success && res.data.success == 1 ){
+                  _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
                   clearInterval(interval);
-                  let params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=550,height=650,left=920,top=150';
-                  window.open(res.data.data.verification_uri, 'azure_authentication', params);
-                  resolve(res);
+                  if(child){
+                    // close authentication window
+                    child.close();
+                  }
+                  resolve();
+                } else if (res.data && res.data.success == 0 && (res.data.errormsg == 'Invalid state parameter.' || res.data.errormsg == 'Access denied.' || res.data.errormsg == 'Authentication is failed.')){
+                  _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, res.data.errormsg]);
+                  _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',false);
+                  clearInterval(interval);
+                  resolve(false);
+                } else if (child && child.closed || countdown <= 0) {
+                  _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, 'Authentication is aborted.']);
+                  _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',false);
+                  clearInterval(interval);
                 }
               })
               .catch((error)=>{
                 clearInterval(interval);
                 reject(error);
               });
+            countdown = countdown - 1;
           }, 1000);
         });
       }
     }, {}, _eventBus);
-    setCloudDBCredInstance(azureCloudDBCredSchema);
+    setCloudDBCredInstance(googleCredSchema);
   }, [props.cloudProvider]);
 
   return  <SchemaView
@@ -98,133 +114,108 @@ export function AzureCredentials(props) {
     showFooter={false}
     isTabView={false}
     onDataChange={(isChanged, changedData) => {
-      props.setAzureCredData(changedData);
+      props.setGoogleCredData(changedData);
     }}
   />;
 }
-AzureCredentials.propTypes = {
+GoogleCredentials.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
   cloudProvider: PropTypes.string,
-  setAzureCredData: PropTypes.func
+  setGoogleCredData: PropTypes.func
 };
 
-
-// Azure Instance
-export function AzureInstanceDetails(props) {
-  const [azureInstanceSchema, setAzureInstanceSchema] = React.useState();
+// Google Instance
+export function GoogleInstanceDetails(props) {
+  const [googleInstanceSchema, setGoogleInstanceSchema] = React.useState();
   const classes = useStyles();
 
   React.useMemo(() => {
-    const AzureSchema = new AzureClusterSchema({
-      subscriptions: () => getNodeAjaxOptions('get_subscriptions', {}, {}, {},{
+    const GoogleClusterSchemaObj = new GoogleClusterSchema({
+      projects: () => getNodeAjaxOptions('get_projects', {}, {}, {},{
         useCache:false,
         cacheNode: 'server',
         customGenerateUrl: ()=>{
-          return url_for('azure.subscriptions');
+          return url_for('google.projects');
         }
       }),
-      resourceGroups: (subscription)=>getNodeAjaxOptions('ge_resource_groups', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
+      regions: (project)=>getNodeAjaxOptions('get_regions', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData,{
         useCache:false,
         cacheNode: 'server',
         customGenerateUrl: ()=>{
-          return url_for('azure.resource_groups', {'subscription_id': subscription});
-        }
-      }),
-      regions: (subscription)=>getNodeAjaxOptions('get_regions', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData,{
-        useCache:false,
-        cacheNode: 'server',
-        customGenerateUrl: ()=>{
-          return url_for('azure.regions', {'subscription_id': subscription});
+          return url_for('google.regions', {'project_id': project});
         }
       }),
       availabilityZones: (region)=>getNodeAjaxOptions('get_availability_zones', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
         useCache:false,
         cacheNode: 'server',
         customGenerateUrl: ()=>{
-          return url_for('azure.availability_zones', {'region_name': region});
+          return url_for('google.availability_zones', {'region': region});
         }
       }),
-      versionOptions: (availabilityZone)=>getNodeAjaxOptions('get_db_versions', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
+      dbVersions: ()=>getNodeAjaxOptions('get_db_versions', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
         useCache:false,
         cacheNode: 'server',
         customGenerateUrl: ()=>{
-          return url_for('azure.db_versions', {'availability_zone': availabilityZone});
+          return url_for('google.database_versions');
         }
       }),
-      instanceOptions: (dbVersion, availabilityZone)=>{
-        if (isEmptyString(dbVersion) || isEmptyString(availabilityZone) ) return [];
+      instanceTypes: (project, region, instanceClass)=>{
+        if (isEmptyString(project) || isEmptyString(region) || isEmptyString(instanceClass)) return [];
         return getNodeAjaxOptions('get_instance_types', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
           useCache:false,
           cacheNode: 'server',
           customGenerateUrl: ()=>{
-            return url_for('azure.instance_types', {'availability_zone':availabilityZone, 'db_version': dbVersion});
+            return url_for('google.instance_types', {'project_id':project, 'region': region, 'instance_class': instanceClass});
           }
         });},
-      storageOptions: (dbVersion, availabilityZone)=>{
-        if (isEmptyString(dbVersion) || isEmptyString(availabilityZone) ) return [];
-        return getNodeAjaxOptions('get_instance_types', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData, {
-          useCache:false,
-          cacheNode: 'server',
-          customGenerateUrl: ()=>{
-            return url_for('azure.storage_types', {'availability_zone':availabilityZone, 'db_version': dbVersion});
-          }
-        });
-      },
-      zoneRedundantHaSupported: (region)=>getNodeAjaxOptions('is_zone_redundant_ha_supported', pgAdmin.Browser.Nodes['server'], props.nodeInfo, props.nodeData,{
-        useCache:false,
-        cacheNode: 'server',
-        customGenerateUrl: ()=>{
-          return url_for('azure.zone_redundant_ha_supported', {'region_name': region});
-        }
-      }),
     }, {
       nodeInfo: props.nodeInfo,
       nodeData: props.nodeData,
       hostIP: props.hostIP,
-      ...props.azureInstanceData
+      ...props.googleInstanceData
     });
-    setAzureInstanceSchema(AzureSchema);
+    setGoogleInstanceSchema(GoogleClusterSchemaObj);
   }, [props.cloudProvider]);
 
   return  <SchemaView
     formType={'dialog'}
     getInitData={() => { /*This is intentional (SonarQube)*/ }}
     viewHelperProps={{ mode: 'create' }}
-    schema={azureInstanceSchema}
+    schema={googleInstanceSchema}
     showFooter={false}
     isTabView={false}
     onDataChange={(isChanged, changedData) => {
-      props.setAzureInstanceData(changedData);
+      props.setGoogleInstanceData(changedData);
     }}
     formClassName={classes.formClass}
   />;
 }
-AzureInstanceDetails.propTypes = {
+GoogleInstanceDetails.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
   cloudProvider: PropTypes.string,
-  setAzureInstanceData: PropTypes.func,
+  setGoogleInstanceData: PropTypes.func,
   hostIP: PropTypes.string,
   subscriptions: PropTypes.array,
-  azureInstanceData: PropTypes.object
+  googleInstanceData: PropTypes.object
 };
 
 
-// Azure Database Details
-export function AzureDatabaseDetails(props) {
-  const [azureDBInstance, setAzureDBInstance] = React.useState();
+// Google Database Details
+export function GoogleDatabaseDetails(props) {
+  const [gooeleDBInstance, setGoogleDBInstance] = React.useState();
   const classes = useStyles();
 
   React.useMemo(() => {
-    const azureDBSchema = new AzureDatabaseSchema({
+    const googleDBSchema = new GoogleDatabaseSchema({
       server_groups: ()=>getNodeListById(pgAdmin.Browser.Nodes['server_group'], props.nodeInfo, props.nodeData),
     },
     {
       gid: props.nodeInfo['server_group']._id,
     }
     );
-    setAzureDBInstance(azureDBSchema);
+    setGoogleDBInstance(googleDBSchema);
 
   }, [props.cloudProvider]);
 
@@ -232,25 +223,24 @@ export function AzureDatabaseDetails(props) {
     formType={'dialog'}
     getInitData={() => { /*This is intentional (SonarQube)*/ }}
     viewHelperProps={{ mode: 'create' }}
-    schema={azureDBInstance}
+    schema={gooeleDBInstance}
     showFooter={false}
     isTabView={false}
     onDataChange={(isChanged, changedData) => {
-      props.setAzureDatabaseData(changedData);
+      props.setGoogleDatabaseData(changedData);
     }}
     formClassName={classes.formClass}
   />;
 }
-AzureDatabaseDetails.propTypes = {
+GoogleDatabaseDetails.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
   cloudProvider: PropTypes.string,
-  setAzureDatabaseData: PropTypes.func,
+  setGoogleDatabaseData: PropTypes.func,
 };
 
-
 // Validation functions
-export function validateAzureStep2(cloudInstanceDetails) {
+export function validateGoogleStep2(cloudInstanceDetails) {
   let isError = false;
   if (isEmptyString(cloudInstanceDetails.name) ||
   isEmptyString(cloudInstanceDetails.db_version) || isEmptyString(cloudInstanceDetails.instance_type) ||
@@ -260,38 +250,18 @@ export function validateAzureStep2(cloudInstanceDetails) {
   return isError;
 }
 
-export function validateAzureStep3(cloudDBDetails, nodeInfo) {
+export function validateGoogleStep3(cloudDBDetails, nodeInfo) {
   let isError = false;
   if (isEmptyString(cloudDBDetails.db_username) || isEmptyString(cloudDBDetails.db_password)) {
     isError = true;
   }
 
-  if (cloudDBDetails.db_password != cloudDBDetails.db_confirm_password ||  !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,128}$/.test(cloudDBDetails.db_confirm_password)) {
+  if (cloudDBDetails.db_password != cloudDBDetails.db_confirm_password) {
     isError = true;
   }
 
   if (isEmptyString(cloudDBDetails.gid)) cloudDBDetails.gid = nodeInfo['server_group']._id;
   return isError;
-}
-
-
-// Check cluster name avaiablity
-export function checkClusternameAvailbility(clusterName){
-  return new Promise((resolve, reject)=>{
-    let _url = url_for('azure.check_cluster_name_availability');
-    const axiosApi = getApiInstance();
-    axiosApi.get(_url, {
-      params: {
-        'name': clusterName,
-      }
-    }).then((res)=>{
-      if (res.data) {
-        resolve(res.data);
-      }
-    }).catch((error) => {
-      reject(gettext(`Error while checking server name availability with Microsoft Azure: ${error.response.data.errormsg}`));
-    });
-  });
 }
 
 // Summary creation
@@ -303,22 +273,27 @@ function createData(name, value) {
 }
 
 // Summary section
-export function getAzureSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
+export function getGoogleSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
+  let dbVersion = cloudInstanceDetails.db_version;
+  dbVersion  = dbVersion.charAt(0) + dbVersion.slice(1,7).toLowerCase() + 'SQL ' + dbVersion.split('_')[1];
+  let storageType = cloudInstanceDetails.storage_type.split('_')[1];
+
   const rows1 = [
     createData(gettext('Cloud'), cloud),
-    createData(gettext('Subscription'), cloudInstanceDetails.subscription),
-    createData(gettext('Resource group'), cloudInstanceDetails.resource_group),
+    createData(gettext('Instance name'), cloudInstanceDetails.name),
+    createData(gettext('Project'), cloudInstanceDetails.project),
     createData(gettext('Region'), cloudInstanceDetails.region),
     createData(gettext('Availability zone'), cloudInstanceDetails.availability_zone),
   ];
 
   const rows2 = [
-    createData(gettext('PostgreSQL version'), cloudInstanceDetails.db_version),
+    createData(gettext('PostgreSQL version'), dbVersion),
     createData(gettext('Instance type'), cloudInstanceDetails.instance_type),
   ];
 
   const rows3 = [
-    createData(gettext('Allocated storage'), cloudInstanceDetails.storage_size + ' GiB'),
+    createData(gettext('Storage type'), storageType),
+    createData(gettext('Allocated storage'), cloudInstanceDetails.storage_size + ' GB'),
   ];
 
   const rows4 = [
@@ -332,6 +307,7 @@ export function getAzureSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
 
   const rows6 = [
     createData(gettext('High availability'), cloudInstanceDetails.high_availability),
+    createData(gettext('Secondary availability zone'), cloudInstanceDetails.secondary_availability_zone),
   ];
 
   return [rows1, rows2, rows3, rows4, rows5, rows6];

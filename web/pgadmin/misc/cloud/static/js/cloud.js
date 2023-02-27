@@ -76,7 +76,7 @@ define('pgadmin.misc.cloud', [
 
       // Register dialog panel
       pgBrowser.Node.registerUtilityPanel();
-      let panel = pgBrowser.Node.addUtilityPanel(920, 650),
+      let panel = pgBrowser.Node.addUtilityPanel(930, 650),
         j = panel.$container.find('.obj_properties').first();
       panel.title(gettext('Deploy Cloud Instance'));
 

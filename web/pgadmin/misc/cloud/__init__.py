@@ -27,6 +27,7 @@ from pgadmin.misc.cloud.biganimal import deploy_on_biganimal,\
     clear_biganimal_session
 from pgadmin.misc.cloud.rds import deploy_on_rds, clear_aws_session
 from pgadmin.misc.cloud.azure import deploy_on_azure, clear_azure_session
+from pgadmin.misc.cloud.google import clear_google_session, deploy_on_google
 import config
 
 # set template path for sql scripts
@@ -76,6 +77,9 @@ class CloudModule(PgAdminModule):
         app.register_blueprint(module)
 
         from .rds import blueprint as module
+        app.register_blueprint(module)
+
+        from .google import blueprint as module
         app.register_blueprint(module)
 
 
@@ -135,6 +139,8 @@ def deploy_on_cloud():
         status, p, resp = deploy_on_biganimal(data)
     elif data['cloud'] == 'azure':
         status, p, resp = deploy_on_azure(data)
+    elif data['cloud'] == 'google':
+        status, p, resp = deploy_on_google(data)
     else:
         status = False
         resp = gettext('No cloud implementation.')
@@ -214,6 +220,7 @@ def clear_cloud_session(pid=None):
     clear_aws_session()
     clear_biganimal_session()
     clear_azure_session(pid)
+    clear_google_session()
 
 
 @blueprint.route(
