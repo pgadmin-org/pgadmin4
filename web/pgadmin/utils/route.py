@@ -68,13 +68,11 @@ class TestsGeneratorRegistry(ABCMeta):
         all_modules = []
 
         try:
-            for module_name in find_modules(pkg_root, True, True):
+            for module_name in find_modules(pkg_root, False, True):
                 if module_name.find(PSYCOPG2) != -1:
                     print("Skipping ", module_name)
                     continue
                 all_modules.append(module_name)
-            TestsGeneratorRegistry._exclude_packages(all_modules,
-                                                     exclude_pkgs)
         except Exception:
             pass
 
