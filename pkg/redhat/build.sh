@@ -230,7 +230,7 @@ if [ "${OS_VERSION}" == 7 ]; then
 fi
 
 # Get the libpq we need
-yumdownloader -y --downloadonly --destdir="${DISTROOT}" postgresql$(ls -d /usr/pgsql-1* | sort -r | head -1 | awk -F '-' '{ print $2 }')-libs
+yumdownloader -y --downloadonly --destdir="${DISTROOT}" libpq5 libpq5-devel postgresql$(ls -d /usr/pgsql-1* | sort -r | head -1 | awk -F '-' '{ print $2 }')-libs
 
 #
 # Get the results!
