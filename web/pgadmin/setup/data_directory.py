@@ -8,6 +8,7 @@
 ##########################################################################
 
 import os
+import sys
 import getpass
 from pgadmin.utils.constants import KERBEROS
 
