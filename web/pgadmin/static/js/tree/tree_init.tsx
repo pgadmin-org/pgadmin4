@@ -108,7 +108,7 @@ function BrowserTree(props) {
         return <PgMenuDivider key={i}/>;
     }
     if(menuItem.isDisabled) {
-      return <React.Fragment key={i}></React.Fragment>;
+      return <React.Fragment key={i}><div style={{padding: '0 0.7rem',opacity: '0.5'}}>{menuItem.label}</div></React.Fragment>;
     }
     const hasCheck = typeof menuItem.checked == 'boolean';
 

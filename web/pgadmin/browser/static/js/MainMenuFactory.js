@@ -113,4 +113,16 @@ export default class MainMenuFactory {
     Menu.sortMenus(menuList);
     return menuList;
   }
+
+  static checkNoMenuOptionForNode(d){
+    let selectedNodeFromNodes=pgAdmin.Browser.Nodes[d._type];
+    let selectedNode=pgAdmin.Browser.tree.selected();
+    let flag=!_.isUndefined(selectedNodeFromNodes.showMenu);
+    if(flag){
+      var showMenu = selectedNodeFromNodes.showMenu(d, selectedNode);
+      return {flag:showMenu?false:flag,showMenu};
+    } else{
+      return {flag,showMenu:undefined};
+    }
+  }
 }

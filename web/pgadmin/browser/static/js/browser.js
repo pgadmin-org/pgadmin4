@@ -378,77 +378,91 @@ define('pgadmin.browser', [
     masterpass_callback_queue: [],
     getMenuList: function(name, item, d, skipDisabled=false) {
       let obj = this;
-      let category = {
-        'common': []
-      };
-      const nodeTypeMenus = obj.all_menus_cache[name][d._type];
-      for(let key of Object.keys(nodeTypeMenus)) {
-        let menuItem = nodeTypeMenus[key];
-        let menuCategory = menuItem.category ?? 'common';
-        category[menuCategory] = category[menuCategory] ?? [];
-        category[menuCategory].push(menuItem);
-      }
-      let menuItemList = [];
-
-      for(let c in category) {
-        if((c in obj.menu_categories || category[c].length > 1) && c != 'common' ) {
-          let allMenuItemsDisabled = true;
-          category[c].forEach((mi)=> {
-            mi.checkAndSetDisabled(d, item);
-            if(allMenuItemsDisabled) {
-              allMenuItemsDisabled = mi.isDisabled;
-            }
-          });
-
-          const categoryMenuOptions = obj.menu_categories[c];
-          let label = categoryMenuOptions?.label ?? c;
-          let priority = categoryMenuOptions?.priority ?? 10;
-
-          if(categoryMenuOptions?.above) {
-            menuItemList.push(MainMenuFactory.getSeparator(label, priority));
-          }
-          if(!allMenuItemsDisabled && skipDisabled) {
-            let _menuItem = MainMenuFactory.createMenuItem({
-              name: c,
-              label: label,
-              module: c,
-              category: c,
-              menu_items: category[c],
-              priority: priority
-            });
-
-            menuItemList.push(_menuItem);
-          } else if(!skipDisabled){
-            let _menuItem = MainMenuFactory.createMenuItem({
-              name: c,
-              label: label,
-              module:c,
-              category: c,
-              menu_items: category[c],
-              priority: priority
-            });
-
-            menuItemList.push(_menuItem);
-          }
-          if(categoryMenuOptions?.below) {
-            menuItemList.push(MainMenuFactory.getSeparator(label, priority));
-          }
-        } else {
-          category[c].forEach((c)=> {
-            c.checkAndSetDisabled(d, item);
-          });
-
-          category[c].forEach((m)=> {
-            if(!skipDisabled) {
-              menuItemList.push(m);
-            } else if(skipDisabled && !m.isDisabled){
-              menuItemList.push(m);
-            }
-          });
+      //This 'checkNoMenuOptionForNode' function will check if showMenu flag is present or not for selected node
+      let {flag,showMenu}=MainMenuFactory.checkNoMenuOptionForNode(d);
+      if(flag){
+        if(showMenu===false){
+          return [MainMenuFactory.createMenuItem({
+            enable : false,
+            label: gettext('No menu available for this object.'),
+            name:'',
+            priority: 1,
+            category: 'create',
+          })];
         }
-      }
+      }else{
+        let category = {
+          'common': []
+        };
+        const nodeTypeMenus = obj.all_menus_cache[name][d._type];
+        for(let key of Object.keys(nodeTypeMenus)) {
+          let menuItem = nodeTypeMenus[key];
+          let menuCategory = menuItem.category ?? 'common';
+          category[menuCategory] = category[menuCategory] ?? [];
+          category[menuCategory].push(menuItem);
+        }
+        let menuItemList = [];
 
-      return menuItemList;
+        for(let c in category) {
+          if((c in obj.menu_categories || category[c].length > 1) && c != 'common' ) {
+            let allMenuItemsDisabled = true;
+            category[c].forEach((mi)=> {
+              mi.checkAndSetDisabled(d, item);
+              if(allMenuItemsDisabled) {
+                allMenuItemsDisabled = mi.isDisabled;
+              }
+            });
+
+            const categoryMenuOptions = obj.menu_categories[c];
+            let label = categoryMenuOptions?.label ?? c;
+            let priority = categoryMenuOptions?.priority ?? 10;
+
+            if(categoryMenuOptions?.above) {
+              menuItemList.push(MainMenuFactory.getSeparator(label, priority));
+            }
+            if(!allMenuItemsDisabled && skipDisabled) {
+              let _menuItem = MainMenuFactory.createMenuItem({
+                name: c,
+                label: label,
+                module: c,
+                category: c,
+                menu_items: category[c],
+                priority: priority
+              });
+
+              menuItemList.push(_menuItem);
+            } else if(!skipDisabled){
+              let _menuItem = MainMenuFactory.createMenuItem({
+                name: c,
+                label: label,
+                module:c,
+                category: c,
+                menu_items: category[c],
+                priority: priority
+              });
+
+              menuItemList.push(_menuItem);
+            }
+            if(categoryMenuOptions?.below) {
+              menuItemList.push(MainMenuFactory.getSeparator(label, priority));
+            }
+          } else {
+            category[c].forEach((c)=> {
+              c.checkAndSetDisabled(d, item);
+            });
+
+            category[c].forEach((m)=> {
+              if(!skipDisabled) {
+                menuItemList.push(m);
+              } else if(skipDisabled && !m.isDisabled){
+                menuItemList.push(m);
+              }
+            });
+          }
+        }
+
+        return menuItemList;
+      }
     },
     // Enable/disable menu options
     enable_disable_menus: function(item) {
