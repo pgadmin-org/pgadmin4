@@ -268,7 +268,7 @@ class Connection(BaseConnection):
         password, encpass, is_update_password = self._check_user_password(
             kwargs)
 
-        passfile = manager.get_connection_param_value('passfile')
+        passfile = kwargs['passfile'] if 'passfile' in kwargs else None
         tunnel_password = kwargs['tunnel_password'] if 'tunnel_password' in \
                                                        kwargs else ''
 
@@ -305,7 +305,7 @@ class Connection(BaseConnection):
         # we will check for pgpass file availability from connection manager
         # if it's present then we will use it
         if not password and not encpass and not passfile:
-            passfile = manager.passfile if manager.passfile else None
+            passfile = manager.get_connection_param_value('passfile')
             if manager.passexec:
                 password = manager.passexec.get()
 

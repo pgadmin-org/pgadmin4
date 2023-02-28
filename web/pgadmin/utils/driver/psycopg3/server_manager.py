@@ -642,6 +642,8 @@ WHERE db.oid = {0}""".format(did))
             self.local_bind_port if self.use_ssh_tunnel else self.port
         dsn_args['dbname'] = database
         dsn_args['user'] = user
+        if self.service is not None:
+            dsn_args['service'] = self.service
 
         # Make a copy to display the connection string on GUI.
         display_dsn_args = dsn_args.copy()
@@ -658,7 +660,7 @@ WHERE db.oid = {0}""".format(did))
                 orig_value = value
                 # Getting complete file path if the key is one of the below.
                 if key in ['passfile', 'sslcert', 'sslkey', 'sslrootcert',
-                           'sslcrl', 'service', 'sslcrldir']:
+                           'sslcrl', 'sslcrldir']:
                     with_complete_path = True
                     value = get_complete_file_path(value)
 
