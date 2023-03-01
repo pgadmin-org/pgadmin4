@@ -61,8 +61,8 @@ requests                                                         2.25.1         
 pyotp                                                            2.8.0            MIT License                          https://github.com/pyotp/pyotp
 qrcode                                                           7.4.2            BSD                                  https://github.com/lincolnloop/python-qrcode
 Pillow                                                           9.4.0            HPND                                 https://python-pillow.org
-boto3                                                            1.26.64          Apache License 2.0                   https://github.com/boto/boto3
-botocore                                                         1.29.64          Apache License 2.0                   https://github.com/boto/botocore
+boto3                                                            1.26.71          Apache License 2.0                   https://github.com/boto/boto3
+botocore                                                         1.29.71          Apache License 2.0                   https://github.com/boto/botocore
 urllib3                                                          1.26.14          MIT                                  https://urllib3.readthedocs.io/
 Werkzeug                                                         2.1.2            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
 azure-mgmt-rdbms                                                 10.1.0           MIT License                          https://github.com/Azure/azure-sdk-for-python
@@ -315,7 +315,6 @@ json-schema-traverse                                             1.0.0          
 json-schema-traverse                                             0.4.1            MIT                                  git+https://github.com/epoberezkin/json-schema-traverse.git
 json-source-map                                                  0.6.1            MIT                                  git+https://github.com/epoberezkin/json-source-map.git
 json5                                                            2.2.3            MIT                                  git+https://github.com/json5/json5.git
-jsoneditor-react                                                 3.1.2            MIT                                  git+https://github.com/vankop/jsoneditor-react.git
 jss                                                              10.9.2           MIT                                  https://github.com/cssinjs/jss.git
 jss-plugin-camel-case                                            10.9.2           MIT                                  https://github.com/cssinjs/jss.git
 jss-plugin-default-unit                                          10.9.2           MIT                                  https://github.com/cssinjs/jss.git
@@ -573,5 +572,5 @@ tslib                                                            2.3.1          
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 
-492 dependencies listed.
+491 dependencies listed.
 
