@@ -164,14 +164,9 @@ def register_string_typecasters(connection):
     # characters. Here we unescape them using unicode_escape
     # and send ahead. When insert update is done, the characters
     # are escaped again and sent to the DB.
-
-    postgres_encoding, python_encoding = \
-        get_encoding(connection.info.encoding)
-    if postgres_encoding != 'UTF-8' and postgres_encoding != 'UTF8':
-
-        for typ in (19, 18, 25, 1042, 1043, 0):
-            if connection:
-                connection.adapters.register_loader(typ, TextLoaderpgAdmin)
+    for typ in (19, 18, 25, 1042, 1043, 0):
+        if connection:
+            connection.adapters.register_loader(typ, TextLoaderpgAdmin)
 
 
 def register_binary_typecasters(connection):
@@ -222,10 +217,14 @@ class TextLoaderpgAdmin(TextLoader):
         postgres_encoding, python_encoding = get_encoding(
             self.connection.info.encoding)
         if postgres_encoding not in ['SQLASCII', 'SQL_ASCII']:
+            # In case of errors while decoding data, instead of raising error
+            # replace errors with empty space.
+            # Error - utf-8 code'c can not decode byte 0x7f:
+            # invalid continuation byte
             if isinstance(data, memoryview):
-                return bytes(data).decode(self._encoding)
+                return bytes(data).decode(self._encoding, errors='replace')
             else:
-                return data.decode(self._encoding)
+                return data.decode(self._encoding, errors='replace')
         else:
             # SQL_ASCII Database
             try:
