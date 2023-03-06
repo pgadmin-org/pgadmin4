@@ -274,10 +274,16 @@ REM Main build sequence Ends
     REM YARN END
 
     REM WGET
-    FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
-    :GET_NW
-        wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
-        IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
+    REM Comment out the below for loop as the latest version having
+    REM some problem to launch on CentOS 7, so for
+    REM the time being hardcoded the version to 0.72.0
+    REM FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
+    REM :GET_NW
+    REM    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
+    REM    IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
+
+    SET "NW_VERSION=0.72.0"
+    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
 
     tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
     REM WGET END

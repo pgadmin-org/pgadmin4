@@ -34,7 +34,11 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    # Comment out the below line as the latest version (0.73.0) having some
+    # problem in launching the pgAdmin 4 in CentOS 7
+    # hardcoded the version to 0.72.0
+    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    NW_VERSION="0.72.0"
 
     pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do
