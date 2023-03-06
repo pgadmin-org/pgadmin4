@@ -43,5 +43,6 @@ Bug fixes
   | `Issue #5810 <https://github.com/pgadmin-org/pgadmin4/issues/5810>`_ -  Fix an issue where sequence owner is remove on sequence edit.
   | `Issue #5822 <https://github.com/pgadmin-org/pgadmin4/issues/5822>`_ -  Do not allow to save invalid JSON in query tool JSON editor.
   | `Issue #5847 <https://github.com/pgadmin-org/pgadmin4/issues/5847>`_ -  Fixed an issue where pgAdmin failed to connect when the Postgres password included special characters.
+  | `Issue #5870 <https://github.com/pgadmin-org/pgadmin4/issues/5870>`_ -  Ensure that the database migration does not fail with a NoSuchTableError exception.
   | `Issue #5872 <https://github.com/pgadmin-org/pgadmin4/issues/5872>`_ -  Handle MERGE operation in query tool explain introduced in PostgreSQL 15.
   | `Issue #5889 <https://github.com/pgadmin-org/pgadmin4/issues/5889>`_ -  Fixed an issue where the database server is not connected using a service file.

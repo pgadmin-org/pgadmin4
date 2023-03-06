@@ -32,6 +32,23 @@ def migrate_connection_params(table_name):
     op.add_column(table_name,
                   sa.Column('connection_params', sa.JSON()))
 
+    # Fixed the NoSuchTableError exception when migrating from v6.2 and below
+    # to directly v6.16 and above. Below statements has been removed from
+    # migration file 3ce25f562f3b_.py as a part of using the alembic code
+    # instead of SQL queries directly.
+    try:
+        # Rename user table to user_old and again user_old to user to change
+        # the foreign key reference of user_old table which is not exists
+        op.execute("ALTER TABLE user RENAME TO user_old")
+        op.execute("ALTER TABLE user_old RENAME TO user")
+        # Rename user table to server_old and again server_old to server to
+        # change the foreign key reference of user_old table which is not
+        # exists.
+        op.execute("ALTER TABLE server RENAME TO server_old")
+        op.execute("ALTER TABLE server_old RENAME TO server")
+    except Exception as _:
+        pass
+
     # define table representation
     meta = sa.MetaData(bind=op.get_bind())
     meta.reflect(only=(table_name,))
