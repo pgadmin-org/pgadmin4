@@ -532,6 +532,37 @@ def index():
     return response
 
 
+def validate_shared_storage_config(data, shared_storage_keys):
+    """
+    Validate the config values are correct or not
+    """
+    if shared_storage_keys.issubset(data.keys()):
+        if isinstance(data['name'], str) and isinstance(
+                data['path'], str) and \
+                isinstance(data['restricted_access'], bool):
+            return True
+    return False
+
+
+def get_shared_storage_list():
+    """
+    Return the shared storage list after checking all required keys are present
+    or not in config. This is for server mode only.
+    """
+    shared_storage_config = []
+    shared_storage_list = []
+    if config.SERVER_MODE:
+        shared_storage_keys = set(['name', 'path', 'restricted_access'])
+        shared_storage_config = [
+            sdir for sdir in config.SHARED_STORAGE if
+            validate_shared_storage_config(sdir, shared_storage_keys)]
+
+        config.SHARED_STORAGE = shared_storage_config
+        shared_storage_list = [sdir['name'] for sdir in shared_storage_config]
+
+    return shared_storage_list
+
+
 @blueprint.route("/js/utils.js")
 @pgCSRFProtect.exempt
 @login_required
@@ -599,6 +630,8 @@ def utils():
         auth_source = session['auth_source_manager'][
             'source_friendly_name']
 
+    shared_storage_list = get_shared_storage_list()
+
     return make_response(
         render_template(
             'browser/js/utils.js',
@@ -630,7 +663,8 @@ def utils():
             auth_source=auth_source,
             heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
             password_length_min=config.PASSWORD_LENGTH_MIN,
-            current_ui_lock=current_ui_lock
+            current_ui_lock=current_ui_lock,
+            shared_storage_list=shared_storage_list,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

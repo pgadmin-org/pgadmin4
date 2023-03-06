@@ -51,7 +51,8 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
 from pgadmin.utils.constants import MIMETYPE_APP_JS, \
-    SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, ERROR_FETCHING_DATA
+    SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, \
+    ERROR_FETCHING_DATA, MY_STORAGE
 from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
@@ -1808,7 +1809,9 @@ def load_file():
     file_path = unquote(file_data['file_name'])
 
     # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
+    storage_manager_path = get_storage_directory(
+        shared_storage=file_data['storage'])
+
     try:
         Filemanager.check_access_permission(storage_manager_path, file_path)
     except Exception as e:
@@ -1850,7 +1853,13 @@ def save_file():
         file_data = json.loads(request.data)
 
     # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
+    last_storage = Preferences.module('file_manager').preference(
+        'last_storage').get()
+    if last_storage != MY_STORAGE:
+        storage_manager_path = get_storage_directory(
+            shared_storage=last_storage)
+    else:
+        storage_manager_path = get_storage_directory()
 
     # generate full path of file
     file_path = unquote(file_data['file_name'])

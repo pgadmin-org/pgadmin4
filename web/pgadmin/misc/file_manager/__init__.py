@@ -16,6 +16,7 @@ import string
 import time
 from urllib.parse import unquote
 from sys import platform as _platform
+from flask_security import current_user
 import config
 import codecs
 import pathlib
@@ -30,7 +31,8 @@ from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, unauthorized, \
     internal_server_error
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_OPTIONS, MIMETYPE_APP_JS
+from pgadmin.utils.constants import PREF_LABEL_OPTIONS, MIMETYPE_APP_JS, \
+    MY_STORAGE
 from pgadmin.settings.utils import get_file_type_setting
 
 # Checks if platform is Windows
@@ -152,6 +154,12 @@ class FileManagerModule(PgAdminModule):
             gettext("Last directory visited"), 'text', '/',
             category_label=PREF_LABEL_OPTIONS
         )
+        self.last_storage = self.preference.register(
+            'options', 'last_storage',
+            gettext("Last storage"), 'text', '',
+            category_label=PREF_LABEL_OPTIONS,
+            hidden=True
+        )
         self.file_dialog_view = self.preference.register(
             'options', 'file_dialog_view',
             gettext("File dialog view"), 'select', 'list',
@@ -228,6 +236,7 @@ def init_filemanager():
                 "platform_type": data['platform_type'],
                 "show_volumes": data['show_volumes'],
                 "homedir": data['homedir'],
+                'storage_folder': data['storage_folder'],
                 "last_selected_format": last_selected_format
             },
             "security": {
@@ -263,6 +272,7 @@ def delete_trans_id(trans_id):
 @login_required
 def save_last_directory_visited(trans_id):
     blueprint.last_directory_visited.set(req.json['path'])
+    blueprint.last_storage.set(req.json['storage_folder'])
     return make_json_response(status=200)
 
 
@@ -297,9 +307,10 @@ class Filemanager():
         'Code': 0
     }
 
-    def __init__(self, trans_id):
+    def __init__(self, trans_id, ss=''):
         self.trans_id = trans_id
         self.dir = get_storage_directory()
+        self.sharedDir = get_storage_directory(shared_storage=ss)
 
         if self.dir is not None and isinstance(self.dir, list):
             self.dir = ""
@@ -394,6 +405,20 @@ class Filemanager():
         if 'init_path' in params:
             blueprint.last_directory_visited.get(params['init_path'])
         last_dir = blueprint.last_directory_visited.get()
+        last_ss_name = blueprint.last_storage.get()
+        if last_ss_name and last_ss_name != MY_STORAGE \
+                and len(config.SHARED_STORAGE) > 0:
+            selectedDir = [sdir for sdir in config.SHARED_STORAGE if
+                           sdir['name'] == last_ss_name]
+            last_ss = selectedDir[0]['path'] if len(
+                selectedDir) == 1 else storage_dir
+        else:
+            if last_ss_name != MY_STORAGE:
+                last_dir = '/'
+                blueprint.last_storage.set(MY_STORAGE)
+
+            last_ss = storage_dir
+
         check_dir_exists = False
         if last_dir is None:
             last_dir = "/"
@@ -404,12 +429,13 @@ class Filemanager():
             last_dir = homedir
 
         if check_dir_exists:
-            last_dir = Filemanager.get_closest_parent(storage_dir, last_dir)
+            last_dir = Filemanager.get_closest_parent(last_ss, last_dir)
 
         # create configs using above configs
         configs = {
             "fileroot": last_dir,
             "homedir": homedir,
+            'storage_folder': last_ss_name,
             "dialog_type": fm_type,
             "title": title,
             "upload": {
@@ -743,13 +769,34 @@ class Filemanager():
         trans_data = Filemanager.get_trasaction_selection(self.trans_id)
         the_dir = None
         if config.SERVER_MODE:
-            the_dir = self.dir
+            if self.sharedDir and len(config.SHARED_STORAGE) > 0:
+                the_dir = self.sharedDir
+            else:
+                the_dir = self.dir
+
             if the_dir is not None and not the_dir.endswith('/'):
                 the_dir += '/'
 
         filelist = self.list_filesystem(
             the_dir, path, trans_data, file_type, show_hidden)
         return filelist
+
+    def check_access(self, ss, mode):
+        if self.sharedDir:
+            selectedDirList = [sdir for sdir in config.SHARED_STORAGE if
+                               sdir['name'] == ss]
+            selectedDir = selectedDirList[0] if len(
+                selectedDirList) == 1 else None
+
+            if selectedDir:
+                if selectedDir[
+                    'restricted_access'] and not current_user.has_role(
+                        "Administrator"):
+                    raise PermissionError(gettext(
+                        "Access denied: This shared folder has restricted "
+                        "access, you are not allowed to rename, delete, "
+                        "or upload any files/folders. Please contact "
+                        "Administrator to gain access."))
 
     def rename(self, old=None, new=None):
         """
@@ -758,7 +805,10 @@ class Filemanager():
         if not self.validate_request('rename'):
             return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-        the_dir = self.dir if self.dir is not None else ''
+        if self.sharedDir:
+            the_dir = self.sharedDir
+        else:
+            the_dir = self.dir if self.dir is not None else ''
 
         Filemanager.check_access_permission(the_dir, old)
         Filemanager.check_access_permission(the_dir, new)
@@ -801,8 +851,10 @@ class Filemanager():
         """
         if not self.validate_request('delete'):
             return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
-
-        the_dir = self.dir if self.dir is not None else ''
+        if self.sharedDir:
+            the_dir = self.sharedDir
+        else:
+            the_dir = self.dir if self.dir is not None else ''
         orig_path = "{0}{1}".format(the_dir, path)
 
         Filemanager.check_access_permission(the_dir, path)
@@ -825,7 +877,10 @@ class Filemanager():
         if not self.validate_request('upload'):
             return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-        the_dir = self.dir if self.dir is not None else ''
+        if self.sharedDir:
+            the_dir = self.sharedDir
+        else:
+            the_dir = self.dir if self.dir is not None else ''
 
         try:
             path = req.form.get('currentpath')
@@ -990,7 +1045,10 @@ class Filemanager():
         if not self.validate_request('create'):
             return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-        user_dir = self.dir if self.dir is not None else ''
+        if self.sharedDir and len(config.SHARED_STORAGE) > 0:
+            user_dir = self.sharedDir
+        else:
+            user_dir = self.dir if self.dir is not None else ''
 
         Filemanager.check_access_permission(user_dir, "{}{}".format(
             path, name))
@@ -1018,7 +1076,11 @@ class Filemanager():
         if not self.validate_request('download'):
             return unauthorized(self.ERROR_NOT_ALLOWED['Error'])
 
-        the_dir = self.dir if self.dir is not None else ''
+        if self.sharedDir and len(config.SHARED_STORAGE) > 0:
+            the_dir = self.sharedDir
+        else:
+            the_dir = self.dir if self.dir is not None else ''
+
         orig_path = "{0}{1}".format(the_dir, path)
 
         Filemanager.check_access_permission(
@@ -1057,13 +1119,13 @@ def file_manager(trans_id):
     It gets unique transaction id from post request and
     rotate it into Filemanager class.
     """
-    my_fm = Filemanager(trans_id)
     mode = ''
     kwargs = {}
     if req.method == 'POST':
         if req.files:
             mode = 'add'
-            kwargs = {'req': req}
+            kwargs = {'req': req,
+                      'storage_folder': req.form.get('storage_folder', None)}
         else:
             kwargs = json.loads(req.data)
             kwargs['req'] = req
@@ -1075,14 +1137,23 @@ def file_manager(trans_id):
             'name': req.args['name'] if 'name' in req.args else ''
         }
         mode = req.args['mode']
+    ss = kwargs['storage_folder'] if 'storage_folder' in kwargs else None
+    my_fm = Filemanager(trans_id, ss)
+
+    if ss and mode in ['upload', 'rename', 'delete', 'addfolder', 'add']:
+        my_fm.check_access(ss, mode)
     func = getattr(my_fm, mode)
     try:
         if mode in ['getfolder', 'download']:
             kwargs.pop('name', None)
 
+        if mode in ['add']:
+            kwargs.pop('storage_folder', None)
+
         if mode in ['addfolder', 'getfolder', 'rename', 'delete',
                     'is_file_exist', 'req', 'permission', 'download']:
             kwargs.pop('req', None)
+            kwargs.pop('storage_folder', None)
 
         res = func(**kwargs)
     except PermissionError as e:

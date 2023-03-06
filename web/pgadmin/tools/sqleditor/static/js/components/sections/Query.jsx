@@ -350,9 +350,10 @@ export default function Query() {
       }
     });
 
-    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName)=>{
+    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE, (fileName, storage)=>{
       queryToolCtx.api.post(url_for('sqleditor.load_file'), {
         'file_name': decodeURI(fileName),
+        'storage': storage
       }, {transformResponse: [(data, headers) => {
         if(headers['content-type'].includes('application/json')) {
           return JSON.parse(data);

@@ -148,7 +148,7 @@ export default function Uploader({fmUtilsObj, onClose}) {
             type: 'started',
             id: upfile.id,
           });
-          await fmUtilsObj.uploadItem(upfile.file, (progressEvent)=>{
+          await fmUtilsObj.uploadItem(upfile.file, fmUtilsObj.storage_folder, (progressEvent)=>{
             const {loaded, total} = progressEvent;
             const percent = Math.floor((loaded * 100) / total);
             dispatchFileAction({

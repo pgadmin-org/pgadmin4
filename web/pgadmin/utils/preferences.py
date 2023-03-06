@@ -72,6 +72,7 @@ class _Preference():
         self.options = kwargs.get('options', None)
         self.select = kwargs.get('select', None)
         self.fields = kwargs.get('fields', None)
+        self.hidden = kwargs.get('hidden', None)
         self.allow_blanks = kwargs.get('allow_blanks', None)
         self.disabled = kwargs.get('disabled', False)
         self.dependents = kwargs.get('dependents', None)
@@ -262,6 +263,7 @@ class _Preference():
             'select': self.select,
             'value': self.get(),
             'fields': self.fields,
+            'hidden': self.hidden,
             'disabled': self.disabled,
             'dependents': self.dependents
         }
@@ -436,6 +438,7 @@ class Preferences():
         category_label = kwargs.get('category_label', None)
         select = kwargs.get('select', None)
         fields = kwargs.get('fields', None)
+        hidden = kwargs.get('hidden', None)
         allow_blanks = kwargs.get('allow_blanks', None)
         disabled = kwargs.get('disabled', False)
         dependents = kwargs.get('dependents', None)
@@ -457,7 +460,7 @@ class Preferences():
             min_val=min_val, max_val=max_val, options=options,
             select=select, fields=fields, allow_blanks=allow_blanks,
             disabled=disabled, dependents=dependents,
-            control_props=control_props
+            control_props=control_props, hidden=hidden
         )
 
         return res

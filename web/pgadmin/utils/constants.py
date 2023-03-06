@@ -120,3 +120,6 @@ DATABASE_LAST_SYSTEM_OID = 16383
 # Drivers
 PSYCOPG2 = 'psycopg2'
 PSYCOPG3 = 'psycopg3'
+
+# Shared storage
+MY_STORAGE = 'my_storage'

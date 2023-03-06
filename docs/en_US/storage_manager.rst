@@ -7,6 +7,7 @@
 *Storage Manager* is a feature that helps you manage your systems storage device. You can use *Storage Manager* to:
 
 * Download, upload, or manage operating system files. To use this feature, *pgAdmin* must be running in *Server Mode* on your client machine.
+* The shared storage option allows users to access the shared storages that are shared by admin users.
 * Download *backup* or *export* files (custom, tar and plain text format) on a client machine.
 * Download *export* dump files of tables.
 
@@ -17,6 +18,12 @@ You can access *Storage Manager* from the *Tools* Menu.
     :align: center
 
 Use icons on the top of the *Storage Manager* window to manage storage:
+
+Use the ``Folder`` icon |Shared Storage| to access shared storage. In order to enable shared storage,
+admins need to add the SHARED_STORAGE variable to the config file. Users can access the shared storage
+with this and share files with one another.
+
+.. |Shared Storage| image:: images/sm_ss.png
 
 Use the ``Home`` icon |home| to return to the home directory.
 
@@ -39,6 +46,17 @@ Use the ``New Folder`` icon |folder| to add a new folder.
 .. |folder| image:: images/sm_new_folder.png
 
 Use the *Format* drop down list to select the format of the files to be displayed; choose from *sql*, *csv*, or *All Files*.
+
+Shared Storage
+*********************
+.. image:: images/shared_storage.png
+    :alt: Other options
+    :align: center
+
+In shared storage the ``My Storage`` is the user's storage directory, and other directories are shared storage set by
+the admin user. Using this shared storage users can share the files with other users through pgAdmin.
+Admin users can mark the shared storage as restricted to restrict non-admin users from deleting, uploading,
+adding, and renaming files/folders in shared storage by setting the restricted_access flag in config.
 
 Other Options
 *********************
