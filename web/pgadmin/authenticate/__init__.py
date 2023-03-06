@@ -83,7 +83,7 @@ def login():
     Entry point for all the authentication sources.
     The user input will be validated and authenticated.
     """
-    form = _security.login_form()
+    form = _security.forms.get('login_form').cls(request.form)
     if OAUTH2 in config.AUTHENTICATION_SOURCES \
             and 'oauth2_button' in request.form:
         # Sending empty form as oauth2 does not require form attribute
@@ -173,7 +173,7 @@ def login():
     if 'auth_obj' in session:
         session.pop('auth_obj')
     flash(msg, 'danger')
-    form_class = _security.login_form
+    form_class = _security.forms.get('login_form').cls
     form = form_class()
 
     return _security.render_template(

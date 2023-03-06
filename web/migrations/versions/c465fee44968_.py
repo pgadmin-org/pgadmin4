@@ -29,9 +29,9 @@ def upgrade():
     op.add_column('user', sa.Column('fs_uniquifier', sa.String(),
                                     nullable=True))
 
-    meta = sa.MetaData(bind=op.get_bind())
+    meta = sa.MetaData()
     # define table representation
-    meta.reflect(only=('user',))
+    meta.reflect(op.get_bind(), only=('user',))
     user_table = sa.Table('user', meta)
 
     op.execute(

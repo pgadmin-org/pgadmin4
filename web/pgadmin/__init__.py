@@ -299,9 +299,6 @@ def create_app(app_name=None):
     # Initialise i18n
     babel = Babel(app)
 
-    app.logger.debug('Available translations: %s' % babel.list_translations())
-
-    @babel.localeselector
     def get_locale():
         """Get the language for the user."""
         language = 'en'
@@ -335,6 +332,7 @@ def create_app(app_name=None):
 
         return language
 
+    babel.init_app(app, locale_selector=get_locale)
     ##########################################################################
     # Setup authentication
     ##########################################################################
@@ -456,21 +454,18 @@ def create_app(app_name=None):
             # Run migration for the first time i.e. create database
             # If version not available, user must have aborted. Tables are not
             # created and so its an empty db
-            try:
-                if get_version() == -1:
-                    db_upgrade(app)
-                else:
-                    schema_version = get_version()
+            if get_version() == -1:
+                db_upgrade(app)
+            else:
+                schema_version = get_version()
 
-                    # Run migration if current schema version is greater than
-                    # the schema version stored in version table.
-                    if CURRENT_SCHEMA_VERSION > schema_version:
-                        db_upgrade(app)
-                        # Update schema version to the latest
-                        set_version(CURRENT_SCHEMA_VERSION)
-                        db.session.commit()
-            except Exception as e:
-                app.logger.error(e)
+                # Run migration if current schema version is greater than
+                # the schema version stored in version table.
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    db_upgrade(app)
+                    # Update schema version to the latest
+                    set_version(CURRENT_SCHEMA_VERSION)
+                    db.session.commit()
 
     # Run the migration as per specified by the user.
     if config.CONFIG_DATABASE_URI is not None and \
@@ -719,7 +714,9 @@ def create_app(app_name=None):
                                svr_superuser, svr_port, svr_discovery_id,
                                svr_comment)
 
-        except Exception:
+        except Exception as e:
+            print(str(e))
+            db.session.rollback()
             pass
 
     @user_logged_in.connect_via(app)
