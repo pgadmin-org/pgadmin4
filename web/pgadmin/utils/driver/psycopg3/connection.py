@@ -1017,7 +1017,6 @@ WHERE db.datname = current_database()""")
         encoding = self.python_encoding
 
         query = query.encode(encoding)
-
         self.__async_cursor = cur
         self.__async_query_id = query_id
 
@@ -1814,7 +1813,7 @@ Failed to reset the connection to the server due to following error:
         else:
 
             if parameters:
-                return psycopg.sql.SQL(query.format(parameters)
-                                       ).as_string(self.conn)
+                with psycopg.ClientCursor(self.conn) as _cur:
+                    return _cur.mogrify(query, parameters)
             else:
                 return query
