@@ -79,13 +79,13 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
       },
       {
         id: 'using', label: gettext('Using'), deps: ['using', 'event'],
-        type: 'text', disabled: obj.disableUsingField,
+        type: 'multiline', disabled: obj.disableUsingField,
         mode: ['create', 'edit', 'properties'],
         control: 'sql', visible: true, group: gettext('Commands'),
       },
       {
         id: 'withcheck', label: gettext('With check'), deps: ['withcheck', 'event'],
-        type: 'text', mode: ['create', 'edit', 'properties'],
+        type: 'multiline', mode: ['create', 'edit', 'properties'],
         control: 'sql', visible: true, group: gettext('Commands'),
         disabled: obj.disableWithCheckField,
       },
