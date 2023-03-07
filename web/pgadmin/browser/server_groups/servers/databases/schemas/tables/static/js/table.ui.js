@@ -576,7 +576,7 @@ export default class TableSchema extends BaseUISchema {
         if (state.rlspolicy && this.origData.rlspolicy != state.rlspolicy) {
           Notify.alert(
             gettext('Check Policy?'),
-            gettext('Please check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
+            gettext('Please check if any policy exists. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
           );
         }
       }
