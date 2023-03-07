@@ -612,14 +612,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # version 9.5 and above
         BaseTableView._check_rlspolicy_support(res)
 
+        # If estimated_row_count is zero or -1 then set the row count to 0
+        if not estimated_row_count or estimated_row_count < 0:
+            res['rows'][0]['rows_cnt'] = 0
         # If estimated rows are greater than threshold then
-        if estimated_row_count and \
-                estimated_row_count > table_row_count_threshold:
+        elif estimated_row_count > table_row_count_threshold:
             res['rows'][0]['rows_cnt'] = str(table_row_count_threshold) + '+'
-
         # If estimated rows is lower than threshold then calculate the count
-        elif estimated_row_count and \
-                table_row_count_threshold >= estimated_row_count:
+        elif 0 < estimated_row_count <= table_row_count_threshold:
             sql = render_template(
                 "/".join(
                     [self.table_template_path, 'get_table_row_count.sql']
@@ -632,10 +632,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 return False, internal_server_error(errormsg=count)
 
             res['rows'][0]['rows_cnt'] = count
-
-        # If estimated_row_count is zero then set the row count with same
-        elif not estimated_row_count:
-            res['rows'][0]['rows_cnt'] = estimated_row_count
 
         # Fetch privileges
         sql = render_template("/".join([self.table_template_path,
