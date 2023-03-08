@@ -46,3 +46,4 @@ Bug fixes
   | `Issue #5870 <https://github.com/pgadmin-org/pgadmin4/issues/5870>`_ -  Ensure that the database migration does not fail with a NoSuchTableError exception.
   | `Issue #5872 <https://github.com/pgadmin-org/pgadmin4/issues/5872>`_ -  Handle MERGE operation in query tool explain introduced in PostgreSQL 15.
   | `Issue #5889 <https://github.com/pgadmin-org/pgadmin4/issues/5889>`_ -  Fixed an issue where the database server is not connected using a service file.
+  | `Issue #5909 <https://github.com/pgadmin-org/pgadmin4/issues/5909>`_ -  Fixed an issue where the file name in the query tool tab was not changing if another file is opened.
