@@ -67,7 +67,8 @@ const configData = {
     'platform_type': 'darwin',
     'show_volumes': true,
     'homedir': '/home/',
-    'last_selected_format': '*'
+    'last_selected_format': '*',
+    'storage_folder': ''
   },
   'security': {
     'uploadPolicy': '',
@@ -84,6 +85,8 @@ const configData = {
     'imagesOnly': false
   }
 };
+
+const sharedStorageConfig = ['Shared Storage'];
 
 const params={
   dialog_type: 'select_file',
@@ -123,6 +126,7 @@ describe('FileManger', ()=>{
             closeModal={closeModal}
             onOK={onOK}
             onCancel={onCancel}
+            sharedStorages={sharedStorageConfig}
             {...props}
           />
         </Theme>);
@@ -147,6 +151,32 @@ describe('FileManger', ()=>{
           expect(ctrl.find('GridView').length).toBe(1);
           done();
         }, 500);
+      }, 0);
+    });
+
+    it('Change Shared Storage', (done)=>{
+      networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      let ctrl = ctrlMount({});
+      setTimeout(()=>{
+        ctrl.update();
+        ctrl.find('button[name="menu-shared-storage"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="Shared Storage"]').simulate('click');
+        ctrl.update();
+        expect(ctrl.find('Shared Storage').length).toBe(0);
+        done();
+      }, 0);
+    });
+
+    it('Change Storage to My Storage', (done)=>{
+      networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      let ctrl = ctrlMount({});
+      setTimeout(()=>{
+        ctrl.update();
+        ctrl.find('button[name="menu-shared-storage"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="my_storage"]').simulate('click');
+        ctrl.update();
+        expect(ctrl.find('my_storage').length).toBe(0);
+        done();
       }, 0);
     });
 
@@ -257,7 +287,7 @@ describe('FileManagerUtils', ()=>{
   });
 
   it('addFolder', async ()=>{
-    let res = await fmObj.addFolder({Filename: 'newfolder'});
+    let res = await fmObj.addFolder({Filename: 'newfolder', 'storage_folder': 'my_storage'});
     expect(res).toEqual({
       Filename: 'newfolder',
       Path: '/home/newfolder',
@@ -279,10 +309,10 @@ describe('FileManagerUtils', ()=>{
 
   it('deleteItem', async ()=>{
     let row = {Filename: 'newfolder', Path: '/home/newfolder'};
-    let path = await fmObj.deleteItem(row);
+    let path = await fmObj.deleteItem(row, '');
     expect(path).toBe('/home/newfolder');
 
-    path = await fmObj.deleteItem(row, 'file1');
+    path = await fmObj.deleteItem(row, '', 'file1');
     expect(path).toBe('/home/newfolder/file1');
   });
 
@@ -317,7 +347,7 @@ describe('FileManagerUtils', ()=>{
 
   it('downloadFile', async ()=>{
     spyOn(pgUtils, 'downloadBlob');
-    let row = {Filename: 'newfile1', Path: '/home/newfile1'};
+    let row = {Filename: 'newfile1', Path: '/home/newfile1', 'storage_folder': 'my_storage'};
     await fmObj.downloadFile(row);
     expect(pgUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
   });
