@@ -50,18 +50,18 @@ def migrate_connection_params(table_name):
         pass
 
     # define table representation
-    meta = sa.MetaData(bind=op.get_bind())
-    meta.reflect(only=(table_name,))
+    meta = sa.MetaData()
+    meta.reflect(op.get_bind(), only=(table_name,))
     server_table = sa.Table(table_name, meta)
 
     # Create a select statement
-    stmt = sa.select([
+    stmt = sa.select(
         server_table.columns.id, server_table.columns.ssl_mode,
         server_table.columns.sslcert, server_table.columns.sslkey,
         server_table.columns.sslrootcert, server_table.columns.sslcrl,
         server_table.columns.sslcompression, server_table.columns.hostaddr,
         server_table.columns.passfile, server_table.columns.connect_timeout
-    ])
+    )
 
     # Fetch the data from the server table
     results = op.get_bind().execute(stmt).fetchall()

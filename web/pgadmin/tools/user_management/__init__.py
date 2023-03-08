@@ -14,7 +14,7 @@ from flask import render_template, request, \
     Response, abort, current_app, session
 from flask_babel import gettext as _
 from flask_security import login_required, roles_required, current_user
-from flask_security.utils import encrypt_password
+from flask_security.utils import hash_password
 from werkzeug.exceptions import InternalServerError
 
 import config
@@ -437,7 +437,7 @@ def validate_password(data, new_data):
             'confirmPassword' in data and data['confirmPassword'] != ""):
 
         if data['newPassword'] == data['confirmPassword']:
-            new_data['password'] = encrypt_password(data['newPassword'])
+            new_data['password'] = hash_password(data['newPassword'])
         else:
             raise InternalServerError(_("Passwords do not match."))
 
