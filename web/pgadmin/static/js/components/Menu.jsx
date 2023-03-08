@@ -104,7 +104,7 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
       props.onClick(e);
     };
   }
-  const dataLabel = typeof(children) == 'string' ? children : undefined;
+  const dataLabel = typeof(children) == 'string' ? children : props.datalabel;
   return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
     {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} />}
     {children}
@@ -120,6 +120,7 @@ PgMenuItem.propTypes = {
   children: CustomPropTypes.children,
   closeOnCheck: PropTypes.bool,
   onClick: PropTypes.func,
+  dataLabel: PropTypes.string,
 };
 
 export function usePgMenuGroup() {

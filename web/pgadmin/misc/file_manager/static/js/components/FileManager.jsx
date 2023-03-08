@@ -21,7 +21,6 @@ import MoreHorizRoundedIcon from '@material-ui/icons/MoreHorizRounded';
 import SyncRoundedIcon from '@material-ui/icons/SyncRounded';
 import CreateNewFolderRoundedIcon from '@material-ui/icons/CreateNewFolderRounded';
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
-import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
 import clsx from 'clsx';
 import { FormFooterMessage, InputSelectNonSearch, InputText, MESSAGE_TYPE } from '../../../../../static/js/components/FormComponents';
@@ -307,7 +306,9 @@ export class FileManagerUtils {
   }
 
   setDialogView(view) {
-    this.config.options.defaultViewMode = view;
+    if(this.config.options != undefined)
+      this.config.options.defaultViewMode = view;
+
     this.api.post(url_for('file_manager.save_file_dialog_view', {
       trans_id: this.transId,
     }), {view: view})
@@ -401,7 +402,7 @@ ConfirmFile.propTypes = {
   onNo: PropTypes.func
 };
 
-export default function FileManager({params, closeModal, onOK, onCancel}) {
+export default function FileManager({params, closeModal, onOK, onCancel, sharedStorages=[]}) {
   const classes = useStyles();
   const modalClasses = useModalStyles();
   const apiObj = useMemo(()=>getApiInstance(), []);
@@ -696,10 +697,9 @@ export default function FileManager({params, closeModal, onOK, onCancel}) {
           {Boolean(confirmText) && <ConfirmFile text={confirmText} onNo={()=>setConfirmFile([null, null])} onYes={onConfirmYes}/>}
           <Box className={classes.toolbar}>
             <PgButtonGroup size="small" style={{flexGrow: 1}}>
-              { pgAdmin.server_mode == 'True' && pgAdmin.shared_storage.length > 0?
+              { sharedStorages.length > 0 &&
                 <PgIconButton title={ selectedSS == MY_STORAGE ? gettext('My Storage') :gettext(selectedSS)} icon={ selectedSS == MY_STORAGE ? <><FolderIcon/><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></> : <><FolderSharedIcon /><KeyboardArrowDownIcon style={{marginLeft: '-10px'}} /></>} splitButton
                   name="menu-shared-storage" ref={sharedSRef} onClick={toggleMenu} className={classes.sharedStorage}/>
-                : <></>
               }
               <PgIconButton title={gettext('Home')} onClick={async ()=>{
                 await openDir(fmUtilsObj.config?.options?.homedir, selectedSS);
@@ -762,30 +762,33 @@ export default function FileManager({params, closeModal, onOK, onCancel}) {
                 await openDir(fmUtilsObj.currPath, selectedSS);
               }}>{gettext('Show Hidden Files')}</PgMenuItem>
             </PgMenu>
-            <PgMenu
-              anchorRef={sharedSRef}
-              open={openMenuName=='menu-shared-storage'}
-              onClose={onMenuClose}
-              label={gettext(`${selectedSS}`)}
-            >
-              <PgMenuItem hasCheck value="my_storage" checked={selectedSS == MY_STORAGE}
-                onClick={async (option)=> {
-                  option.keepOpen = false;
-                  await changeDir(option.value);
-                }}><FolderIcon className={classes.sharedIcon}/><Box className={classes.storageName}>{gettext('My Storage')}</Box></PgMenuItem>
+            {
+              sharedStorages.length > 0 &&
+              <PgMenu
+                anchorRef={sharedSRef}
+                open={openMenuName=='menu-shared-storage'}
+                onClose={onMenuClose}
+                label={gettext(`${selectedSS}`)}
+              >
+                <PgMenuItem hasCheck value="my_storage" checked={selectedSS == MY_STORAGE} datalabel={'my_storage'}
+                  onClick={async (option)=> {
+                    option.keepOpen = false;
+                    await changeDir(option.value);
+                  }}><FolderIcon className={classes.sharedIcon}/><Box className={classes.storageName}>{gettext('My Storage')}</Box></PgMenuItem>
 
-              {
-                pgAdmin.shared_storage.map((ss)=> {
-                  return (
-                    <PgMenuItem key={ss} hasCheck value={ss} checked={selectedSS == ss}
-                      onClick={async(option)=> {
-                        option.keepOpen = false;
-                        await changeDir(option.value);
-                      }}><FolderSharedIcon className={classes.sharedIcon}/><Box className={classes.storageName}>{gettext(ss)}</Box></PgMenuItem>);
-                })
-              }
+                {
+                  sharedStorages.map((ss)=> {
+                    return (
+                      <PgMenuItem key={ss} hasCheck value={ss} checked={selectedSS == ss} datalabel={ss}
+                        onClick={async(option)=> {
+                          option.keepOpen = false;
+                          await changeDir(option.value);
+                        }}><FolderSharedIcon className={classes.sharedIcon}/><Box className={classes.storageName}>{gettext(ss)}</Box></PgMenuItem>);
+                  })
+                }
 
-            </PgMenu>
+              </PgMenu>
+            }
           </Box>
           <Box flexGrow="1" display="flex" flexDirection="column" position="relative" overflow="hidden">
             {showUploader &&
@@ -848,4 +851,5 @@ FileManager.propTypes = {
   closeModal: PropTypes.func,
   onOK: PropTypes.func,
   onCancel: PropTypes.func,
+  sharedStorages: PropTypes.array,
 };
