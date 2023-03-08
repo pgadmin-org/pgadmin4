@@ -251,6 +251,9 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     eventBus.registerListener(QUERY_TOOL_EVENTS.QUERY_CHANGED, (isDirty)=>{
       setDisableButton('save', !isDirty);
     });
+    eventBus.registerListener(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, ()=>{
+      setDisableButton('save', true);
+    });
     eventBus.registerListener(QUERY_TOOL_EVENTS.DATAGRID_CHANGED, (isDirty)=>{
       setDisableButton('save-data', !isDirty);
     });

@@ -431,7 +431,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         setPanelTitle(panel, fileName, {...qtState, current_file: fileName});
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
-      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, isDirtyRef.current);
     };
     const events = [
       [QUERY_TOOL_EVENTS.TRIGGER_LOAD_FILE, ()=>{
