@@ -40,6 +40,10 @@ if (3, 10) > sys.version_info > (3, 8) and os.name == 'posix':
     # This was causing issue in psycopg3
     from eventlet import hubs
     hubs.use_hub("poll")
+    # Ref: https://github.com/miguelgrinberg/python-socketio/issues/567
+    # Resolve BigAnimal API issue
+    import selectors
+    selectors.DefaultSelector = selectors.PollSelector
 
 import config
 import setup
@@ -97,6 +101,7 @@ if not os.path.isfile(config.SQLITE_PATH):
 # it can be imported
 ##########################################################################
 app = create_app()
+app.debug = False
 app.config['sessions'] = dict()
 
 if setup_db_required:
@@ -158,6 +163,22 @@ def main():
             setattr(sys, _name,
                     open(os.devnull, 'r' if _name == 'stdin' else 'w'))
 
+    # Build Javascript files when DEBUG
+    if config.DEBUG:
+        from pgadmin.utils.javascript.javascript_bundler import \
+            JavascriptBundler, JsState
+        app.debug = True
+
+        javascript_bundler = JavascriptBundler()
+        javascript_bundler.bundle()
+        if javascript_bundler.report() == JsState.NONE:
+            app.logger.error(
+                "Unable to generate javascript.\n"
+                "To run the app ensure that yarn install command runs "
+                "successfully"
+            )
+            raise RuntimeError("No generated javascript, aborting")
+
     # Output a startup message if we're not under the runtime and startup.
     # If we're under WSGI, we don't need to worry about this
     if not app.PGADMIN_RUNTIME:
@@ -192,19 +213,19 @@ def main():
             app.run(
                 host=config.DEFAULT_SERVER,
                 port=config.EFFECTIVE_SERVER_PORT,
-                debug=config.DEBUG,
                 use_reloader=(
-                    (not app.PGADMIN_RUNTIME) and
+                    (not app.PGADMIN_RUNTIME) and app.debug and
                     os.environ.get("WERKZEUG_RUN_MAIN") is not None
                 ),
                 threaded=config.THREADED_MODE
             )
         else:
+            # Can use cheroot instead of flask dev server when not in debug
+            # 10 is default thread count in CherootServer
+            # num_threads = 10 if config.THREADED_MODE else 1
             try:
                 socketio.run(
                     app,
-                    debug=config.DEBUG,
-                    allow_unsafe_werkzeug=True,
                     host=config.DEFAULT_SERVER,
                     port=config.EFFECTIVE_SERVER_PORT,
                 )

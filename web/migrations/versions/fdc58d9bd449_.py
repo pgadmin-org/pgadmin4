@@ -114,8 +114,7 @@ def upgrade():
         current_app.config['SECURITY_PASSWORD_SALT'] = current_salt
         current_app.config['SECRET_KEY'] = secret_key
         user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-        Security(current_app.app_context().app, user_datastore,
-                 register_blueprint=False)
+        Security(current_app, user_datastore, register_blueprint=False)
     else:
         current_app.config['SECURITY_PASSWORD_SALT'] = current_salt
         current_app.config['SECRET_KEY'] = secret_key

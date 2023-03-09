@@ -7,12 +7,13 @@
 #
 ##########################################################################
 
+from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from . import utils as servers_utils
 from unittest.mock import patch, MagicMock
 import json
-from psycopg import OperationalError
+from PG_DEFAULT_DRIVER import OperationalError
 
 
 class ServersSSHConnectTestCase(BaseTestGenerator):

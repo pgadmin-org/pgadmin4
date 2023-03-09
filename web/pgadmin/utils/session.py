@@ -279,7 +279,7 @@ class ManagedSessionInterface(SessionInterface):
         self.manager = manager
 
     def open_session(self, app, request):
-        cookie_val = request.cookies.get(app.config['SESSION_COOKIE_NAME'])
+        cookie_val = request.cookies.get(app.session_cookie_name)
 
         if not cookie_val or '!' not in cookie_val:
             return self.manager.new_session()
@@ -296,8 +296,7 @@ class ManagedSessionInterface(SessionInterface):
         if not session:
             self.manager.remove(session.sid)
             if session.modified:
-                response.delete_cookie(app.config['SESSION_COOKIE_NAME'],
-                                       domain=domain)
+                response.delete_cookie(app.session_cookie_name, domain=domain)
             return
 
         if not session.modified:
@@ -311,7 +310,7 @@ class ManagedSessionInterface(SessionInterface):
 
         cookie_exp = self.get_expiration_time(app, session)
         response.set_cookie(
-            app.config['SESSION_COOKIE_NAME'],
+            app.session_cookie_name,
             '%s!%s' % (session.sid, session.hmac_digest),
             expires=cookie_exp,
             secure=config.SESSION_COOKIE_SECURE,

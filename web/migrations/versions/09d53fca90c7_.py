@@ -123,9 +123,9 @@ def upgrade():
 
     if version < 11:
         # get metadata from current connection
-        meta = sa.MetaData()
+        meta = sa.MetaData(bind=op.get_bind())
         # define table representation
-        meta.reflect(op.get_bind(), only=('role',))
+        meta.reflect(only=('role',))
         role_table = sa.Table('role', meta)
 
         op.execute(
@@ -166,9 +166,9 @@ def upgrade():
                          'value': security_password_salt}])
 
     # get metadata from current connection
-    meta = sa.MetaData()
+    meta = sa.MetaData(bind=op.get_bind())
     # define table representation
-    meta.reflect(op.get_bind(), only=('version',))
+    meta.reflect(only=('version',))
     version_table = sa.Table('version', meta)
 
     op.execute(

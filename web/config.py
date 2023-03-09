@@ -859,8 +859,80 @@ AUTO_DISCOVER_SERVERS = True
 #############################################################################
 SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 
-#############################################################################
-# Patch the default config with custom config and other manipulations
-#############################################################################
-from pgadmin.evaluate_config import evaluate_and_patch_config
-locals().update(evaluate_and_patch_config(locals()))
+##########################################################################
+# Local config settings
+##########################################################################
+# User configs loaded from config_local, config_distro etc.
+user_config_settings = {}
+
+
+# Function to Extract settings from config_local, config_distro etc.
+def get_variables_from_module(module_name):
+    module = globals().get(module_name, None)
+    variables = {}
+    if module:
+        variables = {key: value for key, value in module.__dict__.items()
+                     if not (key.startswith('__') or key.startswith('_'))}
+    return variables
+
+
+# Load distribution-specific config overrides
+try:
+    import config_distro
+    config_distro_settings = get_variables_from_module('config_distro')
+    user_config_settings.update(config_distro_settings)
+except ImportError:
+    pass
+
+# Load local config overrides
+try:
+    import config_local
+    config_local_settings = get_variables_from_module('config_local')
+    user_config_settings.update(config_local_settings)
+except ImportError:
+    pass
+
+# Load system config overrides. We do this last, so that the sysadmin can
+# override anything they want from a config file that's in a protected system
+# directory and away from pgAdmin to avoid invalidating signatures.
+system_config_dir = '/etc/pgadmin'
+if sys.platform.startswith('win32'):
+    system_config_dir = os.environ['CommonProgramFiles'] + '/pgadmin'
+elif sys.platform.startswith('darwin'):
+    system_config_dir = '/Library/Preferences/pgadmin'
+
+if os.path.exists(system_config_dir + '/config_system.py'):
+    try:
+        sys.path.insert(0, system_config_dir)
+        import config_system
+        config_system_settings = get_variables_from_module('config_system')
+        user_config_settings.update(config_system_settings)
+    except ImportError:
+        pass
+
+# Update settings for 'LOG_FILE', 'SQLITE_PATH', 'SESSION_DB_PATH',
+# 'AZURE_CREDENTIAL_CACHE_DIR', 'KERBEROS_CCACHE_DIR', 'STORAGE_DIR'
+# of DATA_DIR is user defined
+data_dir_dependent_settings = ['LOG_FILE', 'SQLITE_PATH', 'SESSION_DB_PATH',
+                               'AZURE_CREDENTIAL_CACHE_DIR',
+                               'KERBEROS_CCACHE_DIR', 'STORAGE_DIR']
+
+if 'DATA_DIR' in user_config_settings:
+    for setting in data_dir_dependent_settings:
+        if setting not in user_config_settings:
+            data_dir = user_config_settings['DATA_DIR']
+            file_dir_name = os.path.basename(locals().get(setting))
+            locals().update({setting: os.path.join(data_dir, file_dir_name)})
+
+# Finally update config user configs
+locals().update(user_config_settings)
+
+# Override DEFAULT_SERVER value from environment variable.
+if 'PGADMIN_CONFIG_DEFAULT_SERVER' in os.environ:
+    DEFAULT_SERVER = os.environ['PGADMIN_CONFIG_DEFAULT_SERVER']
+
+# Disable USER_INACTIVITY_TIMEOUT when SERVER_MODE=False
+if not SERVER_MODE:
+    USER_INACTIVITY_TIMEOUT = 0
+    # Enable PSQL in Desktop Mode.
+    ENABLE_PSQL = True

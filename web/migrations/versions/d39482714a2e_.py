@@ -30,9 +30,9 @@ def upgrade():
     # If password is already exists for any existing server then change the
     # save_password column to 1 (True) else set 0
     # get metadata from current connection
-    meta = sa.MetaData()
+    meta = sa.MetaData(bind=op.get_bind())
     # define table representation
-    meta.reflect(op.get_bind(), only=('server',))
+    meta.reflect(only=('server',))
     server_table = sa.Table('server', meta)
 
     op.execute(
