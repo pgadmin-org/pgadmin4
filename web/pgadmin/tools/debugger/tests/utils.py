@@ -125,7 +125,7 @@ def initialize_target(self, utils, close_debugger_instance=True):
                       'for indirect debugging.')
 
 
-async def start_listener(self, utils, db_utils):
+def start_listener(self, utils, db_utils):
     response = self.tester.get(
         'debugger/start_listener/' + str(self.trans_id),
         content_type='application/json')
