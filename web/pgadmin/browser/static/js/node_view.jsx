@@ -80,7 +80,7 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
       resolve(res.data);
       onSave && onSave(res.data);
     }).catch((err)=>{
-      Notify.pgNotifier('error', err, '', function(msg) {
+      Notify.pgNotifier('error-noalert', err, '', function(msg) {
         if (msg == 'CRYPTKEY_SET') {
           return Promise.resolve(onSaveClick(isNew, data));
         } else if (msg == 'CRYPTKEY_NOT_SET') {

@@ -192,6 +192,9 @@ let Notifier = {
         return;
       }
     }
+    if(type == 'error-noalert' && onJSONResult && typeof(onJSONResult) == 'function') {
+      return onJSONResult();
+    }
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
   },
   alert: (title, text, onOkClick, okLabel=gettext('OK'))=>{
