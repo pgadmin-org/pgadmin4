@@ -20,6 +20,7 @@ import Azure from '../../img/azure.svg?svgr';
 import SQLFileSvg from '../../img/sql_file.svg?svgr';
 import MagicSvg from '../../img/magic.svg?svgr';
 import MsAzure from '../../img/ms_azure.svg?svgr';
+import GoogleCloud from '../../img/google-cloud-1.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -71,14 +72,17 @@ ExpandDialogIcon.propTypes = {style: PropTypes.object};
 export const MinimizeDialogIcon = ({style})=><ExternalIcon Icon={Collapse} style={{height: '1.4rem', ...style}} data-label="MinimizeDialogIcon" />;
 MinimizeDialogIcon.propTypes = {style: PropTypes.object};
 
-export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '1.4rem', ...style}} data-label="AWSIcon" />;
+export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '2.2rem',width: '3.2rem', ...style}} data-label="AWSIcon" />;
 AWSIcon.propTypes = {style: PropTypes.object};
 
-export const BigAnimalIcon = ({style})=><ExternalIcon Icon={BigAnimal} style={{height: '1.4rem', ...style}} data-label="BigAnimalIcon" />;
+export const BigAnimalIcon = ({style})=><ExternalIcon Icon={BigAnimal} style={{height: '2.2rem',width: '3.2rem', ...style}} data-label="BigAnimalIcon" />;
 BigAnimalIcon.propTypes = {style: PropTypes.object};
 
-export const AzureIcon = ({style})=><ExternalIcon Icon={Azure} style={{height: '1.4rem', ...style}} data-label="AzureIcon" />;
+export const AzureIcon = ({style})=><ExternalIcon Icon={Azure} style={{height: '2.2rem', width: '3.2rem', ...style}} data-label="AzureIcon" />;
 AzureIcon.propTypes = {style: PropTypes.object};
+
+export const GoogleCloudIcon = ({style})=><ExternalIcon Icon={GoogleCloud} style={{height: '2.2rem', width: '3.2rem', ...style}} data-label="GoogleCloudIcon" />;
+GoogleCloudIcon.propTypes = {style: PropTypes.object};
 
 export const SQLFileIcon = ({style})=><ExternalIcon Icon={SQLFileSvg} style={{height: '1rem', ...style}} data-label="SQLFileIcon" />;
 SQLFileIcon.propTypes = {style: PropTypes.object};

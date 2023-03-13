@@ -69,9 +69,11 @@ class CloudProcessDesc(IProcessDesc):
         if _provider == 'rds':
             self.provider = 'Amazon RDS'
         elif _provider == 'azure':
-            self.provider = 'Azure PostgreSQL'
+            self.provider = 'Azure Database'
+        elif _provider == 'google':
+            self.provider = 'Google Cloud SQL'
         else:
-            self.provider = 'EDB Big Animal'
+            self.provider = 'EDB BigAnimal'
 
     @property
     def message(self):

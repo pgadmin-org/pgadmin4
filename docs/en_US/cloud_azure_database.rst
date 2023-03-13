@@ -1,16 +1,16 @@
-.. _cloud_azure_postgresql:
+.. cloud_azure_database:
 
 ******************************************
-`Azure PostgreSQL Cloud Deployment`:index:
+`Azure Database Cloud Deployment`:index:
 ******************************************
 
-To deploy a PostgreSQL server on the Azure cloud, follow the below steps.
+To deploy a PostgreSQL server on the Azure Database, follow the below steps.
 
-.. image:: images/cloud_azure_provider.png
+.. image:: images/cloud_provider_for_postgresql.png
     :alt: Cloud Deployment
     :align: center
 
-Once you launch the tool, select the Azure PostgreSQL option.
+Once you launch the tool, select the Azure Database option.
 Click on the *Next* button to proceed further.
 
 
@@ -103,7 +103,7 @@ Click on the next button to proceed.
     :align: center
 
 At the end, review the instance details that you provided. Click on Finish
-button to deploy the instance on Azure PostgreSQL.
+button to deploy the instance on Azure Database.
 
 Once you click on the finish, one background process will start which will
 deploy the instance in the cloud and monitor the progress of the deployment.

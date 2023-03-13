@@ -182,3 +182,8 @@ def service_unavailable(errormsg=_("Service Unavailable"), info='',
         result=result,
         data=data
     )
+
+
+def plain_text_response(message=''):
+    response = Response(message, status=200, mimetype="text/plain")
+    return response
