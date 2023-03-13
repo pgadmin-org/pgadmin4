@@ -56,15 +56,14 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
           resolve(res.data);
         })
         .catch((err)=>{
-          if(err.response){
-            console.error('error resp', err.response);
-          } else if(err.request){
-            console.error('error req', err.request);
-          } else if(err.message){
-            console.error('error msg', err.message);
-          }
-          reject(err);
-          Notify.pgRespErrorNotify(err);
+          Notify.pgNotifier('error', err, '', function(msg) {
+            if (msg == 'CRYPTKEY_SET') {
+              return Promise.resolve(initData());
+            } else if (msg == 'CRYPTKEY_NOT_SET') {
+              reject(gettext('The master password is not set.'));
+            }
+            reject(err);
+          });
         });
     }
   });
@@ -81,7 +80,14 @@ export function getNodeView(nodeType, treeNodeInfo, actionType, itemNodeData, fo
       resolve(res.data);
       onSave && onSave(res.data);
     }).catch((err)=>{
-      reject(err);
+      Notify.pgNotifier('error', err, '', function(msg) {
+        if (msg == 'CRYPTKEY_SET') {
+          return Promise.resolve(onSaveClick(isNew, data));
+        } else if (msg == 'CRYPTKEY_NOT_SET') {
+          reject(gettext('The master password is not set.'));
+        }
+        reject(err);
+      });
     });
   });
 

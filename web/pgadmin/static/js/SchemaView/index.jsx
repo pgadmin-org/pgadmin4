@@ -595,11 +595,15 @@ function SchemaDialogView({
       });
       setFormReady(true);
       setLoaderText('');
-    }).catch(()=>{
+    }).catch((err)=>{
       if(unmounted) {
         return;
       }
       setLoaderText('');
+      setFormErr({
+        name: 'apierror',
+        message: _.escape(parseApiError(err)),
+      });
     });
     /* Clear the focus timeout if unmounted */
     return ()=>{
@@ -892,8 +896,9 @@ function SchemaPropertiesView({
         });
         setLoaderText('');
       }
-    }).catch(()=>{
+    }).catch((err)=>{
       setLoaderText('');
+      Notify.pgRespErrorNotify(err);
     });
   }, []);
 
