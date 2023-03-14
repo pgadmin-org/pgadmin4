@@ -295,7 +295,7 @@ function PlanSVG({planData, zoomFactor, fitZoomFactor, ...props}) {
   }, [planData.width]);
 
   return (
-    <svg height={planData.height*zoomFactor} width={planData.width*zoomFactor} version="1.1" xmlns="https://www.w3.org/2000/svg">
+    <svg height={planData.height*zoomFactor} width={planData.width*zoomFactor} version="1.1" xmlns="http://www.w3.org/2000/svg">
       <defs>
         {Object.keys(props.ctx.arrows).map((arr_id, i)=>{
           let arrowPoints = [
