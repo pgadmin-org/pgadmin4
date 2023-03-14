@@ -48,7 +48,7 @@ node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
 # Configuring the Python Environment
 
 In order to run the Python code, a suitable runtime environment is required.
-Python version 3.6 and later are currently supported. It is recommended that a
+Python version 3.7 and later are currently supported. It is recommended that a
 Python Virtual Environment is setup for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
