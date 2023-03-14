@@ -30,13 +30,6 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
     function_name = ""
 
     def before(self):
-        with test_utils.Database(self.server) as (connection, _):
-            if connection.server_version < 90100:
-                self.skipTest(
-                    "Functions tree node is not present in pgAdmin below "
-                    "PG v9.1"
-                )
-
         # Some test function is needed for debugger
         self.function_name = "a_test_function" + \
                              str(secrets.choice(range(10000, 65535)))

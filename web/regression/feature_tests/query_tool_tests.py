@@ -55,22 +55,16 @@ class QueryToolFeatureTest(BaseFeatureTest):
         # explain query with verbose and cost
         print("Explain query with verbose and cost... ",
               file=sys.stderr, end="")
-        if self._supported_server_version():
-            self._query_tool_explain_with_verbose_and_cost()
-            print("OK.", file=sys.stderr)
-            self.page.clear_query_tool()
-        else:
-            print(skip_warning, file=sys.stderr)
+        self._query_tool_explain_with_verbose_and_cost()
+        print("OK.", file=sys.stderr)
+        self.page.clear_query_tool()
 
         # explain analyze query with buffers and timing
         print("Explain analyze query with buffers and timing... ",
               file=sys.stderr, end="")
-        if self._supported_server_version():
-            self._query_tool_explain_analyze_with_buffers_and_timing()
-            print("OK.", file=sys.stderr)
-            self.page.clear_query_tool()
-        else:
-            print(skip_warning, file=sys.stderr)
+        self._query_tool_explain_analyze_with_buffers_and_timing()
+        print("OK.", file=sys.stderr)
+        self.page.clear_query_tool()
 
         # auto commit disabled.
         print("Auto commit disabled... ", file=sys.stderr, end="")
@@ -596,17 +590,6 @@ SELECT 1, pg_sleep(300)"""
                 .format('Execution Cancelled!'))
         )
 
-    def _supported_server_version(self):
-        connection = test_utils.get_db_connection(
-            self.server['db'],
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
-        return connection.server_version > 90100
-
     def _query_tool_notify_statements(self):
         print("\n\tListen on an event... ", file=sys.stderr, end="")
         self.page.execute_query("LISTEN foo;")
@@ -627,15 +610,12 @@ SELECT 1, pg_sleep(300)"""
         print("OK.", file=sys.stderr)
 
         print("\tNotify event with data... ", file=sys.stderr, end="")
-        if self._supported_server_version():
-            self.page.clear_query_tool()
-            self.page.execute_query("SELECT pg_notify('foo', 'Hello')")
-            self.page.click_tab('id-notifications', rc_dock=True)
-            self.wait.until(WaitForAnyElementWithText(
-                (By.CSS_SELECTOR, "td[data-label='payload']"), "Hello"))
-            print("OK.", file=sys.stderr)
-        else:
-            print("Skipped.", file=sys.stderr)
+        self.page.clear_query_tool()
+        self.page.execute_query("SELECT pg_notify('foo', 'Hello')")
+        self.page.click_tab('id-notifications', rc_dock=True)
+        self.wait.until(WaitForAnyElementWithText(
+            (By.CSS_SELECTOR, "td[data-label='payload']"), "Hello"))
+        print("OK.", file=sys.stderr)
 
 
 class WaitForAnyElementWithText():

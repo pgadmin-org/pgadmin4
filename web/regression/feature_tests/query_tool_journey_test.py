@@ -489,6 +489,8 @@ class QueryToolJourneyTest(BaseFeatureTest):
                     print('Double click not succeeded in try- ' + str(
                         retry), file=sys.stderr)
                     retry -= 1
+                    if retry == 0:
+                        return False
             except Exception as e:
                 print('Exception while reading cell value in try ' +
                       str(retry), file=sys.stderr)
