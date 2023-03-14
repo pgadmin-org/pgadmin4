@@ -70,7 +70,7 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         else:
             self.timezone_hh_mm = '+{}'.format(self.timezone_hh_mm)
 
-        self.database_version = connection.server_version
+        self.database_version = self.server_information['server_version']
 
         # For this test case we need to set "Insert bracket pairs?"
         # SQL Editor preference to 'false' to avoid codemirror
