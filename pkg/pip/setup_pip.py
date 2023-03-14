@@ -39,8 +39,8 @@ kerberos_extras = []
 # Ensure the Wheel will use psycopg-binary, not the source distro, and stick
 # gssapi in it's own list
 for index, req in enumerate(all_requires):
-    if 'psycopg' in req:
-        req = req.replace('psycopg', 'psycopg-binary')
+    if 'psycopg[c]' in req:
+        req = req.replace('psycopg[c]', 'psycopg-binary')
 
     if 'gssapi' in req:
         kerberos_extras.append(req)
