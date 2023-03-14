@@ -10,7 +10,7 @@
 """This file contains functions fetching different utility paths."""
 
 import os
-import config
+
 from flask import current_app, url_for
 from flask_security import current_user
 from werkzeug.exceptions import InternalServerError
@@ -31,6 +31,9 @@ def preprocess_username(un):
 
 
 def get_storage_directory(user=current_user, shared_storage=''):
+    # Don't move this import statement to the top of the file,
+    # it throws circular import error.
+    import config
     if config.SERVER_MODE is not True:
         return None
 
@@ -96,6 +99,9 @@ def get_storage_directory(user=current_user, shared_storage=''):
 
 
 def init_app():
+    # Don't move this import statement to the top of the file,
+    # it throws circular import error.
+    import config
     if config.SERVER_MODE is not True:
         return None
 
@@ -138,6 +144,9 @@ def create_users_storage_directory():
     This function is used to iterate through all the users and
     create users directory if not already created.
     """
+    # Don't move this import statement to the top of the file,
+    # it throws circular import error.
+    import config
     if not config.SERVER_MODE:
         return None
 
