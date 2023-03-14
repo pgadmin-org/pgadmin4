@@ -173,6 +173,28 @@
         "error_msg": "Mocked Internal Server Error",
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create: Add unique key constraint to table with nulls not distinct.",
+      "url": "/browser/unique_constraint/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 150000,
+        "skip_msg": "Nulls not distinct is not supported by PPAS/PG 15.0 and below."
+      },
+      "test_data": {
+        "constraint_name": "test_uniquekey_add_",
+        "spcname": "pg_default",
+        "columns": [{"column": "id"}],
+        "indnullsnotdistinct": true
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
     }
   ],
   "index_constraint_delete": [
