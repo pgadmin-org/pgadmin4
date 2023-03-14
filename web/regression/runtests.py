@@ -535,7 +535,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
 
         # This is required when some tests are running parallel
         # & some sequential in case of parallel ui tests
-        if threading.current_thread().getName() == "sequential_tests":
+        if threading.current_thread().name == "sequential_tests":
             try:
                 if test_result[server_passed['name']][0] is not None:
                     ran_tests = test_result[server_passed['name']][0] + \
@@ -576,7 +576,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
     finally:
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
-        if threading.current_thread().getName() == thread_name:
+        if threading.current_thread().name == thread_name:
             test_utils.quit_webdriver(driver_passed)
             time.sleep(20)
 

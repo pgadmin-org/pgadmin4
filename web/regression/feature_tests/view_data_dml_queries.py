@@ -95,12 +95,6 @@ CREATE TABLE public.nonintpkey
     """
 
     def before(self):
-        with test_utils.Database(self.server) as (connection, _):
-            if connection.server_version < 90100:
-                self.skipTest(
-                    "COLLATE is not present in PG versions below v9.1"
-                )
-
         # Create pre-requisite table
         for k, v in {1: 'id', 2: '"ID"'}.items():
             test_utils.create_table_with_query(
@@ -116,9 +110,6 @@ CREATE TABLE public.nonintpkey
 
         # Initialize an instance of WebDriverWait with timeout of 3 seconds
         self.wait = WebDriverWait(self.driver, 3)
-
-        # close the db connection
-        connection.close()
 
     def runTest(self):
         try:

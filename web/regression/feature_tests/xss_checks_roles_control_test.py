@@ -30,11 +30,6 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     xss_test_role = "<h1>test</h1>"
 
     def before(self):
-        with test_utils.Database(self.server) as (connection, _):
-            if connection.server_version < 90100:
-                self.skipTest(
-                    "Membership is not present in Postgres below PG v9.1")
-
         # create role
         self.role = "test_role" + str(secrets.choice(range(10000, 65535)))
 
