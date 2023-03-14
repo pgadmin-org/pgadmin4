@@ -20,13 +20,14 @@ from werkzeug.exceptions import InternalServerError
 import config
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response, \
-    make_json_response, bad_request, internal_server_error, forbidden
+    make_json_response, bad_request, internal_server_error
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.constants import MIMETYPE_APP_JS, INTERNAL,\
     SUPPORTED_AUTH_SOURCES
 from pgadmin.utils.validation_utils import validate_email
 from pgadmin.model import db, Role, User, UserPreference, Server, \
     ServerGroup, Process, Setting, roles_users, SharedServer
+from pgadmin.utils.paths import create_users_storage_directory
 
 # set template path for sql scripts
 MODULE_NAME = 'user_management'
@@ -531,6 +532,9 @@ def create_user(data):
         _create_new_user(new_data)
     except Exception as e:
         return False, str(e)
+
+    # Create users storage directory
+    create_users_storage_directory()
 
     return True, ''
 
