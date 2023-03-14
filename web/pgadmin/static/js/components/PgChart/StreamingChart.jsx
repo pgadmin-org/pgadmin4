@@ -92,6 +92,16 @@ export default function StreamingChart({xRange=75, data, options}) {
       {
         show: false,
       },
+      {
+        size: function(_obj, values) {
+          let size = 40;
+          if(values?.length > 0) {
+            size = values[values.length-1].length*12;
+            if(size < 40) size = 40;
+          }
+          return size;
+        }
+      }
     ],
     plugins: options.showTooltip ? [tooltipPlugin(data.refreshRate)] : [],
   }), [data.refreshRate, data?.datasets?.length, width, height, options]);
