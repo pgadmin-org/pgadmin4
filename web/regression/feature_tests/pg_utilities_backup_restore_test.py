@@ -9,6 +9,7 @@
 
 import os
 
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -169,6 +170,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             (By.CSS_SELECTOR, NavMenuLocators.backup_obj_css)))
         backup_object.click()
 
+        self.assertFalse(self.page.check_utility_error(),
+                         'Binary path is not configured.')
+
         # Enter the file name of the backup to be taken
         self.wait.until(EC.visibility_of_element_located(
             (By.NAME, NavMenuLocators.backup_filename_txt_box_name)))
@@ -203,6 +207,9 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
         restore_obj = self.page.find_by_css_selector(
             NavMenuLocators.restore_obj_css)
         restore_obj.click()
+
+        self.assertFalse(self.page.check_utility_error(),
+                         'Binary path is not configured.')
 
         self.wait.until(EC.visibility_of_element_located(
             (By.NAME, NavMenuLocators.restore_file_name_txt_box_name)))

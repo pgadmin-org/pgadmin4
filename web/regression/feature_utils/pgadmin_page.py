@@ -1267,3 +1267,30 @@ class PgadminPage:
     def clear_edit_box(self, edit_box_webelement):
         while edit_box_webelement.get_attribute("value") != "":
             edit_box_webelement.send_keys(Keys.BACK_SPACE)
+
+    def check_utility_error(self):
+        wait = WebDriverWait(self.driver, 2)
+        try:
+            is_error = wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//div[contains(@class,'MuiDialogTitle-root')]"
+                           "//div[text()='Utility not found']")
+            ))
+        except TimeoutException:
+            is_error = None
+
+        # If debugger plugin is not found
+        if is_error and is_error.text == "Utility not found":
+            click = True
+            while click:
+                try:
+                    self.click_modal('OK')
+                    wait.until(EC.invisibility_of_element(
+                        (By.XPATH, "//div[@class ='MuiDialogTitle-root']"
+                                   "//div[text()='Utility not found']")
+                    ))
+                    click = False
+                except TimeoutException:
+                    pass
+            return True
+        else:
+            return False

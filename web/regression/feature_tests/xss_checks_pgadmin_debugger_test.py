@@ -127,6 +127,9 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
             source_code = self.page.find_by_xpath(
                 "//div[@id='id-debugger-messages'] //div[@id='debugger-msg']"
             ).get_attribute('innerHTML')
+
+            self.assertIsNotNone(source_code, 'Messages tab is empty.')
+
             self._check_escaped_characters(
                 source_code,
                 'NOTICE:  &lt;img src="x" onerror="console.log(1)"&gt;',
