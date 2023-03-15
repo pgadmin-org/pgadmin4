@@ -149,7 +149,6 @@ export class SaveOptSchema extends BaseUISchema {
 
 
   get baseFields() {
-    let obj = this;
     return [{
       id: 'dns_owner',
       label: gettext('Owner'),
@@ -180,11 +179,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
-      visible: function() {
-        let serverInfo = _.isUndefined(obj.fieldOptions.nodeInfo) ? undefined : obj.fieldOptions.nodeInfo.server;
-
-        return _.isUndefined(serverInfo) ? false : serverInfo.version >= 110000;
-      },
+      min_version: 110000
     }];
   }
 }
@@ -218,7 +213,6 @@ export class QueryOptionSchema extends BaseUISchema {
 
 
   get baseFields() {
-    let obj = this;
     return [{
       id: 'use_column_inserts',
       label: gettext('Use Column Inserts'),
@@ -237,9 +231,7 @@ export class QueryOptionSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Queries'),
-      visible: function() {
-        return !(!_.isUndefined(obj.backupType) && obj.backupType === 'server');
-      },
+      visible: isVisible,
     }, {
       id: 'include_drop_database',
       label: gettext('Include DROP DATABASE statement'),
@@ -259,14 +251,8 @@ export class QueryOptionSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Queries'),
-      visible: function() {
-        if (!_.isUndefined(obj.backupType) && obj.backupType === 'server')
-          return false;
-
-        let serverInfo = _.isUndefined(obj.fieldOptions.nodeInfo) ? undefined : obj.fieldOptions.nodeInfo.server;
-
-        return _.isUndefined(serverInfo) ? false : serverInfo.version >= 110000;
-      },
+      min_version: 110000,
+      visible: isVisible,
     }];
   }
 }
@@ -474,13 +460,8 @@ export default class BackupSchema extends BaseUISchema {
       type: 'select',
       disabled: false,
       options: obj.fieldOptions.encoding,
-      visible: function() {
-        if (!_.isUndefined(obj.backupType) && obj.backupType === 'server') {
-          let dbNode = obj.pgBrowser.serverInfo[obj.treeNodeInfo.server._id];
-          return _.isUndefined(dbNode) ? false : dbNode.version >= 110000;
-        }
-        return true;
-      },
+      min_version: 110000,
+      visible: isVisible
     }, {
       id: 'no_of_jobs',
       label: gettext('Number of jobs'),

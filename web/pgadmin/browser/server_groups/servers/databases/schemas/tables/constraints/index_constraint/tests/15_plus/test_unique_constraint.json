@@ -1,0 +1,77 @@
+{
+    "scenarios": [
+      {
+        "type": "create",
+        "name": "Create Table",
+        "endpoint": "NODE-table.obj",
+        "sql_endpoint": "NODE-table.sql_id",
+        "data": {
+          "name": "tablefor_unique_cons",
+          "columns": [{
+            "name": "col1",
+            "cltype": "integer",
+            "is_primary_key": false
+          }, {
+            "name": "col2",
+            "cltype": "integer",
+            "is_primary_key": false
+          }],
+          "is_partitioned": false,
+          "schema": "testschema",
+          "spcname": "pg_default"
+        },
+        "store_object_id": true
+      }, {
+        "type": "create",
+        "name": "Create Index",
+        "endpoint": "NODE-index.obj",
+        "sql_endpoint": "NODE-index.sql_id",
+        "data": {
+          "name": "uindex",
+          "spcname": "pg_default",
+          "amname": "btree",
+          "columns": [{
+            "colname": "col1",
+            "sort_order": false,
+            "nulls": false,
+            "is_sort_nulls_applicable": true
+          }],
+          "indisunique": true,
+          "fillfactor": 20
+        }
+      }, {
+        "type": "create",
+        "name": "Create Unique Constraint -- 15 Plus",
+        "endpoint": "NODE-unique_constraint.obj",
+        "sql_endpoint": "NODE-unique_constraint.sql_id",
+        "msql_endpoint": "NODE-unique_constraint.msql",
+        "data": {
+          "name": "UC_$%{}[]()&*^!@\"'`\\/#",
+          "comment": "Comment for create",
+          "fillfactor": 20,
+          "columns": [{"column":"col1"}],
+          "include": ["col2"],
+          "condeferrable": true,
+          "condeferred": true,
+          "indnullsnotdistinct": true
+        },
+        "expected_sql_file": "create_unique_constraint.sql",
+        "expected_msql_file": "create_unique_constraint_msql.sql"
+      }, {
+        "type": "delete",
+        "name": "Drop Unique Constraint -- 15 Plus",
+        "endpoint": "NODE-unique_constraint.delete_id",
+        "data": {
+          "name": "UC_$%{}[]()&*^!@\"'`\\/#a"
+        }
+      }, {
+        "type": "delete",
+        "name": "Drop Unique Constraint Table -- 15 Plus",
+        "endpoint": "NODE-table.delete_id",
+        "data": {
+          "name": "tablefor_unique_cons"
+        }
+      }
+    ]
+  }
+  

@@ -101,11 +101,7 @@ export default class SubscriptionSchema extends BaseUISchema{
     return [{
       id: 'name', label: gettext('Name'), type: 'text',
       mode: ['properties', 'create', 'edit'], noEmpty: true,
-      visible: function() {
-        return (!_.isUndefined(this.node_info['node_info'])
-            && !_.isUndefined(this.node_info['node_info'].version)
-            && this.node_info['node_info'].version >= 100000);
-      },
+      min_version: 100000
     },{
       id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
       type: 'text',

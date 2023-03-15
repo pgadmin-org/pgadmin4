@@ -151,7 +151,6 @@ export class RestoreSaveOptSchema extends BaseUISchema {
 
 
   get baseFields() {
-    let obj = this;
     return [{
       id: 'dns_owner',
       label: gettext('Owner'),
@@ -176,10 +175,7 @@ export class RestoreSaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
-      visible: function() {
-        let serverInfo = obj.fieldOptions.nodeInfo.server;
-        return !_.isUndefined(serverInfo) && serverInfo.version >= 110000 ? true : false;
-      },
+      min_version: 110000
     }];
   }
 }

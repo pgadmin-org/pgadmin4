@@ -25,6 +25,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       fillfactor: undefined,
       condeferrable: undefined,
       condeferred: undefined,
+      indnullsnotdistinct: undefined,
       columns: [],
       include: [],
     });
@@ -150,12 +151,7 @@ export default class UniqueConstraintSchema extends BaseUISchema {
       editable: false,
       canDelete: true, canAdd: true,
       mode: ['properties', 'create', 'edit'],
-      visible: function() {
-        /* In table properties, nodeInfo is not available */
-        return (!_.isUndefined(this.nodeInfo) && !_.isUndefined(this.nodeInfo.server)
-          && !_.isUndefined(this.nodeInfo.server.version) &&
-            this.nodeInfo.server.version >= 110000);
-      },
+      min_version: 110000,
       deps: ['index'],
       readonly: function(state) {
         return obj.isReadOnly(state);
@@ -256,6 +252,13 @@ export default class UniqueConstraintSchema extends BaseUISchema {
           return {condeferred: false};
         }
       }
+    },{
+      id: 'indnullsnotdistinct', label: gettext('NULLs not distinct?'),
+      type: 'switch', group: gettext('Definition'),
+      readonly: function(state) {
+        return obj.isReadOnly(state);
+      },
+      min_version: 150000
     }];
   }
 

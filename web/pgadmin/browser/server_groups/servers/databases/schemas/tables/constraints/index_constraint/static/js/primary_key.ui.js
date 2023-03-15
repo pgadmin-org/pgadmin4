@@ -151,10 +151,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
       editable: false,
       canDelete: true, canAdd: true,
       mode: ['properties', 'create', 'edit'],
-      visible: function() {
-        /* In table properties, nodeInfo is not available */
-        return this.getServerVersion() >= 110000;
-      },
+      min_version: 110000,
       deps: ['index'],
       readonly: function(state) {
         return obj.isReadOnly(state);
