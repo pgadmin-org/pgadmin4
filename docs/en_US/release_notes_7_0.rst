@@ -28,6 +28,7 @@ Housekeeping
 
   | `Issue #5011 <https://github.com/pgadmin-org/pgadmin4/issues/5011>`_ -  Added support for psycopg3 along with psycopg2.
   | `Issue #5701 <https://github.com/pgadmin-org/pgadmin4/issues/5701>`_ -  Remove Bootstrap and jQuery usage.
+  | `Issue #5901 <https://github.com/pgadmin-org/pgadmin4/issues/5901>`_ -  Update SQLAlchemy, Flask, Flask-SQLAlchemy, and other packages to current versions.
 
 Bug fixes
 *********
@@ -38,7 +39,6 @@ Bug fixes
   | `Issue #5824 <https://github.com/pgadmin-org/pgadmin4/issues/5824>`_ -  Ensure that the user's storage directory is created when the users are created, as well as for those users who have not yet been created.
   | `Issue #5833 <https://github.com/pgadmin-org/pgadmin4/issues/5833>`_ -  Fixed an issue where user MFA entry was not getting delete after deleting a user.
   | `Issue #5874 <https://github.com/pgadmin-org/pgadmin4/issues/5874>`_ -  Make "using" and "with check" fields a textarea in the RLS policy.
-  | `Issue #5901 <https://github.com/pgadmin-org/pgadmin4/issues/5901>`_ -  Update SQLAlchemy, Flask, Flask-SQLAlchemy, and other packages to current versions.
   | `Issue #5904 <https://github.com/pgadmin-org/pgadmin4/issues/5904>`_ -  Fixed an issue where the count query should not be triggered when the estimated count is less than zero.
   | `Issue #5929 <https://github.com/pgadmin-org/pgadmin4/issues/5929>`_ -  Dashboard graph Y-axis width should increase with label.
   | `Issue #5943 <https://github.com/pgadmin-org/pgadmin4/issues/5943>`_ -  Use http for SVG namespace URLs which were changed to https for SonarQube fixes.

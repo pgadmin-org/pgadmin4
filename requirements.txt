@@ -32,7 +32,6 @@ python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.0.*
 cryptography==39.0.*
-pyOpenSSL>=23.* # required by cryptography
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
