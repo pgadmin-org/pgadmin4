@@ -13,7 +13,7 @@ from abc import abstractmethod
 
 import flask
 from flask import render_template, current_app
-from flask.views import View, MethodViewType
+from flask.views import View, MethodView
 from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
@@ -140,7 +140,7 @@ class PGChildModule():
         pass
 
 
-class NodeView(View, metaclass=MethodViewType):
+class NodeView(View, metaclass=type(MethodView)):
     """
     A PostgreSQL Object has so many operaions/functions apart from CRUD
     (Create, Read, Update, Delete):

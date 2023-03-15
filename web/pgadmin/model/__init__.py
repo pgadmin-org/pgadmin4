@@ -73,25 +73,6 @@ class PgAdminDbBinaryString(types.TypeDecorator):
             return value
 
 
-class PgAdminJSONString(types.TypeDecorator):
-    """
-    This function is used to return a string representing a json object from
-    an object and vise versa.
-    """
-
-    impl = types.String
-
-    def process_bind_param(self, value, dialect):
-        if value is not None:
-            value = json.dumps(value)
-        return value
-
-    def process_result_value(self, value, dialect):
-        if value is not None:
-            value = json.loads(value)
-        return value
-
-
 class Version(db.Model):
     """Version numbers for reference/upgrade purposes"""
     __tablename__ = 'version'
@@ -218,7 +199,7 @@ class Server(db.Model):
     shared = db.Column(db.Boolean(), nullable=False)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
-    connection_params = db.Column(MutableDict.as_mutable(PgAdminJSONString))
+    connection_params = db.Column(MutableDict.as_mutable(types.JSON))
 
     @property
     def serialize(self):
@@ -458,7 +439,7 @@ class SharedServer(db.Model):
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
-    connection_params = db.Column(MutableDict.as_mutable(PgAdminJSONString))
+    connection_params = db.Column(MutableDict.as_mutable(types.JSON))
 
 
 class Macros(db.Model):

@@ -304,7 +304,7 @@ def panel(trans_id):
     params['bgcolor'] = None
     params['fgcolor'] = None
 
-    s = Server.query.filter_by(id=params['sid']).first()
+    s = Server.query.filter_by(id=int(params['sid'])).first()
     if s.shared and s.user_id != current_user.id:
         # Import here to avoid circular dependency
         from pgadmin.browser.server_groups.servers import ServerModule
