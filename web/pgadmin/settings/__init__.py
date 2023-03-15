@@ -104,13 +104,15 @@ def store(setting=None, value=None):
     errormsg = ''
 
     try:
+        data = request.form if request.form else json.loads(
+            request.data.decode('utf-8'))
         if request.method == 'POST':
             if 'count' in request.form:
-                for x in range(int(request.form['count'])):
-                    store_setting(request.form['setting%d' % (
-                        x + 1)], request.form['value%d' % (x + 1)])
+                for x in range(int(data['count'])):
+                    store_setting(data['setting%d' % (
+                        x + 1)], data['value%d' % (x + 1)])
             else:
-                store_setting(request.form['setting'], request.form['value'])
+                store_setting(data['setting'], data['value'])
         else:
             store_setting(setting, value)
     except Exception as e:
