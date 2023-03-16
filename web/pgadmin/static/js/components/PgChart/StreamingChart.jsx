@@ -3,6 +3,7 @@ import UplotReact from 'uplot-react';
 import { useResizeDetector } from 'react-resize-detector';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
+import { useTheme } from '@material-ui/styles';
 
 function tooltipPlugin(refreshRate) {
   let tooltipTopOffset = -20;
@@ -59,6 +60,7 @@ function tooltipPlugin(refreshRate) {
 
 export default function StreamingChart({xRange=75, data, options}) {
   const chartRef = useRef();
+  const theme = useTheme();
   const { width, height, ref:containerRef } = useResizeDetector();
   const defaultOptions = useMemo(()=>({
     title: '',
@@ -91,8 +93,14 @@ export default function StreamingChart({xRange=75, data, options}) {
     axes: [
       {
         show: false,
+        stroke: theme.palette.text.primary,
       },
       {
+        grid: {
+          stroke: theme.otherVars.borderColor,
+          width: 0.5,
+        },
+        stroke: theme.palette.text.primary,
         size: function(_obj, values) {
           let size = 40;
           if(values?.length > 0) {
