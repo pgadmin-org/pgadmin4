@@ -17,6 +17,7 @@ class BigAnimalClusterTypeSchema extends BaseUISchema {
   constructor(fieldOptions = {}, initValues = {}) {
     super({
       oid: undefined,
+      project: '',
       cluster_type: '',
       replicas: 0,
       provider: '',
@@ -43,6 +44,18 @@ class BigAnimalClusterTypeSchema extends BaseUISchema {
 
   get baseFields() {
     return [
+      { id: 'project',
+        label: gettext('Project'),
+        mode: ['create'],
+        noEmpty: true,
+        type: () => {
+          return {
+            type: 'select',
+            options: this.fieldOptions.projects
+          };
+        },
+
+      },
       {
         id: 'cluster_type', label: gettext('Cluster type'),  noEmpty: true,
         type: () => {
@@ -68,8 +81,17 @@ class BigAnimalClusterTypeSchema extends BaseUISchema {
           return state.cluster_type != 'ha';
         }
       }, { id: 'provider', label: gettext('Cluster provider'),  noEmpty: true,
-        type: 'toggle', className: this.initValues.classes.providerHeight,
-        options: this.initValues.bigAnimalProviders,
+        deps:['project'],
+        type: (state) => {
+          return {
+            type: 'select',
+            options: state.project
+              ? () => this.fieldOptions.providers(state.project)
+              : [],
+            optionsReloadBasis: state.project,
+            allowClear: false,
+          };
+        }
       },
     ];
   }
@@ -379,7 +401,7 @@ class BigAnimalDatabaseSchema extends BaseUISchema {
         type: (state) => {
           return {
             type: 'select',
-            options: ()=>this.fieldOptions.db_versions(this.initValues.cluster_typ, state.database_type),
+            options: ()=>this.fieldOptions.db_versions(this.initValues.cluster_type, state.database_type),
             optionsReloadBasis: state.database_type,
           };
         },
@@ -439,8 +461,7 @@ class BigAnimalClusterSchema extends BaseUISchema {
         type: () => {
           return {
             type: 'select',
-            options: ()=>this.fieldOptions.regions(this.initValues.provider),
-            optionsReloadBasis: this.initValues.provider,
+            options: ()=>this.fieldOptions.regions()
           };
         },
       },{
