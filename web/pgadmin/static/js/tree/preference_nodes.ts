@@ -7,27 +7,27 @@
 //
 //////////////////////////////////////////////////////////////
 
-import * as BrowserFS from 'browserfs'
+import * as BrowserFS from 'browserfs';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
-import { FileType } from 'react-aspen'
+import { FileType } from 'react-aspen';
 import { findInTree } from './tree';
 
 export class ManagePreferenceTreeNodes {
   constructor(data) {
-    this.tree = {}
+    this.tree = {};
     this.tempTree = new TreeNode(undefined, {});
     this.treeData = data || [];
   }
 
-  public init = (_root: string) => new Promise((res, rej) => {
-    let node = { parent: null, children: [], data: null };
+  public init = (_root: string) => new Promise((res) => {
+    const node = { parent: null, children: [], data: null };
     this.tree = {};
     this.tree[_root] = { name: 'root', type: FileType.Directory, metadata: node };
     res();
   })
 
-  public updateNode = (_path, _data) => new Promise((res, rej) => {
+  public updateNode = (_path, _data) => new Promise((res) => {
     const item = this.findNode(_path);
     if (item) {
       item.name = _data.label;
@@ -36,7 +36,7 @@ export class ManagePreferenceTreeNodes {
     res(true);
   })
 
-  public removeNode = async (_path, _removeOnlyChild) => {
+  public removeNode = async (_path) => {
     const item = this.findNode(_path);
 
     if (item && item.parentNode) {
@@ -54,16 +54,16 @@ export class ManagePreferenceTreeNodes {
     return findInTree(this.tempTree, path);
   }
 
-  public addNode = (_parent: string, _path: string, _data: []) => new Promise((res, rej) => {
+  public addNode = (_parent: string, _path: string, _data: []) => new Promise((res) => {
     _data.type = _data.inode ? FileType.Directory : FileType.File;
     _data._label = _data.label;
     _data.label = _.escape(_data.label);
 
     _data.is_collection = isCollectionNode(_data._type);
-    let nodeData = { parent: _parent, children: _data?.children ? _data.children : [], data: _data };
+    const nodeData = { parent: _parent, children: _data?.children ? _data.children : [], data: _data };
 
-    let tmpParentNode = this.findNode(_parent);
-    let treeNode = new TreeNode(_data.id, _data, {}, tmpParentNode, nodeData, _data.type);
+    const tmpParentNode = this.findNode(_parent);
+    const treeNode = new TreeNode(_data.id, _data, {}, tmpParentNode, nodeData, _data.type);
 
     if (tmpParentNode !== null && tmpParentNode !== undefined) tmpParentNode.children.push(treeNode);
 
@@ -71,37 +71,37 @@ export class ManagePreferenceTreeNodes {
   })
 
   public readNode = (_path: string) => new Promise<string[]>((res, rej) => {
-    let temp_tree_path = _path,
+    const temp_tree_path = _path,
       node = this.findNode(_path);
     node.children = [];
 
     if (node && node.children.length > 0) {
       if (!node.type === FileType.File) {
-        rej("It's a leaf node")
+        rej('It\'s a leaf node');
       }
       else {
-        if (node?.children.length != 0) res(node.children)
+        if (node?.children.length != 0) res(node.children);
       }
     }
 
-    var self = this;
+    const self = this;
 
     async function loadData() {
-      const Path = BrowserFS.BFSRequire('path')
+      const Path = BrowserFS.BFSRequire('path');
       const fill = async (tree) => {
-        for (let idx in tree) {
-          const _node = tree[idx]
-          const _pathl = Path.join(_path, _node.id)
+        for (const idx in tree) {
+          const _node = tree[idx];
+          const _pathl = Path.join(_path, _node.id);
           await self.addNode(temp_tree_path, _pathl, _node);
         }
-      }
+      };
 
       if (node && !_.isUndefined(node.id)) {
-        let _data = self.treeData.find((el) => el.id == node.id);
-        let subNodes = [];
+        const _data = self.treeData.find((el) => el.id == node.id);
+        const subNodes = [];
 
         _data.childrenNodes.forEach(element => {
-          subNodes.push(element)
+          subNodes.push(element);
         });
 
         await fill(subNodes);
@@ -109,7 +109,7 @@ export class ManagePreferenceTreeNodes {
         await fill(self.treeData);
       }
 
-      self.returnChildrens(node, res)
+      self.returnChildrens(node, res);
     }
     loadData();
   })
@@ -130,7 +130,7 @@ export class TreeNode {
     this.children = [];
     this.domNode = domNode;
     this.metadata = metadata;
-    this.name = metadata ? metadata.data.label : "";
+    this.name = metadata ? metadata.data.label : '';
     this.type = type ? type : undefined;
   }
 
@@ -170,10 +170,10 @@ export class TreeNode {
    * Find the ancestor with matches this condition
    */
   ancestorNode(condition) {
-    let node = this;
+    let node;
 
-    while (node.hasParent()) {
-      node = node.parent();
+    while (this.hasParent()) {
+      node = this.parent();
       if (condition(node)) {
         return node;
       }
@@ -233,7 +233,7 @@ export class TreeNode {
       } else if (tree.isOpen(this.domNode)) {
         resolve(true);
       } else {
-        tree.open(this.domNode).then(val => resolve(true), err => reject(true));
+        tree.open(this.domNode).then(() => resolve(true), () => reject(true));
       }
     });
   }

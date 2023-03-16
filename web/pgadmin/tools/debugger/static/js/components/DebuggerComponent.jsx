@@ -840,7 +840,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
   };
 
   const getBreakpointList = (br_list) => {
-    let breakpoint_list = new Array();
+    let breakpoint_list = [];
     for (let val of br_list) {
       if (val.linenumber != -1) {
         breakpoint_list.push(val.linenumber);
