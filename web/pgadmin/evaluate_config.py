@@ -20,8 +20,27 @@ def get_variables_from_module(module_name):
     variables = {}
     if module:
         variables = {key: value for key, value in module.__dict__.items()
-                     if not (key.startswith('__') or key.startswith('_'))}
+                     if not (key.startswith('__') or key.startswith('_')) and
+                     validate_config_variable(key, value)}
     return variables
+
+
+def validate_config_variable(key, value):
+    boolean_keys = ['SERVER_MODE', 'ENHANCED_COOKIE_PROTECTION',
+                    'SUPPORT_SSH_TUNNEL', 'ALLOW_SAVE_TUNNEL_PASSWORD',
+                    'MASTER_PASSWORD_REQUIRED']
+    integer_keys = ['DEFAULT_SERVER_PORT', 'SERVER_HEARTBEAT_TIMEOUT',
+                    'LOG_ROTATION_SIZE', 'LOG_ROTATION_AGE',
+                    'LOG_ROTATION_MAX_LOG_FILES', 'MAX_SESSION_IDLE_TIME']
+    if key in boolean_keys and not isinstance(value, bool):
+        exception_msg = 'Expected boolean value for %s; got %r' % (key, value)
+        raise ValueError(exception_msg)
+    elif key in integer_keys and not isinstance(value, int):
+        exception_msg = 'Expected integer value for %s; got %r' % (key, value)
+        raise ValueError(exception_msg)
+    else:
+        # Do not validate
+        return True
 
 
 # Load distribution-specific config overrides
