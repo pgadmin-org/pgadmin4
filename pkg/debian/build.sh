@@ -6,7 +6,6 @@ set -e
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g')
 OS_ARCH=$(dpkg-architecture -qDEB_HOST_ARCH)
 
 # Stop creating pyc files.
@@ -38,7 +37,7 @@ Version: ${APP_LONG_VERSION}
 Architecture: ${OS_ARCH}
 Section: database
 Priority: optional
-Depends: python3, libpq5 (>= 11.0), libgssapi-krb5-2
+Depends: ${PYTHON_BINARY}, libpq5 (>= 11.0), libgssapi-krb5-2
 Recommends: postgresql-client | postgresql-client-15 | postgresql-client-14 | postgresql-client-13 | postgresql-client-12 | postgresql-client-11 | postgresql-client-10
 Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
