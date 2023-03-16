@@ -819,18 +819,22 @@ export function ResultSet() {
       );
     };
 
+    const executeAndPoll = async ()=>{
+      let goForPoll = await yesCallback();
+      if (goForPoll) pollCallback();
+    };
+
     if(isDataChanged()) {
       queryToolCtx.modal.confirm(
         gettext('Unsaved changes'),
         gettext('The data has been modified, but not saved. Are you sure you wish to discard the changes?'),
-        yesCallback,
+        executeAndPoll,
         function() {
           eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
         }
       );
     } else {
-      let goForPoll = await yesCallback();
-      if (goForPoll) pollCallback();
+      await executeAndPoll();
     }
   };
 

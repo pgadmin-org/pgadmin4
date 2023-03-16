@@ -10,7 +10,7 @@
 /*
  * The ERDCore is the middleware between the canvas engine and the UI DOM.
  */
-import createEngine, {DagreEngine, PathFindingLinkFactory, PortModelAlignment} from '@projectstorm/react-diagrams';
+import createEngine, {DagreEngine, PortModelAlignment} from '@projectstorm/react-diagrams';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 
@@ -665,10 +665,6 @@ export default class ERDCore {
 
   dagreDistributeNodes() {
     this.dagre_engine.redistribute(this.getModel());
-    this.getEngine()
-      .getLinkFactories()
-      .getFactory(PathFindingLinkFactory.NAME)
-      .calculateRoutingMatrix();
     this.repaint();
   }
 
