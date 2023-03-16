@@ -1,8 +1,7 @@
-import { IFileTreeHandle, FileEntry, Directory, TreeModel, FileType, IFileEntryItem, IItemRenderer, FileOrDir } from 'react-aspen'
-import { IDisposable } from 'notificar'
-import { TreeModelX } from './TreeModelX'
-import React, { MouseEventHandler } from 'react'
-import { MenuItem } from '../../helpers/Menu'
+import { IFileTreeHandle, FileEntry, Directory, FileType, IFileEntryItem, IItemRenderer, FileOrDir } from 'react-aspen';
+import { IDisposable } from 'notificar';
+import { TreeModelX } from './TreeModelX';
+import React from 'react';
 
 
 export interface IFileTreeXTriggerEvents {

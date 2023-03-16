@@ -20,6 +20,8 @@
     "@emotion/styled": "^10.0.14",
     "@emotion/utils": "^1.0.0",
     "@svgr/webpack": "^6.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.4.1",
     "autoprefixer": "^10.2.4",
     "axios-mock-adapter": "^1.17.0",
@@ -172,7 +174,7 @@
     "xterm-addon-web-links": "^0.4.0"
   },
   "scripts": {
-    "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js  --ext .jsx .",
+    "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js  --ext .jsx --ext .ts --ext .tsx .",
     "webpacker": "yarn run webpack --config webpack.config.js --progress",
     "webpacker:watch": "yarn run webpack --config webpack.config.js --progress --watch",
     "bundle:watch": "yarn run linter && yarn run webpacker:watch",

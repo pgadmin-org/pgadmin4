@@ -18,12 +18,12 @@ import { FileTreeX, TreeModelX } from '../components/PgTree';
 import Theme from '../Theme';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from '../components/Menu';
 
-var initBrowserTree = (pgBrowser) => {
-  return new Promise((resolve, reject)=>{
-    const MOUNT_POINT = '/browser'
+const initBrowserTree = (pgBrowser) => {
+  return new Promise((resolve)=>{
+    const MOUNT_POINT = '/browser';
 
     // Setup host
-    let mtree = new ManageTreeNodes();
+    const mtree = new ManageTreeNodes();
 
     // Init Tree with the Tree Parent node '/browser'
     mtree.init(MOUNT_POINT);
@@ -48,45 +48,45 @@ var initBrowserTree = (pgBrowser) => {
         }
         return retval;
       },
-    }
+    };
 
     // Create Node
     const create = async (parentPath, _data): Promise<IFileEntryItem> => {
       try {
-        let _node_path = parentPath + "/" + _data.id
-        return mtree.addNode(parentPath, _node_path, _data)
+        const _node_path = parentPath + '/' + _data.id;
+        return mtree.addNode(parentPath, _node_path, _data);
       } catch (error) {
-        return null // or throw error as you see fit
+        return null; // or throw error as you see fit
       }
-    }
+    };
 
     // Remove Node
     const remove = async (path: string, _removeOnlyChild): Promise<boolean> => {
       try {
         await mtree.removeNode(path, _removeOnlyChild);
-        return true
+        return true;
       } catch (error) {
-        return false // or throw error as you see fit
+        return false; // or throw error as you see fit
       }
-    }
+    };
 
     // Update Node
     const update = async (path: string, data): Promise<boolean> => {
       try {
         await mtree.updateNode(path, data);
-        return true
+        return true;
       } catch (error) {
-        return false // or throw error as you see fit
+        return false; // or throw error as you see fit
       }
-    }
+    };
 
-    const treeModelX = new TreeModelX(host, MOUNT_POINT)
+    const treeModelX = new TreeModelX(host, MOUNT_POINT);
 
     const itemHandle = function onReady(handler) {
       // Initialize pgBrowser Tree
       pgBrowser.tree = new Tree(handler, mtree, pgBrowser);
       resolve(pgBrowser);
-    }
+    };
 
     treeModelX.root.ensureLoaded().then(()=>{
       // Render Browser Tree
@@ -97,7 +97,7 @@ var initBrowserTree = (pgBrowser) => {
       );
     });
   });
-}
+};
 
 function BrowserTree(props) {
   const [contextPos, setContextPos] = React.useState<{x: number, y: number} | null>(null);
@@ -105,7 +105,7 @@ function BrowserTree(props) {
 
   const getPgMenuItem = (menuItem, i)=>{
     if(menuItem.type == 'separator') {
-        return <PgMenuDivider key={i}/>;
+      return <PgMenuDivider key={i}/>;
     }
     if(menuItem.isDisabled) {
       return <React.Fragment key={i}><div style={{padding: '0 0.7rem',opacity: '0.5'}}>{menuItem.label}</div></React.Fragment>;
@@ -113,13 +113,13 @@ function BrowserTree(props) {
     const hasCheck = typeof menuItem.checked == 'boolean';
 
     return <PgMenuItem
-        key={i}
-        disabled={menuItem.isDisabled}
-        onClick={()=>{
-            menuItem.callback();
-        }}
-        hasCheck={hasCheck}
-        checked={menuItem.checked}
+      key={i}
+      disabled={menuItem.isDisabled}
+      onClick={()=>{
+        menuItem.callback();
+      }}
+      hasCheck={hasCheck}
+      checked={menuItem.checked}
     >{menuItem.label}</PgMenuItem>;
   };
 
@@ -134,35 +134,35 @@ function BrowserTree(props) {
   return (
     <Theme>
       <FileTreeX
-      {...props} height={'100%'} disableCache={true} onContextMenu={onContextMenu}
-      onScroll={()=>{
-        contextPos && setContextPos(null);
-      }}
+        {...props} height={'100%'} disableCache={true} onContextMenu={onContextMenu}
+        onScroll={()=>{
+          contextPos && setContextPos(null);
+        }}
       />
       <PgMenu
-          anchorPoint={{
-              x: contextPos?.x,
-              y: contextPos?.y
-          }}
-          open={Boolean(contextPos) && contextMenuItems.length !=0}
-          onClose={()=>setContextPos(null)}
-          label="context"
-          portal
+        anchorPoint={{
+          x: contextPos?.x,
+          y: contextPos?.y
+        }}
+        open={Boolean(contextPos) && contextMenuItems.length !=0}
+        onClose={()=>setContextPos(null)}
+        label="context"
+        portal
       >
         {contextMenuItems.length !=0 && contextMenuItems.map((menuItem, i)=>{
-            const submenus = menuItem.getMenuItems();
-            if(submenus) {
-                return <PgSubMenu key={i} label={menuItem.label}>
-                {submenus.map((submenuItem, si)=>{
-                    return getPgMenuItem(submenuItem, i+'-'+si);
-                })}
-                </PgSubMenu>;
-            }
-            return getPgMenuItem(menuItem, i);
+          const submenus = menuItem.getMenuItems();
+          if(submenus) {
+            return <PgSubMenu key={i} label={menuItem.label}>
+              {submenus.map((submenuItem, si)=>{
+                return getPgMenuItem(submenuItem, i+'-'+si);
+              })}
+            </PgSubMenu>;
+          }
+          return getPgMenuItem(menuItem, i);
         })}
       </PgMenu>
     </Theme>
-  )
+  );
 }
 
 module.exports = {

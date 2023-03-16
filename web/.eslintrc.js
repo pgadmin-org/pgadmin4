@@ -42,6 +42,20 @@ module.exports = {
     'react',
     '@babel',
   ],
+  'overrides': [
+    {
+      'files': ['**/*.ts', '**/*.tsx'],
+      'plugins': [
+        '@typescript-eslint',
+      ],
+      'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended'],
+      'parser': '@typescript-eslint/parser',
+      'rules': {
+        '@typescript-eslint/no-explicit-any': ['off'],
+        '@typescript-eslint/no-this-alias': ['off'],
+      }
+    },
+  ],
   'globals': {
     '_': true,
     'module': true,
