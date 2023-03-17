@@ -8,9 +8,9 @@ This release contains a number of bug fixes and new features since the release o
 
 Supported Database Servers
 **************************
-**PostgreSQL**: 10, 11, 12, 13, 14 and 15
+**PostgreSQL**: 11, 12, 13, 14 and 15
 
-**EDB Advanced Server**: 10, 11, 12, 13, 14 and 15
+**EDB Advanced Server**: 11, 12, 13, 14 and 15
 
 Bundled PostgreSQL Utilities
 ****************************
@@ -35,7 +35,11 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #4423 <https://github.com/pgadmin-org/pgadmin4/issues/4423>`_ -  Fixed an issue where list of tables is not displayed.
   | `Issue #4784 <https://github.com/pgadmin-org/pgadmin4/issues/4784>`_ -  Handle errors occurring during decoding UTF-8 encoded query result data which contains ascii characters.
+  | `Issue #4884 <https://github.com/pgadmin-org/pgadmin4/issues/4884>`_ -  Fixed an issue where it is not possible to import csv data to tables having columns with german umlauts in their name.
+  | `Issue #4891 <https://github.com/pgadmin-org/pgadmin4/issues/4891>`_ -  Fixed 'rawunicodeescape' codec can't decode issue.
+  | `Issue #5504 <https://github.com/pgadmin-org/pgadmin4/issues/5504>`_ -  Fixed an issue where incorrect view of text[] fields in query and table results when use other then UTF8 (win1251) codepage and symbols.
   | `Issue #5735 <https://github.com/pgadmin-org/pgadmin4/issues/5735>`_ -  Show appropriate error message when master password is not set instead of 'Crypt key missing'.
   | `Issue #5775 <https://github.com/pgadmin-org/pgadmin4/issues/5775>`_ -  Display the 'No menu available for this object' message if the selected tree node does not have any options.
   | `Issue #5824 <https://github.com/pgadmin-org/pgadmin4/issues/5824>`_ -  Ensure that the user's storage directory is created when the users are created, as well as for those users who have not yet been created.

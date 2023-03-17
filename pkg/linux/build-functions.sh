@@ -64,7 +64,7 @@ _create_python_virtualenv() {
     cd "usr/${APP_NAME}" || exit
 
     # Create the blank venv
-    ${SYSTEM_PYTHON_PATH} -m venv
+    "${SYSTEM_PYTHON_PATH}" -m venv
     # shellcheck disable=SC1091
     . venv/bin/activate
 
@@ -93,9 +93,9 @@ _create_python_virtualenv() {
 
     # Use {SYSTEM_PYTHON_PATH} here as we want the system path
     if [ "$1" == "debian" ]; then
-        PYSYSLIB_PATH=$(${SYSTEM_PYTHON_PATH} -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
+        PYSYSLIB_PATH=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
     else
-        PYSYSLIB_PATH=$(${SYSTEM_PYTHON_PATH} -c "import sys; print('%s/lib64/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
+        PYSYSLIB_PATH=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print('%s/lib64/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
     fi
 
     # Symlink in the rest of the Python libs. This is required because the runtime
@@ -201,7 +201,7 @@ _build_docs() {
     cd "${SERVERROOT}" && mkdir -p "usr/${APP_NAME}/share/docs/en_US/html"
     cd "${SOURCEDIR}/docs/en_US" || exit
     python3 build_code_snippet.py
-    SYS_PYTHONPATH=$(${SYSTEM_PYTHON_PATH} -c "import sys; print(':'.join([p for p in sys.path if p]))")
+    SYS_PYTHONPATH=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print(':'.join([p for p in sys.path if p]))")
     # shellcheck disable=SC2153
     PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
 }
@@ -239,8 +239,8 @@ _copy_code() {
     # user has configured an alternative default.
     # DO THIS LAST!
     cd "${SERVERROOT}/usr/${APP_NAME}/venv/bin" || exit
-    PYTHON_INTERPRETER=$(${SYSTEM_PYTHON_PATH} -c "import os, sys; print(os.path.realpath(sys.executable))")
-    PYTHON_VERSION=$(${SYSTEM_PYTHON_PATH} -c "import sys; print('%d.%d' % (sys.version_info.major, sys.version_info.minor))")
+    PYTHON_INTERPRETER=$("${SYSTEM_PYTHON_PATH}" -c "import os, sys; print(os.path.realpath(sys.executable))")
+    PYTHON_VERSION=$("${SYSTEM_PYTHON_PATH}" -c "import sys; print('%d.%d' % (sys.version_info.major, sys.version_info.minor))")
     rm python && ln -s python3 python
     rm "python${PYTHON_VERSION}" && ln -s python3 "python${PYTHON_VERSION}"
     rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
