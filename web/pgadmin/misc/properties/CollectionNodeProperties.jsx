@@ -89,6 +89,7 @@ export function CollectionNodeView({
   const [selectedObject, setSelectedObject] = React.useState([]);
   const [reload, setReload] = React.useState(false);
   const [loaderText, setLoaderText] = React.useState('');
+  const schemaRef = React.useRef();
 
   //Reload the collection node on refresh or change in children count
   React.useEffect(() => {
@@ -133,7 +134,7 @@ export function CollectionNodeView({
         _type: row.original._type,
       }));
     } else {
-      selRows = selRowModels.map((row) => row.original.oid);
+      selRows = selRowModels.map((row) => row.original[schemaRef.current.idAttribute]);
     }
 
     if (selRows.length === 0) {
@@ -202,8 +203,8 @@ export function CollectionNodeView({
       setLoaderText('Loading...');
 
       if (itemNodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
-        let schema = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, itemNodeData);
-        schema.fields.forEach((field) => {
+        schemaRef.current = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, itemNodeData);
+        schemaRef.current?.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {
               column = {
