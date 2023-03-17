@@ -18,6 +18,19 @@ _setup_env() {
     if [ -n "${APP_SUFFIX}" ]; then
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
+
+    # Setting up the correct Python version for Ubuntu 18 and EL-8, which have
+    # new Python versions installed parallel to the old ones.
+    OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
+    SYSTEM_PYTHON_PATH='/usr/bin/python3'
+    PYTHON_BINARY='python3'
+    if [ "$2" == 'debian' ] && [ "${OS_VERSION}" == "18" ]; then
+      SYSTEM_PYTHON_PATH='/usr/bin/python3.8'
+      PYTHON_BINARY='python3.8'
+    elif [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
+      SYSTEM_PYTHON_PATH='/usr/bin/python3.9'
+      PYTHON_BINARY='python3.9'
+    fi
 }
 
 _cleanup() {
@@ -51,9 +64,9 @@ _create_python_virtualenv() {
     cd "usr/${APP_NAME}" || exit
 
     # Create the blank venv
-    python3 -m venv venv
+    ${SYSTEM_PYTHON_PATH} -m venv
     # shellcheck disable=SC1091
-    source venv/bin/activate
+    . venv/bin/activate
 
     # Make sure we have the wheel package present, as well as the latest pip
     pip3 install --upgrade pip
@@ -78,11 +91,11 @@ _create_python_virtualenv() {
     PYMODULES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
     DIR_PYMODULES_PATH=$(dirname "${PYMODULES_PATH}")
 
-    # Use /usr/bin/python3 here as we want the system path
+    # Use {SYSTEM_PYTHON_PATH} here as we want the system path
     if [ "$1" == "debian" ]; then
-        PYSYSLIB_PATH=$(/usr/bin/python3 -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
+        PYSYSLIB_PATH=$(${SYSTEM_PYTHON_PATH} -c "import sys; print('%s/lib/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
     else
-        PYSYSLIB_PATH=$(/usr/bin/python3 -c "import sys; print('%s/lib64/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
+        PYSYSLIB_PATH=$(${SYSTEM_PYTHON_PATH} -c "import sys; print('%s/lib64/python%d.%.d' % (sys.prefix, sys.version_info.major, sys.version_info.minor))")
     fi
 
     # Symlink in the rest of the Python libs. This is required because the runtime
@@ -188,13 +201,9 @@ _build_docs() {
     cd "${SERVERROOT}" && mkdir -p "usr/${APP_NAME}/share/docs/en_US/html"
     cd "${SOURCEDIR}/docs/en_US" || exit
     python3 build_code_snippet.py
-    SYS_PYTHONPATH=$(/usr/bin/python3 -c "import sys; print(':'.join([p for p in sys.path if p]))")
+    SYS_PYTHONPATH=$(${SYSTEM_PYTHON_PATH} -c "import sys; print(':'.join([p for p in sys.path if p]))")
     # shellcheck disable=SC2153
-    if [ "$1" == "redhat" ] && [ "${OS_VERSION}" == "7" ]; then
-            PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 /usr/local/bin/sphinx-build . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
-    else
-        PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
-    fi
+    PYTHONPATH=$PYTHONPATH:${SYS_PYTHONPATH} python3 -msphinx . "${SERVERROOT}/usr/${APP_NAME}/share/docs/en_US/html"
 }
 
 _copy_code() {
@@ -230,8 +239,8 @@ _copy_code() {
     # user has configured an alternative default.
     # DO THIS LAST!
     cd "${SERVERROOT}/usr/${APP_NAME}/venv/bin" || exit
-    PYTHON_INTERPRETER=$(/usr/bin/python3 -c "import os, sys; print(os.path.realpath(sys.executable))")
-    PYTHON_VERSION=$(/usr/bin/python3 -c "import sys; print('%d.%d' % (sys.version_info.major, sys.version_info.minor))")
+    PYTHON_INTERPRETER=$(${SYSTEM_PYTHON_PATH} -c "import os, sys; print(os.path.realpath(sys.executable))")
+    PYTHON_VERSION=$(${SYSTEM_PYTHON_PATH} -c "import sys; print('%d.%d' % (sys.version_info.major, sys.version_info.minor))")
     rm python && ln -s python3 python
     rm "python${PYTHON_VERSION}" && ln -s python3 "python${PYTHON_VERSION}"
     rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
