@@ -899,7 +899,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
         """View function which handles a change password request."""
 
         has_error = False
-        form_class = _security.change_password_form
+        form_class = _security.forms.get('change_password_form').cls
         req_json = request.get_json(silent=True)
 
         if req_json:
@@ -986,7 +986,7 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
     def forgot_password():
         """View function that handles a forgotten password request."""
         has_error = False
-        form_class = _security.forgot_password_form
+        form_class = _security.forms.get('forgot_password_form').cls
         req_json = request.get_json(silent=True)
 
         if req_json:
