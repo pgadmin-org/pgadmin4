@@ -16,7 +16,7 @@ import { ResultSet } from './sections/ResultSet';
 import { StatusBar } from './sections/StatusBar';
 import { MainToolBar } from './sections/MainToolBar';
 import { Messages } from './sections/Messages';
-import getApiInstance, {parseApiError} from '../../../../../static/js/api_instance';
+import getApiInstance, {callFetch, parseApiError} from '../../../../../static/js/api_instance';
 import url_for from 'sources/url_for';
 import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS } from './QueryToolConstants';
 import { useInterval } from '../../../../../static/js/custom_hooks';
@@ -359,11 +359,19 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
 
   useEffect(()=>{
     const closeConn = ()=>{
-      api.delete(
+      /* Using fetch with keepalive as the browser may
+      cancel the axios request on tab close. keepalive will
+      make sure the request is completed */
+      callFetch(
         url_for('sqleditor.close', {
           'trans_id': qtState.params.trans_id,
-        })
-      );
+        }), {
+          keepalive: true,
+          method: 'DELETE',
+        }
+      )
+        .then(()=>{/* Success */})
+        .catch((err)=>console.error(err));
     };
     window.addEventListener('unload', closeConn);
 

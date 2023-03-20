@@ -427,17 +427,6 @@ export default class DebuggerModule {
               setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, db_label, null, self.pgBrowser);
 
               panel.focus();
-              // Register Panel Closed event
-              panel.on(self.wcDocker.EVENT.CLOSED, function () {
-                let closeUrl = url_for('debugger.close', {
-                  'trans_id': trans_id,
-                });
-                self.api({
-                  url: closeUrl,
-                  method: 'DELETE',
-                });
-              });
-
               panel.on(self.wcDocker.EVENT.RENAME, function (panel_data) {
                 self.panel_rename_event(panel_data, panel, treeInfo);
               });
@@ -606,17 +595,6 @@ export default class DebuggerModule {
           setDebuggerTitle(panel, browser_preferences, label, db_label, db_label, null, self.pgBrowser);
 
           panel.focus();
-
-          // Panel Closed event
-          panel.on(self.wcDocker.EVENT.CLOSED, function () {
-            let closeUrl = url_for('debugger.close', {
-              'trans_id': res.data.data.debuggerTransId,
-            });
-            self.api({
-              url: closeUrl,
-              method: 'DELETE',
-            });
-          });
 
           // Panel Rename event
           panel.on(self.wcDocker.EVENT.RENAME, function (panel_data) {

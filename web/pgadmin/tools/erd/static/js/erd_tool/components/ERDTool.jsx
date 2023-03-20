@@ -31,7 +31,7 @@ import { MainToolBar } from './MainToolBar';
 import { Box, withStyles } from '@material-ui/core';
 import EventBus from '../../../../../../static/js/helpers/EventBus';
 import { ERD_EVENTS } from '../ERDConstants';
-import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
+import getApiInstance, { callFetch, parseApiError } from '../../../../../../static/js/api_instance';
 import { openSocket, socketApiGet } from '../../../../../../static/js/socket_instance';
 
 /* Custom react-diagram action for keyboard events */
@@ -333,12 +333,22 @@ class ERDTool extends React.Component {
     });
 
     window.addEventListener('unload', ()=>{
-      this.apiObj.delete(url_for('erd.close', {
-        trans_id: this.props.params.trans_id,
-        sgid: this.props.params.sgid,
-        sid: this.props.params.sid,
-        did: this.props.params.did
-      }));
+      /* Using fetch with keepalive as the browser may
+      cancel the axios request on tab close. keepalive will
+      make sure the request is completed */
+      callFetch(
+        url_for('erd.close', {
+          trans_id: this.props.params.trans_id,
+          sgid: this.props.params.sgid,
+          sid: this.props.params.sid,
+          did: this.props.params.did
+        }), {
+          keepalive: true,
+          method: 'DELETE',
+        }
+      )
+        .then(()=>{/* Success */})
+        .catch((err)=>console.error(err));
     });
 
     let done = await this.initConnection();

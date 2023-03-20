@@ -47,3 +47,14 @@ export function parseApiError(error) {
     return error;
   }
 }
+
+export function callFetch(url, options, headers={}) {
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-type': 'application/json',
+      [pgAdmin.csrf_token_header]: pgAdmin.csrf_token,
+      ...headers,
+    }
+  });
+}
