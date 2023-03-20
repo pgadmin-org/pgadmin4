@@ -205,6 +205,7 @@ class pgAdminInetLoader(InetLoader):
 
 # The new classes can be registered globally, on a connection, on a cursor
 psycopg.adapters.register_loader("inet", pgAdminInetLoader)
+psycopg.adapters.register_loader("cidr", pgAdminInetLoader)
 
 
 class pgAdminByteaLoader(Loader):

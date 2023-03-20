@@ -212,6 +212,9 @@ export class ResultSetUtils {
           this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_LIMIT_VALUE, httpMessageData.data.limit);
           this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EDITOR_SET_SQL, httpMessageData.data.sql, false);
         }
+        if(httpMessageData.data.notifies) {
+          this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, httpMessageData.data.notifies);
+        }
         return true;
       } else {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
@@ -232,9 +235,6 @@ export class ResultSetUtils {
         if(!flags.external) {
           this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HIGHLIGHT_ERROR, httpMessageData.data.result);
         }
-      }
-      if(httpMessageData.data.notifies) {
-        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, httpMessageData.data.notifies);
       }
     } catch(e) {
       this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
