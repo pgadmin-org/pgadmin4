@@ -71,7 +71,7 @@ def verify_credentials():
     data = json.loads(request.data)
     client_secret_path = data['secret']['client_secret_file'] if \
         'client_secret_file' in data['secret'] else None
-    status = True
+    status = False
     error = None
     res_data = {}
 
@@ -91,15 +91,14 @@ def verify_credentials():
         # get auth url
         auth_url, error_msg = _google.get_auth_url(request.host_url)
         if error_msg:
-            status = False
             error = error_msg
         else:
+            status = True
             res_data = {'auth_url': auth_url}
             # save google object
-            session['google']['client_config'] = client_config
-            session['google']['google_obj'] = pickle.dumps(_google, -1)
+        session['google']['client_config'] = client_config
+        session['google']['google_obj'] = pickle.dumps(_google, -1)
     else:
-        status = False
         error = 'Client secret path not found'
 
     return make_json_response(success=status, errormsg=error, data=res_data)

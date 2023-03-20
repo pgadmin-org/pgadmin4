@@ -16,6 +16,9 @@ import sys
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
                        'or later.')
+# Due to https://github.com/eventlet/eventlet/issues/670
+if sys.version_info <= (3, 9):
+    import select
 
 import builtins
 import os

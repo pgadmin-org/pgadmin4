@@ -38,7 +38,7 @@ class GoogleCredSchema extends BaseUISchema{
         id: 'client_secret_file',
         label: gettext('Client secret file'),
         type: 'file',
-        helpMessage: gettext('Select a client secrets file containing the client ID, client secret, and other OAuth 2.0 parameters for google authentication. Refer <a href="https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications">link</a> for creating client secret.'),
+        helpMessage: gettext('Select a client secrets file containing the client ID, client secret, and other OAuth 2.0 parameters for google authentication. Refer <a href="https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications" target="_blank">link</a> for creating client secret.'),
         controlProps: {
           dialogType: 'select_file',
           supportedTypes: ['json'],
@@ -65,6 +65,7 @@ class GoogleCredSchema extends BaseUISchema{
               obj.fieldOptions.authenticateGoogle(state.client_secret_file)
                 .then(()=>{
                   resolve(()=>({
+                    is_authenticating: false,
                   }));
                 })
                 .catch((err)=>{
@@ -81,7 +82,7 @@ class GoogleCredSchema extends BaseUISchema{
         deps:['auth_btn'],
         deferredDepChange: (state, source)=>{
           return new Promise((resolve, reject)=>{
-            if(source == 'auth_btn'  && state.is_authenticating ) {
+            if(source == 'auth_btn' && state.is_authenticating ) {
               obj.fieldOptions.verification_ack()
                 .then(()=>{
                   resolve();
@@ -261,7 +262,7 @@ class GoogleStorageSchema extends BaseUISchema {
       {
         id: 'storage_size', 
         label: gettext('Storage capacity'), 
-        type: 'text',
+        type: 'int',
         mode: ['create'], 
         noEmpty: true, 
         deps: ['storage_type'],
@@ -272,7 +273,7 @@ class GoogleStorageSchema extends BaseUISchema {
 
   validate(data, setErrMsg) {
     if (data.storage_size && (data.storage_size < 9 ||  data.storage_size > 65536)) {
-      setErrMsg('storage_size', gettext('Please enter value betwwen 10 and 65,536.'));
+      setErrMsg('storage_size', gettext('Please enter the value between 10 and 65,536.'));
       return true;
     }
     return false;
@@ -350,8 +351,8 @@ class GoogleHighAvailabilitySchema extends BaseUISchema {
   }
 
   validate(data, setErrMsg) {
-    if (data.high_availability && (isEmptyString(data.secondary_availability_zone))) {
-      setErrMsg('secondary_availability_zone', gettext('Please select Secondary availability zone.'));
+    if (data.high_availability && (isEmptyString(data.secondary_availability_zone)) || (data.secondary_availability_zone == data.availability_zone)) {
+      setErrMsg('secondary_availability_zone', gettext('Please select Secondary availability zone different than primary.'));
       return true;
     }
     return false;
@@ -518,6 +519,14 @@ class GoogleClusterSchema extends BaseUISchema {
         schema: this.googleHighAvailabilityDetails,
       },
     ];
+  }
+
+  validate(data, setErr) {
+    if ( !isEmptyString(data.name) && (!/^(?=[a-z])[a-z0-9\-]*$/.test(data.name) || data.name.length > 97)) {
+      setErr('name',gettext('Name must only contain lowercase letters, numbers, and hyphens. Start with a letter.'));
+      return true;
+    }
+    return false;
   }
 }
 

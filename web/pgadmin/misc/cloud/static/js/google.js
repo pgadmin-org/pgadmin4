@@ -83,7 +83,7 @@ export function GoogleCredentials(props) {
                     child.close();
                   }
                   resolve();
-                } else if (res.data && res.data.success == 0 && (res.data.errormsg == 'Invalid state parameter.' || res.data.errormsg == 'Access denied.' || res.data.errormsg == 'Authentication is failed.')){
+                } else if (res.data && res.data.success == 0 && res.data.errormsg ){
                   _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.ERROR, res.data.errormsg]);
                   _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',false);
                   clearInterval(interval);
@@ -242,9 +242,12 @@ GoogleDatabaseDetails.propTypes = {
 // Validation functions
 export function validateGoogleStep2(cloudInstanceDetails) {
   let isError = false;
-  if (isEmptyString(cloudInstanceDetails.name) ||
-  isEmptyString(cloudInstanceDetails.db_version) || isEmptyString(cloudInstanceDetails.instance_type) ||
-  isEmptyString(cloudInstanceDetails.region)|| isEmptyString(cloudInstanceDetails.storage_size) || isEmptyString(cloudInstanceDetails.public_ips)) {
+  if ((isEmptyString(cloudInstanceDetails.name) || isEmptyString(cloudInstanceDetails.project) ||
+      isEmptyString(cloudInstanceDetails.region) || isEmptyString(cloudInstanceDetails.availability_zone) ||
+      isEmptyString(cloudInstanceDetails.db_version) || isEmptyString(cloudInstanceDetails.instance_type) ||
+      isEmptyString(cloudInstanceDetails.instance_class) || isEmptyString(cloudInstanceDetails.storage_type)||
+      isEmptyString(cloudInstanceDetails.storage_size) || isEmptyString(cloudInstanceDetails.public_ips)) ||
+      (cloudInstanceDetails.high_availability && isEmptyString(cloudInstanceDetails.secondary_availability_zone))) {
     isError = true;
   }
   return isError;
@@ -274,9 +277,17 @@ function createData(name, value) {
 
 // Summary section
 export function getGoogleSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
-  let dbVersion = cloudInstanceDetails.db_version;
-  dbVersion  = dbVersion.charAt(0) + dbVersion.slice(1,7).toLowerCase() + 'SQL ' + dbVersion.split('_')[1];
+  let db_version = cloudInstanceDetails.db_version;
+  db_version  = db_version.charAt(0) + db_version.slice(1,7).toLowerCase() + 'SQL ' + db_version.split('_')[1];
   let storageType = cloudInstanceDetails.storage_type.split('_')[1];
+  let instance_class = cloudInstanceDetails.instance_class.charAt(0).toUpperCase() + cloudInstanceDetails.instance_class.slice(1);
+  let instance_type = cloudInstanceDetails.instance_type;
+  if (instance_class =='Standard' || instance_class =='Highmem' ){
+    instance_type =  instance_type.split('-')[2] + ' vCPU ' + Math.round((parseInt(instance_type.split('-')[3]))/1024) + ' GB';
+  }else{
+    const instance_type_mapping = {'db-f1-micro':'1 vCPU, 0.6 GB', 'db-g1-small': '1 vCPU, 1.7 GB'};
+    instance_type = instance_type_mapping[instance_type];
+  }
 
   const rows1 = [
     createData(gettext('Cloud'), cloud),
@@ -287,8 +298,9 @@ export function getGoogleSummary(cloud, cloudInstanceDetails, cloudDBDetails) {
   ];
 
   const rows2 = [
-    createData(gettext('PostgreSQL version'), dbVersion),
-    createData(gettext('Instance type'), cloudInstanceDetails.instance_type),
+    createData(gettext('PostgreSQL version'), db_version),
+    createData(gettext('Instance class'), instance_class),
+    createData(gettext('Instance type'), instance_type),
   ];
 
   const rows3 = [

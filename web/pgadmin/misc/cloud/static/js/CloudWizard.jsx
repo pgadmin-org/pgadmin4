@@ -271,6 +271,10 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
       if(activeStep == 3 && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
         resolve(true);
       }
+      else if(activeStep == 1  && (cloudProvider == CLOUD_PROVIDERS.AWS || cloudProvider == CLOUD_PROVIDERS.AZURE || cloudProvider == CLOUD_PROVIDERS.GOOGLE)) {
+        setVerificationIntiated(false);
+      }
+      setErrMsg(['', '']);
       resolve();
     });
   };
