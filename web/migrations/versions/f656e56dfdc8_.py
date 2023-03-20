@@ -14,7 +14,7 @@ Create Date: 2023-01-02 14:52:48.109290
 
 """
 import sqlalchemy as sa
-from alembic import op
+from alembic import op, context
 
 
 # revision identifiers, used by Alembic.
@@ -36,18 +36,20 @@ def migrate_connection_params(table_name):
     # to directly v6.16 and above. Below statements has been removed from
     # migration file 3ce25f562f3b_.py as a part of using the alembic code
     # instead of SQL queries directly.
-    try:
-        # Rename user table to user_old and again user_old to user to change
-        # the foreign key reference of user_old table which is not exists
-        op.execute("ALTER TABLE user RENAME TO user_old")
-        op.execute("ALTER TABLE user_old RENAME TO user")
-        # Rename user table to server_old and again server_old to server to
-        # change the foreign key reference of user_old table which is not
-        # exists.
-        op.execute("ALTER TABLE server RENAME TO server_old")
-        op.execute("ALTER TABLE server_old RENAME TO server")
-    except Exception as _:
-        pass
+    if context.get_impl().bind.dialect.name == "sqlite":
+        try:
+            # Rename user table to user_old and again user_old to user to
+            # change the foreign key reference of user_old table which is not
+            # exists
+            op.execute("ALTER TABLE \"user\" RENAME TO user_old")
+            op.execute("ALTER TABLE user_old RENAME TO \"user\"")
+            # Rename user table to server_old and again server_old to server to
+            # change the foreign key reference of user_old table which is not
+            # exists.
+            op.execute("ALTER TABLE server RENAME TO server_old")
+            op.execute("ALTER TABLE server_old RENAME TO server")
+        except Exception as _:
+            pass
 
     # define table representation
     meta = sa.MetaData()
