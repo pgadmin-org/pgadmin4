@@ -45,8 +45,10 @@ Bug fixes
   | `Issue #5824 <https://github.com/pgadmin-org/pgadmin4/issues/5824>`_ -  Ensure that the user's storage directory is created when the users are created, as well as for those users who have not yet been created.
   | `Issue #5833 <https://github.com/pgadmin-org/pgadmin4/issues/5833>`_ -  Fixed an issue where user MFA entry was not getting delete after deleting a user.
   | `Issue #5874 <https://github.com/pgadmin-org/pgadmin4/issues/5874>`_ -  Make "using" and "with check" fields a textarea in the RLS policy.
+  | `Issue #5894 <https://github.com/pgadmin-org/pgadmin4/issues/5894>`_ -  Use fetch instead of axios to close connections in SQLEditor, ERD, Schema Diff and Debugger to ensure it completes.
   | `Issue #5904 <https://github.com/pgadmin-org/pgadmin4/issues/5904>`_ -  Fixed an issue where the count query should not be triggered when the estimated count is less than zero.
   | `Issue #5929 <https://github.com/pgadmin-org/pgadmin4/issues/5929>`_ -  Dashboard graph Y-axis width should increase with label.
+  | `Issue #5941 <https://github.com/pgadmin-org/pgadmin4/issues/5941>`_ -  Fixed an issue where migration on external database is not working.
   | `Issue #5943 <https://github.com/pgadmin-org/pgadmin4/issues/5943>`_ -  Use http for SVG namespace URLs which were changed to https for SonarQube fixes.
   | `Issue #5955 <https://github.com/pgadmin-org/pgadmin4/issues/5955>`_ -  Fix an issue where query tool is stuck when running query after discarding changed data.
   | `Issue #5958 <https://github.com/pgadmin-org/pgadmin4/issues/5958>`_ -  Fix an issue where new dashboard graphs are partially following theme colors.
