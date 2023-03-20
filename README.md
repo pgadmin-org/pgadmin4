@@ -74,7 +74,7 @@ simple - adapt as required for your distribution:
    ```
    
 4. Ensure that a PostgreSQL installation's bin/ directory is in the path (so
-   pg_config can be found for building psycopg2), and install the required
+   pg_config can be found for building psycopg3), and install the required
    packages:
 
    ```bash

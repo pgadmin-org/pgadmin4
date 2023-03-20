@@ -14,7 +14,7 @@ from importlib import import_module
 
 from werkzeug.utils import find_modules
 from pgadmin.utils import server_utils
-from pgadmin.utils.constants import PSYCOPG2, PSYCOPG3
+from pgadmin.utils.constants import PSYCOPG3
 from .. import socketio
 
 import unittest
@@ -69,9 +69,6 @@ class TestsGeneratorRegistry(ABCMeta):
 
         try:
             for module_name in find_modules(pkg_root, False, True):
-                if module_name.find(PSYCOPG2) != -1:
-                    print("Skipping ", module_name)
-                    continue
                 all_modules.append(module_name)
         except Exception:
             pass

@@ -39,12 +39,8 @@ from pgadmin.utils.constants import BINARY_PATHS, PSYCOPG3
 from pgadmin.utils import set_binary_path
 
 from functools import wraps
+import psycopg
 
-# Remove this condition, once psycopg2 will be removed completely
-if config.PG_DEFAULT_DRIVER == PSYCOPG3:
-    import psycopg
-else:
-    import psycopg2 as psycopg
 
 CURRENT_PATH = os.path.abspath(os.path.join(os.path.dirname(
     os.path.realpath(__file__)), "../"))

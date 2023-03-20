@@ -118,7 +118,6 @@ USER_NOT_FOUND = gettext("The specified user ID (%s) could not be found.")
 DATABASE_LAST_SYSTEM_OID = 16383
 
 # Drivers
-PSYCOPG2 = 'psycopg2'
 PSYCOPG3 = 'psycopg3'
 
 # Shared storage

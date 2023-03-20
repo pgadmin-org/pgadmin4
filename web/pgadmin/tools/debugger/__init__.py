@@ -36,7 +36,6 @@ from pgadmin.browser.server_groups.servers.databases.extensions.utils \
 from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
     SERVER_CONNECTION_CLOSED
 from pgadmin.preferences import preferences
-from pgadmin.utils.constants import PSYCOPG2
 
 MODULE_NAME = 'debugger'
 
@@ -1318,11 +1317,6 @@ def messages(trans_id):
 
     if conn.connected():
         status = 'Busy'
-        if PG_DEFAULT_DRIVER == PSYCOPG2:
-            # psycopg3 doesn't require polling to get the
-            # messages as debugger connection is already open
-            # Remove this block while removing psucopg2 completely
-            _, result = conn.poll()
         notify = conn.messages()
         if notify:
             # In notice message we need to find "PLDBGBREAK" string to find
