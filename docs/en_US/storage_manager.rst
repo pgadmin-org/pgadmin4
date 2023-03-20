@@ -58,6 +58,9 @@ the admin user. Using this shared storage users can share the files with other u
 Admin users can mark the shared storage as restricted to restrict non-admin users from deleting, uploading,
 adding, and renaming files/folders in shared storage by setting the restricted_access flag in config.
 
+*NOTE: You must ensure the directories specified are writeable by the user that the web server processes will be running as, e.g. apache or www-data.*
+
+
 Other Options
 *********************
 
