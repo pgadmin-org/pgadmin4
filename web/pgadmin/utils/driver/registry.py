@@ -9,7 +9,6 @@
 
 from abc import ABCMeta
 
-from pgadmin.utils.constants import PSYCOPG2
 from pgadmin.utils.dynamic_registry import create_registry_metaclass
 import config
 
@@ -18,12 +17,8 @@ import config
 def load_modules(cls, app=None):
     submodules = []
 
-    if config.PG_DEFAULT_DRIVER == PSYCOPG2:
-        from . import psycopg2 as module
-        submodules.append(module)
-    else:
-        from . import psycopg3 as module
-        submodules.append(module)
+    from . import psycopg3 as module
+    submodules.append(module)
 
     from . import abstract as module
     submodules.append(module)

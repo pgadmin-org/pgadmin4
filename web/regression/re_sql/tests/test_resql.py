@@ -236,9 +236,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 elif self.check_precondition(
                         scenario['precondition_sql'], False):
                     skip_test_case = False
-            elif 'pg_driver' in scenario and\
-                    scenario['pg_driver'] != PG_DEFAULT_DRIVER:
-                skip_test_case = True
             else:
                 skip_test_case = False
 
