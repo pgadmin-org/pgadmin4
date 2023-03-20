@@ -741,16 +741,6 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgAdmin.Browser);
               panel.focus();
 
-              // Panel Closed event
-              panel.on(wcDocker.EVENT.CLOSED, function () {
-                let closeUrl = url_for('debugger.close', {
-                  'trans_id': res_post.data.data.debuggerTransId,
-                });
-                api({
-                  url: closeUrl,
-                  method: 'DELETE',
-                });
-              });
               /* TO-DO check how to add this is new lib for wc-docker */
               commonUtils.registerDetachEvent(panel);
 

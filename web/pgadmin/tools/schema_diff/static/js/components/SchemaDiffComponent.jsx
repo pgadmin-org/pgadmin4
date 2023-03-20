@@ -19,7 +19,7 @@ import { Box, makeStyles } from '@material-ui/core';
 import { Results } from './Results';
 import { SchemaDiffCompare } from './SchemaDiffCompare';
 import EventBus from '../../../../../static/js/helpers/EventBus';
-import getApiInstance from '../../../../../static/js/api_instance';
+import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 
 export const SchemaDiffEventsContext = createContext();
@@ -78,9 +78,19 @@ export default function SchemaDiffComponent({params}) {
 
   function registerUnload() {
     window.addEventListener('unload', ()=>{
-      api.delete(url_for('schema_diff.close', {
-        trans_id: params.transId
-      }));
+      /* Using fetch with keepalive as the browser may
+      cancel the axios request on tab close. keepalive will
+      make sure the request is completed */
+      callFetch(
+        url_for('schema_diff.close', {
+          trans_id: params.transId
+        }), {
+          keepalive: true,
+          method: 'DELETE',
+        }
+      )
+        .then(()=>{/* Success */})
+        .catch((err)=>console.error(err));
     });
   }
 

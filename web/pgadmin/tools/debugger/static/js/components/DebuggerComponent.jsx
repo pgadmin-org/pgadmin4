@@ -17,7 +17,7 @@ import Loader from 'sources/components/Loader';
 
 import Layout, { LayoutHelper } from '../../../../../static/js/helpers/Layout';
 import EventBus from '../../../../../static/js/helpers/EventBus';
-import getApiInstance from '../../../../../static/js/api_instance';
+import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
 import Notify from '../../../../../static/js/helpers/Notifier';
 
 import { evalFunc } from '../../../../../static/js/utils';
@@ -380,6 +380,27 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
         .catch(raiseJSONError);
       messages(params.transId);
     }
+
+    const closeConn = ()=>{
+      /* Using fetch with keepalive as the browser may
+      cancel the axios request on tab close. keepalive will
+      make sure the request is completed */
+      callFetch(
+        url_for('debugger.close', {
+          'trans_id': params.transId,
+        }), {
+          keepalive: true,
+          method: 'DELETE',
+        }
+      )
+        .then(()=>{/* Success */})
+        .catch((err)=>console.error(err));
+    };
+    window.addEventListener('unload', closeConn);
+
+    return ()=>{
+      window.removeEventListener('unload', closeConn);
+    };
   }, []);
 
   const setUnsetBreakpoint = (res, breakpoint_list) => {

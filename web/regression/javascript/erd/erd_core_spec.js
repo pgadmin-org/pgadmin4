@@ -10,7 +10,7 @@ import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import * as createEngineLib from '@projectstorm/react-diagrams';
 import TEST_TABLES_DATA from './test_tables';
 import { FakeLink, FakeNode } from './fake_item';
-import { PortModelAlignment, PathFindingLinkFactory } from '@projectstorm/react-diagrams';
+import { PortModelAlignment } from '@projectstorm/react-diagrams';
 
 describe('ERDCore', ()=>{
   let eleFactory = jasmine.createSpyObj('nodeFactories', {
@@ -45,7 +45,6 @@ describe('ERDCore', ()=>{
 
   beforeAll(()=>{
     spyOn(createEngineLib, 'default').and.returnValue(erdEngine);
-    spyOn(PathFindingLinkFactory.prototype, 'calculateRoutingMatrix').and.callFake(()=>{/* intentionally empty */});
   });
 
   it('initialization', ()=>{
