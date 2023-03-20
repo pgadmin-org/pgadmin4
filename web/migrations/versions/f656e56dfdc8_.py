@@ -70,7 +70,7 @@ def migrate_connection_params(table_name):
     for rows in results:
         connection_params = {}
         server_id = 0
-        for key, value in rows.items():
+        for key, value in rows._asdict().items():
             if key == 'id':
                 server_id = value
             # Name is changed from ssl_mode to sslmode
