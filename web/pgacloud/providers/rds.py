@@ -45,7 +45,7 @@ class RdsProvider(AbsProvider):
     def init_args(self, parsers):
         """ Create the command line parser for this provider """
         self.parser = parsers.add_parser('rds',
-                                         help='Amazon AWS RDS PostgreSQL',
+                                         help='Amazon RDS PostgreSQL',
                                          epilog='Credentials are read from '
                                                 '~/.aws/config by default and '
                                                 'can be overridden in the '
