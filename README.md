@@ -1,6 +1,6 @@
 # pgAdmin 4 
 
-pgAdmin 4 is a rewrite of the popular pgAdmin3 management tool for the
+pgAdmin 4 is a rewrite of the popular pgAdmin 3 management tool for the
 PostgreSQL (http://www.postgresql.org) database. 
 
 In the following documentation and examples, *$PGADMIN4_SRC/* is used to denote
@@ -11,11 +11,11 @@ tarball or a git checkout.
 
 pgAdmin 4 is written as a web application in Python, using jQuery and Bootstrap
 for the client side processing and UI. On the server side, Flask is being
-utilised.
+utilized.
 
 Although developed using web technologies, pgAdmin 4 can be deployed either on
 a web server using a browser, or standalone on a workstation. The runtime/
-subdirectory contains an NWjs based runtime application intended to allow this,
+subdirectory contains an NW.js based runtime application intended to allow this,
 which will execute the Python server and display the UI.
 
 ## Building the Runtime
@@ -26,7 +26,7 @@ To build the runtime, the following packages must be installed:
 * Yarn
 
 Change into the runtime directory, and run *yarn install*. This will install the
-dependencies required.
+required dependencies.
 
 In order to use the runtime in a development environment, you'll need to copy
 *dev_config.json.in* file to *dev_config.json*, and edit the paths to the Python
@@ -48,8 +48,8 @@ node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
 # Configuring the Python Environment
 
 In order to run the Python code, a suitable runtime environment is required.
-Python version 3.7 and later are currently supported. It is recommended that a
-Python Virtual Environment is setup for this purpose, rather than using the
+Python Version 3.7 and later are currently supported. It is recommended that a
+Python Virtual Environment is set up for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
 
@@ -127,7 +127,7 @@ simple - adapt as required for your distribution:
         )
    ```
    
-   This configuration allows easy switching between server and desktop modes
+   This configuration allows for easy switching between server and desktop modes
    for testing.
 
 6. The initial setup of the configuration database is interactive in server
@@ -152,7 +152,7 @@ At this point you will be able to run pgAdmin 4 from the command line in either
 server or desktop mode, and access it from a web browser using the URL shown in
 the terminal once pgAdmin has started up.
 
-Setup of an environment on Windows is somewhat more complicated unfortunately,
+Setting up of an environment on Windows is somewhat more complicated unfortunately,
 please see *pkg/win32/README.txt* for complete details.
 
 # Building the Web Assets
