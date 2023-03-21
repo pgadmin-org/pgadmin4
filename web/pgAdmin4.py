@@ -44,6 +44,9 @@ if (3, 10) > sys.version_info > (3, 8) and os.name == 'posix':
     from eventlet import hubs
     hubs.use_hub("poll")
 
+    import selectors
+    selectors.DefaultSelector = selectors.PollSelector
+
 import config
 import setup
 from pgadmin import create_app, socketio
