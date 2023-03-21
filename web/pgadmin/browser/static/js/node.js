@@ -838,7 +838,7 @@ define('pgadmin.browser.node', [
             `;
 
             // Prepare dynamic style tag using template
-            document.querySelector(`style[id="${dynamic_class}"]`).remove();
+            document.querySelector(`style[id="${dynamic_class}"]`)?.remove();
             document.head.appendChild(styleTag);
             // Add dynamic class to the tree node.
             pgBrowser.tree.addCssClass(item, dynamic_class);

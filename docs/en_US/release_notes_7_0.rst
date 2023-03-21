@@ -27,7 +27,7 @@ New features
 Housekeeping
 ************
 
-  | `Issue #5011 <https://github.com/pgadmin-org/pgadmin4/issues/5011>`_ -  Added support for psycopg3 along with psycopg2.
+  | `Issue #5011 <https://github.com/pgadmin-org/pgadmin4/issues/5011>`_ -  Upgrade from psycopg2 to psycopg3.
   | `Issue #5701 <https://github.com/pgadmin-org/pgadmin4/issues/5701>`_ -  Remove Bootstrap and jQuery usage.
   | `Issue #5830 <https://github.com/pgadmin-org/pgadmin4/issues/5830>`_ -  Add .ts and .tsx files under linter and fix linter issues.
   | `Issue #5901 <https://github.com/pgadmin-org/pgadmin4/issues/5901>`_ -  Update SQLAlchemy, Flask, Flask-SQLAlchemy, and other packages to current versions.
@@ -35,14 +35,14 @@ Housekeeping
 Bug fixes
 *********
 
-  | `Issue #4423 <https://github.com/pgadmin-org/pgadmin4/issues/4423>`_ -  Fixed an issue where list of tables is not displayed.
+  | `Issue #4423 <https://github.com/pgadmin-org/pgadmin4/issues/4423>`_ -  Fixed an issue where list of tables is not displayed in a SQL_ASCII database.
   | `Issue #4784 <https://github.com/pgadmin-org/pgadmin4/issues/4784>`_ -  Handle errors occurring during decoding UTF-8 encoded query result data which contains ascii characters.
   | `Issue #4884 <https://github.com/pgadmin-org/pgadmin4/issues/4884>`_ -  Fixed an issue where it is not possible to import csv data to tables having columns with german umlauts in their name.
-  | `Issue #4891 <https://github.com/pgadmin-org/pgadmin4/issues/4891>`_ -  Fixed 'rawunicodeescape' codec can't decode issue.
+  | `Issue #4891 <https://github.com/pgadmin-org/pgadmin4/issues/4891>`_ -  Fixed 'rawunicodeescape' codec can't decode issue in a SQL_ASCII database.
   | `Issue #5504 <https://github.com/pgadmin-org/pgadmin4/issues/5504>`_ -  Fixed an issue where incorrect view of text[] fields in query and table results when use other then UTF8 (win1251) codepage and symbols.
   | `Issue #5735 <https://github.com/pgadmin-org/pgadmin4/issues/5735>`_ -  Show appropriate error message when master password is not set instead of 'Crypt key missing'.
   | `Issue #5775 <https://github.com/pgadmin-org/pgadmin4/issues/5775>`_ -  Display the 'No menu available for this object' message if the selected tree node does not have any options.
-  | `Issue #5824 <https://github.com/pgadmin-org/pgadmin4/issues/5824>`_ -  Ensure that the user's storage directory is created when the users are created, as well as for those users who have not yet been created.
+  | `Issue #5824 <https://github.com/pgadmin-org/pgadmin4/issues/5824>`_ -  Ensure that the user's storage directory is created when the users are created, as well as for those users whose directories have not yet been created.
   | `Issue #5833 <https://github.com/pgadmin-org/pgadmin4/issues/5833>`_ -  Fixed an issue where user MFA entry was not getting delete after deleting a user.
   | `Issue #5874 <https://github.com/pgadmin-org/pgadmin4/issues/5874>`_ -  Make "using" and "with check" fields a textarea in the RLS policy.
   | `Issue #5894 <https://github.com/pgadmin-org/pgadmin4/issues/5894>`_ -  Use fetch instead of axios to close connections in SQLEditor, ERD, Schema Diff and Debugger to ensure it completes.
