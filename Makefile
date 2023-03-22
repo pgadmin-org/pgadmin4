@@ -76,22 +76,12 @@ check-js: install-node linter
 check-js-coverage:
     cd web && yarn run test:karma-coverage
 
-runtime-debug:
-	cd runtime && qmake CONFIG+=debug && make
-
-runtime:
-	cd runtime && qmake CONFIG+=release && make
-
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-redhat clean-src clean-runtime
+clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-redhat clean-src
 	rm -rf web/pgadmin/static/js/generated/*
 	rm -rf web/pgadmin/static/js/generated/.cache
 	rm -rf web/pgadmin/static/css/generated/*
 	rm -rf web/pgadmin/static/css/generated/.cache
-
-clean-runtime:
-	if [ -f runtime/Makefile ]; then (cd runtime && make clean); fi;
-	rm -rf build-*
 
 clean-appbundle:
 	rm -rf mac-build/
