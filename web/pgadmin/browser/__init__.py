@@ -559,8 +559,11 @@ def get_shared_storage_list():
 
         config.SHARED_STORAGE = shared_storage_config
         shared_storage_list = [sdir['name'] for sdir in shared_storage_config]
+        restricted_shared_storage_list = [sdir['name'] for sdir in
+                                          shared_storage_config if
+                                          sdir['restricted_access']]
 
-    return shared_storage_list
+    return shared_storage_list, restricted_shared_storage_list
 
 
 @blueprint.route("/js/utils.js")
@@ -630,7 +633,8 @@ def utils():
         auth_source = session['auth_source_manager'][
             'source_friendly_name']
 
-    shared_storage_list = get_shared_storage_list()
+    shared_storage_list, \
+        restricted_shared_storage_list = get_shared_storage_list()
 
     return make_response(
         render_template(
@@ -665,6 +669,8 @@ def utils():
             password_length_min=config.PASSWORD_LENGTH_MIN,
             current_ui_lock=current_ui_lock,
             shared_storage_list=shared_storage_list,
+            restricted_shared_storage_list=[] if current_user.has_role(
+                "Administrator") else restricted_shared_storage_list,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 

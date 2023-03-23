@@ -402,7 +402,7 @@ ConfirmFile.propTypes = {
   onNo: PropTypes.func
 };
 
-export default function FileManager({params, closeModal, onOK, onCancel, sharedStorages=[]}) {
+export default function FileManager({params, closeModal, onOK, onCancel, sharedStorages=[], restrictedSharedStorage=[]}) {
   const classes = useStyles();
   const modalClasses = useModalStyles();
   const apiObj = useMemo(()=>getApiInstance(), []);
@@ -462,7 +462,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
       let newItems = await fmUtilsObj.getFolder(dirPath || fmUtilsObj.currPath, changeStoragePath);
       setItems(newItems);
       setPath(fmUtilsObj.currPath);
-      params.dialog_type == 'storage_dialog' && fmUtilsObj.setLastVisitedDir(fmUtilsObj.currPath, selectedSS);
+      setTimeout(()=>{fmUtilsObj.setLastVisitedDir(dirPath || fmUtilsObj.currPath, changeStoragePath);}, 100);
     } catch (error) {
       console.error(error);
       setErrorMsg(parseApiError(error));
@@ -726,7 +726,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
               {params.dialog_type == 'storage_dialog' &&
               <PgIconButton title={gettext('Download')} icon={<GetAppRoundedIcon />}
                 onClick={onDownload} disabled={showUploader || isNoneSelected || selectedRow?.file_type == 'dir' || selectedRow?.file_type == 'drive'} />}
-              {fmUtilsObj.hasCapability('create') && <PgIconButton title={gettext('New Folder')} icon={<CreateNewFolderRoundedIcon />}
+              {fmUtilsObj.hasCapability('create') && !restrictedSharedStorage.includes(selectedSS) && <PgIconButton title={gettext('New Folder')} icon={<CreateNewFolderRoundedIcon />}
                 onClick={onAddFolder} disabled={showUploader} />}
             </PgButtonGroup>
             <PgButtonGroup size="small" style={{marginLeft: '4px'}}>
@@ -739,13 +739,13 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
               onClose={onMenuClose}
               label={gettext('Options')}
             >
-              {fmUtilsObj.hasCapability('rename') && <PgMenuItem hasCheck onClick={renameSelectedItem} disabled={isNoneSelected}>
+              {fmUtilsObj.hasCapability('rename') && !restrictedSharedStorage.includes(selectedSS) && <PgMenuItem hasCheck onClick={renameSelectedItem} disabled={isNoneSelected}>
                 {gettext('Rename')}
               </PgMenuItem>}
-              {fmUtilsObj.hasCapability('delete') && <PgMenuItem hasCheck onClick={deleteSelectedItem} disabled={isNoneSelected}>
+              {fmUtilsObj.hasCapability('delete') && !restrictedSharedStorage.includes(selectedSS) && <PgMenuItem hasCheck onClick={deleteSelectedItem} disabled={isNoneSelected}>
                 {gettext('Delete')}
               </PgMenuItem>}
-              {fmUtilsObj.hasCapability('upload') && <>
+              {fmUtilsObj.hasCapability('upload') && !restrictedSharedStorage.includes(selectedSS) && <>
                 <PgMenuDivider />
                 <PgMenuItem hasCheck onClick={(e)=>{
                   e.keepOpen = false;
@@ -820,7 +820,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
                   onChange={(e)=>{
                     let val = e.target.value;
                     fmUtilsObj.setFileType(val);
-                    openDir(fmUtilsObj.currPath);
+                    openDir(fmUtilsObj.currPath, selectedSS);
                     setFileType(val);
                   }}
                   options={fmUtilsObj.allowedFileTypes?.map((type)=>({
@@ -852,4 +852,5 @@ FileManager.propTypes = {
   onOK: PropTypes.func,
   onCancel: PropTypes.func,
   sharedStorages: PropTypes.array,
+  restrictedSharedStorage: PropTypes.array,
 };

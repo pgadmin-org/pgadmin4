@@ -42,7 +42,6 @@ const files = [
     }
   }
 ];
-
 const transId = 140391;
 const configData = {
   'transId': transId,
@@ -87,6 +86,7 @@ const configData = {
 };
 
 const sharedStorageConfig = ['Shared Storage'];
+const restrictedSharedStorage = [];
 
 const params={
   dialog_type: 'select_file',
@@ -127,6 +127,7 @@ describe('FileManger', ()=>{
             onOK={onOK}
             onCancel={onCancel}
             sharedStorages={sharedStorageConfig}
+            restrictedSharedStorage={restrictedSharedStorage}
             {...props}
           />
         </Theme>);
@@ -134,6 +135,7 @@ describe('FileManger', ()=>{
 
     it('init', (done)=>{
       networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
       let ctrl = ctrlMount({});
       setTimeout(()=>{
         ctrl.update();

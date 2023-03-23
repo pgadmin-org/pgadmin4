@@ -422,7 +422,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
-    } else {
+    } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
+      Notifier.error(error.response.data.errormsg);
+    }else {
       let msg = parseApiError(error);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);

@@ -75,6 +75,7 @@ export default class FileManagerModule {
           onCancel={onCancel}
           onOK={onOK}
           sharedStorages={this.pgAdmin.server_mode == 'True' ? this.pgAdmin.shared_storage: []}
+          restrictedSharedStorage={this.pgAdmin.server_mode == 'True' ? this.pgAdmin.restricted_shared_storage: []}
         />
       );
     }, {
