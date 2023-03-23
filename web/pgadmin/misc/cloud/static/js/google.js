@@ -50,7 +50,6 @@ export function GoogleCredentials(props) {
         return new Promise((resolve, reject)=>{axiosApi.post(_url, post_data)
           .then((res) => {
             if (res.data && res.data.success == 1 ) {
-              _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',true);
               let params = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no, width=550,height=650,left=600,top=150';
               child = window.open(res.data.data.auth_url, 'google_authentication', params);
               resolve(true);
@@ -76,6 +75,7 @@ export function GoogleCredentials(props) {
             axiosApi.get(auth_url)
               .then((res)=>{
                 if (res.data.success && res.data.success == 1 ){
+                  _eventBus.fireEvent('SET_CRED_VERIFICATION_INITIATED',true);
                   _eventBus.fireEvent('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD',[MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
                   clearInterval(interval);
                   if(child){
@@ -242,12 +242,14 @@ GoogleDatabaseDetails.propTypes = {
 // Validation functions
 export function validateGoogleStep2(cloudInstanceDetails) {
   let isError = false;
-  if ((isEmptyString(cloudInstanceDetails.name) || isEmptyString(cloudInstanceDetails.project) ||
+  if ((isEmptyString(cloudInstanceDetails.name) || (!/^(?=[a-z])[a-z0-9\-]*$/.test(cloudInstanceDetails.name) ||
+      cloudInstanceDetails.name.length > 97) || isEmptyString(cloudInstanceDetails.project) ||
       isEmptyString(cloudInstanceDetails.region) || isEmptyString(cloudInstanceDetails.availability_zone) ||
       isEmptyString(cloudInstanceDetails.db_version) || isEmptyString(cloudInstanceDetails.instance_type) ||
       isEmptyString(cloudInstanceDetails.instance_class) || isEmptyString(cloudInstanceDetails.storage_type)||
       isEmptyString(cloudInstanceDetails.storage_size) || isEmptyString(cloudInstanceDetails.public_ips)) ||
-      (cloudInstanceDetails.high_availability && isEmptyString(cloudInstanceDetails.secondary_availability_zone))) {
+      (cloudInstanceDetails.high_availability && (isEmptyString(cloudInstanceDetails.secondary_availability_zone) ||
+      cloudInstanceDetails.secondary_availability_zone == cloudInstanceDetails.availability_zone))) {
     isError = true;
   }
   return isError;
