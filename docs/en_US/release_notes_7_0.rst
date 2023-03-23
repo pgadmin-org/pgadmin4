@@ -44,9 +44,12 @@ Bug fixes
   | `Issue #5775 <https://github.com/pgadmin-org/pgadmin4/issues/5775>`_ -  Display the 'No menu available for this object' message if the selected tree node does not have any options.
   | `Issue #5824 <https://github.com/pgadmin-org/pgadmin4/issues/5824>`_ -  Ensure that the user's storage directory is created when the users are created, as well as for those users whose directories have not yet been created.
   | `Issue #5833 <https://github.com/pgadmin-org/pgadmin4/issues/5833>`_ -  Fixed an issue where user MFA entry was not getting delete after deleting a user.
+  | `Issue #5834 <https://github.com/pgadmin-org/pgadmin4/issues/5834>`_ -  Fixed issue where pgAgent jobs were not getting dropped from properties tab.
   | `Issue #5874 <https://github.com/pgadmin-org/pgadmin4/issues/5874>`_ -  Make "using" and "with check" fields a textarea in the RLS policy.
   | `Issue #5894 <https://github.com/pgadmin-org/pgadmin4/issues/5894>`_ -  Use fetch instead of axios to close connections in SQLEditor, ERD, Schema Diff and Debugger to ensure it completes.
   | `Issue #5904 <https://github.com/pgadmin-org/pgadmin4/issues/5904>`_ -  Fixed an issue where the count query should not be triggered when the estimated count is less than zero.
+  | `Issue #5907 <https://github.com/pgadmin-org/pgadmin4/issues/5907>`_ -  Validate user inputs provided in configuration files before starting pgadmin server.
+  | `Issue #5921 <https://github.com/pgadmin-org/pgadmin4/issues/5921>`_ -  Ensure that when pasting rows the rows are added right below the selected rows for copying.
   | `Issue #5929 <https://github.com/pgadmin-org/pgadmin4/issues/5929>`_ -  Dashboard graph Y-axis width should increase with label.
   | `Issue #5941 <https://github.com/pgadmin-org/pgadmin4/issues/5941>`_ -  Fixed an issue where migration on external database is not working.
   | `Issue #5943 <https://github.com/pgadmin-org/pgadmin4/issues/5943>`_ -  Use http for SVG namespace URLs which were changed to https for SonarQube fixes.
