@@ -1,0 +1,55 @@
+name: SonarQube scan
+
+on:
+  # Triggers the workflow on push events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  # This workflow contains a single job called "build"
+  build:
+    if: vars.SONARQUBE_PROJECT_KEY != null
+   
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      # Run the scan
+      - name: Create the scan properties file
+        run: |
+          cat <<EOF > sonar-project.properties
+          sonar.projectKey=${{ vars.SONARQUBE_PROJECT_KEY }}
+          sonar.projectName=pgAdmin 4
+          sonar.projectVersion=%VERSION%
+
+          # Ignore templates and SQL scripts as they confuse the scanner
+          sonar.exclusions=**/templates/**/*, **/*.sql
+          
+          # Let SonarQube know where tests can be found
+          sonar.test.inclusions=**/tests/**, web/regression
+          
+          # Python compatibility
+          sonar.python.version=3.7, 3.8, 3.9, 3.10, 3.11
+          EOF
+          
+          APP_RELEASE=`grep "^APP_RELEASE" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
+          APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
+          APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
+          sed -i "s/%VERSION%/${APP_LONG_VERSION}/g" sonar-project.properties
+          
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST }}
