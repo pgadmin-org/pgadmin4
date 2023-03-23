@@ -29,14 +29,8 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
 
-      - name: Install pyOpenSSL
-        run: pip install "pyOpenSSL>=23.*"
-
-      - name: Install sphinx
-        run: pip install sphinx
-
-      - name: Install sphinx youtube
-        run: pip install sphinxcontrib-youtube
+      - name: Install additional Python dependencies
+        run: pip install "pyOpenSSL>=23.*" sphinx sphinxcontrib-youtube
 
       - name: Check the documentation
         run: make docs
