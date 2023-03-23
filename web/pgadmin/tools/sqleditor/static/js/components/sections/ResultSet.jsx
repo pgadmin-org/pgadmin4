@@ -781,6 +781,7 @@ export function ResultSet() {
       dispatchDataChange({type: 'reset'});
       setSelectedRows(new Set());
       setSelectedColumns(new Set());
+      rsu.current.resetClientPKIndex();
       setLoaderText(gettext('Waiting for the query to complete...'));
       return await rsu.current.startExecution(
         query, explainObject,
@@ -1207,8 +1208,18 @@ export function ResultSet() {
 
   useEffect(()=>{
     const triggerAddRows = (_rows, fromClipboard)=>{
+      let insPosn = 0;
+      if(selectedRows.size > 0) {
+        let selectedRowsSorted = Array.from(selectedRows);
+        selectedRowsSorted.sort();
+        insPosn = _.findIndex(rows, (r)=>rowKeyGetter(r)==selectedRowsSorted[selectedRowsSorted.length-1])+1;
+      }
       let newRows = rsu.current.processRows(_rows, columns, fromClipboard);
-      setRows((prev)=>[...newRows, ...prev]);
+      setRows((prev)=>[
+        ...prev.slice(0, insPosn),
+        ...newRows,
+        ...prev.slice(insPosn)
+      ]);
       let add = {};
       newRows.forEach((row)=>{
         add[rowKeyGetter(row)] = {
@@ -1222,7 +1233,7 @@ export function ResultSet() {
     };
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
     return ()=>eventBus.deregisterListener(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, triggerAddRows);
-  }, [columns]);
+  }, [columns, selectedRows.size]);
 
   useEffect(()=>{
     const renderGeometries = (column)=>{
