@@ -34,3 +34,9 @@ jobs:
 
       - name: Check the ePub build
         run: make docs-epub
+
+      - name: Archive ePub
+        uses: actions/upload-artifact@v3
+        with:
+          name: pgadmin4-epub-build-output
+          path: docs/en_US/_build/epub/pgAdmin4.epub

@@ -34,3 +34,9 @@ jobs:
 
       - name: Check the PDF build
         run: make docs-pdf
+
+      - name: Archive PDF
+        uses: actions/upload-artifact@v3
+        with:
+          name: pgadmin4-pdf-build-output
+          path: docs/en_US/_build/latex/pgadmin4.pdf

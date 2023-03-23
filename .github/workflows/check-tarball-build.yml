@@ -34,3 +34,9 @@ jobs:
 
       - name: Check the tarball build
         run: make src
+
+      - name: Archive source tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: pgadmin4-tarball-build-output
+          path: dist/*
