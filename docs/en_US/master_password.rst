@@ -56,3 +56,5 @@ passwords. This is applicable only for desktop mode users.
 
 .. warning:: Resetting the master password will also remove all saved passwords
     and close all existing established connections.
+
+**Note:** pgAdmin 4 will use the OS password manager from version 7.2 onwards and fallback to master password if OS password manager is not available.

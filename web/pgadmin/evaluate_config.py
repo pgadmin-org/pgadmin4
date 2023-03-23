@@ -9,6 +9,7 @@
 
 import os
 import sys
+import keyring
 
 # User configs loaded from config_local, config_distro etc.
 custom_config_settings = {}
@@ -113,5 +114,14 @@ def evaluate_and_patch_config(config: dict) -> dict:
         config['USER_INACTIVITY_TIMEOUT'] = 0
         # Enable PSQL in Desktop Mode.
         config['ENABLE_PSQL'] = True
+
+    if config.get('SERVER_MODE'):
+        config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', True)
+    else:
+        k_name = keyring.get_keyring().name
+        if k_name == 'fail Keyring':
+            config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', True)
+        else:
+            config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', False)
 
     return config

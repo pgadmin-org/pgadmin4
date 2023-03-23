@@ -160,7 +160,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
   const api = getApiInstance();
   api.post(url_for('browser.set_master_password'), data).then((res)=> {
     if(!res.data.data.present) {
-      showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback);
+      showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback, res.data.data.is_keyring);
     } else {
       masterPassCallbacks(masterpass_callback_queue);
     }
@@ -170,7 +170,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
 }
 
 // This functions is used to show the master password dialog.
-export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback) {
+export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback, is_keyring) {
   const api = getApiInstance();
   let title =  isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
 
@@ -179,6 +179,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
       <MasterPasswordContent
         isPWDPresent= {isPWDPresent}
         data={{'errmsg': errmsg}}
+        isKeyring={is_keyring}
         setHeight={(containerHeight) => {
           setNewSize(pgAdmin.Browser.stdW.md, containerHeight);
         }}
