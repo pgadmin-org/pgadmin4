@@ -38,7 +38,7 @@ gssapi==1.8.*
 eventlet==0.33.3
 httpagentparser==1.9.*
 user-agents==2.2.0
-pywinpty==1.1.*; sys_platform=="win32"
+pywinpty==2.0.*; sys_platform=="win32"
 Authlib==1.2.*
 requests==2.28.*
 pyotp==2.*
