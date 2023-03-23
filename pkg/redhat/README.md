@@ -6,8 +6,7 @@ Redhat distributions.
 ## Supported platforms
 
 * Fedora 36 & 37
-* RHEL 7 & 8
-* CentOS 7
+* RHEL 8
 * Rocky Linux 8 (x86_64)
 * AlmaLinux/RHEL/Rocky Linux 9 (x86_64)
 
@@ -46,11 +45,6 @@ The desktop runtime. Requires the server package.
 
 The server mode setup script for configuring Apache HTTPD. Requires the server 
 package.
-
-*pgadmin4-python3-mod_wsgi-4.7.1-2.el7.<arch>.rpm*
-
-The Python 3 build of mod_wsgi for the Apache HTTPD server. Only built on 
-RHEL/CentOS 7.
 
 ## Signing Packages
 
