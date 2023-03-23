@@ -24,7 +24,7 @@
     "bootstrap": "^4.5.3"
   },
   "devDependencies": {
-    "eslint": "^6.3.0",
+    "eslint": "^8.36.0",
     "nw": "^0.70.0"
   },
   "scripts": {
