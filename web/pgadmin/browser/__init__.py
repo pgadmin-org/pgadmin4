@@ -551,6 +551,7 @@ def get_shared_storage_list():
     """
     shared_storage_config = []
     shared_storage_list = []
+    restricted_shared_storage_list = []
     if config.SERVER_MODE:
         shared_storage_keys = set(['name', 'path', 'restricted_access'])
         shared_storage_config = [

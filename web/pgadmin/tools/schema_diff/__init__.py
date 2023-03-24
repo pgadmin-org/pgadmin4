@@ -447,7 +447,9 @@ def compare_database(params):
         compare_pre_validation(params['trans_id'], params['source_sid'],
                                params['target_sid'])
     if not status:
-        socketio.emit('compare_database_failed', error_msg,
+        socketio.emit('compare_database_failed',
+                      error_msg.json if type(
+                          error_msg) == Response else error_msg,
                       namespace=SOCKETIO_NAMESPACE, to=request.sid)
         return error_msg
 
@@ -586,7 +588,9 @@ def compare_schema(params):
         compare_pre_validation(params['trans_id'], params['source_sid'],
                                params['target_sid'])
     if not status:
-        socketio.emit('compare_schema_failed', error_msg,
+        socketio.emit('compare_schema_failed',
+                      error_msg.json if type(
+                          error_msg) == Response else error_msg,
                       namespace=SOCKETIO_NAMESPACE, to=request.sid)
         return error_msg
 
