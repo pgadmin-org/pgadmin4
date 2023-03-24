@@ -549,7 +549,6 @@ def get_shared_storage_list():
     Return the shared storage list after checking all required keys are present
     or not in config. This is for server mode only.
     """
-    shared_storage_config = []
     shared_storage_list = []
     restricted_shared_storage_list = []
     if config.SERVER_MODE:

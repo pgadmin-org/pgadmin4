@@ -22,7 +22,9 @@ from threading import Lock
 
 from .paths import get_storage_directory
 from .preferences import Preferences
-from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND
+from pgadmin.utils.constants import UTILITIES_ARRAY, USER_NOT_FOUND, \
+    MY_STORAGE, ACCESS_DENIED_MESSAGE
+from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, User, ServerGroup, Server
 from urllib.parse import unquote
 
@@ -269,8 +271,26 @@ def filename_with_file_manager_path(_file, create_file=False,
     Returns:
         Filename to use for backup with full path taken from preference
     """
-    # Set file manager directory from preference
-    storage_dir = get_storage_directory()
+    # retrieve storage directory path
+    last_storage = Preferences.module('file_manager').preference(
+        'last_storage').get()
+    if last_storage != MY_STORAGE:
+        selDirList = [sdir for sdir in current_app.config['SHARED_STORAGE']
+                      if sdir['name'] == last_storage]
+        selectedDir = selDirList[0] if len(
+            selDirList) == 1 else None
+
+        if selectedDir:
+            if selectedDir['restricted_access'] and \
+                    not current_user.has_role("Administrator"):
+                return make_json_response(success=0,
+                                          errormsg=ACCESS_DENIED_MESSAGE,
+                                          info='ACCESS_DENIED',
+                                          status=403)
+        storage_dir = get_storage_directory(
+            shared_storage=last_storage)
+    else:
+        storage_dir = get_storage_directory()
 
     from pgadmin.misc.file_manager import Filemanager
     Filemanager.check_access_permission(
