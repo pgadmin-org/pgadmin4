@@ -122,3 +122,6 @@ PSYCOPG3 = 'psycopg3'
 
 # Shared storage
 MY_STORAGE = 'my_storage'
+ACCESS_DENIED_MESSAGE = gettext(
+    "Access denied: You’re having limited access. You’re not allowed to "
+    "Rename, Delete or Create any files/folders")

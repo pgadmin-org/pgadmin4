@@ -53,12 +53,14 @@ Shared Storage
     :alt: Other options
     :align: center
 
-In shared storage the ``My Storage`` is the user's storage directory, and other directories are shared storage set by
-the admin user. Using this shared storage users can share the files with other users through pgAdmin.
-Admin users can mark the shared storage as restricted to restrict non-admin users from deleting, uploading,
-adding, and renaming files/folders in shared storage by setting the restricted_access flag in config.
 
-*NOTE: You must ensure the directories specified are writeable by the user that the web server processes will be running as, e.g. apache or www-data.*
+In the storage manager, ``My Storage`` is the pgAdmin user’s storage directory, and other listed directories are shared
+storages set by the pgAdmin server administrator. Using these, pgAdmin users can have common storages to share files.
+pgAdmin server administrator can configure the shared storages using the <link>config file</link>. Storages can be
+marked as restricted to give read-only access to non-admin pgAdmin users.
+
+
+.. note:: You must ensure the directories specified are writeable by the user that the web server processes will be running as, e.g. apache or www-data.*
 
 
 Other Options

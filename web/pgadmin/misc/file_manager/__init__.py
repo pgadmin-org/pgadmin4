@@ -17,6 +17,7 @@ import time
 from urllib.parse import unquote
 from sys import platform as _platform
 from flask_security import current_user
+from pgadmin.utils.constants import ACCESS_DENIED_MESSAGE
 import config
 import codecs
 import pathlib
@@ -792,11 +793,10 @@ class Filemanager():
                 if selectedDir[
                     'restricted_access'] and not current_user.has_role(
                         "Administrator"):
-                    raise PermissionError(gettext(
-                        "Access denied: This shared folder has restricted "
-                        "access, you are not allowed to rename, delete, "
-                        "or upload any files/folders. Please contact "
-                        "Administrator to gain access."))
+                    return make_json_response(success=0,
+                                              errormsg=ACCESS_DENIED_MESSAGE,
+                                              info='ACCESS_DENIED',
+                                              status=403)
 
     def rename(self, old=None, new=None):
         """

@@ -17,7 +17,7 @@ from threading import Lock
 
 import json
 from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT,\
-    ALLOW_SAVE_PASSWORD
+    ALLOW_SAVE_PASSWORD, SHARED_STORAGE
 from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
 from flask import request
@@ -52,7 +52,7 @@ from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
 from pgadmin.utils.constants import MIMETYPE_APP_JS, \
     SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, \
-    ERROR_FETCHING_DATA, MY_STORAGE
+    ERROR_FETCHING_DATA, MY_STORAGE, ACCESS_DENIED_MESSAGE
 from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.settings import get_setting
@@ -1856,6 +1856,18 @@ def save_file():
     last_storage = Preferences.module('file_manager').preference(
         'last_storage').get()
     if last_storage != MY_STORAGE:
+        selectedDirList = [sdir for sdir in SHARED_STORAGE if
+                           sdir['name'] == last_storage]
+        selectedDir = selectedDirList[0] if len(
+            selectedDirList) == 1 else None
+
+        if selectedDir:
+            if selectedDir['restricted_access'] and \
+                    not current_user.has_role("Administrator"):
+                return make_json_response(success=0,
+                                          errormsg=ACCESS_DENIED_MESSAGE,
+                                          info='ACCESS_DENIED',
+                                          status=403)
         storage_manager_path = get_storage_directory(
             shared_storage=last_storage)
     else:
