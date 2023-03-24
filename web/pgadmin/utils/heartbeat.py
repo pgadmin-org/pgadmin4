@@ -111,15 +111,16 @@ class ServerHeartbeatTimer():
     def _release_connections(server_conn, sess_id, sid):
         for d in server_conn:
             try:
-                # Release the connection
-                server_conn[d]._release()
-                # Reconnect on the reload
-                server_conn[d].wasConnected = True
-                current_app.logger.debug(
-                    "Heartbeat not received. Released "
-                    "connection for the session "
-                    "id##server id: {0}##{1}".format(
-                        sess_id, sid))
+                # Release the connection only if it is connected
+                if server_conn[d].wasConnected:
+                    server_conn[d]._release()
+                    # Reconnect on the reload
+                    server_conn[d].wasConnected = True
+                    current_app.logger.debug(
+                        "Heartbeat not received. Released "
+                        "connection for the session "
+                        "id##server id: {0}##{1}".format(
+                            sess_id, sid))
             except Exception as e:
                 current_app.logger.exception(e)
 
