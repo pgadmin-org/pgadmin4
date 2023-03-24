@@ -8,13 +8,18 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# Concurrent SonarQube runs can cause problems if they report times out of order
+concurrency:
+  group: sonarqube
+  cancel-in-progress: false
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
   # This workflow contains a single job called "build"
   build:
     if: vars.SONARQUBE_PROJECT_KEY != null
-   
+
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -24,7 +29,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       # Run the scan
       - name: Create the scan properties file
         run: |
@@ -47,7 +52,7 @@ jobs:
           APP_REVISION=`grep "^APP_REVISION" web/config.py | cut -d"=" -f2 | sed 's/ //g'`
           APP_LONG_VERSION=${APP_RELEASE}.${APP_REVISION}
           sed -i "s/%VERSION%/${APP_LONG_VERSION}/g" sonar-project.properties
-          
+
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
