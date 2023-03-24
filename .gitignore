@@ -9,6 +9,8 @@
 .DS_Store
 .idea
 .vscode
+.yarn
+.yarnrc.yml
 /*.diff
 /*.patch
 /dist
