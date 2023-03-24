@@ -790,10 +790,6 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
           method: 'POST',
           data: JSON.stringify(argsValueList),
         })
-          .then(function () {
-            /* Close the debugger modal dialog */
-            props.closeModal();
-          })
           .catch(function (error) {
             props.closeModal();
             Notify.alert(
@@ -816,6 +812,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
         })
           .then(function () {
             /*This is intentional (SonarQube)*/
+            props.closeModal();
           })
           .catch(function (error) {
             setLoaderText('');

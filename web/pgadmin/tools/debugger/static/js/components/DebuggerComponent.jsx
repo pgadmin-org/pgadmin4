@@ -353,12 +353,6 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
         url: baseUrl,
         method: 'POST',
       })
-        .then(function (res) {
-          if (res.data.data.status) {
-            enableToolbarButtons();
-            pollResult(params.transId);
-          }
-        })
         .catch(raiseJSONError);
       enableToolbarButtons();
       pollResult(params.transId);
@@ -372,11 +366,6 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
         url: baseUrl,
         method: 'POST',
       })
-        .then(function (res) {
-          if (res.data.data.status) {
-            messages(params.transId);
-          }
-        })
         .catch(raiseJSONError);
       messages(params.transId);
     }
@@ -637,12 +626,10 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
       url: base_url,
       method: 'POST',
     })
-      .then(function () {
-        if (params.directDebugger.debug_type) {
-          pollEndExecutionResult(params.transId);
-        }
-      })
       .catch(raisePollingError);
+    if (params.directDebugger.debug_type) {
+      pollEndExecutionResult(params.transId);
+    }
   }
 
   const pollEndExecuteError = (res) => {
@@ -742,7 +729,7 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
                 /*
                 "result" is undefined only in case of EDB procedure.
                 As Once the EDB procedure execution is completed then we are
-                not getting any result so we need ignore the result.
+                not getting any result so we need to ignore the result.
                 */
                 setActiveLine(-1);
                 params.directDebugger.direct_execution_completed = true;
