@@ -21,6 +21,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      
+      # Create a builder
+      - name: Create a builder
+        run: docker buildx create --use
 
       # Run the build
       - name: Build the container
