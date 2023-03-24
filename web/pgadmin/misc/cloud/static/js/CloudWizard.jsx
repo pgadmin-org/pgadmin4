@@ -22,7 +22,7 @@ import pgAdmin from 'sources/pgadmin';
 import {ToggleButtons, FinalSummary} from './cloud_components';
 import { PrimaryButton } from '../../../../static/js/components/Buttons';
 import {AwsCredentials, AwsInstanceDetails, AwsDatabaseDetails, validateCloudStep1, validateCloudStep2, validateCloudStep3} from './aws';
-import {BigAnimalInstance, BigAnimalDatabase, BigAnimalClusterType, getProviderOptions, validateBigAnimal, validateBigAnimalStep2, validateBigAnimalStep3, validateBigAnimalStep4} from './biganimal';
+import {BigAnimalInstance, BigAnimalDatabase, BigAnimalClusterType, validateBigAnimal, validateBigAnimalStep2, validateBigAnimalStep3, validateBigAnimalStep4} from './biganimal';
 import { isEmptyString } from 'sources/validators';
 import { AWSIcon, BigAnimalIcon, AzureIcon, GoogleCloudIcon } from '../../../../static/js/components/ExternalIcon';
 import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClusternameAvailbility, validateAzureStep2, validateAzureStep3} from './azure';
@@ -84,7 +84,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
   const [bigAnimalInstanceData, setBigAnimalInstanceData] = React.useState({});
   const [bigAnimalDatabaseData, setBigAnimalDatabaseData] = React.useState({});
   const [bigAnimalClusterTypeData, setBigAnimalClusterTypeData] = React.useState({});
-  const [bigAnimalProviders, setBigAnimalProviders] = React.useState({});
 
   const [azureCredData, setAzureCredData] = React.useState({});
   const [azureInstanceData, setAzureInstanceData] = React.useState({});
@@ -320,16 +319,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
             setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
             reject();
           });
-      } else if (activeStep == 1 && cloudProvider == CLOUD_PROVIDERS.BIGANIMAL ) {
-        getProviderOptions()
-          .then((res)=>{
-            setBigAnimalProviders(res);
-            setErrMsg(['', '']);
-            resolve();
-          }).catch((error)=>{
-            setErrMsg([MESSAGE_TYPE.ERROR, gettext(error)]);
-            reject();
-          });
       } else if (cloudProvider == CLOUD_PROVIDERS.AZURE) {
         if (activeStep == 1) {
           // Skip the current step
@@ -477,7 +466,6 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
               cloudProvider={cloudProvider}
               nodeInfo={nodeInfo}
               nodeData={nodeData}
-              bigAnimalProviders={bigAnimalProviders}
               setBigAnimalClusterTypeData={setBigAnimalClusterTypeData}
               hostIP={hostIP}
             /> }
