@@ -21,7 +21,9 @@ New features
 ************
 
   | `Issue #5014 <https://github.com/pgadmin-org/pgadmin4/issues/5014>`_ -  Added support for mounting shared storage in server mode.
+  | `Issue #5022 <https://github.com/pgadmin-org/pgadmin4/issues/5022>`_ -  Add a note on top of keyboard shortcuts preferences to show the Accesskey of the browser.
   | `Issue #5750 <https://github.com/pgadmin-org/pgadmin4/issues/5750>`_ -  Added capability to deploy PostgreSQL servers on Google Cloud.
+  | `Issue #5805 <https://github.com/pgadmin-org/pgadmin4/issues/5805>`_ -  Added support of BigAnimal v3 API.
   | `Issue #5855 <https://github.com/pgadmin-org/pgadmin4/issues/5855>`_ -  Added option to create unique constraint with nulls not distinct.
 
 Housekeeping
