@@ -55,18 +55,23 @@ class GoogleCredSchema extends BaseUISchema{
         disabled: (state)=>{
           return state.client_secret_file ? false : true;
         },
-        depChange: ()=> {
-          return {is_authenticating: true};
-        },
         deferredDepChange: (state, source)=>{
           return new Promise((resolve, reject)=>{
             /* button clicked */
             if(source == 'auth_btn') {
               obj.fieldOptions.authenticateGoogle(state.client_secret_file)
-                .then(()=>{
-                  resolve(()=>({
-                    is_authenticating: false,
-                  }));
+                .then((apiRes)=>{
+                  resolve(()=>{
+                    if(apiRes){
+                      obj.fieldOptions.verification_ack()
+                        .then(()=>{
+                          resolve();
+                        })
+                        .catch((err)=>{
+                          reject(err);
+                        });
+                    }
+                  });
                 })
                 .catch((err)=>{
                   reject(err);
@@ -74,26 +79,7 @@ class GoogleCredSchema extends BaseUISchema{
             }
           });
         }
-      },
-      {
-        id: 'is_authenticating',
-        visible: false,
-        type: '',
-        deps:['auth_btn'],
-        deferredDepChange: (state, source)=>{
-          return new Promise((resolve, reject)=>{
-            if(source == 'auth_btn' && state.is_authenticating ) {
-              obj.fieldOptions.verification_ack()
-                .then(()=>{
-                  resolve();
-                })
-                .catch((err)=>{
-                  reject(err);
-                });
-            }
-          });
-        },
-      },
+      }
     ];}
 
 }

@@ -13,19 +13,18 @@ import json
 import os
 from pathlib import Path
 
-from oauthlib.oauth2 import AccessDeniedError
-
 from config import root
 from pgadmin.utils.csrf import pgCSRFProtect
-from pgadmin import make_json_response
-from pgadmin.utils.ajax import plain_text_response
+from pgadmin.utils.ajax import plain_text_response, unauthorized, \
+    make_json_response, bad_request
 from pgadmin.misc.bgprocess import BatchProcess
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
-from pgadmin.utils import PgAdminModule
-
+from pgadmin.utils import PgAdminModule, filename_with_file_manager_path
 from flask_security import login_required
 from flask import session, current_app, request
+from flask_babel import gettext as _
 
+from oauthlib.oauth2 import AccessDeniedError
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -61,6 +60,12 @@ blueprint = GooglePostgresqlModule(MODULE_NAME, __name__,
                                    static_url_path='/misc/cloud/google')
 
 
+@blueprint.route("/")
+@login_required
+def index():
+    return bad_request(errormsg=_("This URL cannot be called directly."))
+
+
 @blueprint.route('/verify_credentials/',
                  methods=['POST'], endpoint='verify_credentials')
 @login_required
@@ -74,6 +79,14 @@ def verify_credentials():
     status = False
     error = None
     res_data = {}
+
+    try:
+        client_secret_path = \
+            filename_with_file_manager_path(client_secret_path)
+    except PermissionError as e:
+        return unauthorized(errormsg=str(e))
+    except Exception as e:
+        return bad_request(errormsg=str(e))
 
     if client_secret_path is not None and Path(client_secret_path).exists():
         with open(client_secret_path, 'r') as json_file:
@@ -100,6 +113,7 @@ def verify_credentials():
         session['google']['google_obj'] = pickle.dumps(_google, -1)
     else:
         error = 'Client secret path not found'
+        session.pop('google', None)
 
     return make_json_response(success=status, errormsg=error, data=res_data)
 
