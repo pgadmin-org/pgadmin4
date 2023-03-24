@@ -10514,10 +10514,10 @@ watchpack@^2.4.0:
     jquery "^3.3.1"
     jquery-contextmenu "^2.6.4"
 
-webfonts-loader@^7.5.2:
-  version "7.5.2"
-  resolved "https://registry.yarnpkg.com/webfonts-loader/-/webfonts-loader-7.5.2.tgz#9cdf86db9a24d07c6f9ad2fb59e7fa1e20fcfebb"
-  integrity sha512-XUCqaPZwWrQyTk7zWuHnxVy+ZDdKexAqPJm02dpQwN/zIaHdsGFohLVb09onRRsHRai49b7SZLDVaTxJY8wLsA==
+webfonts-loader@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/webfonts-loader/-/webfonts-loader-8.0.1.tgz#1e8e21242ab3cf5be43686137c77cd9697ad3ce4"
+  integrity sha512-+ud7K1xpPM5P119R/QBXE8oHrZytngK7JHJroEJCscmnNEdN5NCyas5fZjQoxhHWiu4kBZh58IiQ4aNAg0GTow==
   dependencies:
     "@vusion/webfonts-generator" "^0.8.0"
     glob "^7.1.6"
