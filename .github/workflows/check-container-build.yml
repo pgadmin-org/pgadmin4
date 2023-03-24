@@ -28,4 +28,4 @@ jobs:
 
       # Run the build
       - name: Build the container
-        run: docker buildx build --platform linux/arm/v8,linux/arm/v7,linux/amd64 .
+        run: docker buildx build --platform linux/arm/v8,linux/amd64 .
