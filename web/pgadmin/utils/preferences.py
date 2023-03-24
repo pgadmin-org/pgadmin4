@@ -349,6 +349,7 @@ class Preferences():
             cat = self.categories[c]
             interm = {
                 'id': cat['id'],
+                'name': cat['name'],
                 'label': cat['label'] or cat['name'],
                 'preferences': []
             }
