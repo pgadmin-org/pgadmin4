@@ -664,8 +664,13 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
         setSelectedSS(fmUtilsObj.config.options.storage_folder);
       }
 
-      openDir(params?.path, fmUtilsObj.config.options.storage_folder);
-      params?.path && fmUtilsObj.setLastVisitedDir(params?.path, selectedSS);
+      let tempPath = params?.path;
+      if (params?.dialog_type == 'storage_dialog' && (!params?.path?.includes('/') || !params?.path?.includes('\\'))) {
+        tempPath = '/';
+      }
+
+      openDir(tempPath, fmUtilsObj.config.options.storage_folder);
+      (params?.dialog_type != 'storage_dialog' && params?.path) && fmUtilsObj.setLastVisitedDir(params?.path, selectedSS);
     };
     init();
     setTimeout(()=>{
