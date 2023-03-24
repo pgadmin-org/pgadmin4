@@ -27,6 +27,7 @@ import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/j
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getBinaryPathSchema } from '../../../../browser/server_groups/servers/static/js/binary_path.ui';
 import { _set_dynamic_tab } from '../../../../tools/sqleditor/static/js/show_query_tool';
+import { getBrowserAccesskey } from '../../../../static/js/components/ShortcutTitle';
 
 class PreferencesSchema extends BaseUISchema {
   constructor(initValues = {}, schemaFields = []) {
@@ -205,7 +206,7 @@ export default function PreferencesComponent({ ...props }) {
             'id': sid.toString(),
             'label': subNode.label,
             '_label': subNode.label,
-            'name': subNode.label,
+            'name': subNode.name,
             'icon': '',
             'inode': false,
             '_type': subNode.label.toLowerCase(),
@@ -338,6 +339,8 @@ export default function PreferencesComponent({ ...props }) {
     // Check and add the note for the element.
     if (subNode.label == gettext('Nodes') && node.label == gettext('Browser')) {
       note = [gettext('This settings is to Show/Hide nodes in the browser tree.')].join('');
+    } if(nodeData.name == 'keyboard_shortcuts') {
+      note = gettext('The Accesskey here is %s.', getBrowserAccesskey().join(' + '));
     } else {
       note = [note].join('');
     }
@@ -368,6 +371,7 @@ export default function PreferencesComponent({ ...props }) {
     // Listen selected preferences tree node event and show the appropriate components in right panel.
     pgAdmin.Browser.Events.on('preferences:tree:selected', (event, item) => {
       if (item.type == FileType.File) {
+        prefSchema.current.setSelectedCategory(item._metadata.data.name);
         prefSchema.current.schemaFields.forEach((field) => {
           field.visible = field.parentId === item._metadata.data.id && !field?.hidden ;
           if(field.visible && _.isNull(firstElement)) {
@@ -629,12 +633,11 @@ export default function PreferencesComponent({ ...props }) {
           </Box>
           <Box className={clsx(classes.preferencesContainer)}>
             {
-              prefSchema.current && loadTree > 0 ?
+              prefSchema.current && loadTree > 0 &&
                 <RightPanel schema={prefSchema.current} initValues={initValues} onDataChange={(changedData) => {
                   Object.keys(changedData).length > 0 ? setDisableSave(false) : setDisableSave(true);
                   prefChangedData.current = changedData;
                 }}></RightPanel>
-                : <></>
             }
           </Box>
         </Box>

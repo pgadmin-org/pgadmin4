@@ -973,7 +973,7 @@ class ERDTool extends React.Component {
           <ERDCanvasSettings.Provider value={{
             cardinality_notation: this.state.cardinality_notation
           }}>
-            <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />
+            {this.diagram.getEngine() && <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />}
           </ERDCanvasSettings.Provider>
         </div>
       </Box>

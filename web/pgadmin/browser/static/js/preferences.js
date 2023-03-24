@@ -138,7 +138,7 @@ _.extend(pgBrowser, {
   },
 
   onPreferencesChange: function(module, eventHandler) {
-    pgBrowser.Events.on('prefchange:'+module, function(event) {
+    pgBrowser.Events?.on('prefchange:'+module, function(event) {
       eventHandler(event);
     });
   },

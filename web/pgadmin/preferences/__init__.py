@@ -146,6 +146,7 @@ def _iterate_categories(pref_d, label, res):
         oc = {
             "id": c['id'],
             "mid": pref_d['id'],
+            "name": c['name'],
             "label": gettext(c['label']),
             "value": '{0}{1}'.format(c['id'], gettext(c['label'])),
             "inode": False,
