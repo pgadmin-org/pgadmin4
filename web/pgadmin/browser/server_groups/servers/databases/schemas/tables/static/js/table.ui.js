@@ -121,6 +121,7 @@ export class ConstraintsSchema extends BaseUISchema {
       canAddRow: function(state) {
         return ((state.primary_key||[]).length < 1 && obj.anyColumnAdded(state));
       },
+      expandEditOnAdd: true,
       depChange: (state, source, topState, actionObj)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {primary_key: []};
@@ -147,6 +148,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns','references_table_name'],
       disabled: this.inCatalog,
       canAddRow: obj.anyColumnAdded,
+      expandEditOnAdd: true,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {foreign_key: []};
@@ -177,6 +179,7 @@ export class ConstraintsSchema extends BaseUISchema {
         return obj.canAdd(state);
       },
       canAddRow: obj.anyColumnAdded,
+      expandEditOnAdd: true,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {unique_constraint: []};
@@ -196,6 +199,7 @@ export class ConstraintsSchema extends BaseUISchema {
         return obj.canAdd(state);
       },
       canAddRow: obj.anyColumnAdded,
+      expandEditOnAdd: true,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {exclude_constraint: []};

@@ -346,6 +346,7 @@ export default function DataGridView({
   const stateUtils = useContext(StateUtilsContext);
   const checkIsMounted = useIsMounted();
   const [hoverIndex, setHoverIndex] = useState();
+  const newRowIndex = useRef();
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
@@ -538,12 +539,15 @@ export default function DataGridView({
     }
 
     let newRow = schemaRef.current.getNewData();
+    if(props.expandEditOnAdd && props.canEdit) {
+      newRowIndex.current = rows.length;
+    }
     dataDispatch({
       type: SCHEMA_STATE_ACTIONS.ADD_ROW,
       path: accessPath,
       value: newRow,
     });
-  }, [props.canAddRow]);
+  }, [props.canAddRow, rows?.length]);
 
   const defaultColumn = useMemo(()=>({
   }), []);
@@ -592,6 +596,13 @@ export default function DataGridView({
         });
     }
   }, []);
+
+  useEffect(()=>{
+    if(newRowIndex.current >= 0) {
+      rows[newRowIndex.current]?.toggleRowExpanded(true);
+      newRowIndex.current = null;
+    }
+  }, [rows?.length]);
 
   const moveRow = (dragIndex, hoverIndex) => {
     dataDispatch({
@@ -666,6 +677,7 @@ DataGridView.propTypes = {
   canDeleteRow: PropTypes.oneOfType([
     PropTypes.bool, PropTypes.func,
   ]),
+  expandEditOnAdd: PropTypes.bool,
   customDeleteTitle: PropTypes.string,
   customDeleteMsg: PropTypes.string,
   canSearch: PropTypes.bool,

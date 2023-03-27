@@ -110,7 +110,7 @@ MappedFormControlBase.propTypes = {
 };
 
 /* Control mapping for grid cell view */
-function MappedCellControlBase({ cell, value, id, optionsLoaded, onCellChange, visible, reRenderRow, ...props }) {
+function MappedCellControlBase({ cell, value, id, optionsLoaded, onCellChange, visible, reRenderRow, inputRef, ...props }) {
   const name = id;
   const onTextChange = useCallback((e) => {
     let val = e;
@@ -149,15 +149,16 @@ function MappedCellControlBase({ cell, value, id, optionsLoaded, onCellChange, v
   /* The mapping does not need Form* components as labels are not needed for grid cells */
   switch(cell) {
   case 'int':
-    return <InputText name={name} value={value} onChange={onTextChange} {...props} type='int'/>;
+    return <InputText name={name} value={value} onChange={onTextChange} ref={inputRef} {...props} type='int'/>;
   case 'numeric':
-    return <InputText name={name} value={value} onChange={onTextChange} {...props} type='numeric'/>;
+    return <InputText name={name} value={value} onChange={onTextChange} ref={inputRef} {...props} type='numeric'/>;
   case 'text':
-    return <InputText name={name} value={value} onChange={onTextChange} {...props}/>;
+    return <InputText name={name} value={value} onChange={onTextChange} ref={inputRef} {...props}/>;
   case 'password':
-    return <InputText name={name} value={value} onChange={onTextChange} {...props} type='password'/>;
+    return <InputText name={name} value={value} onChange={onTextChange} ref={inputRef} {...props} type='password'/>;
   case 'select':
-    return <InputSelect name={name} value={value} onChange={onTextChange} optionsLoaded={optionsLoadedRerender} {...props}/>;
+    return <InputSelect name={name} value={value} onChange={onTextChange} optionsLoaded={optionsLoadedRerender}
+      inputRef={inputRef} {...props}/>;
   case 'switch':
     return <InputSwitch name={name} value={value}
       onChange={(e)=>onTextChange(e.target.checked, e.target.name)} {...props} />;
