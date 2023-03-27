@@ -54,8 +54,10 @@ Bug fixes
   | `Issue #5919 <https://github.com/pgadmin-org/pgadmin4/issues/5919>`_ -  While restoring the database connections due to lost server connection, ensure that the databases which were previously connected are only reconnected.
   | `Issue #5921 <https://github.com/pgadmin-org/pgadmin4/issues/5921>`_ -  Ensure that when pasting rows the rows are added right below the selected rows for copying.
   | `Issue #5929 <https://github.com/pgadmin-org/pgadmin4/issues/5929>`_ -  Dashboard graph Y-axis width should increase with label.
+  | `Issue #5934 <https://github.com/pgadmin-org/pgadmin4/issues/5934>`_ -  Ensure that default values are set only for insert statement if user does not provide any values, in case of updating existing values to blank it should be set to null.
   | `Issue #5941 <https://github.com/pgadmin-org/pgadmin4/issues/5941>`_ -  Fixed an issue where migration on external database is not working.
   | `Issue #5943 <https://github.com/pgadmin-org/pgadmin4/issues/5943>`_ -  Use http for SVG namespace URLs which were changed to https for SonarQube fixes.
   | `Issue #5952 <https://github.com/pgadmin-org/pgadmin4/issues/5952>`_ -  Ensure that the schema diff tool should not allow comparison between Postgres Server and EDB Postgres Advanced Server.
   | `Issue #5955 <https://github.com/pgadmin-org/pgadmin4/issues/5955>`_ -  Fix an issue where query tool is stuck when running query after discarding changed data.
   | `Issue #5958 <https://github.com/pgadmin-org/pgadmin4/issues/5958>`_ -  Fix an issue where new dashboard graphs are partially following theme colors.
+  | `Issue #6018 <https://github.com/pgadmin-org/pgadmin4/issues/6018>`_ -  Change the foreground color of the code mirror text for Dark Theme.
