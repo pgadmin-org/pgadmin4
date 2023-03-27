@@ -71,9 +71,9 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
     def _check_role_membership_control(self):
         self.page.driver.find_element(
             By.CSS_SELECTOR, NavMenuLocators.object_menu_css).click()
-        property_object = self.wait.until(EC.visibility_of_element_located(
-            (By.CSS_SELECTOR, NavMenuLocators.properties_obj_css)))
-        property_object.click()
+        edit_object = self.wait.until(EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, NavMenuLocators.edit_obj_css)))
+        edit_object.click()
         membership_tab = WebDriverWait(self.page.driver, 4).until(
             EC.presence_of_element_located((
                 By.XPATH, "//span[normalize-space(text())='Membership']")))

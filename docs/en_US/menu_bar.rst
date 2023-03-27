@@ -64,7 +64,7 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Drop Cascade*              | Click to delete the currently selected object and all dependent objects from the server.                                 |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Properties...*             | Click to review or modify the currently selected object's properties.                                                    |
+| *Edit Object...*            | Click to review or modify the currently selected object's properties.                                                    |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Refresh*                   | Click to refresh the currently selected object.                                                                          |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+

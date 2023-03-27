@@ -338,7 +338,7 @@ export default function PreferencesComponent({ ...props }) {
   function addNote(node, subNode, nodeData, preferencesData, note = '') {
     // Check and add the note for the element.
     if (subNode.label == gettext('Nodes') && node.label == gettext('Browser')) {
-      note = [gettext('This settings is to Show/Hide nodes in the browser tree.')].join('');
+      note = [gettext('This settings is to Show/Hide nodes in the object explorer.')].join('');
     } if(nodeData.name == 'keyboard_shortcuts') {
       note = gettext('The Accesskey here is %s.', getBrowserAccesskey().join(' + '));
     } else {
@@ -561,8 +561,8 @@ export default function PreferencesComponent({ ...props }) {
 
         if (pref.name == 'hide_shared_server') {
           Notify.confirm(
-            gettext('Browser tree refresh required'),
-            gettext('A browser tree refresh is required. Do you wish to refresh the tree?'),
+            gettext('Object explorer tree refresh required'),
+            gettext('The object explorer tree refresh is required. Do you wish to refresh the tree?'),
             function () {
               pgAdmin.Browser.tree.destroy({
                 success: function () {

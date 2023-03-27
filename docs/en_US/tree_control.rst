@@ -8,7 +8,7 @@ The left pane of the main window displays a tree control (the *pgAdmin* tree
 control) that provides access to the objects that reside on a server.
 
 .. image:: /images/main_left_pane.png
-    :alt: Browser tree panel
+    :alt: object explorer panel
     :align: center
 
 You can expand nodes in the tree control to view the database objects that
@@ -63,7 +63,7 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Maintenance...*          | Click to open the :ref:`Maintenance... <maintenance_dialog>` dialog to VACUUM, ANALYZE, REINDEX, or CLUSTER.              |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Properties...*           | Click to review or modify the currently selected object's properties.                                                     |
+| *Edit Object...*          | Click to review or modify the currently selected object's properties.                                                     |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Refresh...*              | Click to refresh the currently selected object.                                                                           |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+

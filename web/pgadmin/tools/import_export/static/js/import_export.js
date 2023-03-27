@@ -51,7 +51,7 @@ define([
           null, pgBrowser.tree, ['table']
         ),
         data: {
-          data_disabled: gettext('Please select any table from the browser tree to Import/Export data.'),
+          data_disabled: gettext('Please select any table from the object explorer to Import/Export data.'),
         },
       }]);
     },

@@ -44,8 +44,7 @@ Use the fields from the Instance Specification tab to specify the Instance
 details.
 
 * Use the *Cluster name* field to add a cluster name for the PostgreSQL
-  server; the name specified will be displayed in the *Browser* tree control
-  too.
+  server; the name specified will be displayed in the *Object Explorer* too.
 
 * Use the *Region* field to select the region.
 
@@ -75,8 +74,8 @@ details.
 Use the fields from the Database Details tab to specify the Instance details.
 
 * Use the drop-down list box in the *Server group* field to select the parent
-  node for the server; the server will be displayed in the *Browser* tree
-  control within the specified group.
+  node for the server; the server will be displayed in the *Object Explorer*
+  within the specified group.
 
 * Use the *Database type* field to specify the PostgreSQL
   type, EnterpriseDB PostgreSQL Advanced Server or PostgreSQL.

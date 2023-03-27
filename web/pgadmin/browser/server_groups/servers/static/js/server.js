@@ -79,14 +79,14 @@ define('pgadmin.node.server', [
           applies: ['tools', 'context'], callback: 'reload_configuration',
           category: 'reload', priority: 10, label: gettext('Reload Configuration'),
           enable : 'enable_reload_config',data: {
-            data_disabled: gettext('Please select a server from the browser tree to reload the configuration files.'),
+            data_disabled: gettext('Please select a server from the object explorer to reload the configuration files.'),
           },
         },{
           name: 'restore_point', node: 'server', module: this,
           applies: ['tools', 'context'], callback: 'restore_point',
           category: 'restore', priority: 7, label: gettext('Add Named Restore Point...'),
           enable : 'is_applicable',data: {
-            data_disabled: gettext('Please select any server from the browser tree to Add Named Restore Point.'),
+            data_disabled: gettext('Please select any server from the object explorer to Add Named Restore Point.'),
           },
         },{
           name: 'change_password', node: 'server', module: this,

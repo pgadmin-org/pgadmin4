@@ -47,10 +47,10 @@ def register_browser_preferences(self):
 
     self.preference.register(
         'display', 'browser_tree_state_save_interval',
-        gettext("Browser tree state saving interval"), 'integer',
+        gettext("Object explorer tree state saving interval"), 'integer',
         30, category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Browser tree state saving interval in seconds. '
+            'Object explorer state saving interval in seconds. '
             'Use -1 to disable the tree saving mechanism.'
         )
     )
@@ -139,7 +139,7 @@ def register_browser_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'browser_tree',
-        gettext('Browser tree'),
+        gettext('Object Explorer'),
         'keyboardshortcut',
         {
             'alt': True,
@@ -425,7 +425,7 @@ def register_browser_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'sub_menu_refresh',
-        gettext('Refresh browser tree'),
+        gettext('Refresh object explorer'),
         'keyboardshortcut',
         {
             'alt': False,

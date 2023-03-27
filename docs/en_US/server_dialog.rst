@@ -15,10 +15,10 @@ allows connections from the host of the client.
 Use the fields in the *General* tab to identify the server:
 
 * Use the *Name* field to add a descriptive name for the server; the name
-  specified will be displayed in the *Browser* tree control.
+  specified will be displayed in the *Object Explorer*.
 
 * Use the drop-down list box in the *Server group* field to select the parent
-  node for the server; the server will be displayed in the *Browser* tree
+  node for the server; the server will be displayed in the *Object Explorer*
   control within the specified group.
 
 * Use the color-picker in the *Background* field to specify the background
@@ -42,7 +42,7 @@ Use the fields in the *General* tab to identify the server:
     * Change of host, port, and maintenance database
 
   Please note that once the server is shared, it's icon is changed in the
-  browser tree.
+  object explorer.
 
 * Provide a comment about the server in the *Comments* field.
 

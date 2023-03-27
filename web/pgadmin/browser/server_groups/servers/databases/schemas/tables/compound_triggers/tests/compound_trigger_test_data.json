@@ -768,7 +768,7 @@
       }
     },
     {
-      "name": "Error while updating the new compound trigger id in browser tree",
+      "name": "Error while updating the new compound trigger id in object explorer",
       "url": "/browser/compound_trigger/obj/",
       "is_positive_test": false,
       "mocking_required": true,

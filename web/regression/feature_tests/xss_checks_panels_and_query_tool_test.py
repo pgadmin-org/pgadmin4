@@ -121,7 +121,7 @@ class CheckForXssFeatureTest(BaseFeatureTest):
 
     def _check_xss_in_browser_tree(self):
         print(
-            "\n\tChecking the Browser tree for XSS vulnerabilities",
+            "\n\tChecking the browser tree for XSS vulnerabilities",
             file=sys.stderr, end=""
         )
         # Fetch the inner html & check for escaped characters

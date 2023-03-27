@@ -194,7 +194,7 @@ Nodes
 *****
 
 Nodes are very similar to modules, it represents an individual node or,
-collection object on the browser treeview. To recognised as a node module, a
+collection object on the object explorer treeview. To recognised as a node module, a
 Python package (along with javascript modules) must be created. This must:
 
 1) Be placed within the **web/pgadmin/browser/** directory, and

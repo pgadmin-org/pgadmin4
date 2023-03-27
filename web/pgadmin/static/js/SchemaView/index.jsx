@@ -997,7 +997,7 @@ function SchemaPropertiesView({
           data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
           title="SQL help for this object type." className={classes.buttonMargin} />
         <PgIconButton data-test="edit"
-          onClick={props.onEdit} icon={<EditIcon />} title="Edit the object" />
+          onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
       </Box>
       <Box className={clsx(classes.form, classes.formProperties)}>
         <Box>

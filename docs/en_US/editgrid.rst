@@ -5,9 +5,9 @@
 `View/Edit Data`:index:
 ***********************
 
-To view or modify data, right click on a table or view name in the *Browser*
-tree control.  When the context menu opens, use the *View/Edit Data* menu to
-specify the number of rows you would like to display in the editor panel.
+To view or modify data, right click on a table or view name in the
+*Object Explorer*. When the context menu opens, use the *View/Edit Data* menu
+to specify the number of rows you would like to display in the editor panel.
 
 .. image:: images/editgrid.png
     :alt: Edit grid window

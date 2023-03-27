@@ -324,8 +324,8 @@ function UserManagementDialog({onClose}) {
         if (changeData['refreshBrowserTree']) {
           // Confirmation dialog to refresh the browser tree.
           Notify.confirm(
-            gettext('Browser tree refresh required'),
-            gettext('The ownership of the shared server was changed or the shared server was deleted, so a browser tree refresh is required. Do you wish to refresh the tree?'),
+            gettext('Object explorer tree refresh required'),
+            gettext('The ownership of the shared server was changed or the shared server was deleted, so the object explorer tree refresh is required. Do you wish to refresh the tree?'),
             function () {
               pgAdmin.Browser.tree.destroy();
             },

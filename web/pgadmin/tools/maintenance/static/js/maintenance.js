@@ -50,7 +50,7 @@ define([
           null, pgBrowser.tree, menuUtils.maintenanceSupportedNodes
         ),
         data: {
-          data_disabled: gettext('Please select any database from the browser tree to do Maintenance.'),
+          data_disabled: gettext('Please select any database from the object explorer to do Maintenance.'),
         },
       }];
 
@@ -68,7 +68,7 @@ define([
             null, pgBrowser.tree, menuUtils.maintenanceSupportedNodes
           ),
           data: {
-            data_disabled: gettext('Please select any database from the browser tree to do Maintenance.'),
+            data_disabled: gettext('Please select any database from the object explorer to do Maintenance.'),
           },
         });
       }

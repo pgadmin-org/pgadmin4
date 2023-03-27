@@ -20,7 +20,7 @@ Use the fields in the *General* tab to specify import and export preferences:
   server should import data to a table from a file. The default is *Import*.
 
 * Enter the name of the source or target file in the *Filename* field.
-  Optionally, select the *Browser* icon (ellipsis) to the right to navigate
+  Optionally, select the *Browse* icon (ellipsis) to the right to navigate
   into a directory and select a file.
 
 * Use the drop-down listbox in the *Format* field to specify the file type.
