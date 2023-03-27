@@ -33,12 +33,5 @@ apt update
 
 # Install pre-reqs
 echo "Installing build pre-requisites..."
-# Install correct Python packages for Ubuntu 18.
-OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
-if [ "${OS_VERSION}" == "18" ]; then
-  apt install -y build-essential python3.8-dev python3.8-venv libpq-dev libffi-dev nodejs yarn libkrb5-dev
-  python3.8 -m pip install pip wheel sphinx sphinxcontrib-youtube
-else
-  apt install -y build-essential python3-dev python3-venv python3-sphinx python3-wheel python3-pip libpq-dev libffi-dev nodejs yarn libkrb5-dev
-  python3 -m pip install sphinxcontrib-youtube
-fi
+apt install -y build-essential python3-dev python3-venv python3-sphinx python3-wheel python3-pip libpq-dev libffi-dev nodejs yarn libkrb5-dev
+python3 -m pip install sphinxcontrib-youtube

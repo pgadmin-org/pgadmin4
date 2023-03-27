@@ -24,13 +24,11 @@ _setup_env() {
     OS_VERSION=$(grep "^VERSION_ID=" /etc/os-release | awk -F "=" '{ print $2 }' | sed 's/"//g' | awk -F "." '{ print $1 }')
     SYSTEM_PYTHON_PATH='/usr/bin/python3'
     PYTHON_BINARY='python3'
-    if [ "$2" == 'debian' ] && [ "${OS_VERSION}" == "18" ]; then
-      SYSTEM_PYTHON_PATH='/usr/bin/python3.8'
-      PYTHON_BINARY='python3.8'
-    elif [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
+    if [ "$2" == 'redhat' ] && [ "${OS_VERSION}" == "8" ]; then
       SYSTEM_PYTHON_PATH='/usr/bin/python3.9'
       PYTHON_BINARY='python3.9'
     fi
+    PYTHON_BINARY_WITHOUT_DOTS=$(echo ${PYTHON_BINARY} | sed -e 's/\.//g')
 }
 
 _cleanup() {
