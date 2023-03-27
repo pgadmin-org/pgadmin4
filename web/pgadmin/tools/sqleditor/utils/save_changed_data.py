@@ -120,6 +120,12 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 # Update columns value with columns having
                 # not_null=False and has no default value
                 column_data.update(data)
+                use_default = False
+                if not column_data:
+                    for each_col in columns_info:
+                        if columns_info[each_col]['has_default_val']:
+                            column_data[each_col] = 'set_default'
+                            use_default = True
 
                 sql = render_template(
                     "/".join([command_obj.sql_path, 'insert.sql']),
@@ -131,7 +137,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     data_type=column_type,
                     pk_names=pk_names,
                     has_oids=command_obj.has_oids(),
-                    type_cast_required=type_cast_required
+                    type_cast_required=type_cast_required,
+                    use_default=use_default
                 )
 
                 select_sql = render_template(
