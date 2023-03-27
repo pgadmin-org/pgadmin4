@@ -62,18 +62,15 @@ class BaseFeatureTest(BaseTestGenerator):
         pass
 
     def tearDown(self):
-        python2_failures = hasattr(
-            self, "_resultForDoCleanups") and self.current_test_failed()
-
         python3_failures = hasattr(self, '_outcome') and self.any_step_failed()
 
-        if python2_failures or python3_failures:
+        if python3_failures:
             self._screenshot()
 
         self.after()
 
     def any_step_failed(self):
-        for step in self._outcome.errors:
+        for step in self._outcome.result.errors:
             if step[1] is not None:
                 return True
         return False

@@ -106,9 +106,9 @@ ALL_JSON_TYPES = PSYCOPG_SUPPORTED_JSON_TYPES +\
 # OID reference psycopg/lib/_ipaddress.py
 PSYCOPG_SUPPORTED_IPADDRESS_ARRAY_TYPES = (1041, 651)
 
-# uuid[]
+# uuid[], uuid
 # OID reference psycopg/lib/extras.py
-PSYCOPG_SUPPORTED_IPADDRESS_ARRAY_TYPES = (2951,)
+PSYCOPG_SUPPORTED_IPADDRESS_ARRAY_TYPES = (2951, 2950)
 
 # int4range, int8range, numrange, daterange tsrange, tstzrange[]
 # OID reference psycopg/lib/_range.py
@@ -132,15 +132,8 @@ def register_global_typecasters():
         psycopg.adapters.register_loader(typ,
                                          TextLoaderpgAdmin)
 
-    #
-    # # define type caster to convert pg array types of above types into
-    # # array of string type
-    # pg_array_types_to_array_of_string_type = \
-    #     psycopg.extensions.new_array_type(
-    #         TO_ARRAY_OF_STRING_DATATYPES,
-    #         'TYPECAST_TO_ARRAY_OF_STRING', pg_types_to_string_type
-    #     )
-
+    # Define type caster to convert pg array types of above types into
+    # array of string type
     for typ in TO_ARRAY_OF_STRING_DATATYPES:
         psycopg.adapters.register_loader(typ, TextLoaderpgAdmin)
 
