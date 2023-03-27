@@ -2251,7 +2251,7 @@ class MViewNode(ViewNode, VacuumSettings):
                 # Check for connection timeout and if it is greater than 0
                 # then set the environment variable PGCONNECT_TIMEOUT.
                 timeout = manager.get_connection_param_value('connect_timeout')
-                if timeout and timeout > 0:
+                if timeout and int(timeout) > 0:
                     env = dict()
                     env['PGCONNECT_TIMEOUT'] = str(timeout)
                     p.set_env_variables(server, env=env)

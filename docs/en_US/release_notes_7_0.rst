@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #3298 <https://github.com/pgadmin-org/pgadmin4/issues/3298>`_ -  Auto expand row edit form when a new row is added for Primary Key, Foreign Key, Unique Constraint and Exclusion Constraint.
   | `Issue #5014 <https://github.com/pgadmin-org/pgadmin4/issues/5014>`_ -  Added support for mounting shared storage in server mode.
   | `Issue #5022 <https://github.com/pgadmin-org/pgadmin4/issues/5022>`_ -  Add a note on top of keyboard shortcuts preferences to show the Accesskey of the browser.
   | `Issue #5750 <https://github.com/pgadmin-org/pgadmin4/issues/5750>`_ -  Added capability to deploy PostgreSQL servers on Google Cloud.
@@ -60,4 +61,5 @@ Bug fixes
   | `Issue #5952 <https://github.com/pgadmin-org/pgadmin4/issues/5952>`_ -  Ensure that the schema diff tool should not allow comparison between Postgres Server and EDB Postgres Advanced Server.
   | `Issue #5955 <https://github.com/pgadmin-org/pgadmin4/issues/5955>`_ -  Fix an issue where query tool is stuck when running query after discarding changed data.
   | `Issue #5958 <https://github.com/pgadmin-org/pgadmin4/issues/5958>`_ -  Fix an issue where new dashboard graphs are partially following theme colors.
+  | `Issue #5959 <https://github.com/pgadmin-org/pgadmin4/issues/5959>`_ -  Fix an issue where Backup, Restore, and Maintenance not working if connection timeout is set in the server dialog.
   | `Issue #6018 <https://github.com/pgadmin-org/pgadmin4/issues/6018>`_ -  Change the foreground color of the code mirror text for Dark Theme.
