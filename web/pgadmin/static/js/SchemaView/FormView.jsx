@@ -277,6 +277,7 @@ export default function FormView({
           containerClassName: classes.controlRow, ...field, canAdd: canAdd, canReorder: canReorder,
           canEdit: canEdit, canDelete: canDelete,
           visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch,
+          expandEditOnAdd: field.expandEditOnAdd,
           fixedRows: (viewHelperProps.mode == 'create' ? field.fixedRows : undefined)
         };
 

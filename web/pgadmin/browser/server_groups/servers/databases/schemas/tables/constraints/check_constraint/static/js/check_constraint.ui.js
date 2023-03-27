@@ -67,7 +67,7 @@ export default class CheckConstraintSchema extends BaseUISchema {
     },{
       id: 'consrc', label: gettext('Check'), type: 'multiline', cell: 'text',
       group: gettext('Definition'), mode: ['properties', 'create', 'edit'],
-      readonly: obj.isReadonly, editable: false, noEmpty: true,
+      readonly: obj.isReadonly, editable: true, noEmpty: true,
     },{
       id: 'connoinherit', label: gettext('No inherit?'), type: 'switch', cell: 'switch',
       group: gettext('Definition'), mode: ['properties', 'create', 'edit'], min_version: 90200,
