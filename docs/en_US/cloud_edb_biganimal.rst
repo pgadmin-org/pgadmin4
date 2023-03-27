@@ -27,12 +27,13 @@ and the next button will be enabled. To proceed further, click on the next butto
     :alt: Cloud Deployment Provider
     :align: center
 
+* Use the *Project* field to choose a project in your Biganimal account.
 
 * Use the *Cluster type* field to choose a cluster type.
 
 * Use the *No. of Standby Replicas* field to specify the replicas if you have selected the High Availability cluster.
 
-* Use the *Cluster provider* field to coose the provider.
+* Use the *Cluster provider* field to choose the provider.
 
 
 .. image:: images/cloud_biganimal_instance.png
