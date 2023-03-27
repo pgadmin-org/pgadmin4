@@ -582,6 +582,7 @@ class PgadminPage:
                 if not server_child_expanded:
                     print("Child is not expanded after clicking ",
                           file=sys.stderr)
+                    return server_child_expanded
         else:
             print("The server/previous nodes not expanded", file=sys.stderr)
         return server_child_expanded

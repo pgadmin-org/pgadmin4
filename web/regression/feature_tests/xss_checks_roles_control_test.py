@@ -54,13 +54,14 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
         test_utils.drop_role(self.server, "postgres", self.xss_test_role)
 
     def _role_node_expandable(self, role):
-        retry = 3
+        retry = 2
         while retry > 0:
             if self.page.expand_server_child_node(
                     "Server", self.server['name'], self.server['db_password'],
                     'Login/Group Roles'):
                 retry = 0
             else:
+                self.page.reset_layout()
                 retry -= 1
 
         role_node = self.page.check_if_element_exists_with_scroll(
