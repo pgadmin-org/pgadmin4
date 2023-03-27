@@ -62,14 +62,16 @@ class PgadminPage:
                 self.driver.refresh()
                 try:
                     WebDriverWait(self.driver, 3).until(EC.alert_is_present())
-                    self.driver.switch_to_alert().accept()
+                    self.driver.switch_to.alert.accept()
                     attempt = attempt + 1
                 except TimeoutException:
                     attempt = attempt + 1
 
         self.click_element(self.find_by_css_selector(
             "li[data-label='Reset Layout']"))
-        self.click_modal('OK')
+        self.click_modal('Yes')
+        if WebDriverWait(self.driver, 3).until(EC.alert_is_present()):
+            self.driver.switch_to.alert.accept()
         self.wait_for_reloading_indicator_to_disappear()
 
     def refresh_page(self):
