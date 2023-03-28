@@ -11,7 +11,6 @@
 import pickle
 import json
 import os
-from pathlib import Path
 from urllib.parse import unquote
 
 from config import root
@@ -90,7 +89,7 @@ def verify_credentials():
     except Exception as e:
         return bad_request(errormsg=str(e))
 
-    if client_secret_path is not None and Path(client_secret_path).exists():
+    if client_secret_path and os.path.exists(client_secret_path):
         with open(client_secret_path, 'r') as json_file:
             client_config = json.load(json_file)
 
