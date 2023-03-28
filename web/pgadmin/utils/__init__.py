@@ -272,8 +272,12 @@ def filename_with_file_manager_path(_file, create_file=False,
         Filename to use for backup with full path taken from preference
     """
     # retrieve storage directory path
-    last_storage = Preferences.module('file_manager').preference(
-        'last_storage').get()
+    try:
+        last_storage = Preferences.module('file_manager').preference(
+            'last_storage').get()
+    except Exception as e:
+        last_storage = MY_STORAGE
+
     if last_storage != MY_STORAGE:
         selDirList = [sdir for sdir in current_app.config['SHARED_STORAGE']
                       if sdir['name'] == last_storage]
