@@ -158,6 +158,7 @@ describe('FileManger', ()=>{
 
     it('Change Shared Storage', (done)=>{
       networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
       let ctrl = ctrlMount({});
       setTimeout(()=>{
         ctrl.update();
@@ -171,6 +172,7 @@ describe('FileManger', ()=>{
 
     it('Change Storage to My Storage', (done)=>{
       networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
       let ctrl = ctrlMount({});
       setTimeout(()=>{
         ctrl.update();
