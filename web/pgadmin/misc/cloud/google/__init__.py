@@ -12,6 +12,7 @@ import pickle
 import json
 import os
 from pathlib import Path
+from urllib.parse import unquote
 
 from config import root
 from pgadmin.utils.csrf import pgCSRFProtect
@@ -80,6 +81,7 @@ def verify_credentials():
     error = None
     res_data = {}
 
+    client_secret_path = unquote(client_secret_path)
     try:
         client_secret_path = \
             filename_with_file_manager_path(client_secret_path)
@@ -102,7 +104,11 @@ def verify_credentials():
             _google = pickle.loads(session['google']['google_obj'])
 
         # get auth url
-        auth_url, error_msg = _google.get_auth_url(request.host_url)
+        host_url = request.origin + '/'
+        if request.root_path != '':
+            host_url = host_url + request.root_path + '/'
+
+        auth_url, error_msg = _google.get_auth_url(host_url)
         if error_msg:
             error = error_msg
         else:
