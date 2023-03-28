@@ -8,7 +8,7 @@
 
 
 class BrowserToolBarLocators():
-    """This will contains element locators for browser tool bar"""
+    """This will contains element locators for browser tree tool bar"""
 
     open_query_tool_button_css = \
         ".wcFrameButton[aria-label='Query Tool']:not(.disabled)"
@@ -40,7 +40,7 @@ class NavMenuLocators:
 
     object_menu_css = "button[data-label='Object']"
 
-    properties_obj_css = "li[data-label='Properties...']"
+    edit_obj_css = "li[data-label='Edit Object...']"
 
     backup_obj_css = "li[data-label='Backup...']"
 

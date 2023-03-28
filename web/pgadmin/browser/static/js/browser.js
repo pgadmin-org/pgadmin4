@@ -197,7 +197,7 @@ define('pgadmin.browser', [
       // Panel to keep the left hand browser tree
       'browser': new pgAdmin.Browser.Panel({
         name: 'browser',
-        title: gettext('Browser'),
+        title: gettext('Object Explorer'),
         showTitle: true,
         isCloseable: false,
         isPrivate: true,

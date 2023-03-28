@@ -48,7 +48,7 @@ export default class SearchObjectModule {
       label: gettext('Search Objects...'),
       below: true,
       data: {
-        data_disabled: gettext('Please select a database from the browser tree to search the database objects.'),
+        data_disabled: gettext('Please select a database from the object explorer to search the database objects.'),
       },
     }];
 

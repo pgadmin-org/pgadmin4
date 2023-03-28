@@ -39,7 +39,7 @@ Use the fields from the Instance Specification tab to specify the Instance
 details.
 
 * Use the *Cluster name* field to add a name for the PostgreSQL
-  server; the name specified will be displayed in the *Browser* tree control too.
+  server; the name specified will be displayed in the *Object Explorer* too.
 
 * Select the project from *project* dropdown under which the
   PostgreSQL instance will be created.
@@ -83,8 +83,8 @@ details.
 Use the fields from the Database Details tab to specify the PostgreSQL database details.
 
 * Use the drop-down list in the *pgAdmin server group* field to select the parent
-  node for the server; the server will be displayed in the *Browser* tree
-  control within the specified group.
+  node for the server; the server will be displayed in the *Object Explorer*
+  within the specified group.
 
 * Admin username field will be default to postgres.
   server.

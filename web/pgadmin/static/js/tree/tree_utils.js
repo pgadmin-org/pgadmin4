@@ -50,7 +50,7 @@ export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle) {
   if (serverInformation === null) {
     Notify.alert(
       gettext(errorAlertTitle),
-      gettext('Please select server or child node from the browser tree.')
+      gettext('Please select server or child node from the object explorer.')
     );
   }
 

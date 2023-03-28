@@ -30,7 +30,7 @@ restore process:
    * Select *Directory* to restore from a compressed directory-format archive.
 
 * Enter the complete path to the backup file in the *Filename* field.
-  Optionally, select the *Browser* icon (ellipsis) to the right to navigate
+  Optionally, select the *Browse* icon (ellipsis) to the right to navigate
   into a directory and select the file that contains the archive.
 * Use the *Number of Jobs* field to specify if pg_restore should use multiple
   (concurrent) jobs to process the restore.  Each job uses a separate connection

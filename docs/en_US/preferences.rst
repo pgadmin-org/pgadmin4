@@ -31,7 +31,7 @@ Use the fields on the *Display* panel to specify general display preferences:
   be automatically expanded if a treeview node is expanded and has only a single
   child.
 
-* Use the *Browser tree state saving interval* field to set the treeview state
+* Use the *Object explorer state saving interval* field to set the treeview state
   saving interval. A value of *-1* will disable the treeview state saving
   functionality.
 
@@ -44,7 +44,7 @@ Use the fields on the *Display* panel to specify general display preferences:
   them to continue.
 
 * When the *Hide shared servers?* switch is set to *True*, the client will hide
-  all the shared servers from the browser tree.
+  all the shared servers from the object explorer.
 
 * Use the *Lock layout* field to lock the UI layout at different levels. This
   can also be changed from File menu on the :ref:`menu bar <menu_bar>`

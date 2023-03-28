@@ -134,7 +134,7 @@ const columns = [
     formatter: TypePathFormatter,
   },{
     key: 'path',
-    name: gettext('Browser path'),
+    name: gettext('Object path'),
     sortable: false,
     formatter: TypePathFormatter,
   }

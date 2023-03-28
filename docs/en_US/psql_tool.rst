@@ -7,10 +7,10 @@
 The PSQL tool allows users to connect to PostgreSQL or EDB Advanced server using
 the psql command line interface through their browser.
 
-* Open the PSQL tool from the Tools or browser tree context menu, or use PSQL
-  tool button at the top of the browser tree.
+* Open the PSQL tool from the Tools or object explorer context menu, or use PSQL
+  tool button at the top of the object explorer.
 
-* PSQL will connect to the current connected database from the browser tree.
+* PSQL will connect to the current connected database from the object explorer.
 
 .. image:: images/psql_tool.png
     :alt: PSQL tool window

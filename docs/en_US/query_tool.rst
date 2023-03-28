@@ -7,7 +7,7 @@
 The Query Tool is a powerful, feature-rich environment that allows you to
 execute arbitrary SQL commands and review the result set.  You can access the
 Query Tool via the *Query Tool* menu option on the *Tools* menu, or through the
-context menu of select nodes of the Browser tree control.  The Query Tool
+context menu of select nodes of the Object explorer control.  The Query Tool
 allows you to:
 
 * Issue ad-hoc SQL queries.

@@ -125,7 +125,7 @@ export default class SQLEditor {
       label: gettext('Query Tool'),
       data:{
         applies: 'tools',
-        data_disabled: gettext('Please select a database from the browser tree to access Query Tool.'),
+        data_disabled: gettext('Please select a database from the object explorer to access Query Tool.'),
       },
     }];
 

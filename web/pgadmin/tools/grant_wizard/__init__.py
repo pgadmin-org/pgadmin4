@@ -40,8 +40,6 @@ class GrantWizardModule(PgAdminModule):
         It is a wizard which inherits PgAdminModule
         class and define methods to load its own
         javascript file.
-
-    LABEL = gettext('Browser')
     """
 
     def get_own_stylesheets(self):

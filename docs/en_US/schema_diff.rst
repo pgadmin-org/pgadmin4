@@ -54,7 +54,7 @@ The Schema Diff Object Comparison Panel
 
 In the object comparison panel, you can select the source and target servers
 of the same major version, and databases to be compared. You can
-select any server listed under the browser tree whether it is connected or
+select any server listed under the object explorer whether it is connected or
 disconnected. If you select a server that is not connected then it will
 prompt you for the password before using the server.
 
