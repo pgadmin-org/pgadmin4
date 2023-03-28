@@ -30,6 +30,7 @@ New features
 Housekeeping
 ************
 
+  | `Issue #4734 <https://github.com/pgadmin-org/pgadmin4/issues/4734>`_ -  Rename the "Properties..." context menu option of the objects to "Edit Object..." and the "Browser" tree to "Object Explorer".
   | `Issue #5011 <https://github.com/pgadmin-org/pgadmin4/issues/5011>`_ -  Upgrade from psycopg2 to psycopg3.
   | `Issue #5701 <https://github.com/pgadmin-org/pgadmin4/issues/5701>`_ -  Remove Bootstrap and jQuery usage.
   | `Issue #5830 <https://github.com/pgadmin-org/pgadmin4/issues/5830>`_ -  Add .ts and .tsx files under linter and fix linter issues.
