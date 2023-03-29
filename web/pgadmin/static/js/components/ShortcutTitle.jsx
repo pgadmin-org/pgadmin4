@@ -25,35 +25,22 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 export function getBrowserAccesskey() {
-  /* Ref: https://github.com/tillsanders/access-key-label-polyfill/ */
+  /* Ref: https://www.w3schools.com/tags/att_accesskey.asp */
   let ua = window.navigator.userAgent;
   // macOS
   if (ua.match(/macintosh/i)) {
-    // Firefox
-    if (ua.match(/firefox/i)) {
-      const firefoxVersion = ua.match(/firefox[\s/](\d+)/i);
-      // Firefox < v14
-      if (firefoxVersion[1] && parseInt(firefoxVersion[1], 10) < 14) {
-        return ['Ctrl'];
-      }
-    }
-    return ['Option', 'Ctrl'];
+    return ['Ctrl', 'Option'];
   }
 
-  // Internet Explorer / Edge
-  if (ua.match(/msie|trident/i) || ua.match(/\sedg/i)) {
+  // Windows / Linux
+  if (ua.match(/windows/i) || ua.match(/linux/i)) {
+    if(ua.match(/firefox/i)) {
+      return ['Alt', 'Shift'];
+    }
     return ['Alt'];
   }
 
-  // iOS / iPadOS
-  if (ua.match(/(ipod|iphone|ipad)/i)) {
-    // accesskeyLabel is supported > v14, but we're not checking for versions here, since we use
-    // feature support detection
-    return ['Option', 'Ctrl'];
-  }
-
   // Fallback
-  // Note: Apparently, Chrome for Android is not even supporting accesskey, so be prepared.
   return [gettext('Accesskey')];
 }
 
