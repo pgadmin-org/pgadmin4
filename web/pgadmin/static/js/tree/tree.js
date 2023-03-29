@@ -43,6 +43,9 @@ function manageTreeEvents(event, eventName, item) {
       if (eventName == 'added' || eventName == 'beforeopen' || eventName == 'loaded') {
         obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data'), item, item.parent.path);
       }
+      if(eventName == 'copied') {
+        obj.tree.copyHandler?.(item.getMetadata('data'), item);
+      }
       if (_.isObject(node.callbacks) &&
         eventName in node.callbacks &&
         typeof node.callbacks[eventName] == 'function' &&
@@ -545,6 +548,13 @@ export class Tree {
         e.dataTransfer.setDragImage(dragItem, 0, 0);
       }
     }
+    else {
+      e.preventDefault();
+    }
+  }
+
+  onNodeCopy(copyCallback) {
+    this.copyHandler = copyCallback;
   }
 }
 

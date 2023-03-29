@@ -1,5 +1,6 @@
+import { Notificar } from 'notificar';
 import { FileEntry, Directory, FileType } from 'react-aspen';
-import { IFileTreeXHandle } from '../types';
+import { FileTreeXEvent, IFileTreeXHandle } from '../types';
 
 export class KeyboardHotkeys {
   private hotkeyActions = {
@@ -12,15 +13,20 @@ export class KeyboardHotkeys {
     'Home': () => this.jumpToFirstItem(),
     'End': () => this.jumpToLastItem(),
     'Escape': () => this.resetSteppedOrSelectedItem(),
+    'Ctrl+KeyC': () => this.copyEntry(),
   };
 
-  constructor(private readonly fileTreeX: IFileTreeXHandle) { }
+  constructor(private readonly fileTreeX: IFileTreeXHandle, private readonly events: Notificar<FileTreeXEvent>) { }
 
   public handleKeyDown = (ev: React.KeyboardEvent) => {
     if (!this.fileTreeX.hasDirectFocus()) {
       return false;
     }
-    const { code } = ev.nativeEvent;
+    let { code } = ev.nativeEvent;
+
+    if((ev.nativeEvent.ctrlKey || ev.nativeEvent.metaKey) && ev.nativeEvent.key !== 'Control') {
+      code = `Ctrl+${code}`;
+    }
     if (code in this.hotkeyActions) {
       ev.preventDefault();
       this.hotkeyActions[code]();
@@ -125,5 +131,10 @@ export class KeyboardHotkeys {
 
   private resetSteppedItem = () => {
     this.fileTreeX.setActiveFile(null);
+  };
+
+  private copyEntry = () => {
+    const currentPseudoActive = this.fileTreeX.getActiveFile();
+    this.events.dispatch(FileTreeXEvent.onTreeEvents, null, 'copied', currentPseudoActive);
   };
 }
