@@ -69,18 +69,6 @@ do
     tar cf - "${FILE}" | (cd "src-build/${TARBALL_NAME}"; tar xf -)
 done
 
-pushd web > /dev/null || exit
-    yarn install
-    yarn run bundle
-
-    for FILE in pgadmin/static/js/generated/*
-    do
-        echo Adding "${FILE}"
-        # shellcheck disable=SC2164
-        tar cf - "${FILE}" | (cd "../src-build/${TARBALL_NAME}/web"; tar xf -)
-    done
-popd > /dev/null || exit
-
 # Create the tarball
 echo Creating tarball...
 cd src-build || exit
