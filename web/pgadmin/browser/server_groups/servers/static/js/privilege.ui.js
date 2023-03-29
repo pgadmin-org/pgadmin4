@@ -38,7 +38,7 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
 
   updateSupportedPrivs = (updatedPrivs) => {
     this.supportedPrivs = updatedPrivs;
-  }
+  };
   get baseFields() {
     let obj = this;
 

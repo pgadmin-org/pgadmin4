@@ -591,7 +591,7 @@ export class ResultSetUtils {
       /* If the raw row objects are available, use to them identify null values */
       copiedRowsObjects = JSON.parse(localStorage.getItem('copied-rows'));
     } catch {/* Suppress the error */}
-    for(const [recIdx, rec] of result?.entries()) {
+    for(const [recIdx, rec] of result?.entries()??[]) {
       // Convert 2darray to dict.
       let rowObj = {};
       for(const col of columns) {

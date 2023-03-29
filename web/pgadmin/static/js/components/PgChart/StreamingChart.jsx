@@ -78,12 +78,12 @@ export default function StreamingChart({xRange=75, data, options}) {
     },
     series: [
       {},
-      ...data.datasets?.map((datum)=>({
+      ...(data.datasets?.map((datum)=>({
         label: datum.label,
         stroke: datum.borderColor,
         width: options.lineBorderWidth ?? 1,
         points: { show: options.showDataPoints ?? false, size: datum.pointHitRadius*2 }
-      }))
+      }))??{})
     ],
     scales: {
       x: {
@@ -116,11 +116,11 @@ export default function StreamingChart({xRange=75, data, options}) {
 
   const initialState = [
     Array.from(new Array(xRange).keys()),
-    ...data.datasets?.map((d)=>{
+    ...(data.datasets?.map((d)=>{
       let ret = [...d.data];
       ret.reverse();
       return ret;
-    }),
+    })??{}),
   ];
 
   chartRef.current?.setScale('x', {min: data.datasets[0]?.data?.length-xRange, max: data.datasets[0]?.data?.length-1});

@@ -24,8 +24,8 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 
 // Some predefined constants used to calculate image location and its border
-let pWIDTH = 100.;
-let pHEIGHT = 100.;
+let pWIDTH = 100;
+let pHEIGHT = 100;
 let IMAGE_WIDTH = 50;
 let IMAGE_HEIGHT = 50;
 let ARROW_WIDTH = 10,

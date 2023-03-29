@@ -25,7 +25,7 @@ export class ManagePreferenceTreeNodes {
     this.tree = {};
     this.tree[_root] = { name: 'root', type: FileType.Directory, metadata: node };
     res();
-  })
+  });
 
   public updateNode = (_path, _data) => new Promise((res) => {
     const item = this.findNode(_path);
@@ -34,7 +34,7 @@ export class ManagePreferenceTreeNodes {
       item.metadata.data = _data;
     }
     res(true);
-  })
+  });
 
   public removeNode = async (_path) => {
     const item = this.findNode(_path);
@@ -68,7 +68,7 @@ export class ManagePreferenceTreeNodes {
     if (tmpParentNode !== null && tmpParentNode !== undefined) tmpParentNode.children.push(treeNode);
 
     res(treeNode);
-  })
+  });
 
   public readNode = (_path: string) => new Promise<string[]>((res, rej) => {
     const temp_tree_path = _path,
@@ -112,12 +112,12 @@ export class ManagePreferenceTreeNodes {
       self.returnChildrens(node, res);
     }
     loadData();
-  })
+  });
 
   public returnChildrens = (node: any, res: any)  =>{
     if (node?.children.length > 0) return res(node.children);
     else return res(null);
-  }
+  };
 }
 
 

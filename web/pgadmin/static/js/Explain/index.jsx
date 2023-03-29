@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 // Some predefined constants used to calculate image location and its border
-let pWIDTH = 100.;
-let pHEIGHT = 100.;
+let pWIDTH = 100;
+let pHEIGHT = 100;
 let offsetX = 200,
   offsetY = 60;
 let xMargin = 25,

@@ -311,7 +311,7 @@ class TableNodeWidgetRaw extends React.Component {
   toggleShowDetails = (e) => {
     e.preventDefault();
     this.setState((prevState)=>({show_details: !prevState.show_details}));
-  }
+  };
 
   render() {
     let tableData = this.props.node.getData() || {};

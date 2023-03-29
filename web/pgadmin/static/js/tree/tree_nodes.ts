@@ -27,7 +27,7 @@ export class ManageTreeNodes {
     this.tree = {};
     this.tree[_root] = {name: 'root', type: FileType.Directory, metadata: node};
     res();
-  })
+  });
 
   public updateNode = (_path, _data)  => new Promise((res) => {
     const item = this.findNode(_path);
@@ -36,7 +36,7 @@ export class ManageTreeNodes {
       item.metadata.data = _data;
     }
     res(true);
-  })
+  });
 
   public removeNode = async (_path)  => {
     const item = this.findNode(_path);
@@ -69,7 +69,7 @@ export class ManageTreeNodes {
     if (tmpParentNode !== null && tmpParentNode !== undefined) tmpParentNode.children.push(treeNode);
 
     res(treeNode);
-  })
+  });
 
   public readNode = (_path: string) => new Promise<string[]>((res, rej) => {
     let temp_tree_path = _path;
@@ -152,7 +152,7 @@ export class ManageTreeNodes {
 
     }
     loadData();
-  })
+  });
 
   public generate_url = (path: string) => {
     let _path = path;
@@ -176,7 +176,7 @@ export class ManageTreeNodes {
     if(_partitions.length > 0) _parent_path[0]  = _partitions[_partitions.length-1];
 
     return _parent_path.reverse().join('/');
-  }
+  };
 }
 
 
