@@ -70,7 +70,13 @@ class PgadminPage:
         self.click_element(self.find_by_css_selector(
             "li[data-label='Reset Layout']"))
         self.click_modal('Yes')
-        if WebDriverWait(self.driver, 3).until(EC.alert_is_present()):
+        confirmation_alert = True
+        try:
+            WebDriverWait(self.driver, 1).until(EC.alert_is_present())
+        except TimeoutException:
+            confirmation_alert = False
+
+        if confirmation_alert:
             self.driver.switch_to.alert.accept()
         self.wait_for_reloading_indicator_to_disappear()
 
@@ -565,9 +571,17 @@ class PgadminPage:
                     server_child_node_exp_status_xpath, 1):
                 server_child_expanded = True
             else:
+                # Check for child node element
                 child_node_ele = self.check_if_element_exists_with_scroll(
                     server_child_node_xpath)
-                if not child_node_ele:
+                # If child node element present try to expand it by clicking
+                # and if click and expansion is successful, return True
+                if child_node_ele:
+                    server_child_expanded = self.click_to_expand_tree_node(
+                        child_node_ele, server_child_node_exp_status_xpath)
+                if not child_node_ele or not server_child_expanded:
+                    # As child node element is not expanded,
+                    # collapse database node
                     databases_node_xpath = TreeAreaLocators.server_child_node(
                         server_name, 'Databases')
                     databases_node = self.check_if_element_exists_with_scroll(
@@ -578,13 +592,13 @@ class PgadminPage:
                         databases_node).perform()
                     child_node_ele = self.check_if_element_exists_with_scroll(
                         server_child_node_xpath)
+                    server_child_expanded = self.click_to_expand_tree_node(
+                        child_node_ele, server_child_node_exp_status_xpath)
 
-                server_child_expanded = self.click_to_expand_tree_node(
-                    child_node_ele, server_child_node_exp_status_xpath)
                 if not server_child_expanded:
                     print("Child is not expanded after clicking ",
                           file=sys.stderr)
-                    return server_child_expanded
+                return server_child_expanded
         else:
             print("The server/previous nodes not expanded", file=sys.stderr)
         return server_child_expanded

@@ -61,7 +61,6 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
                     'Login/Group Roles'):
                 retry = 0
             else:
-                self.page.reset_layout()
                 retry -= 1
 
         role_node = self.page.check_if_element_exists_with_scroll(
