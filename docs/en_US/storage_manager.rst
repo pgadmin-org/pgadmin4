@@ -56,7 +56,7 @@ Shared Storage
 
 In the storage manager, ``My Storage`` is the pgAdmin user’s storage directory, and other listed directories are shared
 storages set by the pgAdmin server administrator. Using these, pgAdmin users can have common storages to share files.
-pgAdmin server administrator can configure the shared storages using the <link>config file</link>. Storages can be
+pgAdmin server administrator can configure the shared storages using the :ref:`config file <config_py>`. Storages can be
 marked as restricted to give read-only access to non-admin pgAdmin users.
 
 

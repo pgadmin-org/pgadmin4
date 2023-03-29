@@ -791,12 +791,9 @@ class Filemanager():
 
             if selectedDir:
                 if selectedDir[
-                    'restricted_access'] and not current_user.has_role(
+                        'restricted_access'] and not current_user.has_role(
                         "Administrator"):
-                    return make_json_response(success=0,
-                                              errormsg=ACCESS_DENIED_MESSAGE,
-                                              info='ACCESS_DENIED',
-                                              status=403)
+                    raise PermissionError(ACCESS_DENIED_MESSAGE)
 
     def rename(self, old=None, new=None):
         """
@@ -1140,7 +1137,8 @@ def file_manager(trans_id):
     ss = kwargs['storage_folder'] if 'storage_folder' in kwargs else None
     my_fm = Filemanager(trans_id, ss)
 
-    if ss and mode in ['upload', 'rename', 'delete', 'addfolder', 'add']:
+    if ss and mode in ['upload', 'rename', 'delete', 'addfolder', 'add',
+                       'permission']:
         my_fm.check_access(ss, mode)
     func = getattr(my_fm, mode)
     try:
