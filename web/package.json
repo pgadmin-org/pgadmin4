@@ -153,7 +153,7 @@
     "react-resize-detector": "^8.0.3",
     "react-rnd": "^10.3.5",
     "react-router-dom": "^6.2.2",
-    "react-select": "^4.2.1",
+    "react-select": "^5.7.2",
     "react-table": "^7.6.3",
     "react-timer-hook": "^3.0.5",
     "react-virtualized-auto-sizer": "^1.0.6",
