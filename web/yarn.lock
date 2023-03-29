@@ -487,7 +487,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.8.0"
 
-"@babel/plugin-syntax-jsx@^7.16.0", "@babel/plugin-syntax-jsx@^7.17.12", "@babel/plugin-syntax-jsx@^7.18.6":
+"@babel/plugin-syntax-jsx@^7.16.0", "@babel/plugin-syntax-jsx@^7.18.6":
   version "7.18.6"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-jsx/-/plugin-syntax-jsx-7.18.6.tgz#a8feef63b010150abd97f1649ec296e849943ca0"
   integrity sha512-6mmljtAedFGTWu2p/8WIORGwy+61PLgOMPOdazc7YoJ9ZCWUyFy3A6CpPkRKLKD1ToAesxX8KGEViAiLo9N+7Q==
@@ -1033,13 +1033,12 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@emotion/babel-plugin@^11.10.5":
-  version "11.10.5"
-  resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.10.5.tgz#65fa6e1790ddc9e23cc22658a4c5dea423c55c3c"
-  integrity sha512-xE7/hyLHJac7D2Ve9dKroBBZqBT7WuPQmWcq7HSGb84sUuP4mlOWoB8dvVfD9yk5DHkU1m6RW7xSoDtnQHNQeA==
+"@emotion/babel-plugin@^11.10.6":
+  version "11.10.6"
+  resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.10.6.tgz#a68ee4b019d661d6f37dec4b8903255766925ead"
+  integrity sha512-p2dAqtVrkhSa7xz1u/m9eHYdLi+en8NowrmXeF/dKtJpU8lCWli8RUAati7NcSl0afsBott48pdnANuD0wh9QQ==
   dependencies:
     "@babel/helper-module-imports" "^7.16.7"
-    "@babel/plugin-syntax-jsx" "^7.17.12"
     "@babel/runtime" "^7.18.3"
     "@emotion/hash" "^0.9.0"
     "@emotion/memoize" "^0.8.0"
@@ -1132,13 +1131,13 @@
   resolved "https://registry.yarnpkg.com/@emotion/memoize/-/memoize-0.8.0.tgz#f580f9beb67176fa57aae70b08ed510e1b18980f"
   integrity sha512-G/YwXTkv7Den9mXDO7AhLWkE3q+I92B+VqAE+dYG4NGPaHZGvt3G8Q0p9vmE+sq7rTGphUbAvmQ9YpbfMQGGlA==
 
-"@emotion/react@^11.1.1", "@emotion/react@^11.1.5":
-  version "11.10.5"
-  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.10.5.tgz#95fff612a5de1efa9c0d535384d3cfa115fe175d"
-  integrity sha512-TZs6235tCJ/7iF6/rvTaOH4oxQg2gMAcdHemjwLKIjKz4rRuYe1HJ2TQJKnAcRAfOUDdU8XoDadCe1rl72iv8A==
+"@emotion/react@^11.1.1", "@emotion/react@^11.10.6":
+  version "11.10.6"
+  resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.10.6.tgz#dbe5e650ab0f3b1d2e592e6ab1e006e75fd9ac11"
+  integrity sha512-6HT8jBmcSkfzO7mc+N1L9uwvOnlcGoix8Zn7srt+9ga0MjREo6lRpuVX0kzo6Jp6oTqDhREOFsygN6Ew4fEQbw==
   dependencies:
     "@babel/runtime" "^7.18.3"
-    "@emotion/babel-plugin" "^11.10.5"
+    "@emotion/babel-plugin" "^11.10.6"
     "@emotion/cache" "^11.10.5"
     "@emotion/serialize" "^1.1.1"
     "@emotion/use-insertion-effect-with-fallbacks" "^1.0.0"
@@ -8670,9 +8669,10 @@ react-checkbox-tree@^1.7.2:
     nanoid "^3.0.0"
     prop-types "^15.5.8"
 
-"react-data-grid@git+https://github.com/pgadmin-org/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8":
+"react-data-grid@https://github.com/pgadmin-org/react-data-grid.git#200d2f5e02de694e3e9ffbe177c279bc40240fb8":
   version "7.0.0-beta.14"
-  resolved "git+https://github.com/pgadmin-org/react-data-grid.git/#200d2f5e02de694e3e9ffbe177c279bc40240fb8"
+  uid "200d2f5e02de694e3e9ffbe177c279bc40240fb8"
+  resolved "https://github.com/pgadmin-org/react-data-grid.git#200d2f5e02de694e3e9ffbe177c279bc40240fb8"
   dependencies:
     clsx "^1.1.1"
 
@@ -10504,9 +10504,10 @@ watchpack@^2.4.0:
     glob-to-regexp "^0.4.1"
     graceful-fs "^4.1.2"
 
-"webcabin-docker@git+https://github.com/pgadmin-org/wcdocker/#460fc6d90ba170bb177faaa8277f5fbb8279522a":
+"webcabin-docker@https://github.com/pgadmin-org/wcdocker#460fc6d90ba170bb177faaa8277f5fbb8279522a":
   version "2.2.5"
-  resolved "git+https://github.com/pgadmin-org/wcdocker/#460fc6d90ba170bb177faaa8277f5fbb8279522a"
+  uid "460fc6d90ba170bb177faaa8277f5fbb8279522a"
+  resolved "https://github.com/pgadmin-org/wcdocker#460fc6d90ba170bb177faaa8277f5fbb8279522a"
   dependencies:
     "@fortawesome/fontawesome-free" "^5.14.0"
     FileSaver "^0.10.0"
