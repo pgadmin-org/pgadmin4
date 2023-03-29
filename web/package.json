@@ -76,7 +76,7 @@
     "typescript": "^3.2.2",
     "url-loader": "^4.1.1",
     "webfonts-loader": "^8.0.1",
-    "webpack": "^5.76.0",
+    "webpack": "^5.76.3",
     "webpack-bundle-analyzer": "^4.8.0",
     "webpack-cli": "^4.5.0",
     "yarn-audit-html": "^4.0.0"
