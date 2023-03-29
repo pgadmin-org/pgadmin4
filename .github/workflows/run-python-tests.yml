@@ -33,7 +33,7 @@ jobs:
 
       - name: Start PostgreSQL
         run: |
-          sudo echo -e "local all all trust\n$(cat /etc/postgresql/15/main/pg_hba.conf)" > /etc/postgresql/15/main/pg_hba.conf
+          sudo echo -e "local all all trust\n$(sudo cat /etc/postgresql/15/main/pg_hba.conf)" > /etc/postgresql/15/main/pg_hba.conf
           sudo echo "shared_preload_libraries = '$libdir/plugin_debugger'" > /etc/postgresql/15/main/postgresql.auto.conf
           su - postgres -c '/usr/lib/postgresql/15/bin/postgres -D /var/lib/postgresql/15/main -c config_file=/etc/postgresql/15/main/postgresql.conf &'
           
