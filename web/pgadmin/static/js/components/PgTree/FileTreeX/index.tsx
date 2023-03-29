@@ -159,7 +159,7 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
       this.setPseudoActiveFile(null);
     }));
 
-    this.keyboardHotkeys = new KeyboardHotkeys(this.fileTreeHandle);
+    this.keyboardHotkeys = new KeyboardHotkeys(this.fileTreeHandle, this.events);
 
     if (typeof onReady === 'function') {
       onReady(this.fileTreeHandle);
