@@ -327,11 +327,12 @@ export class FileManagerUtils {
       });
   }
 
-  async checkPermission(path) {
+  async checkPermission(path, selectedStorage=MY_STORAGE) {
     try {
       let res = await this.api.post(this.fileConnectorUrl, {
         'path': path,
         'mode': 'permission',
+        'storage_folder': selectedStorage
       });
       if (res.data.data.result.Code === 1) {
         return null;
@@ -589,7 +590,7 @@ export default function FileManager({params, closeModal, onOK, onCancel, sharedS
         newFileName += `.${fileType}`;
       }
       onOkPath = fmUtilsObj.join(fmUtilsObj.currPath, newFileName);
-      let error = await fmUtilsObj.checkPermission(onOkPath);
+      let error = await fmUtilsObj.checkPermission(onOkPath, selectedSS);
       if(error) {
         setErrorMsg(error);
         setLoaderText('');
