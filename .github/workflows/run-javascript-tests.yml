@@ -36,4 +36,4 @@ jobs:
       - name: Run the tests
         run: |
           cd web
-          yarn run test
+          yarn run test:karma-once
