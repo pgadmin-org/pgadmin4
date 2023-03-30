@@ -1,4 +1,4 @@
-name: Check PDF build
+name: Check documentation builds
 
 on:
   push:
@@ -24,11 +24,29 @@ jobs:
           sudo apt update
           sudo apt install -y build-essential python3-dev python3-pip libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev latexmk texlive-latex-recommended tex-gyre texlive-latex-extra
 
-      - name: Install Python requirements
+      - name: Install Python dependencies
         run: |
           sudo pip install --upgrade pip
           sudo pip install -r requirements.txt
           sudo pip install "pyOpenSSL>=23.*" sphinx sphinxcontrib-youtube
+
+      - name: Check the HTML build
+        run: make docs
+
+      - name: Archive HTML
+        uses: actions/upload-artifact@v3
+        with:
+          name: pgadmin4-html-build-output
+          path: docs/en_US/_build/html/*
+
+      - name: Check the ePub build
+        run: make docs-epub
+
+      - name: Archive ePub
+        uses: actions/upload-artifact@v3
+        with:
+          name: pgadmin4-epub-build-output
+          path: docs/en_US/_build/epub/pgAdmin4.epub
 
       - name: Check the PDF build
         run: make docs-pdf
