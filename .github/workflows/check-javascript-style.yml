@@ -22,7 +22,6 @@ jobs:
       - name: Install platform dependencies
         run: |
           sudo apt update
-          sudo apt upgrade -y
           sudo apt install -y nodejs npm
 
       - name: Install Node dependencies

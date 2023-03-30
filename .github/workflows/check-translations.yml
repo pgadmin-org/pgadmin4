@@ -22,7 +22,6 @@ jobs:
       - name: Install platform dependencies
         run: |
           sudo apt update
-          sudo apt upgrade -y
           sudo apt install -y python3-babel python3-jinja2
 
       - name: Check we can extract messages
