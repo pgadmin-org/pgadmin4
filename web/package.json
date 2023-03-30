@@ -68,7 +68,7 @@
     "sass-loader": "^11.0.0",
     "sass-resources-loader": "^2.2.1",
     "shim-loader": "^1.0.1",
-    "style-loader": "^3.3.1",
+    "style-loader": "^3.3.2",
     "stylis": "^4.0.7",
     "svgo": "^2.7.0",
     "svgo-loader": "^2.2.0",
