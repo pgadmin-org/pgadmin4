@@ -229,7 +229,8 @@ SELECT EXISTS(
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             jid=jid,
-            has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+            has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -257,7 +258,8 @@ SELECT EXISTS(
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             jstid=jstid,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
 
         status, result = self.conn.execute_2darray(sql)
@@ -315,7 +317,8 @@ SELECT EXISTS(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             jstid=jstid,
             jid=jid,
-            has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+            has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -356,7 +359,8 @@ SELECT EXISTS(
             "/".join([self.template_path, self._CREATE_SQL]),
             jid=jid,
             data=data,
-            has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+            has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+            conn=self.conn
         )
 
         status, res = self.conn.execute_scalar(sql)
@@ -367,7 +371,8 @@ SELECT EXISTS(
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             jstid=res,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -415,7 +420,8 @@ SELECT EXISTS(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 jstid=jstid,
                 jid=jid,
-                has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+                has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
 
@@ -439,7 +445,8 @@ SELECT EXISTS(
             jid=jid,
             jstid=jstid,
             data=data,
-            has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+            has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+            conn=self.conn
         )
 
         status, res = self.conn.execute_void(sql)
@@ -450,7 +457,8 @@ SELECT EXISTS(
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             jstid=jstid,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -522,7 +530,8 @@ SELECT EXISTS(
                 "/".join([self.template_path, self._CREATE_SQL]),
                 jid=jid,
                 data=data,
-                has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+                has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+                conn=self.conn
             )
 
             return make_json_response(
@@ -539,7 +548,8 @@ SELECT EXISTS(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 jstid=jstid,
                 jid=jid,
-                has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+                has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
 
@@ -563,7 +573,8 @@ SELECT EXISTS(
             jid=jid,
             jstid=jstid,
             data=data,
-            has_connstr=self.manager.db_info['pgAgent']['has_connstr']
+            has_connstr=self.manager.db_info['pgAgent']['has_connstr'],
+            conn=self.conn
         )
 
         return make_json_response(

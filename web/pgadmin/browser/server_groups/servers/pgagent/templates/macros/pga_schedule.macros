@@ -2,7 +2,7 @@
 {# This will be specific macro for pga_schedule. #}
 {#################################################}
 {% import 'macros/pga_exception.macros' as EXCEPTIONS %}
-{% macro INSERT(jid, data) -%}
+{% macro INSERT(jid, data, conn) -%}
 -- Inserting a schedule{% if jid %} (jobid: {{ jid|qtLiteral(conn) }}){% endif %}
 
 INSERT INTO pgagent.pga_schedule(
@@ -26,9 +26,9 @@ INSERT INTO pgagent.pga_schedule(
 ) RETURNING jscid INTO scid;{% if 'jscexceptions' in data %}
 {% for exc in data.jscexceptions %}
 
-{{ EXCEPTIONS.INSERT(None, exc) }}{% endfor %}{% endif %}
+{{ EXCEPTIONS.INSERT(None, exc, conn) }}{% endfor %}{% endif %}
 {%- endmacro %}
-{% macro UPDATE(jid, jscid, data) -%}
+{% macro UPDATE(jid, jscid, data, conn) -%}
 {% if 'jscname' in data or 'jscenabled' in data or 'jscdesc' in data or 'jscstart' in data or 'jscend' in data or 'jscmonths' in data or 'jscminutes' in data or 'jscmonthdays' in data or 'jschours' in data or 'jscweekdays' in data %}
 
 -- Updating the schedule (id: {{ jscid|qtLiteral(conn) }}, jobid: {{ jid|qtLiteral(conn) }})
@@ -59,31 +59,31 @@ WHERE jscid={{ jscid|qtLiteral(conn) }}::integer AND jscjobid={{ jid|qtLiteral(c
 {% if 'added' in data.jscexceptions and data.jscexceptions.added|length > 0 %}
 
 {% for exc in data.jscexceptions.added %}
-{{ EXCEPTIONS.INSERT(jscid, exc) }}
+{{ EXCEPTIONS.INSERT(jscid, exc, conn) }}
 {% endfor %}
 {% endif %}
 {% if 'deleted' in data.jscexceptions and data.jscexceptions.deleted|length > 0 %}
 
 {% for exc in data.jscexceptions.deleted %}
-{{ EXCEPTIONS.DELETE(jscid, exc) }}
+{{ EXCEPTIONS.DELETE(jscid, exc, conn) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in data.jscexceptions and data.jscexceptions.changed|length > 0 %}
 
 {% for exc in data.jscexceptions.changed %}
-{{ EXCEPTIONS.UPDATE(jscid, exc) }}
+{{ EXCEPTIONS.UPDATE(jscid, exc, conn) }}
 {% endfor %}
 {% endif %}
 {% endif %}
 {%- endmacro %}
-{% macro DELETE(jid, jscid) -%}
+{% macro DELETE(jid, jscid, conn) -%}
 -- Removing the existing schedule (id: {{ jscid|qtLiteral(conn) }}, jobid: {{ jid|qtLiteral(conn) }})
 DELETE FROM pgagent.pga_schedule WHERE jscid={{ jscid|qtLiteral(conn) }}::integer AND jscjobid={{ jid|qtLiteral(conn) }}::integer;
 {%- endmacro %}
 {% macro FETCH_CURRENT() -%}
 SELECT jscid FROM pgagent.pga_schedule WHERE xmin::text = (txid_current() % (2^32)::bigint)::text;
 {%- endmacro %}
-{% macro PROPERTIES(jid, jscid) -%}
+{% macro PROPERTIES(jid, jscid, conn) -%}
 SELECT
     jscid,  jscjobid, jscname, jscdesc, jscenabled, jscstart, jscend,
     jscminutes, jschours, jscweekdays, jscmonthdays, jscmonths,

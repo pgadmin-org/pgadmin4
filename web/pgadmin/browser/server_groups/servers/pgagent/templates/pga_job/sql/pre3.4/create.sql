@@ -17,12 +17,12 @@ INSERT INTO pgagent.pga_job(
 
 
 -- Steps
-{% for step in data.jsteps %}{{ STEP.INSERT(has_connstr, None, step) }}{% endfor %}
+{% for step in data.jsteps %}{{ STEP.INSERT(has_connstr, None, step, conn) }}{% endfor %}
 {% endif %}{% if 'jschedules' in data and data.jschedules|length > 0 %}
 
 
 -- Schedules
-{% for schedule in data.jschedules %}{{ SCHEDULE.INSERT(None, schedule) }}{% endfor %}
+{% for schedule in data.jschedules %}{{ SCHEDULE.INSERT(None, schedule, conn) }}{% endfor %}
 {% endif %}
 
 END

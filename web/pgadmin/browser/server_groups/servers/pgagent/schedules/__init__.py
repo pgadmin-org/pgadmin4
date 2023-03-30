@@ -215,7 +215,7 @@ class JobScheduleView(PGChildNodeView):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            jid=jid
+            jid=jid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -242,7 +242,8 @@ class JobScheduleView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             jscid=jscid,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
 
         status, result = self.conn.execute_2darray(sql)
@@ -298,7 +299,7 @@ class JobScheduleView(PGChildNodeView):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            jscid=jscid, jid=jid
+            jscid=jscid, jid=jid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -349,7 +350,8 @@ class JobScheduleView(PGChildNodeView):
             "/".join([self.template_path, self._CREATE_SQL]),
             jid=jid,
             data=data,
-            fetch_id=True
+            fetch_id=True,
+            conn=self.conn
         )
 
         status, res = self.conn.execute_void('BEGIN')
@@ -366,7 +368,8 @@ class JobScheduleView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             jscid=res,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -419,7 +422,8 @@ class JobScheduleView(PGChildNodeView):
             "/".join([self.template_path, self._UPDATE_SQL]),
             jid=jid,
             jscid=jscid,
-            data=data
+            data=data,
+            conn=self.conn
         )
 
         status, res = self.conn.execute_void(sql)
@@ -430,7 +434,8 @@ class JobScheduleView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             jscid=jscid,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -504,14 +509,16 @@ class JobScheduleView(PGChildNodeView):
                 "/".join([self.template_path, self._CREATE_SQL]),
                 jid=jid,
                 data=data,
-                fetch_id=False
+                fetch_id=False,
+                conn=self.conn
             )
         else:
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
                 jid=jid,
                 jscid=jscid,
-                data=data
+                data=data,
+                conn=self.conn
             )
 
         return make_json_response(

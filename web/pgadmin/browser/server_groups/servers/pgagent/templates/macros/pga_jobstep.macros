@@ -1,7 +1,7 @@
 {################################################}
 {# This will be specific macro for pga_jobstep. #}
 {################################################}
-{% macro INSERT(has_connstr, jid, data) -%}
+{% macro INSERT(has_connstr, jid, data, conn) -%}
 -- Inserting a step (jobid: {{ jid|qtLiteral(conn) }})
 INSERT INTO pgagent.pga_jobstep (
     jstjobid, jstname, jstenabled, jstkind,
@@ -13,7 +13,7 @@ INSERT INTO pgagent.pga_jobstep (
     {{ data.jstcode|qtLiteral(conn) }}::text, {{ data.jstdesc|qtLiteral(conn) }}::text
 ) {% if jid %}RETURNING jstid{% endif %};
 {%- endmacro %}
-{% macro UPDATE(has_connstr, jid, jstid, data) -%}
+{% macro UPDATE(has_connstr, jid, jstid, data, conn) -%}
 {% if 'jstname' in data or 'jstenabled' in data or 'jstdesc' in data or 'jstonerror' in data or 'jstcode' in data %}
 {% set is_comma_required = True %}
 {% else %}
@@ -36,11 +36,11 @@ SET
 
 WHERE jstid={{ jstid|qtLiteral(conn) }}::integer AND jstjobid={{ jid|qtLiteral(conn) }}::integer;
 {%- endmacro %}
-{% macro DELETE(jid, jstid) -%}
+{% macro DELETE(jid, jstid, conn) -%}
 -- Deleting a step (id: {{ jstid|qtLiteral(conn) }}, jobid: {{ jid|qtLiteral(conn) }})
 DELETE FROM pgagent.pga_jobstep WHERE jstid={{ jstid|qtLiteral(conn) }}::integer AND jstjobid={{ jid|qtLiteral(conn) }}::integer;
 {%- endmacro %}
-{% macro PROPERTIES(has_connstr, jid, jstid) -%}
+{% macro PROPERTIES(has_connstr, jid, jstid, conn) -%}
 SELECT
     jstid,  jstjobid, jstname, jstdesc, jstenabled, jstkind = 's'::bpchar as jstkind,
     jstcode, CASE WHEN (jstdbname != '' OR jstkind = 'b'::bpchar) THEN true ELSE false END AS jstconntype,
