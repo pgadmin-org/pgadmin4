@@ -100,7 +100,7 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
             status = False
             if table_node:
                 status = True
-            self.assertTrue(status, "Table name {} is not visible/selected".
+            self.assertTrue(status, "Table name {0} is not visible/selected".
                             format(self.table_name))
             table_node.click()
 
