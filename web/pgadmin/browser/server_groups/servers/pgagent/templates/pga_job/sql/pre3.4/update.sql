@@ -11,19 +11,19 @@ SET {% if 'jobjclid' in data %}jobjclid={{ data.jobjclid|qtLiteral(conn) }}::int
 WHERE jobid = {{ jid }};
 {% endif %}{% if 'jsteps' in data %}
 
-{% if 'deleted' in data.jsteps %}{% for step in data.jsteps.deleted %}{{ STEP.DELETE(jid, step.jstid) }}{% endfor %}{% endif %}
-{% if 'changed' in data.jsteps %}{% for step in data.jsteps.changed %}{{ STEP.UPDATE(has_connstr, jid, step.jstid, step) }}{% endfor %}{% endif %}
-{% if 'added' in data.jsteps %}{% for step in data.jsteps.added %}{{ STEP.INSERT(has_connstr, jid, step) }}{% endfor %}{% endif %}{% endif %}{% if 'jschedules' in data %}
+{% if 'deleted' in data.jsteps %}{% for step in data.jsteps.deleted %}{{ STEP.DELETE(jid, step.jstid, conn) }}{% endfor %}{% endif %}
+{% if 'changed' in data.jsteps %}{% for step in data.jsteps.changed %}{{ STEP.UPDATE(has_connstr, jid, step.jstid, step, conn) }}{% endfor %}{% endif %}
+{% if 'added' in data.jsteps %}{% for step in data.jsteps.added %}{{ STEP.INSERT(has_connstr, jid, step, conn) }}{% endfor %}{% endif %}{% endif %}{% if 'jschedules' in data %}
 
-{% if 'deleted' in data.jschedules %}{% for schedule in data.jschedules.deleted %}{{ SCHEDULE.DELETE(jid, schedule.jscid) }}{% endfor %}{% endif %}
-{% if 'changed' in data.jschedules %}{% for schedule in data.jschedules.changed %}{{ SCHEDULE.UPDATE(jid, schedule.jscid, schedule) }}{% endfor %}{% endif %}
+{% if 'deleted' in data.jschedules %}{% for schedule in data.jschedules.deleted %}{{ SCHEDULE.DELETE(jid, schedule.jscid, conn) }}{% endfor %}{% endif %}
+{% if 'changed' in data.jschedules %}{% for schedule in data.jschedules.changed %}{{ SCHEDULE.UPDATE(jid, schedule.jscid, schedule, conn) }}{% endfor %}{% endif %}
 {% if 'added' in data.jschedules %}
 
 DO $$
 DECLARE
     scid integer;
 BEGIN
-{% for schedule in data.jschedules.added %}{{ SCHEDULE.INSERT(jid, schedule) }}{% endfor %}
+{% for schedule in data.jschedules.added %}{{ SCHEDULE.INSERT(jid, schedule, conn) }}{% endfor %}
 END
 $$;
 {% endif %}
