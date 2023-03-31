@@ -302,8 +302,9 @@ define('pgadmin.node.database', [
             data.is_connecting = true;
             connect_to_database(this, data, pgBrowser.tree, item, false);
           }
-
-          return pgBrowser.Node.callbacks.selected.apply(this, arguments);
+          if(data.connected){
+            return pgBrowser.Node.callbacks.selected.apply(this, arguments);
+          }
         },
 
         refresh: function(cmd, i) {
@@ -448,6 +449,7 @@ define('pgadmin.node.database', [
               /* Call enable/disable menu function after database is connected.
                To make sure all the menus for database is in the right state */
               pgBrowser.enable_disable_menus.apply(pgBrowser, [_item]);
+              pgBrowser.Nodes['database'].callbacks.selected(_item, _data);
 
               if (!_connected) {
                 setTimeout(function() {
