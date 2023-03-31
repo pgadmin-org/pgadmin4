@@ -8728,10 +8728,10 @@ react-property@2.0.0:
   resolved "https://registry.yarnpkg.com/react-property/-/react-property-2.0.0.tgz#2156ba9d85fa4741faf1918b38efc1eae3c6a136"
   integrity sha512-kzmNjIgU32mO4mmH5+iUyrqlpFQhF8K2k7eZ4fdLSOPFrD1XgEuSBv9LDEgxRXTMBqMd8ppT0x6TIzqE5pdGdw==
 
-react-resize-detector@^8.0.3:
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/react-resize-detector/-/react-resize-detector-8.0.3.tgz#dab4470aae23bb07deb857230ccf945d000ef99b"
-  integrity sha512-c3eqm5BVcluVhxHsBQnhyPO/5uYB3XHIHz6D1ZOHzU2WcnZF0Cr3KLl5OIozRC2RSsdQlu5vn1PHEqrvKRnIYA==
+react-resize-detector@^8.0.4:
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/react-resize-detector/-/react-resize-detector-8.0.4.tgz#385a68287282ec7835758570f8e74980aa9d234d"
+  integrity sha512-ln9pMAob8y8mc9UI4aZuuWFiyMqBjnTs/sxe9Vs9dPXUjwCTeKK1FP8I75ufnb/2mEEZXG6wOo/fjMcBRRuAXw==
   dependencies:
     lodash "^4.17.21"
 
