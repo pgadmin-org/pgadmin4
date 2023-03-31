@@ -1,4 +1,13 @@
-name: Run Python tests
+# This workflow requires the following configuration in Github
+#
+# Vars:
+#   ENABLE_EPAS_TESTS - Set to true to enable this test
+#
+# Secrets:
+#   EDB_REPO_USERNAME - Username for accessing EDB Repos 1.0
+#   EDB_REPO_PASSWORD - Password for accessing EDB Repos 1.0
+
+name: Run Python tests on EPAS
 
 on:
   push:
@@ -9,56 +18,60 @@ on:
   workflow_dispatch:
 
 env:
-  POSTGRESQL_VERSIONS: 15 14 13 12 11
+  # Note that EDB only support all current EPAS versions on Ubuntu 18.04
+  # which pgAdmin doesn't support as Python is v3.6. Github don't support
+  # Debian or EL runners, so we're stuck with Ubuntu 20.04 and EPAS 13+
+  # for the best coverage.
+  POSTGRESQL_VERSIONS: 15 14 13
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Only run if the EDB repo username and password are set
+    if: vars.ENABLE_EPAS_TESTS == 'true'
+
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup the PGDG APT repo
+      - name: Setup the EDB APT repo
         run: |
-          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-
+          sudo su -c 'echo "deb [arch=amd64] https://apt.enterprisedb.com/$(lsb_release -cs)-edb/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/edb-$(lsb_release -cs).list'
+          sudo su -c 'echo "machine apt.enterprisedb.com login ${{ secrets.EDB_REPO_USERNAME }} password ${{ secrets.EDB_REPO_PASSWORD }}" > /etc/apt/auth.conf.d/edb.conf'
+          sudo wget -q -O - https://apt.enterprisedb.com/edb-deb.gpg.key | sudo apt-key add -
       - name: Install platform dependencies
         run: |
           PACKAGES=
           for VERSION in ${POSTGRESQL_VERSIONS};
           do
-            PACKAGES="${PACKAGES} postgresql-${VERSION} postgresql-${VERSION}-pldebugger"
+            PACKAGES="${PACKAGES} edb-as${VERSION}-server edb-as${VERSION}-server-pldebugger edb-as${VERSION}-pgagent"
           done
-
           sudo apt update
-          sudo apt install -y build-essential python3-dev python3-pip libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev ${PACKAGES} pgagent
-
+          sudo apt install -y build-essential python3-dev python3-pip libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev ${PACKAGES}
       - name: Create the tablespace directory
         run: |
           for VERSION in ${POSTGRESQL_VERSIONS};
           do
-            sudo mkdir -p /var/lib/postgresql/tablespaces/${VERSION}
-            sudo chown postgres:postgres /var/lib/postgresql/tablespaces/${VERSION}
+            sudo mkdir -p /var/lib/edb-as/tablespaces/${VERSION}
+            sudo chown enterprisedb:enterprisedb /var/lib/edb-as/tablespaces/${VERSION}
           done
-
       - name: Start PostgreSQL
         run: |
           # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
           for VERSION in ${POSTGRESQL_VERSIONS};
           do
-            sudo su -c "echo local all all trust > /etc/postgresql/${VERSION}/main/pg_hba.conf"
-            sudo sed -i "s/port = 543[0-9]/port = 59${VERSION}/g" /etc/postgresql/${VERSION}/main/postgresql.conf
-            sudo sed -i "s/#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/plugin_debugger'/g" /etc/postgresql/${VERSION}/main/postgresql.conf
-            sudo su - postgres -c "/usr/lib/postgresql/${VERSION}/bin/postgres -D /var/lib/postgresql/${VERSION}/main -c config_file=/etc/postgresql/${VERSION}/main/postgresql.conf &"
+            sudo su -c "echo local all all trust > /etc/edb-as/${VERSION}/main/pg_hba.conf"
+            sudo sed -i "s/port = 544[0-9]/port = 58${VERSION}/g" /etc/edb-as/${VERSION}/main/postgresql.conf
+            sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${VERSION}/main/postgresql.conf
+            sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${VERSION}-main.epas_stat_tmp"
+            sudo systemctl restart edb-as@${VERSION}-main
           
-            until sudo runuser -l postgres -c "pg_isready -p 59${VERSION}" 2>/dev/null; do
-              >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
+            until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${VERSION}/bin/pg_isready -p 58${VERSION}" 2>/dev/null; do
+              >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
               sleep 2
             done
           
-            psql -U postgres -p 59${VERSION} -c 'CREATE EXTENSION pgagent;'
-            psql -U postgres -p 59${VERSION} -c 'CREATE EXTENSION pldbgapi;'
+            psql -U enterprisedb -d postgres -p 58${VERSION} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
           done
 
       - name: Install Python dependencies
@@ -66,7 +79,6 @@ jobs:
           sudo pip install --upgrade pip
           sudo pip install -r web/regression/requirements.txt
           sudo pip install "pyOpenSSL>=23.*"
-
       - name: Create the test configuration
         run: |
           cat <<EOF > web/config_local.py
@@ -123,19 +135,19 @@ jobs:
           
             cat <<EOF >> web/regression/test_config.json
               {
-                "name": "PostgreSQL $1",
-                "comment": "PostgreSQL $1 Server",
-                "db_username": "postgres",
-                "host": "/var/run/postgresql",
-                "db_password": "postgres",
-                "db_port": 59$1,
+                "name": "EPAS $1",
+                "comment": "EPAS $1 Server",
+                "db_username": "enterprisedb",
+                "host": "/var/run/edb-as",
+                "db_password": "",
+                "db_port": 58$1,
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
-                "tablespace_path": "/var/lib/postgresql/tablespaces/$1",
+                "tablespace_path": "/var/lib/edb-as/tablespaces/$1",
                 "enabled": true,
                 "default_binary_paths": {
-                  "pg": "/usr/lib/postgresql/$1/bin",
-                  "ppas": ""
+                  "pg": "",
+                  "ppas": "/usr/lib/edb-as/$1/bin"
                 }
               }${SEP}
           EOF
@@ -156,7 +168,6 @@ jobs:
             ]
           }
           EOF
-
       - name: Run the tests
         run: make check-python
 
