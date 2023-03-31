@@ -1453,9 +1453,10 @@ Failed to reset the connection to the server due to following error:
                                             desc in cur.ordered_description()]
 
                     pos = 0
-                    for col in self.column_info:
-                        col['pos'] = pos
-                        pos += 1
+                    if self.column_info:
+                        for col in self.column_info:
+                            col['pos'] = pos
+                            pos += 1
 
                 self.row_count = cur.get_rowcount()
                 if not no_result and cur.get_rowcount() > 0:
