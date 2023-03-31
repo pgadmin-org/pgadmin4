@@ -1810,7 +1810,7 @@ def load_file():
 
     # retrieve storage directory path
     storage_manager_path = get_storage_directory(
-        shared_storage=file_data['storage'])
+        shared_storage=file_data['storage'] if 'storage' in file_data else '')
 
     try:
         Filemanager.check_access_permission(storage_manager_path, file_path)
