@@ -12,14 +12,14 @@ INSERT INTO pgagent.pga_schedule(
     <PGA_JOB_ID>, 'schedule_2'::text, 'test schedule_2 comment'::text, true,
     '2020-04-15 05:11:31 -07:00'::timestamp with time zone, '2020-04-16 05:11:34 -07:00'::timestamp with time zone,
     -- Minutes
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Hours
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Week days
-    ARRAY[false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Month days
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Months
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false]::boolean[]
+    '{f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[]
 ) RETURNING jscid INTO scid;END
 $$;

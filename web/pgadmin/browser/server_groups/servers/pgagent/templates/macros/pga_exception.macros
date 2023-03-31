@@ -2,7 +2,7 @@
 {# This will be specific macro for pga_exception. #}
 {##################################################}
 {% macro INSERT(jscid, data, conn) -%}
--- Inserting a schedule exception {% if jscid %}(schedule: {{ jscid|qtLiteral(conn)}}){% endif %}
+-- Inserting a schedule exception{% if jscid %} (schedule: {{ jscid|qtLiteral(conn)}}){% endif %}
 
 INSERT INTO pgagent.pga_exception (
     jexscid, jexdate, jextime
