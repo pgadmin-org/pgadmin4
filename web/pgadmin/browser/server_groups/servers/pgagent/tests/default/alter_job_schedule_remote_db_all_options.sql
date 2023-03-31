@@ -7,7 +7,7 @@ BEGIN
 INSERT INTO pgagent.pga_job(
     jobjclid, jobname, jobdesc, jobhostagent, jobenabled
 ) VALUES (
-    1::integer, 'test_sql_job_remote_db_$%{}[]()&*^!@""''`\/#'::text, 'test_job_step_schedule description'::text, 'test_host'::text, true
+    1::integer, E'test_sql_job_remote_db_$%{}[]()&*^!@""''`\\/#'::text, 'test_job_step_schedule description'::text, 'test_host'::text, true
 ) RETURNING jobid INTO jid;
 
 -- Steps
@@ -40,15 +40,15 @@ INSERT INTO pgagent.pga_schedule(
     jid, 'schedule_2'::text, 'test schedule_2 comment'::text, true,
     '<TIMESTAMPTZ_1>'::timestamp with time zone, '<TIMESTAMPTZ_2>'::timestamp with time zone,
     -- Minutes
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Hours
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Week days
-    ARRAY[false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Month days
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Months
-    ARRAY[false,false,false,false,false,false,false,false,false,false,false,false]::boolean[]
+    '{f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[]
 ) RETURNING jscid INTO scid;
 END
 $$;

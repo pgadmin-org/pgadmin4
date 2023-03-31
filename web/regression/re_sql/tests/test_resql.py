@@ -266,91 +266,99 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 else:
                     print(scenario['name'] + " (MSQL) ... ok")
 
-            if 'type' in scenario and scenario['type'] == 'create':
-                # Get the url and create the specific node.
+            try:
+                if 'type' in scenario and scenario['type'] == 'create':
+                    # Get the url and create the specific node.
 
-                create_url = self.get_url(scenario['endpoint'])
-                response = self.tester.post(create_url,
-                                            data=json.dumps(scenario['data']),
-                                            content_type='html/json')
-                try:
-                    self.assertEqual(response.status_code, 200)
-                except Exception as e:
-                    response = self.tester.post(create_url,
-                                                data=json.dumps(
-                                                    scenario['data']),
-                                                content_type='html/json')
-                    self.final_test_status = False
-                    print(scenario['name'] + "... FAIL")
-                    traceback.print_exc()
-                    continue
+                    create_url = self.get_url(scenario['endpoint'])
+                    response = self.tester.post(
+                        create_url, data=json.dumps(scenario['data']),
+                        content_type='html/json')
+                    try:
+                        self.assertEqual(response.status_code, 200)
+                    except Exception as e:
+                        response = self.tester.post(create_url,
+                                                    data=json.dumps(
+                                                        scenario['data']),
+                                                    content_type='html/json')
+                        self.final_test_status = False
+                        print(scenario['name'] + "... FAIL")
+                        traceback.print_exc()
+                        continue
 
-                resp_data = json.loads(response.data.decode('utf8'))
-                object_id = resp_data['node']['_id']
+                    resp_data = json.loads(response.data.decode('utf8'))
+                    print('object_id set', object_id)
+                    object_id = resp_data['node']['_id']
 
-                # Store the object id based on endpoints
-                if 'store_object_id' in scenario:
-                    self.store_object_ids(object_id,
-                                          scenario['data'],
-                                          scenario['endpoint'])
+                    # Store the object id based on endpoints
+                    if 'store_object_id' in scenario:
+                        self.store_object_ids(object_id,
+                                              scenario['data'],
+                                              scenario['endpoint'])
 
-                # Compare the reverse engineering SQL
-                if not self.check_re_sql(scenario, object_id):
-                    print(scenario['name'] + "... FAIL")
+                    # Compare the reverse engineering SQL
+                    if not self.check_re_sql(scenario, object_id):
+                        print(scenario['name'] + "... FAIL")
 
-                    if 'expected_sql_file' in scenario:
-                        print_msg = " - Expected SQL File: " + \
-                                    os.path.join(self.test_folder,
-                                                 scenario['expected_sql_file'])
-                        print(print_msg)
-                    continue
-            elif 'type' in scenario and scenario['type'] == 'alter':
-                # Get the url and create the specific node.
+                        if 'expected_sql_file' in scenario:
+                            print_msg = " - Expected SQL File: " + \
+                                        os.path.join(
+                                            self.test_folder,
+                                            scenario['expected_sql_file'])
+                            print(print_msg)
+                        continue
+                elif 'type' in scenario and scenario['type'] == 'alter':
+                    # Get the url and create the specific node.
 
-                alter_url = self.get_url(scenario['endpoint'], object_id)
-                response = self.tester.put(alter_url,
-                                           data=json.dumps(scenario['data']),
-                                           follow_redirects=True)
-                try:
-                    self.assertEqual(response.status_code, 200)
-                except Exception as e:
-                    self.final_test_status = False
                     alter_url = self.get_url(scenario['endpoint'], object_id)
-                    response = self.tester.put(alter_url,
-                                               data=json.dumps(
-                                                   scenario['data']),
-                                               follow_redirects=True)
-                    print(scenario['name'] + "... FAIL")
-                    traceback.print_exc()
-                    continue
+                    response = self.tester.put(
+                        alter_url, data=json.dumps(scenario['data']),
+                        follow_redirects=True)
+                    try:
+                        self.assertEqual(response.status_code, 200)
+                    except Exception as e:
+                        self.final_test_status = False
+                        alter_url = self.get_url(
+                            scenario['endpoint'], object_id)
+                        response = self.tester.put(alter_url,
+                                                   data=json.dumps(
+                                                       scenario['data']),
+                                                   follow_redirects=True)
+                        print(scenario['name'] + "... FAIL")
+                        traceback.print_exc()
+                        continue
 
-                resp_data = json.loads(response.data.decode('utf8'))
-                object_id = resp_data['node']['_id']
+                    resp_data = json.loads(response.data.decode('utf8'))
+                    object_id = resp_data['node']['_id']
 
-                # Compare the reverse engineering SQL
-                if not self.check_re_sql(scenario, object_id):
-                    print_msg = scenario['name']
-                    if 'expected_sql_file' in scenario:
-                        print_msg = print_msg + "  Expected SQL File:" + \
-                                                scenario['expected_sql_file']
-                    print_msg = print_msg + "... FAIL"
-                    print(print_msg)
-                    continue
-            elif 'type' in scenario and scenario['type'] == 'delete':
-                # Get the delete url and delete the object created above.
-                delete_url = self.get_url(scenario['endpoint'], object_id)
-                delete_response = self.tester.delete(
-                    delete_url, data=json.dumps(scenario.get('data', {})),
-                    follow_redirects=True)
-                try:
-                    self.assertEqual(delete_response.status_code, 200)
-                except Exception as e:
-                    self.final_test_status = False
-                    print(scenario['name'] + "... FAIL")
-                    traceback.print_exc()
-                    continue
+                    # Compare the reverse engineering SQL
+                    if not self.check_re_sql(scenario, object_id):
+                        print_msg = scenario['name']
+                        if 'expected_sql_file' in scenario:
+                            print_msg = \
+                                print_msg + "  Expected SQL File:" + \
+                                scenario['expected_sql_file']
+                        print_msg = print_msg + "... FAIL"
+                        print(print_msg)
+                        continue
+                elif 'type' in scenario and scenario['type'] == 'delete':
+                    # Get the delete url and delete the object created above.
+                    delete_url = self.get_url(scenario['endpoint'], object_id)
+                    delete_response = self.tester.delete(
+                        delete_url, data=json.dumps(scenario.get('data', {})),
+                        follow_redirects=True)
+                    try:
+                        self.assertEqual(delete_response.status_code, 200)
+                    except Exception as e:
+                        self.final_test_status = False
+                        print(scenario['name'] + "... FAIL")
+                        traceback.print_exc()
+                        continue
 
-            print(scenario['name'] + "... ok")
+                print(scenario['name'] + "... ok")
+            except Exception as _:
+                print(scenario['name'] + "... FAIL")
+                raise
 
     def get_test_folder(self, module_path):
         """

@@ -281,7 +281,7 @@ class Driver(BaseDriver):
             try:
                 if type(conn) != psycopg.Connection:
                     conn = conn.conn
-                res = psycopg.sql.Literal(value).as_string(conn)
+                res = psycopg.sql.Literal(value).as_string(conn).strip()
             except Exception:
                 print("Exception", value)
 
