@@ -1414,15 +1414,17 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name, url_client):
         test_name.replace(' ', '_') + '_' + browser + browser_ver
     driver_local = None
     desired_capabilities = {
-        "version": browser_ver,
-        "enableVNC": True,
-        "enableVideo": True,
-        "enableLog": True,
-        "videoName": test_name + ".mp4",
-        "logName": test_name + ".log",
-        "name": test_name,
-        "timeZone": "Asia/Kolkata",
-        "sessionTimeout": "180s"
+        "browserVersion": browser_ver,
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True,
+            "enableLog": True,
+            "videoName": test_name + ".mp4",
+            "logName": test_name + ".log",
+            "name": test_name,
+            "timeZone": "Asia/Kolkata",
+            "sessionTimeout": "180s"
+        }
     }
 
     if browser == 'firefox':
