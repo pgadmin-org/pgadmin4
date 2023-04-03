@@ -141,7 +141,10 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    # Remove the above commented code once below issue is fixed
+    # Pining NWjs because of https://github.com/nwjs/nw.js/issues/8039 in 0.74.0
+    NW_VERSION="0.72.0"
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
