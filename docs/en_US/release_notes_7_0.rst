@@ -61,6 +61,7 @@ Bug fixes
   | `Issue #5941 <https://github.com/pgadmin-org/pgadmin4/issues/5941>`_ -  Fixed an issue where migration on external database is not working.
   | `Issue #5943 <https://github.com/pgadmin-org/pgadmin4/issues/5943>`_ -  Use http for SVG namespace URLs which were changed to https for SonarQube fixes.
   | `Issue #5952 <https://github.com/pgadmin-org/pgadmin4/issues/5952>`_ -  Ensure that the schema diff tool should not allow comparison between Postgres Server and EDB Postgres Advanced Server.
+  | `Issue #5953 <https://github.com/pgadmin-org/pgadmin4/issues/5953>`_ -  Fixed error while executing continue in debugging session after some time of debug execution.
   | `Issue #5955 <https://github.com/pgadmin-org/pgadmin4/issues/5955>`_ -  Fix an issue where query tool is stuck when running query after discarding changed data.
   | `Issue #5958 <https://github.com/pgadmin-org/pgadmin4/issues/5958>`_ -  Fix an issue where new dashboard graphs are partially following theme colors.
   | `Issue #5959 <https://github.com/pgadmin-org/pgadmin4/issues/5959>`_ -  Fix an issue where Backup, Restore, and Maintenance not working if connection timeout is set in the server dialog.
