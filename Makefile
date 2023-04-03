@@ -24,7 +24,13 @@ appbundle:
 	./pkg/mac/build.sh
 
 install-node:
-	cd web && yarn install && npm rebuild
+	cd web && yarn install
+
+install-python:
+	./tools/setup-python-env.sh
+
+install-python-testing:
+	./tools/setup-python-env.sh --test
 
 bundle:
 	cd web && yarn run bundle
