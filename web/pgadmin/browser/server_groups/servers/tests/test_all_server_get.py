@@ -31,7 +31,11 @@ class AllServersGetTestCase(BaseTestGenerator):
         server_details['password'] = self.server['db_password']
         server_details['save_password'] = 1
         server_details['connect_now'] = 1
-
+        server_details['connection_params'] = [
+            {'name': 'sslmode', 'value': 'prefer', 'keyword': 'sslmode'},
+            {'name': 'connect_timeout', 'value': 10,
+             'keyword': 'connect_timeout'}
+        ]
         url = "/browser/server/obj/{0}/".format(utils.SERVER_GROUP)
 
         response = self.tester.post(
