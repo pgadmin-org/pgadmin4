@@ -529,20 +529,17 @@ rolmembership:{
                 data = json.loads(request.data)
             else:
                 data = dict()
-                req = request.args or request.form
-
-                for key in req:
-
-                    val = req[key]
-                    if key in [
-                        'rolcanlogin', 'rolsuper', 'rolcreatedb',
-                        'rolcreaterole', 'rolinherit', 'rolreplication',
-                        'rolcatupdate', 'variables', 'rolmembership',
-                        'seclabels', 'rolmembers'
-                    ]:
-                        data[key] = json.loads(val)
-                    else:
-                        data[key] = val
+                for k, v in request.args.items():
+                    try:
+                        # comments should be taken as is because if user enters
+                        # a json comment it is parsed by loads which should not
+                        # happen
+                        if k in ('comment',):
+                            data[k] = v
+                        else:
+                            data[k] = json.loads(v)
+                    except ValueError:
+                        data[k] = v
 
             invalid_msg_arr = [
                 self._validate_rolname(kwargs.get('rid', -1), data),
