@@ -1139,7 +1139,8 @@ class ServerNode(PGChildNodeView):
                 password = None
                 passfile = None
                 tunnel_password = ''
-                if 'password' in data and data["password"] != '':
+                if 'password' in data and data["password"] != '' and \
+                        data["password"] is not None:
                     # login with password
                     have_password = True
                     password = data['password']
