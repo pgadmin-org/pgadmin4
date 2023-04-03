@@ -1292,6 +1292,11 @@ export function ResultSet() {
   const onRowsChange = (newRows, otherInfo)=>{
     let row = newRows[otherInfo.indexes[0]];
     let clientPK = rowKeyGetter(row);
+    
+    // Check if column is pk and value is null set it to default value.
+    if(otherInfo.column.has_default_val && _.isNull(row[otherInfo.column.key]) && otherInfo.column.key in queryData.primary_keys) {
+      row[otherInfo.column.key] = undefined;
+    }
 
     if(clientPK in (dataChangeStore.added || {})) {
       /* No need to track this */
