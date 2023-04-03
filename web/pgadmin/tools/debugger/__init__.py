@@ -1263,6 +1263,11 @@ def execute_debugger_query(trans_id, query_type):
 
         status, result = execute_async_search_path(
             conn, sql, de_inst.debugger_data['search_path'])
+
+        if result and 'select() failed waiting for target' in result:
+            status = True
+            result = None
+
         if not status:
             return internal_server_error(errormsg=result)
         return make_json_response(

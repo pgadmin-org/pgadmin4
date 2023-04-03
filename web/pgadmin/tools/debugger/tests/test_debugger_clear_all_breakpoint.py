@@ -31,9 +31,6 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
     def setUp(self):
         super().setUp()
 
-        if PG_DEFAULT_DRIVER == PSYCOPG3:
-            self.skipTest('Skip for psycopg3.')
-
         if sys.platform == 'win32':
             self.skipTest('PSQL disabled for windows')
 
