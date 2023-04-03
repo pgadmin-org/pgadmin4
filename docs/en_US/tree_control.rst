@@ -63,7 +63,7 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Maintenance...*          | Click to open the :ref:`Maintenance... <maintenance_dialog>` dialog to VACUUM, ANALYZE, REINDEX, or CLUSTER.              |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Edit Object...*          | Click to review or modify the currently selected object's properties.                                                     |
+| *Properties...*           | Click to review or modify the currently selected object's properties.                                                     |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Refresh...*              | Click to refresh the currently selected object.                                                                           |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
