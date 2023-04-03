@@ -987,6 +987,11 @@ WHERE db.datname = current_database()""")
         except Exception:
             print("EXCEPTION.....")
 
+        # If multiple queries are run, make sure to reach
+        # the last query result
+        while cur.nextset():
+            pass
+
         self.row_count = cur.get_rowcount()
         if cur.get_rowcount() > 0:
             res = cur.fetchone()
