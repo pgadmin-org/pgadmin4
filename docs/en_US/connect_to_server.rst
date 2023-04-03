@@ -45,4 +45,4 @@ communicate. For detailed information about a specific error message, please see
 the :ref:`Connection Error <connect_error>` help page.
 
 To review or modify connection details, right-click on the name of the server,
-and select *Edit Object...* from the context menu.
+and select *Properties...* from the context menu.

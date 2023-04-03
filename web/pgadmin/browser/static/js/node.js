@@ -123,7 +123,7 @@ define('pgadmin.browser.node', [
           applies: ['object', 'context'],
           callback: 'show_obj_properties',
           priority: 999,
-          label: gettext('Edit Object...'),
+          label: gettext('Properties...'),
           data: {
             'action': 'edit',
           },

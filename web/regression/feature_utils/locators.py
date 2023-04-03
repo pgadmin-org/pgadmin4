@@ -40,7 +40,7 @@ class NavMenuLocators:
 
     object_menu_css = "button[data-label='Object']"
 
-    edit_obj_css = "li[data-label='Edit Object...']"
+    edit_obj_css = "li[data-label='Properties...']"
 
     backup_obj_css = "li[data-label='Backup...']"
 
