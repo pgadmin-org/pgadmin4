@@ -39,6 +39,8 @@ rm -rf /usr/pgadmin4/venv
 rm -rf /usr/pgadmin4/web
 EOF
 
+chmod 755 "${SERVERROOT}/DEBIAN/preinst"
+
 cat << EOF > "${SERVERROOT}/DEBIAN/control"
 Package: ${APP_NAME}-server
 Version: ${APP_LONG_VERSION}
