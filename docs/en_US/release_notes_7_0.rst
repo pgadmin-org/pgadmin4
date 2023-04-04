@@ -54,6 +54,7 @@ Bug fixes
   | `Issue #5894 <https://github.com/pgadmin-org/pgadmin4/issues/5894>`_ -  Use fetch instead of axios to close connections in SQLEditor, ERD, Schema Diff and Debugger to ensure it completes.
   | `Issue #5904 <https://github.com/pgadmin-org/pgadmin4/issues/5904>`_ -  Fixed an issue where the count query should not be triggered when the estimated count is less than zero.
   | `Issue #5907 <https://github.com/pgadmin-org/pgadmin4/issues/5907>`_ -  Validate user inputs provided in configuration files before starting pgadmin server.
+  | `Issue #5916 <https://github.com/pgadmin-org/pgadmin4/issues/5916>`_ -  Fix an issue in search objects where objects were unable to locate occasionally.
   | `Issue #5919 <https://github.com/pgadmin-org/pgadmin4/issues/5919>`_ -  While restoring the database connections due to lost server connection, ensure that the databases which were previously connected are only reconnected.
   | `Issue #5921 <https://github.com/pgadmin-org/pgadmin4/issues/5921>`_ -  Ensure that when pasting rows the rows are added right below the selected rows for copying.
   | `Issue #5929 <https://github.com/pgadmin-org/pgadmin4/issues/5929>`_ -  Dashboard graph Y-axis width should increase with label.
