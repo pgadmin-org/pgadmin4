@@ -125,7 +125,7 @@ describe('ERDTool', ()=>{
     erd = mount(
       <Theme>
         <ModalProvider>
-          <ERDTool params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} />
+          <ERDTool params={params} pgAdmin={pgAdmin} pgWindow={pgWindow} isTest={true} />
         </ModalProvider>
       </Theme>
     );
