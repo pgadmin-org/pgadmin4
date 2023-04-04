@@ -18,18 +18,15 @@ on:
   workflow_dispatch:
 
 env:
-  # Note that EDB only support all current EPAS versions on Ubuntu 18.04
-  # which pgAdmin doesn't support as Python is v3.6. Github don't support
-  # Debian or EL runners, so we're stuck with Ubuntu 20.04 and EPAS 13+
-  # for the best coverage.
-  POSTGRESQL_VERSIONS: 15 14 13
+  POSTGRESQL_VERSIONS: 15 14 13 12 11
 
 jobs:
   build:
-    # Only run if the EDB repo username and password are set
+    # Only run if the tests are enabled
+    # TODO: Figure out a way to test for the presence of the secrets instead
     if: vars.ENABLE_EPAS_TESTS == 'true'
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v3
