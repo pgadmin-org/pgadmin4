@@ -348,7 +348,7 @@ export class Tree {
 
     let onCorrectPath = function (matchPath) {
       return (matchPath !== undefined && path !== undefined
-        && (basepath.startsWith(matchPath) || path === matchPath));
+        && (basepath.startsWith(`${matchPath}/`) || path === matchPath));
     };
 
     return (function findInNode(currentNode) {
