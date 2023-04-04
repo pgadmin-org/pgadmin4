@@ -31,6 +31,14 @@ _copy_code
 echo "Creating the server package..."
 mkdir "${SERVERROOT}/DEBIAN"
 
+echo "Creating preinst script..."
+cat << EOF > "${SERVERROOT}/DEBIAN/preinst"
+#!/bin/sh
+
+rm -rf /usr/pgadmin4/venv
+rm -rf /usr/pgadmin4/web
+EOF
+
 cat << EOF > "${SERVERROOT}/DEBIAN/control"
 Package: ${APP_NAME}-server
 Version: ${APP_LONG_VERSION}
