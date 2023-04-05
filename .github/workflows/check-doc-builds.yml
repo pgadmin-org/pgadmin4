@@ -22,16 +22,15 @@ jobs:
       - name: Install platform dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential python3-dev python3-pip libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev latexmk texlive-latex-recommended tex-gyre texlive-latex-extra
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev latexmk texlive-latex-recommended tex-gyre texlive-latex-extra
 
       - name: Install Python dependencies
-        run: |
-          sudo pip install --upgrade pip
-          sudo pip install -r requirements.txt
-          sudo pip install "pyOpenSSL>=23.*" sphinx sphinxcontrib-youtube
+        run: make install-python
 
       - name: Check the HTML build
-        run: make docs
+        run: |
+          . venv/bin/activate
+          make docs
 
       - name: Archive HTML
         uses: actions/upload-artifact@v3
@@ -40,7 +39,9 @@ jobs:
           path: docs/en_US/_build/html/*
 
       - name: Check the ePub build
-        run: make docs-epub
+        run: |
+          . venv/bin/activate
+          make docs-epub
 
       - name: Archive ePub
         uses: actions/upload-artifact@v3
@@ -49,7 +50,9 @@ jobs:
           path: docs/en_US/_build/epub/pgAdmin4.epub
 
       - name: Check the PDF build
-        run: make docs-pdf
+        run: |
+          . venv/bin/activate
+          make docs-pdf
 
       - name: Archive PDF
         uses: actions/upload-artifact@v3
