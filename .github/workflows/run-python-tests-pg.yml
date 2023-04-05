@@ -8,12 +8,14 @@ on:
 
   workflow_dispatch:
 
-env:
-  POSTGRESQL_VERSIONS: 15 14 13 12 11
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pgver: [11, 12, 13, 14, 15]
+
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v3
@@ -25,41 +27,29 @@ jobs:
 
       - name: Install platform dependencies
         run: |
-          PACKAGES=
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            PACKAGES="${PACKAGES} postgresql-${VERSION} postgresql-${VERSION}-pldebugger"
-          done
-
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev ${PACKAGES} pgagent
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent
 
       - name: Create the tablespace directory
         run: |
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            sudo mkdir -p /var/lib/postgresql/tablespaces/${VERSION}
-            sudo chown postgres:postgres /var/lib/postgresql/tablespaces/${VERSION}
-          done
+          sudo mkdir -p /var/lib/postgresql/tablespaces/${{ matrix.pgver }}
+          sudo chown postgres:postgres /var/lib/postgresql/tablespaces/${{ matrix.pgver }}
 
       - name: Start PostgreSQL
         run: |
           # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            sudo su -c "echo local all all trust > /etc/postgresql/${VERSION}/main/pg_hba.conf"
-            sudo sed -i "s/port = 543[0-9]/port = 59${VERSION}/g" /etc/postgresql/${VERSION}/main/postgresql.conf
-            sudo sed -i "s/#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/plugin_debugger'/g" /etc/postgresql/${VERSION}/main/postgresql.conf
-            sudo su - postgres -c "/usr/lib/postgresql/${VERSION}/bin/postgres -D /var/lib/postgresql/${VERSION}/main -c config_file=/etc/postgresql/${VERSION}/main/postgresql.conf &"
+          sudo su -c "echo local all all trust > /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo sed -i "s/port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
+          sudo sed -i "s/#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/plugin_debugger'/g" /etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf
+          sudo su - postgres -c "/usr/lib/postgresql/${{ matrix.pgver }}/bin/postgres -D /var/lib/postgresql/${{ matrix.pgver }}/main -c config_file=/etc/postgresql/${{ matrix.pgver }}/main/postgresql.conf &"
           
-            until sudo runuser -l postgres -c "pg_isready -p 59${VERSION}" 2>/dev/null; do
-              >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
-              sleep 2
-            done
-          
-            psql -U postgres -p 59${VERSION} -c 'CREATE EXTENSION pgagent;'
-            psql -U postgres -p 59${VERSION} -c 'CREATE EXTENSION pldbgapi;'
+          until sudo runuser -l postgres -c "pg_isready -p 59${{ matrix.pgver }}" 2>/dev/null; do
+            >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
+            sleep 2
           done
+          
+          psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pgagent;'
+          psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pldbgapi;'
 
       - name: Install Python dependencies
         run: make install-python-testing
@@ -110,41 +100,22 @@ jobs:
             },
             "server_group": 1,
             "server_credentials": [
-          EOF
-          
-          function add_server_def() {
-            SEP=","
-            if [ "$1" = "$2" ]; then
-              SEP=""
-            fi
-          
-            cat <<EOF >> web/regression/test_config.json
               {
-                "name": "PostgreSQL $1",
-                "comment": "PostgreSQL $1 Server",
+                "name": "PostgreSQL ${{ matrix.pgver }}",
+                "comment": "PostgreSQL ${{ matrix.pgver }} Server",
                 "db_username": "postgres",
                 "host": "/var/run/postgresql",
                 "db_password": "postgres",
-                "db_port": 59$1,
+                "db_port": 59${{ matrix.pgver }},
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
-                "tablespace_path": "/var/lib/postgresql/tablespaces/$1",
+                "tablespace_path": "/var/lib/postgresql/tablespaces/${{ matrix.pgver }}",
                 "enabled": true,
                 "default_binary_paths": {
-                  "pg": "/usr/lib/postgresql/$1/bin",
+                  "pg": "/usr/lib/postgresql/${{ matrix.pgver }}/bin",
                   "ppas": ""
                 }
-              }${SEP}
-          EOF
-          }
-          
-          LAST_VERSION=$(echo ${POSTGRESQL_VERSIONS} | awk '{print $NF}')
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            add_server_def ${VERSION} ${LAST_VERSION}
-          done
-          
-          cat <<EOF >> web/regression/test_config.json
+              }
             ],
             "server_update_data": [
               {
@@ -163,12 +134,12 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: server-log
+          name: server-log-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: regression-log
+          name: regression-log-pg${{ matrix.pgver }}
           path: web/regression/regression.log
