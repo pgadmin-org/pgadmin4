@@ -32,7 +32,7 @@ jobs:
           done
 
           sudo apt update
-          sudo apt install -y build-essential python3-dev python3-pip libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev ${PACKAGES} pgagent
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev ${PACKAGES} pgagent
 
       - name: Create the tablespace directory
         run: |
@@ -62,10 +62,7 @@ jobs:
           done
 
       - name: Install Python dependencies
-        run: |
-          sudo pip install --upgrade pip
-          sudo pip install -r web/regression/requirements.txt
-          sudo pip install "pyOpenSSL>=23.*"
+        run: make install-python
 
       - name: Create the test configuration
         run: |
@@ -158,7 +155,9 @@ jobs:
           EOF
 
       - name: Run the tests
-        run: make check-python
+        run: |
+          . venv/bin/activate
+          make check-python
 
       - name: Archive server log
         if: success() || failure()

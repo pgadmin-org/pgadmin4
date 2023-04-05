@@ -22,16 +22,15 @@ jobs:
       - name: Install platform dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential python3-dev python3-pip libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev
 
       - name: Install Python dependencies
-        run: |
-          sudo pip install --upgrade pip
-          sudo pip install -r requirements.txt
-          sudo pip install "pyOpenSSL>=23.*" sphinx sphinxcontrib-youtube
+        run: make install-python
 
       - name: Check the tarball build
-        run: make src
+        run: |
+          . venv/bin/activate
+          make src
 
       - name: Archive source tarball
         uses: actions/upload-artifact@v3
