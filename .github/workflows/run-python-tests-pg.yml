@@ -62,7 +62,7 @@ jobs:
           done
 
       - name: Install Python dependencies
-        run: make install-python
+        run: make install-python-testing
 
       - name: Create the test configuration
         run: |
