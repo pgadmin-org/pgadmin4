@@ -17,14 +17,16 @@ on:
 
   workflow_dispatch:
 
-env:
-  POSTGRESQL_VERSIONS: 15 14 13 12 11
-
 jobs:
   build:
     # Only run if the tests are enabled
     # TODO: Figure out a way to test for the presence of the secrets instead
     if: vars.ENABLE_EPAS_TESTS == 'true'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        pgver: [11, 12, 13, 14, 15]
 
     runs-on: ubuntu-22.04
 
@@ -39,40 +41,29 @@ jobs:
 
       - name: Install platform dependencies
         run: |
-          PACKAGES=
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            PACKAGES="${PACKAGES} edb-as${VERSION}-server edb-as${VERSION}-server-pldebugger edb-as${VERSION}-pgagent"
-          done
           sudo apt update
-          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev ${PACKAGES}
+          sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev edb-as${{ matrix.pgver }}-server edb-as${{ matrix.pgver }}-server-pldebugger edb-as${{ matrix.pgver }}-pgagent
 
       - name: Create the tablespace directory
         run: |
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            sudo mkdir -p /var/lib/edb-as/tablespaces/${VERSION}
-            sudo chown enterprisedb:enterprisedb /var/lib/edb-as/tablespaces/${VERSION}
-          done
+          sudo mkdir -p /var/lib/edb-as/tablespaces/${{ matrix.pgver }}
+          sudo chown enterprisedb:enterprisedb /var/lib/edb-as/tablespaces/${{ matrix.pgver }}
 
       - name: Start PostgreSQL
         run: |
           # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            sudo su -c "echo local all all trust > /etc/edb-as/${VERSION}/main/pg_hba.conf"
-            sudo sed -i "s/port = 544[0-9]/port = 58${VERSION}/g" /etc/edb-as/${VERSION}/main/postgresql.conf
-            sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${VERSION}/main/postgresql.conf
-            sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${VERSION}-main.epas_stat_tmp"
-            sudo systemctl restart edb-as@${VERSION}-main
+          sudo su -c "echo local all all trust > /etc/edb-as/${{ matrix.pgver }}/main/pg_hba.conf"
+          sudo sed -i "s/port = 544[0-9]/port = 58${{ matrix.pgver }}/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo sed -i "s/shared_preload_libraries = '/shared_preload_libraries = '\$libdir\/plugin_debugger,/g" /etc/edb-as/${{ matrix.pgver }}/main/postgresql.conf
+          sudo su - enterprisedb -c "mkdir -p /var/run/edb-as/${{ matrix.pgver }}-main.epas_stat_tmp"
+          sudo systemctl restart edb-as@${{ matrix.pgver }}-main
           
-            until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${VERSION}/bin/pg_isready -p 58${VERSION}" 2>/dev/null; do
-              >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
-              sleep 2
-            done
-          
-            psql -U enterprisedb -d postgres -p 58${VERSION} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
+          until sudo runuser -l enterprisedb -c "/usr/lib/edb-as/${{ matrix.pgver }}/bin/pg_isready -p 58${{ matrix.pgver }}" 2>/dev/null; do
+            >&2 echo "EPAS is unavailable - sleeping for 2 seconds"
+            sleep 2
           done
+          
+          psql -U enterprisedb -d postgres -p 58${{ matrix.pgver }} -c 'CREATE EXTENSION IF NOT EXISTS pgagent;'
 
       - name: Install Python dependencies
         run: make install-python-testing
@@ -123,41 +114,22 @@ jobs:
             },
             "server_group": 1,
             "server_credentials": [
-          EOF
-          
-          function add_server_def() {
-            SEP=","
-            if [ "$1" = "$2" ]; then
-              SEP=""
-            fi
-          
-            cat <<EOF >> web/regression/test_config.json
               {
-                "name": "EPAS $1",
-                "comment": "EPAS $1 Server",
+                "name": "EPAS ${{ matrix.pgver }}",
+                "comment": "EPAS ${{ matrix.pgver }} Server",
                 "db_username": "enterprisedb",
                 "host": "/var/run/edb-as",
                 "db_password": "",
-                "db_port": 58$1,
+                "db_port": 58${{ matrix.pgver }},
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
-                "tablespace_path": "/var/lib/edb-as/tablespaces/$1",
+                "tablespace_path": "/var/lib/edb-as/tablespaces/${{ matrix.pgver }}",
                 "enabled": true,
                 "default_binary_paths": {
                   "pg": "",
-                  "ppas": "/usr/lib/edb-as/$1/bin"
+                  "ppas": "/usr/lib/edb-as/${{ matrix.pgver }}/bin"
                 }
-              }${SEP}
-          EOF
-          }
-          
-          LAST_VERSION=$(echo ${POSTGRESQL_VERSIONS} | awk '{print $NF}')
-          for VERSION in ${POSTGRESQL_VERSIONS};
-          do
-            add_server_def ${VERSION} ${LAST_VERSION}
-          done
-          
-          cat <<EOF >> web/regression/test_config.json
+              }
             ],
             "server_update_data": [
               {
@@ -166,6 +138,7 @@ jobs:
             ]
           }
           EOF
+
       - name: Run the tests
         run: |
           . venv/bin/activate
@@ -175,12 +148,12 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: server-log
+          name: server-log-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: regression-log
+          name: regression-log-pg${{ matrix.pgver }}
           path: web/regression/regression.log
