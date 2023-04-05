@@ -14,18 +14,15 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Install platform dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y nodejs npm
-
-      - name: Install Node dependencies
-        run: sudo npm install --global yarn
 
       - name: Install Node modules
         run: |
