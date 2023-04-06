@@ -17,29 +17,44 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-latest, ubuntu-latest]
         pgver: [11, 12, 13, 14, 15]
 
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup the PGDG APT repo
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 
-      - name: Install platform dependencies
+      - name: Install platform dependencies on Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo apt update
           sudo apt install -y libpq-dev libffi-dev libssl-dev libkrb5-dev zlib1g-dev postgresql-${{ matrix.pgver }} postgresql-${{ matrix.pgver }}-pldebugger pgagent
 
-      - name: Create the tablespace directory
+      - name: Install platform dependencies on macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew install postgresql@${{ matrix.pgver }}
+
+      - name: Create the tablespace directory on Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           sudo mkdir -p /var/lib/postgresql/tablespaces/${{ matrix.pgver }}
           sudo chown postgres:postgres /var/lib/postgresql/tablespaces/${{ matrix.pgver }}
 
-      - name: Start PostgreSQL
+      - name: Create the tablespace directory on macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          mkdir -p /usr/local/var/tablespaces/${{ matrix.pgver }}
+
+      - name: Start PostgreSQL on Linux
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
           sudo su -c "echo local all all trust > /etc/postgresql/${{ matrix.pgver }}/main/pg_hba.conf"
@@ -54,6 +69,21 @@ jobs:
           
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pgagent;'
           psql -U postgres -p 59${{ matrix.pgver }} -c 'CREATE EXTENSION pldbgapi;'
+
+      - name: Start PostgreSQL on macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          # Note: we use a custom port for PostgreSQL as the runner may already have a version of PostgreSQL installed
+          echo local all all trust > /usr/local/var/postgresql@${{ matrix.pgver }}/pg_hba.conf
+          sed -i '' "s/#port = 543[0-9]/port = 59${{ matrix.pgver }}/g" /usr/local/var/postgresql@${{ matrix.pgver }}/postgresql.conf
+          brew services restart postgresql@${{ matrix.pgver }}
+          
+          until /usr/local/opt/postgresql@${{ matrix.pgver }}/bin/pg_isready -p 59${{ matrix.pgver }} 2>/dev/null; do
+            >&2 echo "Postgres is unavailable - sleeping for 2 seconds"
+            sleep 2
+          done
+          
+          psql postgres -p 59${{ matrix.pgver }} -c 'CREATE ROLE postgres SUPERUSER LOGIN;'
 
       - name: Install Python dependencies
         run: make install-python-testing
@@ -108,15 +138,15 @@ jobs:
                 "name": "PostgreSQL ${{ matrix.pgver }}",
                 "comment": "PostgreSQL ${{ matrix.pgver }} Server",
                 "db_username": "postgres",
-                "host": "/var/run/postgresql",
+                "host": "${{ matrix.os == 'macos-latest' && '/tmp' || '/var/run/postgresql' }}",
                 "db_password": "postgres",
                 "db_port": 59${{ matrix.pgver }},
                 "maintenance_db": "postgres",
                 "sslmode": "prefer",
-                "tablespace_path": "/var/lib/postgresql/tablespaces/${{ matrix.pgver }}",
+                "tablespace_path": "${{  matrix.os == 'macos-latest' && format('/usr/local/var/tablespaces/{0}', matrix.pgver) || format('/var/lib/postgresql/tablespaces/{0}', matrix.pgver) }}",
                 "enabled": true,
                 "default_binary_paths": {
-                  "pg": "/usr/lib/postgresql/${{ matrix.pgver }}/bin",
+                  "pg": "${{ matrix.os == 'macos-latest' && format('/usr/local/opt/postgresql@{0}/bin', matrix.pgver) || format('/usr/lib/postgresql/{0}/bin', matrix.pgver) }}",
                   "ppas": ""
                 }
               }
@@ -138,12 +168,12 @@ jobs:
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: server-log-pg${{ matrix.pgver }}
+          name: server-log-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: var/pgadmin4.log
 
       - name: Archive regression log
         if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
-          name: regression-log-pg${{ matrix.pgver }}
+          name: regression-log-${{ matrix.os }}-pg${{ matrix.pgver }}
           path: web/regression/regression.log
