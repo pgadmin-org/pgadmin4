@@ -36,7 +36,9 @@ cat << EOF > "${SERVERROOT}/DEBIAN/preinst"
 #!/bin/sh
 
 rm -rf /usr/pgadmin4/venv
-rm -rf /usr/pgadmin4/web
+if [ -d /usr/pgadmin4/web ]; then
+    cd /usr/pgadmin4/web && rm -rf $(ls -A -I config_local.py)
+fi
 EOF
 
 chmod 755 "${SERVERROOT}/DEBIAN/preinst"

@@ -2,7 +2,7 @@
 Version 7.0
 ***********
 
-Release date: 2023-04-06
+Release date: 2023-04-11
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v6.21.
 
@@ -67,3 +67,4 @@ Bug fixes
   | `Issue #5958 <https://github.com/pgadmin-org/pgadmin4/issues/5958>`_ -  Fix an issue where new dashboard graphs are partially following theme colors.
   | `Issue #5959 <https://github.com/pgadmin-org/pgadmin4/issues/5959>`_ -  Fix an issue where Backup, Restore, and Maintenance not working if connection timeout is set in the server dialog.
   | `Issue #6018 <https://github.com/pgadmin-org/pgadmin4/issues/6018>`_ -  Change the foreground color of the code mirror text for Dark Theme.
+  | `Issue #6100 <https://github.com/pgadmin-org/pgadmin4/issues/6100>`_ -  Fixed the LDAP authentication issue for the simultaneous login attempts.(CVE-2023-1907)
