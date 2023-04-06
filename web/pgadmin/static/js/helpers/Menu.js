@@ -176,7 +176,7 @@ export class MenuItem {
     * Checks this menu enable/disable state based on the selection.
     */
   disabled(node, item) {
-    if (this.enable == undefined) {
+    if (this.enable == undefined || !node) {
       return false;
     }
 

@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const misc = require('../js/misc.js');
 const spawn = require('child_process').spawn;
+const {EOL} = require('os');
 
 let pgadminServerProcess = null;
 let startPageUrl = null;
@@ -249,6 +250,10 @@ function launchPgAdminWindow() {
        * nothing but a splash screen. We will have to make it null,
        * so that open in new browser tab will work.
        */
+      pgadminWindow.window.hookConsole((method, args)=>{
+        misc.writeServerLog(
+          `--------------[UI ${method}]---------------${EOL}${misc.parseConsoleArgs(method, args)}${EOL}------------[UI End]----------------`);
+      });
       pgadminWindow.window.opener = null;
 
       // Show new window

@@ -424,6 +424,18 @@ let ConfigureStore = {
   },
 };
 
+function parseConsoleArgs(_method, args) {
+  const retData = Array.from(args).map(arg => {
+    try {
+      if(arg.stack) return arg.stack;
+      return JSON.stringify(arg);
+    } catch (e) {
+      return arg
+    }
+  });
+  return retData?.join(' ');
+}
+
 
 module.exports = {
   readServerLog: readServerLog,
@@ -444,4 +456,5 @@ module.exports = {
   unregisterZoomEvents: unregisterZoomEvents,
   setZoomLevelForAllWindows: setZoomLevelForAllWindows,
   ConfigureStore: ConfigureStore,
+  parseConsoleArgs: parseConsoleArgs,
 };
