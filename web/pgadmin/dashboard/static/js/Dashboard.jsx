@@ -146,7 +146,7 @@ export default function Dashboard({
   ...props
 }) {
   const classes = useStyles();
-  let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
+  let tabs = [gettext('Sessions'), gettext('Active Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
   const [dashData, setdashData] = useState([]);
   const [msg, setMsg] = useState('');
   const [tabVal, setTabVal] = useState(0);
@@ -756,8 +756,10 @@ export default function Dashboard({
       if (tabVal === 0) {
         url = url_for('dashboard.activity');
       } else if (tabVal === 1) {
-        url = url_for('dashboard.locks');
+        url = url_for('dashboard.active_only');
       } else if (tabVal === 2) {
+        url = url_for('dashboard.locks');
+      } else if (tabVal === 3) {
         url = url_for('dashboard.prepared');
       } else {
         url = url_for('dashboard.config');
@@ -878,18 +880,26 @@ export default function Dashboard({
                   <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
                     <PgTable
                       caveTable={false}
+                      columns={activityColumns}
+                      data={dashData}
+                      schema={schemaDict}
+                    ></PgTable>
+                  </TabPanel>
+                  <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                    <PgTable
+                      caveTable={false}
                       columns={databaseLocksColumns}
                       data={dashData}
                     ></PgTable>
                   </TabPanel>
-                  <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                  <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
                     <PgTable
                       caveTable={false}
                       columns={databasePreparedColumns}
                       data={dashData}
                     ></PgTable>
                   </TabPanel>
-                  <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
+                  <TabPanel value={tabVal} index={4} classNameRoot={classes.tabPanel}>
                     <PgTable
                       caveTable={false}
                       columns={serverConfigColumns}

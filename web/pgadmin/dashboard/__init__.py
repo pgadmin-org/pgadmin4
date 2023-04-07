@@ -187,8 +187,12 @@ class DashboardModule(PgAdminModule):
             'dashboard.dashboard_stats_sid',
             'dashboard.dashboard_stats_did',
             'dashboard.activity',
+            'dashboard.active_only',
             'dashboard.get_activity_by_server_id',
             'dashboard.get_activity_by_database_id',
+            'dashboard.active_only',
+            'dashboard.get_active_only_by_server_id',
+            'dashboard.get_active_only_by_database_id',
             'dashboard.locks',
             'dashboard.get_locks_by_server_id',
             'dashboard.get_locks_by_database_id',
@@ -220,7 +224,7 @@ def check_precondition(f):
         )
 
         def get_error(i_node_type):
-            stats_type = ('activity', 'prepared', 'locks', 'config')
+            stats_type = ('activity', 'active_only', 'prepared', 'locks', 'config')
             if f.__name__ in stats_type:
                 return precondition_required(
                     gettext("Please connect to the selected {0}"
@@ -437,6 +441,22 @@ def activity(sid=None, did=None):
     :return:
     """
     return get_data(sid, did, 'activity.sql', True)
+
+
+@blueprint.route('/active_only/', endpoint='active_only')
+@blueprint.route('/active_only/<int:sid>', endpoint='get_active_only_by_server_id')
+@blueprint.route(
+    '/active_only/<int:sid>/<int:did>', endpoint='get_active_only_by_database_id'
+)
+@login_required
+@check_precondition
+def active_only(sid=None, did=None):
+    """
+    This function returns only active server activity information
+    :param sid: server id
+    :return:
+    """
+    return get_data(sid, did, 'active_only.sql', True)
 
 
 @blueprint.route('/locks/', endpoint='locks')
