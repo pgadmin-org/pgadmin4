@@ -70,7 +70,11 @@ The core server package for pgAdmin. pgAdmin is the most popular and feature ric
 %pre
 rm -rf /usr/pgadmin4/venv
 if [ -d /usr/pgadmin4/web ]; then
-    cd /usr/pgadmin4/web && rm -rf $(ls -A -I config_local.py)
+  for f in /usr/pgadmin4/web/*; do
+    if [ "$f" != "/usr/pgadmin4/web/config_local.py" ]; then
+      rm -rf $f
+    fi
+  done
 fi
 
 %build
