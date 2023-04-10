@@ -21,13 +21,13 @@ WHERE cl.oid IN (SELECT objid FROM pg_catalog.pg_shdepend WHERE refobjid={{rid}}
 UNION ALL SELECT 'n', null, nspname, null
     FROM pg_catalog.pg_namespace nsp
     WHERE nsp.oid IN (SELECT objid FROM pg_catalog.pg_shdepend WHERE refobjid={{rid}}::oid) AND nsp.oid > {{lastsysoid}}::oid
-UNION ALL SELECT CASE WHEN typtype='d' THEN 'd' ELSE 'y' END, null, typname, null
+UNION ALL SELECT CASE WHEN typtype='d' THEN 'd'::"char" ELSE 'y'::"char" END, null, typname, null
     FROM pg_catalog.pg_type ty
     WHERE ty.oid IN (SELECT objid FROM pg_catalog.pg_shdepend WHERE refobjid={{rid}}::oid) AND ty.oid > {{lastsysoid}}::oid
 UNION ALL SELECT 'C', null, conname, null
     FROM pg_catalog.pg_conversion co
     WHERE co.oid IN (SELECT objid FROM pg_catalog.pg_shdepend WHERE refobjid={{rid}}::oid) AND co.oid > {{lastsysoid}}::oid
-UNION ALL SELECT CASE WHEN prorettype=2279 THEN 'T' ELSE 'p' END, null, proname, null
+UNION ALL SELECT CASE WHEN prorettype=2279 THEN 'T'::"char" ELSE 'p'::"char" END, null, proname, null
     FROM pg_catalog.pg_proc pr
     WHERE pr.oid IN (SELECT objid FROM pg_catalog.pg_shdepend WHERE refobjid={{rid}}::oid) AND pr.oid > {{lastsysoid}}::oid
 UNION ALL SELECT 'o', null, oprname || '('::text || COALESCE(tl.typname, ''::text) || CASE WHEN tl.oid IS NOT NULL
