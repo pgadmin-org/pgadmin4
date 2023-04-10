@@ -16,12 +16,11 @@ result.
 import asyncio
 from collections import OrderedDict
 import psycopg
+from flask import g, current_app
 from psycopg import Cursor as _cursor, AsyncCursor as _async_cursor
 from typing import Any, Sequence
 from psycopg.rows import dict_row, tuple_row
 from psycopg._encodings import py_codecs as encodings
-
-
 from .encoding import configure_driver_encodings
 
 configure_driver_encodings(encodings)
@@ -278,7 +277,10 @@ class AsyncDictCursor(_async_cursor):
         """
         Execute function
         """
-        return asyncio.run(self._execute(query, params))
+        try:
+            return asyncio.run(self._execute(query, params))
+        except RuntimeError as e:
+            current_app.logger.exception(e)
 
     async def _execute(self, query, params=None):
         """
