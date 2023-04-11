@@ -11,7 +11,7 @@ import _ from 'lodash';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
-import getApiInstance from '../api_instance';
+import getApiInstance, { callFetch } from '../api_instance';
 
 export const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -86,16 +86,23 @@ _.extend(pgBrowser.browserTreeState, {
     if(self.last_state == JSON.stringify(self.current_state))
       return;
 
-    getApiInstance().post(
-      url_for('settings.save_tree_state'),
-      JSON.stringify(self.current_state)
-    ).then(()=> {
-      self.last_state = JSON.stringify(self.current_state);
-      self.fetch_state();
-    }).catch(function(error) {
-      console.warn(
-        gettext('Error resetting the tree saved state."'), error);
-    });
+    /* Using fetch with keepalive as the browser may
+    cancel the axios request on tab close. keepalive will
+    make sure the request is completed */
+    callFetch(
+      url_for('settings.save_tree_state'), {
+        keepalive: true,
+        method: 'POST',
+        body: JSON.stringify(self.current_state)
+      })
+      .then(()=> {
+        self.last_state = JSON.stringify(self.current_state);
+        self.fetch_state();
+      })
+      .catch((error)=> {
+        console.warn(
+          gettext('Error resetting the tree saved state."'), error);
+      });
   },
   fetch_state: function() {
 
