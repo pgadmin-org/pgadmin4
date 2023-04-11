@@ -70,3 +70,4 @@ Bug fixes
   | `Issue #6093 <https://github.com/pgadmin-org/pgadmin4/issues/6093>`_ -  Fix the dependents SQL of Roles which is throwing a type casting error on PostgreSQL 15.
   | `Issue #6100 <https://github.com/pgadmin-org/pgadmin4/issues/6100>`_ -  Fixed the LDAP authentication issue for the simultaneous login attempts.(CVE-2023-1907)
   | `Issue #6109 <https://github.com/pgadmin-org/pgadmin4/issues/6109>`_ -  Fixed asyncio random task error messages in Query tool.
+  | `Issue #6122 <https://github.com/pgadmin-org/pgadmin4/issues/6122>`_ -  Fixed CSV export from Query Tool results does not include all columns for multiple CTEs.

@@ -316,11 +316,12 @@ class AsyncDictCursor(_async_cursor):
         Fetch many tuples as ordered dictionary list.
         """
         self._odt_desc = None
-        if _tupples:
-            self.row_factory = tuple_row
+        self.row_factory = tuple_row
         res = asyncio.run(self._fetchmany(size))
-        if _tupples:
-            self.row_factory = dict_row
+        if not _tupples and res is not None:
+            res = [self._dict_tuple(t) for t in res]
+
+        self.row_factory = dict_row
         return res
 
     async def _fetchmany(self, size=None):
@@ -340,11 +341,12 @@ class AsyncDictCursor(_async_cursor):
         Fetch all tuples as ordered dictionary list.
         """
         self._odt_desc = None
-        if _tupples:
-            self.row_factory = tuple_row
+        self.row_factory = tuple_row
         res = asyncio.run(self._fetchall())
-        if _tupples:
-            self.row_factory = dict_row
+        if not _tupples and res is not None:
+            res = [self._dict_tuple(t) for t in res]
+
+        self.row_factory = dict_row
         return res
 
     async def _fetchone(self):
