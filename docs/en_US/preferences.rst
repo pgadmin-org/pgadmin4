@@ -440,6 +440,9 @@ preferences for copied data.
 * Specify the maximum width of the column in pixels when 'Columns sized by' is
   set to *Column data*. If 'Columns sized by' is set to *Column name* then this
   setting won't have any effect.
+* Specify the number of records to fetch in one batch in query tool when
+  query result set is large. Changing this value will override
+  ON_DEMAND_ROW_COUNT setting from config file.
 * Use the *Result copy field separator* drop-down listbox to select the field
   separator for copied data.
 * Use the *Result copy quote character* drop-down listbox to select the quote

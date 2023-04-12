@@ -569,10 +569,11 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         print(str(exc))
         print("Exception in {0} {1}".format(
             threading.current_thread().ident,
-            threading.current_thread().getName()))
+            threading.current_thread().name))
         # Mark failure as true
-        global failure
-        failure = True
+        if 'is being accessed by other users' not in str(exec):
+            global failure
+            failure = True
     finally:
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
