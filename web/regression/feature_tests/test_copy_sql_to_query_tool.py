@@ -42,6 +42,7 @@ class CopySQLFeatureTest(BaseFeatureTest):
         self.assertEqual(query_tool_result, sql_query)
 
     def after(self):
+        self.page.close_query_tool(True)
         self.page.remove_server(self.server)
         test_utils.delete_table(
             self.server, self.test_db, self.test_table_name)

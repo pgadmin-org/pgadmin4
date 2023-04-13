@@ -69,22 +69,6 @@ class CheckForXssFeatureTest(BaseFeatureTest):
         self._check_xss_in_browser_tree()
         self._check_xss_in_sql_tab()
         self._check_xss_in_dependents_tab()
-        # sometime the tab for dependent does not show info, so refreshing
-        # the page and then again collapsing until the table node
-        # retry = 2
-        # while retry > 0:
-        #     try:
-        #         self.page.refresh_page()
-        #         self.page.wait_for_spinner_to_disappear()
-        #         self._tables_node_expandable()
-        #         self._check_xss_in_dependents_tab()
-        #         retry = 0
-        #     except WebDriverException as e:
-        #         print("Exception in dependent check {0}".format(retry),
-        #               file=sys.stderr)
-        #         if retry == 1:
-        #             raise e
-        #         retry -= 1
 
         # Query tool
         self.page.open_query_tool()

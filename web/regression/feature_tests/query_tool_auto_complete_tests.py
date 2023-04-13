@@ -157,6 +157,7 @@ class QueryToolAutoCompleteFeatureTest(BaseFeatureTest):
         self.page.clear_query_tool()
 
     def after(self):
+        self.page.close_query_tool(False)
         self.page.remove_server(self.server)
         test_utils.delete_table(self.server, self.test_db,
                                 self.first_table_name)

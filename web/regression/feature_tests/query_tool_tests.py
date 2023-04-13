@@ -96,6 +96,7 @@ class QueryToolFeatureTest(BaseFeatureTest):
         self.page.clear_query_tool()
 
     def after(self):
+        self.page.close_query_tool(False)
         self.page.remove_server(self.server)
 
     def _reset_options(self):
