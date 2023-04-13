@@ -802,7 +802,7 @@ function SchemaDialogView({
               <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
                 {gettext('Reset')}
               </DefaultButton>
-              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={ !(viewHelperProps.mode === 'edit' || checkDirtyOnEnableSave ? dirty : true) || saving || Boolean(formErr.name) || !formReady}>
+              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={ !(viewHelperProps.mode === 'edit' || checkDirtyOnEnableSave ? dirty : true) || saving || Boolean(formErr.name && formErr.name !== 'apierror') || !formReady}>
                 {props.customSaveBtnName ? gettext(props.customSaveBtnName) : gettext('Save')}
               </PrimaryButton>
             </Box>
