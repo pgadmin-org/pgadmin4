@@ -15,6 +15,7 @@ from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_SQL_FORMATTING, PREF_LABEL_GRAPH_VISUALISER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields, \
     ACCESSKEY_FIELDS as accesskey_fields
+from config import ON_DEMAND_RECORD_COUNT
 
 
 def register_query_tool_preferences(self):
@@ -290,6 +291,17 @@ def register_query_tool_preferences(self):
             'Specify the maximum width of the column in pixels when '
             '\'Columns sized by \' is set to \'Column data\'.'
         ),
+    )
+
+    self.on_demand_record_count = self.preference.register(
+        'Results_grid', 'on_demand_record_count',
+        gettext("On demand record count"), 'integer', ON_DEMAND_RECORD_COUNT,
+        min_val=100,
+        category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('Specify the number of records to fetch in one batch '
+                         'in query tool when query result set is large. '
+                         'Changing this value will override '
+                         'ON_DEMAND_ROW_COUNT setting from config file.')
     )
 
     self.sql_font_size = self.preference.register(

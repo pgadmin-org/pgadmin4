@@ -16,8 +16,7 @@ from urllib.parse import unquote
 from threading import Lock
 
 import json
-from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT,\
-    ALLOW_SAVE_PASSWORD, SHARED_STORAGE
+from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD, SHARED_STORAGE
 from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
 from flask import request
@@ -874,6 +873,8 @@ def poll(trans_id):
     additional_messages = None
     notifies = None
     data_obj = {}
+    on_demand_record_count = Preferences.module(MODULE_NAME).\
+        preference('on_demand_record_count').get()
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -910,7 +911,7 @@ def poll(trans_id):
                         trans_obj.auto_rollback:
                     conn.execute_void("ROLLBACK;")
 
-            st, result = conn.async_fetchmany_2darray(ON_DEMAND_RECORD_COUNT)
+            st, result = conn.async_fetchmany_2darray(on_demand_record_count)
 
             # There may be additional messages even if result is present
             # eg: Function can provide result as well as RAISE messages
@@ -986,7 +987,7 @@ def poll(trans_id):
                 # means nothing to fetch
                 if result and rows_affected > -1:
                     res_len = len(result)
-                    if res_len == ON_DEMAND_RECORD_COUNT:
+                    if res_len == on_demand_record_count:
                         has_more_rows = True
 
                     if res_len > 0:
@@ -1064,7 +1065,9 @@ def fetch(trans_id, fetch_all=None):
     has_more_rows = False
     rows_fetched_from = 0
     rows_fetched_to = 0
-    fetch_row_cnt = -1 if fetch_all == 1 else ON_DEMAND_RECORD_COUNT
+    on_demand_record_count = Preferences.module(MODULE_NAME).preference(
+        'on_demand_record_count').get()
+    fetch_row_cnt = -1 if fetch_all == 1 else on_demand_record_count
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -1082,7 +1085,7 @@ def fetch(trans_id, fetch_all=None):
         else:
             status = 'Success'
             res_len = len(result) if result else 0
-            if fetch_row_cnt != -1 and res_len == ON_DEMAND_RECORD_COUNT:
+            if fetch_row_cnt != -1 and res_len == on_demand_record_count:
                 has_more_rows = True
 
             if res_len:
