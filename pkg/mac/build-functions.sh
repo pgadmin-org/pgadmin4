@@ -12,6 +12,7 @@ _setup_env() {
     fi
     BUNDLE_DIR="${BUILD_ROOT}/${APP_NAME}.app"
     DMG_NAME="${DIST_ROOT}"/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-"${APP_LONG_VERSION}.dmg"
+    PYTHON_OS_VERSION="11"
 }
 
 _cleanup() {
@@ -86,6 +87,7 @@ _create_python_env() {
         "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" \
         --upgrade-pip \
         --python-version "${PGADMIN_PYTHON_VERSION}" \
+        --os-version "${PYTHON_OS_VERSION}" \
         --pip-requirements "${SOURCE_DIR}/requirements.txt" \
         --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
