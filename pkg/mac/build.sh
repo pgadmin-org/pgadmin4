@@ -53,8 +53,8 @@ if [ "${PGADMIN_POSTGRES_DIR}" == "" ]; then
 fi
 
 if [ "${PGADMIN_PYTHON_VERSION}" == "" ]; then
-    echo "PGADMIN_PYTHON_VERSION not set. Setting it to the default: 3.9.9"
-    export PGADMIN_PYTHON_VERSION=3.9.9
+    echo "PGADMIN_PYTHON_VERSION not set. Setting it to the default: 3.11.2"
+    export PGADMIN_PYTHON_VERSION=3.11.2
 fi
 
 # shellcheck disable=SC1091
