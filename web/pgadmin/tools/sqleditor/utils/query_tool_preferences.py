@@ -301,7 +301,7 @@ def register_query_tool_preferences(self):
         help_str=gettext('Specify the number of records to fetch in one batch '
                          'in query tool when query result set is large. '
                          'Changing this value will override '
-                         'ON_DEMAND_ROW_COUNT setting from config file.')
+                         'ON_DEMAND_RECORD_COUNT setting from config file.')
     )
 
     self.sql_font_size = self.preference.register(
