@@ -370,7 +370,7 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
         as AJAX response.
         """
 
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template("/".join([self.template_path,
                                             'get_collations.sql']))
