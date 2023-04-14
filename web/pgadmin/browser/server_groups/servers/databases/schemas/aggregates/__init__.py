@@ -231,7 +231,8 @@ class AggregateView(PGChildNodeView):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-aggregate"
+                    icon="icon-aggregate",
+                    description=row['description']
                 ))
 
         return make_json_response(

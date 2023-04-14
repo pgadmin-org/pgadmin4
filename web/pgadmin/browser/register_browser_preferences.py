@@ -10,7 +10,8 @@ import sys
 from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
-    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER, VW_EDT_DEFAULT_PLACEHOLDER
+    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER, VW_EDT_DEFAULT_PLACEHOLDER, \
+    PREF_LABEL_BREADCRUMBS
 from flask import current_app
 import config
 
@@ -557,3 +558,25 @@ def register_browser_preferences(self):
                 ' back to the default title with placeholders.'
             )
         )
+
+    self.preference.register(
+        'breadcrumbs', 'breadcrumbs_enable',
+        gettext("Enable object breadcrumbs?"),
+        'boolean',
+        True, category_label=PREF_LABEL_BREADCRUMBS,
+        help_str=gettext(
+            'Enable breadcrumbs to show the complete path of an object in the '
+            'object explorer. The breadcrumbs are displayed on object mouse '
+            'hover.'
+        )
+    )
+
+    self.preference.register(
+        'breadcrumbs', 'breadcrumbs_show_comment',
+        gettext("Show comment with object breadcrumbs?"),
+        'boolean',
+        True, category_label=PREF_LABEL_BREADCRUMBS,
+        help_str=gettext(
+            'Show object comment along with breadcrumbs.'
+        )
+    )

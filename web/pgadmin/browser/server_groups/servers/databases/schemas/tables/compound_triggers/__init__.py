@@ -398,7 +398,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['name'],
                     icon="icon-compound_trigger-bad"
                     if row['is_enable_trigger'] == 'D'
-                    else "icon-compound_trigger"
+                    else "icon-compound_trigger",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -671,7 +672,8 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     name,
                     icon="icon-%s-bad" % self.node_type if
                     data['is_enable_trigger'] == 'D' else
-                    "icon-%s" % self.node_type
+                    "icon-%s" % self.node_type,
+                    description=data['description']
                 )
             )
         except Exception as e:

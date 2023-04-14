@@ -271,7 +271,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 shared=server.shared,
                 is_kerberos_conn=bool(server.kerberos_conn),
                 gss_authenticated=manager.gss_authenticated,
-                cloud_status=server.cloud_status
+                cloud_status=server.cloud_status,
+                description=server.comment
             )
 
     @property
@@ -595,7 +596,8 @@ class ServerNode(PGChildNodeView):
                     username=server.username,
                     shared=server.shared,
                     is_kerberos_conn=bool(server.kerberos_conn),
-                    gss_authenticated=manager.gss_authenticated
+                    gss_authenticated=manager.gss_authenticated,
+                    description=server.comment
                 )
             )
 
@@ -846,7 +848,8 @@ class ServerNode(PGChildNodeView):
                 server_type='pg',  # default server type
                 username=server.username,
                 role=server.role,
-                is_password_saved=bool(server.save_password)
+                is_password_saved=bool(server.save_password),
+                description=server.comment
             )
         )
 

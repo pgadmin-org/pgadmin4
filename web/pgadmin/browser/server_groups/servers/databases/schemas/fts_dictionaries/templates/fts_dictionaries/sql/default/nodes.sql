@@ -1,9 +1,11 @@
 {# Fetch FTS DICTIONARY name statement #}
 SELECT
-    oid, dictname as name,
-    dictnamespace as schema
+    dict.oid, dictname as name,
+    dictnamespace as schema,
+    des.description
 FROM
     pg_catalog.pg_ts_dict dict
+    LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=dict.oid AND des.classoid='pg_ts_dict'::regclass)
 WHERE
 {% if scid %}
     dict.dictnamespace = {{scid}}::OID

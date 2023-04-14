@@ -88,6 +88,30 @@ displayed in the *Browser* tree control:
   catalogs, you can reduce the number of object types displayed to increase
   speed.
 
+Use the fields on the *Object Breadcrumbs* panel to change object breadcrumbs
+related settings:
+
+.. image:: images/preferences_browser_breadcrumbs.png
+    :alt: Preferences dialog object breadcrumbs section
+    :align: center
+
+* Use *Enable object breadcrumbs?* to enable or disable object breadcrumbs
+  displayed on on object mouse hover.
+
+* Use *Show comment with object breadcrumbs?* to enable or disable the
+  comment visibility which comes displayed with object breadcrumbs.
+
+
+Use the fields on the *Processes* panel to change processes tab
+related settings:
+
+.. image:: images/preferences_browser_processes.png
+    :alt: Preferences dialog processes section
+    :align: center
+
+* Change *Process details/logs retention days* to the number of days,
+  the process info and logs will be automatically cleared.
+
 Use fields on the *Properties* panel to specify browser properties:
 
 .. image:: images/preferences_browser_properties.png

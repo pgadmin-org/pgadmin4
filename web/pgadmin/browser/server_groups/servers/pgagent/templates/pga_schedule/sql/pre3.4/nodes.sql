@@ -1,5 +1,5 @@
 SELECT
-    jscid, jscjobid, jscname, jscenabled
+    jscid, jscjobid, jscname, jscenabled, jscdesc
 FROM
     pgagent.pga_schedule
 WHERE

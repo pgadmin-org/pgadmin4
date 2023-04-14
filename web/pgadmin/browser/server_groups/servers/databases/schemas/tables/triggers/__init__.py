@@ -488,7 +488,8 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     tid,
                     row['name'],
                     icon="icon-trigger-bad" if row['is_enable_trigger'] == 'D'
-                    else "icon-trigger"
+                    else "icon-trigger",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -763,7 +764,8 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     name,
                     icon="icon-%s-bad" % self.node_type if
                     data['is_enable_trigger'] == 'D' else
-                    "icon-%s" % self.node_type
+                    "icon-%s" % self.node_type,
+                    description=data['description']
                 )
             )
         except Exception as e:

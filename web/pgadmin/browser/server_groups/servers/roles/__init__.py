@@ -741,7 +741,8 @@ rolmembership:{
                     row['rolname'],
                     'icon-role' if row['rolcanlogin'] else 'icon-group',
                     can_login=row['rolcanlogin'],
-                    is_superuser=row['rolsuper']
+                    is_superuser=row['rolsuper'],
+                    description=row['description']
                 )
             )
 
@@ -1005,7 +1006,8 @@ rolmembership:{
                     row['rolname'],
                     'icon-role' if row['rolcanlogin'] else 'icon-group',
                     can_login=row['rolcanlogin'],
-                    is_superuser=row['rolsuper']
+                    is_superuser=row['rolsuper'],
+                    description=row['description']
                 )
             )
 

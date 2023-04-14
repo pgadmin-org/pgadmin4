@@ -290,7 +290,8 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     fid,
                     row['name'],
-                    icon="icon-foreign_server"
+                    icon="icon-foreign_server",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -503,12 +504,17 @@ class ForeignServerView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            other_node_info = {}
+            if 'description' in data:
+                other_node_info['description'] = data['description']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     fsid,
                     fid,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon="icon-%s" % self.node_type,
+                    **other_node_info
                 )
             )
 

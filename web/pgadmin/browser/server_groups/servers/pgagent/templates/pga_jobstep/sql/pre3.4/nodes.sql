@@ -1,5 +1,5 @@
 SELECT
-    jstid, jstjobid, jstname, jstenabled, jstkind = 's'::bpchar AS jstkind
+    jstid, jstjobid, jstname, jstenabled, jstkind = 's'::bpchar AS jstkind, jstdesc
 FROM
     pgagent.pga_jobstep
 WHERE

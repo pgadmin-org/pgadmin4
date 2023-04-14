@@ -246,7 +246,8 @@ class CatalogObjectColumnsView(PGChildNodeView):
                     row['attnum'],
                     coid,
                     row['attname'],
-                    icon="icon-catalog_object_column"
+                    icon="icon-catalog_object_column",
+                    description=row['description']
                 ))
 
         return make_json_response(

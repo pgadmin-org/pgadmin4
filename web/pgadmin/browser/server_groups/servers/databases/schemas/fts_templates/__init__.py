@@ -257,7 +257,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-fts_template"
+                    icon="icon-fts_template",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -445,7 +446,8 @@ class FtsTemplateView(PGChildNodeView, SchemaDiffObjectCompare):
                 tid,
                 rset['schema'],
                 rset['name'],
-                icon="icon-%s" % self.node_type
+                icon="icon-%s" % self.node_type,
+                description=rset['description']
             )
         )
 

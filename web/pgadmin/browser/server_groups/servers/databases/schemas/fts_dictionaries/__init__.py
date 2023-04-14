@@ -308,7 +308,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-fts_dictionary"
+                    icon="icon-fts_dictionary",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -530,12 +531,17 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                     _("Could not find the FTS Dictionary node to update.")
                 )
 
+        other_node_info = {}
+        if 'description' in data:
+            other_node_info['description'] = data['description']
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 dcid,
                 res['rows'][0]['schema'],
                 name,
-                icon="icon-%s" % self.node_type
+                icon="icon-%s" % self.node_type,
+                **other_node_info
             )
         )
 

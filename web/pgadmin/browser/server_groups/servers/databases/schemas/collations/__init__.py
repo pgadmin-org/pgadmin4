@@ -268,7 +268,8 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-collation"
+                    icon="icon-collation",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -604,12 +605,17 @@ class CollationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         scid = res['rows'][0]['scid']
 
+        other_node_info = {}
+        if 'description' in data:
+            other_node_info['description'] = data['description']
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 coid,
                 scid,
                 name,
-                icon="icon-%s" % self.node_type
+                icon="icon-%s" % self.node_type,
+                **other_node_info
             )
         )
 
