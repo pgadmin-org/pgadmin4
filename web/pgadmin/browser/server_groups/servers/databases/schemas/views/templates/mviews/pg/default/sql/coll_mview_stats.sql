@@ -1,5 +1,5 @@
 SELECT
-    st.relname AS {{ conn|qtIdent(_('Table name')) }},
+    st.relname AS {{ conn|qtIdent(_('View Name')) }},
     n_tup_ins AS {{ conn|qtIdent(_('Tuples inserted')) }},
     n_tup_upd AS {{ conn|qtIdent(_('Tuples updated')) }},
     n_tup_del AS {{ conn|qtIdent(_('Tuples deleted')) }},
@@ -23,7 +23,7 @@ SELECT
 FROM
     pg_catalog.pg_stat_all_tables st
 JOIN
-    pg_catalog.pg_class cl on cl.oid=st.relid and cl.relkind IN ('r','s','t','p')
+    pg_catalog.pg_class cl on cl.oid=st.relid and cl.relkind = 'm'
 WHERE
     schemaname = {{schema_name|qtLiteral(conn)}}
 ORDER BY st.relname;

@@ -350,7 +350,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         'nodes': [{'get': 'node'}, {'get': 'nodes'}],
         'sql': [{'get': 'sql'}],
         'msql': [{'get': 'msql'}, {'get': 'msql'}],
-        'stats': [{'get': 'statistics'}],
+        'stats': [{'get': 'statistics'}, {'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
         'configs': [{'get': 'configs'}],
@@ -2340,6 +2340,79 @@ class MViewNode(ViewNode, VacuumSettings):
             )
 
         return make_json_response(success=1)
+
+    @check_precondition
+    def statistics(self, gid, sid, did, scid, vid=None):
+        """
+        Statistics
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            vid: View ID
+
+        Returns the statistics for a particular MView if vid is specified,
+        otherwise it will return statistics for all the MView in that
+        schema.
+        """
+        status, schema_name = self.conn.execute_scalar(
+            render_template(
+                "/".join([self.template_path, 'sql/get_schema.sql']),
+                conn=self.conn, scid=scid
+            )
+        )
+        if not status:
+            return internal_server_error(errormsg=schema_name)
+
+        if vid is None:
+            status, res = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path,
+                              'sql/coll_mview_stats.sql']), conn=self.conn,
+                    schema_name=schema_name
+                )
+            )
+        else:
+            # For Individual mview stats
+
+            # Check if pgstattuple extension is already created?
+            # if created then only add extended stats
+            status, is_pgstattuple = self.conn.execute_scalar("""
+            SELECT (count(extname) > 0) AS is_pgstattuple
+            FROM pg_catalog.pg_extension
+            WHERE extname='pgstattuple'
+            """)
+            if not status:
+                return internal_server_error(errormsg=is_pgstattuple)
+
+            # Fetch MView name
+            status, mview_name = self.conn.execute_scalar(
+                render_template(
+                    "/".join([self.template_path, 'sql/get_view_name.sql']),
+                    conn=self.conn, scid=scid, vid=vid
+                )
+            )
+            if not status:
+                return internal_server_error(errormsg=mview_name)
+
+            status, res = self.conn.execute_dict(
+                render_template(
+                    "/".join([self.template_path, 'sql/stats.sql']),
+                    conn=self.conn, schema_name=schema_name,
+                    mview_name=mview_name,
+                    is_pgstattuple=is_pgstattuple, vid=vid
+                )
+            )
+
+        if not status:
+            return internal_server_error(errormsg=res)
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
 
 SchemaDiffRegistry(view_blueprint.node_type, ViewNode)

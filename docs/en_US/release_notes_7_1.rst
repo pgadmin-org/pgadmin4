@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #3275 <https://github.com/pgadmin-org/pgadmin4/issues/3275>`_ -  Allow on demand record count setting to be changed per user using preferences.
+  | `Issue #3316 <https://github.com/pgadmin-org/pgadmin4/issues/3316>`_ -  Added support to show statistics for materialized views.
 
 Housekeeping
 ************

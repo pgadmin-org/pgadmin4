@@ -39,6 +39,7 @@ define('pgadmin.node.mview', [
         label: gettext('Materialized Views'),
         type: 'coll-mview',
         columns: ['name', 'owner', 'comment'],
+        hasStatistics: true,
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
@@ -64,6 +65,7 @@ define('pgadmin.node.mview', [
       label: gettext('Materialized View'),
       hasSQL: true,
       hasDepends: true,
+      hasStatistics: true,
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
       width: pgBrowser.stdW.md + 'px',
