@@ -150,7 +150,7 @@
     "react-draggable": "^4.4.4",
     "react-dropzone": "^14.2.1",
     "react-leaflet": "^3.2.2",
-    "react-resize-detector": "^8.0.3",
+    "react-resize-detector": "^9.1.0",
     "react-rnd": "^10.3.5",
     "react-router-dom": "^6.2.2",
     "react-select": "^5.7.2",
