@@ -4755,10 +4755,10 @@ executable@^4.1.0:
   dependencies:
     pify "^2.2.0"
 
-exports-loader@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/exports-loader/-/exports-loader-2.0.0.tgz#ca7861b86726997bb4e55001888d2af940935979"
-  integrity sha512-k/VFrVEUmotfkk8vZ+njG5NEXpr5Ee+BonV+AYINV2hNo3o+/UB8nEuCUQk2k6IyWIoobmXoTFO0igxrQcMV4Q==
+exports-loader@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/exports-loader/-/exports-loader-4.0.0.tgz#af34fe80a18f12fb0f42f435edd7df0fe9db49bb"
+  integrity sha512-4iqFFIAnlVAbkAUMHhWceyxK6N6dMDWpQFbSHLmiayGEPMXl2bgWD4D11GYi1VNuEQwJaHGdATcPYTnXpwzSmw==
   dependencies:
     source-map "^0.6.1"
 
