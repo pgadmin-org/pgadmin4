@@ -561,9 +561,6 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         if connection:
             test_utils.drop_database(connection, test_db_name)
             connection.close()
-        # Delete test server
-        # test_utils.delete_test_server(test_client)
-        test_utils.delete_server(test_client, server_information)
     except Exception as exc:
         traceback.print_exc(file=sys.stderr)
         print(str(exc))
@@ -571,10 +568,12 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
             threading.current_thread().ident,
             threading.current_thread().name))
         # Mark failure as true
-        if 'is being accessed by other users' not in str(exec):
+        if str(exc).find('other sessions using the database.') != -1:
             global failure
             failure = True
     finally:
+        # Delete test server
+        test_utils.delete_server(test_client, server_information)
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
         if threading.current_thread().name == thread_name:
