@@ -224,7 +224,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 primary_key_labels=keys,
                 no_of_keys=no_of_keys,
                 object_name=command_obj.object_name,
-                nsp_name=command_obj.nsp_name
+                nsp_name=command_obj.nsp_name,
+                conn=conn
             )
             list_of_sql[of_type].append({'sql': sql, 'data': {}})
 

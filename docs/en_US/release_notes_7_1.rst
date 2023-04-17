@@ -33,3 +33,4 @@ Bug fixes
   | `Issue #5777 <https://github.com/pgadmin-org/pgadmin4/issues/5777>`_ -  Fixed an issue where the browser tree state is not remembered when reopening pgAdmin.
   | `Issue #5820 <https://github.com/pgadmin-org/pgadmin4/issues/5820>`_ -  Fixed an issue where collation was set to none if we remove it while creating partitioned table.
   | `Issue #6075 <https://github.com/pgadmin-org/pgadmin4/issues/6075>`_ -  Ensure that the save button is enabled when registering a new server fails due to an API error.
+  | `Issue #6130 <https://github.com/pgadmin-org/pgadmin4/issues/6130>`_ -  Ensure to quote the primary key value if needed while deleting rows from the table.
