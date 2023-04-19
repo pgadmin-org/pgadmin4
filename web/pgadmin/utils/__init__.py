@@ -493,8 +493,10 @@ def dump_database_servers(output_file, selected_servers,
     object_dict["Servers"] = server_dict
 
     try:
-        file_path = filename_with_file_manager_path(
-            unquote(output_file), skip_permission_check=from_setup)
+        if from_setup:
+            file_path = unquote(output_file)
+        else:
+            file_path = filename_with_file_manager_path(unquote(output_file))
     except Exception as e:
         return _handle_error(str(e), from_setup)
 
