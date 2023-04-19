@@ -49,6 +49,13 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         cls.tester.logout()
 
     def setUp(self):
+        try:
+            import gssapi
+        except ImportError:
+            self.skipTest("Import Error: GSSAPI module couldn't be loaded.")
+        except OSError:
+            self.skipTest("OS Error: GSSAPI module couldn't be loaded.")
+
         app_config.AUTHENTICATION_SOURCES = self.auth_source
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = KERBEROS
 
