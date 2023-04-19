@@ -18,6 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
+import { parseApiError } from '../../../../static/js/api_instance';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -135,7 +136,7 @@ export default function Dependencies({ nodeData, item, node, ...props }) {
           .catch((e) => {
             Notify.alert(
               gettext('Failed to retrieve data from the server.'),
-              gettext(e.message)
+              parseApiError(e)
             );
             // show failed message.
             setMsg(gettext('Failed to retrieve data from the server.'));
