@@ -551,10 +551,17 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 return True, err_msg
         return False, ''
 
+    def end_transaction(self, data):
+        """
+        This function is used to end the transaction
+        """
+        if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+            self.conn.execute_scalar("END;")
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
         """
-        This function will creates new the schema object
+        This function will create the new index object
 
          Args:
            gid: Server Group ID
@@ -579,7 +586,6 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 data[k] = v
 
         required_args = {
-            'name': 'Name',
             'columns': 'Columns'
         }
 
@@ -611,8 +617,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 # End transaction.
-                if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                    self.conn.execute_scalar("END;")
+                self.end_transaction(data)
                 return internal_server_error(errormsg=res)
 
             # If user chooses concurrent index then we cannot run it along
@@ -625,27 +630,35 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             if SQL != '':
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
-                    if hasattr(data, "isconcurrent") and not data[
-                            'isconcurrent']:
-                        # End transaction.
-                        self.conn.execute_scalar("END;")
+                    self.end_transaction(data)
                     return internal_server_error(errormsg=res)
 
             # we need oid to add object in tree at browser
-            SQL = render_template(
-                "/".join([self.template_path, self._OID_SQL]),
-                tid=tid, data=data, conn=self.conn
-            )
-            status, idx = self.conn.execute_scalar(SQL)
-            if not status:
-                if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                    # End transaction.
-                    self.conn.execute_scalar("END;")
-                return internal_server_error(errormsg=tid)
+            idx = 0
+            if data.get('name', '') == "":
+                SQL = render_template(
+                    "/".join([self.template_path, 'get_oid_name.sql']),
+                    tid=tid, conn=self.conn
+                )
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    self.end_transaction(data)
+                    return internal_server_error(errormsg=tid)
 
-            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                # End transaction.
-                self.conn.execute_scalar("END;")
+                if 'rows' in res and len(res['rows']) > 0:
+                    data['name'] = res['rows'][0]['relname']
+                    idx = res['rows'][0]['oid']
+            else:
+                SQL = render_template(
+                    "/".join([self.template_path, self._OID_SQL]),
+                    tid=tid, data=data, conn=self.conn
+                )
+                status, idx = self.conn.execute_scalar(SQL)
+                if not status:
+                    self.end_transaction(data)
+                    return internal_server_error(errormsg=tid)
+
+            self.end_transaction(data)
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     idx,
@@ -655,9 +668,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
         except Exception as e:
-            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                # End transaction.
-                self.conn.execute_scalar("END;")
+            self.end_transaction(data)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition

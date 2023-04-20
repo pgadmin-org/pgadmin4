@@ -1,4 +1,5 @@
-CREATE {% if data.indisunique %}UNIQUE {% endif %}INDEX{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {% if data.isconcurrent %}CONCURRENTLY {% endif %}{{conn|qtIdent(data.name)}}
+CREATE{% if data.indisunique %} UNIQUE{% endif %} INDEX{% if add_not_exists_clause %} IF NOT EXISTS{% endif %}{% if data.isconcurrent %} CONCURRENTLY{% endif %}{% if data.name %} {{conn|qtIdent(data.name)}}{% endif %}
+
     ON {{conn|qtIdent(data.schema, data.table)}} {% if data.amname %}USING {{conn|qtIdent(data.amname)}}{% endif %}
 
 {% if mode == 'create' %}

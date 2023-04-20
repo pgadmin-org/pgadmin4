@@ -184,7 +184,6 @@ def _get_create_sql(data, template_path, conn, mode, name,
     :return:
     """
     required_args = {
-        'name': 'Name',
         'columns': 'Columns'
     }
     for arg in required_args:

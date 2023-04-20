@@ -258,6 +258,33 @@
       "data": {
         "name": "test_table_for_indexes"
       }
+    },
+    {
+      "type": "create",
+      "name": "Create unnamed hash index",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "spcname": "pg_default",
+        "amname": "hash",
+        "columns": [{
+          "colname": "id",
+          "collspcname": "",
+          "op_class": "",
+          "sort_order": false,
+          "nulls": false,
+          "is_sort_nulls_applicable": false
+        }],
+        "indisunique": false,
+        "isconcurrent": false
+      },
+      "expected_msql_file": "create_unnamed_hash_index_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop hash index",
+      "endpoint": "NODE-index.delete_id"
     }
   ]
 }

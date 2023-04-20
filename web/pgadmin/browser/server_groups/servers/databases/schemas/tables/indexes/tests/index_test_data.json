@@ -1,6 +1,29 @@
 {
   "index_create": [
     {
+      "name": "Create unnamed index: With valid data.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
       "name": "Create index: With valid data.",
       "is_positive_test": true,
       "inventory_data": {},
@@ -105,32 +128,6 @@
       "expected_data": {
         "status_code": 410,
         "error_msg": "You must provide one or more column to create index.",
-        "test_result_data": {}
-      }
-    },
-    {
-      "name": "Create index: With invalid data - Missing Parameter.",
-      "is_positive_test": false,
-      "inventory_data": {},
-      "test_data": {
-        "spcname": "pg_default",
-        "amname": "btree",
-        "columns": [
-          {
-            "colname": "id",
-            "sort_order": false,
-            "nulls": false
-          }
-        ],
-        "include": [
-          "name"
-        ]
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 410,
-        "error_msg": "Could not find the required parameter (Name).",
         "test_result_data": {}
       }
     },

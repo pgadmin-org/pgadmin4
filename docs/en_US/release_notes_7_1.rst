@@ -2,7 +2,7 @@
 Version 7.1
 ***********
 
-Release date: 2023-05-01
+Release date: 2023-05-04
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v7.0.
 
@@ -22,6 +22,7 @@ New features
 
   | `Issue #3275 <https://github.com/pgadmin-org/pgadmin4/issues/3275>`_ -  Allow on demand record count setting to be changed per user using preferences.
   | `Issue #3316 <https://github.com/pgadmin-org/pgadmin4/issues/3316>`_ -  Added support to show statistics for materialized views.
+  | `Issue #3318 <https://github.com/pgadmin-org/pgadmin4/issues/3318>`_ -  Added support to create an unnamed index.
 
 Housekeeping
 ************
@@ -33,5 +34,8 @@ Bug fixes
   | `Issue #5777 <https://github.com/pgadmin-org/pgadmin4/issues/5777>`_ -  Fixed an issue where the browser tree state is not remembered when reopening pgAdmin.
   | `Issue #5820 <https://github.com/pgadmin-org/pgadmin4/issues/5820>`_ -  Fixed an issue where collation was set to none if we remove it while creating partitioned table.
   | `Issue #6075 <https://github.com/pgadmin-org/pgadmin4/issues/6075>`_ -  Ensure that the save button is enabled when registering a new server fails due to an API error.
+  | `Issue #6120 <https://github.com/pgadmin-org/pgadmin4/issues/6120>`_ -  Fixed error occurring while logging out from pgAdmin keeping a query tool opened.
+  | `Issue #6128 <https://github.com/pgadmin-org/pgadmin4/issues/6128>`_ -  Fix a SQL error occurring on roles dependents SQL.
   | `Issue #6130 <https://github.com/pgadmin-org/pgadmin4/issues/6130>`_ -  Ensure to quote the primary key value if needed while deleting rows from the table.
   | `Issue #6137 <https://github.com/pgadmin-org/pgadmin4/issues/6137>`_ -  Fixed error occurring while dumping the servers from CLI.
+  | `Issue #6138 <https://github.com/pgadmin-org/pgadmin4/issues/6138>`_ -  Throw an appropriate error when a table for which View/Edit data is open, is deleted, and query is executed.

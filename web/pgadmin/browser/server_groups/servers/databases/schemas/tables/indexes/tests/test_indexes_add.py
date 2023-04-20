@@ -61,11 +61,13 @@ class IndexesAddTestCase(BaseTestGenerator):
         if self.is_positive_test:
             response = indexes_utils.api_create_index(self)
             indexes_utils.assert_status_code(self, response)
-            index_response = indexes_utils.verify_index(self.server,
-                                                        self.db_name,
-                                                        self.index_name)
-            self.assertIsNot(index_response, "Could not find the newly "
-                                             "created index.")
+            # In case of unnamed index the below logic is not required
+            if hasattr(self, 'index_name'):
+                index_response = indexes_utils.verify_index(self.server,
+                                                            self.db_name,
+                                                            self.index_name)
+                self.assertIsNot(index_response, "Could not find the newly "
+                                                 "created index.")
 
         else:
             if self.mocking_required:

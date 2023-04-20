@@ -263,7 +263,7 @@ export default class IndexSchema extends BaseUISchema {
     return [
       {
         id: 'name', label: gettext('Name'), cell: 'string',
-        type: 'text', noEmpty: true,
+        type: 'text',
         disabled: () => inSchema(indexSchemaObj.node_info),
       },{
         id: 'oid', label: gettext('OID'), cell: 'string',
@@ -366,8 +366,15 @@ export default class IndexSchema extends BaseUISchema {
         group: gettext('Definition'),
       },{
         id: 'indisclustered', label: gettext('Clustered?'), cell: 'string',
-        type: 'switch', disabled: () => inSchema(indexSchemaObj.node_info),
-        group: gettext('Definition'),
+        type: 'switch', group: gettext('Definition'), deps: ['name'],
+        disabled: function (state) {
+          return isEmptyString(state.name) || inSchema(indexSchemaObj.node_info);
+        },
+        depChange: (state)=>{
+          if(isEmptyString(state.name)) {
+            return {indisclustered: false};
+          }
+        }
       },{
         id: 'indisvalid', label: gettext('Valid?'), cell: 'string',
         type: 'switch', mode: ['properties'],
@@ -429,7 +436,15 @@ export default class IndexSchema extends BaseUISchema {
       },{
         id: 'description', label: gettext('Comment'), cell: 'string',
         type: 'multiline', mode: ['properties', 'create', 'edit'],
-        disabled: () => inSchema(indexSchemaObj.node_info),
+        deps: ['name'],
+        disabled: function (state) {
+          return isEmptyString(state.name) || inSchema(indexSchemaObj.node_info);
+        },
+        depChange: (state)=>{
+          if(isEmptyString(state.name)) {
+            return {comment: ''};
+          }
+        }
       },
     ];
   }
