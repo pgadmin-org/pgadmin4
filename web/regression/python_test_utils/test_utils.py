@@ -145,62 +145,58 @@ def clear_node_info_dict():
 def create_database(server, db_name, encoding=None):
     """This function used to create database and returns the database id"""
     db_id = ''
-    try:
-        connection = get_db_connection(
-            server['db'],
-            server['username'],
-            server['db_password'],
-            server['host'],
-            server['port'],
-            server['sslmode']
-        )
-        old_isolation_level = connection.isolation_level
-        set_isolation_level(connection, 0)
-        connection.autocommit = True
-        pg_cursor = connection.cursor()
-        if encoding is None:
-            pg_cursor.execute(
-                '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
-        else:
-            pg_cursor.execute(
-                '''CREATE DATABASE "%s" TEMPLATE template0
-                ENCODING='%s' LC_COLLATE='%s' LC_CTYPE='%s' ''' %
-                (db_name, encoding[0], encoding[1], encoding[1]))
-        connection.autocommit = False
-        set_isolation_level(connection, old_isolation_level)
-        connection.commit()
+    connection = get_db_connection(
+        server['db'],
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
+    old_isolation_level = connection.isolation_level
+    set_isolation_level(connection, 0)
+    connection.autocommit = True
+    pg_cursor = connection.cursor()
+    if encoding is None:
+        pg_cursor.execute(
+            '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
+    else:
+        pg_cursor.execute(
+            '''CREATE DATABASE "%s" TEMPLATE template0
+            ENCODING='%s' LC_COLLATE='%s' LC_CTYPE='%s' ''' %
+            (db_name, encoding[0], encoding[1], encoding[1]))
+    connection.autocommit = False
+    set_isolation_level(connection, old_isolation_level)
+    connection.commit()
 
-        # Get 'oid' from newly created database
-        pg_cursor.execute("SELECT db.oid from pg_catalog.pg_database db WHERE"
-                          " db.datname='%s'" % db_name)
-        oid = pg_cursor.fetchone()
-        if oid:
-            db_id = oid[0]
-        connection.close()
+    # Get 'oid' from newly created database
+    pg_cursor.execute("SELECT db.oid from pg_catalog.pg_database db WHERE"
+                      " db.datname='%s'" % db_name)
+    oid = pg_cursor.fetchone()
+    if oid:
+        db_id = oid[0]
+    connection.close()
 
-        # In PostgreSQL 15 the default public schema that every database has
-        # will have a different set of permissions. In fact, before PostgreSQL
-        # 15, every user could manipulate the public schema of a database he is
-        # not owner. Since the upcoming new version, only the database owner
-        # will be granted full access to the public schema, while other users
-        # will need to get an explicit GRANT
-        connection = get_db_connection(
-            db_name,
-            server['username'],
-            server['db_password'],
-            server['host'],
-            server['port'],
-            server['sslmode']
-        )
-        pg_cursor = connection.cursor()
-        pg_cursor.execute('''GRANT ALL ON SCHEMA public TO PUBLIC''')
-        connection.commit()
-        connection.close()
+    # In PostgreSQL 15 the default public schema that every database has
+    # will have a different set of permissions. In fact, before PostgreSQL
+    # 15, every user could manipulate the public schema of a database he is
+    # not owner. Since the upcoming new version, only the database owner
+    # will be granted full access to the public schema, while other users
+    # will need to get an explicit GRANT
+    connection = get_db_connection(
+        db_name,
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
+    pg_cursor = connection.cursor()
+    pg_cursor.execute('''GRANT ALL ON SCHEMA public TO PUBLIC''')
+    connection.commit()
+    connection.close()
 
-        return db_id
-    except Exception:
-        traceback.print_exc(file=sys.stderr)
-        return db_id
+    return db_id
 
 
 def create_table(server, db_name, table_name, extra_columns=[]):
@@ -1173,30 +1169,27 @@ def get_server_type(server):
     :param server:
     :return:
     """
-    try:
-        connection = get_db_connection(
-            server['db'],
-            server['username'],
-            server['db_password'],
-            server['host'],
-            server['port'],
-            server['sslmode']
-        )
+    connection = get_db_connection(
+        server['db'],
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
 
-        pg_cursor = connection.cursor()
-        # Get 'version' string
-        pg_cursor.execute("SELECT version()")
-        version_string = pg_cursor.fetchone()
-        connection.close()
-        if isinstance(version_string, tuple):
-            version_string = version_string[0]
+    pg_cursor = connection.cursor()
+    # Get 'version' string
+    pg_cursor.execute("SELECT version()")
+    version_string = pg_cursor.fetchone()
+    connection.close()
+    if isinstance(version_string, tuple):
+        version_string = version_string[0]
 
-        if "EnterpriseDB" in version_string:
-            return 'ppas'
+    if "EnterpriseDB" in version_string:
+        return 'ppas'
 
-        return 'pg'
-    except Exception:
-        traceback.print_exc(file=sys.stderr)
+    return 'pg'
 
 
 def check_binary_path_or_skip_test(cls, utility_name):

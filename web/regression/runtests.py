@@ -477,6 +477,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
     :param parallel_ui_test: parallel ui tests
     :return:
     """
+    server_information = None
     try:
         print("\n=============Running the test cases for '%s' ============="
               % server_passed['name'], file=sys.stderr)
@@ -568,12 +569,13 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
             threading.current_thread().ident,
             threading.current_thread().name))
         # Mark failure as true
-        if str(exc).find('other sessions using the database.') != -1:
+        if 'other sessions using the database.' not in str(exc):
             global failure
             failure = True
     finally:
         # Delete test server
-        test_utils.delete_server(test_client, server_information)
+        if server_information:
+            test_utils.delete_server(test_client, server_information)
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
         if threading.current_thread().name == thread_name:
