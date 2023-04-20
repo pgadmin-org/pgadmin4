@@ -1130,7 +1130,7 @@ rolmembership:{
 
             status, result = temp_conn.execute_dict(query)
             if not status:
-                current_app.logger.error(result)
+                raise ExecuteError(result)
 
             RoleView._handle_dependents_data(result, types, dependents, db_row)
 
