@@ -148,11 +148,20 @@ export default function DebuggerComponent({ pgAdmin, selectedNodeInfo, panel, ev
     try {
       let err = xhr.response.data;
       if (err.success == 0) {
-        Notify.alert(gettext('Debugger Error'), err.errormsg, () => {
+        let header_msg = gettext('Debugger Error'),
+          err_msg = err.errormsg;
+
+        // Stopped Debugger forcefully. 57014 is the SQL State
+        if (err.errormsg.indexOf('57014') !== -1) {
+          header_msg = gettext('Debugger Aborted');
+          err_msg = gettext('Debugger has been aborted. '
+           + 'On clicking the ok button, debugger panel will be closed.');
+        }
+
+        Notify.alert(header_msg, err_msg, () => {
           if (panel) {
             panel.close();
           }
-
         });
       }
     } catch (e) {

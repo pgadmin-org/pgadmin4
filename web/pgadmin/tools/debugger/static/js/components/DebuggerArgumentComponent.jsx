@@ -736,6 +736,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               let panel = pgAdmin.Browser.docker.addPanel(
                 'frm_debugger', wcDocker.DOCK.STACKED, propertiesPanel[0]
               );
+              panel.trans_id = res_post.data.data.debuggerTransId;
               let browser_pref = pgAdmin.Browser.get_preferences_for_module('browser');
               let label = getAppropriateLabel(treeInfo);
               setDebuggerTitle(panel, browser_pref, label, treeInfo.schema.label, treeInfo.database.label, null, pgAdmin.Browser);
