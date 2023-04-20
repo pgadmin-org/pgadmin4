@@ -39,3 +39,4 @@ Bug fixes
   | `Issue #6130 <https://github.com/pgadmin-org/pgadmin4/issues/6130>`_ -  Ensure to quote the primary key value if needed while deleting rows from the table.
   | `Issue #6137 <https://github.com/pgadmin-org/pgadmin4/issues/6137>`_ -  Fixed error occurring while dumping the servers from CLI.
   | `Issue #6138 <https://github.com/pgadmin-org/pgadmin4/issues/6138>`_ -  Throw an appropriate error when a table for which View/Edit data is open, is deleted, and query is executed.
+  | `Issue #6159 <https://github.com/pgadmin-org/pgadmin4/issues/6159>`_ -  Ensure that the ERD tool should work with the external database after moving to psycopg3.

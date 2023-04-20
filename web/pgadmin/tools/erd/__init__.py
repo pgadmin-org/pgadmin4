@@ -478,7 +478,7 @@ def panel(trans_id):
     if "linux" in _platform:
         is_linux_platform = True
 
-    s = Server.query.filter_by(id=params['sid']).first()
+    s = Server.query.filter_by(id=int(params['sid'])).first()
 
     params.update({
         'bgcolor': s.bgcolor,
