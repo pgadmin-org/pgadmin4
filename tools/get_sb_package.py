@@ -22,16 +22,6 @@ if len(sys.argv) != 4:
           format(sys.argv[0]))
     sys.exit(1)
 
-class Progress:
-    def __init__(self):
-        self.old_percent = 0
-
-    def download_progress_hook(self, count, blockSize, totalSize):
-        percent = int(count * blockSize * 100 / totalSize)
-        if percent > self.old_percent:
-            self.old_percent = percent
-            print('{}%'.format(percent))
-
 # Get the catalog
 catalog = urlopen(sys.argv[1]).read().decode('utf-8')
 apps = ET.fromstring(catalog)
@@ -52,8 +42,7 @@ if len(downloads) == 0:
 downloads = sorted(downloads, key=lambda d: d['version'], reverse=True)
 
 # Get the file
-progress = Progress()
-filename, headers = urlretrieve(downloads[0]['url'], reporthook=progress.download_progress_hook)
+filename, headers = urlretrieve(downloads[0]['url'])
 
 if sys.argv[3].startswith('windows') and downloads[0]['format'] == 'exe':
     os.rename(filename, '{}.exe'.format(filename))

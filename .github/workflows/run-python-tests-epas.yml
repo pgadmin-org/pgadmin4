@@ -55,7 +55,7 @@ jobs:
       - name: Install platform dependencies on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: |
-          FOR /F "tokens=* USEBACKQ" %%F IN ('python tools/get_sb_package.py ${{ secrets.EDB_SBP_URL }} edb_as${{ matrix.pgver }}_dbserver windows-x64') DO (SET INSTALLER_EXE=%%F)
+          FOR /F "tokens=* USEBACKQ" %%F IN ('python tools/get_sb_package.py "${{ secrets.EDB_SBP_URL }}" "edb_as${{ matrix.pgver }}_dbserver" "windows-x64"') DO (SET INSTALLER_EXE=%%F)
           ECHO Running %INSTALLER_EXE%...
           %INSTALLER_EXE% --prefix C:\EPAS\${{ matrix.pgver }} --datadir C:\EPAS\${{ matrix.pgver }}\data --serverport 58${{ matrix.pgver }} --superpassword enterprisedb --create_samples no --install_runtimes 0 --disable-components pgadmin4
           
