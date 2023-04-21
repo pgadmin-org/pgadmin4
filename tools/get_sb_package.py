@@ -20,6 +20,8 @@ import xml.etree.ElementTree as ET
 if len(sys.argv) != 4:
     print('Usage: {} <Catalog URL> <Application ID> <Platform>'.\
           format(sys.argv[0]))
+    print('argv length: {}'.format(len(sys.argv)))
+    print('argv contents: {}'.format(sys.argv))
     sys.exit(1)
 
 # Get the catalog
