@@ -18,7 +18,7 @@ from urllib.request import urlopen, urlretrieve
 import xml.etree.ElementTree as ET
 
 if len(sys.argv) != 4:
-    print('Usage: {} <Catalog URL> <Application ID> <Platform>'.\
+    print('Usage: {} <Catalog URL> <Application ID> <Platform>'.
           format(sys.argv[0]))
     sys.exit(1)
 
