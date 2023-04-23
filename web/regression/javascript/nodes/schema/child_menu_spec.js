@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 /////////////////////////////////////////////////////////////
@@ -13,6 +13,45 @@ import {
 import pgAdmin from 'sources/pgadmin';
 import {TreeFake} from '../../tree/tree_fake';
 
+let beforeActionForSchema = (tree, pgBrowser)=> {
+  let hierarchy = {
+    id: 'root',
+    children: [{
+      id: 'level2',
+      data: {_type: 'schema'},
+      children: [{
+        id: 'coll-table',
+        data: {_type: 'coll-table'},
+        children: [{
+          id: 'table/1',
+          data: {_type: 'table'},
+        }],
+      }],
+    }],
+  };
+
+  pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
+};
+
+let beforeActionForCatalog = (tree, pgBrowser)=> {
+  let hierarchy = {
+    id: 'root',
+    children: [{
+      id: 'level2',
+      data: {_type: 'catalog'},
+      children: [{
+        id: 'coll-table',
+        data: {_type: 'coll-table'},
+        children: [{
+          id: 'table/1',
+          data: {_type: 'table'},
+        }],
+      }],
+    }],
+  };
+
+  pgBrowser.tree = TreeFake.build(hierarchy, pgBrowser);
+};
 
 describe('#childCreateMenuEnabled', () => {
   let data,
@@ -86,24 +125,7 @@ describe('#childCreateMenuEnabled', () => {
 
         describe(', on one of the child node under schema node ', () => {
           beforeEach(() => {
-            let hierarchy = {
-              id: 'root',
-              children: [{
-                id: 'level2',
-                data: {_type: 'schema'},
-                children: [{
-                  id: 'coll-table',
-                  data: {_type: 'coll-table'},
-                  children: [{
-                    id: 'table/1',
-                    data: {_type: 'table'},
-                  }],
-                }],
-              }],
-            };
-
-            tree = TreeFake.build(hierarchy, pgBrowser);
-            pgBrowser.tree = tree;
+            beforeActionForSchema(tree, pgBrowser);
           });
 
           it(' it is true', () => {
@@ -160,24 +182,7 @@ describe('#childCreateMenuEnabled', () => {
 
         describe(', on one of the child node under catalog node ', () => {
           beforeEach(() => {
-            let hierarchy = {
-              id: 'root',
-              children: [{
-                id: 'level2',
-                data: {_type: 'catalog'},
-                children: [{
-                  id: 'coll-table',
-                  data: {_type: 'coll-table'},
-                  children: [{
-                    id: 'table/1',
-                    data: {_type: 'table'},
-                  }],
-                }],
-              }],
-            };
-
-            tree = TreeFake.build(hierarchy, pgBrowser);
-            pgBrowser.tree = tree;
+            beforeActionForCatalog(tree, pgBrowser);
           });
 
           it(' it is false', () => {
@@ -195,27 +200,9 @@ describe('#childDropMenuEnabled', () => {
   let tree,
     pgBrowser = pgAdmin.Browser;
 
-
   describe(' - the child node under schema node ', () => {
     beforeEach(() => {
-      let hierarchy = {
-        id: 'root',
-        children: [{
-          id: 'level2',
-          data: {_type: 'schema'},
-          children: [{
-            id: 'coll-table',
-            data: {_type: 'coll-table'},
-            children: [{
-              id: 'table/1',
-              data: {_type: 'table'},
-            }],
-          }],
-        }],
-      };
-
-      tree = TreeFake.build(hierarchy, pgBrowser);
-      pgBrowser.tree = tree;
+      beforeActionForSchema(tree, pgBrowser);
     });
 
     it(' it is true', () => {
@@ -227,24 +214,7 @@ describe('#childDropMenuEnabled', () => {
 
   describe('- the child node under the catalog node ', () => {
     beforeEach(() => {
-      let hierarchy = {
-        id: 'root',
-        children: [{
-          id: 'level2',
-          data: {_type: 'catalog'},
-          children: [{
-            id: 'coll-table',
-            data: {_type: 'coll-table'},
-            children: [{
-              id: 'table/1',
-              data: {_type: 'table'},
-            }],
-          }],
-        }],
-      };
-
-      tree = TreeFake.build(hierarchy, pgBrowser);
-      pgBrowser.tree = tree;
+      beforeActionForCatalog(tree, pgBrowser);
     });
 
     it(' it is false', () => {

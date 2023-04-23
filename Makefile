@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2018, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 #########################################################################
@@ -18,13 +18,19 @@ APP_REVISION := $(shell grep ^APP_REVISION web/config.py | awk -F"=" '{print $$N
 #########################################################################
 
 # Include only platform-independent builds in all
-all: docs pip src runtime
+all: docs pip src
 
 appbundle:
 	./pkg/mac/build.sh
 
 install-node:
 	cd web && yarn install
+
+install-python:
+	./tools/setup-python-env.sh
+
+install-python-testing:
+	./tools/setup-python-env.sh --test
 
 bundle:
 	cd web && yarn run bundle
@@ -76,22 +82,12 @@ check-js: install-node linter
 check-js-coverage:
     cd web && yarn run test:karma-coverage
 
-runtime-debug:
-	cd runtime && qmake CONFIG+=debug && make
-
-runtime:
-	cd runtime && qmake CONFIG+=release && make
-
 # Include all clean sub-targets in clean
-clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-redhat clean-src clean-runtime
+clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-redhat clean-src
 	rm -rf web/pgadmin/static/js/generated/*
 	rm -rf web/pgadmin/static/js/generated/.cache
 	rm -rf web/pgadmin/static/css/generated/*
 	rm -rf web/pgadmin/static/css/generated/.cache
-
-clean-runtime:
-	if [ -f runtime/Makefile ]; then (cd runtime && make clean); fi;
-	rm -rf build-*
 
 clean-appbundle:
 	rm -rf mac-build/
@@ -122,7 +118,7 @@ debian:
 
 docker:
 	echo $(APP_NAME)
-	docker build -t ${APP_NAME} -t $(APP_NAME):latest -t $(APP_NAME):$(APP_RELEASE) -t $(APP_NAME):$(APP_RELEASE).$(APP_REVISION) .
+	docker build --pull -t ${APP_NAME} -t $(APP_NAME):latest -t $(APP_NAME):$(APP_RELEASE) -t $(APP_NAME):$(APP_RELEASE).$(APP_REVISION) .
 
 docs:
 	LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 $(MAKE) -C docs/en_US -f Makefile.sphinx html

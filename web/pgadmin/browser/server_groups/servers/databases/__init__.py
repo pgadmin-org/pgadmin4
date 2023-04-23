@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,12 +12,12 @@
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, current_app, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import current_user
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.utils import \
@@ -47,7 +47,7 @@ class DatabaseModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(DatabaseModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid):
         """
@@ -94,6 +94,40 @@ class DatabaseModule(CollectionNodeModule):
         module.
         """
         return False
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .casts import blueprint as module
+        self.submodules.append(module)
+
+        from .event_triggers import blueprint as module
+        self.submodules.append(module)
+
+        from .extensions import blueprint as module
+        self.submodules.append(module)
+
+        from .foreign_data_wrappers import blueprint as module
+        self.submodules.append(module)
+
+        from .languages import blueprint as module
+        self.submodules.append(module)
+
+        from .publications import blueprint as module
+        self.submodules.append(module)
+
+        from .schemas import schema_blueprint as module
+        self.submodules.append(module)
+
+        from .schemas import catalog_blueprint as module
+        self.submodules.append(module)
+
+        from .subscriptions import blueprint as module
+        self.submodules.append(module)
+
+        super().register(app, options)
 
 
 blueprint = DatabaseModule(__name__)
@@ -182,7 +216,6 @@ class DatabaseView(PGChildNodeView):
                 if self.manager is None:
                     return gone(errormsg=_("Could not find the server."))
 
-                self.datlastsysoid = 0
                 self.datistemplate = False
                 if action and action in ["drop"]:
                     self.conn = self.manager.connection()
@@ -193,8 +226,7 @@ class DatabaseView(PGChildNodeView):
                     # provide generic connection
                     if kwargs['did'] in self.manager.db_info:
                         self._db = self.manager.db_info[kwargs['did']]
-                        self.datlastsysoid, self.datistemplate, \
-                            datallowconn = \
+                        self.datistemplate, datallowconn = \
                             get_attributes_from_db_info(self.manager, kwargs)
 
                         if datallowconn is False:
@@ -232,35 +264,68 @@ class DatabaseView(PGChildNodeView):
             conn=self.conn,
             last_system_oid=last_system_oid,
             db_restrictions=db_disp_res,
-            show_system_objects=self.blueprint.show_system_objects,
         )
         status, res = self.conn.execute_dict(SQL, params)
 
         if not status:
             return internal_server_error(errormsg=res)
 
+        result_set = []
         for row in res['rows']:
+            row['is_sys_obj'] = (
+                row['did'] <= self._DATABASE_LAST_SYSTEM_OID or
+                self.datistemplate)
+            if self.skip_db(row):
+                continue
+
             if self.manager.db == row['name']:
                 row['canDrop'] = False
             else:
                 row['canDrop'] = True
 
+            result_set.append(row)
+
         return ajax_response(
-            response=res['rows'],
+            response=result_set,
             status=200
         )
 
     def retrieve_last_system_oid(self):
         last_system_oid = 0
-        if self.blueprint.show_system_objects:
-            last_system_oid = 0
-        elif (
-            self.manager.db_info is not None and
-            self.manager.did in self.manager.db_info
-        ):
-            last_system_oid = (self.manager.db_info[self.manager.did])[
-                'datlastsysoid']
+
+        if not self.blueprint.show_system_objects:
+            last_system_oid = self._DATABASE_LAST_SYSTEM_OID
+
         return last_system_oid
+
+    def get_icon(self, res, connected):
+        if not connected and not res['is_template']:
+            icon = "icon-database-not-connected"
+        elif not connected and res['is_template']:
+            icon = 'icon-database-template-not-connected'
+        elif connected and res['is_template']:
+            icon = 'icon-database-template-connected'
+        else:
+            icon = "pg-icon-database"
+
+        return icon
+
+    def skip_db(self, row):
+
+        if not self.blueprint.show_system_objects \
+            and row['is_sys_obj'] \
+                and row['name'] not in ('postgres', 'edb') \
+                or not self.blueprint.show_database_template \
+                and row['is_sys_obj'] \
+                and row['name'] not in ('postgres', 'edb'):
+            return True
+
+        if not self.blueprint.show_database_template \
+            and row['is_template'] and \
+            not row['is_sys_obj'] and \
+                row['name'] not in ('postgres', 'edb'):
+            return True
+        return False
 
     def get_nodes(self, gid, sid, is_schema_diff=False):
         res = []
@@ -269,8 +334,7 @@ class DatabaseView(PGChildNodeView):
         # if is_schema_diff then no need to show system templates.
         if is_schema_diff and self.manager.db_info is not None and \
                 self.manager.did in self.manager.db_info:
-            last_system_oid = \
-                self.manager.db_info[self.manager.did]['datlastsysoid']
+            last_system_oid = self._DATABASE_LAST_SYSTEM_OID
 
         server_node_res = self.manager
 
@@ -285,7 +349,6 @@ class DatabaseView(PGChildNodeView):
             "/".join([self.template_path, self._NODES_SQL]),
             last_system_oid=last_system_oid,
             db_restrictions=db_disp_res,
-            show_system_objects=self.blueprint.show_system_objects,
         )
         status, rset = self.conn.execute_dict(SQL, params)
 
@@ -294,6 +357,12 @@ class DatabaseView(PGChildNodeView):
 
         for row in rset['rows']:
             dbname = row['name']
+            row['is_sys_obj'] = (
+                row['did'] <= self._DATABASE_LAST_SYSTEM_OID or
+                self.datistemplate)
+
+            if self.skip_db(row):
+                continue
             if self.manager.db == dbname:
                 connected = True
                 can_drop = can_dis_conn = False
@@ -302,19 +371,21 @@ class DatabaseView(PGChildNodeView):
                 connected = conn.connected()
                 can_drop = can_dis_conn = True
 
+            icon = self.get_icon(row, connected)
+
             res.append(
                 self.blueprint.generate_browser_node(
                     row['did'],
                     sid,
                     row['name'],
-                    icon="icon-database-not-connected" if not connected
-                    else "pg-icon-database",
+                    icon=icon,
                     connected=connected,
                     tablespace=row['spcname'],
                     allowConn=row['datallowconn'],
                     canCreate=row['cancreate'],
                     canDisconn=can_dis_conn,
                     canDrop=can_drop,
+                    isTemplate=row['is_template'],
                     inode=True if row['datallowconn'] else False
                 )
             )
@@ -402,7 +473,7 @@ class DatabaseView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, conn=self.conn, last_system_oid=0,
-            show_system_objects=self.blueprint.show_system_objects,
+            show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -426,7 +497,7 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
+            did=did, conn=self.conn, grant_reovke_sql=False
         )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:
@@ -436,7 +507,7 @@ class DatabaseView(PGChildNodeView):
 
         result = res['rows'][0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or self.datistemplate)
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID)
         # Fetching variable for database
         SQL = render_template(
             "/".join([self.template_path, 'get_variables.sql']),
@@ -537,7 +608,7 @@ class DatabaseView(PGChildNodeView):
         """
         This function to return list of avialable encodings
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         SQL = render_template(
             "/".join([self.template_path, 'get_encodings.sql'])
         )
@@ -590,7 +661,7 @@ class DatabaseView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -656,7 +727,8 @@ class DatabaseView(PGChildNodeView):
                 allowConn=True,
                 canCreate=response['cancreate'],
                 canDisconn=True,
-                canDrop=True
+                canDrop=True,
+                isTemplate=response['is_template']
             )
         )
 
@@ -751,7 +823,7 @@ class DatabaseView(PGChildNodeView):
 
     def _get_data_from_request(self):
         return request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
     @check_precondition(action='update')
@@ -835,14 +907,16 @@ class DatabaseView(PGChildNodeView):
 
         can_drop = can_dis_conn = is_can_drop
 
+        icon = self.get_icon(res,
+                             self.conn.connected()
+                             if self._db['datallowconn'] else False)
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 did,
                 sid,
                 res['name'],
-                icon="pg-icon-{0}".format(self.node_type) if
-                self._db['datallowconn'] and self.conn.connected() else
-                "icon-database-not-connected",
+                icon=icon,
                 connected=self.conn.connected() if
                 self._db['datallowconn'] else False,
                 tablespace=res['spcname'],
@@ -850,7 +924,8 @@ class DatabaseView(PGChildNodeView):
                 canCreate=res['cancreate'],
                 canDisconn=can_dis_conn,
                 canDrop=can_drop,
-                inode=True if res['datallowconn'] else False
+                inode=True if res['datallowconn'] else False,
+                isTemplate=res['is_template'],
             )
         )
 
@@ -885,7 +960,7 @@ class DatabaseView(PGChildNodeView):
 
         if did is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [did]}
@@ -953,7 +1028,7 @@ class DatabaseView(PGChildNodeView):
                 if k in ('comments',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         status, res = self.get_sql(gid, sid, data, did)
@@ -1021,7 +1096,7 @@ class DatabaseView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls, encoding='utf-8')
+            acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -1057,7 +1132,7 @@ class DatabaseView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls, encoding='utf-8')
+            acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -1145,7 +1220,7 @@ class DatabaseView(PGChildNodeView):
         This function will generate sql for sql panel
         """
 
-        conn = self.manager.connection()
+        conn = self.manager.connection(did=did)
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             did=did, conn=conn, last_system_oid=0,
@@ -1172,7 +1247,7 @@ class DatabaseView(PGChildNodeView):
 
         SQL = render_template(
             "/".join([self.template_path, 'defacl.sql']),
-            did=did, conn=self.conn
+            did=did, conn=self.conn, grant_reovke_sql=True
         )
         status, defaclres = self.conn.execute_dict(SQL)
         if not status:

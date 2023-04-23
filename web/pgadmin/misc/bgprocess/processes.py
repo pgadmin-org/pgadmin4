@@ -3,7 +3,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL License
 #
 ##########################################################################
@@ -16,20 +16,23 @@ import os
 import sys
 import psutil
 from abc import ABCMeta, abstractproperty, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from pickle import dumps, loads
 from subprocess import Popen, PIPE
 import logging
+import json
+import shutil
 
 from pgadmin.utils import u_encode, file_quote, fs_encoding, \
     get_complete_file_path, get_storage_directory, IS_WIN
-from pgadmin.browser.server_groups.servers.utils import does_server_exists
 from pgadmin.utils.constants import KERBEROS
+from pgadmin.utils.locker import ConnectionLocker
+from pgadmin.utils.preferences import Preferences
 
 import pytz
 from dateutil import parser
 from flask import current_app, session
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import current_user
 
 import config
@@ -52,8 +55,9 @@ def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
     ).strftime(format)
 
 
-class IProcessDesc(object, metaclass=ABCMeta):
-    @abstractproperty
+class IProcessDesc(metaclass=ABCMeta):
+    @property
+    @abstractmethod
     def message(self):
         pass
 
@@ -107,7 +111,7 @@ def replace_path_for_win(last_dir=None):
     return last_dir
 
 
-class BatchProcess(object):
+class BatchProcess():
     def __init__(self, **kwargs):
 
         self.id = self.desc = self.cmd = self.args = self.log_dir = \
@@ -118,8 +122,13 @@ class BatchProcess(object):
         if 'id' in kwargs:
             self._retrieve_process(kwargs['id'])
         else:
+            _cmd = kwargs['cmd']
+            # Get system's interpreter
+            if kwargs['cmd'] == 'python':
+                _cmd = self._get_python_interpreter()
+
             self._create_process(
-                kwargs['desc'], kwargs['cmd'], kwargs['args']
+                kwargs['desc'], _cmd, kwargs['args']
             )
 
     def _retrieve_process(self, _id):
@@ -128,7 +137,10 @@ class BatchProcess(object):
         if p is None:
             raise LookupError(PROCESS_NOT_FOUND)
 
-        tmp_desc = loads(p.desc)
+        try:
+            tmp_desc = loads(bytes.fromhex(p.desc))
+        except Exception:
+            tmp_desc = loads(p.desc)
 
         # ID
         self.id = _id
@@ -162,11 +174,11 @@ class BatchProcess(object):
         )
 
         def random_number(size):
-            import random
+            import secrets
             import string
 
             return ''.join(
-                random.choice(
+                secrets.choice(
                     string.ascii_uppercase + string.digits
                 ) for _ in range(size)
             )
@@ -219,7 +231,7 @@ class BatchProcess(object):
         csv_writer.writerow(_args)
 
         args_val = args_csv_io.getvalue().strip(str('\r\n'))
-        tmp_desc = dumps(self.desc)
+        tmp_desc = dumps(self.desc).hex()
 
         j = Process(
             pid=int(uid),
@@ -244,13 +256,8 @@ class BatchProcess(object):
                 _('The process has already finished and cannot be restarted.')
             )
 
-    def start(self, cb=None):
-        self.check_start_end_time()
-
-        executor = file_quote(os.path.join(
-            os.path.dirname(u_encode(__file__)), 'process_executor.py'
-        ))
-
+    def _get_python_interpreter(self):
+        """Get Python Interpreter"""
         if os.name == 'nt':
             paths = os.environ['PATH'].split(os.pathsep)
 
@@ -259,14 +266,25 @@ class BatchProcess(object):
                 str(paths)
             )
 
-            interpreter = self.get_interpreter(paths)
+            interpreter = self.get_windows_interpreter(paths)
         else:
             interpreter = sys.executable
+            if interpreter.endswith('uwsgi'):
+                interpreter = interpreter.split('uwsgi',
+                                                maxsplit=1)[0] + 'python'
 
-        cmd = [
-            interpreter if interpreter is not None else 'python',
-            executor, self.cmd
-        ]
+        return interpreter if interpreter else 'python'
+
+    def start(self, cb=None):
+        self.check_start_end_time()
+
+        executor = file_quote(os.path.join(
+            os.path.dirname(u_encode(__file__)), 'process_executor.py'
+        ))
+
+        interpreter = self._get_python_interpreter()
+
+        cmd = [interpreter, executor, self.cmd]
         cmd.extend(self.args)
 
         current_app.logger.info(
@@ -274,14 +292,18 @@ class BatchProcess(object):
             str(cmd)
         )
 
-        # Make a copy of environment, and add new variables to support
-        env = os.environ.copy()
+        # Acquiring lock while copying the environment from the parent process
+        # for the child process
+        with ConnectionLocker(_is_kerberos_conn=False):
+            # Make a copy of environment, and add new variables to support
+            env = os.environ.copy()
+
         env['PROCID'] = self.id
         env['OUTDIR'] = self.log_dir
         env['PGA_BGP_FOREGROUND'] = "1"
         if config.SERVER_MODE and session and \
                 session['auth_source_manager']['current_source'] == \
-                KERBEROS:
+                KERBEROS and 'KRB5CCNAME' in session:
             env['KRB5CCNAME'] = session['KRB5CCNAME']
 
         if self.env:
@@ -319,7 +341,7 @@ class BatchProcess(object):
             else:
                 p = Popen(
                     cmd, close_fds=True, stdout=None, stderr=None, stdin=None,
-                    preexec_fn=self.preexec_function, env=env
+                    start_new_session=True, env=env
                 )
 
         self.ecode = p.poll()
@@ -355,7 +377,7 @@ class BatchProcess(object):
         """
         p = Popen(
             cmd, close_fds=True, stdout=PIPE, stderr=PIPE, stdin=None,
-            preexec_fn=self.preexec_function, env=env
+            start_new_session=True, env=env
         )
 
         output, errors = p.communicate()
@@ -377,7 +399,7 @@ class BatchProcess(object):
         # Explicitly ignoring signals in the child process
         signal.signal(signal.SIGINT, signal.SIG_IGN)
 
-    def get_interpreter(self, paths):
+    def get_windows_interpreter(self, paths):
         """
         Get interpreter.
         :param paths:
@@ -449,8 +471,9 @@ class BatchProcess(object):
         idx = 0
         c = re.compile(r"(\d+),(.*$)")
 
+        # If file is not present then
         if not os.path.isfile(logfile):
-            return 0, False
+            return 0, True
 
         with open(logfile, 'rb') as f:
             eofs = os.fstat(f.fileno()).st_size
@@ -481,6 +504,62 @@ class BatchProcess(object):
                     break
 
         return pos, completed
+
+    def update_cloud_details(self):
+        """
+        Parse the output to get the cloud instance details
+        """
+        _pid = self.id
+
+        _process = Process.query.filter_by(
+            user_id=current_user.id, pid=_pid
+        ).first()
+
+        if _process is None:
+            raise LookupError(PROCESS_NOT_FOUND)
+
+        ctime = get_current_time(format='%y%m%d%H%M%S%f')
+        stdout = []
+        stderr = []
+        out = 0
+        err = 0
+        cloud_server_id = 0
+        cloud_instance = ''
+
+        enc = sys.getdefaultencoding()
+        if enc == 'ascii':
+            enc = 'utf-8'
+
+        out, out_completed = self.read_log(
+            self.stdout, stdout, out, ctime, _process.exit_code, enc
+        )
+        err, err_completed = self.read_log(
+            self.stderr, stderr, err, ctime, _process.exit_code, enc
+        )
+
+        from pgadmin.misc.cloud import update_server, clear_cloud_session
+        if out_completed and not _process.exit_code:
+            for value in stdout:
+                if 'instance' in value[1] and value[1] != '':
+                    cloud_instance = json.loads(value[1])
+                    cloud_server_id = _process.server_id
+
+                if type(cloud_instance) is dict and \
+                        'instance' in cloud_instance:
+                    cloud_instance['instance']['sid'] = cloud_server_id
+                    cloud_instance['instance']['status'] = True
+                    cloud_instance['instance']['pid'] = _pid
+                    return update_server(cloud_instance)
+        elif err_completed and _process.exit_code is not None and \
+                _process.exit_code > 0:
+            cloud_instance = {'instance': {}}
+            cloud_instance['instance']['sid'] = _process.server_id
+            cloud_instance['instance']['status'] = False
+            cloud_instance['instance']['pid'] = _pid
+            return update_server(cloud_instance)
+        else:
+            clear_cloud_session(_pid)
+        return True, {}
 
     def status(self, out=0, err=0):
         ctime = get_current_time(format='%y%m%d%H%M%S%f')
@@ -544,8 +623,7 @@ class BatchProcess(object):
             },
             'start_time': self.stime,
             'exit_code': self.ecode,
-            'execution_time': execution_time,
-            'process_state': self.process_state
+            'execution_time': execution_time
         }
 
     @staticmethod
@@ -605,7 +683,11 @@ class BatchProcess(object):
         :return: return value for details, type_desc and desc related
         to process
         """
-        desc = loads(p.desc)
+        try:
+            desc = loads(bytes.fromhex(p.desc))
+        except Exception:
+            desc = loads(p.desc)
+
         details = desc
         type_desc = ''
         current_storage_dir = None
@@ -635,8 +717,23 @@ class BatchProcess(object):
         processes = Process.query.filter_by(user_id=current_user.id)
         changed = False
 
+        browser_preference = Preferences.module('browser')
+        expiry_add = timedelta(
+            browser_preference.preference('process_retain_days').get() or 1
+        )
+
         res = []
-        for p in processes:
+        for p in [*processes]:
+            if p.start_time is not None:
+                # remove expired jobs
+                process_expiration_time = \
+                    parser.parse(p.start_time) + expiry_add
+                if datetime.now(process_expiration_time.tzinfo) >= \
+                        process_expiration_time:
+                    shutil.rmtree(p.logdir, True)
+                    db.session.delete(p)
+                    changed = True
+
             status, updated = BatchProcess.update_process_info(p)
             if not status:
                 continue
@@ -647,11 +744,6 @@ class BatchProcess(object):
                 p.acknowledge is not None and p.end_time is None
             ):
                 continue
-
-            if BatchProcess._operate_orphan_process(p):
-                continue
-
-            execution_time = None
 
             stime = parser.parse(p.start_time)
             etime = parser.parse(p.end_time or get_current_time())
@@ -672,6 +764,8 @@ class BatchProcess(object):
                 'acknowledge': p.acknowledge,
                 'execution_time': execution_time,
                 'process_state': p.process_state,
+                'utility_pid': p.utility_pid,
+                'server_id': p.server_id,
                 'current_storage_dir': current_storage_dir,
             })
 
@@ -679,29 +773,6 @@ class BatchProcess(object):
             db.session.commit()
 
         return res
-
-    @staticmethod
-    def _operate_orphan_process(p):
-
-        if p and p.desc:
-            desc = loads(p.desc)
-            if does_server_exists(desc.sid, current_user.id) is False:
-                current_app.logger.warning(
-                    _("Server with id '{0}' is either removed or does "
-                      "not exists for the background process "
-                      "'{1}'").format(desc.sid, p.pid)
-                )
-                try:
-                    BatchProcess.acknowledge(p.pid)
-                except LookupError as lerr:
-                    current_app.logger.warning(
-                        _("Status for the background process '{0}' could "
-                          "not be loaded.").format(p.pid)
-                    )
-                    current_app.logger.exception(lerr)
-                return True
-
-        return False
 
     @staticmethod
     def total_seconds(dt):
@@ -737,14 +808,26 @@ class BatchProcess(object):
         """Set environment variables"""
         if server:
             # Set SSL related ENV variables
-            if server.sslcert and server.sslkey and server.sslrootcert:
+            if hasattr(server, 'connection_params') and \
+                server.connection_params and \
+                'sslcert' in server.connection_params and \
+                'sslkey' in server.connection_params and \
+                    'sslrootcert' in server.connection_params:
                 # SSL environment variables
-                self.env['PGSSLMODE'] = server.ssl_mode
-                self.env['PGSSLCERT'] = get_complete_file_path(server.sslcert)
-                self.env['PGSSLKEY'] = get_complete_file_path(server.sslkey)
-                self.env['PGSSLROOTCERT'] = get_complete_file_path(
-                    server.sslrootcert
-                )
+                sslcert = get_complete_file_path(
+                    server.connection_params['sslcert'])
+                sslkey = get_complete_file_path(
+                    server.connection_params['sslkey'])
+                sslrootcert = get_complete_file_path(
+                    server.connection_params['sslrootcert'])
+
+                self.env['PGSSLMODE'] = server.connection_params['sslmode'] \
+                    if hasattr(server, 'connection_params') and \
+                    'sslmode' in server.connection_params else 'prefer'
+                self.env['PGSSLCERT'] = '' if sslcert is None else sslcert
+                self.env['PGSSLKEY'] = '' if sslkey is None else sslkey
+                self.env['PGSSLROOTCERT'] = \
+                    '' if sslrootcert is None else sslrootcert
 
             # Set service name related ENV variable
             if server.service:
@@ -769,10 +852,25 @@ class BatchProcess(object):
             process.terminate()
             # Update the process state to "Terminated"
             p.process_state = PROCESS_TERMINATED
-            db.session.commit()
+        except psutil.NoSuchProcess:
+            p.process_state = PROCESS_TERMINATED
         except psutil.Error as e:
             current_app.logger.warning(
                 _("Unable to kill the background process '{0}'").format(
                     p.utility_pid)
             )
             current_app.logger.exception(e)
+        db.session.commit()
+
+    @staticmethod
+    def update_server_id(_pid, _sid):
+        p = Process.query.filter_by(
+            user_id=current_user.id, pid=_pid
+        ).first()
+
+        if p is None:
+            raise LookupError(PROCESS_NOT_FOUND)
+
+        # Update the cloud server id
+        p.server_id = _sid
+        db.session.commit()

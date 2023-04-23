@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 export default class CatalogSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
       namespaceowner: undefined,

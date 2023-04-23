@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,14 +11,11 @@
 a webserver, this will provide the WSGI interface, otherwise, we're going
 to start a web server."""
 
-
 import sys
-
 
 if sys.version_info < (3, 4):
     raise RuntimeError('This application must be run under Python 3.4 '
                        'or later.')
-
 import builtins
 import os
 
@@ -36,9 +33,20 @@ if 'PGADMIN_SERVER_MODE' in os.environ:
 else:
     builtins.SERVER_MODE = None
 
+if (3, 10) > sys.version_info > (3, 8) and os.name == 'posix':
+    # Fix eventlet issue with Python 3.9.
+    # Ref: https://github.com/eventlet/eventlet/issues/670
+    # This was causing issue in psycopg3
+    import select
+    from eventlet import hubs
+    hubs.use_hub("poll")
+
+    import selectors
+    selectors.DefaultSelector = selectors.PollSelector
+
 import config
+import setup
 from pgadmin import create_app, socketio
-from pgadmin.utils import u_encode, fs_encoding, file_quote
 from pgadmin.utils.constants import INTERNAL
 # Get the config database schema version. We store this in pgadmin.model
 # as it turns out that putting it in the config files isn't a great idea
@@ -48,7 +56,7 @@ from pgadmin.model import SCHEMA_VERSION
 ##########################################################################
 # Support reverse proxying
 ##########################################################################
-class ReverseProxied(object):
+class ReverseProxied():
     def __init__(self, app):
         self.app = app
         # https://werkzeug.palletsprojects.com/en/0.15.x/middleware/proxy_fix
@@ -83,28 +91,29 @@ class ReverseProxied(object):
 config.SETTINGS_SCHEMA_VERSION = SCHEMA_VERSION
 
 # Check if the database exists. If it does not, create it.
+setup_db_required = False
 if not os.path.isfile(config.SQLITE_PATH):
-    setup_py = os.path.join(
-        os.path.dirname(os.path.realpath(u_encode(__file__, fs_encoding))),
-        'setup.py'
-    )
-    exec(open(file_quote(setup_py), 'r').read())
-
+    setup_db_required = True
 
 ##########################################################################
 # Create the app and configure it. It is created outside main so that
 # it can be imported
 ##########################################################################
 app = create_app()
-app.debug = False
 app.config['sessions'] = dict()
 
-if config.SERVER_MODE:
-    app.wsgi_app = ReverseProxied(app.wsgi_app)
+if setup_db_required:
+    setup.setup_db(app)
 
 # Authentication sources
 if len(config.AUTHENTICATION_SOURCES) > 0:
-    app.PGADMIN_EXTERNAL_AUTH_SOURCE = config.AUTHENTICATION_SOURCES[0]
+    # Creating a temporary auth source list removing INTERNAL
+    # This change is done to avoid selecting INTERNAL authentication when user
+    # mistakenly keeps that the first option.
+    auth_source = [x for x in config.AUTHENTICATION_SOURCES
+                   if x != INTERNAL]
+    app.PGADMIN_EXTERNAL_AUTH_SOURCE = auth_source[0] \
+        if len(auth_source) > 0 else INTERNAL
 else:
     app.PGADMIN_EXTERNAL_AUTH_SOURCE = INTERNAL
 
@@ -138,6 +147,9 @@ if 'PGADMIN_INT_KEY' in os.environ:
 else:
     app.PGADMIN_INT_KEY = ''
 
+if not app.PGADMIN_RUNTIME:
+    app.wsgi_app = ReverseProxied(app.wsgi_app)
+
 
 ##########################################################################
 # The entry point
@@ -148,22 +160,6 @@ def main():
         if getattr(sys, _name) is None:
             setattr(sys, _name,
                     open(os.devnull, 'r' if _name == 'stdin' else 'w'))
-
-    # Build Javascript files when DEBUG
-    if config.DEBUG:
-        from pgadmin.utils.javascript.javascript_bundler import \
-            JavascriptBundler, JsState
-        app.debug = True
-
-        javascript_bundler = JavascriptBundler()
-        javascript_bundler.bundle()
-        if javascript_bundler.report() == JsState.NONE:
-            app.logger.error(
-                "Unable to generate javascript.\n"
-                "To run the app ensure that yarn install command runs "
-                "successfully"
-            )
-            raise RuntimeError("No generated javascript, aborting")
 
     # Output a startup message if we're not under the runtime and startup.
     # If we're under WSGI, we don't need to worry about this
@@ -199,19 +195,19 @@ def main():
             app.run(
                 host=config.DEFAULT_SERVER,
                 port=config.EFFECTIVE_SERVER_PORT,
+                debug=config.DEBUG,
                 use_reloader=(
-                    (not app.PGADMIN_RUNTIME) and app.debug and
+                    (not app.PGADMIN_RUNTIME) and
                     os.environ.get("WERKZEUG_RUN_MAIN") is not None
                 ),
                 threaded=config.THREADED_MODE
             )
         else:
-            # Can use cheroot instead of flask dev server when not in debug
-            # 10 is default thread count in CherootServer
-            # num_threads = 10 if config.THREADED_MODE else 1
             try:
                 socketio.run(
                     app,
+                    debug=config.DEBUG,
+                    allow_unsafe_werkzeug=True,
                     host=config.DEFAULT_SERVER,
                     port=config.EFFECTIVE_SERVER_PORT,
                 )

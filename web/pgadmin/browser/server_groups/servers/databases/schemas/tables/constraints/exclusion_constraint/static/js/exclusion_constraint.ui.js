@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
@@ -5,8 +13,18 @@ import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
-import { pgAlertify } from '../../../../../../../../../../static/js/helpers/legacyConnector';
 import TableSchema from '../../../../static/js/table.ui';
+import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
+
+function getData(data) {
+  let res = [];
+  if (data && _.isArray(data)) {
+    _.each(data, function(d) {
+      res.push({label: d[0], value: d[1]});
+    });
+  }
+  return res;
+}
 
 export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgBrowser, noColumns=false) {
   let tableNode = pgBrowser.Nodes['table'];
@@ -17,22 +35,10 @@ export function getNodeExclusionConstraintSchema(treeNodeInfo, itemNodeData, pgB
       return (m.label != 'pg_global');
     }),
     getOperClass: (urlParams)=>getNodeAjaxOptions('get_oper_class', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams, useCache:false}, (data)=>{
-      let res = [];
-      if (data && _.isArray(data)) {
-        _.each(data, function(d) {
-          res.push({label: d[0], value: d[1]});
-        });
-      }
-      return res;
+      return getData(data);
     }),
     getOperator: (urlParams)=>getNodeAjaxOptions('get_operator', tableNode, treeNodeInfo, itemNodeData, {urlParams: urlParams, useCache:false}, (data)=>{
-      let res = [];
-      if (data && _.isArray(data)) {
-        _.each(data, function(d) {
-          res.push({label: d[0], value: d[1]});
-        });
-      }
-      return res;
+      return getData(data);
     }),
   }, treeNodeInfo);
 }
@@ -186,7 +192,7 @@ class ExclusionColumnSchema extends BaseUISchema {
 }
 
 export default class ExclusionConstraintSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo) {
+  constructor(fieldOptions={}, nodeInfo={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -213,10 +219,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
   }
 
   get inTable() {
-    if(this.top && this.top instanceof TableSchema) {
-      return true;
-    }
-    return false;
+    return this.top && this.top instanceof TableSchema;
   }
 
   initialise(data) {
@@ -256,10 +259,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       id: 'comment', label: gettext('Comment'), cell: 'text',
       type: 'multiline', mode: ['properties', 'create', 'edit'],
       deps:['name'], disabled:function(state) {
-        if(isEmptyString(state.name)) {
-          return true;
-        }
-        return false;
+        return isEmptyString(state.name);
       }, depChange: (state)=>{
         if(isEmptyString(state.name)) {
           return {comment: ''};
@@ -275,7 +275,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       options: this.fieldOptions.amname,
       deferredDepChange: (state, source, topState, actionObj)=>{
         return new Promise((resolve)=>{
-          pgAlertify().confirm(
+          Notify.confirm(
             gettext('Change access method?'),
             gettext('Changing access method will clear columns collection'),
             function () {
@@ -325,11 +325,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       deps: ['condeferrable'],
       disabled: function(state) {
         // Disable if condeferred is false or unselected.
-        if(state.condeferrable) {
-          return false;
-        } else {
-          return true;
-        }
+        return !state.condeferrable;
       },
       readonly: obj.isReadonly,
       depChange: (state)=>{

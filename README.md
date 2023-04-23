@@ -48,7 +48,7 @@ node_modules/nw/nwjs/nwjs.app/Contents/MacOS/nwjs .
 # Configuring the Python Environment
 
 In order to run the Python code, a suitable runtime environment is required.
-Python version 3.6 and later are currently supported. It is recommended that a
+Python version 3.7 and later are currently supported. It is recommended that a
 Python Virtual Environment is setup for this purpose, rather than using the
 system Python environment. On Linux and Mac systems, the process is fairly
 simple - adapt as required for your distribution:
@@ -74,7 +74,7 @@ simple - adapt as required for your distribution:
    ```
    
 4. Ensure that a PostgreSQL installation's bin/ directory is in the path (so
-   pg_config can be found for building psycopg2), and install the required
+   pg_config can be found for building psycopg3), and install the required
    packages:
 
    ```bash
@@ -206,6 +206,7 @@ virtual environment. This can be installed with the pip package manager:
 ```bash
 $ source venv/bin/activate
 (venv) $ pip install Sphinx
+(venv) $ pip install sphinxcontrib-youtube
 ```
 
 The docs can then be built using the Makefile in *$PGADMIN4_SRC*, e.g.
@@ -261,17 +262,23 @@ There is no need to increment the SETTINGS_SCHEMA_VERSION.
 
 See https://www.pgadmin.org/support/ for support options.
 
+# Security Issues
+
+If you would like to report a security issue with pgAdmin, please email
+**security (at) pgadmin (dot) org**.
+    
+Note that this address should only be used for reporting security issues
+that you believe you've found in the design or code of pgAdmin, pgAgent,
+and the pgAdmin website. It should not be used to ask security questions.
+
 # Project info
 
-The source code repository can be found here:
+A GitHub project for pgAdmin 4 can be found at the address below:
 
-http://git.postgresql.org/gitweb/?p=pgadmin4.git;a=summary
+https://github.com/pgadmin-org/pgadmin4
 
-A Redmine project for pgAdmin 4 can be found at the address below. A PostgreSQL
-community account is required to access this site. Please note that at present
-only project developers can log bug and feature requests:
-
-https://redmine.postgresql.org/projects/pgadmin4
+Please submit any changes as Pull Requests against the *master* branch of the
+*pgadmin-org/pgadmin4* repository.
 
 If you wish to discuss pgAdmin 4, or contribute to the project, please use the
 pgAdmin Hackers mailing list:

@@ -1,0 +1,115 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
+
+import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
+import {DividerBox} from 'rc-dock';
+
+import url_for from 'sources/url_for';
+
+import { Box, makeStyles } from '@material-ui/core';
+
+import { Results } from './Results';
+import { SchemaDiffCompare } from './SchemaDiffCompare';
+import EventBus from '../../../../../static/js/helpers/EventBus';
+import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
+import { useModal } from '../../../../../static/js/helpers/ModalProvider';
+
+export const SchemaDiffEventsContext = createContext();
+export const SchemaDiffContext = createContext();
+
+const useStyles = makeStyles((theme) => ({
+  resultPanle: {
+    backgroundColor: theme.palette.default.main,
+    zIndex: 5,
+    border: '1px solid ' + theme.otherVars.borderColor,
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    height: 0,
+    overflow: 'hidden',
+  },
+  comparePanel:{
+    overflow: 'hidden',
+    border: '1px solid ' + theme.otherVars.borderColor,
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    height: 0,
+  }
+}));
+
+export default function SchemaDiffComponent({params}) {
+  const classes = useStyles();
+  const eventBus = useRef(new EventBus());
+  const containerRef = React.useRef(null);
+  const api = getApiInstance();
+  const modal = useModal();
+  const [schemaDiffState, setSchemaDiffState] = useState({
+    preferences: null
+  });
+
+  const schemaDiffContextValue = useMemo(()=> ({
+    api: api,
+    modal: modal,
+    preferences_schema_diff: schemaDiffState.preferences
+  }), [schemaDiffState.preferences]);
+
+  registerUnload();
+  useEffect(() => {
+    reflectPreferences();
+    params.pgAdmin.Browser.onPreferencesChange('schema_diff', function () {
+      reflectPreferences();
+    });
+  }, []);
+
+  const reflectPreferences = useCallback(() => {
+    setSchemaDiffState({
+      preferences: params.pgAdmin.Browser.get_preferences_for_module('schema_diff')
+    });
+  }, []);
+
+  function registerUnload() {
+    window.addEventListener('unload', ()=>{
+      /* Using fetch with keepalive as the browser may
+      cancel the axios request on tab close. keepalive will
+      make sure the request is completed */
+      callFetch(
+        url_for('schema_diff.close', {
+          trans_id: params.transId
+        }), {
+          keepalive: true,
+          method: 'DELETE',
+        }
+      )
+        .then(()=>{/* Success */})
+        .catch((err)=>console.error(err));
+    });
+  }
+
+  return (
+    <SchemaDiffContext.Provider value={schemaDiffContextValue}>
+      <SchemaDiffEventsContext.Provider value={eventBus.current}>
+        <Box display="flex" flexDirection="column" flexGrow="1" height="100%" tabIndex="0" style={{minHeight: 80}}>
+          <DividerBox mode='vertical' style={{flexGrow: 1}}>
+            <div className={classes.comparePanel} id="schema-diff-compare-container" ref={containerRef}><SchemaDiffCompare params={params} /></div>
+            <div className={classes.resultPanle} id="schema-diff-result-container">
+              <Results />
+            </div>
+          </DividerBox>
+        </Box>
+      </SchemaDiffEventsContext.Provider>
+    </SchemaDiffContext.Provider>
+  );
+}
+
+SchemaDiffComponent.propTypes = {
+  params: PropTypes.object
+};

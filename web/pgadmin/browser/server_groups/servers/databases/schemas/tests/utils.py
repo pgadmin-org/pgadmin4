@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -58,10 +58,10 @@ def create_schema(connection, schema_name):
     """This function add the schemas into databases"""
     try:
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute("CREATE SCHEMA %s" % schema_name)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get schema details of newly created schema
         pg_cursor.execute("SELECT sch.oid, sch.nspname FROM "

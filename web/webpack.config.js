@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -41,9 +41,7 @@ const providePlugin = new webpack.ProvidePlugin({
   $: 'jquery',
   jQuery: 'jquery',
   'window.jQuery': 'jquery',
-  _: 'underscore',
-  Backbone: 'backbone',
-  Backgrid: 'backgrid',
+  _: 'lodash',
   pgAdmin: 'pgadmin',
   'moment': 'moment',
   'window.moment':'moment',
@@ -56,7 +54,7 @@ const providePlugin = new webpack.ProvidePlugin({
 // Reference: https://webpack.js.org/plugins/source-map-dev-tool-plugin/#components/sidebar/sidebar.jsx
 const sourceMapDevToolPlugin = new webpack.SourceMapDevToolPlugin({
   filename: '[name].js.map',
-  exclude: /(vendor|codemirror|slickgrid|pgadmin\.js|pgadmin.theme|pgadmin.static|style\.js|popper)/,
+  exclude: /(vendor|codemirror|pgadmin\.js|pgadmin.theme|pgadmin.static|style\.js|popper)/,
   columns: false,
 });
 
@@ -77,7 +75,7 @@ const copyFiles = new CopyPlugin({
 });
 
 const imageMinimizer = new ImageMinimizerPlugin({
-  test: /\.(jpe?g|png|gif|svg)$/i,
+  test: /\.(jpe?g|png|gif)$/i,
   minimizerOptions: {
     // Lossless optimization with custom option
     // Feel free to experiment with options for better result for you
@@ -95,8 +93,8 @@ function cssToBeSkiped(curr_path) {
     return true;
   }
 
-  for(let i=0; i< webpackShimConfig.css_bundle_skip.length; i++) {
-    if(path.join(__dirname, webpackShimConfig.css_bundle_skip[i]) === curr_path){
+  for(let value of webpackShimConfig.css_bundle_skip) {
+    if(path.join(__dirname, value) === curr_path){
       return true;
     }
   }
@@ -133,11 +131,11 @@ let pgadminScssStyles = [];
 let pgadminCssStyles = [];
 
 /* Include what is given in shim config */
-for(let i=0; i<webpackShimConfig.css_bundle_include.length; i++) {
-  if(webpackShimConfig.css_bundle_include[i].endsWith('.scss')) {
-    pgadminScssStyles.push(path.join(__dirname, webpackShimConfig.css_bundle_include[i]));
-  } else if(webpackShimConfig.css_bundle_include[i].endsWith('.css')){
-    pgadminCssStyles.push(path.join(__dirname, webpackShimConfig.css_bundle_include[i]));
+for(let value of webpackShimConfig.css_bundle_include) {
+  if(value.endsWith('.scss')) {
+    pgadminScssStyles.push(path.join(__dirname, value));
+  } else if(value.endsWith('.css')){
+    pgadminCssStyles.push(path.join(__dirname, value));
   }
 }
 
@@ -177,9 +175,26 @@ fs.readdirSync(all_themes_dir).map(function(curr_dir) {
 
 fs.writeFileSync(pgadminThemesJson, JSON.stringify(pgadminThemes, null, 4));
 
-var themeCssRules = function(theme_name) {
+let themeCssRules = function(theme_name) {
   return [{
-    test: /\.(jpe?g|png|gif|svg)$/i,
+    test: /\.svg$/,
+    oneOf: [
+      {
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: /svgr/,
+        use: ['@svgr/webpack'],
+      },
+      {
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 4 * 1024, // 4kb
+          }
+        }
+      },
+    ],
+  },{
+    test: /\.(jpe?g|png|gif)$/i,
     type: 'asset',
     parser: {
       dataUrlCondition: {
@@ -191,7 +206,7 @@ var themeCssRules = function(theme_name) {
     },
     exclude: /vendor/,
   },{
-    test: /\.(eot|svg|ttf|woff|woff2)$/,
+    test: /\.(eot|ttf|woff|woff2)$/,
     type: 'asset/resource',
     generator: {
       filename: 'fonts/[name].[ext]',
@@ -269,7 +284,7 @@ var themeCssRules = function(theme_name) {
   }];
 };
 
-var getThemeWebpackConfig = function(theme_name) {
+let getThemeWebpackConfig = function(theme_name) {
   return {
     mode: envType,
     devtool: devToolVal,
@@ -321,6 +336,9 @@ var getThemeWebpackConfig = function(theme_name) {
       modules: ['node_modules', '.'],
       extensions: ['.js'],
       unsafeCache: true,
+      fallback: {
+        'fs': false
+      },
     },
     // Watch mode Configuration: After initial build, webpack will watch for
     // changes in files and compiles only files which are changed,
@@ -340,7 +358,7 @@ var getThemeWebpackConfig = function(theme_name) {
   };
 };
 
-var pgadminThemesWebpack = [];
+let pgadminThemesWebpack = [];
 Object.keys(pgadminThemes).forEach((theme_name)=>{
   pgadminThemesWebpack.push(getThemeWebpackConfig(theme_name));
 });
@@ -356,13 +374,11 @@ module.exports = [{
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
-    slickgrid: sourceDir + '/bundle/slickgrid.js',
-    sqleditor: './pgadmin/tools/sqleditor/static/js/sqleditor.js',
-    debugger_direct: './pgadmin/tools/debugger/static/js/direct.js',
-    schema_diff: './pgadmin/tools/schema_diff/static/js/schema_diff_hook.js',
-    erd_tool: './pgadmin/tools/erd/static/js/erd_tool_hook.js',
+    sqleditor: './pgadmin/tools/sqleditor/static/js/index.js',
+    schema_diff: './pgadmin/tools/schema_diff/static/js/index.js',
+    erd_tool: './pgadmin/tools/erd/static/js/index.js',
     psql_tool: './pgadmin/tools/psql/static/js/index.js',
-    file_utils: './pgadmin/misc/file_manager/static/js/utility.js',
+    debugger: './pgadmin/tools/debugger/static/js/index.js',
     'pgadmin.style': pgadminCssStyles,
     pgadmin: pgadminScssStyles,
     style: './pgadmin/static/css/style.css',
@@ -388,7 +404,7 @@ module.exports = [{
     //
     // imports-loader: it adds dependent modules(use:imports-loader?module1)
     // at the beginning of module it is dependency of like:
-    // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
+    // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
@@ -413,7 +429,12 @@ module.exports = [{
           plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
         },
       },
-    }, {
+    },{
+      test: /\.m?js$/,
+      resolve: {
+        fullySpecified: false
+      },
+    },{
       test: /\.tsx?$|\.ts?$/,
       use: {
         loader: 'babel-loader',
@@ -443,23 +464,17 @@ module.exports = [{
     }, {
       // imports-loader: it adds dependent modules(use:imports-loader?module1)
       // at the beginning of module it is dependency of like:
-      // var jQuery = require('jquery'); var browser = require('pgadmin.browser')
+      // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
       // It solves number of problems
       // Ref: http:/github.com/webpack-contrib/imports-loader/
-      test: require.resolve('./pgadmin/tools/datagrid/static/js/datagrid'),
+      test: require.resolve('./pgadmin/tools/sqleditor/static/js/index'),
       use: {
         loader: 'imports-loader',
         options: {
           type: 'commonjs',
           imports: [
-            'pure|pgadmin.dashboard',
-            'pure|pgadmin.browser.quick_search',
             'pure|pgadmin.tools.user_management',
-            'pure|pgadmin.browser.object_statistics',
-            'pure|pgadmin.browser.dependencies',
-            'pure|pgadmin.browser.dependents',
-            'pure|pgadmin.browser.object_sql',
-            'pure|pgadmin.browser.bgprocess',
+            'pure|pgadmin.browser.bgprocessmanager',
             'pure|pgadmin.node.server_group',
             'pure|pgadmin.node.server',
             'pure|pgadmin.node.database',
@@ -512,22 +527,6 @@ module.exports = [{
         },
       },
     },{
-      test: require.resolve('./node_modules/acitree/js/jquery.aciTree.min'),
-      use: {
-        loader: 'imports-loader',
-        options: {
-          wrapper: 'window',
-        },
-      },
-    }, {
-      test: require.resolve('./node_modules/acitree/js/jquery.aciPlugin.min'),
-      use: {
-        loader: 'imports-loader',
-        options: {
-          wrapper: 'window',
-        },
-      },
-    }, {
       test: require.resolve('./pgadmin/static/bundle/browser'),
       use: {
         loader: 'imports-loader',
@@ -536,21 +535,22 @@ module.exports = [{
           imports: [
             'pure|pgadmin.about',
             'pure|pgadmin.preferences',
-            'pure|pgadmin.file_manager',
             'pure|pgadmin.settings',
             'pure|pgadmin.tools.backup',
             'pure|pgadmin.tools.restore',
             'pure|pgadmin.tools.grant_wizard',
             'pure|pgadmin.tools.maintenance',
             'pure|pgadmin.tools.import_export',
-            'pure|pgadmin.tools.debugger.controller',
-            'pure|pgadmin.tools.debugger.direct',
+            'pure|pgadmin.tools.import_export_servers',
+            'pure|pgadmin.tools.debugger',
             'pure|pgadmin.node.pga_job',
             'pure|pgadmin.tools.schema_diff',
-            'pure|pgadmin.tools.storage_manager',
+            'pure|pgadmin.tools.file_manager',
             'pure|pgadmin.tools.search_objects',
-            'pure|pgadmin.tools.erd_module',
+            'pure|pgadmin.tools.erd',
             'pure|pgadmin.tools.psql_module',
+            'pure|pgadmin.tools.sqleditor',
+            'pure|pgadmin.misc.cloud',
           ],
         },
       },
@@ -563,6 +563,9 @@ module.exports = [{
     modules: ['node_modules', '.'],
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     unsafeCache: true,
+    fallback: {
+      'fs': false
+    },
   },
   // Watch mode Configuration: After initial build, webpack will watch for
   // changes in files and compiles only files which are changed,
@@ -594,7 +597,7 @@ module.exports = [{
           minChunks: 2,
           enforce: true,
           test(module) {
-            return webpackShimConfig.matchModules(module, ['wcdocker', 'backbone', 'jquery', 'bootstrap', 'popper']);
+            return webpackShimConfig.matchModules(module, ['wcdocker', 'jquery', 'bootstrap', 'popper']);
           },
         },
         vendor_others: {

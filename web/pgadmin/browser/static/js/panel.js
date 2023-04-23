@@ -2,20 +2,23 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-define(
-  ['underscore', 'sources/pgadmin', 'jquery', 'wcdocker'],
-  function(_, pgAdmin, $) {
+import { getPanelView } from './panel_view';
+import _ from 'lodash';
 
-    var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
+define(
+  ['sources/pgadmin', 'wcdocker'],
+  function(pgAdmin) {
+
+    let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {},
       wcDocker = window.wcDocker;
 
     pgAdmin.Browser.Panel = function(options) {
-      var defaults = [
+      let defaults = [
         'name', 'title', 'width', 'height', 'showTitle', 'isCloseable',
         'isPrivate', 'isLayoutMember', 'content', 'icon', 'events', 'onCreate', 'elContainer',
         'canHide', 'limit', 'extraClasses', 'canMaximise',
@@ -41,7 +44,7 @@ define(
       limit: null,
       extraClasses: null,
       load: function(docker, title) {
-        var that = this;
+        let that = this;
         if (!that.panel) {
           docker.registerPanelType(that.name, {
             title: that.title,
@@ -49,30 +52,32 @@ define(
             limit: that.limit,
             isLayoutMember: that.isLayoutMember,
             onCreate: function(myPanel) {
-              $(myPanel).data('pgAdminName', that.name);
+              myPanel.panelData = {
+                pgAdminName: that.name,
+              };
               myPanel.initSize(that.width, that.height);
 
               if (!that.showTitle)
                 myPanel.title(false);
               else {
-                var title_elem = '<a href="#" tabindex="-1" class="panel-link-heading">' + (title || that.title) + '</a>';
+                let title_elem = '<a href="#" tabindex="-1" class="panel-link-heading">' + (title || that.title) + '</a>';
                 myPanel.title(title_elem);
                 if (that.icon != '')
                   myPanel.icon(that.icon);
               }
 
-              var $container = $('<div>', {
-                'class': 'pg-panel-content',
-              }).append($(that.content));
+              let container = document.createElement('div');
+              container.setAttribute('class', 'pg-panel-content');
+              container.innerHTML = that.content;
 
               // Add extra classes
               if (!_.isNull('extraClasses')) {
-                $container.addClass(that.extraClasses);
+                container.classList.add(that.extraClasses);
               }
 
               myPanel.maximisable(!!that.canMaximise);
               myPanel.closeable(!!that.isCloseable);
-              myPanel.layout().addItem($container);
+              myPanel.layout().addItem(container);
               that.panel = myPanel;
               if (that.events && _.isObject(that.events)) {
                 _.each(that.events, function(v, k) {
@@ -96,21 +101,20 @@ define(
               });
 
               if (that.onCreate && _.isFunction(that.onCreate)) {
-                that.onCreate.apply(that, [myPanel, $container]);
+                that.onCreate.apply(that, [myPanel, container]);
               }
 
               // Prevent browser from opening the drag file.
               // Using addEventListener to avoid conflict with jquery.drag
               ['dragover', 'drop'].forEach((eventName)=>{
-                $container[0].addEventListener(eventName, function(event) {
+                container.addEventListener(eventName, function(event) {
                   event.stopPropagation();
                   event.preventDefault();
                 });
               });
 
               if (that.elContainer) {
-                myPanel.pgElContainer = $container;
-                $container.addClass('pg-el-container');
+                myPanel.pgElContainer = container;
                 _.each([
                   wcDocker.EVENT.RESIZED, wcDocker.EVENT.ATTACHED,
                   wcDocker.EVENT.DETACHED, wcDocker.EVENT.VISIBILITY_CHANGED,
@@ -120,20 +124,81 @@ define(
                 that.resizedContainer.apply(myPanel);
               }
 
-              // Bind events only if they are configurable
-              if (that.canHide) {
-                _.each([wcDocker.EVENT.CLOSED, wcDocker.EVENT.VISIBILITY_CHANGED],
-                  function(ev) {
-                    myPanel.on(ev, that.handleVisibility.bind(myPanel, ev));
-                  });
+              if (myPanel._type == 'dashboard' || myPanel._type == 'processes') {
+                getPanelView(
+                  pgBrowser.tree,
+                  container,
+                  pgBrowser,
+                  myPanel._type
+                );
               }
+
+              // Re-render the dashboard panel when preference value 'show graph' gets changed.
+              pgBrowser.onPreferencesChange('dashboards', function() {
+                getPanelView(
+                  pgBrowser.tree,
+                  container,
+                  pgBrowser,
+                  myPanel._type
+                );
+              });
+
+              // Re-render the dashboard panel when preference value gets changed.
+              pgBrowser.onPreferencesChange('graphs', function() {
+                getPanelView(
+                  pgBrowser.tree,
+                  container,
+                  pgBrowser,
+                  myPanel._type
+                );
+              });
+
+              _.each([wcDocker.EVENT.CLOSED, wcDocker.EVENT.VISIBILITY_CHANGED],
+                function(ev) {
+                  myPanel.on(ev, that.handleVisibility.bind(myPanel, ev));
+                });
+
+              pgBrowser.Events.on('pgadmin-browser:tree:selected', () => {
+
+                if(myPanel.isVisible() && myPanel._type !== 'properties') {
+                  getPanelView(
+                    pgBrowser.tree,
+                    container,
+                    pgBrowser,
+                    myPanel._type
+                  );
+                }
+              });
+
+              pgBrowser.Events.on('pgadmin:database:connected', () => {
+
+                if(myPanel.isVisible() && myPanel._type !== 'properties') {
+                  getPanelView(
+                    pgBrowser.tree,
+                    container,
+                    pgBrowser,
+                    myPanel._type
+                  );
+                }
+              });
+
+              pgBrowser.Events.on('pgadmin-browser:tree:refreshing', () => {
+
+                if(myPanel.isVisible() && myPanel._type !== 'properties') {
+                  getPanelView(
+                    pgBrowser.tree,
+                    container,
+                    pgBrowser,
+                    myPanel._type
+                  );
+                }
+              });
             },
           });
         }
       },
       eventFunc: function(eventName) {
-        var name = $(this).data('pgAdminName');
-
+        let name = this.panelData.pgAdminName;
         try {
           pgBrowser.Events.trigger(
             'pgadmin-browser:panel', eventName, this, arguments
@@ -155,7 +220,7 @@ define(
         }
       },
       resizedContainer: function() {
-        var p = this;
+        let p = this;
 
         if (p.pgElContainer && !p.pgResizeTimeout) {
           if (!p.isVisible()) {
@@ -166,14 +231,11 @@ define(
           }
           p.pgResizeTimeout = setTimeout(
             function() {
-              var w = p.width(),
+              let w = p.width(),
                 elAttr = 'xs';
               p.pgResizeTimeout = null;
 
               /** Calculations based on https://getbootstrap.com/docs/4.1/layout/grid/#grid-options **/
-              if (w < 480) {
-                elAttr = 'xs';
-              }
               if (w >= 480) {
                 elAttr = 'sm';
               }
@@ -187,35 +249,40 @@ define(
                 elAttr = 'xl';
               }
 
-              p.pgElContainer.attr('el', elAttr);
+              p.pgElContainer.setAttribute('el', elAttr);
             },
             100
           );
         }
       },
       handleVisibility: function(eventName) {
-        // Supported modules
-        let type_module = {
-          'dashboard': pgAdmin.Dashboard,
-          'statistics': pgBrowser.NodeStatistics,
-          'dependencies': pgBrowser.NodeDependencies,
-          'dependents': pgBrowser.NodeDependents,
-        };
+        let selectedPanel = pgBrowser.docker.findPanels(this._type)[0];
+        let isPanelVisible = selectedPanel.isVisible();
+        let container = selectedPanel
+          .layout()
+          .scene()
+          .find('.pg-panel-content');
 
-        let module = type_module[this._type];
-        if(_.isUndefined(module))
-          return;
-
-        if(_.isUndefined(module.toggleVisibility))
-          return;
-
-        if (eventName == 'panelClosed') {
-          /* Pass the closed flag also */
-          module.toggleVisibility.call(module, false, true);
-        } else if (eventName == 'panelVisibilityChanged') {
-          module.toggleVisibility.call(module, pgBrowser.docker.findPanels(this._type)[0].isVisible(), false);
+        if (isPanelVisible && ['dashboard', 'statistics', 'dependencies', 'dependents', 'sql', 'processes'].includes(selectedPanel._type) ) {
+          if (eventName == 'panelVisibilityChanged') {
+            getPanelView(
+              pgBrowser.tree,
+              container[0],
+              pgBrowser,
+              this._type
+            );
+          }
         }
-      },
+        if (eventName == 'panelClosed' && selectedPanel._type == 'dashboard') {
+          getPanelView(
+            pgBrowser.tree,
+            container[0],
+            pgBrowser,
+            this._type,
+            false
+          );
+        }
+      }
 
     });
 

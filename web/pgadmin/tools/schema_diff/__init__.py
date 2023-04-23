@@ -2,21 +2,21 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module implementing the schema_diff frame."""
-import simplejson as json
+import json
 import pickle
-import random
+import secrets
 import copy
 
 from flask import Response, session, url_for, request
 from flask import render_template, current_app as app
 from flask_security import current_user, login_required
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     make_response as ajax_response, internal_server_error
@@ -28,9 +28,12 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS,\
     ERROR_MSG_TRANS_ID_NOT_FOUND
 from sqlalchemy import or_
+from pgadmin.authenticate import socket_login_required
+from pgadmin import socketio
 
 MODULE_NAME = 'schema_diff'
 COMPARE_MSG = gettext("Comparing objects...")
+SOCKETIO_NAMESPACE = '/{0}'.format(MODULE_NAME)
 
 
 class SchemaDiffModule(PgAdminModule):
@@ -44,13 +47,6 @@ class SchemaDiffModule(PgAdminModule):
 
     def get_own_menuitems(self):
         return {}
-
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.schema_diff',
-            'path': url_for('schema_diff.index') + "schema_diff",
-            'when': None
-        }]
 
     def get_panels(self):
         return []
@@ -66,9 +62,6 @@ class SchemaDiffModule(PgAdminModule):
             'schema_diff.servers',
             'schema_diff.databases',
             'schema_diff.schemas',
-            'schema_diff.compare_database',
-            'schema_diff.compare_schema',
-            'schema_diff.poll',
             'schema_diff.ddl_compare',
             'schema_diff.connect_server',
             'schema_diff.connect_database',
@@ -80,21 +73,20 @@ class SchemaDiffModule(PgAdminModule):
 
         self.preference.register(
             'display', 'ignore_whitespaces',
-            gettext("Ignore whitespaces"), 'boolean', False,
+            gettext("Ignore whitespace"), 'boolean', False,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, then the Schema Diff '
-                             'tool ignores the whitespaces while comparing '
-                             'the string objects. Whitespace includes space, '
-                             'tabs, and CRLF')
+            help_str=gettext('Set ignore whitespace on or off by default in '
+                             'the drop-down menu near the Compare button in '
+                             'the Schema Diff tab.')
         )
 
         self.preference.register(
             'display', 'ignore_owner',
             gettext("Ignore owner"), 'boolean', False,
             category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, then the Schema Diff '
-                             'tool ignores the owner while comparing '
-                             'the objects.')
+            help_str=gettext('Set ignore owner on or off by default in the '
+                             'drop-down menu near the Compare button in the '
+                             'Schema Diff tab.')
         )
 
 
@@ -135,18 +127,9 @@ def panel(trans_id, editor_title):
         "schema_diff/index.html",
         _=gettext,
         trans_id=trans_id,
-        editor_title=editor_title
-    )
-
-
-@blueprint.route("/schema_diff.js")
-@login_required
-def script():
-    """render the required javascript"""
-    return Response(
-        response=render_template("schema_diff/js/schema_diff.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
+        requirejs=True,
+        basejs=True,
+        editor_title=editor_title,
     )
 
 
@@ -206,7 +189,7 @@ def initialize():
     trans_id = None
     try:
         # Create a unique id for the transaction
-        trans_id = str(random.randint(1, 9999999))
+        trans_id = str(secrets.choice(range(1, 9999999)))
 
         if 'schemaDiff' not in session:
             schema_diff_data = dict()
@@ -453,34 +436,40 @@ def schemas(sid, did):
     return make_json_response(data=res)
 
 
-@blueprint.route(
-    '/compare_database/<int:trans_id>/<int:source_sid>/<int:source_did>/'
-    '<int:target_sid>/<int:target_did>',
-    methods=["GET"],
-    endpoint="compare_database"
-)
-@login_required
-def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
+@socketio.on('compare_database', namespace=SOCKETIO_NAMESPACE)
+@socket_login_required
+def compare_database(params):
     """
     This function will compare the two databases.
     """
     # Check the pre validation before compare
     status, error_msg, diff_model_obj, session_obj = \
-        compare_pre_validation(trans_id, source_sid, target_sid)
+        compare_pre_validation(params['trans_id'], params['source_sid'],
+                               params['target_sid'])
     if not status:
+        socketio.emit('compare_database_failed',
+                      error_msg.json if type(
+                          error_msg) == Response else error_msg,
+                      namespace=SOCKETIO_NAMESPACE, to=request.sid)
         return error_msg
 
     comparison_result = []
 
-    diff_model_obj.set_comparison_info(COMPARE_MSG, 0)
-    update_session_diff_transaction(trans_id, session_obj,
+    socketio.emit('compare_status', {'diff_percentage': 0,
+                  'compare_msg': COMPARE_MSG}, namespace=SOCKETIO_NAMESPACE,
+                  to=request.sid)
+    update_session_diff_transaction(params['trans_id'], session_obj,
                                     diff_model_obj)
 
     try:
+        ignore_owner = bool(params['ignore_owner'])
+        ignore_whitespaces = bool(params['ignore_whitespaces'])
+
         # Fetch all the schemas of source and target database
         # Compare them and get the status.
-        schema_result = fetch_compare_schemas(source_sid, source_did,
-                                              target_sid, target_did)
+        schema_result = \
+            fetch_compare_schemas(params['source_sid'], params['source_did'],
+                                  params['target_sid'], params['target_did'])
 
         total_schema = len(schema_result['source_only']) + len(
             schema_result['target_only']) + len(
@@ -495,11 +484,14 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
         # Compare Database objects
         comparison_schema_result, total_percent = \
             compare_database_objects(
-                trans_id=trans_id, session_obj=session_obj,
-                source_sid=source_sid, source_did=source_did,
-                target_sid=target_sid, target_did=target_did,
+                trans_id=params['trans_id'], session_obj=session_obj,
+                source_sid=params['source_sid'],
+                source_did=params['source_did'],
+                target_sid=params['target_sid'],
+                target_did=params['target_did'],
                 diff_model_obj=diff_model_obj, total_percent=total_percent,
-                node_percent=node_percent)
+                node_percent=node_percent, ignore_owner=ignore_owner,
+                ignore_whitespaces=ignore_whitespaces)
         comparison_result = \
             comparison_result + comparison_schema_result
 
@@ -509,15 +501,19 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
             for item in schema_result['source_only']:
                 comparison_schema_result, total_percent = \
                     compare_schema_objects(
-                        trans_id=trans_id, session_obj=session_obj,
-                        source_sid=source_sid, source_did=source_did,
-                        source_scid=item['scid'], target_sid=target_sid,
-                        target_did=target_did, target_scid=None,
+                        trans_id=params['trans_id'], session_obj=session_obj,
+                        source_sid=params['source_sid'],
+                        source_did=params['source_did'],
+                        source_scid=item['scid'],
+                        target_sid=params['target_sid'],
+                        target_did=params['target_did'], target_scid=None,
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
                         node_percent=node_percent,
-                        is_schema_source_only=True)
+                        is_schema_source_only=True,
+                        ignore_owner=ignore_owner,
+                        ignore_whitespaces=ignore_whitespaces)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -527,14 +523,18 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
             for item in schema_result['target_only']:
                 comparison_schema_result, total_percent = \
                     compare_schema_objects(
-                        trans_id=trans_id, session_obj=session_obj,
-                        source_sid=source_sid, source_did=source_did,
-                        source_scid=None, target_sid=target_sid,
-                        target_did=target_did, target_scid=item['scid'],
+                        trans_id=params['trans_id'], session_obj=session_obj,
+                        source_sid=params['source_sid'],
+                        source_did=params['source_did'],
+                        source_scid=None, target_sid=params['target_sid'],
+                        target_did=params['target_did'],
+                        target_scid=item['scid'],
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
-                        node_percent=node_percent)
+                        node_percent=node_percent,
+                        ignore_owner=ignore_owner,
+                        ignore_whitespaces=ignore_whitespaces)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
@@ -545,111 +545,97 @@ def compare_database(trans_id, source_sid, source_did, target_sid, target_did):
             for item in schema_result['in_both_database']:
                 comparison_schema_result, total_percent = \
                     compare_schema_objects(
-                        trans_id=trans_id, session_obj=session_obj,
-                        source_sid=source_sid, source_did=source_did,
-                        source_scid=item['src_scid'], target_sid=target_sid,
-                        target_did=target_did, target_scid=item['tar_scid'],
+                        trans_id=params['trans_id'], session_obj=session_obj,
+                        source_sid=params['source_sid'],
+                        source_did=params['source_did'],
+                        source_scid=item['src_scid'],
+                        target_sid=params['target_sid'],
+                        target_did=params['target_did'],
+                        target_scid=item['tar_scid'],
                         schema_name=item['schema_name'],
                         diff_model_obj=diff_model_obj,
                         total_percent=total_percent,
-                        node_percent=node_percent)
+                        node_percent=node_percent,
+                        ignore_owner=ignore_owner,
+                        ignore_whitespaces=ignore_whitespaces)
 
                 comparison_result = \
                     comparison_result + comparison_schema_result
 
         msg = gettext("Successfully compare the specified databases.")
         total_percent = 100
-        diff_model_obj.set_comparison_info(msg, total_percent)
         # Update the message and total percentage done in session object
-        update_session_diff_transaction(trans_id, session_obj, diff_model_obj)
+        update_session_diff_transaction(params['trans_id'], session_obj,
+                                        diff_model_obj)
 
     except Exception as e:
         app.logger.exception(e)
+        socketio.emit('compare_database_failed', str(e),
+                      namespace=SOCKETIO_NAMESPACE, to=request.sid)
 
-    return make_json_response(data=comparison_result)
+    socketio.emit('compare_database_success', comparison_result,
+                  namespace=SOCKETIO_NAMESPACE, to=request.sid)
 
 
-@blueprint.route(
-    '/compare_schema/<int:trans_id>/<int:source_sid>/<int:source_did>/'
-    '<int:source_scid>/<int:target_sid>/<int:target_did>/<int:target_scid>',
-    methods=["GET"],
-    endpoint="compare_schema"
-)
-@login_required
-def compare_schema(trans_id, source_sid, source_did, source_scid,
-                   target_sid, target_did, target_scid):
+@socketio.on('compare_schema', namespace=SOCKETIO_NAMESPACE)
+@socket_login_required
+def compare_schema(params):
     """
     This function will compare the two schema.
     """
     # Check the pre validation before compare
     status, error_msg, diff_model_obj, session_obj = \
-        compare_pre_validation(trans_id, source_sid, target_sid)
+        compare_pre_validation(params['trans_id'], params['source_sid'],
+                               params['target_sid'])
     if not status:
+        socketio.emit('compare_schema_failed',
+                      error_msg.json if type(
+                          error_msg) == Response else error_msg,
+                      namespace=SOCKETIO_NAMESPACE, to=request.sid)
         return error_msg
 
     comparison_result = []
 
-    diff_model_obj.set_comparison_info(COMPARE_MSG, 0)
-    update_session_diff_transaction(trans_id, session_obj,
+    update_session_diff_transaction(params['trans_id'], session_obj,
                                     diff_model_obj)
     try:
+        ignore_owner = bool(params['ignore_owner'])
+        ignore_whitespaces = bool(params['ignore_whitespaces'])
         all_registered_nodes = SchemaDiffRegistry.get_registered_nodes()
         node_percent = round(100 / len(all_registered_nodes))
         total_percent = 0
 
         comparison_schema_result, total_percent = \
             compare_schema_objects(
-                trans_id=trans_id, session_obj=session_obj,
-                source_sid=source_sid, source_did=source_did,
-                source_scid=source_scid, target_sid=target_sid,
-                target_did=target_did, target_scid=target_scid,
+                trans_id=params['trans_id'], session_obj=session_obj,
+                source_sid=params['source_sid'],
+                source_did=params['source_did'],
+                source_scid=params['source_scid'],
+                target_sid=params['target_sid'],
+                target_did=params['target_did'],
+                target_scid=params['target_scid'],
                 schema_name=gettext('Schema Objects'),
                 diff_model_obj=diff_model_obj,
                 total_percent=total_percent,
-                node_percent=node_percent)
+                node_percent=node_percent,
+                ignore_owner=ignore_owner,
+                ignore_whitespaces=ignore_whitespaces)
 
         comparison_result = \
             comparison_result + comparison_schema_result
 
         msg = gettext("Successfully compare the specified schemas.")
         total_percent = 100
-        diff_model_obj.set_comparison_info(msg, total_percent)
         # Update the message and total percentage done in session object
-        update_session_diff_transaction(trans_id, session_obj, diff_model_obj)
+        update_session_diff_transaction(params['trans_id'], session_obj,
+                                        diff_model_obj)
 
     except Exception as e:
         app.logger.exception(e)
-
-    return make_json_response(data=comparison_result)
-
-
-@blueprint.route(
-    '/poll/<int:trans_id>', methods=["GET"], endpoint="poll"
-)
-@login_required
-def poll(trans_id):
-    """
-    This function is used to check the schema comparison is completed or not.
-    :param trans_id:
-    :return:
-    """
-
-    # Check the transaction and connection status
-    status, error_msg, diff_model_obj, session_obj = \
-        check_transaction_status(trans_id)
-
-    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
-        return make_json_response(success=0, errormsg=error_msg, status=404)
-
-    msg, diff_percentage = diff_model_obj.get_comparison_info()
-
-    if diff_percentage == 100:
-        diff_model_obj.set_comparison_info(COMPARE_MSG, 0)
-        update_session_diff_transaction(trans_id, session_obj,
-                                        diff_model_obj)
-
-    return make_json_response(data={'compare_msg': msg,
-                                    'diff_percentage': diff_percentage})
+        socketio.emit('compare_schema_failed', str(e),
+                      namespace=SOCKETIO_NAMESPACE, to=request.sid)
+    socketio.emit('compare_schema_success', comparison_result,
+                  namespace=SOCKETIO_NAMESPACE, to=request.sid)
 
 
 @blueprint.route(
@@ -767,6 +753,8 @@ def compare_database_objects(**kwargs):
     diff_model_obj = kwargs.get('diff_model_obj')
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
+    ignore_owner = kwargs.get('ignore_owner')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
     comparison_result = []
 
     all_registered_nodes = SchemaDiffRegistry.get_registered_nodes(None,
@@ -777,7 +765,9 @@ def compare_database_objects(**kwargs):
             msg = gettext('Comparing {0}'). \
                 format(gettext(view.blueprint.collection_label))
             app.logger.debug(msg)
-            diff_model_obj.set_comparison_info(msg, total_percent)
+            socketio.emit('compare_status', {'diff_percentage': total_percent,
+                          'compare_msg': msg}, namespace=SOCKETIO_NAMESPACE,
+                          to=request.sid)
             # Update the message and total percentage in session object
             update_session_diff_transaction(trans_id, session_obj,
                                             diff_model_obj)
@@ -786,7 +776,9 @@ def compare_database_objects(**kwargs):
                                source_did=source_did,
                                target_sid=target_sid,
                                target_did=target_did,
-                               group_name=gettext('Database Objects'))
+                               group_name=gettext('Database Objects'),
+                               ignore_owner=ignore_owner,
+                               ignore_whitespaces=ignore_whitespaces)
 
             if res is not None:
                 comparison_result = comparison_result + res
@@ -815,6 +807,9 @@ def compare_schema_objects(**kwargs):
     total_percent = kwargs.get('total_percent')
     node_percent = kwargs.get('node_percent')
     is_schema_source_only = kwargs.get('is_schema_source_only', False)
+    ignore_owner = kwargs.get('ignore_owner')
+    ignore_whitespaces = kwargs.get('ignore_whitespaces')
+
     source_schema_name = None
     if is_schema_source_only:
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -834,7 +829,9 @@ def compare_schema_objects(**kwargs):
                     format(gettext(view.blueprint.collection_label),
                            gettext(schema_name))
             app.logger.debug(msg)
-            diff_model_obj.set_comparison_info(msg, total_percent)
+            socketio.emit('compare_status', {'diff_percentage': total_percent,
+                          'compare_msg': msg}, namespace=SOCKETIO_NAMESPACE,
+                          to=request.sid)
             # Update the message and total percentage in session object
             update_session_diff_transaction(trans_id, session_obj,
                                             diff_model_obj)
@@ -846,7 +843,9 @@ def compare_schema_objects(**kwargs):
                                target_did=target_did,
                                target_scid=target_scid,
                                group_name=gettext(schema_name),
-                               source_schema_name=source_schema_name)
+                               source_schema_name=source_schema_name,
+                               ignore_owner=ignore_owner,
+                               ignore_whitespaces=ignore_whitespaces)
 
             if res is not None:
                 comparison_result = comparison_result + res
@@ -932,3 +931,15 @@ def compare_pre_validation(trans_id, source_sid, target_sid):
         return False, res, None, None
 
     return True, '', diff_model_obj, session_obj
+
+
+@socketio.on('connect', namespace=SOCKETIO_NAMESPACE)
+def connect():
+    """
+    Connect to the server through socket.
+    :return:
+    :rtype:
+    """
+    socketio.emit('connected', {'sid': request.sid},
+                  namespace=SOCKETIO_NAMESPACE,
+                  to=request.sid)

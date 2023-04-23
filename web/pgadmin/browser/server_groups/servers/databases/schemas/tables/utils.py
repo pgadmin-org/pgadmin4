@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,9 +12,9 @@
 import re
 import copy
 from functools import wraps
-import simplejson as json
+import json
 from flask import render_template, jsonify, request
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from pgadmin.browser.server_groups.servers.databases.schemas\
     .tables.base_partition_table import BasePartitionTable
@@ -104,7 +104,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             # Here args[0] will hold self & kwargs will hold gid,sid,did
             self = args[0]
             driver = get_driver(PG_DEFAULT_DRIVER)
-            did = kwargs['did']
+
             self.manager = driver.connection_manager(kwargs['sid'])
             if "conn_id" in kwargs:
                 self.conn = self.manager.connection(
@@ -113,20 +113,13 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
             self.qtTypeIdent = driver.qtTypeIdent
-            # We need datlastsysoid to check if current table is system table
-            self.datlastsysoid = self.manager.db_info[
-                did
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                did in self.manager.db_info else 0
 
             ver = self.manager.version
             server_type = self.manager.server_type
             # Set the template path for the SQL scripts
-            self.table_template_path = compile_template_path('tables/sql',
-                                                             server_type, ver)
+            self.table_template_path = compile_template_path('tables/sql', ver)
             self.data_type_template_path = compile_template_path(
-                'datatype/sql',
-                server_type, ver)
+                'datatype/sql', ver)
             self.partition_template_path = \
                 'partitions/sql/{0}/#{0}#{1}#'.format(server_type, ver)
 
@@ -136,7 +129,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             # Template for index node
             self.index_template_path = compile_template_path(
-                'indexes/sql', server_type, ver)
+                'indexes/sql', ver)
 
             # Template for index node
             self.row_security_policies_template_path = \
@@ -220,7 +213,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if data['typoid']:
             sql = render_template("/".join([self.table_template_path,
                                             'get_columns_for_table.sql']),
-                                  tid=data['typoid'])
+                                  tid=data['typoid'], conn=self.conn)
 
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -264,7 +257,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 sql = render_template("/".join(
                     [self.table_template_path,
                      'get_columns_for_table.sql']),
-                    tid=row['oid']
+                    tid=row['oid'], conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -333,10 +326,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         :return: True or False based on condition
         """
         # check whether the table is partition or not, then check conislocal
-        if 'relispartition' in data and data['relispartition'] is True:
-            if 'conislocal' in constraint \
-                    and constraint['conislocal'] is False:
-                return True
+        if 'relispartition' in data and data['relispartition'] is True and \
+                'conislocal' in constraint and \
+                constraint['conislocal'] is False:
+            return True
         return False
 
     def get_table_dependents(self, tid):
@@ -401,6 +394,22 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             response=dependencies_result,
             status=200
         )
+
+    def get_fk_ref_tables(self, tid):
+        """
+        This function get the depending tables of the current table.
+        The tables depending on tid table using FK relation.
+        Args:
+            tid: Table ID
+        """
+        sql = render_template("/".join([self.table_template_path,
+                                        'fk_ref_tables.sql']), oid=tid)
+
+        status, res = self.conn.execute_dict(sql)
+        if not status:
+            return status, res
+
+        return status, res['rows']
 
     def get_table_statistics(self, scid, tid):
         """
@@ -511,7 +520,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         else:
             res = dict()
             sql = render_template("/".join([self.table_template_path,
-                                            self._NODES_SQL]), scid=scid)
+                                            self._NODES_SQL]), scid=scid,
+                                  schema_diff=True)
             status, tables = self.conn.execute_2darray(sql)
             if not status:
                 return False, tables
@@ -576,7 +586,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         sql = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -601,14 +612,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # version 9.5 and above
         BaseTableView._check_rlspolicy_support(res)
 
+        # If estimated_row_count is zero or -1 then set the row count to 0
+        if not estimated_row_count or estimated_row_count < 0:
+            res['rows'][0]['rows_cnt'] = 0
         # If estimated rows are greater than threshold then
-        if estimated_row_count and \
-                estimated_row_count > table_row_count_threshold:
+        elif estimated_row_count > table_row_count_threshold:
             res['rows'][0]['rows_cnt'] = str(table_row_count_threshold) + '+'
-
         # If estimated rows is lower than threshold then calculate the count
-        elif estimated_row_count and \
-                table_row_count_threshold >= estimated_row_count:
+        elif 0 < estimated_row_count <= table_row_count_threshold:
             sql = render_template(
                 "/".join(
                     [self.table_template_path, 'get_table_row_count.sql']
@@ -621,10 +632,6 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 return False, internal_server_error(errormsg=count)
 
             res['rows'][0]['rows_cnt'] = count
-
-        # If estimated_row_count is zero then set the row count with same
-        elif not estimated_row_count:
-            res['rows'][0]['rows_cnt'] = estimated_row_count
 
         # Fetch privileges
         sql = render_template("/".join([self.table_template_path,
@@ -747,7 +754,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
 
             index_sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=table, did=did, tid=tid,
-                idx=row['oid'], datlastsysoid=self.datlastsysoid,
+                idx=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 template_path=None, with_header=json_resp,
                 add_not_exists_clause=add_not_exists_clause
             )
@@ -779,7 +786,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     get_reverse_engineered_sql(
                         self.conn, schema=schema, table=table, scid=scid,
                         plid=row['oid'], policy_table_id=tid,
-                        datlastsysoid=self.datlastsysoid,
+                        datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                         template_path=None, with_header=json_resp)
                 policy_sql = "\n" + policy_sql
 
@@ -805,7 +812,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         for row in rset['rows']:
             trigger_sql = trigger_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=table, tid=tid,
-                trid=row['oid'], datlastsysoid=self.datlastsysoid,
+                trid=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects,
                 template_path=None, with_header=json_resp)
             trigger_sql = "\n" + trigger_sql
@@ -836,7 +843,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 compound_trigger_sql = \
                     compound_trigger_utils.get_reverse_engineered_sql(
                         self.conn, schema=schema, table=table, tid=tid,
-                        trid=row['oid'], datlastsysoid=self.datlastsysoid)
+                        trid=row['oid'],
+                        datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
                 compound_trigger_sql = "\n" + compound_trigger_sql
 
                 # Add into main sql
@@ -863,7 +871,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             rules_sql = '\n'
             sql = render_template("/".join(
                 [self.rules_template_path, self._PROPERTIES_SQL]
-            ), rid=row['oid'], datlastsysoid=self.datlastsysoid)
+            ), rid=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -905,6 +913,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 part_data = dict()
                 part_data['partitioned_table_name'] = data['name']
                 part_data['parent_schema'] = data['schema']
+                part_data['spcname'] = row['spcname']
                 if not json_resp:
                     part_data['schema'] = data['schema']
                 else:
@@ -1063,7 +1072,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if is_partitioned:
             sql = render_template("/".join([self.partition_template_path,
                                             self._NODES_SQL]),
-                                  scid=scid, tid=tid)
+                                  scid=scid, tid=tid, did=did)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rset)
@@ -1130,7 +1139,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             if row['key_type'] == 'column':
                 partition_scheme += self.qtIdent(
                     self.conn, row['pt_column'])
-                if 'collationame' in row:
+                if 'collationame' in row and row['collationame']:
                     partition_scheme += ' COLLATE %s' % row['collationame']
 
                 if 'op_class' in row:
@@ -1447,7 +1456,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if 'relacl' in data:
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
-    def get_sql(self, did, scid, tid, data, res, add_not_exists_clause=False):
+    def get_sql(self, did, scid, tid, data, res, add_not_exists_clause=False,
+                with_drop=False):
         """
         This function will generate create/update sql from model data
         coming from client
@@ -1544,10 +1554,14 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             # Update the vacuum toast table settings.
             self.update_vacuum_settings('vacuum_toast', data)
 
-            sql = render_template("/".join([self.table_template_path,
+            sql = ''
+            if with_drop:
+                sql = self.get_delete_sql(data) + '\n\n'
+
+            sql += render_template("/".join([self.table_template_path,
                                             self._CREATE_SQL]),
-                                  data=data, conn=self.conn,
-                                  add_not_exists_clause=add_not_exists_clause)
+                                   data=data, conn=self.conn,
+                                   add_not_exists_clause=add_not_exists_clause)
 
             # Append SQL for partitions
             sql += '\n' + partitions_sql
@@ -1592,7 +1606,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 return internal_server_error(errormsg=rest)
 
             sql = render_template("/".join([self.table_template_path,
-                                  self._GET_SCHEMA_OID_SQL]), tid=tid)
+                                  self._GET_SCHEMA_OID_SQL]), tid=tid,
+                                  conn=self.conn)
             status, rest = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rest)
@@ -1641,7 +1656,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                                 self.table_template_path,
                                 self._GET_SCHEMA_OID_SQL
                             ]),
-                            tid=row['oid']
+                            tid=row['oid'],
+                            conn=self.conn
                         )
                     )
                     if not status:
@@ -1674,7 +1690,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                                 self.table_template_path,
                                 self._GET_SCHEMA_OID_SQL
                             ]),
-                            tid=row['partition_name']
+                            tid=row['partition_name'],
+                            conn=self.conn
                         )
                     )
                     if not status:
@@ -1692,7 +1709,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                         "/".join([
                             self.table_template_path, self._OID_SQL
                         ]),
-                        scid=scid, data=tmp_data
+                        scid=scid, data=tmp_data, conn=self.conn
                     )
 
                     status, ptid = self.conn.execute_scalar(sql)
@@ -1753,7 +1770,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             partitions = []
             sql = render_template("/".join([self.partition_template_path,
                                             self._NODES_SQL]),
-                                  scid=scid, tid=tid)
+                                  scid=scid, tid=tid, did=did)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=rset)
@@ -1945,11 +1962,11 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         """
         # Below will decide if it's simple drop or drop with cascade call
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Convert str 'true' to boolean type
-        is_cascade = json.loads(data.get('cascade') or 'false')
-        is_identity = json.loads(data.get('identity') or 'false')
+        is_cascade = data.get('cascade') or False
+        is_identity = data.get('identity') or False
 
         data = res['rows'][0]
 
@@ -1974,11 +1991,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             }
         )
 
-    def get_delete_sql(self, res):
+    def get_delete_sql(self, data):
         # Below will decide if it's simple drop or drop with cascade call
         cascade = self._check_cascade_operation()
-
-        data = res['rows'][0]
 
         return render_template(
             "/".join([self.table_template_path, self._DELETE_SQL]),
@@ -1998,7 +2013,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
            tid: Table ID
         """
 
-        sql = self.get_delete_sql(res)
+        sql = self.get_delete_sql(res['rows'][0])
 
         status, res = self.conn.execute_scalar(sql)
         if not status:
@@ -2054,7 +2069,9 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         # Get schema oid
         status, scid = self.conn.execute_scalar(
             render_template("/".join([self.table_template_path,
-                                      self._GET_SCHEMA_OID_SQL]), tid=tid))
+                                      self._GET_SCHEMA_OID_SQL]),
+                            tid=tid,
+                            conn=self.conn))
         if not status:
             return internal_server_error(errormsg=scid)
         if scid is None:
@@ -2096,8 +2113,18 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
         if data is None:
             if vacuum_key in old_data:
                 for opt in old_data[vacuum_key]:
-                    if 'value' in opt and opt['value'] is None:
+                    if 'add_vacuum_settings_in_sql' not in old_data:
+                        old_data['add_vacuum_settings_in_sql'] = False
+
+                    if ('value' in opt and opt['value'] is None) or \
+                            ('value' in opt and opt['value'] == ''):
                         opt.pop('value')
+
+                    if 'value' in opt and 'add_vacuum_settings_in_sql' in \
+                        old_data and not \
+                            old_data['add_vacuum_settings_in_sql']:
+                        old_data['add_vacuum_settings_in_sql'] = True
+
         # Iterate vacuum table
         elif vacuum_key in data and 'changed' in data[vacuum_key] \
                 and vacuum_key in old_data:

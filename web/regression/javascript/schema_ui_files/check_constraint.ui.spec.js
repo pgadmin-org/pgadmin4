@@ -2,21 +2,18 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import CheckConstraintSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+
 class SchemaInColl extends BaseUISchema {
   constructor() {
     super();
@@ -53,83 +50,24 @@ describe('CheckConstraintSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('create collection', ()=>{
     let schemaCollObj = new SchemaInColl();
-    let ctrl = mount(<SchemaView
-      formType='dialog'
-      schema={schemaCollObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    let ctrl = mount(getCreateView(schemaCollObj));
     /* Make sure you hit every corner */
     ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
   });

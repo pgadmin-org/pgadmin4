@@ -2,23 +2,22 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import IndexSchema, { getColumnSchema } from './index.ui';
 import { getNodeAjaxOptions, getNodeListByName } from 'pgbrowser/node_ajax';
+import _ from 'lodash';
 
 define('pgadmin.node.index', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'backbone', 'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.backform', 'pgadmin.backgrid',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify, Backform,
-  Backgrid, SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-index']) {
@@ -61,67 +60,39 @@ define('pgadmin.node.index', [
           name: 'create_index_on_coll', node: 'coll-index', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_index', node: 'index', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_index_onTable', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_index_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_index_onMatView', node: 'mview', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Index...'),
-          icon: 'wcTabIcon icon-index', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },
         ]);
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          nspname: undefined,
-          tabname: undefined,
-          spcname: undefined,
-          amname: 'btree',
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', disabled: 'inSchema',
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'int', readonly: true, mode: ['properties'],
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema',
-        }],
-      }),
       // Below function will enable right click menu for creating column
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
           s_version = t.getTreeNodeHierarchy(i).server.version;

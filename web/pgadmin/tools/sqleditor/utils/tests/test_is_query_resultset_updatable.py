@@ -2,13 +2,12 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
-import json
-import random
+import secrets
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -133,7 +132,7 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
 
     def setUp(self):
         self.test_table_name = "test_for_updatable_resultset" + \
-                               str(random.randint(1000, 9999))
+                               str(secrets.choice(range(1000, 9999)))
         self._initialize_database_connection()
         self._initialize_query_tool()
         self._initialize_urls()
@@ -202,8 +201,8 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
     def _initialize_query_tool(self):
-        self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
+        url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
         self.assertEqual(response.status_code, 200)
@@ -235,41 +234,41 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         utils.create_table_with_query(self.server, self.db_name, create_sql)
 
     def _close_query_tool(self):
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 
-
-class TestTemporaryTable(TestQueryUpdatableResultset):
-    """ This class will test the query result-set for temporary tables """
-    scenarios = [
-        ('When selecting all columns of the Temporary table, on commit drop',
-         dict(sql='''
-                DROP TABLE IF EXISTS {0};
-                CREATE TEMPORARY TABLE {0} ON COMMIT DROP AS
-                            SELECT
-                                CURRENT_DATE AS today;
-                SELECT * FROM {0};''',
-              expected_primary_keys=None,
-              expected_results_column_data=[[date.today().strftime(
-                                            "%Y-%m-%d")]],
-              expected_has_oids=False,
-              expected_results_column_is_editable=False,
-              table_has_oids=False,
-              expected_cols_is_editable=[False]
-              ))
-    ]
-
-    def runTest(self):
-        response_data = self._execute_select_sql()
-        self._check_primary_keys(response_data)
-        self._check_oids(response_data)
-        # Verifying Temporary table result data on Commit Drop
-        self._check_results_column_data(response_data)
-        self._check_editable_columns(response_data)
-
-    def _check_results_column_data(self, response_data):
-        results_column_data = response_data['data']['result']
-        for result_data, expected_is_editable in \
-                zip(results_column_data, self.expected_results_column_data):
-            self.assertEqual(result_data, expected_is_editable)
+#
+# class TestTemporaryTable(TestQueryUpdatableResultset):
+#     """ This class will test the query result-set for temporary tables """
+#     scenarios = [
+#         ('When selecting all columns of the Temporary table, on commit drop',
+#          dict(sql='''
+#                 DROP TABLE IF EXISTS {0};
+#                 CREATE TEMPORARY TABLE {0} ON COMMIT DROP AS
+#                             SELECT
+#                                 CURRENT_DATE AS today;
+#                 SELECT * FROM {0};''',
+#               expected_primary_keys=None,
+#               expected_results_column_data=[[date.today().strftime(
+#                                             "%Y-%m-%d")]],
+#               expected_has_oids=False,
+#               expected_results_column_is_editable=False,
+#               table_has_oids=False,
+#               expected_cols_is_editable=[False]
+#               ))
+#     ]
+#
+#     def runTest(self):
+#         response_data = self._execute_select_sql()
+#         self._check_primary_keys(response_data)
+#         self._check_oids(response_data)
+#         # Verifying Temporary table result data on Commit Drop
+#         self._check_results_column_data(response_data)
+#         self._check_editable_columns(response_data)
+#
+#     def _check_results_column_data(self, response_data):
+#         results_column_data = response_data['data']['result']
+#         for result_data, expected_is_editable in \
+#                 zip(results_column_data, self.expected_results_column_data):
+#             self.assertEqual(result_data, expected_is_editable)

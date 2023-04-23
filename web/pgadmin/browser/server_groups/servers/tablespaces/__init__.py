@@ -2,17 +2,17 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import simplejson as json
+import json
 import re
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from flask import render_template, make_response, request, jsonify, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db
@@ -29,7 +29,7 @@ class TablespaceModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext("Tablespaces")
 
     def __init__(self, import_name, **kwargs):
-        super(TablespaceModule, self).__init__(import_name, **kwargs)
+        super().__init__(import_name, **kwargs)
 
     def get_nodes(self, gid, sid):
         """
@@ -106,10 +106,6 @@ class TablespaceView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection()
-            self.datlastsysoid = \
-                self.manager.db_info[self.manager.did]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                self.manager.did in self.manager.db_info else 0
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -275,7 +271,8 @@ class TablespaceView(PGChildNodeView):
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
         copy_data['is_sys_obj'] = (
-            copy_data['oid'] <= self.datlastsysoid or self.datistemplate)
+            copy_data['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         copy_data = self._formatter(copy_data, tsid)
 
         return ajax_response(
@@ -295,7 +292,7 @@ class TablespaceView(PGChildNodeView):
         }
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -322,16 +319,6 @@ class TablespaceView(PGChildNodeView):
 
             if not status:
                 return internal_server_error(errormsg=res)
-            SQL = render_template(
-                "/".join([self.template_path, self._ALTER_SQL]),
-                data=data, conn=self.conn
-            )
-
-            # Checking if we are not executing empty query
-            if SQL and SQL.strip('\n') and SQL.strip(' '):
-                status, res = self.conn.execute_scalar(SQL)
-                if not status:
-                    return internal_server_error(errormsg=res)
 
             # To fetch the oid of newly created tablespace
             SQL = render_template(
@@ -343,6 +330,32 @@ class TablespaceView(PGChildNodeView):
 
             if not status:
                 return internal_server_error(errormsg=tsid)
+
+            SQL = render_template(
+                "/".join([self.template_path, self._ALTER_SQL]),
+                data=data, conn=self.conn
+            )
+
+            # Checking if we are not executing empty query
+            if SQL and SQL.strip('\n') and SQL.strip(' '):
+                status, res = self.conn.execute_scalar(SQL)
+                if not status:
+                    return jsonify(
+                        node=self.blueprint.generate_browser_node(
+                            tsid,
+                            sid,
+                            data['name'],
+                            icon="icon-tablespace"
+                        ),
+                        success=0,
+                        errormsg=gettext(
+                            'Tablespace created successfully, '
+                            'Set parameter fail: {0}'.format(res)
+                        ),
+                        info=gettext(
+                            res
+                        )
+                    )
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(
@@ -362,7 +375,7 @@ class TablespaceView(PGChildNodeView):
         This function will update tablespace object
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -395,7 +408,7 @@ class TablespaceView(PGChildNodeView):
         """
         if tsid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tsid]}
@@ -456,7 +469,7 @@ class TablespaceView(PGChildNodeView):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError as ve:
                 current_app.logger.exception(ve)
                 data[k] = v
@@ -527,7 +540,7 @@ class TablespaceView(PGChildNodeView):
 
             SQL = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data
+                data=data, o_data=old_data, conn=self.conn
             )
         else:
             # To format privileges coming from client
@@ -536,7 +549,7 @@ class TablespaceView(PGChildNodeView):
             # If the request for new object which do not have tsid
             SQL = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
-                data=data
+                data=data, conn=self.conn
             )
             SQL += "\n"
             SQL += render_template(
@@ -610,7 +623,7 @@ class TablespaceView(PGChildNodeView):
         ver = self.manager.version
         if ver >= 90600:
             SQL = render_template(
-                "/".join(['tablespaces/sql/9.6_plus', 'variables.sql'])
+                "/".join(['tablespaces/sql/default', 'variables.sql'])
             )
         else:
             SQL = render_template(
@@ -815,77 +828,6 @@ class TablespaceView(PGChildNodeView):
                                              is_connected, manager)
 
         return dependents
-
-    @check_precondition
-    def move_objects(self, gid, sid, tsid):
-        """
-        This function moves objects from current tablespace to another
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            tsid: Tablespace ID
-        """
-        data = json.loads(request.form['data'], encoding='utf-8')
-
-        try:
-            SQL = render_template("/".join(
-                [self.template_path, 'move_objects.sql']),
-                data=data, conn=self.conn
-            )
-            status, res = self.conn.execute_scalar(SQL.strip('\n'))
-            if not status:
-                return internal_server_error(errormsg=res)
-
-            return make_json_response(
-                success=1,
-                info="Tablespace updated",
-                data={
-                    'id': tsid,
-                    'sid': sid,
-                    'gid': gid
-                }
-            )
-        except Exception as e:
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
-
-    @check_precondition
-    def move_objects_sql(self, gid, sid, tsid):
-        """
-        This function returns sql for Move Objects.. dialog
-
-        Args:
-            gid: Server Group ID
-            sid: Server ID
-            tsid: Tablespace ID
-        """
-        required_args = ['old_tblspc', 'tblspc', 'obj_type']
-
-        data = dict()
-        for k, v in request.args.items():
-            try:
-                data[k] = json.loads(v, encoding='utf-8')
-            except ValueError as ve:
-                current_app.logger.exception(ve)
-                data[k] = v
-
-        for arg in required_args:
-            if arg not in data:
-                return make_json_response(
-                    data=gettext("-- definition incomplete"),
-                    status=200
-                )
-
-        sql = render_template("/".join(
-            [self.template_path, 'move_objects.sql']),
-            data=data, conn=self.conn
-        )
-
-        return make_json_response(
-            data=sql.strip('\n'),
-            status=200
-        )
 
 
 TablespaceView.register_node_view(blueprint)

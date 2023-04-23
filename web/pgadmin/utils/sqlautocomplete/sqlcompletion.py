@@ -1,4 +1,3 @@
-import sys
 import re
 import sqlparse
 from collections import namedtuple
@@ -9,7 +8,6 @@ from .parseutils.tables import extract_tables
 from .parseutils.ctes import isolate_query_ctes
 
 
-Special = namedtuple("Special", [])
 Database = namedtuple("Database", [])
 Schema = namedtuple("Schema", ["quoted"])
 Schema.__new__.__defaults__ = (False,)
@@ -48,7 +46,7 @@ Alias = namedtuple("Alias", ["aliases"])
 Path = namedtuple("Path", [])
 
 
-class SqlStatement(object):
+class SqlStatement:
     def __init__(self, full_text, text_before_cursor):
         self.identifier = None
         self.word_before_cursor = word_before_cursor = last_word(

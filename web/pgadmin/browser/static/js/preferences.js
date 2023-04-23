@@ -2,19 +2,18 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
-import $ from 'jquery';
-import * as Alertify from 'pgadmin.alertifyjs';
-import * as SqlEditorUtils from 'sources/sqleditor_utils';
-import pgWindow from 'sources/window';
+import Notify from '../../../static/js/helpers/Notifier';
+import { shortcutToString } from '../../../static/js/components/ShortcutTitle';
+import gettext from 'sources/gettext';
+import getApiInstance from '../../../static/js/api_instance';
 
-//var modifyAnimation = require('sources/modify_animation');
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -48,17 +47,17 @@ _.extend(pgBrowser, {
   get_preference: function(module, preference){
     const self = this;
 
-    return _.findWhere(
+    return _.find(
       self.preferences_cache, {'module': module, 'name': preference}
     );
   },
 
   /* Get all the preferences of a module */
   get_preferences_for_module: function(module) {
-    var self = this;
+    let self = this;
     let preferences = {};
-    _.each(
-      _.where(self.preferences_cache, {'module': module}),
+    _.forEach(
+      _.filter(self.preferences_cache, {'module': module}),
       (preference) => {
         preferences[preference.name] = preference.value;
       }
@@ -70,73 +69,76 @@ _.extend(pgBrowser, {
 
   /* Get preference of an id, id is numeric */
   get_preference_for_id : function(id) {
-    var self = this;
-    /* findWhere returns undefined if not found */
-    return _.findWhere(self.preferences_cache, {'id': id});
+    let self = this;
+    /* find returns undefined if not found */
+    return _.find(self.preferences_cache, {'id': id});
   },
 
   // Get and cache the preferences
   cache_preferences: function (modulesChanged) {
-    var self = this,
-      headers = {};
-    headers[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
+    let self = this;
 
     setTimeout(function() {
-      $.ajax({
-        url: url_for('preferences.get_all'),
-        headers: headers,
-      })
-        .done(function(res) {
+      getApiInstance().get(url_for('preferences.get_all'))
+        .then(({data: res})=>{
           self.preferences_cache = res;
           self.preference_version(self.generate_preference_version());
 
           pgBrowser.keyboardNavigation.init();
-          //          if(pgBrowser.tree) {
-          //            modifyAnimation.modifyAcitreeAnimation(self);
-          //            modifyAnimation.modifyAlertifyAnimation(self);
-          //          }
 
           // Initialize Tree saving/reloading
           pgBrowser.browserTreeState.init();
 
           /* Once the cache is loaded after changing the preferences,
-         * notify the modules of the change
-         */
+          * notify the modules of the change
+          */
           if(modulesChanged) {
             if(typeof modulesChanged === 'string'){
-              $.event.trigger('prefchange:'+modulesChanged);
+              pgBrowser.Events.trigger('prefchange:'+modulesChanged);
             } else {
               _.each(modulesChanged, (val, key)=> {
-                $.event.trigger('prefchange:'+key);
+                pgBrowser.Events.trigger('prefchange:'+key);
               });
             }
           }
         })
-        .fail(function(xhr, status, error) {
-          Alertify.pgRespErrorNotify(xhr, error);
+        .catch(function(error) {
+          Notify.pgRespErrorNotify(error);
         });
     }, 500);
   },
 
+  triggerPreferencesChange: function(moduleChanged) {
+    pgBrowser.Events.trigger('prefchange:'+moduleChanged);
+  },
+
   reflectPreferences: function(module) {
     let obj = this;
-
-    if(module === 'sqleditor' || module === null || typeof module === 'undefined') {
-      let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
-
-      $(obj?.editor?.getWrapperElement()).css(
-        'font-size',SqlEditorUtils.calcFontSize(sqlEditPreferences.sql_font_size)
-      );
-      obj?.editor?.setOption('tabSize', sqlEditPreferences.tab_size);
-      obj?.editor?.setOption('lineWrapping', sqlEditPreferences.wrap_code);
-      obj?.editor?.setOption('autoCloseBrackets', sqlEditPreferences.insert_pair_brackets);
-      obj?.editor?.setOption('matchBrackets', sqlEditPreferences.brace_matching);
-      obj?.editor?.refresh();
+    //browser preference
+    if(module === 'browser') {
+      let browserPreferences = obj.get_preferences_for_module('browser');
+      let buttonList = obj?.panels?.browser?.panel?._buttonList;
+      buttonList.forEach(btn => {
+        let key = null;
+        switch(btn.name) {
+        case gettext('Query Tool'):
+          key = shortcutToString(browserPreferences.sub_menu_query_tool,null,true);
+          obj?.panels?.browser?.panel?.updateButton(gettext('Query Tool'), {key});
+          break;
+        case gettext('View Data'):
+          key = shortcutToString(browserPreferences.sub_menu_view_data,null,true);
+          obj?.panels?.browser?.panel?.updateButton(gettext('View Data'), {key});
+          break;
+        case gettext('Search objects'):
+          key = shortcutToString(browserPreferences.sub_menu_search_objects,null,true);
+          obj?.panels?.browser?.panel?.updateButton(gettext('Search objects'), {key});
+        }
+      });
     }
   },
 
   onPreferencesChange: function(module, eventHandler) {
-    $(pgWindow).on('prefchange:'+module, function(event) {
+    pgBrowser.Events?.on('prefchange:'+module, function(event) {
       eventHandler(event);
     });
   },

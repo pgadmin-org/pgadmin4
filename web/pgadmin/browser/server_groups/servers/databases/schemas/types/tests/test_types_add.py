@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -19,7 +19,7 @@ from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as types_utils
 from unittest.mock import patch
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 
 
 class TypesAddTestCase(BaseTestGenerator):
@@ -28,6 +28,7 @@ class TypesAddTestCase(BaseTestGenerator):
                                          types_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.data = self.test_data
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]

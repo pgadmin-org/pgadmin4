@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Foreign Data Wrapper Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
     parse_priv_to_db, validate_options, tokenize_options
@@ -64,7 +64,7 @@ class ForeignDataWrapperModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(ForeignDataWrapperModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """
@@ -94,6 +94,15 @@ class ForeignDataWrapperModule(CollectionNodeModule):
         generating the javascript module.
         """
         return False
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .foreign_servers import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = ForeignDataWrapperModule(__name__)
@@ -216,11 +225,6 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -380,7 +384,8 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         if res['rows'][0]['fdwoptions'] is not None:
             res['rows'][0]['fdwoptions'] = tokenize_options(
@@ -389,7 +394,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),
-                              fid=fid
+                              fid=fid, conn=self.conn
                               )
 
         status, fdw_acl_res = self.conn.execute_dict(sql)
@@ -420,7 +425,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -488,7 +493,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
             fid: foreign data wrapper ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -528,7 +533,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if fid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [fid]}
 
@@ -615,7 +620,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:
@@ -810,7 +815,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                 is_valid_options = True
 
         sql = render_template("/".join([self.template_path, self._ACL_SQL]),
-                              fid=fid)
+                              fid=fid, conn=self.conn)
         status, fdw_acl_res = self.conn.execute_dict(sql)
         if not status:
             return internal_server_error(errormsg=fdw_acl_res)
@@ -963,7 +968,8 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
 
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']))
+                                        self._PROPERTIES_SQL]),
+                              schema_diff=True, conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)

@@ -2,18 +2,17 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Internal Authentication"""
 
-import six
 from flask import current_app, flash
 from flask_security import login_user
 from abc import abstractmethod, abstractproperty
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from .registry import AuthSourceRegistry
 from pgadmin.model import User
@@ -21,8 +20,7 @@ from pgadmin.utils.validation_utils import validate_email
 from pgadmin.utils.constants import INTERNAL
 
 
-@six.add_metaclass(AuthSourceRegistry)
-class BaseAuthentication(object):
+class BaseAuthentication(metaclass=AuthSourceRegistry):
 
     DEFAULT_MSG = {
         'USER_DOES_NOT_EXIST': gettext('Incorrect username or password.'),
@@ -54,14 +52,14 @@ class BaseAuthentication(object):
             form.email.errors = list(form.email.errors)
             form.email.errors.append(gettext(
                 self.messages('EMAIL_NOT_PROVIDED')))
-            return False
+            return False, None
         if password is None or password == '':
             form.password.errors = list(form.password.errors)
             form.password.errors.append(
                 self.messages('PASSWORD_NOT_PROVIDED'))
-            return False
+            return False, None
 
-        return True
+        return True, None
 
     def login(self, form):
         username = form.data['email']
@@ -80,6 +78,8 @@ class BaseAuthentication(object):
         if not status:
             current_app.logger.exception(self.messages('LOGIN_FAILED'))
             return False, self.messages('LOGIN_FAILED')
+        current_app.logger.info(
+            "Internal user {0} logged in.".format(username))
         return True, None
 
     def messages(self, msg_key):
@@ -99,10 +99,10 @@ class InternalAuthentication(BaseAuthentication):
         """User validation"""
         # validate the email id first
         if not validate_email(form.data['email']):
-            flash(self.messages('INVALID_EMAIL'), 'warning')
-            return False
+            return False, self.messages('INVALID_EMAIL')
         # Flask security validation
-        return form.validate_on_submit()
+        submit = form.validate_on_submit()
+        return submit, None
 
     def authenticate(self, form):
         username = form.data['email']

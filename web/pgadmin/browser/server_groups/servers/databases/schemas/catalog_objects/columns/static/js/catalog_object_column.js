@@ -2,16 +2,16 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 import CatalogObjectColumnSchema from './catalog_object_column.ui';
 
 define('pgadmin.node.catalog_object_column', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, $, _, pgAdmin, pgBrowser) {
+], function(gettext, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-catalog_object_column']) {
     pgAdmin.Browser.Nodes['coll-catalog_object_column'] =
@@ -45,32 +45,6 @@ define('pgadmin.node.catalog_object_column', [
         getSchema: function() {
           return new CatalogObjectColumnSchema();
         },
-        model: pgAdmin.Browser.Node.Model.extend({
-          defaults: {
-            attname: undefined,
-            attowner: undefined,
-            atttypid: undefined,
-            attnum: undefined,
-            cltype: undefined,
-            collspcname: undefined,
-            attacl: undefined,
-            is_sys_obj: undefined,
-            description: undefined,
-          },
-          schema: [{
-            id: 'attname', label: gettext('Column'), cell: 'string',
-            type: 'text', readonly: true,
-          },{
-            id: 'attnum', label: gettext('Position'), cell: 'string',
-            type: 'text', readonly: true,
-          },{
-            id: 'cltype', label: gettext('Data type'), cell: 'string',
-            group: gettext('Definition'), type: 'text', readonly: true,
-          },{
-            id: 'description', label: gettext('Comment'), cell: 'string',
-            type: 'multiline', readonly: true,
-          }],
-        }),
       });
   }
 

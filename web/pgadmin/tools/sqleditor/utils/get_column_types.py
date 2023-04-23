@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,7 +12,8 @@
 """
 
 from flask import render_template
-from pgadmin.utils.exception import ExecuteError
+from flask_babel import gettext
+from pgadmin.utils.exception import ExecuteError, ObjectGone
 
 
 def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
@@ -20,10 +21,15 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
     query = render_template(
         "/".join([nodes_sqlpath, 'nodes.sql']),
         tid=table_oid,
-        has_oids=has_oids
+        has_oids=has_oids,
+        conn=conn
     )
 
     colst, rset = conn.execute_2darray(query)
+    # If no record found consider table is deleted, raise error
+    if len(rset['rows']) == 0:
+        raise ObjectGone(gettext("The specified object could not be found."))
+
     if not colst:
         raise ExecuteError(rset)
 
@@ -50,6 +56,7 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
 
                     col_type['has_default_val'] = \
                         col['has_default_val'] = row['has_default_val']
+                    break
 
                 else:
                     col_type['not_null'] = col['not_null'] = None

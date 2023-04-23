@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,10 +11,9 @@ import EDBVarSchema from './edbvar.ui';
 
 /* Create and Register Function Collection and Node. */
 define('pgadmin.node.edbvar', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.browser.collection', 'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser) {
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
+  'pgadmin.browser.collection',
+], function(gettext, url_for, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-edbvar']) {
     pgBrowser.Nodes['coll-edbvar'] =
@@ -48,16 +47,6 @@ define('pgadmin.node.edbvar', [
       },
       canDrop: false,
       canDropCascade: false,
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        }]
-      }),
       getSchema: () => {
         return new EDBVarSchema();
       }

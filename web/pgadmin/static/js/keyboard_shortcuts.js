@@ -2,26 +2,17 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
 
-import $ from 'jquery';
 import gettext from 'sources/gettext';
 import { getMod } from 'sources/utils';
 
-const PERIOD_KEY = 190,
-  FWD_SLASH_KEY = 191,
-  ESC_KEY = 27,
-  LEFT_KEY = 37,
-  UP_KEY = 38,
-  RIGHT_KEY = 39,
-  DOWN_KEY = 40,
-  K_KEY = 75;
-
 function isMac() {
-  return window.navigator.platform.search('Mac') != -1;
+  return window.navigator.userAgentData?.platform === 'macOS'
+   ||  window.navigator.platform.search('Mac') != -1;
 }
 
 function isKeyCtrlAlt(event) {
@@ -55,7 +46,7 @@ function isCtrlAltBoth(event) {
 /* Returns the key of shortcut */
 function shortcut_key(shortcut) {
   let key = '';
-  if(shortcut['key'] && shortcut['key']['char']) {
+  if(shortcut && shortcut['key'] && shortcut['key']['char']) {
     key = shortcut['key']['char'].toUpperCase();
   }
   return key;
@@ -153,211 +144,8 @@ function focusDockerPanel(docker, op) {
   return focus_panel._type;
 }
 
-/* Debugger: Keyboard Shortcuts handling */
-function keyboardShortcutsDebugger($el, event, preferences, docker) {
-  let panel_type = '', panel_content, $input;
-
-  if(this.validateShortcutKeys(preferences.edit_grid_values, event)) {
-    this._stopEventPropagation(event);
-    panel_content = $el.find(
-      'div.wcPanelTabContent:not(".wcPanelTabContentHidden")'
-    );
-    if(panel_content.length) {
-      $input = $(panel_content).find('td.editable:first');
-      if($input.length)
-        $input.trigger('click');
-    }
-  } else if(this.validateShortcutKeys(preferences.move_next, event)) {
-    this._stopEventPropagation(event);
-    panel_type = focusDockerPanel(docker, 'right');
-  } else if(this.validateShortcutKeys(preferences.move_previous, event)) {
-    this._stopEventPropagation(event);
-    panel_type = focusDockerPanel(docker, 'left');
-  } else if(this.validateShortcutKeys(preferences.switch_panel, event)) {
-    this._stopEventPropagation(event);
-    panel_type = focusDockerPanel(docker, 'switch');
-  }
-  return panel_type;
-}
-
-/* Query tool: Keyboard Shortcuts handling */
-function keyboardShortcutsQueryTool(
-  sqlEditorController, queryToolActions, event, docker
-) {
-  if (sqlEditorController.isQueryRunning()) {
-    return;
-  }
-  let keyCode = event.which || event.keyCode, panel_type = '';
-  let executeKeys = sqlEditorController.preferences.execute_query;
-  let explainKeys = sqlEditorController.preferences.explain_query;
-  let explainAnalyzeKeys = sqlEditorController.preferences.explain_analyze_query;
-  let downloadCsvKeys = sqlEditorController.preferences.download_results;
-  let nextTabKeys = sqlEditorController.preferences.move_next;
-  let previousTabKeys = sqlEditorController.preferences.move_previous;
-  let switchPanelKeys = sqlEditorController.preferences.switch_panel;
-  let toggleCaseKeys = sqlEditorController.preferences.toggle_case;
-  let commitKeys = sqlEditorController.preferences.commit_transaction;
-  let rollbackKeys = sqlEditorController.preferences.rollback_transaction;
-  let saveDataKeys = sqlEditorController.preferences.save_data;
-  let queryToolKeys = sqlEditorController.preferences.show_query_tool;
-
-  if (this.validateShortcutKeys(executeKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.executeQuery(sqlEditorController);
-  } else if (this.validateShortcutKeys(explainKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.explain(sqlEditorController);
-  } else if (this.validateShortcutKeys(explainAnalyzeKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.explainAnalyze(sqlEditorController);
-  } else if (this.validateShortcutKeys(downloadCsvKeys, event)) {
-    if(!sqlEditorController.is_save_results_to_file_disabled) {
-      this._stopEventPropagation(event);
-      queryToolActions.download(sqlEditorController);
-    }
-  } else if (this.validateShortcutKeys(toggleCaseKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.toggleCaseOfSelectedText(sqlEditorController);
-  } else if (this.validateShortcutKeys(commitKeys, event)) {
-    // If transaction buttons are disabled then no need to execute commit.
-    if (!sqlEditorController.is_transaction_buttons_disabled) {
-      this._stopEventPropagation(event);
-      queryToolActions.executeCommit(sqlEditorController);
-    }
-  } else if (this.validateShortcutKeys(rollbackKeys, event)) {
-    // If transaction buttons are disabled then no need to execute rollback.
-    if (!sqlEditorController.is_transaction_buttons_disabled) {
-      this._stopEventPropagation(event);
-      queryToolActions.executeRollback(sqlEditorController);
-    }
-  } else if (this.validateShortcutKeys(saveDataKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.saveDataChanges(sqlEditorController);
-  } else if (this.validateShortcutKeys(queryToolKeys, event)) {
-    this._stopEventPropagation(event);
-    queryToolActions.openQueryTool(sqlEditorController);
-  } else if ((
-    (this.isMac() && event.metaKey) ||
-     (!this.isMac() && event.ctrlKey)
-  ) && !event.altKey && event.shiftKey && keyCode === FWD_SLASH_KEY) {
-    this._stopEventPropagation(event);
-    queryToolActions.commentBlockCode(sqlEditorController);
-  } else if ((
-    (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
-     (!this.isMac() && !this.isKeyAltShift(event) && event.ctrlKey)
-  ) && keyCode === FWD_SLASH_KEY) {
-    this._stopEventPropagation(event);
-    queryToolActions.commentLineCode(sqlEditorController);
-  } else if ((
-    (this.isMac() && !this.isKeyCtrlAltShift(event) && event.metaKey) ||
-     (!this.isMac() && !this.isKeyAltShift(event) && event.ctrlKey)
-  ) && keyCode === PERIOD_KEY) {
-    this._stopEventPropagation(event);
-    queryToolActions.uncommentLineCode(sqlEditorController);
-  } else if ((
-    (this.isMac() && event.metaKey) ||
-     (!this.isMac() && event.ctrlKey)
-  ) && !event.altKey && event.shiftKey && keyCode === K_KEY) {
-    this._stopEventPropagation(event);
-    queryToolActions.formatSql(sqlEditorController);
-  }  else if (keyCode == ESC_KEY) {
-    queryToolActions.focusOut(sqlEditorController);
-    /*Apply only for sub-dropdown*/
-    if($(event.target).hasClass('dropdown-item')
-        && $(event.target).closest('.dropdown-submenu').length > 0) {
-      $(event.target).closest('.dropdown-submenu').find('.dropdown-menu').removeClass('show');
-    }
-  } else if(this.validateShortcutKeys(nextTabKeys, event)) {
-    this._stopEventPropagation(event);
-    panel_type = focusDockerPanel(docker, 'right');
-  } else if(this.validateShortcutKeys(previousTabKeys, event)) {
-    this._stopEventPropagation(event);
-    panel_type = focusDockerPanel(docker, 'left');
-  } else if(this.validateShortcutKeys(switchPanelKeys, event)) {
-    this._stopEventPropagation(event);
-    panel_type = focusDockerPanel(docker, 'switch');
-  } else if(keyCode === UP_KEY || keyCode === DOWN_KEY) {
-    /*Apply only for dropdown*/
-    if($(event.target).closest('.dropdown-menu').length > 0) {
-      this._stopEventPropagation(event);
-      let currLi = $(event.target).closest('li');
-      /*close all the submenus on movement*/
-      $(event.target).closest('.dropdown-menu').find('.show').removeClass('show');
-
-      if(keyCode === UP_KEY) {
-        currLi = currLi.prev();
-      }
-      else if(keyCode === DOWN_KEY){
-        currLi = currLi.next();
-      }
-
-      /*do not focus on divider, disabled and d-none */
-      while(currLi.hasClass('dropdown-divider')
-        || currLi.hasClass('d-none')
-        || currLi.find('.dropdown-item').first().hasClass('disabled')) {
-        if(keyCode === UP_KEY) {
-          currLi = currLi.prev();
-        }
-        else if(keyCode === DOWN_KEY){
-          currLi = currLi.next();
-        }
-      }
-      currLi.find('.dropdown-item').trigger('focus');
-    }
-  } else if(keyCode === LEFT_KEY || keyCode === RIGHT_KEY) {
-    /*Apply only for dropdown*/
-    if($(event.target).closest('.dropdown-menu').length > 0) {
-      this._stopEventPropagation(event);
-      let currLi = $(event.target).closest('li');
-
-      if(keyCode === RIGHT_KEY) {
-        /*open submenu if any*/
-        if(currLi.hasClass('dropdown-submenu')){
-          currLi.find('.dropdown-menu').addClass('show');
-          currLi.find('.dropdown-menu .dropdown-item').first().trigger('focus');
-        }
-      } else if(keyCode === LEFT_KEY) {
-        /*close submenu*/
-        let currMenu = currLi.closest('.dropdown-menu');
-        if(currMenu.closest('.dropdown-submenu').length > 0) {
-          currMenu.removeClass('show');
-          currLi = currMenu.closest('.dropdown-submenu');
-          currLi.find('.dropdown-item').trigger('focus');
-        }
-      }
-    }
-  } else {
-    // Macros
-    let macroId = this.validateMacros(sqlEditorController, event);
-
-    if  (macroId !== false) {
-      this._stopEventPropagation(event);
-      queryToolActions.executeMacro(sqlEditorController, macroId);
-    }
-  }
-
-  return panel_type;
-}
-
-function validateMacros(sqlEditorController, event) {
-  let keyCode = event.which || event.keyCode;
-
-  let macro = sqlEditorController.macros.filter(mc =>
-    mc.alt == event.altKey &&
-    mc.control  == event.ctrlKey &&
-    mc.key_code == keyCode);
-
-  if (macro.length == 1) {
-    return macro[0].id;
-  }
-
-  return false;
-}
-
 export {
-  keyboardShortcutsDebugger as processEventDebugger,
-  keyboardShortcutsQueryTool as processEventQueryTool,
-  focusDockerPanel, validateShortcutKeys, validateMacros,
+  focusDockerPanel, validateShortcutKeys,
   _stopEventPropagation, isMac, isKeyCtrlAlt, isKeyAltShift, isKeyCtrlShift,
   isKeyCtrlAltShift, isAltShiftBoth, isCtrlShiftBoth, isCtrlAltBoth,
   shortcut_key, shortcut_title, shortcut_accesskey_title,

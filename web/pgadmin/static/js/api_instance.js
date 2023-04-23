@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -14,14 +14,13 @@ import axios from 'axios';
 /* Get the axios instance to call back end APIs.
 Do not import axios directly, instead use this */
 export default function getApiInstance(headers={}) {
-  const api = axios.create({
+  return axios.create({
     headers: {
       'Content-type': 'application/json',
       [pgAdmin.csrf_token_header]: pgAdmin.csrf_token,
       ...headers,
     }
   });
-  return api;
 }
 
 export function parseApiError(error) {
@@ -38,8 +37,24 @@ export function parseApiError(error) {
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
     return gettext('Connection to pgAdmin server has been lost');
-  } else {
+  } else if(error.message) {
     // Something happened in setting up the request that triggered an Error
     return error.message;
+  } else if(error.errormsg) {
+    // Received response JSON in socket handle
+    return error.errormsg;
+  } else {
+    return error;
   }
+}
+
+export function callFetch(url, options, headers={}) {
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-type': 'application/json',
+      [pgAdmin.csrf_token_header]: pgAdmin.csrf_token,
+      ...headers,
+    }
+  });
 }

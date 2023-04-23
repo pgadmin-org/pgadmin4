@@ -7,12 +7,11 @@ END AS inherits
 FROM pg_catalog.pg_class c
 JOIN pg_catalog.pg_namespace n
 ON n.oid=c.relnamespace
-WHERE relkind='r'
+WHERE relkind='r' AND NOT relispartition
 {% if not show_system_objects %}
 {{ CATALOG.VALID_CATALOGS(server_type) }}
 {% endif %}
 {% if tid %}
 AND c.oid != tid
 {% endif %}
-AND c.relnamespace = {{ scid }}
 ORDER BY relnamespace, c.relname

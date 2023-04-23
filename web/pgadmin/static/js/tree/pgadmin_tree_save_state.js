@@ -2,16 +2,16 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import _ from 'underscore';
-import $ from 'jquery';
+import _ from 'lodash';
 import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
+import getApiInstance, { callFetch } from '../api_instance';
 
 export const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -49,6 +49,8 @@ _.extend(pgBrowser.browserTreeState, {
   // Previous tree state
   last_state: {},
 
+  is_selected: false,
+
   // Current tree state
   current_state: {},
 
@@ -64,90 +66,56 @@ _.extend(pgBrowser.browserTreeState, {
       this.fetch_state.apply(this);
 
       pgBrowser.Events.on('pgadmin:browser:tree:expand-from-previous-tree-state',
-        this.expand_from_previous_state, this);
+        this.expand_from_previous_state.bind(this));
       pgBrowser.Events.on('pgadmin:browser:tree:remove-from-tree-state',
-        this.remove_from_cache, this);
+        this.remove_from_cache.bind(this));
       pgBrowser.Events.on('pgadmin:browser:tree:update-tree-state',
-        this.update_cache, this);
+        this.update_cache.bind(this));
     } else if (!_.isUndefined(save_tree_state_period)) {
-      $.ajax({
-        url: url_for('settings.reset_tree_state'),
-        type: 'DELETE',
-      })
-        .fail(function(jqx) {
-          var msg = jqx.responseText;
-          /* Error from the server */
-          if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-            try {
-              var data = JSON.parse(jqx.responseText);
-              msg = data.errormsg;
-            } catch (e) {
-              console.warn(e.stack || e);
-            }
-          }
+      getApiInstance().delete(url_for('settings.reset_tree_state'))
+        .catch(function(error) {
           console.warn(
-            gettext('Error resetting the tree saved state."'), msg);
+            gettext('Error resetting the tree saved state."'), error);
         });
     }
 
   },
   save_state: function() {
 
-    var self = pgBrowser.browserTreeState;
+    let self = pgBrowser.browserTreeState;
     if(self.last_state == JSON.stringify(self.current_state))
       return;
 
-    $.ajax({
-      url: url_for('settings.save_tree_state'),
-      type: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify(self.current_state),
-    })
-      .done(function() {
-        self.last_state = JSON.stringify(self.current_state);
+    /* Using fetch with keepalive as the browser may
+    cancel the axios request on tab close. keepalive will
+    make sure the request is completed */
+    callFetch(
+      url_for('settings.save_tree_state'), {
+        keepalive: true,
+        method: 'POST',
+        body: JSON.stringify(self.current_state)
       })
-      .fail(function(jqx) {
-        var msg = jqx.responseText;
-        /* Error from the server */
-        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-          try {
-            var data = JSON.parse(jqx.responseText);
-            msg = data.errormsg;
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
-        }
+      .then(()=> {
+        self.last_state = JSON.stringify(self.current_state);
+        self.fetch_state();
+      })
+      .catch((error)=> {
         console.warn(
-          gettext('Error saving the tree state."'), msg);
+          gettext('Error resetting the tree saved state."'), error);
       });
-
   },
   fetch_state: function() {
 
-    var self = this;
-    $.ajax({
-      url: url_for('settings.get_tree_state'),
-      type: 'GET',
-      dataType: 'json',
-      contentType: 'application/json',
-    })
-      .done(function(res) {
-        self.stored_state = res;
-      })
-      .fail(function(jqx) {
-        var msg = jqx.responseText;
-        /* Error from the server */
-        if (jqx.status == 417 || jqx.status == 410 || jqx.status == 500) {
-          try {
-            var data = JSON.parse(jqx.responseText);
-            msg = data.errormsg;
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
-        }
-        console.warn(
-          gettext('Error fetching the tree state.'), msg);
-      });
+    let self = this;
+
+    getApiInstance().get(
+      url_for('settings.get_tree_state'),
+    ).then((res)=> {
+      self.stored_state = res.data;
+    }).catch(function(error) {
+      console.warn(
+        gettext('Error resetting the tree saved state."'), error);
+    });
   },
   update_cache: function(item) {
     let data = item && pgBrowser.tree.itemData(item),
@@ -260,7 +228,7 @@ _.extend(pgBrowser.browserTreeState, {
   },
   expand_from_previous_state: function(item) {
     let self = this,
-      treeData = self.stored_state || {},
+      treeData = this.stored_state || {},
       data = item && pgBrowser.tree.itemData(item),
       treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item);
 
@@ -302,7 +270,7 @@ _.extend(pgBrowser.browserTreeState, {
             let index = tmpItemData.indexOf(data.id);
 
             pgBrowser.tree.open(item);
-
+            pgBrowser.tree.ensureLoaded(item);
             if (index == (tmpItemData.length - 1 )) {
               let tIndex = treeData[treeHierarchy[self.parent]['_id']]['paths'].indexOf(tData);
               treeData[treeHierarchy[self.parent]['_id']]['paths'].splice(tIndex, 1);
@@ -312,7 +280,6 @@ _.extend(pgBrowser.browserTreeState, {
       });
     }
 
-    // Select the previously selected item
     this.select_tree_item(item);
 
   },
@@ -364,7 +331,6 @@ _.extend(pgBrowser.browserTreeState, {
       if (!_.isUndefined(databaseItem))
         this.current_state[topParent]['selected'][databaseItem] = selectedItem;
     }
-
   },
   select_tree_item(item) {
     let treeData = this.stored_state || {},
@@ -372,13 +338,13 @@ _.extend(pgBrowser.browserTreeState, {
       treeHierarchy = pgBrowser.tree.getTreeNodeHierarchy(item),
       tmpTreeData = treeData[treeHierarchy[this.parent]['_id']];
 
+    if (treeHierarchy.hasOwnProperty('server')) {
+      let selectedItem = treeHierarchy['server']['id'];
 
-    if (treeHierarchy.hasOwnProperty('database')) {
-      let databaseItem = treeHierarchy['database']['id'];
-
-      if (tmpTreeData && 'selected' in tmpTreeData && databaseItem in tmpTreeData['selected']) {
-        if (tmpTreeData['selected'][databaseItem] == data.id) {
-          pgBrowser.tree.select(item);
+      if (tmpTreeData && 'selected' in tmpTreeData && selectedItem in tmpTreeData['selected']) {
+        if (tmpTreeData['selected'][selectedItem] == data.id) {
+          this.is_selected = true;
+          pgBrowser.tree.select(item, true, 'center');
         }
       }
     }

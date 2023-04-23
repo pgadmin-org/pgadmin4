@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL License
 #
 ##########################################################################
@@ -111,14 +111,14 @@ class UTC(tzinfo):
     def dst(self, dt):
         return _ZERO
 
-    def localize(self, dt, is_dst=False):
-        '''Convert naive time to local time'''
+    def localize(self, dt):
+        """Convert naive time to local time"""
         if dt.tzinfo is not None:
             raise ValueError('Not naive datetime (tzinfo is already set)')
         return dt.replace(tzinfo=self)
 
-    def normalize(self, dt, is_dst=False):
-        '''Correct the timezone information on the given datetime'''
+    def normalize(self, dt):
+        """Correct the timezone information on the given datetime"""
         if dt.tzinfo is self:
             return dt
         if dt.tzinfo is None:
@@ -170,7 +170,8 @@ class ProcessLogger(Thread):
         Thread.__init__(self)
         self.process = None
         self.stream = None
-        self.logger = open(os.path.join(_out_dir, stream_type), 'wb')
+        self.logger = open(os.path.join(_out_dir, stream_type), 'wb',
+                           buffering=0)
 
     def attach_process_stream(self, process, stream):
         """

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 /////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ let pgBrowser = pgAdmin.Browser;
 
 export function childCreateMenuEnabled(itemData, item, data) {
   // If check is false then , we will allow create menu
-  if (data && data.check === false) {
+  if (data && !data.check) {
     return true;
   }
 

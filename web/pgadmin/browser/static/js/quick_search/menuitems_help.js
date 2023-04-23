@@ -2,90 +2,72 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import gettext from 'sources/gettext';
-
+import {MenuItem as NewMenuItem} from '../../../../static/js/helpers/Menu';
+import pgAdmin from 'sources/pgadmin';
 
 
 //  Allow us to
 const getMenuName = (item) => {
-  let aLinks = item.getElementsByTagName('a');
-  let name;
-  if (aLinks.length > 0) {
-    name = (aLinks[0].text).trim();
-    name = name.replace(/\.+$/g, '');
-  }
-  return name;
+  return item.label;
 };
 
 export function menuSearch(param, props) {
-  let LAST_MENU;
   param = param.trim();
   const setState = props.setState;
   let result = [];
 
-  if (window.pgAdmin.Browser.utils.app_name) {
-    LAST_MENU = gettext('About '+ window.pgAdmin.Browser.utils.app_name);
-  }
-
-  // Here we will add the matches
-  const parseLI = (_menu, path) => {
-    let _name = getMenuName(_menu);
-    if (_name && _name.toLowerCase().indexOf(param.toLowerCase()) != -1) {
-      let _res = {};
-      _res[_name] = path;
-      _res['element'] = _menu.children[0];
-      result.push(_res);
-    }
-    // Check if last menu then update the parent component's state
-    if (_name === LAST_MENU) {
-      setState(state => ({
-        ...state,
-        fetched: true,
-        data: result,
-      }));
-    }
-  };
-
-  // Recursive function to search in UL
-  const parseUL = (menu, path) => {
-    const menus = Array.from(menu.children);
-    menus.forEach((_menu) => {
-      let _name, _path;
-      if (_menu.tagName == 'UL') {
-        _name = getMenuName(_menu);
-        _path = `${path}/${_name}`;
-        iterItem(_menu, _path);
-      } else if (_menu.tagName == 'LI') {
-        if (_menu.classList.contains('dropdown-submenu')) {
-          _name = getMenuName(_menu);
-          _path = `${path}/${_name}`;
-          iterItem(_menu, _path);
+  const iterItem = (subMenus, path, parentPath) => {
+    subMenus.forEach((subMenu) =>{
+      if(subMenu instanceof NewMenuItem) {
+        if(subMenu.type != 'separator' && subMenu?.label?.toLowerCase().indexOf(param.toLowerCase()) != -1){
+          let localPath = path;
+          if(parentPath) {
+            localPath = `${parentPath} > ${path} `;
+          }
+          subMenu.path = localPath;
+          let selectedNode = pgAdmin.Browser.tree.selected();
+          if(subMenu.path == 'Object') {
+            if(selectedNode && selectedNode._metadata.data._type == subMenu.module.parent_type) {
+              result.push(subMenu);
+            }
+          } else {
+            result.push(subMenu);
+          }
+        }
+        if(subMenu.getMenuItems()) {
+          iterItem(subMenu.getMenuItems(), getMenuName(subMenu), path);
+        }
+      } else {
+        if(typeof(subMenu) == 'object' && !(subMenu instanceof NewMenuItem)) {
+          iterItem(Object.values(subMenu), path, parentPath);
         } else {
-          parseLI(_menu, path);
+          iterItem(subMenu, path, parentPath);
         }
       }
     });
   };
 
-  // Expects LI of menus which contains A & UL
-  const iterItem = (menu, path) => {
-    const subMenus = Array.from(menu.children);
-    subMenus.forEach((_menu) => {
-      if (_menu.tagName == 'UL') {
-        parseUL(_menu, path);
-      }
-    });
-  };
-
-  // Starting Point
-  const navbar = document.querySelector('.navbar-nav');
-  const mainMenus = Array.from(navbar.children);
-
+  const mainMenus = pgAdmin.Browser.MainMenus;
   mainMenus.forEach((menu) => {
-    iterItem(menu, getMenuName(menu));
+    let subMenus = [];
+    if(menu.name == 'object') {
+      let selectedNode = pgAdmin.Browser.tree.selected();
+      if(selectedNode) {
+        subMenus = menu.getMenuItems();
+      }
+    } else {
+      subMenus = pgAdmin.Browser.all_menus_cache[menu.name];
+    }
+    iterItem(Object.values(subMenus), getMenuName(menu));
   });
+
+  setState(state => ({
+    ...state,
+    fetched: true,
+    data: result,
+  }));
 }

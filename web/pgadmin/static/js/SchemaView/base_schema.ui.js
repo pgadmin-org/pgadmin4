@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@ export default class BaseUISchema {
   constructor(defaults) {
     /* Pass the initial data to constructor so that
     they will set to defaults */
-    this._defaults = defaults;
+    this._defaults = defaults || {};
 
     this.keys = null; // If set, other fields except keys will be filtered
     this.filterGroups = []; // If set, these groups will be filtered out
@@ -139,10 +139,12 @@ export default class BaseUISchema {
 
   /* Check if node in catalog */
   inCatalog() {
-    if(this.nodeInfo && 'catalog' in this.nodeInfo) {
-      return true;
-    }
-    return false;
+    return this.nodeInfo && 'catalog' in this.nodeInfo;
+  }
+
+  /* Check readonly on the basis of new state */
+  isReadOnly(state) {
+    return !this.isNew(state);
   }
 
   /* Get the server version */
@@ -151,5 +153,22 @@ export default class BaseUISchema {
       && !_.isUndefined(this.nodeInfo.server.version)) {
       return this.nodeInfo.server.version;
     }
+  }
+
+  /* Get the filter options */
+  getFilterOptions(state, options) {
+    // Function is used to populate the filter options.
+    let res = [];
+    if (state && this.isNew(state)) {
+      options.forEach((option) => {
+        if(option && option.label == '') {
+          return;
+        }
+        res.push({ label: option.label, value: option.value });
+      });
+    } else {
+      res = options;
+    }
+    return res;
   }
 }

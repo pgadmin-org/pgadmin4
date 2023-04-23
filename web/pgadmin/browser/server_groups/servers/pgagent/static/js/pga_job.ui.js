@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import PgaJobScheduleSchema from '../../schedules/static/js/pga_schedule.ui';
 
 export default class PgaJobSchema extends BaseUISchema {
-  constructor(fieldOptions={}, getPgaJobStepSchema, initValues) {
+  constructor(fieldOptions={}, getPgaJobStepSchema=()=>[], initValues={}) {
     super({
       jobname: '',
       jobid: undefined,

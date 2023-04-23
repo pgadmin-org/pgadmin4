@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module implementing the Webserver authentication."""
 
-import random
+import secrets
 import string
 import config
 from flask import request, current_app, session, Response, render_template, \
     url_for
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_user
 from .internal import BaseAuthentication
 from pgadmin.model import User
@@ -23,14 +23,13 @@ from pgadmin.utils.constants import WEBSERVER
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.csrf import pgCSRFProtect
 from flask_security.utils import logout_user
-from os import environ, path, remove
 
 
 class WebserverModule(PgAdminModule):
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options, first_registration)
+        super().register(app, options)
 
     def get_exposed_url_endpoints(self):
         return ['webserver.login',
@@ -74,7 +73,7 @@ class WebserverAuthentication(BaseAuthentication):
         return gettext("webserver")
 
     def validate(self, form):
-        return True
+        return True, None
 
     def get_user(self):
         username = request.environ.get(config.WEBSERVER_REMOTE_USER)
@@ -91,7 +90,7 @@ class WebserverAuthentication(BaseAuthentication):
                 "Webserver authenticate failed.")
 
         session['pass_enc_key'] = ''.join(
-            (random.choice(string.ascii_lowercase) for x in range(10)))
+            (secrets.choice(string.ascii_lowercase) for _ in range(10)))
         useremail = request.environ.get('mail')
         if not useremail:
             useremail = ''
@@ -105,6 +104,8 @@ class WebserverAuthentication(BaseAuthentication):
             if not status:
                 current_app.logger.exception(self.messages('LOGIN_FAILED'))
                 return False, self.messages('LOGIN_FAILED')
+            current_app.logger.info(
+                "Webserver user {0} logged in.".format(username))
             return True, None
         return False, self.messages('LOGIN_FAILED')
 
@@ -113,6 +114,10 @@ class WebserverAuthentication(BaseAuthentication):
         if config.WEBSERVER_AUTO_CREATE_USER:
             user = User.query.filter_by(username=username).first()
             if not user:
+                create_msg = ("Creating user {0} with email {1} "
+                              "from auth source Webserver.")
+                current_app.logger.info(create_msg.format(username,
+                                                          useremail))
                 return create_user({
                     'username': username,
                     'email': useremail,

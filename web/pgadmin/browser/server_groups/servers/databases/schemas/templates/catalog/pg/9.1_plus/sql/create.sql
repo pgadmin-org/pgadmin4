@@ -7,7 +7,7 @@ CREATE SCHEMA {{ conn|qtIdent(data.name) }}
 {% endif %}
 {% if data.description %}
 COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {% if data.nspacl %}

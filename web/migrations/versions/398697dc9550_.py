@@ -1,12 +1,20 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: 398697dc9550
 Revises: a091c9611d20
 Create Date: 2020-09-07 15:17:59.473879
 
 """
-from pgadmin.model import db
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '398697dc9550'
@@ -16,39 +24,49 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute("""
-        CREATE TABLE macros (
-            id INTEGER NOT NULL,
-            alt BOOLEAN NOT NULL,
-            control BOOLEAN NOT NULL,
-            key	VARCHAR(128) NOT NULL,
-            key_code INTEGER NOT NULL,
-            PRIMARY KEY(id)
-        );
-    """)
+    macro_table = op.create_table(
+        'macros',
+        sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
+        sa.Column('alt', sa.Boolean(), nullable=False),
+        sa.Column('control', sa.Boolean(), nullable=False),
+        sa.Column('key', sa.String(length=128), nullable=False),
+        sa.Column('key_code', sa.Integer(), nullable=False),
+        sa.PrimaryKeyConstraint('id'))
 
-    db.engine.execute("""
-        CREATE TABLE user_macros (
-            mid INTEGER NOT NULL,
-            uid INTEGER NOT NULL,
-            name VARCHAR(1024) NOT NULL,
-            sql	TEXT NOT NULL,
-            PRIMARY KEY(mid, uid),
-            FOREIGN KEY(mid) REFERENCES macros (id),
-            FOREIGN KEY(uid) REFERENCES user (id)
-        );
-    """)
+    op.create_table(
+        'user_macros',
+        sa.Column('mid', sa.Integer(), nullable=False),
+        sa.Column('uid', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=1024), nullable=False),
+        sa.Column('sql', sa.String()),
+        sa.ForeignKeyConstraint(['mid'], ['macros.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['uid'], ['user.id'], ondelete='CASCADE'),
+        sa.PrimaryKeyConstraint('mid', 'uid'))
 
-    db.engine.execute("""
-        INSERT INTO macros (id, alt, control, key, key_code) VALUES (1, 0, 1, '1', 49),
-        (2, 0, 1, '2', 50), (3, 0, 1, '3', 51), (4, 0, 1, '4', 52),
-        (5, 0, 1, '5', 53), (6, 0, 1, '6', 54), (7, 0, 1, '7', 55),
-        (8, 0, 1, '8', 56), (9, 0, 1, '9', 57), (10, 0, 1, '0', 48),
-        (11, 1, 0, 'F1', 112), (12, 1, 0, 'F2', 113), (13, 1, 0, 'F3', 114),
-        (14, 1, 0, 'F4', 115), (15, 1, 0, 'F5', 116), (16, 1, 0, 'F6', 117),
-        (17, 1, 0, 'F7', 118), (18, 1, 0, 'F8', 119), (19, 1, 0, 'F9', 120),
-        (20, 1, 0, 'F10', 121), (21, 1, 0, 'F11', 122), (22, 1, 0, 'F12', 123);
-    """)
+    op.bulk_insert(macro_table, [
+        {'alt': 0, 'control': 1, 'key': '1', 'key_code': 49},
+        {'alt': 0, 'control': 1, 'key': '2', 'key_code': 50},
+        {'alt': 0, 'control': 1, 'key': '3', 'key_code': 51},
+        {'alt': 0, 'control': 1, 'key': '4', 'key_code': 52},
+        {'alt': 0, 'control': 1, 'key': '5', 'key_code': 53},
+        {'alt': 0, 'control': 1, 'key': '6', 'key_code': 54},
+        {'alt': 0, 'control': 1, 'key': '7', 'key_code': 55},
+        {'alt': 0, 'control': 1, 'key': '8', 'key_code': 56},
+        {'alt': 0, 'control': 1, 'key': '9', 'key_code': 57},
+        {'alt': 0, 'control': 1, 'key': '0', 'key_code': 48},
+        {'alt': 1, 'control': 0, 'key': 'F1', 'key_code': 112},
+        {'alt': 1, 'control': 0, 'key': 'F2', 'key_code': 113},
+        {'alt': 1, 'control': 0, 'key': 'F3', 'key_code': 114},
+        {'alt': 1, 'control': 0, 'key': 'F4', 'key_code': 115},
+        {'alt': 1, 'control': 0, 'key': 'F5', 'key_code': 116},
+        {'alt': 1, 'control': 0, 'key': 'F6', 'key_code': 117},
+        {'alt': 1, 'control': 0, 'key': 'F7', 'key_code': 118},
+        {'alt': 1, 'control': 0, 'key': 'F8', 'key_code': 119},
+        {'alt': 1, 'control': 0, 'key': 'F9', 'key_code': 120},
+        {'alt': 1, 'control': 0, 'key': 'F10', 'key_code': 121},
+        {'alt': 1, 'control': 0, 'key': 'F11', 'key_code': 122},
+        {'alt': 1, 'control': 0, 'key': 'F12', 'key_code': 123}
+    ])
 
 
 def downgrade():

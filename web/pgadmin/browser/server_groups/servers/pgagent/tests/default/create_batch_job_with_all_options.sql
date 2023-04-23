@@ -7,7 +7,7 @@ BEGIN
 INSERT INTO pgagent.pga_job(
     jobjclid, jobname, jobdesc, jobhostagent, jobenabled
 ) VALUES (
-    1::integer, 'test_batch_job_$%{}[]()&*^!@""''`\/#'::text, 'test_job_step_schedule description'::text, 'test_host'::text, true
+    1::integer, E'test_batch_job_$%{}[]()&*^!@""''`\\/#'::text, 'test_job_step_schedule description'::text, 'test_host'::text, true
 ) RETURNING jobid INTO jid;
 
 -- Steps
@@ -31,15 +31,15 @@ INSERT INTO pgagent.pga_schedule(
     jid, 'schedule_1'::text, 'test schedule comment'::text, true,
     '<TIMESTAMPTZ_1>'::timestamp with time zone, '<TIMESTAMPTZ_2>'::timestamp with time zone,
     -- Minutes
-    ARRAY[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Hours
-    ARRAY[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false]::boolean[],
+    '{t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,f,f,f,f}'::bool[]::boolean[],
     -- Week days
-    ARRAY[true,true,true,true,true,true,true]::boolean[],
+    '{t,t,t,t,t,t,t}'::bool[]::boolean[],
     -- Month days
-    ARRAY[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false]::boolean[],
+    '{t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,t,f,f,f,f,f,f,f,f,f,f,f,f}'::bool[]::boolean[],
     -- Months
-    ARRAY[true,true,true,true,true,true,true,true,true,true,true,true]::boolean[]
+    '{t,t,t,t,t,t,t,t,t,t,t,t}'::bool[]::boolean[]
 ) RETURNING jscid INTO scid;
 END
 $$;

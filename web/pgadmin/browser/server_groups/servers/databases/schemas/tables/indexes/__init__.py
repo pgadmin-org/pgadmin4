@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """ Implements Index Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     partitions import backend_supported
@@ -66,14 +66,14 @@ class IndexesModule(CollectionNodeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(IndexesModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def backend_supported(self, manager, **kwargs):
         """
         Load this module if vid is view, we will not load it under
         material view
         """
-        if super(IndexesModule, self).backend_supported(manager, **kwargs):
+        if super().backend_supported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
             # If PG version > 100000 and < 110000 then index is
@@ -246,22 +246,14 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            # We need datlastsysoid to check if current index is system index
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
 
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
                 'indexes/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 
@@ -514,7 +506,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+            did=did, tid=tid, idx=idx,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -558,10 +551,17 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 return True, err_msg
         return False, ''
 
+    def end_transaction(self, data):
+        """
+        This function is used to end the transaction
+        """
+        if hasattr(data, "isconcurrent") and not data['isconcurrent']:
+            self.conn.execute_scalar("END;")
+
     @check_precondition
     def create(self, gid, sid, did, scid, tid):
         """
-        This function will creates new the schema object
+        This function will create the new index object
 
          Args:
            gid: Server Group ID
@@ -571,7 +571,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -581,12 +581,11 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
         required_args = {
-            'name': 'Name',
             'columns': 'Columns'
         }
 
@@ -618,8 +617,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 # End transaction.
-                if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                    self.conn.execute_scalar("END;")
+                self.end_transaction(data)
                 return internal_server_error(errormsg=res)
 
             # If user chooses concurrent index then we cannot run it along
@@ -632,27 +630,35 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             if SQL != '':
                 status, res = self.conn.execute_scalar(SQL)
                 if not status:
-                    if hasattr(data, "isconcurrent") and not data[
-                            'isconcurrent']:
-                        # End transaction.
-                        self.conn.execute_scalar("END;")
+                    self.end_transaction(data)
                     return internal_server_error(errormsg=res)
 
             # we need oid to add object in tree at browser
-            SQL = render_template(
-                "/".join([self.template_path, self._OID_SQL]),
-                tid=tid, data=data
-            )
-            status, idx = self.conn.execute_scalar(SQL)
-            if not status:
-                if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                    # End transaction.
-                    self.conn.execute_scalar("END;")
-                return internal_server_error(errormsg=tid)
+            idx = 0
+            if data.get('name', '') == "":
+                SQL = render_template(
+                    "/".join([self.template_path, 'get_oid_name.sql']),
+                    tid=tid, conn=self.conn
+                )
+                status, res = self.conn.execute_dict(SQL)
+                if not status:
+                    self.end_transaction(data)
+                    return internal_server_error(errormsg=tid)
 
-            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                # End transaction.
-                self.conn.execute_scalar("END;")
+                if 'rows' in res and len(res['rows']) > 0:
+                    data['name'] = res['rows'][0]['relname']
+                    idx = res['rows'][0]['oid']
+            else:
+                SQL = render_template(
+                    "/".join([self.template_path, self._OID_SQL]),
+                    tid=tid, data=data, conn=self.conn
+                )
+                status, idx = self.conn.execute_scalar(SQL)
+                if not status:
+                    self.end_transaction(data)
+                    return internal_server_error(errormsg=tid)
+
+            self.end_transaction(data)
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     idx,
@@ -662,9 +668,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
             )
         except Exception as e:
-            if hasattr(data, "isconcurrent") and not data['isconcurrent']:
-                # End transaction.
-                self.conn.execute_scalar("END;")
+            self.end_transaction(data)
             return internal_server_error(errormsg=str(e))
 
     @check_precondition
@@ -685,7 +689,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if idx is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [idx]}
@@ -700,7 +704,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 # so that we create template for dropping index
                 SQL = render_template(
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
-                    did=did, tid=tid, idx=idx, datlastsysoid=self.datlastsysoid
+                    did=did, tid=tid, idx=idx,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
 
                 status, res = self.conn.execute_dict(SQL)
@@ -750,14 +755,14 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
            idx: Index ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         data['schema'] = self.schema
         data['table'] = self.table
         try:
             SQL, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid)
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             if not isinstance(SQL, str):
                 return SQL
             SQL = SQL.strip('\n').strip(' ')
@@ -797,7 +802,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -808,7 +813,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             sql, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid, mode='create')
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create')
             if not isinstance(sql, str):
                 return sql
             sql = sql.strip('\n').strip(' ')
@@ -837,7 +842,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL = index_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, did=did,
-            tid=tid, idx=idx, datlastsysoid=self.datlastsysoid,
+            tid=tid, idx=idx, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             add_not_exists_clause=True
         )
 
@@ -868,7 +873,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql, name = index_utils.get_sql(
                 self.conn, data=data, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid, mode='create')
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID, mode='create')
 
             sql = sql.strip('\n').strip(' ')
 
@@ -876,7 +881,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = index_utils.get_reverse_engineered_sql(
                 self.conn, schema=target_schema,
                 table=self.table, did=did, tid=tid, idx=idx,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 template_path=None, with_header=False,
                 add_not_exists_clause=True
             )
@@ -973,7 +978,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 SQL = render_template(
                     "/".join([self.template_path, self._PROPERTIES_SQL]),
                     did=did, tid=tid, idx=idx,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -1028,7 +1033,8 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if not oid:
             SQL = render_template("/".join([self.template_path,
-                                            self._NODES_SQL]), tid=tid)
+                                            self._NODES_SQL]), tid=tid,
+                                  schema_diff=True)
             status, indexes = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(indexes)

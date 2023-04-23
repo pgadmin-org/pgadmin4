@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for Check Constraint. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -181,6 +181,6 @@ def get_sql(conn, data, tid, cid=None, template_path=None):
             return _('-- definition incomplete'), name
 
         sql = render_template("/".join([template_path, 'create.sql']),
-                              data=data)
+                              data=data, conn=conn)
 
     return sql, name

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ export default function Privilege({value, onChange, controlProps}) {
   return (
     <div className={classes.root}>
       <InputText value={textValue} readOnly/>
-      <table className={clsx(classes.table, 'priv-table')}>
+      <table className={clsx(classes.table, 'priv-table')} tabIndex="0">
         {(realVal.length > 1) && <thead>
           <tr>
             <td className={classes.tableCell}>

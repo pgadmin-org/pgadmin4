@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -37,14 +37,14 @@ describe('components Buttons', ()=>{
   it('PrimaryButton', ()=>{
     let ThemedBtn = withTheme(PrimaryButton);
     let btn = mount(<ThemedBtn>Test</ThemedBtn>);
-    expect(btn.getDOMNode().classList.contains('MuiButton-containedPrimary')).toBe(true);
+    expect(btn.find('button').getDOMNode().classList.contains('MuiButton-containedPrimary')).toBe(true);
   });
 
   it('DefaultButton', ()=>{
     let ThemedBtn = withTheme(DefaultButton);
     let btn = mount(<ThemedBtn className="testClass">Test</ThemedBtn>);
-    expect(btn.getDOMNode().classList.contains('MuiButton-outlined')).toBe(true);
-    expect(btn.getDOMNode().classList.contains('testClass')).toBe(true);
+    expect(btn.find('button').getDOMNode().classList.contains('MuiButton-outlined')).toBe(true);
+    expect(btn.find('button').getDOMNode().classList.contains('testClass')).toBe(true);
   });
 
   it('PgIconButton', ()=>{

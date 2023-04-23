@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -20,7 +20,7 @@ import datetime
 import hmac
 import hashlib
 import os
-import random
+import secrets
 import string
 import time
 import config
@@ -41,7 +41,7 @@ from pgadmin.utils.ajax import make_json_response
 def _calc_hmac(body, secret):
     return base64.b64encode(
         hmac.new(
-            secret.encode(), body.encode(), hashlib.sha1
+            secret.encode(), body.encode(), hashlib.sha256
         ).digest()
     ).decode()
 
@@ -70,12 +70,13 @@ class ManagedSession(CallbackDict, SessionMixin):
         if not self.hmac_digest:
             population = string.ascii_lowercase + string.digits
 
-            self.randval = ''.join(random.sample(population, 20))
+            self.randval = ''.join(
+                secrets.choice(population) for i in range(20))
             self.hmac_digest = _calc_hmac(
                 '%s:%s' % (self.sid, self.randval), secret)
 
 
-class SessionManager(object):
+class SessionManager():
     def new_session(self):
         'Create a new session'
         raise NotImplementedError
@@ -278,7 +279,7 @@ class ManagedSessionInterface(SessionInterface):
         self.manager = manager
 
     def open_session(self, app, request):
-        cookie_val = request.cookies.get(app.session_cookie_name)
+        cookie_val = request.cookies.get(app.config['SESSION_COOKIE_NAME'])
 
         if not cookie_val or '!' not in cookie_val:
             return self.manager.new_session()
@@ -295,7 +296,8 @@ class ManagedSessionInterface(SessionInterface):
         if not session:
             self.manager.remove(session.sid)
             if session.modified:
-                response.delete_cookie(app.session_cookie_name, domain=domain)
+                response.delete_cookie(app.config['SESSION_COOKIE_NAME'],
+                                       domain=domain)
             return
 
         if not session.modified:
@@ -309,7 +311,7 @@ class ManagedSessionInterface(SessionInterface):
 
         cookie_exp = self.get_expiration_time(app, session)
         response.set_cookie(
-            app.session_cookie_name,
+            app.config['SESSION_COOKIE_NAME'],
             '%s!%s' % (session.sid, session.hmac_digest),
             expires=cookie_exp,
             secure=config.SESSION_COOKIE_SECURE,

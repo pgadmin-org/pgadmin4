@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Subscription Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
@@ -23,7 +23,6 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-import psycopg2
 from pgadmin.utils import get_complete_file_path
 
 
@@ -62,7 +61,7 @@ class SubscriptionModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(SubscriptionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = self.min_ppasver = 100000
         self.max_ver = None
 
@@ -215,7 +214,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         self.template_path = None
         self.manager = None
 
-        super(SubscriptionView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -231,10 +230,6 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             self.driver = get_driver(PG_DEFAULT_DRIVER)
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = self.manager.db_info[kwargs['did']][
-                'datlastsysoid'] if self.manager.db_info is not None \
-                and kwargs['did'] in self.manager.db_info else 0
-
             # Set the template path for the SQL scripts
             self.template_path = (
                 "subscriptions/sql/#{0}#".format(self.manager.version)
@@ -280,7 +275,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         sql = render_template("/".join([self.template_path,
-                                        'nodes.sql']), did=did)
+                                        self._NODES_SQL]), did=did)
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -406,7 +401,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             subid: Subscription ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -445,7 +440,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -501,7 +496,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if subid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [subid]}
@@ -562,7 +557,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:
@@ -663,7 +658,10 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             'passfile' in connection_details and \
             connection_details['passfile'] != '' else None
         try:
-            conn = psycopg2.connect(
+            from pgadmin.utils.driver import get_driver
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            conn = driver.get_connection(
+                sid=0,
                 host=connection_details['host'],
                 database=connection_details['db'],
                 user=connection_details['username'],
@@ -883,15 +881,9 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         if self.manager.version < 100000:
             return res
 
-        last_system_oid = 0
-        if self.manager.db_info is not None and did in self.manager.db_info:
-            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
-
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects,
-            did=did
+            "/".join([self.template_path, self._NODES_SQL]),
+            did=did, schema_diff=True
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:

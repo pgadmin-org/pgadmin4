@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -130,7 +130,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                     "acl": []
                 },
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_dict",
                     "return_value": "(False, 'Mocked Internal Server "
                                     "Error while get msq fetch properties.')"
@@ -162,7 +162,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
                     "acl": []
                 },
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_dict",
                     "return_value": "(True, {'rows': []})"
                 },
@@ -198,7 +198,7 @@ class FunctionGetmsqlTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will get function nodes under schema. """
-        super(FunctionGetmsqlTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
         db_user = self.server["username"]
         self.test_data["funcowner"] = db_user

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ export class DomainConstSchema extends BaseUISchema {
 }
 
 export default class DomainSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -135,7 +135,7 @@ export default class DomainSchema extends BaseUISchema {
         readonly: function(state) {return !obj.isNew(state);},
         disabled: function(state) {
           // We will store type from selected from combobox
-          var of_type = state.basetype;
+          let of_type = state.basetype;
           if(obj.type_options) {
             // iterating over all the types
             _.each(obj.type_options, function(o) {
@@ -167,7 +167,7 @@ export default class DomainSchema extends BaseUISchema {
         readonly: function(state) {return !obj.isNew(state);},
         disabled: function(state) {
           // We will store type from selected from combobox
-          var of_type = state.basetype;
+          let of_type = state.basetype;
           if(obj.type_options) {
             // iterating over all the types
             _.each(obj.type_options, function(o) {

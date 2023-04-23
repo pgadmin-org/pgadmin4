@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -32,7 +32,6 @@ export class OwnedBySchema extends BaseUISchema {
         return t._id;
       }
     }
-    return;
   }
 
   get baseFields() {
@@ -52,6 +51,13 @@ export class OwnedBySchema extends BaseUISchema {
             optionsReloadBasis: state.owned_table,
           };
         },
+        depChange: (state)=>{
+          if(!state.owned_table) {
+            return {
+              owned_column: null,
+            };
+          }
+        }
       }
     ];
   }
@@ -68,7 +74,7 @@ export class OwnedBySchema extends BaseUISchema {
 
 
 export default class SequenceSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -242,7 +248,7 @@ export default class SequenceSchema extends BaseUISchema {
       }
     }
 
-    var min_lt = gettext('Minimum value must be less than maximum value.'),
+    let min_lt = gettext('Minimum value must be less than maximum value.'),
       start_lt = gettext('Start value cannot be less than minimum value.'),
       start_gt = gettext('Start value cannot be greater than maximum value.');
 

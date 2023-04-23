@@ -35,12 +35,13 @@ To add a user, click the Add (+) button at the top right corner.
 Provide information about the new pgAdmin role in the row:
 
 * Use the drop-down list box next to *Authentication source* field to select the
-  type of authentication that should be used for the user. If LDAP
-  authentication is not enabled for pgAdmin, then *Authentication source* field
-  is disabled.
+  type of authentication that should be used for the user. If authentication
+  source is only 'internal' then *Authentication source* field
+  is disabled. Supported *Authentication source* are internal, ldap, kerberos,
+  oauth2 and webserver.
 * Click in the *Username* field, and provide a username for the user. This field
-  is enabled only if you select *ldap* as authentication source. If you select
-  *internal* as authentication source, your email address is displayed in the
+  is enabled only when you select authentication source except *internal*. If you
+  select *internal* as authentication source, your email address is displayed in the
   username field.
 * Click in the *Email* field, and provide an email address for the user.
 * Use the drop-down list box next to *Role* to select whether a user is an
@@ -54,15 +55,19 @@ Provide information about the new pgAdmin role in the row:
   active; the default is *Yes*. Use this switch to disable account activity
   without deleting an account.
 * Use the *New password* field to provide the password associated with the user
-  specified in the *Email* field. This field is disabled if you select *ldap*
-  as authentication source since LDAP password is not stored in the pgAdmin database.
+  specified in the *Email* field. This field is disabled if you select any
+  authentication source except *internal*.
 * Re-enter the password in the *Confirm password* field. This field is disabled
   if you select *ldap* as authentication source.
-* Move the *Locked* switch to the *True* position if you want to lock the account;
-  the default is *False*. This functionality is useful when a user is locked by trying unsuccessful login attempts.
+* *Locked* switch is disabled by default when set to *False*. It is only enabled
+  when the user is locked by trying unsuccessful login attempts. Move the switch
+  to the *False* position if you want to unlock the account.
 
 To discard a user, and revoke access to pgAdmin, click the trash icon to the
-left of the row and confirm deletion in the *Delete user?* dialog.
+left of the row and confirm deletion in the *Delete user?* dialog. If the user
+has created some shared servers, then the :ref:`Change Ownership <change_ownership>`
+dialog will appear to change the ownership of a shared server.
+
 
 Users with the *Administrator* role are able to add, edit and remove pgAdmin
 users, but otherwise have the same capabilities as those with the *User* role.

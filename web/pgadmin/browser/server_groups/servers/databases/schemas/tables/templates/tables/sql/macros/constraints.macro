@@ -25,7 +25,7 @@
 {% for data in unique_data %}
 {% if data.columns|length > 0 %}{% if loop.index !=1 %},{% endif %}
 
-    {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}UNIQUE ({% for c in data.columns%}
+    {% if data.name %}CONSTRAINT {{conn|qtIdent(data.name)}} {% endif %}UNIQUE {% if data.indnullsnotdistinct %}NULLS NOT DISTINCT {% endif %}({% for c in data.columns%}
 {% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(c.column)}}{% endfor %}){% if data.include|length > 0 %}
 
         INCLUDE({% for col in data.include %}{% if loop.index != 1 %}, {% endif %}{{conn|qtIdent(col)}}{% endfor %}){% endif %}
@@ -106,7 +106,7 @@
 {% for d in data %}
 {% if d.name and d.comment %}
 COMMENT ON CONSTRAINT {{ conn|qtIdent(d.name) }} ON {{ conn|qtIdent(schema, table) }}
-    IS {{ d.comment|qtLiteral }};
+    IS {{ d.comment|qtLiteral(conn) }};
 {% endif %}
 {% endfor %}
 {%- endmacro %}

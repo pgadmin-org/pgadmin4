@@ -6,7 +6,7 @@ BEGIN
 INSERT INTO pgagent.pga_job(
     jobjclid, jobname, jobdesc, jobhostagent, jobenabled
 ) VALUES (
-    1::integer, 'test_sql_job_remote_db_$%{}[]()&*^!@""''`\/#'::text, 'test_job_step_schedule description'::text, 'test_host'::text, true
+    1::integer, E'test_sql_job_remote_db_$%{}[]()&*^!@""''`\\/#'::text, 'test_job_step_schedule description'::text, 'test_host'::text, true
 ) RETURNING jobid INTO jid;
 
 -- Steps

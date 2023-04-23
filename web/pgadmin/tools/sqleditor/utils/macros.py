@@ -2,15 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Handle Macros for SQL Editor."""
 
-import simplejson as json
-from flask_babelex import gettext
+import json
+from flask_babel import gettext
 from flask import current_app, request
 from flask_security import login_required, current_user
 from pgadmin.utils.ajax import make_response as ajax_response,\
@@ -76,7 +76,8 @@ def get_user_macros():
     macros = db.session.query(UserMacros.name,
                               Macros.id,
                               Macros.alt, Macros.control,
-                              Macros.key, Macros.key_code
+                              Macros.key, Macros.key_code,
+                              UserMacros.sql
                               ).outerjoin(
         Macros, UserMacros.mid == Macros.id).filter(
         UserMacros.uid == current_user.id).order_by(UserMacros.name).all()
@@ -87,7 +88,8 @@ def get_user_macros():
         key_label = 'Ctrl + ' + m[4] if m[3] is True else 'Alt + ' + m[4]
         data.append({'name': m[0], 'id': m[1], 'key': m[4],
                      'key_label': key_label, 'alt': 1 if m[2] else 0,
-                     'control': 1 if m[3] else 0, 'key_code': m[5]})
+                     'control': 1 if m[3] else 0, 'key_code': m[5],
+                     'sql': m[6]})
 
     return data
 
@@ -98,7 +100,7 @@ def set_macros():
     """
 
     data = request.form if request.form else json.loads(
-        request.data, encoding='utf-8'
+        request.data
     )
 
     if 'changed' not in data:
@@ -121,7 +123,8 @@ def set_macros():
                 return make_json_response(
                     status=410, success=0, errormsg=msg
                 )
-    return ajax_response(status=200)
+
+    return get_macros(None, True)
 
 
 def create_macro(macro):

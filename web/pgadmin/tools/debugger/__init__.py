@@ -2,22 +2,22 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module implementing the debugger"""
 
-import simplejson as json
-import random
+import json
+import secrets
 import re
+import copy
 
-from flask import url_for, Response, render_template, request, \
-    current_app
-from flask_babelex import gettext
+from flask import render_template, request, current_app
+from flask_babel import gettext
 from flask_security import login_required
-from werkzeug.useragents import UserAgent
+from werkzeug.user_agent import UserAgent
 
 from pgadmin.utils import PgAdminModule, \
     SHORTCUT_FIELDS as shortcut_fields, \
@@ -33,8 +33,8 @@ from pgadmin.model import db, DebuggerFunctionArguments
 from pgadmin.tools.debugger.utils.debugger_instance import DebuggerInstance
 from pgadmin.browser.server_groups.servers.databases.extensions.utils \
     import get_extension_details
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY, \
-    PREF_LABEL_KEYBOARD_SHORTCUTS, MIMETYPE_APP_JS, SERVER_CONNECTION_CLOSED
+from pgadmin.utils.constants import PREF_LABEL_KEYBOARD_SHORTCUTS, \
+    SERVER_CONNECTION_CLOSED
 from pgadmin.preferences import preferences
 
 MODULE_NAME = 'debugger'
@@ -52,30 +52,8 @@ class DebuggerModule(PgAdminModule):
     class DebuggerModule(PgAdminModule)
 
         A module class for debugger which is derived from PgAdminModule.
-
-    Methods:
-    -------
-    * get_own_javascripts(self)
-      - Method is used to load the required javascript files for debugger
-      module
-
     """
     LABEL = gettext("Debugger")
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.debugger.controller', 'js/debugger'],
-            ['pgadmin.tools.debugger.ui', 'js/debugger_ui'],
-            ['pgadmin.tools.debugger.direct', 'js/direct']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('debugger.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def register_preferences(self):
         self.preference.register(
@@ -246,7 +224,7 @@ class DebuggerModule(PgAdminModule):
                 'debugger.poll_end_execution_result', 'debugger.poll_result'
                 ]
 
-    def on_logout(self, user):
+    def on_logout(self):
         """
         This is a callback function when user logout from pgAdmin
         :param user:
@@ -266,50 +244,28 @@ def index():
     )
 
 
-@blueprint.route("/js/debugger.js")
-@login_required
-def script():
-    """render the main debugger javascript file"""
-    return Response(
-        response=render_template("debugger/js/debugger.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
-@blueprint.route("/js/debugger_ui.js")
-@login_required
-def script_debugger_js():
-    """render the debugger UI javascript file"""
-    return Response(
-        response=render_template("debugger/js/debugger_ui.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
-@blueprint.route("/js/direct.js")
-@login_required
-def script_debugger_direct_js():
-    """
-    Render the javascript file required send and receive the response
-    from server for debugging
-    """
-    return Response(
-        response=render_template("debugger/js/direct.js", _=gettext),
-        status=200,
-        mimetype=MIMETYPE_APP_JS
-    )
-
-
 def execute_dict_search_path(conn, sql, search_path):
-    sql = "SET search_path={0};".format(search_path) + sql
+    sql_search = "SET search_path={0};".format(search_path)
+    status, res = conn.execute_void(sql_search)
+
+    if not status:
+        current_app.logger.debug(
+            "Error setting the search path.")
+        return False, res
+
     status, res = conn.execute_dict(sql)
     return status, res
 
 
 def execute_async_search_path(conn, sql, search_path):
-    sql = "SET search_path={0};".format(search_path) + sql
+    sql_search = "SET search_path={0};".format(search_path)
+    status, res = conn.execute_void(sql_search)
+
+    if not status:
+        current_app.logger.debug(
+            "Error setting the search path.")
+        return False, res
+
     status, res = conn.execute_async(sql)
     return status, res
 
@@ -682,6 +638,8 @@ def direct_new(trans_id):
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
         function_name_with_arguments=function_name_with_arguments,
+        requirejs=True,
+        basejs=True,
         layout=layout
     )
 
@@ -706,12 +664,16 @@ def get_debugger_version(conn, search_path):
     :return:
     """
     debugger_version = 0
+    status, res = conn.execute_void("SET search_path={0};".format(search_path))
+
+    if not status:
+        return False, internal_server_error(errormsg=res)
+
     status, rid = conn.execute_scalar(
-        "SET search_path={0};"
         "SELECT COUNT(*) FROM pg_catalog.pg_proc p"
         " LEFT JOIN pg_catalog.pg_namespace n ON p.pronamespace = n.oid"
         " WHERE n.nspname = ANY(current_schemas(false)) AND"
-        " p.proname = 'pldbg_get_proxy_info';".format(search_path)
+        " p.proname = 'pldbg_get_proxy_info';"
     )
 
     if not status:
@@ -800,13 +762,13 @@ def get_search_path(conn):
 @blueprint.route(
     '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
     '<int:scid>/<int:func_id>',
-    methods=['GET', 'POST'],
+    methods=['POST'],
     endpoint='initialize_target_for_function'
 )
 @blueprint.route(
     '/initialize_target/<debug_type>/<int:trans_id>/<int:sid>/<int:did>/'
     '<int:scid>/<int:func_id>/<int:tri_id>',
-    methods=['GET', 'POST'],
+    methods=['POST'],
     endpoint='initialize_target_for_trigger'
 )
 @login_required
@@ -833,7 +795,7 @@ def initialize_target(debug_type, trans_id, sid, did,
     """
 
     # Create asynchronous connection using random connection id.
-    conn_id = str(random.randint(1, 9999999))
+    conn_id = str(secrets.choice(range(1, 9999999)))
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did, conn_id=conn_id)
     data_obj = {}
@@ -881,9 +843,9 @@ def initialize_target(debug_type, trans_id, sid, did,
     # the session variables accordingly, For indirect debugging user will
     # provide the data from another session so below condition will
     # be be required
-    if request.method == 'POST':
+    if request.data:
         de_inst.function_data['args_value'] = \
-            json.loads(request.values['data'], encoding='utf-8')
+            json.loads(request.data)
 
     # Update the debugger data session variable
     # Here frame_id is required when user debug the multilevel function.
@@ -996,7 +958,7 @@ def restart_debugging(trans_id):
 
 
 @blueprint.route(
-    '/start_listener/<int:trans_id>', methods=['GET', 'POST'],
+    '/start_listener/<int:trans_id>', methods=['POST'],
     endpoint='start_listener'
 )
 @login_required
@@ -1039,8 +1001,8 @@ def start_debugger_listener(trans_id):
 
     # If user again start the same debug function with different arguments
     # then we need to save that values to session variable and database.
-    if request.method == 'POST':
-        data = json.loads(request.values['data'], encoding='utf-8')
+    if request.data:
+        data = json.loads(request.data)
         if data:
             de_inst.function_data['args_value'] = data
             de_inst.update_session()
@@ -1119,6 +1081,16 @@ def start_debugger_listener(trans_id):
                 else:
                     arg_type = de_inst.function_data['args_type'].split(",")
 
+            debugger_args_values = []
+            if de_inst.function_data['args_value']:
+                debugger_args_values = copy.deepcopy(
+                    de_inst.function_data['args_value'])
+                for arg in debugger_args_values:
+                    if arg['type'].endswith('[]') and arg['value'] and arg[
+                            'value'] != 'NULL':
+                        val_list = arg['value'][1:-1].split(',')
+                        arg['value'] = get_debugger_arg_val(val_list)
+
             # Below are two different template to execute and start executer
             if manager.server_type != 'pg' and manager.version < 90300:
                 str_query = render_template(
@@ -1127,9 +1099,10 @@ def start_debugger_listener(trans_id):
                     is_func=de_inst.function_data['is_func'],
                     lan_name=de_inst.function_data['language'],
                     ret_type=de_inst.function_data['return_type'],
-                    data=de_inst.function_data['args_value'],
+                    data=debugger_args_values,
                     arg_type=arg_type,
-                    args_mode=arg_mode
+                    args_mode=arg_mode,
+                    conn=conn
                 )
             else:
                 str_query = render_template(
@@ -1137,12 +1110,14 @@ def start_debugger_listener(trans_id):
                     func_name=func_name,
                     is_func=de_inst.function_data['is_func'],
                     ret_type=de_inst.function_data['return_type'],
-                    data=de_inst.function_data['args_value'],
-                    is_ppas_database=de_inst.function_data['is_ppas_database']
+                    data=debugger_args_values,
+                    is_ppas_database=de_inst.function_data['is_ppas_database'],
+                    conn=conn
                 )
 
             status, result = execute_async_search_path(
                 conn, str_query, de_inst.debugger_data['search_path'])
+
             if not status:
                 return internal_server_error(errormsg=result)
         else:
@@ -1194,17 +1169,18 @@ def start_debugger_listener(trans_id):
                 session_id=int_session_id
             )
 
-            status, res = execute_async_search_path(
-                conn, sql, de_inst.debugger_data['search_path'])
-            if not status:
-                return internal_server_error(errormsg=res)
-
             de_inst.debugger_data['exe_conn_id'] = \
                 de_inst.debugger_data['conn_id']
             de_inst.debugger_data['restart_debug'] = 1
             de_inst.debugger_data['frame_id'] = 0
             de_inst.debugger_data['session_id'] = int_session_id
             de_inst.update_session()
+
+            status, res = execute_async_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 data={'status': status, 'result': res}
             )
@@ -1213,6 +1189,16 @@ def start_debugger_listener(trans_id):
         result = SERVER_CONNECTION_CLOSED
 
     return make_json_response(data={'status': status, 'result': result})
+
+
+def get_debugger_arg_val(val_list):
+    """Get debugger arguments is list"""
+    debugger_args_data = []
+    for _val in val_list:
+        debugger_args_data.append({
+            'value': _val
+        })
+    return debugger_args_data
 
 
 @blueprint.route(
@@ -1277,6 +1263,11 @@ def execute_debugger_query(trans_id, query_type):
 
         status, result = execute_async_search_path(
             conn, sql, de_inst.debugger_data['search_path'])
+
+        if result and 'select() failed waiting for target' in result:
+            status = True
+            result = None
+
         if not status:
             return internal_server_error(errormsg=result)
         return make_json_response(
@@ -1312,7 +1303,6 @@ def messages(trans_id):
         trans_id
         - unique transaction id.
     """
-
     de_inst = DebuggerInstance(trans_id)
     if de_inst.debugger_data is None:
         return make_json_response(
@@ -1332,7 +1322,6 @@ def messages(trans_id):
 
     if conn.connected():
         status = 'Busy'
-        _, result = conn.poll()
         notify = conn.messages()
         if notify:
             # In notice message we need to find "PLDBGBREAK" string to find
@@ -1387,7 +1376,7 @@ def start_execution(trans_id, port_num):
         )
 
     # Create asynchronous connection using random connection id.
-    exe_conn_id = str(random.randint(1, 9999999))
+    exe_conn_id = str(secrets.choice(range(1, 9999999)))
     try:
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
             de_inst.debugger_data['server_id'])
@@ -1523,6 +1512,17 @@ def set_clear_breakpoint(trans_id, line_no, set_type):
     )
 
 
+def get_debugger_template_path(de_inst):
+    # find the debugger version and execute the query accordingly
+    dbg_version = de_inst.debugger_data['debugger_version']
+    if dbg_version <= 2:
+        template_path = DEBUGGER_SQL_V1_PATH
+    else:
+        template_path = DEBUGGER_SQL_V3_PATH
+
+    return template_path
+
+
 @blueprint.route(
     '/clear_all_breakpoint/<int:trans_id>', methods=['POST'],
     endpoint='clear_all_breakpoint'
@@ -1554,34 +1554,41 @@ def clear_all_breakpoint(trans_id):
         conn_id=de_inst.debugger_data['exe_conn_id'])
 
     # find the debugger version and execute the query accordingly
-    dbg_version = de_inst.debugger_data['debugger_version']
-    if dbg_version <= 2:
-        template_path = DEBUGGER_SQL_V1_PATH
-    else:
-        template_path = DEBUGGER_SQL_V3_PATH
+    template_path = get_debugger_template_path(de_inst)
 
-    if conn.connected():
-        # get the data sent through post from client
-        if request.form['breakpoint_list']:
-            line_numbers = request.form['breakpoint_list'].split(",")
-            for line_no in line_numbers:
-                sql = render_template(
-                    "/".join([template_path, "clear_breakpoint.sql"]),
-                    session_id=de_inst.debugger_data['session_id'],
-                    foid=de_inst.debugger_data['function_id'],
-                    line_number=line_no
-                )
+    status = True
+    result = ''
 
-                status, result = execute_dict_search_path(
-                    conn, sql, de_inst.debugger_data['search_path'])
-                if not status:
-                    return internal_server_error(errormsg=result)
-                result = result['rows']
-        else:
-            return make_json_response(data={'status': False})
-    else:
+    if not conn.connected():
         status = False
         result = SERVER_CONNECTION_CLOSED
+
+        return make_json_response(
+            data={'status': status, 'result': result}
+        )
+
+    if 'breakpoint_list' in json.loads(request.data):
+        line_numbers = []
+        if json.loads(request.data)['breakpoint_list'] is not None and \
+                json.loads(request.data)['breakpoint_list'] != '':
+            line_numbers = json.loads(request.data)[
+                'breakpoint_list'].split(",")
+
+        for line_no in line_numbers:
+            sql = render_template(
+                "/".join([template_path, "clear_breakpoint.sql"]),
+                session_id=de_inst.debugger_data['session_id'],
+                foid=de_inst.debugger_data['function_id'],
+                line_number=line_no
+            )
+
+            status, result = execute_dict_search_path(
+                conn, sql, de_inst.debugger_data['search_path'])
+            if not status:
+                return internal_server_error(errormsg=result)
+            result = result['rows']
+    else:
+        return make_json_response(data={'status': False})
 
     return make_json_response(
         data={'status': status, 'result': result}
@@ -1627,14 +1634,14 @@ def deposit_parameter_value(trans_id):
 
     if conn.connected():
         # get the data sent through post from client
-        data = json.loads(request.values['data'], encoding='utf-8')
+        data = json.loads(request.data)
 
         if data:
             sql = render_template(
                 "/".join([template_path, "deposit_value.sql"]),
                 session_id=de_inst.debugger_data['session_id'],
                 var_name=data[0]['name'], line_number=-1,
-                val=data[0]['value']
+                val=data[0]['value'], conn=conn
             )
 
             status, result = execute_dict_search_path(
@@ -1748,12 +1755,12 @@ def get_arguments_sqlite(sid, did, scid, func_id):
     """
 
     """Get the count of the existing data available in sqlite database"""
-    dbg_func_args_count = DebuggerFunctionArguments.query.filter_by(
+    dbg_func_args_count = int(DebuggerFunctionArguments.query.filter_by(
         server_id=sid,
         database_id=did,
         schema_id=scid,
         function_id=func_id
-    ).count()
+    ).count())
 
     args_data = []
 
@@ -1799,18 +1806,10 @@ def get_array_string(data, i):
     :return: Array string.
     """
     array_string = ''
-    if data[i]['value'].__class__.__name__ in (
-            'list') and data[i]['value']:
-        for k in range(0, len(data[i]['value'])):
-            if data[i]['value'][k]['value'] is None:
-                array_string += 'NULL'
-            else:
-                array_string += str(data[i]['value'][k]['value'])
-            if k != (len(data[i]['value']) - 1):
-                array_string += ','
-    elif data[i]['value'].__class__.__name__ in (
-            'list') and not data[i]['value']:
-        array_string = ''
+
+    if data[i]['value']:
+        array_string = data[i]['value'][1:-1].split(',')
+        array_string = ','.join(array_string)
     else:
         array_string = data[i]['value']
 
@@ -1840,22 +1839,26 @@ def set_arguments_sqlite(sid, did, scid, func_id):
         - Function Id
     """
 
-    if request.values['data']:
-        data = json.loads(request.values['data'], encoding='utf-8')
+    if request.data:
+        data = json.loads(request.data)
 
     try:
         for i in range(0, len(data)):
-            dbg_func_args_exists = DebuggerFunctionArguments.query.filter_by(
-                server_id=data[i]['server_id'],
-                database_id=data[i]['database_id'],
-                schema_id=data[i]['schema_id'],
-                function_id=data[i]['function_id'],
-                arg_id=data[i]['arg_id']
-            ).count()
+            dbg_func_args_exists = int(
+                DebuggerFunctionArguments.query.filter_by(
+                    server_id=data[i]['server_id'],
+                    database_id=data[i]['database_id'],
+                    schema_id=data[i]['schema_id'],
+                    function_id=data[i]['function_id'],
+                    arg_id=data[i]['arg_id']).count())
 
             # handle the Array list sent from the client
             array_string = ''
             if 'value' in data[i]:
+                array_string = data[i]['value']
+
+            if 'is_array_value' in data[i] and 'value' in data[i] and data[i][
+                    'is_array_value']:
                 array_string = get_array_string(data, i)
 
             # Check if data is already available in database then update the
@@ -1969,10 +1972,9 @@ def convert_data_to_dict(conn, result):
             column['type_code'] = items[1][1]
             columns.append(column)
 
-    # We need to convert result from 2D array to dict for BackGrid
-    # BackGrid do not support for 2D array result as it it Backbone Model
-    # based grid, This Conversion is not an overhead as most of the time
-    # result will be smaller
+    # We need to convert result from 2D array to dict.
+    # This Conversion is not an overhead as most of the time
+    # result will be smaller.
     _tmp_result = []
     for row in result:
         temp = dict()

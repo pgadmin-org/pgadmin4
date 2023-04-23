@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class ViewSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, nodeInfo, fieldOptions={}, initValues={}) {
     super({
       owner: undefined,
       schema: undefined,
@@ -36,10 +36,7 @@ export default class ViewSchema extends BaseUISchema {
   }
 
   notInSchema() {
-    if(this.nodeInfo && 'catalog' in this.nodeInfo) {
-      return true;
-    }
-    return false;
+    return this.nodeInfo && 'catalog' in this.nodeInfo;
   }
 
 
@@ -130,16 +127,15 @@ export default class ViewSchema extends BaseUISchema {
         setError('definition', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('definition', errmsg);
+        setError('definition', null);
       }
 
       if (state.definition) {
         if (!(obj.nodeInfo.server.server_type == 'pg' &&
           // No need to check this when creating a view
           obj.origData.oid !== undefined
-        ) || !(
-          state.definition !== obj.origData.definition
+        ) || (
+          state.definition === obj.origData.definition
         )) {
           obj.warningText = null;
           return false;
@@ -173,9 +169,8 @@ export default class ViewSchema extends BaseUISchema {
       }
 
     } else {
-      errmsg = null;
       _.each(['definition'], (item) => {
-        setError(item, errmsg);
+        setError(item, null);
       });
     }
   }

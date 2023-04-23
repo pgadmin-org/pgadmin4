@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -47,14 +47,14 @@ def create_trigger(server, db_name, schema_name, table_name, trigger_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "CREATE TRIGGER %s BEFORE INSERT ON %s.%s FOR EACH ROW " \
                 "EXECUTE PROCEDURE %s.%s()" % (trigger_name, schema_name,
                                                table_name, schema_name,
                                                trigger_func_name)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         pg_cursor.execute("SELECT oid FROM pg_catalog.pg_trigger "
                           "where tgname='%s'" % trigger_name)

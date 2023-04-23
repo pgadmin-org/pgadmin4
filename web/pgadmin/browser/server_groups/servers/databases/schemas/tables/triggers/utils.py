@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for Triggers. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -103,41 +103,37 @@ def get_trigger_function_and_columns(conn, data, tid,
     # If language is 'edbspl' then trigger function should be
     # 'Inline EDB-SPL' else we will find the trigger function
     # with schema name.
-    if data['lanname'] == 'edbspl':
-        data['tfunction'] = 'Inline EDB-SPL'
-        data['tgargs'] = None
-    else:
-        SQL = render_template("/".join(
-            [template_path, 'get_triggerfunctions.sql']),
-            tgfoid=data['tgfoid'],
-            show_system_objects=show_system_objects
-        )
+    SQL = render_template("/".join(
+        [template_path, 'get_triggerfunctions.sql']),
+        tgfoid=data['tgfoid'],
+        show_system_objects=show_system_objects
+    )
 
-        status, result = conn.execute_dict(SQL)
-        if not status:
-            return internal_server_error(errormsg=result)
+    status, result = conn.execute_dict(SQL)
+    if not status:
+        return internal_server_error(errormsg=result)
 
         # Update the trigger function which we have fetched with
         # schema name
-        if 'rows' in result and len(result['rows']) > 0 and \
-                'tfunctions' in result['rows'][0]:
-            data['tfunction'] = result['rows'][0]['tfunctions']
+    if 'rows' in result and len(result['rows']) > 0 and \
+            'tfunctions' in result['rows'][0]:
+        data['tfunction'] = result['rows'][0]['tfunctions']
 
-        if len(data['custom_tgargs']) > 0:
-            driver = get_driver(PG_DEFAULT_DRIVER)
-            # We know that trigger has more than 1 argument, let's join them
-            # and convert it to string
-            formatted_args = [driver.qtLiteral(arg)
-                              for arg in data['custom_tgargs']]
-            formatted_args = ', '.join(formatted_args)
+    if len(data['custom_tgargs']) > 0:
+        driver = get_driver(PG_DEFAULT_DRIVER)
+        # We know that trigger has more than 1 argument, let's join them
+        # and convert it to string
+        formatted_args = [driver.qtLiteral(arg, conn)
+                          for arg in data['custom_tgargs']]
+        formatted_args = ', '.join(formatted_args)
 
-            data['tgargs'] = formatted_args
-        else:
-            data['tgargs'] = None
+        data['tgargs'] = formatted_args
+    else:
+        data['tgargs'] = None
 
-        if len(data['tgattr']) >= 1:
-            columns = ', '.join(data['tgattr'].split(' '))
-            data['columns'] = get_column_details(conn, tid, columns)
+    if len(data['tgattr']) >= 1:
+        columns = ', '.join(data['tgattr'].split(' '))
+        data['columns'] = get_column_details(conn, tid, columns)
 
     return data
 

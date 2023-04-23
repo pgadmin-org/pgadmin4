@@ -22,7 +22,7 @@ WHERE
     cfg.cfgnamespace = {{scid}}::OID
 {% endif %}
 {% if name %}
-    {% if scid %}AND {% endif %}cfg.cfgname = {{name|qtLiteral}}
+    {% if scid %}AND {% endif %}cfg.cfgname = {{name|qtLiteral(conn)}}
 {% endif %}
 {% if cfgid %}
     {% if scid %}AND {% else %}{% if name %}AND {% endif %}{% endif %}cfg.oid = {{cfgid}}::OID

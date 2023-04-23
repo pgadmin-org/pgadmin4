@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,7 +13,7 @@ import traceback
 import json
 
 from flask import Response, request, render_template, url_for, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_login import current_user
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
@@ -23,18 +23,12 @@ from pgadmin.utils.menu import MenuItem
 
 from pgadmin.model import db, Setting
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from .utils import get_dialog_type, get_file_type_setting
 
 MODULE_NAME = 'settings'
 
 
 class SettingsModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.settings',
-            'path': url_for('settings.index') + 'settings',
-            'when': None
-        }]
-
     def get_own_menuitems(self):
         return {
             'file_items': [
@@ -43,7 +37,6 @@ class SettingsModule(PgAdminModule):
                     priority=998,
                     module="pgAdmin.Settings",
                     callback='show',
-                    icon='fa fa-retweet',
                     label=gettext('Reset Layout')
                 )
             ]
@@ -111,18 +104,20 @@ def store(setting=None, value=None):
     errormsg = ''
 
     try:
+        data = request.form if request.form else json.loads(
+            request.data.decode('utf-8'))
         if request.method == 'POST':
             if 'count' in request.form:
-                for x in range(int(request.form['count'])):
-                    store_setting(request.form['setting%d' % (
-                        x + 1)], request.form['value%d' % (x + 1)])
+                for x in range(int(data['count'])):
+                    store_setting(data['setting%d' % (
+                        x + 1)], data['value%d' % (x + 1)])
             else:
-                store_setting(request.form['setting'], request.form['value'])
+                store_setting(data['setting'], data['value'])
         else:
             store_setting(setting, value)
     except Exception as e:
         success = 0
-        errormsg = e.message
+        errormsg = str(e)
 
     try:
         info = traceback.format_exc()
@@ -141,12 +136,20 @@ def reset_layout():
     """Reset configuration setting"""
 
     try:
-        db.session.query(Setting) \
-            .filter(Setting.user_id == current_user.id)\
-            .filter((Setting.setting == 'Browser/Layout') |
-                    (Setting.setting == 'SQLEditor/Layout') |
-                    (Setting.setting == 'Debugger/Layout'))\
-            .delete()
+        if hasattr(request, 'params') and \
+            request.params['setting'] in [
+                'Browser/Layout', 'SQLEditor/Layout', 'Debugger/Layout']:
+            db.session.query(Setting) \
+                .filter(Setting.user_id == current_user.id) \
+                .filter((Setting.setting == request.params['setting'])) \
+                .delete()
+        else:
+            db.session.query(Setting) \
+                .filter(Setting.user_id == current_user.id)\
+                .filter((Setting.setting == 'Browser/Layout') |
+                        (Setting.setting == 'SQLEditor/Layout') |
+                        (Setting.setting == 'Debugger/Layout'))\
+                .delete()
 
         db.session.commit()
     except Exception as e:
@@ -222,38 +225,20 @@ def get_browser_tree_state():
                     mimetype="application/json")
 
 
-def _get_dialog_type(file_type):
-    """
-    This function return dialog type
-    :param file_type:
-    :return: dialog type.
-    """
-    if 'pgerd' in file_type:
-        return 'erd_file_type'
-    elif 'backup' in file_type:
-        return 'backup_file_type'
-    elif 'csv' in file_type and 'txt' in file_type:
-        return 'import_export_file_type'
-    elif 'csv' in file_type and 'txt' not in file_type:
-        return 'storage_manager_file_type'
-    else:
-        return 'sqleditor_file_format'
-
-
 @blueprint.route("/save_file_format_setting/",
                  endpoint="save_file_format_setting",
                  methods=['POST'])
 @login_required
 def save_file_format_setting():
     """
-    This function save the selected file format.
+    This function save the selected file format.save_file_format_setting
     :return: save file format response
     """
     data = request.form if request.form else json.loads(
         request.data.decode('utf-8'))
-    file_type = _get_dialog_type(data['allowed_file_types'])
+    file_type = get_dialog_type(data['allowed_file_types'])
 
-    store_setting(file_type, data['selectedFormat'])
+    store_setting(file_type, data['last_selected_format'])
     return make_json_response(success=True,
                               info=data,
                               result=request.form)
@@ -271,15 +256,9 @@ def get_file_format_setting():
     data = dict()
     for k, v in request.args.items():
         try:
-            data[k] = json.loads(v, encoding='utf-8')
+            data[k] = json.loads(v)
         except (ValueError, TypeError, KeyError):
             data[k] = v
 
-    file_type = _get_dialog_type(list(data.values()))
-
-    data = Setting.query.filter_by(
-        user_id=current_user.id, setting=file_type).first()
-    if data is None:
-        return make_json_response(success=True, info='*')
-    else:
-        return make_json_response(success=True, info=data.value)
+    return make_json_response(success=True,
+                              info=get_file_type_setting(list(data.values())))

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -43,8 +43,8 @@ describe('Wizard', () => {
       <Theme>
         <Wizard
           stepList={['Test']}
-          onStepChange={()=> {}}
-          onSave={()=>{}}
+          onStepChange={()=> {/*This is intentional (SonarQube)*/}}
+          onSave={()=>{/*This is intentional (SonarQube)*/}}
           className={''}
           disableNextStep={()=>{return false;}}
         >

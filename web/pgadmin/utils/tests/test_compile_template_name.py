@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -25,6 +25,6 @@ class TestCompileTemplateName(BaseTestGenerator):
 
     def runTest(self):
         result = compile_template_name(
-            'some/prefix', 'some_file.sql', self.server_type, self.version
+            'some/prefix', 'some_file.sql', self.version
         )
         self.assertEqual(result, self.expected_return_value)

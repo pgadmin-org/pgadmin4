@@ -109,7 +109,7 @@
         "prorettypename": "trigger",
         "prorows": "4321",
         "prosecdef": true,
-        "provolatile": "v",
+        "provolatile": "s",
         "prosrc": "begin\nselect 1;\nend;",
         "seclabels": [],
         "variables": [{

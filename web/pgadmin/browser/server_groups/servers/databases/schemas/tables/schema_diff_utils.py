@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -19,18 +19,19 @@ from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 
 
 class SchemaDiffTableCompare(SchemaDiffObjectCompare):
-    table_keys_to_ignore = ['oid', 'schema', 'edit_types',
+    table_keys_to_ignore = ['oid', 'schema', 'edit_types', 'attnum',
                             'col_type', 'references', 'reltuples', 'oid-2',
                             'rows_cnt', 'hastoasttable', 'relhassubclass',
                             'relacl_str', 'setting']
 
-    column_keys_to_ignore = ['attnum', 'atttypid', 'edit_types', 'elemoid',
-                             'seqrelid']
+    column_keys_to_ignore = ['atttypid', 'edit_types', 'elemoid', 'seqrelid',
+                             'indkey']
 
     constraint_keys_to_ignore = ['relname', 'nspname', 'parent_tbl',
                                  'attrelid', 'adrelid', 'fknsp', 'confrelid',
                                  'references', 'refnsp', 'remote_schema',
-                                 'conkey', 'indkey', 'references_table_name']
+                                 'conkey', 'indkey', 'references_table_name',
+                                 'refnspoid']
 
     trigger_keys_to_ignore = ['xmin', 'tgrelid', 'tgfoid', 'tfunction',
                               'tgqual', 'tgconstraint']
@@ -54,6 +55,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         target_params = {'sid': kwargs.get('target_sid'),
                          'did': kwargs.get('target_did'),
                          'scid': kwargs.get('target_scid')}
+        ignore_owner = kwargs.get('ignore_owner')
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -85,7 +88,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     node_label=self.blueprint.collection_label,
                                     group_name=group_name,
                                     ignore_keys=self.keys_to_ignore,
-                                    source_schema_name=source_schema_name)
+                                    source_schema_name=source_schema_name,
+                                    ignore_owner=ignore_owner,
+                                    ignore_whitespaces=ignore_whitespaces)
 
     def ddl_compare(self, **kwargs):
         """
@@ -168,8 +173,23 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
 
             if item['name'] == source['name']:
                 tmp = copy.deepcopy(item)
+                source['attnum'] = tmp['attnum']
 
         if tmp and source != tmp:
+            # check column level grants
+            acl_dict = dict()
+            if 'attacl' in source and 'attacl' in tmp and \
+                    source['attacl'] != tmp['attacl']:
+                if len(source['attacl']) > 0 and len(tmp['attacl']) < 1:
+                    acl_dict['added'] = source['attacl'].copy()
+                    source['attacl'] = acl_dict
+                elif len(source['attacl']) < 1 and len(tmp['attacl']) > 0:
+                    acl_dict['deleted'] = tmp['attacl'].copy()
+                    source['attacl'] = acl_dict
+                else:
+                    acl_dict['changed'] = source['attacl'].copy()
+                    source['attacl'] = acl_dict
+
             updated.append(source)
             target_cols.remove(tmp)
         elif tmp and source == tmp:
@@ -198,7 +218,10 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                              'exclude_constraint': ['amname',
                                                     'indconstraint',
                                                     'columns'],
-                             'foreign_key': []
+                             'foreign_key': ['condeferrable', 'condeferred',
+                                             'confupdtype', 'confdeltype',
+                                             'confmatchtype', 'convalidated',
+                                             'conislocal']
                              }
 
         for constraint in ['primary_key', 'unique_constraint',
@@ -270,6 +293,7 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         source = kwargs.get('source')
         target = kwargs.get('target')
         diff_dict = kwargs.get('diff_dict')
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         # Get the difference result for source and target columns
         col_diff = self.table_col_comp(source, target)
@@ -333,7 +357,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                         "dict2": dict2,
                         "source": source,
                         "target": target,
-                        "target_schema": target_schema
+                        "target_schema": target_schema,
+                        "ignore_whitespaces": ignore_whitespaces
                     }
                     diff = self._compare_source_and_target(
                         intersect_keys, module_view, source_params,
@@ -381,11 +406,13 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
         source = kwargs['source']
         target = kwargs['target']
         target_schema = kwargs['target_schema']
+        ignore_whitespaces = kwargs.get('ignore_whitespaces')
 
         for key in intersect_keys:
             # Recursively Compare the two dictionary
             if not are_dictionaries_identical(
-                    dict1[key], dict2[key], self.keys_to_ignore):
+                    dict1[key], dict2[key], self.keys_to_ignore,
+                    ignore_whitespaces):
                 diff_ddl = module_view.ddl_compare(
                     source_params=source_params,
                     target_params=target_params,

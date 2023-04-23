@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##############################################################
@@ -12,16 +12,18 @@ import traceback
 from abc import ABCMeta, abstractmethod
 from importlib import import_module
 
-import six
 from werkzeug.utils import find_modules
 from pgadmin.utils import server_utils
+from pgadmin.utils.constants import PSYCOPG3
+from .. import socketio
 
 import unittest
+import config
 
 
 class TestsGeneratorRegistry(ABCMeta):
     """
-    class TestsGeneratorRegistry(object)
+    class TestsGeneratorRegistry()
         Every module will be registered automatically by its module name.
 
     Class-level Methods:
@@ -58,18 +60,28 @@ class TestsGeneratorRegistry(ABCMeta):
         ABCMeta.__init__(self, name, bases, d)
 
     @classmethod
-    def load_generators(cls, pkg_root, exclude_pkgs, for_modules=[],
+    def load_generators(cls, pkg_args, pkg_root, exclude_pkgs, for_modules=[],
                         is_resql_only=False):
 
         cls.registry = dict()
 
         all_modules = []
 
-        all_modules += find_modules(pkg_root, False, True)
+        try:
+            for module_name in find_modules(pkg_root, False, True):
+                all_modules.append(module_name)
+        except Exception:
+            pass
 
         if 'resql' not in exclude_pkgs:
             # Append reverse engineered test case module
             all_modules.append('regression.re_sql.tests.test_resql')
+
+        if (pkg_args is None or pkg_args == "all") and \
+                'feature_tests' not in exclude_pkgs:
+            # Append feature tests module
+            all_modules += find_modules(
+                'regression.feature_tests', False, True)
 
         # If specific modules are to be tested, exclude others
         # for modules are handled differently for resql
@@ -94,11 +106,11 @@ class TestsGeneratorRegistry(ABCMeta):
                 traceback.print_exc(file=sys.stderr)
         else:
             # Check for SERVER mode
-            TestsGeneratorRegistry._check_server_mode(all_modules,
-                                                      exclude_pkgs)
+            TestsGeneratorRegistry._exclude_packages(all_modules,
+                                                     exclude_pkgs)
 
     @staticmethod
-    def _check_server_mode(all_modules, exclude_pkgs):
+    def _exclude_packages(all_modules, exclude_pkgs):
         """
         This function check for server mode test cases.
         :param all_modules: all modules.
@@ -116,18 +128,21 @@ class TestsGeneratorRegistry(ABCMeta):
                 traceback.print_exc(file=sys.stderr)
 
 
-@six.add_metaclass(TestsGeneratorRegistry)
-class BaseTestGenerator(unittest.TestCase):
+class BaseTestGenerator(unittest.TestCase, metaclass=TestsGeneratorRegistry):
     # Defining abstract method which will override by individual testcase.
 
     def setUp(self):
-        super(BaseTestGenerator, self).setUp()
+        super().setUp()
         self.server_id = self.server_information["server_id"]
         server_con = server_utils.connect_server(self, self.server_id)
         if hasattr(self, 'skip_on_database') and \
             'data' in server_con and 'type' in server_con['data'] and \
                 server_con['data']['type'] in self.skip_on_database:
             self.skipTest('cannot run in: %s' % server_con['data']['type'])
+        if hasattr(self, 'mock_data') and 'function_name' in self.mock_data:
+            self.mock_data['function_name'] =\
+                self.mock_data['function_name'].replace(
+                    PSYCOPG3, config.PG_DEFAULT_DRIVER)
 
     def setTestServer(self, server):
         self.server = server
@@ -168,3 +183,24 @@ class BaseTestGenerator(unittest.TestCase):
     @classmethod
     def setForModules(cls, for_modules):
         cls.for_modules = for_modules
+
+
+class BaseSocketTestGenerator(BaseTestGenerator):
+    SOCKET_NAMESPACE = ""
+
+    def setUp(self):
+        super().setUp()
+        self.tester.get("/")
+        self.socket_client = socketio.test_client(
+            self.app, namespace=self.SOCKET_NAMESPACE,
+            flask_test_client=self.tester)
+        self.assertTrue(self.socket_client.is_connected(self.SOCKET_NAMESPACE))
+
+    def runTest(self):
+        super().runTest()
+
+    def tearDown(self):
+        super().tearDown()
+        self.socket_client.disconnect(namespace=self.SOCKET_NAMESPACE)
+        self.assertFalse(
+            self.socket_client.is_connected(self.SOCKET_NAMESPACE))

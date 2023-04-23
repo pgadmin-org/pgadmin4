@@ -17,3 +17,24 @@
   height: 1.3em;
 
 }
+
+.icon-database-template-connected {
+  background-image: url('{{ url_for('NODE-database.static', filename='img/template_database.svg') }}') !important;
+  border-radius: 10px;
+  background-size: 20px !important;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  align-content: center;
+  height: 1.3em;
+}
+
+.icon-database-template-not-connected {
+  background-image: url('{{ url_for('NODE-database.static', filename='img/template_database_bad.svg') }}') !important;
+  border-radius: 10px;
+  background-size: 20px !important;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  align-content: center;
+  height: 1.3em;
+
+}

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -36,16 +36,16 @@ class IsPasswordSaved(BaseTestGenerator):
 
         expected_status_code = self.expected_data["status_code"]
         actual_status_code = response.status_code
-        self.assertEquals(actual_status_code, expected_status_code)
+        self.assertEqual(actual_status_code, expected_status_code)
         response_data = json.loads(response.data.decode('utf-8'))
 
         expected_message = self.expected_data["message"]
         actual_message = response_data["info"]
-        self.assertEquals(actual_message, expected_message)
+        self.assertEqual(actual_message, expected_message)
 
         expected_is_password_saved = self.test_data["is_password_saved"]
         actual_is_password_saved = response_data["data"]["is_password_saved"]
-        self.assertEquals(actual_is_password_saved, expected_is_password_saved)
+        self.assertEqual(actual_is_password_saved, expected_is_password_saved)
 
     def tearDown(self):
         """This function delete the server from SQLite """

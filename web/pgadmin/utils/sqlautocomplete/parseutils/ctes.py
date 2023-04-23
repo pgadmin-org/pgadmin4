@@ -119,7 +119,7 @@ def extract_column_names(parsed):
     if tok_val in ("insert", "update", "delete"):
         # Jump ahead to the RETURNING clause where the list of column names is
         idx, tok = parsed.token_next_by(idx, (Keyword, "returning"))
-    elif not tok_val == "select":
+    elif tok_val != "select":
         # Must be invalid CTE
         return ()
 

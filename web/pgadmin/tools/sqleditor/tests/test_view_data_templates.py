@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -187,7 +187,7 @@ class TestViewDataTemplates(BaseTestGenerator):
 
 class FakeApp(Flask):
     def __init__(self):
-        super(FakeApp, self).__init__("")
+        super().__init__("")
         driver = get_driver(PG_DEFAULT_DRIVER, self)
         self.jinja_env.filters['qtLiteral'] = driver.qtLiteral
         self.jinja_env.filters['qtIdent'] = driver.qtIdent

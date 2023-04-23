@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -16,13 +16,7 @@ MODULE_NAME = 'dependencies'
 
 
 class DependenciesModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.browser.dependencies',
-            'path': url_for('dependencies.static',
-                            filename='js/dependencies'),
-            'when': None
-        }]
+    pass
 
 
 # Initialise the module

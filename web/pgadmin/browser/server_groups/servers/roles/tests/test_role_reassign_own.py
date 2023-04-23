@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,7 +12,7 @@ import uuid
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from . import utils as roles_utils
 import json
 from unittest.mock import patch
@@ -28,9 +28,16 @@ class ReassignRoleTestCase(BaseTestGenerator):
                                          roles_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.server_id = parent_node_dict["server"][-1]["server_id"]
 
         self.data = self.test_data
+
+        if self.data["role_op"] == 'reassign' and \
+            hasattr(self, 'server_min_version') and \
+                self.server_information['server_version'] \
+                < self.server_min_version:
+            self.skipTest(self.skip_msg)
 
         self.role_name = "role_get_%s" % str(uuid.uuid4())[1:8]
         self.role_id = roles_utils.create_role(self.server, self.role_name)
@@ -45,12 +52,6 @@ class ReassignRoleTestCase(BaseTestGenerator):
         self.data['did'] = parent_node_dict['database'][-1]['db_id']
 
         if self.data["role_op"] == 'reassign':
-
-            if hasattr(self, 'server_min_version') and \
-                self.server_information['server_version'] \
-                    < self.server_min_version:
-                self.skipTest(self.skip_msg)
-
             self.role_name_1 = "role_get_%s" % str(uuid.uuid4())[1:8]
             self.role_id_1 = roles_utils.create_role(self.server,
                                                      self.role_name_1)

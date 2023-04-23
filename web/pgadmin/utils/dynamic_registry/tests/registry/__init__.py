@@ -2,11 +2,10 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import six
 from pgadmin.utils.dynamic_registry import create_registry_metaclass
 from .registry import TestModuleRegistry, TestNamedRegistry, TestNameBase
 from .test1 import TestModule1
@@ -86,8 +85,7 @@ def test_create_base_class():
         'RegistryWithBaseClass', __package__, decorate_as_module=False
     )
 
-    @six.add_metaclass(RegistryWithBaseClass)
-    class TestBase(object):
+    class TestBase(metaclass=RegistryWithBaseClass):
         pass
 
     registry = RegistryWithBaseClass._registry

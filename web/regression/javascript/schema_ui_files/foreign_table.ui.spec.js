@@ -2,20 +2,19 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import ForeignTableSchema, { ColumnSchema, CheckConstraintSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -56,61 +55,19 @@ describe('ForeignTableSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('validate', ()=>{
@@ -167,6 +124,14 @@ describe('ForeignTableSchema', ()=>{
   describe('inherits change', ()=>{
     let deferredDepChange;
     let inheritCol = {name: 'id'};
+    let addInheritCols = (depChange, state, done)=> {
+      let finalCols = [{name: 'desc'}];
+      expect(depChange(state)).toEqual({
+        adding_inherit_cols: false,
+        columns: finalCols,
+      });
+      done();
+    };
 
     beforeEach(()=>{
       spyOn(schemaObj, 'getTableOid').and.returnValue(123456);
@@ -201,12 +166,7 @@ describe('ForeignTableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        let finalCols = [{name: 'desc'}];
-        expect(depChange(state)).toEqual({
-          adding_inherit_cols: false,
-          columns: finalCols,
-        });
-        done();
+        addInheritCols(depChange, state, done);
       });
     });
 
@@ -219,12 +179,7 @@ describe('ForeignTableSchema', ()=>{
         },
       });
       deferredPromise.then((depChange)=>{
-        let finalCols = [{name: 'desc'}];
-        expect(depChange(state)).toEqual({
-          adding_inherit_cols: false,
-          columns: finalCols,
-        });
-        done();
+        addInheritCols(depChange, state, done);
       });
     });
   });
@@ -258,61 +213,19 @@ describe('ForeignTableColumnSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('column editable', ()=>{
@@ -351,22 +264,24 @@ describe('ForeignTableColumnSchema', ()=>{
 
     let initData = ()=>Promise.resolve({typlen: 1, inheritedid: 1, inheritedfrom: 'public'});
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={defaultSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={defaultSchemaObj}
+        getInitData={initData}
+        viewHelperProps={{
+          mode: 'edit',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onEdit={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+      />
+    </Theme> );
   });
 
 
@@ -399,22 +314,24 @@ describe('ForeignTableColumnSchema', ()=>{
 
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={defaultSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={defaultSchemaObj}
+        getInitData={initData}
+        viewHelperProps={{
+          mode: 'edit',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onEdit={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+      />
+    </Theme>);
   });
 
 });
@@ -436,61 +353,19 @@ describe('ForeignTableCheckConstraint', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('conname editable', ()=>{

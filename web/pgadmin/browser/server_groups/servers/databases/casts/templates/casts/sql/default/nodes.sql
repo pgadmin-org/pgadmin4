@@ -21,4 +21,8 @@
         {% endif %}
         ca.oid > {{datlastsysoid}}::OID
     {% endif %}
+    {% if schema_diff %}
+        AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+            WHERE objid = ca.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+    {% endif %}
     ORDER BY st.typname, tt.typname

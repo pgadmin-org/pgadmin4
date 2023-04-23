@@ -2,12 +2,12 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -47,7 +47,7 @@ export default function FieldSetView({
 
   let viewFields = [];
   /* Prepare the array of components based on the types */
-  schema.fields.forEach((field)=>{
+  for(const field of schema.fields) {
     let {visible, disabled, readonly, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
@@ -59,7 +59,7 @@ export default function FieldSetView({
         * from there as well.
         */
       viewFields.push(
-        useMemo(()=><MappedFormControl
+        <MappedFormControl
           state={value}
           key={field.id}
           viewHelperProps={viewHelperProps}
@@ -69,28 +69,29 @@ export default function FieldSetView({
           readonly={readonly}
           disabled={disabled}
           visible={visible}
-          onChange={(value)=>{
+          onChange={(changeValue)=>{
             /* Get the changes on dependent fields as well */
             dataDispatch({
               type: SCHEMA_STATE_ACTIONS.SET_VALUE,
               path: accessPath.concat(field.id),
-              value: value,
+              value: changeValue,
             });
           }}
           hasError={hasError}
           className={controlClassName}
-        />, [
-          value[field.id],
-          readonly,
-          disabled,
-          visible,
-          hasError,
-          controlClassName,
-          ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-        ])
+          memoDeps={[
+            value[field.id],
+            readonly,
+            disabled,
+            visible,
+            hasError,
+            controlClassName,
+            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
+          ]}
+        />
       );
     }
-  });
+  }
 
   if(!visible) {
     return <></>;

@@ -32,6 +32,7 @@
         window.resourceBasePath = "{{ url_for('static', filename='js') }}/generated/";
     </script>
     <!-- Base template scripts -->
+{% if requirejs is defined and requirejs is true %}
     <script type="application/javascript"
             src="{{ url_for('static', filename='vendor/require/require.js' if config.DEBUG else 'vendor/require/require.min.js') }}"></script>
     <script type="application/javascript">
@@ -57,11 +58,13 @@
             });
 
     </script>
-
+{% endif %}
+{% if basejs is defined and basejs is true %}
     <!-- View specified scripts -->
     <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.main.js') }}" ></script>
     <script type="application/javascript" src="{{ url_for('static', filename='js/generated/vendor.others.js') }}" ></script>
     <script type="application/javascript" src="{{ url_for('static', filename='js/generated/pgadmin_commons.js') }}" ></script>
+{% endif %}
 
 </head>
 <body>
@@ -73,7 +76,6 @@
 {% block body %}{% endblock %}
 <script type="application/javascript">
             {% block init_script %}{% endblock %}
-
 </script>
 
 </body>

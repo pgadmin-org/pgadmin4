@@ -2,54 +2,28 @@ import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
 import {mount} from 'enzyme';
 import '../helper/enzyme.helper';
+import { DATA_POINT_SIZE } from 'sources/chartjs';
 
-import Graphs, {GraphsWrapper} from '../../../pgadmin/dashboard/static/js/Graphs';
-import {X_AXIS_LENGTH, POINT_SIZE, transformData, legendCallback,
+import Graphs, {GraphsWrapper, transformData,
   getStatsUrl, statsReducer} from '../../../pgadmin/dashboard/static/js/Graphs';
+import { withTheme } from '../fake_theme';
 
 describe('Graphs.js', ()=>{
   it('transformData', ()=>{
-    expect(transformData({'Label1': [], 'Label2': []}, 1)).toEqual({
-      labels: [...Array(X_AXIS_LENGTH).keys()],
+    expect(transformData({'Label1': [], 'Label2': []}, 1, false)).toEqual({
       datasets: [{
         label: 'Label1',
         data: [],
         borderColor: '#00BCD4',
-        backgroundColor: '#00BCD4',
-        pointHitRadius: POINT_SIZE,
+        pointHitRadius: DATA_POINT_SIZE,
       },{
         label: 'Label2',
         data: [],
         borderColor: '#9CCC65',
-        backgroundColor: '#9CCC65',
-        pointHitRadius: POINT_SIZE,
+        pointHitRadius: DATA_POINT_SIZE,
       }],
       refreshRate: 1,
     });
-  });
-
-  it('legendCallback', ()=>{
-    expect(legendCallback({
-      id: 1,
-      data: {
-        datasets: [{
-          label: 'Label1',
-          backgroundColor: '#00BCD4',
-        },{
-          label: 'Label2',
-          backgroundColor: '#9CCC65',
-        }],
-      },
-    })).toEqual([
-      '<div class="1-legend d-flex">',
-      '<div class="legend-value"><span style="background-color:#00BCD4">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-      '<span class="legend-label">Label1</span>',
-      '</div>',
-      '<div class="legend-value"><span style="background-color:#9CCC65">&nbsp;&nbsp;&nbsp;&nbsp;</span>',
-      '<span class="legend-label">Label2</span>',
-      '</div>',
-      '</div>',
-    ].join(''));
   });
 
   describe('getStatsUrl', ()=>{
@@ -120,6 +94,7 @@ describe('Graphs.js', ()=>{
     let graphComp = null;
     let sid = 1;
     let did = 1;
+    let ThemedGraphs = withTheme(Graphs);
     beforeEach(()=>{
       jasmineEnzyme();
       let dashboardPref = {
@@ -131,9 +106,10 @@ describe('Graphs.js', ()=>{
         show_graphs: true,
         graph_data_points: true,
         graph_mouse_track: true,
+        graph_line_border_width: 2
       };
 
-      graphComp = mount(<Graphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} />);
+      graphComp = mount(<ThemedGraphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
     });
 
     it('GraphsWrapper is rendered',  (done)=>{
@@ -144,7 +120,6 @@ describe('Graphs.js', ()=>{
 
     it('pollDelay is set',  (done)=>{
       let found = graphComp.find('[data-testid="graph-poll-delay"]');
-      expect(found).toHaveClassName('d-none');
       expect(found).toHaveText('1000');
       done();
     });
@@ -159,11 +134,15 @@ describe('Graphs.js', ()=>{
         show_graphs: true,
         graph_data_points: true,
         graph_mouse_track: true,
+        graph_line_border_width: 2
       };
       graphComp.setProps({preferences: dashboardPref});
-      let found = graphComp.find('[data-testid="graph-poll-delay"]');
-      expect(found).toHaveText('5000');
-      done();
+      setTimeout(()=>{
+        graphComp.update();
+        let found = graphComp.find('[data-testid="graph-poll-delay"]');
+        expect(found).toHaveText('5000');
+        done();
+      }, 500);
     });
   });
 });

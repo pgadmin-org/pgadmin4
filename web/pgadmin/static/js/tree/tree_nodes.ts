@@ -2,43 +2,43 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import * as BrowserFS from 'browserfs'
+import * as BrowserFS from 'browserfs';
 import url_for from 'sources/url_for';
 import pgAdmin from 'sources/pgadmin';
-import _ from 'underscore';
-import { FileType } from 'react-aspen'
+import _ from 'lodash';
+import { FileType } from 'react-aspen';
 import { findInTree } from './tree';
 
-import { dirname, unix } from 'path-fx';
+import { unix } from 'path-fx';
 
 export class ManageTreeNodes {
-  constructor(fs) {
-    this.tree = {}
-	this.tempTree = new TreeNode(undefined, {});
+  constructor() {
+    this.tree = {};
+    this.tempTree = new TreeNode(undefined, {});
   }
 
-  public init = (_root: string) => new Promise((res, rej) => {
-    let node = {parent: null, children: [], data: null};
+  public init = (_root: string) => new Promise((res) => {
+    const node = {parent: null, children: [], data: null};
     this.tree = {};
     this.tree[_root] = {name: 'root', type: FileType.Directory, metadata: node};
     res();
-  })
+  });
 
-  public updateNode = (_path, _data)  => new Promise((res, rej) => {
+  public updateNode = (_path, _data)  => new Promise((res) => {
     const item = this.findNode(_path);
     if (item) {
       item.name = _data.label;
       item.metadata.data = _data;
     }
     res(true);
-  })
+  });
 
-  public removeNode = async (_path, _removeOnlyChild)  => {
+  public removeNode = async (_path)  => {
     const item = this.findNode(_path);
 
     if (item && item.parentNode) {
@@ -55,50 +55,50 @@ export class ManageTreeNodes {
     return findInTree(this.tempTree, path);
   }
 
-  public addNode = (_parent: string, _path: string, _data: []) => new Promise((res, rej) => {
+  public addNode = (_parent: string, _path: string, _data: []) => new Promise((res) => {
     _data.type = _data.inode ? FileType.Directory : FileType.File;
     _data._label = _data.label;
     _data.label = _.escape(_data.label);
 
     _data.is_collection = isCollectionNode(_data._type);
-    let nodeData = {parent: _parent, children: [], data: _data};
+    const nodeData = {parent: _parent, children: [], data: _data};
 
-    let tmpParentNode = this.findNode(_parent);
-    let treeNode = new TreeNode(_data.id, _data, {}, tmpParentNode, nodeData, _data.type);
+    const tmpParentNode = this.findNode(_parent);
+    const treeNode = new TreeNode(_data.id, _data, {}, tmpParentNode, nodeData, _data.type);
 
     if (tmpParentNode !== null && tmpParentNode !== undefined) tmpParentNode.children.push(treeNode);
 
     res(treeNode);
-  })
+  });
 
   public readNode = (_path: string) => new Promise<string[]>((res, rej) => {
-    let temp_tree_path = _path,
-      node = this.findNode(_path),
-      base_url = pgAdmin.Browser.URL;
+    let temp_tree_path = _path;
+    const node = this.findNode(_path);
+    const base_url = pgAdmin.Browser.URL;
 
     if (node && node.children.length > 0) {
       if (!node.type === FileType.File) {
-        rej("It's a leaf node")
+        rej('It\'s a leaf node');
       }
       else {
-        if (node.children.length != 0) res(node.children)
+        if (node.children.length != 0) res(node.children);
       }
     }
 
-    var self = this;
+    const self = this;
 
     async function loadData() {
       let url = '';
       if (_path == '/browser') {
         url = url_for('browser.nodes');
       } else {
-        let _parent_url = self.generate_url(_path);
+        const _parent_url = self.generate_url(_path);
         if (node.metadata.data._pid == null ) {
           url = node.metadata.data._type + '/children/' + node.metadata.data._id;
         }
         else {
-          if (node.metadata.data._type.includes("coll-")) {
-            let _type = node.metadata.data._type.replace("coll-", "")
+          if (node.metadata.data._type.includes('coll-')) {
+            const _type = node.metadata.data._type.replace('coll-', '');
             url = _type + '/nodes/' + _parent_url + '/';
           }
           else {
@@ -115,53 +115,52 @@ export class ManageTreeNodes {
         }
       }
 
-      async function jsonData(url) {
-        let res = await fetch(url, {
+      async function jsonData(fetch_url) {
+        const result = await fetch(fetch_url, {
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'X-pgA-CSRFToken': pgAdmin.csrf_token
           },
         });
 
-        if (res.status == 200) {
+        if (result.status == 200) {
           try {
-            let json = await res.json();
+            const json = await result.json();
             return json.data;
           } catch (e) {
             console.warn(e);
           }
         }
-        throw new Error("Node Load Error...");
-        return [];
+        throw new Error('Node Load Error...');
       }
 
       let treeData = null;
       if (url) treeData = await jsonData(url);
 
-      const Path = BrowserFS.BFSRequire('path')
+      const Path = BrowserFS.BFSRequire('path');
       const fill = async (tree) => {
-        for (let idx in tree) {
-          const _node = tree[idx]
-          const _pathl = Path.join(_path, _node.id)
+        for (const idx in tree) {
+          const _node = tree[idx];
+          const _pathl = Path.join(_path, _node.id);
           await self.addNode(temp_tree_path, _pathl, _node);
         }
-      }
+      };
 
-      let d = await fill(treeData);
+      await fill(treeData);
       if (node.children.length > 0) res(node.children);
       else res(null);
 
     }
     loadData();
-  })
+  });
 
   public generate_url = (path: string) => {
     let _path = path;
-    let _parent_path = [];
+    const _parent_path = [];
     let _partitions = [];
     while(_path != '/') {
-      let node = this.findNode(_path);
-      let _parent = unix.dirname(_path);
+      const node = this.findNode(_path);
+      const _parent = unix.dirname(_path);
       if(node.parentNode && node.parentNode.path == _parent) {
         if (node.parentNode.metadata.data !== null && !node.parentNode.metadata.data._type.includes('coll-'))
           if(node.parentNode.metadata.data._type.includes('partition')) {
@@ -169,15 +168,15 @@ export class ManageTreeNodes {
           } else {
             _parent_path.push(node.parentNode.metadata.data._id);
           }
-     }
-     _path = _parent;
+      }
+      _path = _parent;
     }
+    _partitions = _partitions.reverse();
     // Replace the table with the last partition as in reality partition node is not child of the table
     if(_partitions.length > 0) _parent_path[0]  = _partitions[_partitions.length-1];
 
-    let _rev_arr = _parent_path.reverse();
-    return _rev_arr.join("/");
-  }
+    return _parent_path.reverse().join('/');
+  };
 }
 
 
@@ -190,7 +189,7 @@ export class TreeNode {
     this.children = [];
     this.domNode = domNode;
     this.metadata = metadata;
-    this.name = metadata ? metadata.data.label : "";
+    this.name = metadata ? metadata.data.label : '';
     this.type = type ? type : undefined;
   }
 
@@ -293,7 +292,7 @@ export class TreeNode {
       } else if(tree.isOpen(this.domNode)) {
         resolve(true);
       } else {
-        tree.open(this.domNode).then(val => resolve(true), err => reject(true));
+        tree.open(this.domNode).then(() => resolve(true), () => reject(true));
       }
     });
   }
@@ -301,9 +300,9 @@ export class TreeNode {
 }
 
 export function isCollectionNode(node) {
-    if (pgAdmin.Browser.Nodes && node in pgAdmin.Browser.Nodes) {
-      if (pgAdmin.Browser.Nodes[node].is_collection !== undefined) return pgAdmin.Browser.Nodes[node].is_collection;
-      else return false;
-    }
-    return false;
+  if (pgAdmin.Browser.Nodes && node in pgAdmin.Browser.Nodes) {
+    if (pgAdmin.Browser.Nodes[node].is_collection !== undefined) return pgAdmin.Browser.Nodes[node].is_collection;
+    else return false;
+  }
+  return false;
 }

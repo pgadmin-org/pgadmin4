@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -160,13 +160,13 @@ class ServersConnectTestCase(BaseTestGenerator):
                         [eval(self.mock_data["return_value"])]
 
                     response = self.get_server_connection(server_id)
-                    self.assertEquals(response.status_code,
-                                      self.expected_data["status_code"])
+                    self.assertEqual(response.status_code,
+                                     self.expected_data["status_code"])
             else:
                 response = self.get_server_connection(server_id)
 
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the server from SQLite """

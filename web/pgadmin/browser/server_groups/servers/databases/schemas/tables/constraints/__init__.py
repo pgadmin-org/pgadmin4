@@ -2,20 +2,20 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Constraint Node"""
 
-import simplejson as json
+import json
 from flask import request
 from functools import wraps
 from pgadmin.utils.driver import get_driver
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.utils.ajax import make_json_response, \
     make_response as ajax_response, internal_server_error
@@ -53,7 +53,7 @@ class ConstraintsModule(CollectionNodeModule):
     def __init__(self, *args, **kwargs):
         self.min_ver = None
         self.max_ver = None
-        super(ConstraintsModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, tid):
         """
@@ -82,6 +82,28 @@ class ConstraintsModule(CollectionNodeModule):
         module.
         """
         return False
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .check_constraint import blueprint as module
+        self.submodules.append(module)
+
+        from .exclusion_constraint import blueprint as module
+        self.submodules.append(module)
+
+        from .foreign_key import blueprint as module
+        self.submodules.append(module)
+
+        from .index_constraint import primary_key_blueprint as module
+        self.submodules.append(module)
+
+        from .index_constraint import unique_constraint_blueprint as module
+        self.submodules.append(module)
+
+        super().register(app, options)
 
 
 blueprint = ConstraintsModule(__name__)
@@ -150,7 +172,7 @@ def delete(**kwargs):
 
     """
     data = request.form if request.form else json.loads(
-        request.data, encoding='utf-8')
+        request.data)
 
     if 'delete' in request.base_url:
         cmd = {"cmd": "delete"}

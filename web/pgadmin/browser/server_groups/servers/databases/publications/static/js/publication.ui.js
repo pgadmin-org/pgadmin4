@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -34,29 +34,25 @@ export class DefaultWithSchema extends BaseUISchema {
       id: 'evnt_truncate', label: gettext('TRUNCATE'),
       type: 'switch', group: gettext('With'),
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info']) && !_.isUndefined(this.node_info['node_info'])
-          && !_.isUndefined(this.node_info['node_info'].version) &&
-            this.node_info['node_info'].version >= 110000)
-          return true;
-        return false;
+        return !_.isUndefined(this.node_info['node_info'])
+          && !_.isUndefined(this.node_info['node_info'].version)
+          && this.node_info['node_info'].version >= 110000;
       },
 
     },{
       id: 'publish_via_partition_root', label: gettext('Publish via root?'),
       type: 'switch', group: gettext('With'),
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info']) && !_.isUndefined(this.node_info['node_info'])
-          && !_.isUndefined(this.node_info['node_info'].version) &&
-            this.node_info['node_info'].version >= 130000)
-          return true;
-        return false;
+        return !_.isUndefined(this.node_info['node_info'])
+          && !_.isUndefined(this.node_info['node_info'].version)
+          && this.node_info['node_info'].version >= 130000;
       },
     }];
   }
 }
 
 export default class PublicationSchema extends BaseUISchema {
-  constructor(fieldOptions={}, node_info, initValues) {
+  constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
       pubowner: (node_info) ? node_info['node_info'].user.name: undefined,
@@ -83,7 +79,7 @@ export default class PublicationSchema extends BaseUISchema {
   }
 
   isAllTable(state) {
-    var allTable = state.all_table;
+    let allTable = state.all_table;
     if(allTable){
       state.pubtable = '';
       return true;
@@ -92,7 +88,7 @@ export default class PublicationSchema extends BaseUISchema {
   }
 
   isTable(state) {
-    var allTable = state.all_table,
+    let allTable = state.all_table,
       table = state.pubtable;
     if(allTable){
       state.only_table = false;
@@ -111,12 +107,9 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'name', label: gettext('Name'), type: 'text',
       mode: ['properties', 'create', 'edit'], noEmpty: true,
       visible: function() {
-        if(!_.isUndefined(this.node_info['node_info'])
-            && !_.isUndefined(this.node_info['node_info'].version)
-            && this.node_info['node_info'].version >= 100000) {
-          return true;
-        }
-        return false;
+        return !_.isUndefined(this.node_info['node_info'])
+          && !_.isUndefined(this.node_info['node_info'].version)
+          && this.node_info['node_info'].version >= 100000;
       },
     },{
       id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
@@ -125,9 +118,7 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'pubowner', label: gettext('Owner'), type: 'select',
       options: this.fieldOptions.role,
       disabled: ()  => {
-        if (obj.isNew())
-          return true;
-        return false;
+        return obj.isNew();
       },
       mode: ['edit', 'properties', 'create'], controlProps: { allowClear: false},
     },{
@@ -144,11 +135,8 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'pubtable', label: gettext('Tables'), type: 'select',
       controlProps: { allowClear: true, multiple: true, creatable: true },
       options: this.fieldOptions.publicationTable,
-      group: gettext('Definition'), mode: ['edit', 'create'],
+      group: gettext('Definition'), mode: ['edit', 'create', 'properties'],
       deps: ['all_table'], disabled: obj.isAllTable,
-    },{
-      id: 'pubtable', label: gettext('Tables'), type: 'text', group: gettext('Definition'),
-      mode: ['properties'],
     },{
       type: 'nested-fieldset', mode: ['create','edit', 'properties'],
       label: gettext('With'), group: gettext('Definition'),

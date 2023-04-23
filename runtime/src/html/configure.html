@@ -23,7 +23,7 @@
     <div class="card-header h6">Fixed Port</div>
     <div class="card-body">
       <div class="form-group">
-        <label>By default, the pgAdmin 4 uses a random port number to ensure it can always run successfully. If you need to use a predictable port number, you can set one here. Note that if the port is already in use, the application will be unable to start.</label>
+        <label>By default, pgAdmin uses a random port number to ensure it can always run successfully. If you need to use a predictable port number, you can set one here. Note that if the port is already in use, the application will be unable to start.</label>
       </div>
       <div class="form-inline">
         <div class="form-check mr-3">
@@ -42,7 +42,7 @@
     <div class="card-header h6">Connection Timeout</div>
     <div class="card-body">
       <div class="form-group">
-        <label>Connection Timeout will define how long to wait for pgAdmin to start before throwing the error. By default, pgAdmin wait for 90 seconds.
+        <label>Connection Timeout will define how long to wait for the pgAdmin server to start before throwing an error. By default, pgAdmin will wait for 90 seconds.
         </label>
       </div>
       <div class="form-inline">
@@ -50,6 +50,22 @@
           <label class="mr-2">Timeout</label>
           <input type="number" class="form-control" id="timeOut" min="10" max="600" value="90" style="min-width: 80px;">
           <label class="ml-1">seconds</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card shadow-sm mt-3">
+    <div class="card-header h6">Open Documentation</div>
+    <div class="card-body">
+      <div class="form-group">
+        <label>By checking this option, all documentation links will open in the default browser instead of a new window.
+        </label>
+      </div>
+      <div class="form-inline">
+        <div class="form-check mr-3">
+          <label class="form-check-label mr-2" for="fixedPortCheck">Open Documentation in Default Browser?</label>
+          <input type="checkbox" class="form-check-input" id="openDocsInBrowser"
+            data-name="open_docs_in_browser"/>
         </div>
       </div>
     </div>

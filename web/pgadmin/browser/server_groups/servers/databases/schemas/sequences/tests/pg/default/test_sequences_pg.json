@@ -76,6 +76,8 @@
       "name": "Alter Sequence add privileges",
       "endpoint": "NODE-sequence.obj_id",
       "sql_endpoint": "NODE-sequence.sql_id",
+      "sql_endpoint": "NODE-sequence.sql_id",
+      "sql_endpoint": "NODE-sequence.sql_id",
       "msql_endpoint": "NODE-sequence.msql_id",
       "data": {
         "relacl": {

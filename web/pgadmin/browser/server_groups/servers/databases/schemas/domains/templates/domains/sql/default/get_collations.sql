@@ -1,5 +1,5 @@
 SELECT --nspname, collname,
-    CASE WHEN length(nspname::text) > 0 AND length(collname::text) > 0 THEN
+    CASE WHEN length(nspname::text) > 0 AND length(collname::text) > 0  THEN
     pg_catalog.concat(nspname, '."', collname,'"')
     ELSE '' END AS copy_collation
 FROM

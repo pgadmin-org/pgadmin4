@@ -2,17 +2,17 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module implementing the maintenance tool for vacuum"""
 
-import simplejson as json
+import json
 
 from flask import url_for, Response, render_template, request, current_app
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, html, does_utility_exist, get_server
@@ -32,29 +32,8 @@ class MaintenanceModule(PgAdminModule):
 
         A module class for maintenance tools of vacuum which is derived from
         PgAdminModule.
-
-    Methods:
-    -------
-    * get_own_javascripts()
-      - Method is used to load the required javascript files for maintenance
-        tool module
-    * get_own_stylesheets()
-      - Returns the list of CSS file used by Maintenance module
     """
     LABEL = _('Maintenance')
-
-    def get_own_javascripts(self):
-        scripts = list()
-        for name, script in [
-            ['pgadmin.tools.maintenance', 'js/maintenance']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for('maintenance.index') + script,
-                'when': None
-            })
-
-        return scripts
 
     def get_own_stylesheets(self):
         """
@@ -84,6 +63,9 @@ class Message(IProcessDesc):
     def get_server_name(self):
         s = get_server(self.sid)
 
+        if s is None:
+            return _("Not available")
+
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
         manager = driver.connection_manager(self.sid)
@@ -91,9 +73,6 @@ class Message(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
-        s.name = html.safe_str(s.name)
-        host = html.safe_str(host)
-        port = html.safe_str(port)
         return "{0} ({1}:{2})".format(s.name, host, port)
 
     def get_op(self):
@@ -139,9 +118,9 @@ class Message(IProcessDesc):
             res = _('VACUUM ({0})')
 
             opts = []
-            if self.data['vacuum_full']:
+            if 'vacuum_full' in self.data and self.data['vacuum_full']:
                 opts.append(_('FULL'))
-            if self.data['vacuum_freeze']:
+            if 'vacuum_freeze' in self.data and self.data['vacuum_freeze']:
                 opts.append(_('FREEZE'))
             if self.data['verbose']:
                 opts.append(_('VERBOSE'))
@@ -150,15 +129,13 @@ class Message(IProcessDesc):
         return res
 
     def details(self, cmd, args):
-
-        res = '<div>' + self.message
-        res += '</div><div class="py-1">'
-        res += _("Running Query:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(self.query)
-        res += '</div></div>'
-
-        return res
+        return {
+            "message": self.message,
+            "query": self.query,
+            "server": self.get_server_name(),
+            "object": self.data['database'],
+            "type": self.type_desc,
+        }
 
 
 @blueprint.route("/")
@@ -213,9 +190,9 @@ def create_maintenance_job(sid, did):
         None
     """
     if request.form:
-        data = json.loads(request.form['data'], encoding='utf-8')
+        data = json.loads(request.form['data'])
     else:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     index_name = get_index_name(data)
 
@@ -274,9 +251,10 @@ def create_maintenance_job(sid, did):
         manager.export_password_env(p.id)
         # Check for connection timeout and if it is greater than 0 then
         # set the environment variable PGCONNECT_TIMEOUT.
-        if manager.connect_timeout > 0:
+        timeout = manager.get_connection_param_value('connect_timeout')
+        if timeout and int(timeout) > 0:
             env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+            env['PGCONNECT_TIMEOUT'] = str(timeout)
             p.set_env_variables(server, env=env)
         else:
             p.set_env_variables(server)
@@ -293,7 +271,7 @@ def create_maintenance_job(sid, did):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'status': True,
+        data={'job_id': jid, 'desc': p.desc.message, 'status': True,
               'info': _('Maintenance job created.')}
     )
 

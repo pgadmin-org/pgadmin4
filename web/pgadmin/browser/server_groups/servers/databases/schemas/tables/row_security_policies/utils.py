@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for row level security. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -89,13 +89,13 @@ def get_sql(conn, **kwargs):
         old_data['table'] = table
         sql = render_template(
             "/".join([template_path, 'update.sql']),
-            data=data, o_data=old_data
+            data=data, o_data=old_data, conn=conn
         )
     else:
         data['schema'] = schema
         data['table'] = table
         sql = render_template("/".join(
-            [template_path, 'create.sql']), data=data)
+            [template_path, 'create.sql']), data=data, conn=conn)
 
     return sql, data['name'] if 'name' in data else old_data['name']
 

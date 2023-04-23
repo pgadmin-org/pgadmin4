@@ -1,6 +1,7 @@
 SELECT  sub.oid as oid,
         subname as name,
         subpublications as pub,
+        subpublications as proppub,
         sub.subsynccommit as sync,
         pga.rolname as subowner,
         subslotname as slot_name,

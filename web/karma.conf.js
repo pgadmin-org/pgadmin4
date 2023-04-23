@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -33,7 +33,6 @@ module.exports = function (config) {
       }),
     ],
     files: [
-      'pgadmin/static/bundle/slickgrid.js',
       {pattern: 'pgadmin/static/**/*.js', included: false, watched: true},
       {pattern: 'pgadmin/browser/static/js/**/*.js', included: false, watched: true},
       {pattern: 'regression/javascript/**/*.js', watched: true},
@@ -50,7 +49,6 @@ module.exports = function (config) {
     preprocessors: {
       'pgadmin/**/js/**/*.js?': ['sourcemap'],
       'regression/javascript/**/*.js': ['webpack', 'sourcemap'],
-      'pgadmin/static/bundle/slickgrid.js': ['webpack', 'sourcemap'],
     },
 
     // optionally, configure the reporter

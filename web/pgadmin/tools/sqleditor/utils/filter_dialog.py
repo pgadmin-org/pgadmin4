@@ -2,15 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Code to handle data sorting in view data mode."""
 import pickle
-import simplejson as json
-from flask_babelex import gettext
+import json
+from flask_babel import gettext
 from flask import current_app
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
@@ -19,7 +19,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost
 from pgadmin.utils.constants import ERROR_MSG_TRANS_ID_NOT_FOUND
 
 
-class FilterDialog(object):
+class FilterDialog():
     @staticmethod
     def get(*args):
         """To fetch the current sorted columns"""
@@ -73,7 +73,7 @@ class FilterDialog(object):
         request = kwargs['request']
 
         if request.data:
-            data = json.loads(request.data, encoding='utf-8')
+            data = json.loads(request.data)
         else:
             data = request.args or request.form
 

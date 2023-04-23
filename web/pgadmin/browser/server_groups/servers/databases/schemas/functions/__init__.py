@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -15,12 +15,12 @@ import sys
 import traceback
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, \
     current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
@@ -71,7 +71,7 @@ class FunctionModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(FunctionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = None
         self.max_ver = None
@@ -107,7 +107,7 @@ class FunctionModule(SchemaChildModule):
         """
         snippets = []
         snippets.extend(
-            super(SchemaChildModule, self).csssnippets
+            super().csssnippets
         )
 
         return snippets
@@ -263,7 +263,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         if key in list_params and req[key] != '' and req[key] is not None:
             # Coverts string into python list as expected.
-            data[key] = json.loads(req[key], encoding='utf-8')
+            data[key] = json.loads(req[key])
         elif (key == 'proretset' or key == 'proisstrict' or
               key == 'prosecdef' or key == 'proiswindow' or
               key == 'proleakproof'):
@@ -294,7 +294,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return:
         """
         if request.data:
-            req = json.loads(request.data, encoding='utf-8')
+            req = json.loads(request.data)
         else:
             req = request.args or request.form
         return req
@@ -385,7 +385,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         sql = render_template("/".join([self.sql_template_path,
                                         self._NODE_SQL]),
-                              scid=scid)
+                              scid=scid, conn=self.conn)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -411,7 +411,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.sql_template_path, self._NODE_SQL]),
             scid=scid,
-            fnid=fnid
+            fnid=fnid,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(sql)
 
@@ -494,9 +495,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         proargmodes = data['proargmodes'] if data['proargmodes'] else \
             ['i'] * len(proargtypes)
         proargnames = data['proargnames'] if data['proargnames'] else []
-        proargdefaultvals = [ptype for ptype in
-                             data['proargdefaultvals'].split(",")] \
-            if data['proargdefaultvals'] else []
+        proargdefaultvals = re.split(
+            r',(?=(?:[^\"\']*[\"\'][^\"\']*[\"\'])*[^\"\']*$)',
+            data['proargdefaultvals']) if data['proargdefaultvals'] else []
         proallargtypes = data['proallargtypes'] \
             if data['proallargtypes'] else []
 
@@ -786,14 +787,6 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             )
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            current_app.logger.error(traceback.print_exception(
-                exc_type,
-                exc_value,
-                exc_traceback,
-                limit=2
-            )
-            )
-
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition
@@ -857,7 +850,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 [self.sql_template_path, self._OID_SQL]
             ),
             nspname=self.request['pronamespace'],
-            name=self.request['name']
+            name=self.request['name'],
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
         if not status:
@@ -890,7 +884,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if fnid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [fnid]}
@@ -1102,7 +1096,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                    data=resp_data, query_type="create",
                                    func_def=name_with_default_args,
                                    query_for="sql_panel",
-                                   add_replace_clause=True
+                                   add_replace_clause=True,
+                                   conn=self.conn
                                    )
 
         return func_def
@@ -1135,7 +1130,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                                              self._CREATE_SQL]),
                                    data=resp_data, query_type="create",
                                    func_def=name_with_default_args,
-                                   query_for="sql_panel")
+                                   query_for="sql_panel",
+                                   conn=self.conn)
 
         return func_def
 
@@ -1455,14 +1451,38 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         else:
             FunctionView._merge_variables(data)
 
+        self._format_prosrc_for_pure_sql(data, False, old_data['lanname'])
+
         if allow_code_formatting:
             self.reformat_prosrc_code(data)
 
         sql = render_template(
             "/".join([self.sql_template_path, self._UPDATE_SQL]),
-            data=data, o_data=old_data
+            data=data, o_data=old_data, conn=self.conn
         )
         return True, '', sql
+
+    def _format_prosrc_for_pure_sql(self, data, view_only=True, lanname='sql'):
+
+        if self.manager.sversion < 140000:
+            return
+
+        # no need to test whether function/procedure definition is pure sql
+        # or not, the parameter from 'is_pure_sql' is sufficient.
+        if view_only:
+            if 'is_pure_sql' in data and data['is_pure_sql'] is True:
+                data['prosrc'] = data['prosrc_sql']
+                if data['prosrc'].endswith(';') is False:
+                    data['prosrc'] = ''.join((data['prosrc'], ';'))
+            else:
+                data['is_pure_sql'] = False
+        else:
+            # when function/procedure definition is changed, we need to find
+            # whether definition is of pure or have std sql definition.
+            if lanname == 'sql' and self._is_function_def_sql_standard(data):
+                data['is_pure_sql'] = True
+                if data['prosrc'].endswith(';') is False:
+                    data['prosrc'] = ''.join((data['prosrc'], ';'))
 
     def _get_sql(self, **kwargs):
         """
@@ -1529,13 +1549,15 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
             data['func_args_without'] = ', '.join(args_without_name)
 
+            self._format_prosrc_for_pure_sql(data, False)
+
             if allow_code_formatting:
                 self.reformat_prosrc_code(data)
 
             # Create mode
             sql = render_template("/".join([self.sql_template_path,
                                             self._CREATE_SQL]),
-                                  data=data, is_sql=is_sql)
+                                  data=data, is_sql=is_sql, conn=self.conn)
         return True, sql.strip('\n')
 
     def _fetch_properties(self, gid, sid, did, scid, fnid=None):
@@ -1583,12 +1605,12 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         # Set System Functions Status
         resp_data['sysfunc'] = False
-        if fnid <= self.manager.db_info[did]['datlastsysoid']:
+        if fnid <= self._DATABASE_LAST_SYSTEM_OID:
             resp_data['sysfunc'] = True
 
         # Set System Functions Status
         resp_data['sysproc'] = False
-        if fnid <= self.manager.db_info[did]['datlastsysoid']:
+        if fnid <= self._DATABASE_LAST_SYSTEM_OID:
             resp_data['sysproc'] = True
 
         # Get formatted Security Labels
@@ -1609,6 +1631,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             resp_data['procost'] = None
             resp_data['provolatile'] = None
             resp_data['proparallel'] = None
+
+        self._format_prosrc_for_pure_sql(resp_data)
 
         return resp_data
 
@@ -1868,7 +1892,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 data['schema'] = target_schema
             status, sql = self._get_sql(gid=gid, sid=sid, did=did, scid=scid,
                                         data=data, fnid=oid, is_sql=False,
-                                        is_schema_diff=True)
+                                        is_schema_diff=True,
+                                        allow_code_formatting=False)
             # Check if return type is changed then we need to drop the
             # function first and then recreate it.
             if 'prorettypename' in data:
@@ -1931,7 +1956,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
         if not oid:
             sql = render_template("/".join([self.sql_template_path,
-                                            self._NODE_SQL]), scid=scid)
+                                            self._NODE_SQL]), scid=scid,
+                                  schema_diff=True, conn=self.conn)
             status, rset = self.conn.execute_2darray(sql)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -1945,6 +1971,56 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             res = data
 
         return res
+
+    @staticmethod
+    def _is_function_def_sql_standard(resp_data):
+
+        """
+        This function is responsible for checking the sql to determine
+        whether it is as per SQL-standard or not. In fact, the function
+        is mainly utilised for the sql language with the newly added
+        ATOMIC in the version v14 of Postgres for functions & procedures
+        respectively.
+
+        :param resp_data:
+        :return: boolean
+        """
+        # if language is other than 'sql', return False
+        if 'lanname' in resp_data and resp_data['lanname'] != 'sql':
+            return False
+
+        # invalid regex, these combination should not be present in the sql
+        invalid_match = [r"^.*(?:\'|\")?.*(?=.*?atomic).*(?:\'|\").*$",
+                         r"^.*(?:\"|\')(?=.*(atomic)).*$"]
+
+        # valid regex, these combination a must in definition to detect a
+        # standard sql or pure sql
+        valid_match = [
+            r"(?=.*begin)(.+?(\n)+)(?=.*atomic)|(?=.*begin)(?=.*atomic)",
+            r"(?=return)"
+        ]
+
+        is_func_def_sql_std = False
+
+        if 'prosrc' in resp_data and resp_data['prosrc'] is not None \
+                and resp_data['prosrc'] != '':
+
+            prosrc = str(resp_data['prosrc']).lower().strip('\n').strip('\t')
+
+            for invalid in invalid_match:
+                for match in enumerate(
+                        re.finditer(invalid, prosrc, re.MULTILINE), start=1):
+                    if match:
+                        return is_func_def_sql_std
+
+            for valid in valid_match:
+                for match in enumerate(
+                        re.finditer(valid, prosrc, re.MULTILINE), start=1):
+                    if match:
+                        is_func_def_sql_std = True
+                        return is_func_def_sql_std
+
+        return is_func_def_sql_std
 
 
 SchemaDiffRegistry(blueprint.node_type, FunctionView)
@@ -1984,7 +2060,7 @@ class ProcedureModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(ProcedureModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 110000
         self.max_ver = None
@@ -2028,7 +2104,7 @@ class ProcedureView(FunctionView):
             *args:
             **kwargs:
         """
-        super(ProcedureView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def required_args(self):
@@ -2084,7 +2160,7 @@ class TriggerFunctionModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TriggerFunctionModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 90100
         self.max_ver = None
@@ -2126,7 +2202,7 @@ class TriggerFunctionView(FunctionView):
             *args:
             **kwargs:
         """
-        super(TriggerFunctionView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def required_args(self):

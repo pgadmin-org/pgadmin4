@@ -16,7 +16,7 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% endif %}
     RETURNS{% if data.proretset and (data.prorettypename.startswith('SETOF ') or data.prorettypename.startswith('TABLE')) %} {{ data.prorettypename }} {% elif data.proretset %} SETOF {{ data.prorettypename }}{% else %} {{ data.prorettypename }}{% endif %}
 
-    LANGUAGE {{ data.lanname|qtLiteral }}
+    LANGUAGE {{ data.lanname|qtLiteral(conn) }}
 {% if data.procost %}
     COST {{data.procost}}
 {% endif %}
@@ -35,11 +35,11 @@ CREATE{% if query_type is defined %}{{' OR REPLACE'}}{% endif %} FUNCTION {{ con
 {% endif -%}
 {% if data.variables %}{% for v in data.variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor %}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor %}
 {% endif %}
 
 AS {% if data.lanname == 'c' %}
-{{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
+{{ data.probin|qtLiteral(conn) }}, {{ data.prosrc_c|qtLiteral(conn) }}
 {% else %}
 $BODY${{ data.prosrc }}$BODY${% endif -%};
 {% if data.funcowner %}
@@ -59,7 +59,7 @@ ALTER FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args
 {% if data.description %}
 
 COMMENT ON FUNCTION {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
-    IS {{ data.description|qtLiteral  }};
+    IS {{ data.description|qtLiteral(conn)  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}

@@ -2,55 +2,67 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import $ from 'jquery';
 import pgAdmin from 'sources/pgadmin';
 
 import { FileType } from 'react-aspen';
 import { TreeNode } from './tree_nodes';
 
-import {isValidData} from 'sources/utils';
-
 function manageTreeEvents(event, eventName, item) {
-  let d = item ? item._metadata.data: [];
+  let d = item ? item._metadata.data : [];
+  let node_metadata = item ? item._metadata : {};
   let node;
   let obj = pgAdmin.Browser;
 
-  if (d && obj.Nodes[d._type]) {
-    node = obj.Nodes[d._type];
-
-    // If the Browser tree is not initialised yet
-    if (obj.tree === null) return;
-
-    if (eventName == 'dragstart') {
-      obj.tree.handleDraggable(event, item);
-    }
-    if (eventName == 'added' || eventName == 'beforeopen' || eventName == 'loaded') {
-      obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data') ,item, item.parent.path);
-    }
-    if (_.isObject(node.callbacks) &&
-      eventName in node.callbacks &&
-        typeof node.callbacks[eventName] == 'function' &&
-        !node.callbacks[eventName].apply(
-          node, [item, d, obj, [], eventName])) {
-      return true;
-    }
-    /* Raise tree events for the nodes */
+  // Events for preferences tree.
+  if (node_metadata.parent && node_metadata.parent.includes('/preferences') && obj.ptree.tree.type == 'preferences') {
     try {
-      node.trigger(
-        'browser-node.' + eventName, node, item, d
-      );
       obj.Events.trigger(
-        'pgadmin-browser:tree:' + eventName, item, d, node
+        'preferences:tree:' + eventName, event, item, d
       );
     } catch (e) {
       console.warn(e.stack || e);
       return false;
+    }
+  } else {
+    // Events for browser tree.
+    if (d && obj.Nodes[d._type]) {
+      node = obj.Nodes[d._type];
+
+      // If the Browser tree is not initialised yet
+      if (obj.tree === null) return;
+
+      if (eventName == 'dragstart') {
+        obj.tree.handleDraggable(event, item);
+      }
+      if (eventName == 'added' || eventName == 'beforeopen' || eventName == 'loaded') {
+        obj.tree.addNewNode(item.getMetadata('data').id, item.getMetadata('data'), item, item.parent.path);
+      }
+      if(eventName == 'copied') {
+        obj.tree.copyHandler?.(item.getMetadata('data'), item);
+      }
+      if (_.isObject(node.callbacks) &&
+        eventName in node.callbacks &&
+        typeof node.callbacks[eventName] == 'function' &&
+        !node.callbacks[eventName].apply(
+          node, [item, d, obj, [], eventName])) {
+        return true;
+      }
+
+      /* Raise tree events for the nodes */
+      try {
+        obj.Events.trigger(
+          'pgadmin-browser:tree:' + eventName, item, d, node
+        );
+      } catch (e) {
+        console.warn(e.stack || e);
+        return false;
+      }
     }
   }
   return true;
@@ -58,8 +70,9 @@ function manageTreeEvents(event, eventName, item) {
 
 
 export class Tree {
-  constructor(tree, manageTree, pgBrowser) {
+  constructor(tree, manageTree, pgBrowser, type) {
     this.tree = tree;
+    this.tree.type = type ? type : 'browser';
     this.tree.onTreeEvents(manageTreeEvents);
 
     this.rootNode = manageTree.tempTree;
@@ -69,6 +82,10 @@ export class Tree {
   }
 
   async refresh(item) {
+    //  Set _children to null as empty array not reload the children nodes on refresh.
+    if(item.children?.length == 0) {
+      item._children = null;
+    }
     await this.tree.refresh(item);
   }
 
@@ -77,7 +94,7 @@ export class Tree {
   }
 
   async before(item, data) {
-    return await this.tree.create(item.parent, data);
+    return Promise.resolve(await this.tree.create(item.parent, data));
   }
 
   async update(item, data) {
@@ -85,20 +102,29 @@ export class Tree {
   }
 
   async remove(item) {
-    return await this.tree.remove(item);
+    await this.tree.remove(item);
   }
 
   async append(item, data) {
-    return await this.tree.create(item, data);
+    return Promise.resolve(await this.tree.create(item, data));
+  }
+
+  async destroy() {
+    const model = this.tree.getModel();
+    this.rootNode.children = [];
+    if (model.root) {
+      model.root.isExpanded = false;
+      await model.root.hardReloadChildren();
+    }
   }
 
   next(item) {
-    if(item) {
+    if (item) {
       let parent = this.parent(item);
-      if(parent && parent.children.length > 0) {
+      if (parent && parent.children.length > 0) {
         let idx = parent.children.indexOf(item);
-        if(idx !== -1 && parent.children.length !== idx+1) {
-          return parent.children[idx+1];
+        if (idx !== -1 && parent.children.length !== idx + 1) {
+          return parent.children[idx + 1];
         }
       }
     }
@@ -106,12 +132,12 @@ export class Tree {
   }
 
   prev(item) {
-    if(item) {
+    if (item) {
       let parent = this.parent(item);
-      if(parent && parent.children.length > 0) {
+      if (parent && parent.children.length > 0) {
         let idx = parent.children.indexOf(item);
-        if(idx !== -1 && idx !== 0) {
-          return parent.children[idx-1];
+        if (idx !== -1 && idx !== 0) {
+          return parent.children[idx - 1];
         }
       }
     }
@@ -123,8 +149,12 @@ export class Tree {
     await this.tree.toggleDirectory(item);
   }
 
-  async ensureVisible(item){
-    await this.tree.ensureVisible(item);
+  async ensureLoaded(item) {
+    await item.ensureLoaded();
+  }
+
+  async ensureVisible(item, align='auto') {
+    await this.tree.ensureVisible(item, align);
   }
 
   async openPath(item) {
@@ -133,19 +163,19 @@ export class Tree {
   }
 
   async close(item) {
-    await this.tree.closeDirectory(item);
+    await this.tree.closeDir(item);
   }
 
   async toggle(item) {
     await this.tree.toggleDirectory(item);
   }
 
-  async select(item, ensureVisible=false) {
-    await this.tree.setActiveFile(item, ensureVisible);
+  async select(item, ensureVisible = false, align = 'auto') {
+    await this.tree.setActiveFile(item, ensureVisible, align);
   }
 
-  async selectNode(item, ensureVisible=false) {
-    this.tree.setActiveFile(item, ensureVisible);
+  async selectNode(item, ensureVisible = false, align = 'auto') {
+    this.tree.setActiveFile(item, ensureVisible, align);
   }
 
   async unload(item) {
@@ -167,18 +197,18 @@ export class Tree {
     // TBD
   }
   async setLabel(item, label) {
-    if(item) {
+    if (item) {
       await this.tree.setLabel(item, label);
     }
   }
 
   async setInode(item) {
-    if(item._children) item._children = null;
+    if (item._children) item._children = null;
     await this.tree.closeDirectory(item);
   }
 
   async setId(item, data) {
-    if(item) {
+    if (item) {
       item.getMetadata('data').id = data.id;
     }
   }
@@ -218,11 +248,14 @@ export class Tree {
 
   children(item) {
     const model = this.tree.getModel();
-    return item ? (item.children !== null ? item.children : []) : model.root.children;
+    if (item) {
+      return (item.children !== null ? item.children : []);
+    }
+    return model.root.children;
   }
 
   itemFrom(domElem) {
-    return this.tree.getItemFromDOM(domElem[0]);
+    return this.tree.getItemFromDOM(domElem);
   }
 
   DOMFrom(item) {
@@ -253,7 +286,7 @@ export class Tree {
   siblings(item) {
     if (this.hasParent(item)) {
       let _siblings = this.parent(item).children.filter((_item) => _item.path !== item.path);
-      if (typeof(_siblings) !== 'object') return [_siblings];
+      if (typeof (_siblings) !== 'object') return [_siblings];
       else return _siblings;
     }
     return [];
@@ -278,7 +311,7 @@ export class Tree {
   }
 
   itemData(item) {
-    return (item !== undefined && item !== null  && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
+    return (item !== undefined && item !== null && item.getMetadata('data') !== undefined) ? item._metadata.data : [];
   }
 
   getData(item) {
@@ -307,18 +340,19 @@ export class Tree {
   findNodeWithToggle(path) {
     let tree = this;
 
-    if(path == null || !Array.isArray(path)) {
+    if (path == null || !Array.isArray(path)) {
       return Promise.reject();
     }
+    const basepath = '/browser/' + path.slice(0, path.length-1).join('/') + '/';
     path = '/browser/' + path.join('/');
 
-    let onCorrectPath = function(matchPath) {
+    let onCorrectPath = function (matchPath) {
       return (matchPath !== undefined && path !== undefined
-        && (path.startsWith(matchPath) || path === matchPath));
+        && (basepath.startsWith(`${matchPath}/`) || path === matchPath));
     };
 
     return (function findInNode(currentNode) {
-      return new Promise((resolve, reject)=>{
+      return new Promise((resolve, reject) => {
         if (path === null || path === undefined || path.length === 0) {
           resolve(null);
         }
@@ -331,18 +365,18 @@ export class Tree {
           resolve(currentNode);
         } else {
           tree.open(currentNode)
-            .then(()=>{
+            .then(() => {
               let children = currentNode.children;
               for (let i = 0, length = children.length; i < length; i++) {
                 let childNode = children[i];
-                if(onCorrectPath(childNode.path)) {
+                if (onCorrectPath(childNode.path)) {
                   resolve(findInNode(childNode));
                   return;
                 }
               }
               reject(null);
             })
-            .catch(()=>{
+            .catch(() => {
               reject(null);
             });
         }
@@ -352,7 +386,7 @@ export class Tree {
 
   findNodeByDomElement(domElement) {
     const path = domElement.path;
-    if(!path || !path[0]) {
+    if (!path || !path[0]) {
       return undefined;
     }
 
@@ -374,7 +408,7 @@ export class Tree {
 
   createOrUpdateNode(id, data, parent, domNode) {
     let oldNodePath = id;
-    if(parent !== null && parent !== undefined && parent.path !== undefined && parent.path != '/browser') {
+    if (parent !== null && parent !== undefined && parent.path !== undefined && parent.path != '/browser') {
       oldNodePath = parent.path + '/' + id;
     }
     const oldNode = this.findNode(oldNodePath);
@@ -394,8 +428,8 @@ export class Tree {
     return node;
   }
 
-  translateTreeNodeIdFromReactTree(aciTreeNode) {
-    let currentTreeNode = aciTreeNode;
+  translateTreeNodeIdFromReactTree(treeNode) {
+    let currentTreeNode = treeNode;
     let path = [];
     while (currentTreeNode !== null && currentTreeNode !== undefined) {
       if (currentTreeNode.path !== '/browser') path.unshift(currentTreeNode.path);
@@ -440,14 +474,14 @@ export class Tree {
    * cur is selection range of text after dropping. If returned as
    * string, by default cursor will be set to the end of text
    */
-  registerDraggableType(typeOrTypeDict, dropDetailsFunc=null) {
-    if(typeof typeOrTypeDict == 'object') {
-      Object.keys(typeOrTypeDict).forEach((type)=>{
+  registerDraggableType(typeOrTypeDict, dropDetailsFunc = null) {
+    if (typeof typeOrTypeDict == 'object') {
+      Object.keys(typeOrTypeDict).forEach((type) => {
         this.registerDraggableType(type, typeOrTypeDict[type]);
       });
     } else {
-      if(dropDetailsFunc != null) {
-        typeOrTypeDict.replace(/ +/, ' ').split(' ').forEach((type)=>{
+      if (dropDetailsFunc != null) {
+        typeOrTypeDict.replace(/ +/, ' ').split(' ').forEach((type) => {
           this.draggableTypes[type] = dropDetailsFunc;
         });
       }
@@ -455,7 +489,7 @@ export class Tree {
   }
 
   getDraggable(type) {
-    if(this.draggableTypes[type]) {
+    if (this.draggableTypes[type]) {
       return this.draggableTypes[type];
     } else {
       return null;
@@ -466,7 +500,7 @@ export class Tree {
     let data = item.getMetadata('data');
     let dropDetailsFunc = this.getDraggable(data._type);
 
-    if(dropDetailsFunc != null) {
+    if (dropDetailsFunc != null) {
 
       /* addEventListener is used here because import jquery.drag.event
        * overrides the dragstart event set using element.on('dragstart')
@@ -474,20 +508,20 @@ export class Tree {
        */
       let dropDetails = dropDetailsFunc(data, item, this.getTreeNodeHierarchy(item));
 
-      if(typeof dropDetails == 'string') {
+      if (typeof dropDetails == 'string') {
         dropDetails = {
-          text:dropDetails,
-          cur:{
-            from:dropDetails.length,
+          text: dropDetails,
+          cur: {
+            from: dropDetails.length,
             to: dropDetails.length,
           },
         };
       } else {
-        if(!dropDetails.cur) {
+        if (!dropDetails.cur) {
           dropDetails = {
             ...dropDetails,
-            cur:{
-              from:dropDetails.text.length,
+            cur: {
+              from: dropDetails.text.length,
               to: dropDetails.text.length,
             },
           };
@@ -496,26 +530,31 @@ export class Tree {
 
       e.dataTransfer.setData('text', JSON.stringify(dropDetails));
       /* Required by Firefox */
-      if(e.dataTransfer.dropEffect) {
+      if (e.dataTransfer.dropEffect) {
         e.dataTransfer.dropEffect = 'move';
       }
 
       /* setDragImage is not supported in IE. We leave it to
-         * its default look and feel
-         */
-      if(e.dataTransfer.setDragImage) {
-        let dragItem = $(`
-            <div class="drag-tree-node">
-              <span>${_.escape(dropDetails.text)}</span>
-            </div>`
-        );
+      * its default look and feel
+      */
+      if (e.dataTransfer.setDragImage) {
+        const dragItem = document.createElement('div');
+        dragItem.classList.add('drag-tree-node');
+        dragItem.innerHTML = `<span>${_.escape(dropDetails.text)}</span>`;
 
-        $('body .drag-tree-node').remove();
-        $('body').append(dragItem);
+        document.querySelector('body .drag-tree-node')?.remove();
+        document.body.appendChild(dragItem);
 
-        e.dataTransfer.setDragImage(dragItem[0], 0, 0);
+        e.dataTransfer.setDragImage(dragItem, 0, 0);
       }
     }
+    else {
+      e.preventDefault();
+    }
+  }
+
+  onNodeCopy(copyCallback) {
+    this.copyHandler = copyCallback;
   }
 }
 
@@ -558,6 +597,6 @@ export function findInTree(rootNode, path) {
   })(rootNode);
 }
 
-let isValidTreeNodeData = isValidData;
+let isValidTreeNodeData = (data) => (!_.isEmpty(data));
 
-export {isValidTreeNodeData};
+export { isValidTreeNodeData };

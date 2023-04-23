@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -25,6 +25,7 @@ class TableSpaceUpdateTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
+        super().setUp()
         if not self.server['tablespace_path']\
                 or self.server['tablespace_path'] is None:
             message = "Tablespace delete test case. Tablespace path" \

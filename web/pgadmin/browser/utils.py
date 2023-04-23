@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,14 +13,15 @@ from abc import abstractmethod
 
 import flask
 from flask import render_template, current_app
-from flask.views import View, MethodViewType, with_metaclass
-from flask_babelex import gettext
+from flask.views import View, MethodView
+from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.utils.ajax import make_json_response, precondition_required,\
     internal_server_error
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
+from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
 
 
 def underscore_escape(text):
@@ -87,7 +88,7 @@ def is_version_in_range(sversion, min_ver, max_ver):
     return False
 
 
-class PGChildModule(object):
+class PGChildModule():
     """
     class PGChildModule
 
@@ -99,7 +100,7 @@ class PGChildModule(object):
     ------
     * backend_supported(manager)
     - Return True when it supports certain version.
-      Uses the psycopg2 server connection manager as input for checking the
+      Uses the psycopg server connection manager as input for checking the
       compatibility of the current module.
     """
 
@@ -110,7 +111,7 @@ class PGChildModule(object):
         self.max_ppasver = 1100000000
         self.server_type = None
 
-        super(PGChildModule, self).__init__()
+        super().__init__()
 
     def backend_supported(self, manager, **kwargs):
         if hasattr(self, 'show_node') and not self.show_node:
@@ -139,7 +140,7 @@ class PGChildModule(object):
         pass
 
 
-class NodeView(with_metaclass(MethodViewType, View)):
+class NodeView(View, metaclass=type(MethodView)):
     """
     A PostgreSQL Object has so many operaions/functions apart from CRUD
     (Create, Read, Update, Delete):
@@ -391,6 +392,7 @@ class PGChildNodeView(NodeView):
     _GET_SUBTYPES_SQL = 'get_subtypes.sql'
     _GET_EXTERNAL_FUNCTIONS_SQL = 'get_external_functions.sql'
     _GET_TABLE_FOR_PUBLICATION = 'get_tables.sql'
+    _DATABASE_LAST_SYSTEM_OID = DATABASE_LAST_SYSTEM_OID
 
     def get_children_nodes(self, manager, **kwargs):
         """
@@ -488,7 +490,7 @@ class PGChildNodeView(NodeView):
         if where_clause.find('subid') < 0:
             sql = render_template(
                 "/".join([sql_path, 'role_dependencies.sql']),
-                where_clause=where_clause, db_name=conn.db)
+                where_clause=where_clause, conn=conn)
 
             status, result = conn.execute_dict(sql)
             if not status:

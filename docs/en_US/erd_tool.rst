@@ -12,7 +12,7 @@ The Entity-Relationship Diagram (ERD) tool is a database design tool that provid
 * Save the diagram and open it later to continue working on it.
 * Generate ready to run SQL from the database design.
 * Generate the database diagram for an existing database.
-* Drag and drop tables from browser tree to the diagram.
+* Drag and drop tables from object explorer to the diagram.
 
 .. image:: images/erd_tool.png
     :alt: ERD tool window
@@ -47,7 +47,7 @@ File Options
    |                      | diagram to a file.                                                                                |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Save as*            | Click the *Save As* to open a new browser dialog and specify a new location to save the diagram.  | Ctrl + Shift + |
-   |                      |                                                                                                   | S              |
+   |                      | You need to click the down arrow beside the save button to see *Save As*.                         | S              |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
 Export Options
@@ -62,6 +62,8 @@ Export Options
    +======================+===================================================================================================+================+
    | *Generate SQL*       | Click the *Generate SQL* icon to generate the DDL SQL for the diagram and open a query tool       | Option + Ctrl +|
    |                      | with the generated SQL ready for execution.                                                       | S              |
+   |                      | You can select the option *With DROP Table* if you wish to have DROP Table DDL statements before  |                |
+   |                      | each CREATE Table DDL. You can see the option by clicking the down arrow beside the SQL button.   |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Download image*     | Click the *Download image* icon to save the ERD diagram in a image formate                        | Option + Ctrl +|
    |                      |                                                                                                   | I              |
@@ -109,6 +111,23 @@ Table Relationship Options
    |                      | tables and link them.                                                                             |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
 
+Node Color Options
+**************************
+
+.. table::
+   :class: longtable
+   :widths: 1 5
+
+   +----------------------+----------------------------------------------------------------------------------------------------------+
+   | Icon                 | Behavior                                                                                                 |
+   +======================+==========================================================================================================+
+   | *Fill Color*         | Use Fill Color to change the background color of a table node. This is helpful if you want to            |
+   |                      | identify a of group tables. Once set, all the newly added tables will take the same color.               |
+   +----------------------+----------------------------------------------------------------------------------------------------------+
+   | *Text Color*         | Use Text Color to change the text color of a table node based on the fill color to make text             |
+   |                      | easily readable.                                                                                         |
+   +----------------------+----------------------------------------------------------------------------------------------------------+
+
 Utility Options
 ***************
 
@@ -116,18 +135,21 @@ Utility Options
    :class: longtable
    :widths: 1 4 1
 
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | Icon                 | Behavior                                                                                          | Shortcut       |
-   +======================+===================================================================================================+================+
-   | *Add/Edit note*      | Click this button to make notes on tables nodes while designing the database.                     | Option/Alt +   |
-   |                      |                                                                                                   | Ctrl + N       |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Auto align*         | Click this button to auto align all tables and links to make it look more cleaner.                | Option/Alt +   |
-   |                      |                                                                                                   | Ctrl + L       |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Show details*       | Click this button to toggle the column details visibility. It allows you to show few or more      | Option/Alt +   |
-   |                      | column details.                                                                                   | Shift + D      |
-   +----------------------+---------------------------------------------------------------------------------------------------+----------------+
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | Icon                    | Behavior                                                                                       | Shortcut       |
+   +=========================+================================================================================================+================+
+   | *Add/Edit note*         | Click this button to make notes on tables nodes while designing the database.                  | Option/Alt +   |
+   |                         |                                                                                                | Ctrl + N       |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | *Auto align*            | Click this button to auto align all tables and links to make it look more cleaner.             | Option/Alt +   |
+   |                         |                                                                                                | Ctrl + L       |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | *Show details*          | Click this button to toggle the column details visibility. It allows you to show few or more   | Option/Alt +   |
+   |                         | column details.                                                                                | Shift + D      |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
+   | *Cardinality Notation*  | Change the cardinality notation format used to present relationship links. Options available   |                |
+   |                         | are - Crow's Foot Notation and Chen Notation.                                                  |                |
+   +-------------------------+------------------------------------------------------------------------------------------------+----------------+
 
 Zoom Options
 ************

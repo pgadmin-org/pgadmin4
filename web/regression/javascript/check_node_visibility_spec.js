@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ define(['sources/check_node_visibility'],
   function (checkNodeVisibility) {
     describe('checkNodeVisibility', function () {
 
-      var browser;
+      let browser;
 
       browser = jasmine.createSpyObj('browser', [
         'node_preference_data', 'get_preference']

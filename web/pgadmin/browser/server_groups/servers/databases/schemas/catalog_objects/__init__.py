@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,7 +12,7 @@
 from functools import wraps
 
 from flask import render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 
 import pgadmin.browser.server_groups.servers.databases as database
 from config import PG_DEFAULT_DRIVER
@@ -62,7 +62,7 @@ class CatalogObjectModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(CatalogObjectModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -79,6 +79,16 @@ class CatalogObjectModule(SchemaChildModule):
         initialized.
         """
         return database.DatabaseModule.node_type
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        super().register(app, options)
+
+        from .columns import blueprint as module
+        app.register_blueprint(module)
 
 
 blueprint = CatalogObjectModule(__name__)
@@ -146,11 +156,6 @@ class CatalogObjectView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -306,7 +311,8 @@ class CatalogObjectView(PGChildNodeView):
                 gettext("""Could not find the specified catalog object."""))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=res['rows'][0],

@@ -25,7 +25,7 @@ or ``Gunicorn``, or under ``NGINX`` using using ``uWSGI`` or ``Gunicorn``.
 .. seealso:: For detailed instructions on building and configuring pgAdmin from
     scratch, please see the README file in the top level directory of the source code.
     For convenience, you can find the latest version of the file
-    `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob_plain;f=README>`_,
+    `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_,
     but be aware that this may differ from the version included with the source code
     for a specific version of pgAdmin.
 
@@ -86,7 +86,9 @@ In order to configure the Python code, follow these steps:
    file locations should be appropriate:
 
    *NOTE: You must ensure the directories specified are writeable by
-   the user that the web server processes will be running as, e.g. apache or www-data.*
+   the user that the web server processes will be running as, e.g. apache or www-data.
+   You may specify DATA_DIR in order to create all required directories and files
+   under DATA_DIR folder.*
 
    .. code-block:: python
 
@@ -94,6 +96,8 @@ In order to configure the Python code, follow these steps:
        SQLITE_PATH = '/var/lib/pgadmin4/pgadmin4.db'
        SESSION_DB_PATH = '/var/lib/pgadmin4/sessions'
        STORAGE_DIR = '/var/lib/pgadmin4/storage'
+       AZURE_CREDENTIAL_CACHE_DIR = '/var/lib/pgadmin4/azurecredentialcache'
+       KERBEROS_CCACHE_DIR = '/var/lib/pgadmin4/kerberoscache'
 
 4. Run the following command to create the configuration database:
 
@@ -300,3 +304,12 @@ Then, configure NGINX:
       include uwsgi_params;
       uwsgi_pass unix:/tmp/pgadmin4.sock;
     }
+
+Additional Information
+----------------------
+
+.. note:: pgAdmin will spawn additional Python processes from time to time, and
+    relies on the *sys.executable* variable in Python to do this. In some cases,
+    you may need to override that value to ensure the correct interpreter is
+    used, instead of the WSGI host process. For example, uWSGI offers the
+    *--py-sys-executable* command line option to achieve this.

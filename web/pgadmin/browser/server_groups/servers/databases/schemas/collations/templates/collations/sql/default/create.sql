@@ -1,17 +1,12 @@
 {% if data %}
-{% if not data.lc_collate and not data.lc_type and not data.locale and not data.copy_collation %}
 CREATE COLLATION{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}
-    FROM pg_catalog."default";
-{% else %}
-CREATE COLLATION{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}
-{% endif %}
 {# if user has provided lc_collate & lc_type #}
 {% if data.lc_collate and data.lc_type %}
-    (LC_COLLATE = {{ data.lc_collate|qtLiteral }}, LC_CTYPE = {{ data.lc_type|qtLiteral }});
+    (LC_COLLATE = {{ data.lc_collate|qtLiteral(conn) }}, LC_CTYPE = {{ data.lc_type|qtLiteral(conn) }});
 {% endif %}
 {# if user has provided locale only  #}
 {% if data.locale %}
-    (LOCALE = {{ data.locale|qtLiteral }});
+    (LOCALE = {{ data.locale|qtLiteral(conn) }});
 {% endif %}
 {# if user has choosed to copy from existing collation #}
 {% if data.copy_collation %}
@@ -25,6 +20,6 @@ ALTER COLLATION {{ conn|qtIdent(data.schema, data.name) }}
 {% if data.description %}
 
 COMMENT ON COLLATION {{ conn|qtIdent(data.schema, data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {% endif %}

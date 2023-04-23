@@ -16,3 +16,39 @@
   background-size: 20px !important;
   background-position: center left;
 }
+
+.icon-at {
+  background-image: url('../../../../static/img/at.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 15px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.icon-key {
+  background-image: url('../../../../static/img/key.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 15px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.icon-join {
+  background-image: url('../../../../static/img/join.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 20px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}
+
+.icon-spinner {
+  background-image: url('../../../../static/img/spinner.svg') !important;
+  background-repeat: no-repeat;
+  background-size: 15px !important;
+  align-content: center;
+  vertical-align: middle;
+  height: 15px;
+}

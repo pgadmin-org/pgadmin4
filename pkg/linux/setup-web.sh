@@ -9,21 +9,27 @@ if [ "$EUID" -ne 0 ]
   exit 1
 fi
 
-if [[ "$#" -ne 0 ]] && ([[ "$#" -eq 1 ]] && [[ "$1" != "--yes" ]]); then
+if [[ "$#" -gt 1 ]] || { [[ "$#" -eq 1 ]] && [[ "$1" != "--yes" ]]; }; then
     echo "Usage: $0 [--yes]"
     exit 1
 fi
 
 IS_REDHAT=0
 IS_DEBIAN=0
+IS_SUSE=0
 UNAME=$(uname -a)
 
 # Get the distro from the environment
-if [ "x${PGADMIN_PLATFORM_TYPE}" == "x" ]; then
+if [ "${PGADMIN_PLATFORM_TYPE}" == "" ]; then
     if [ -f /etc/redhat-release ]; then
         PLATFORM_TYPE=redhat
     elif [[ ${UNAME} =~ "Ubuntu" ]] || [[ ${UNAME} =~ "Debian" ]] || [ -f /etc/apt/sources.list ]; then
         PLATFORM_TYPE=debian
+    elif [ -f /etc/os-release ]; then
+        if grep suse /etc/os-release > /dev/null
+        then
+            PLATFORM_TYPE=suse
+        fi
     else
         echo "Failed to detect the platform. This may mean you're running on a Linux distribution that isn't supported by pgAdmin."
         echo "Please set the PGADMIN_PLATFORM_TYPE environment variable to one of 'redhat' or 'debian' and try again."
@@ -45,6 +51,11 @@ case ${PLATFORM_TYPE} in
         IS_DEBIAN=1
         APACHE=apache2
         ;;
+    suse)
+        echo "Setting up pgAdmin 4 in web mode on a SUSE based platform..."
+        IS_SUSE=1
+        APACHE=apache2
+        ;;
 
     *)
         echo "Invalid value for the PGADMIN_PLATFORM_TYPE environment variable. Please set it to one of 'redhat' or 'debian' and try again."
@@ -61,9 +72,7 @@ fi
 
 # Run setup script first:
 echo "Creating configuration database..."
-/usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py 
-
-if [ $? != 0 ]
+if ! /usr/pgadmin4/venv/bin/python3 /usr/pgadmin4/web/setup.py;
 then
 	echo "Error setting up server mode. Please examine the output above."
 	exit 1
@@ -75,6 +84,8 @@ mkdir -p /var/log/pgadmin /var/lib/pgadmin
 
 if [ ${IS_REDHAT} == 1 ]; then
     chown apache: /var/log/pgadmin /var/lib/pgadmin -R
+elif [ ${IS_SUSE} == 1 ]; then
+    chown wwwrun: /var/log/pgadmin /var/lib/pgadmin -R
 else
     chown www-data: /var/log/pgadmin /var/lib/pgadmin -R
 fi
@@ -95,7 +106,7 @@ if [ ${IS_DEBIAN} == 1 ]; then
     if [ ${AUTOMATED} == 1 ]; then
 	      RESPONSE=Y
     else
-        read -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
+        read -r -p "We can now configure the Apache Web server for you. This involves enabling the wsgi module and configuring the pgAdmin 4 application to mount at /pgadmin4. Do you wish to continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
@@ -108,18 +119,23 @@ if [ ${IS_DEBIAN} == 1 ]; then
     esac
 fi
 
-APACHE_STATUS=`ps cax | grep ${APACHE}`
-if [ $? -eq 0 ]; then
+if pgrep ${APACHE} > /dev/null; then
     if [ ${AUTOMATED} == 1 ]; then
         RESPONSE=Y
     else
-        read -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
+        read -r -p "The Apache web server is running and must be restarted for the pgAdmin 4 installation to complete. Continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
         y|Y )
-	          systemctl restart ${APACHE}
-            if [ $? != 0 ]; then
+            COMMAND=""
+            if [ -x "$(command -v systemctl)" ]; then
+                COMMAND="systemctl restart ${APACHE}"
+            elif [ -x "$(command -v service)" ]; then
+                COMMAND="service ${APACHE} restart"
+            fi
+
+            if ! ${COMMAND}; then
                 echo "Error restarting ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully restarted. You can now start using pgAdmin 4 in web mode at http://127.0.0.1/pgadmin4"
@@ -131,20 +147,18 @@ else
     if [ ${AUTOMATED} == 1 ]; then
         RESPONSE=Y
     else
-        read -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
+        read -r -p "The Apache web server is not running. We can enable and start the web server for you to finish pgAdmin 4 installation. Continue (y/n)? " RESPONSE
     fi
 
     case ${RESPONSE} in
         y|Y )
-            systemctl enable ${APACHE}
-            if [ $? != 0 ]; then
+            if ! systemctl enable ${APACHE}; then
                 echo "Error enabling ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully enabled."
             fi
 
-            systemctl start ${APACHE}
-            if [ $? != 0 ]; then
+            if ! systemctl start ${APACHE}; then
                 echo "Error starting ${APACHE}. Please check the systemd logs"
             else
                 echo "Apache successfully started."

@@ -2,21 +2,16 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import IndexSchema, { getColumnSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui';
-
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('IndexSchema', ()=>{
   let mount;
@@ -30,40 +25,9 @@ describe('IndexSchema', ()=>{
       spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
       spyOn(nodeAjax, 'getNodeListByName').and.returnValue([]);
 
-      mount(<SchemaView
-        formType='dialog'
-        schema={columnSchemaObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getCreateView(columnSchemaObj));
 
-      mount(<SchemaView
-        formType='dialog'
-        schema={columnSchemaObj}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        getInitData={getInitData}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getEditView(columnSchemaObj, getInitData));
     });
 
     it('column schema colname editable', ()=>{
@@ -136,7 +100,7 @@ describe('IndexSchema', ()=>{
 
       columnSchemaObj.op_class_types = [];
       options.push({label: '', value: ''});
-      status = columnSchemaObj.setOpClassTypes(options);
+      columnSchemaObj.setOpClassTypes(options);
       expect(columnSchemaObj.op_class_types.length).toBe(1);
     });
   });
@@ -168,63 +132,19 @@ describe('IndexSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={indexSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(indexSchemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={indexSchemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getEditView(indexSchemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={indexSchemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(indexSchemaObj, getInitData));
   });
 
   it('validate', ()=>{

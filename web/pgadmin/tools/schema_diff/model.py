@@ -2,15 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
-from flask_babelex import gettext
+from flask_babel import gettext
 
 
-class SchemaDiffModel(object):
+class SchemaDiffModel():
     """
     SchemaDiffModel
     """
@@ -32,8 +32,6 @@ class SchemaDiffModel(object):
             **kwargs : N number of parameters
         """
         self._comparison_result = dict()
-        self._comparison_msg = gettext('Comparision started...')
-        self._comparison_percentage = 0
 
     def clear_data(self):
         """
@@ -59,20 +57,3 @@ class SchemaDiffModel(object):
             return self._comparison_result[node_name]
 
         return self._comparison_result
-
-    def get_comparison_info(self):
-        """
-        This function is used to get the comparison information.
-        :return:
-        """
-        return self._comparison_msg, self._comparison_percentage
-
-    def set_comparison_info(self, msg, percentage):
-        """
-        This function is used to set the comparison information.
-        :param msg:
-        :param percentage:
-        :return:
-        """
-        self._comparison_msg = msg
-        self._comparison_percentage = percentage

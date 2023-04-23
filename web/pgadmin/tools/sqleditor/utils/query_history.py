@@ -1,6 +1,7 @@
 from pgadmin.utils.ajax import make_json_response
 from pgadmin.model import db, QueryHistoryModel
 from config import MAX_QUERY_HIST_STORED
+import json
 
 
 class QueryHistory:
@@ -107,30 +108,34 @@ class QueryHistory:
         )
 
     @staticmethod
-    def clear_history(uid, sid, dbname=None):
+    def clear_history(uid, sid, dbname=None, filter=None):
         try:
+            filters = [
+                QueryHistoryModel.uid == uid,
+                QueryHistoryModel.sid == sid
+            ]
             if dbname is not None:
-                db.session.query(QueryHistoryModel) \
-                    .filter(QueryHistoryModel.uid == uid,
-                            QueryHistoryModel.sid == sid,
-                            QueryHistoryModel.dbname == dbname) \
-                    .delete()
+                filters.append(QueryHistoryModel.dbname == dbname)
 
-                db.session.commit()
+            history = db.session.query(QueryHistoryModel) \
+                .filter(*filters)
+            if filter is not None:
+                for row in history:
+                    query_info = json.loads(row.query_info.decode())
+                    if query_info['query'] == filter['query'] and \
+                            query_info['start_time'] == filter['start_time']:
+                        db.session.delete(row)
             else:
-                db.session.query(QueryHistoryModel) \
-                    .filter(QueryHistoryModel.uid == uid,
-                            QueryHistoryModel.sid == sid)\
-                    .delete()
+                history.delete()
 
-                db.session.commit()
+            db.session.commit()
         except Exception:
             db.session.rollback()
             # do not affect query execution if history clear fails
 
     @staticmethod
-    def clear(uid, sid, dbname=None):
-        QueryHistory.clear_history(uid, sid, dbname)
+    def clear(uid, sid, dbname=None, filter=None):
+        QueryHistory.clear_history(uid, sid, dbname, filter)
         return make_json_response(
             data={
                 'status': True,

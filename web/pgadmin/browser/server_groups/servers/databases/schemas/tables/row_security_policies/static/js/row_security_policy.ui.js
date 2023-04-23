@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 
 export default class RowSecurityPolicySchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       policyowner: 'public',
@@ -40,14 +40,11 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
   }
 
   disableUsingField(state){
-    if (state.event == 'INSERT'){
-      return true;
-    }
-    return false;
+    return state.event == 'INSERT';
   }
 
   disableWithCheckField(state){
-    var event = state.event;
+    let event = state.event;
     if ((event == 'SELECT') || (event == 'DELETE')){
       state.withcheck = '';
       return true;
@@ -69,10 +66,7 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
       {
         id: 'event', label: gettext('Event'), type: 'select',
         group: gettext('Commands'),disabled: () => {
-          if(obj.isNew()) {
-            return false;
-          }
-          return true;
+          return !obj.isNew();
         },
         controlProps: { allowClear: false },
         options:[
@@ -85,13 +79,13 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
       },
       {
         id: 'using', label: gettext('Using'), deps: ['using', 'event'],
-        type: 'text', disabled: obj.disableUsingField,
+        type: 'sql', disabled: obj.disableUsingField,
         mode: ['create', 'edit', 'properties'],
         control: 'sql', visible: true, group: gettext('Commands'),
       },
       {
         id: 'withcheck', label: gettext('With check'), deps: ['withcheck', 'event'],
-        type: 'text', mode: ['create', 'edit', 'properties'],
+        type: 'sql', mode: ['create', 'edit', 'properties'],
         control: 'sql', visible: true, group: gettext('Commands'),
         disabled: obj.disableWithCheckField,
       },
@@ -126,10 +120,7 @@ export default class RowSecurityPolicySchema extends BaseUISchema {
           {label: 'RESTRICTIVE', value: 'RESTRICTIVE'},
         ],
         visible: () => {
-          if(obj.nodeInfo.server.version >= 100000)
-            return true;
-
-          return false;
+          return obj.nodeInfo.server.version >= 100000;
         },
       },
     ];

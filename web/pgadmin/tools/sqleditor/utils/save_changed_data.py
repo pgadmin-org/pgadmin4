@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -120,6 +120,12 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 # Update columns value with columns having
                 # not_null=False and has no default value
                 column_data.update(data)
+                use_default = False
+                if not column_data:
+                    for each_col in columns_info:
+                        if columns_info[each_col]['has_default_val']:
+                            column_data[each_col] = 'set_default'
+                            use_default = True
 
                 sql = render_template(
                     "/".join([command_obj.sql_path, 'insert.sql']),
@@ -131,7 +137,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     data_type=column_type,
                     pk_names=pk_names,
                     has_oids=command_obj.has_oids(),
-                    type_cast_required=type_cast_required
+                    type_cast_required=type_cast_required,
+                    use_default=use_default
                 )
 
                 select_sql = render_template(
@@ -171,7 +178,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     object_name=command_obj.object_name,
                     nsp_name=command_obj.nsp_name,
                     data_type=column_type,
-                    type_cast_required=type_cast_required
+                    type_cast_required=type_cast_required,
+                    conn=conn
                 )
                 list_of_sql[of_type].append({'sql': sql,
                                              'data': data,
@@ -216,7 +224,8 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                 primary_key_labels=keys,
                 no_of_keys=no_of_keys,
                 object_name=command_obj.object_name,
-                nsp_name=command_obj.nsp_name
+                nsp_name=command_obj.nsp_name,
+                conn=conn
             )
             list_of_sql[of_type].append({'sql': sql, 'data': {}})
 
@@ -271,7 +280,7 @@ def save_changed_data(changed_data, columns_info, conn, command_obj,
                     else:
                         status, res = conn.execute_void(
                             item['sql'], item['data'])
-                except Exception as _:
+                except Exception:
                     failure_handle(res, item.get('row_id', 0))
                     raise
 

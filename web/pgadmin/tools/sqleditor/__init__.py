@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,16 +11,20 @@
 import os
 import pickle
 import re
+import secrets
 from urllib.parse import unquote
+from threading import Lock
 
-import simplejson as json
-from config import PG_DEFAULT_DRIVER, ON_DEMAND_RECORD_COUNT
+import json
+from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD, SHARED_STORAGE
+from werkzeug.user_agent import UserAgent
 from flask import Response, url_for, render_template, session, current_app
-from flask import request, jsonify
-from flask_babelex import gettext
+from flask import request
+from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.misc.file_manager import Filemanager
-from pgadmin.tools.sqleditor.command import QueryToolCommand
+from pgadmin.tools.sqleditor.command import QueryToolCommand, ObjectRegistry, \
+    SQLFilter
 from pgadmin.tools.sqleditor.utils.constant_definition import ASYNC_OK, \
     ASYNC_EXECUTION_ABORTED, \
     CONNECTION_STATUS_MESSAGE_MAPPING, TX_STATUS_INERROR
@@ -33,7 +37,8 @@ from pgadmin.utils.ajax import make_json_response, bad_request, \
     success_return, internal_server_error
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
-    CryptKeyMissing
+    CryptKeyMissing, ObjectGone
+from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.sqlautocomplete.autocomplete import SQLAutoComplete
 from pgadmin.tools.sqleditor.utils.query_tool_preferences import \
@@ -45,13 +50,18 @@ from pgadmin.tools.sqleditor.utils.query_history import QueryHistory
 from pgadmin.tools.sqleditor.utils.macros import get_macros,\
     get_user_macros, set_macros
 from pgadmin.utils.constants import MIMETYPE_APP_JS, \
-    SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, ERROR_FETCHING_DATA
+    SERVER_CONNECTION_CLOSED, ERROR_MSG_TRANS_ID_NOT_FOUND, \
+    ERROR_FETCHING_DATA, MY_STORAGE, ACCESS_DENIED_MESSAGE
 from pgadmin.model import Server, ServerGroup
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+from pgadmin.settings import get_setting
+from pgadmin.utils.preferences import Preferences
 
 MODULE_NAME = 'sqleditor'
 TRANSACTION_STATUS_CHECK_FAILED = gettext("Transaction status check failed.")
 _NODES_SQL = 'nodes.sql'
+sqleditor_close_session_lock = Lock()
+auto_complete_objects = dict()
 
 
 class SqlEditorModule(PgAdminModule):
@@ -73,13 +83,6 @@ class SqlEditorModule(PgAdminModule):
                      url=url_for('help.static', filename='index.html'))
         ]}
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.sqleditor',
-            'path': url_for('sqleditor.index') + "sqleditor",
-            'when': None
-        }]
-
     def get_panels(self):
         return []
 
@@ -89,11 +92,21 @@ class SqlEditorModule(PgAdminModule):
             list: URL endpoints for sqleditor module
         """
         return [
+            'sqleditor.initialize_viewdata',
+            'sqleditor.initialize_sqleditor',
+            'sqleditor.initialize_sqleditor_with_did',
+            'sqleditor.filter_validate',
+            'sqleditor.filter',
+            'sqleditor.panel',
+            'sqleditor.close',
+            'sqleditor.update_sqleditor_connection',
+
             'sqleditor.view_data_start',
             'sqleditor.query_tool_start',
             'sqleditor.poll',
             'sqleditor.fetch',
             'sqleditor.fetch_all',
+            'sqleditor.fetch_all_from_start',
             'sqleditor.save',
             'sqleditor.inclusive_filter',
             'sqleditor.exclusive_filter',
@@ -117,13 +130,27 @@ class SqlEditorModule(PgAdminModule):
             'sqleditor.get_macros',
             'sqleditor.set_macros',
             'sqleditor.get_new_connection_data',
+            'sqleditor.get_new_connection_servers',
             'sqleditor.get_new_connection_database',
             'sqleditor.get_new_connection_user',
             'sqleditor._check_server_connection_status',
             'sqleditor.get_new_connection_role',
             'sqleditor.connect_server',
-            'sqleditor.connect_server_with_user',
         ]
+
+    def on_logout(self):
+        """
+        This is a callback function when user logout from pgAdmin
+        :param user:
+        :return:
+        """
+        with sqleditor_close_session_lock:
+            if 'gridData' in session:
+                for trans_id in session['gridData']:
+                    close_sqleditor_session(trans_id)
+
+                # Delete all grid data from session variable
+                del session['gridData']
 
     def register_preferences(self):
         register_query_tool_preferences(self)
@@ -138,6 +165,501 @@ def index():
     return bad_request(
         errormsg=gettext('This URL cannot be requested directly.')
     )
+
+
+@blueprint.route("/filter", endpoint='filter')
+@login_required
+def show_filter():
+    return render_template(MODULE_NAME + '/filter.html')
+
+
+@blueprint.route(
+    '/initialize/viewdata/<int:trans_id>/<int:cmd_type>/<obj_type>/'
+    '<int:sgid>/<int:sid>/<int:did>/<int:obj_id>',
+    methods=["PUT", "POST"],
+    endpoint="initialize_viewdata"
+)
+@login_required
+def initialize_viewdata(trans_id, cmd_type, obj_type, sgid, sid, did, obj_id):
+    """
+    This method is responsible for creating an asynchronous connection.
+    After creating the connection it will instantiate and initialize
+    the object as per the object type. It will also create a unique
+    transaction id and store the information into session variable.
+
+    Args:
+        cmd_type: Contains value for which menu item is clicked.
+        obj_type: Contains type of selected object for which data grid to
+        be render
+        sgid: Server group Id
+        sid: Server Id
+        did: Database Id
+        obj_id: Id of currently selected object
+    """
+
+    if request.data:
+        filter_sql = json.loads(request.data)
+    else:
+        filter_sql = request.args or request.form
+
+    # Create asynchronous connection using random connection id.
+    conn_id = str(secrets.choice(range(1, 9999999)))
+    try:
+        manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+        # default_conn is same connection which is created when user connect to
+        # database from tree
+        default_conn = manager.connection(did=did)
+        conn = manager.connection(did=did, conn_id=conn_id,
+                                  auto_reconnect=False,
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
+    except (ConnectionLost, SSHTunnelConnectionLost):
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    status, msg = default_conn.connect()
+    if not status:
+        current_app.logger.error(msg)
+        return internal_server_error(errormsg=str(msg))
+
+    status, msg = conn.connect()
+    if not status:
+        current_app.logger.error(msg)
+        return internal_server_error(errormsg=str(msg))
+    try:
+        # if object type is partition then it is nothing but a table.
+        if obj_type == 'partition':
+            obj_type = 'table'
+
+        # Get the object as per the object type
+        command_obj = ObjectRegistry.get_object(
+            obj_type, conn_id=conn_id, sgid=sgid, sid=sid,
+            did=did, obj_id=obj_id, cmd_type=cmd_type,
+            sql_filter=filter_sql
+        )
+    except ObjectGone:
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    if 'gridData' not in session:
+        sql_grid_data = dict()
+    else:
+        sql_grid_data = session['gridData']
+
+    # Use pickle to store the command object which will be used later by the
+    # sql grid module.
+    sql_grid_data[str(trans_id)] = {
+        # -1 specify the highest protocol version available
+        'command_obj': pickle.dumps(command_obj, -1)
+    }
+
+    # Store the grid dictionary into the session variable
+    session['gridData'] = sql_grid_data
+
+    return make_json_response(
+        data={
+            'conn_id': conn_id
+        }
+    )
+
+
+@blueprint.route(
+    '/panel/<int:trans_id>',
+    methods=["POST"],
+    endpoint='panel'
+)
+def panel(trans_id):
+    """
+    This method calls index.html to render the data grid.
+
+    Args:
+        trans_id: unique transaction id
+    """
+
+    params = None
+    if request.args:
+        params = {k: v for k, v in request.args.items()}
+
+    if request.form:
+        for key, val in request.form.items():
+            params[key] = val
+
+    params['trans_id'] = trans_id
+
+    # We need client OS information to render correct Keyboard shortcuts
+    params['client_platform'] = UserAgent(request.headers.get('User-Agent'))\
+        .platform
+
+    params['is_linux'] = False
+    from sys import platform as _platform
+    if "linux" in _platform:
+        params['is_linux'] = True
+
+    # Fetch the server details
+    params['bgcolor'] = None
+    params['fgcolor'] = None
+
+    s = Server.query.filter_by(id=int(params['sid'])).first()
+    if s.shared and s.user_id != current_user.id:
+        # Import here to avoid circular dependency
+        from pgadmin.browser.server_groups.servers import ServerModule
+        shared_server = ServerModule.get_shared_server(s, params['sgid'])
+        s = ServerModule.get_shared_server_properties(s, shared_server)
+
+    if s and s.bgcolor:
+        # If background is set to white means we do not have to change
+        # the title background else change it as per user specified
+        # background
+        if s.bgcolor != '#ffffff':
+            params['bgcolor'] = s.bgcolor
+        params['fgcolor'] = s.fgcolor or 'black'
+
+    params['server_name'] = underscore_escape(s.name)
+    if 'user' not in params:
+        params['user'] = underscore_escape(s.username)
+    if 'role' not in params and s.role:
+        params['role'] = underscore_escape(s.role)
+    params['layout'] = get_setting('SQLEditor/Layout')
+    params['macros'] = get_user_macros()
+    params['is_desktop_mode'] = current_app.PGADMIN_RUNTIME
+    if 'database_name' in params:
+        params['database_name'] = underscore_escape(params['database_name'])
+
+    return render_template(
+        "sqleditor/index.html",
+        title=underscore_unescape(params['title']),
+        params=json.dumps(params),
+        requirejs=True,
+        basejs=True,
+    )
+
+
+@blueprint.route(
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    methods=["POST"], endpoint='initialize_sqleditor_with_did'
+)
+@blueprint.route(
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>',
+    methods=["POST"], endpoint='initialize_sqleditor'
+)
+@login_required
+def initialize_sqleditor(trans_id, sgid, sid, did=None):
+    """
+    This method is responsible for instantiating and initializing
+    the query tool object. It will also create a unique
+    transaction id and store the information into session variable.
+
+    Args:
+        sgid: Server group Id
+        sid: Server Id
+        did: Database Id
+    """
+    connect = True
+    # Read the data if present. Skipping read may cause connection
+    # reset error if data is sent from the client
+    data = {}
+    if request.data:
+        data = json.loads(request.data)
+
+    req_args = request.args
+    if ('recreate' in req_args and
+            req_args['recreate'] == '1'):
+        connect = False
+
+    kwargs = {
+        'user': data['user'] if 'user' in data else None,
+        'role': data['role'] if 'role' in data else None,
+        'password': data['password'] if 'password' in data else None
+    }
+
+    is_error, errmsg, conn_id, version = _init_sqleditor(
+        trans_id, connect, sgid, sid, did, **kwargs)
+    if is_error:
+        return errmsg
+
+    return make_json_response(
+        data={
+            'connId': str(conn_id),
+            'serverVersion': version,
+        }
+    )
+
+
+def _connect(conn, **kwargs):
+    """
+    Connect the database.
+    :param conn: Connection instance.
+    :param kwargs: user, role and password data from user.
+    :return:
+    """
+    user = None
+    role = None
+    password = None
+    is_ask_password = False
+    if 'user' in kwargs and 'role' in kwargs:
+        user = kwargs['user']
+        role = kwargs['role'] if kwargs['role'] else None
+        password = kwargs['password'] if kwargs['password'] else None
+        is_ask_password = True
+    if user:
+        status, msg = conn.connect(user=user, role=role,
+                                   password=password)
+    else:
+        status, msg = conn.connect(**kwargs)
+
+    return status, msg, is_ask_password, user, role, password
+
+
+def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
+    # Create asynchronous connection using random connection id.
+    conn_id = str(secrets.choice(range(1, 9999999)))
+
+    manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+
+    if did is None:
+        did = manager.did
+    try:
+        command_obj = ObjectRegistry.get_object(
+            'query_tool', conn_id=conn_id, sgid=sgid, sid=sid, did=did
+        )
+    except Exception as e:
+        current_app.logger.error(e)
+        return True, internal_server_error(errormsg=str(e)), '', ''
+
+    try:
+        conn = manager.connection(did=did, conn_id=conn_id,
+                                  auto_reconnect=False,
+                                  use_binary_placeholder=True,
+                                  array_to_string=True)
+
+        pref = Preferences.module('sqleditor')
+        if connect:
+            kwargs['auto_commit'] = pref.preference('auto_commit').get()
+            kwargs['auto_rollback'] = pref.preference('auto_rollback').get()
+
+            status, msg, is_ask_password, user, role, password = _connect(
+                conn, **kwargs)
+            if not status:
+                current_app.logger.error(msg)
+                if is_ask_password:
+                    server = Server.query.filter_by(id=sid).first()
+                    return True, make_json_response(
+                        success=0,
+                        status=428,
+                        result={
+                            "server_label": server.name,
+                            "username": user or server.username,
+                            "errmsg": msg,
+                            "prompt_password": True,
+                            "allow_save_password": True
+                            if ALLOW_SAVE_PASSWORD and
+                            session['allow_save_password'] else False,
+                        }
+                    ), '', ''
+                else:
+                    return True, internal_server_error(
+                        errormsg=str(msg)), '', ''
+    except (ConnectionLost, SSHTunnelConnectionLost) as e:
+        current_app.logger.error(e)
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return True, internal_server_error(errormsg=str(e)), '', ''
+
+    if 'gridData' not in session:
+        sql_grid_data = dict()
+    else:
+        sql_grid_data = session['gridData']
+
+    # Set the value of auto commit and auto rollback specified in Preferences
+    command_obj.set_auto_commit(pref.preference('auto_commit').get())
+    command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
+
+    # Use pickle to store the command object which will be used
+    # later by the sql grid module.
+    sql_grid_data[str(trans_id)] = {
+        # -1 specify the highest protocol version available
+        'command_obj': pickle.dumps(command_obj, -1)
+    }
+
+    # Store the grid dictionary into the session variable
+    session['gridData'] = sql_grid_data
+
+    return False, '', conn_id, manager.version
+
+
+@blueprint.route(
+    '/initialize/sqleditor/update_connection/<int:trans_id>/'
+    '<int:sgid>/<int:sid>/<int:did>',
+    methods=["POST"], endpoint='update_sqleditor_connection'
+)
+def update_sqleditor_connection(trans_id, sgid, sid, did):
+    # Remove transaction Id.
+    with sqleditor_close_session_lock:
+        data = json.loads(request.data)
+
+        if 'gridData' not in session:
+            return make_json_response(data={'status': True})
+
+        grid_data = session['gridData']
+
+        # Return from the function if transaction id not found
+        if str(trans_id) not in grid_data:
+            return make_json_response(data={'status': True})
+
+        connect = True
+
+        req_args = request.args
+        if ('recreate' in req_args and
+                req_args['recreate'] == '1'):
+            connect = False
+
+        new_trans_id = str(secrets.choice(range(1, 9999999)))
+        kwargs = {
+            'user': data['user'],
+            'role': data['role'] if 'role' in data else None,
+            'password': data['password'] if 'password' in data else None
+        }
+
+        is_error, errmsg, conn_id, version = _init_sqleditor(
+            new_trans_id, connect, sgid, sid, did, **kwargs)
+
+        if is_error:
+            return errmsg
+        else:
+            try:
+                # Check the transaction and connection status
+                status, error_msg, conn, trans_obj, session_obj = \
+                    check_transaction_status(trans_id)
+
+                status, error_msg, new_conn, new_trans_obj, new_session_obj = \
+                    check_transaction_status(new_trans_id)
+
+                new_session_obj['primary_keys'] = session_obj[
+                    'primary_keys'] if 'primary_keys' in session_obj else None
+                new_session_obj['columns_info'] = session_obj[
+                    'columns_info'] if 'columns_info' in session_obj else None
+                new_session_obj['client_primary_key'] = session_obj[
+                    'client_primary_key'] if 'client_primary_key'\
+                                             in session_obj else None
+
+                close_sqleditor_session(trans_id)
+                # Remove the information of unique transaction id from the
+                # session variable.
+                grid_data.pop(str(trans_id), None)
+                session['gridData'] = grid_data
+            except Exception as e:
+                current_app.logger.error(e)
+
+    return make_json_response(
+        data={
+            'connId': str(conn_id),
+            'serverVersion': version,
+            'trans_id': new_trans_id
+        }
+    )
+
+
+@blueprint.route('/close/<int:trans_id>', methods=["DELETE"], endpoint='close')
+def close(trans_id):
+    """
+    This method is used to close the asynchronous connection
+    and remove the information of unique transaction id from
+    the session variable.
+
+    Args:
+        trans_id: unique transaction id
+    """
+    with sqleditor_close_session_lock:
+        # delete the SQLAutoComplete object
+        if trans_id in auto_complete_objects:
+            del auto_complete_objects[trans_id]
+
+        if 'gridData' not in session:
+            return make_json_response(data={'status': True})
+
+        grid_data = session['gridData']
+        # Return from the function if transaction id not found
+        if str(trans_id) not in grid_data:
+            return make_json_response(data={'status': True})
+
+        try:
+            close_sqleditor_session(trans_id)
+            # Remove the information of unique transaction id from the
+            # session variable.
+            grid_data.pop(str(trans_id), None)
+            session['gridData'] = grid_data
+        except Exception as e:
+            current_app.logger.error(e)
+            return internal_server_error(errormsg=str(e))
+
+    return make_json_response(data={'status': True})
+
+
+@blueprint.route(
+    '/filter/validate/<int:sid>/<int:did>/<int:obj_id>',
+    methods=["PUT", "POST"], endpoint='filter_validate'
+)
+@login_required
+def validate_filter(sid, did, obj_id):
+    """
+    This method is used to validate the sql filter.
+
+    Args:
+        sid: Server Id
+        did: Database Id
+        obj_id: Id of currently selected object
+    """
+    if request.data:
+        filter_data = json.loads(request.data)
+    else:
+        filter_data = request.args or request.form
+
+    try:
+        # Create object of SQLFilter class
+        sql_filter_obj = SQLFilter(sid=sid, did=did, obj_id=obj_id)
+
+        # Call validate_filter method to validate the SQL.
+        status, res = sql_filter_obj.validate_filter(filter_data['filter_sql'])
+        if not status:
+            return internal_server_error(errormsg=str(res))
+    except ObjectGone:
+        raise
+    except Exception as e:
+        current_app.logger.error(e)
+        return internal_server_error(errormsg=str(e))
+
+    return make_json_response(data={'status': status, 'result': res})
+
+
+def close_sqleditor_session(trans_id):
+    """
+    This function is used to cancel the transaction and release the connection.
+
+    :param trans_id: Transaction id
+    :return:
+    """
+    if 'gridData' in session and str(trans_id) in session['gridData']:
+        cmd_obj_str = session['gridData'][str(trans_id)]['command_obj']
+        # Use pickle.loads function to get the command object
+        cmd_obj = pickle.loads(cmd_obj_str)
+
+        # if connection id is None then no need to release the connection
+        if cmd_obj.conn_id is not None:
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+            if manager is not None:
+                conn = manager.connection(
+                    did=cmd_obj.did, conn_id=cmd_obj.conn_id)
+
+                # Release the connection
+                if conn.connected():
+                    conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
+                    manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
 
 def check_transaction_status(trans_id):
@@ -286,7 +808,6 @@ def start_view_data(trans_id):
             'filter_applied': filter_applied,
             'limit': limit, 'can_edit': can_edit,
             'can_filter': can_filter, 'sql': sql,
-            'info_notifier_timeout': blueprint.info_notifier_timeout.get()
         }
     )
 
@@ -318,7 +839,7 @@ def start_query_tool(trans_id):
 def extract_sql_from_network_parameters(request_data, request_arguments,
                                         request_form_data):
     if request_data:
-        sql_parameters = json.loads(request_data, encoding='utf-8')
+        sql_parameters = json.loads(request_data)
 
         if isinstance(sql_parameters, str):
             return dict(sql=str(sql_parameters), explain_plan=None)
@@ -352,6 +873,8 @@ def poll(trans_id):
     additional_messages = None
     notifies = None
     data_obj = {}
+    on_demand_record_count = Preferences.module(MODULE_NAME).\
+        preference('on_demand_record_count').get()
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -388,7 +911,7 @@ def poll(trans_id):
                         trans_obj.auto_rollback:
                     conn.execute_void("ROLLBACK;")
 
-            st, result = conn.async_fetchmany_2darray(ON_DEMAND_RECORD_COUNT)
+            st, result = conn.async_fetchmany_2darray(on_demand_record_count)
 
             # There may be additional messages even if result is present
             # eg: Function can provide result as well as RAISE messages
@@ -453,7 +976,7 @@ def poll(trans_id):
                                 col_info['type_name'] = typname
 
                         # Using characters %, (, ) in the argument names is not
-                        # supported in psycopg2
+                        # supported in psycopg
                         col_info['pgadmin_alias'] = \
                             re.sub("[%()]+", "|", col_name).\
                             encode('unicode_escape').decode('utf-8')
@@ -464,7 +987,7 @@ def poll(trans_id):
                 # means nothing to fetch
                 if result and rows_affected > -1:
                     res_len = len(result)
-                    if res_len == ON_DEMAND_RECORD_COUNT:
+                    if res_len == on_demand_record_count:
                         has_more_rows = True
 
                     if res_len > 0:
@@ -525,8 +1048,7 @@ def poll(trans_id):
             'oids': oids,
             'transaction_status': transaction_status,
             'data_obj': data_obj,
-        },
-        encoding=conn.python_encoding
+        }
     )
 
 
@@ -543,7 +1065,9 @@ def fetch(trans_id, fetch_all=None):
     has_more_rows = False
     rows_fetched_from = 0
     rows_fetched_to = 0
-    fetch_row_cnt = -1 if fetch_all == 1 else ON_DEMAND_RECORD_COUNT
+    on_demand_record_count = Preferences.module(MODULE_NAME).preference(
+        'on_demand_record_count').get()
+    fetch_row_cnt = -1 if fetch_all == 1 else on_demand_record_count
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
@@ -560,8 +1084,8 @@ def fetch(trans_id, fetch_all=None):
             status = 'Error'
         else:
             status = 'Success'
-            res_len = len(result)
-            if fetch_row_cnt != -1 and res_len == ON_DEMAND_RECORD_COUNT:
+            res_len = len(result) if result else 0
+            if fetch_row_cnt != -1 and res_len == on_demand_record_count:
                 has_more_rows = True
 
             if res_len:
@@ -582,8 +1106,50 @@ def fetch(trans_id, fetch_all=None):
             'has_more_rows': has_more_rows,
             'rows_fetched_from': rows_fetched_from,
             'rows_fetched_to': rows_fetched_to
-        },
-        encoding=conn.python_encoding
+        }
+    )
+
+
+@blueprint.route(
+    '/fetch_all_from_start/<int:trans_id>/<int:limit>', methods=["GET"],
+    endpoint='fetch_all_from_start'
+)
+@login_required
+def fetch_all_from_start(trans_id, limit=-1):
+    """
+    This function is used to fetch all the records from start and reset
+    the cursor back to it's previous position.
+    """
+    # Check the transaction and connection status
+    status, error_msg, conn, trans_obj, session_obj = \
+        check_transaction_status(trans_id)
+
+    if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
+        return make_json_response(success=0, errormsg=error_msg,
+                                  info='DATAGRID_TRANSACTION_REQUIRED',
+                                  status=404)
+
+    if status and conn is not None and session_obj is not None:
+        # Reset the cursor to start to fetch all the records.
+        conn.reset_cursor_at(0)
+
+        status, result = conn.async_fetchmany_2darray(limit)
+        if not status:
+            status = 'Error'
+        else:
+            status = 'Success'
+
+        # Reset the cursor back to it's actual position
+        conn.reset_cursor_at(trans_obj.get_fetched_row_cnt())
+    else:
+        status = 'NotConnected'
+        result = error_msg
+
+    return make_json_response(
+        data={
+            'status': status,
+            'result': result
+        }
     )
 
 
@@ -616,7 +1182,7 @@ def fetch_pg_types(columns_info, trans_obj):
     if oids:
         status, res = default_conn.execute_dict(
             "SELECT oid, pg_catalog.format_type(oid, NULL) AS typname FROM "
-            "pg_catalog.pg_type WHERE oid IN %s ORDER BY oid;", [tuple(oids)]
+            "pg_catalog.pg_type WHERE oid = ANY(%s) ORDER BY oid;", [oids]
         )
 
         if not status:
@@ -688,7 +1254,7 @@ def save(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        changed_data = json.loads(request.data, encoding='utf-8')
+        changed_data = json.loads(request.data)
     else:
         changed_data = request.args or request.form
 
@@ -742,8 +1308,7 @@ def save(trans_id):
             'query_results': query_results,
             '_rowid': _rowid,
             'transaction_status': transaction_status
-        },
-        encoding=conn.python_encoding
+        }
     )
 
 
@@ -760,7 +1325,7 @@ def append_filter_inclusive(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_data = json.loads(request.data, encoding='utf-8')
+        filter_data = json.loads(request.data)
     else:
         filter_data = request.args or request.form
 
@@ -787,7 +1352,7 @@ def append_filter_inclusive(trans_id):
             else:
                 filter_sql = driver.qtIdent(
                     conn, column_name
-                ) + ' = ' + driver.qtLiteral(column_value)
+                ) + ' = ' + driver.qtLiteral(column_value, conn)
 
         trans_obj.append_filter(filter_sql)
 
@@ -815,7 +1380,7 @@ def append_filter_exclusive(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        filter_data = json.loads(request.data, encoding='utf-8')
+        filter_data = json.loads(request.data)
     else:
         filter_data = request.args or request.form
 
@@ -911,7 +1476,7 @@ def set_limit(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        limit = json.loads(request.data, encoding='utf-8')
+        limit = json.loads(request.data)
     else:
         limit = request.args or request.form
 
@@ -1089,7 +1654,7 @@ def set_auto_commit(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        auto_commit = json.loads(request.data, encoding='utf-8')
+        auto_commit = json.loads(request.data)
     else:
         auto_commit = request.args or request.form
 
@@ -1134,7 +1699,7 @@ def set_auto_rollback(trans_id):
         trans_id: unique transaction id
     """
     if request.data:
-        auto_rollback = json.loads(request.data, encoding='utf-8')
+        auto_rollback = json.loads(request.data)
     else:
         auto_rollback = request.args or request.form
 
@@ -1182,7 +1747,7 @@ def auto_complete(trans_id):
     text_before_cursor = ''
 
     if request.data:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
     else:
         data = request.args or request.form
 
@@ -1202,10 +1767,13 @@ def auto_complete(trans_id):
     if status and conn is not None and \
             trans_obj is not None and session_obj is not None:
 
-        # Create object of SQLAutoComplete class and pass connection object
-        auto_complete_obj = SQLAutoComplete(
-            sid=trans_obj.sid, did=trans_obj.did, conn=conn)
+        if trans_id not in auto_complete_objects:
+            # Create object of SQLAutoComplete class and pass connection object
+            auto_complete_objects[trans_id] = \
+                SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
+                                conn=conn)
 
+        auto_complete_obj = auto_complete_objects[trans_id]
         # Get the auto completion suggestions.
         res = auto_complete_obj.get_completions(full_sql, text_before_cursor)
     else:
@@ -1236,15 +1804,22 @@ def script():
 def load_file():
     """
     This function gets name of file from request data
-    reads the data and sends back in reponse
+    reads the data and sends back in response
     """
     if request.data:
-        file_data = json.loads(request.data, encoding='utf-8')
+        file_data = json.loads(request.data)
 
     file_path = unquote(file_data['file_name'])
 
     # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
+    storage_manager_path = get_storage_directory(
+        shared_storage=file_data['storage'] if 'storage' in file_data else '')
+
+    try:
+        Filemanager.check_access_permission(storage_manager_path, file_path)
+    except Exception as e:
+        return internal_server_error(errormsg=str(e))
+
     if storage_manager_path:
         # generate full path of file
         file_path = os.path.join(
@@ -1278,10 +1853,28 @@ def save_file():
     and then save the data to the file
     """
     if request.data:
-        file_data = json.loads(request.data, encoding='utf-8')
+        file_data = json.loads(request.data)
 
     # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
+    last_storage = Preferences.module('file_manager').preference(
+        'last_storage').get()
+    if last_storage != MY_STORAGE:
+        selectedDirList = [sdir for sdir in SHARED_STORAGE if
+                           sdir['name'] == last_storage]
+        selectedDir = selectedDirList[0] if len(
+            selectedDirList) == 1 else None
+
+        if selectedDir:
+            if selectedDir['restricted_access'] and \
+                    not current_user.has_role("Administrator"):
+                return make_json_response(success=0,
+                                          errormsg=ACCESS_DENIED_MESSAGE,
+                                          info='ACCESS_DENIED',
+                                          status=403)
+        storage_manager_path = get_storage_directory(
+            shared_storage=last_storage)
+    else:
+        storage_manager_path = get_storage_directory()
 
     # generate full path of file
     file_path = unquote(file_data['file_name'])
@@ -1344,7 +1937,7 @@ def start_query_download_tool(trans_id):
             errormsg=TRANSACTION_STATUS_CHECK_FAILED
         )
 
-    data = request.values if request.values else None
+    data = request.values if request.values else request.get_json(silent=True)
     if data is None:
         return make_json_response(
             status=410,
@@ -1358,7 +1951,7 @@ def start_query_download_tool(trans_id):
 
         # This returns generator of records.
         status, gen, conn_obj = \
-            sync_conn.execute_on_server_as_csv(records=2000)
+            sync_conn.execute_on_server_as_csv(records=10)
 
         if not status:
             return make_json_response(
@@ -1373,8 +1966,7 @@ def start_query_download_tool(trans_id):
                 quote=blueprint.csv_quoting.get(),
                 quote_char=blueprint.csv_quote_char.get(),
                 field_separator=blueprint.csv_field_separator.get(),
-                replace_nulls_with=blueprint.replace_nulls_with.get()
-                ),
+                replace_nulls_with=blueprint.replace_nulls_with.get()),
             mimetype='text/csv' if
             blueprint.csv_field_separator.get() == ','
             else 'text/plain'
@@ -1424,7 +2016,7 @@ def query_tool_status(trans_id):
     Returns:
         Response with the connection status
 
-        Psycopg2 Status Code Mapping:
+        Psycopg Status Code Mapping:
         -----------------------------
         TRANSACTION_STATUS_IDLE     = 0
         TRANSACTION_STATUS_ACTIVE   = 1
@@ -1445,7 +2037,6 @@ def query_tool_status(trans_id):
 
         if status is not None:
             # Check for the asynchronous notifies statements.
-            conn.check_notifies(True)
             notifies = conn.get_notifies()
 
             return make_json_response(
@@ -1533,8 +2124,12 @@ def _check_server_connection_status(sgid, sid=None):
     '/new_connection_dialog/<int:sgid>/<int:sid>',
     methods=["GET"], endpoint='get_new_connection_data'
 )
+@blueprint.route(
+    '/new_connection_dialog',
+    methods=["GET"], endpoint='get_new_connection_servers'
+)
 @login_required
-def get_new_connection_data(sgid, sid=None):
+def get_new_connection_data(sgid=None, sid=None):
     """
     This method is used to get required data for get new connection.
     :extract_sql_from_network_parameters,
@@ -1557,6 +2152,8 @@ def get_new_connection_data(sgid, sid=None):
                 "value": server.serialize['id'],
                 'image': server_icon_and_background(connected, manager,
                                                     server),
+                'fgcolor': server.serialize['fgcolor'],
+                'bgcolor': server.serialize['bgcolor'],
                 'connected': connected})
 
         msg = "Success"
@@ -1687,9 +2284,11 @@ def get_new_connection_user(sgid, sid=None):
                 status, users = conn.execute_2darray(
                     render_template(sql_path + _NODES_SQL)
                 )
+                _user = manager.user
                 user_list = [
-                    {'value': user['rolname'], 'label': user['rolname']} for
-                    user in users['rows'] if user['rolcanlogin']]
+                    {'value': user['rolname'], 'label': user['rolname'],
+                     'selected': True if user['rolname'] == _user else False}
+                    for user in users['rows'] if user['rolcanlogin']]
             else:
                 status = False
 
@@ -1789,37 +2388,29 @@ def get_new_connection_role(sgid, sid=None):
 
 
 @blueprint.route(
-    '/connect_server/<int:sid>/<usr>',
-    methods=["POST"],
-    endpoint="connect_server_with_user"
-)
-@blueprint.route(
     '/connect_server/<int:sid>',
     methods=["POST"],
     endpoint="connect_server"
 )
 @login_required
-def connect_server(sid, usr=None):
+def connect_server(sid):
     # Check if server is already connected then no need to reconnect again.
     server = Server.query.filter_by(id=sid).first()
     driver = get_driver(PG_DEFAULT_DRIVER)
     manager = driver.connection_manager(sid)
-    conn = manager.connection()
-    user = None
 
-    if usr and manager.user != usr:
-        user = usr
-    else:
-        user = manager.user
-        if conn.connected():
-            return make_json_response(
-                success=1,
-                info=gettext("Server connected."),
-                data={}
-            )
+    conn = manager.connection()
+    if conn.connected():
+        return make_json_response(
+            success=1,
+            info=gettext("Server connected."),
+            data={}
+        )
 
     view = SchemaDiffRegistry.get_node_view('server')
-    return view.connect(server.servergroup_id, sid, user_name=user)
+    return view.connect(
+        server.servergroup_id, sid
+    )
 
 
 @blueprint.route(
@@ -1883,7 +2474,9 @@ def clear_query_history(trans_id):
     status, error_msg, conn, trans_obj, session_ob = \
         check_transaction_status(trans_id)
 
-    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db)
+    filter_json = request.get_json(silent=True)
+    return QueryHistory.clear(current_user.id, trans_obj.sid, conn.db,
+                              filter_json)
 
 
 @blueprint.route(

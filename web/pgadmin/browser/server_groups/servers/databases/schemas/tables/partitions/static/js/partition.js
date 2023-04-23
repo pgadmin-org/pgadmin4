@@ -2,22 +2,24 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import { getNodePartitionTableSchema } from './partition.ui';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define([
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for', 'jquery',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.alertifyjs', 'pgadmin.backform', 'pgadmin.backgrid',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
   'pgadmin.browser.collection',
 ],
 function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Alertify, Backform, Backgrid,
+  gettext, url_for, $, pgAdmin, pgBrowser,
   SchemaChildTreeNode, pgadminUtils
 ) {
 
@@ -28,7 +30,7 @@ function(
         label: gettext('Partitions'),
         type: 'coll-partition',
         columns: [
-          'name', 'schema', 'partition_value', 'is_partitioned', 'description',
+          'name', 'schema', 'partition_scheme',  'partition_value', 'is_partitioned', 'description',
         ],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -44,7 +46,7 @@ function(
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
-      statsPrettifyFields: [gettext('Size'), gettext('Indexes size'), gettext('Table size'),
+      statsPrettifyFields: [gettext('Total Size'), gettext('Indexes size'), gettext('Table size'),
         gettext('TOAST table size'), gettext('Tuple length'),
         gettext('Dead tuple length'), gettext('Free space')],
       sqlAlterHelp: 'sql-altertable.html',
@@ -63,18 +65,18 @@ function(
           name: 'truncate_table', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table',
           category: gettext('Truncate'), priority: 3, label: gettext('Truncate'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
+          enable : 'canCreate',
         },{
           name: 'truncate_table_cascade', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'truncate_table_cascade',
           category: gettext('Truncate'), priority: 3, label: gettext('Truncate Cascade'),
-          icon: 'fa fa-eraser', enable : 'canCreate',
+          enable : 'canCreate',
         },{
           // To enable/disable all triggers for the table
           name: 'enable_all_triggers', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'enable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Enable All'),
-          icon: 'fa fa-check', enable : 'canCreate_with_trigger_enable',
+          enable : 'canCreate_with_trigger_enable',
           data: {
             data_disabled: gettext('The selected tree node does not support this option.'),
           },
@@ -82,7 +84,7 @@ function(
           name: 'disable_all_triggers', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'disable_triggers_on_table',
           category: gettext('Trigger(s)'), priority: 4, label: gettext('Disable All'),
-          icon: 'fa fa-times', enable : 'canCreate_with_trigger_disable',
+          enable : 'canCreate_with_trigger_disable',
           data: {
             data_disabled: gettext('The selected tree node does not support this option.'),
           },
@@ -90,12 +92,11 @@ function(
           name: 'reset_table_stats', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'reset_table_stats',
           category: 'Reset', priority: 4, label: gettext('Reset Statistics'),
-          icon: 'fa fa-chart-bar', enable : 'canCreate',
+          enable : 'canCreate',
         },{
           name: 'detach_partition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'detach_partition',
           priority: 2, label: gettext('Detach Partition'),
-          icon: 'fa fa-remove',
         },{
           name: 'count_table_rows', node: 'partition', module: pgBrowser.Nodes['table'],
           applies: ['object', 'context'], callback: 'count_table_rows',
@@ -126,23 +127,38 @@ function(
           encodeURIComponent(info['partition']._id)
         );
       },
+      on_done: function(res, data, t, i) {
+        if (res.success == 1) {
+          Notify.success(res.info);
+          t.removeIcon(i);
+          data.icon = 'icon-partition';
+          t.addIcon(i, {icon: data.icon});
+          t.unload(i);
+          t.setInode(i);
+          t.deselect(i);
+          // Fetch updated data from server
+          setTimeout(function() {
+            t.select(i);
+          }, 10);
+        }
+      },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       canDropCascade: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       callbacks: {
         /* Enable trigger(s) on table */
         enable_triggers_on_table: function(args) {
-          var params = {'is_enable_trigger': 'O'};
+          let params = {'is_enable_trigger': 'O'};
           this.callbacks.set_triggers.apply(this, [args, params]);
         },
         /* Disable trigger(s) on table */
         disable_triggers_on_table: function(args) {
-          var params = {'is_enable_trigger': 'D'};
+          let params = {'is_enable_trigger': 'D'};
           this.callbacks.set_triggers.apply(this, [args, params]);
         },
         set_triggers: function(args, params) {
           // This function will send request to enable or
           // disable triggers on table level
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -151,15 +167,10 @@ function(
           if (!d)
             return false;
 
-          $.ajax({
-            url: obj.generate_url(i, 'set_trigger' , d, true),
-            type:'PUT',
-            data: params,
-            dataType: 'json',
-          })
-            .done(function(res) {
+          getApiInstance().put(obj.generate_url(i, 'set_trigger' , d, true), params)
+            .then(({data: res})=>{
               if (res.success == 1) {
-                Alertify.success(res.info);
+                Notify.success(res.info);
                 t.unload(i);
                 t.setInode(i);
                 t.deselect(i);
@@ -168,23 +179,23 @@ function(
                 }, 10);
               }
             })
-            .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
               t.unload(i);
             });
         },
         /* Truncate table */
         truncate_table: function(args) {
-          var params = {'cascade': false };
+          let params = {'cascade': false };
           this.callbacks.truncate.apply(this, [args, params]);
         },
         /* Truncate table with cascade */
         truncate_table_cascade: function(args) {
-          var params = {'cascade': true };
+          let params = {'cascade': true };
           this.callbacks.truncate.apply(this, [args, params]);
         },
         truncate: function(args, params) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -193,42 +204,24 @@ function(
           if (!d)
             return false;
 
-          Alertify.confirm(
+          Notify.confirm(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
-            function (e) {
-              if (e) {
-                var data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'truncate' , d, true),
-                  type:'PUT',
-                  data: params,
-                  dataType: 'json',
+            function () {
+              let data = d;
+              getApiInstance().put(obj.generate_url(i, 'truncate' , d, true), params)
+                .then(({data: res})=>{
+                  obj.on_done(res, data, t, i);
                 })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = 'icon-partition';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  });
-              }},
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
+                  t.unload(i);
+                });
+            },
           );
         },
         reset_table_stats: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -237,42 +230,25 @@ function(
           if (!d)
             return false;
 
-          Alertify.confirm(
+          Notify.confirm(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
-            function (e) {
-              if (e) {
-                var data = d;
-                $.ajax({
-                  url: obj.generate_url(i, 'reset' , d, true),
-                  type:'DELETE',
+            function () {
+              let data = d;
+              getApiInstance().delete(obj.generate_url(i, 'reset' , d, true))
+                .then(({data: res})=>{
+                  obj.on_done(res, data, t, i);
                 })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      t.removeIcon(i);
-                      data.icon = 'icon-partition';
-                      t.addIcon(i, {icon: data.icon});
-                      t.unload(i);
-                      t.setInode(i);
-                      t.deselect(i);
-                      // Fetch updated data from server
-                      setTimeout(function() {
-                        t.select(i);
-                      }, 10);
-                    }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                    t.unload(i);
-                  });
-              }
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
+                  t.unload(i);
+                });
             },
-            function() {}
+            function() {/*This is intentional (SonarQube)*/}
           );
         },
         detach_partition: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -281,86 +257,38 @@ function(
           if (!d)
             return false;
 
-          Alertify.confirm(
+          Notify.confirm(
             gettext('Detach Partition'),
             gettext('Are you sure you want to detach the partition %s?', d._label),
-            function (e) {
-              if (e) {
-                $.ajax({
-                  url: obj.generate_url(i, 'detach' , d, true),
-                  type:'PUT',
-                })
-                  .done(function(res) {
-                    if (res.success == 1) {
-                      Alertify.success(res.info);
-                      var n = t.next(i);
+            function () {
+              getApiInstance().put(obj.generate_url(i, 'detach' , d, true))
+                .then(({data: res})=>{
+                  if (res.success == 1) {
+                    Notify.success(res.info);
+                    let n = t.next(i);
+                    if (!n) {
+                      n = t.prev(i);
                       if (!n) {
-                        n = t.prev(i);
-                        if (!n) {
-                          n = t.parent(i);
-                        }
-                      }
-                      t.remove(i);
-                      if (n) {
-                        t.select(n);
+                        n = t.parent(i);
                       }
                     }
-                  })
-                  .fail(function(xhr, status, error) {
-                    Alertify.pgRespErrorNotify(xhr, error);
-                  });
-              }
+                    t.remove(i);
+                    if (n) {
+                      t.select(n);
+                    }
+                  }
+                })
+                .catch((error)=>{
+                  Notify.pgRespErrorNotify(error);
+                });
             },
-            function() {}
+            function() {/*This is intentional (SonarQube)*/}
           );
         },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
         return getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowser);
       },
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          description: undefined,
-          is_partitioned: false,
-          partition_value: undefined,
-        },
-        // Default values!
-        initialize: function(attrs, args) {
-          if (_.size(attrs) === 0) {
-            var userInfo = pgBrowser.serverInfo[
-                args.node_info.server._id
-              ].user,
-              schemaInfo = args.node_info.schema;
-
-            this.set({
-              'relowner': userInfo.name, 'schema': schemaInfo._label,
-            }, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'oid', label: gettext('OID'), type: 'text', mode: ['properties'],
-        },{
-          id: 'schema', label: gettext('Schema'), type: 'text', node: 'schema',
-          mode: ['create', 'edit', 'properties'],
-        },{
-          id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
-          type: 'switch', mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'partition_value', label:gettext('Partition Scheme'),
-          type: 'text', visible: false,
-        },{
-          id: 'description', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'],
-        }],
-      }),
       canCreate: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
       // Check to whether table has disable trigger(s)
       canCreate_with_trigger_enable: function(itemData, item, data) {

@@ -2,20 +2,21 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
-import simplejson as json
+import json
 import os
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
-from pgadmin.utils import server_utils as server_utils, does_utility_exist
+from pgadmin.utils import server_utils, does_utility_exist
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 from unittest.mock import patch, MagicMock
+from config import PG_DEFAULT_DRIVER
 
 
 class BackupCreateJobTest(BaseTestGenerator):
@@ -709,8 +710,8 @@ class BackupCreateJobTest(BaseTestGenerator):
     @patch('pgadmin.tools.backup.BackupMessage')
     @patch('pgadmin.tools.backup.filename_with_file_manager_path')
     @patch('pgadmin.tools.backup.BatchProcess')
-    @patch('pgadmin.utils.driver.psycopg2.server_manager.ServerManager.'
-           'export_password_env')
+    @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
+           'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
                 filename_mock, backup_message_mock, server_mock):
         class TestMockServer():
@@ -731,6 +732,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                                   self.class_params['username'],
                                   self.class_params['database']
                                   )
+
         mock_result = server_mock.query.filter_by.return_value
         mock_result.first.return_value = mock_obj
 
@@ -743,7 +745,8 @@ class BackupCreateJobTest(BaseTestGenerator):
         batch_process_mock.return_value.start = MagicMock(
             return_value=True
         )
-
+        backup_message_mock.message = 'test'
+        batch_process_mock.return_value.desc = backup_message_mock
         export_password_env_mock.return_value = True
 
         server_response = server_utils.connect_server(self, self.server_id)

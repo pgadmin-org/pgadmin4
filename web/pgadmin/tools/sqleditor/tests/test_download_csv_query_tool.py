@@ -3,7 +3,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -15,7 +15,8 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression.python_test_utils import test_utils
 import json
 from pgadmin.utils import server_utils
-import random
+import secrets
+import config
 
 
 class TestDownloadCSV(BaseTestGenerator):
@@ -27,7 +28,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with valid query',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A","B","C"',
                 output_values='1,2,3',
@@ -41,7 +42,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with wrong TX id',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns=None,
                 output_values=None,
@@ -55,7 +56,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download csv URL with wrong query',
             dict(
                 sql='SELECT * FROM this_table_does_not_exist',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns=None,
                 output_values=None,
@@ -69,7 +70,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download as txt without filename parameter',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A";"B";"C"',
                 output_values='1;2;3',
@@ -83,7 +84,7 @@ class TestDownloadCSV(BaseTestGenerator):
             'Download as csv without filename parameter',
             dict(
                 sql='SELECT 1 as "A",2 as "B",3 as "C"',
-                init_url='/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}',
+                init_url='/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}',
                 donwload_url="/sqleditor/query_tool/download/{0}",
                 output_columns='"A","B","C"',
                 output_values='1,2,3',
@@ -96,7 +97,8 @@ class TestDownloadCSV(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self._db_name = 'download_results_' + str(random.randint(10000, 65535))
+        self._db_name = 'download_results_' + str(
+            secrets.choice(range(10000, 65535)))
         self._sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self._sid)
@@ -133,7 +135,7 @@ class TestDownloadCSV(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        self.trans_id = str(random.randint(1, 9999999))
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = self.init_url.format(
             self.trans_id, test_utils.SERVER_GROUP, self._sid, self._did)
         response = self.tester.post(url)
@@ -150,9 +152,8 @@ class TestDownloadCSV(BaseTestGenerator):
         # Disable the console logging from Flask logger
         self.app.logger.disabled = True
         if not self.is_valid and self.is_valid_tx:
-            # When user enters wrong query, poll will throw 500, so expecting
-            # 500, as poll is never called for a wrong query.
-            self.assertEqual(res.status_code, 500)
+            # The result will be null but status code will be 200
+            self.assertEqual(res.status_code, 200)
         elif self.filename is None:
             if self.download_as_txt:
                 with patch('pgadmin.tools.sqleditor.blueprint.'
@@ -211,7 +212,7 @@ class TestDownloadCSV(BaseTestGenerator):
                 self.assertEqual(response.status_code, 500)
 
         # Close query tool
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 

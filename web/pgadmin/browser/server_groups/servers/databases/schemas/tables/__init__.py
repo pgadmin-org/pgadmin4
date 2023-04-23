@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """ Implements Table Node """
 
-import simplejson as json
+import json
 import re
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify, url_for, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule, DataTypeReader, VacuumSettings
 from pgadmin.browser.server_groups.servers.utils import parse_priv_to_db
@@ -64,7 +64,7 @@ class TableModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TableModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.max_ver = None
         self.min_ver = None
 
@@ -118,17 +118,36 @@ class TableModule(SchemaChildModule):
 
         return snippets
 
-    def get_own_javascripts(self):
-        scripts = SchemaChildModule.get_own_javascripts(self)
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .columns import blueprint as module
+        self.submodules.append(module)
 
-        scripts.append({
-            'name': 'pgadmin.browser.table.partition.utils',
-            'path': url_for('browser.index') +
-                    'table/static/js/partition.utils',
-            'when': 'database', 'is_template': False
-        })
+        from .compound_triggers import blueprint as module
+        self.submodules.append(module)
 
-        return scripts
+        from .constraints import blueprint as module
+        self.submodules.append(module)
+
+        from .indexes import blueprint as module
+        self.submodules.append(module)
+
+        from .partitions import blueprint as module
+        self.submodules.append(module)
+
+        from .row_security_policies import blueprint as module
+        self.submodules.append(module)
+
+        from .rules import blueprint as module
+        self.submodules.append(module)
+
+        from .triggers import blueprint as module
+        self.submodules.append(module)
+
+        super().register(app, options)
 
 
 blueprint = TableModule(__name__)
@@ -306,7 +325,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
 
@@ -319,24 +338,24 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
     def get_icon_css_class(self, table_info, default_val='icon-table'):
         if ('is_inherits' in table_info and
-            table_info['is_inherits'] == '1') or \
+            table_info['is_inherits'] > '0') or \
                 ('coll_inherits' in table_info and
                  len(table_info['coll_inherits']) > 0):
 
             if ('is_inherited' in table_info and
-                table_info['is_inherited'] == '1')\
+                table_info['is_inherited'] > '0')\
                     or ('relhassubclass' in table_info and
                         table_info['relhassubclass']):
                 default_val = 'icon-table-multi-inherit'
             else:
                 default_val = 'icon-table-inherits'
         elif ('is_inherited' in table_info and
-              table_info['is_inherited'] == '1')\
+              table_info['is_inherited'] > '0')\
                 or ('relhassubclass' in table_info and
                     table_info['relhassubclass']):
             default_val = 'icon-table-inherited'
 
-        return super(TableView, self).\
+        return super().\
             get_icon_css_class(table_info, default_val)
 
     @BaseTableView.check_precondition
@@ -419,8 +438,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     icon=icon,
                     tigger_count=row['triggercount'],
                     has_enable_triggers=row['has_enable_triggers'],
-                    is_partitioned=self.is_table_partitioned(row),
-                    rows_cnt=0
+                    is_partitioned=self.is_table_partitioned(row)
                 ))
 
         return make_json_response(
@@ -595,7 +613,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         if not res['rows']:
             return gone(gettext(self.not_found_error_msg()))
 
-        return super(TableView, self).properties(
+        return super().properties(
             gid, sid, did, scid, tid, res=res
         )
 
@@ -679,7 +697,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                         self.table_template_path,
                         self._GET_COLUMNS_FOR_TABLE_SQL
                     ]),
-                    tid=data['tid']
+                    tid=data['tid'], conn=self.conn
                 )
             elif data and 'tname' in data:
                 SQL = render_template(
@@ -687,7 +705,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                         self.table_template_path,
                         self._GET_COLUMNS_FOR_TABLE_SQL
                     ]),
-                    tname=data['tname']
+                    tname=data['tname'], conn=self.conn
                 )
 
             if SQL:
@@ -728,7 +746,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                     "/".join(
                         [self.table_template_path,
                          self._GET_COLUMNS_FOR_TABLE_SQL]
-                    ), tid=row['oid']
+                    ), tid=row['oid'], conn=self.conn
                 )
 
                 status, type_cols = self.conn.execute_dict(SQL)
@@ -866,7 +884,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         if 'coll_inherits' in data and \
                 isinstance(data['coll_inherits'], str):
             data['coll_inherits'] = json.loads(
-                data['coll_inherits'], encoding='utf-8'
+                data['coll_inherits']
             )
 
         if 'foreign_key' in data:
@@ -902,7 +920,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
            scid: Schema ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -912,7 +930,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -964,7 +982,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             # Get updated schema oid
             sql = render_template(
                 "/".join([self.table_template_path, self._GET_SCHEMA_OID_SQL]),
-                tname=data['name']
+                tname=data['name'],
+                conn=self.conn
             )
 
             status, new_scid = self.conn.execute_scalar(sql)
@@ -974,7 +993,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             # we need oid to add object in tree at browser
             sql = render_template(
                 "/".join([self.table_template_path, self._OID_SQL]),
-                scid=new_scid, data=data
+                scid=new_scid, data=data, conn=self.conn
             )
 
             status, tid = self.conn.execute_scalar(sql)
@@ -1006,7 +1025,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -1016,7 +1035,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -1030,7 +1049,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 return ExecuteError(
                     error_msg=str(lock_on_table.json['info']))
 
-            return super(TableView, self).update(
+            return super().update(
                 gid, sid, did, scid, tid, data=data, res=res)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -1049,7 +1068,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         """
         if tid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tid]}
@@ -1059,7 +1078,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 SQL = render_template(
                     "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                     did=did, scid=scid, tid=tid,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -1080,8 +1099,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if lock_on_table != '':
                     return lock_on_table
 
-                status, res = super(TableView, self).delete(gid, sid, did,
-                                                            scid, tid, res)
+                status, res = super().delete(gid, sid, did,
+                                             scid, tid, res)
 
                 if not status:
                     return internal_server_error(errormsg=res)
@@ -1111,7 +1130,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             SQL = render_template(
                 "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -1120,7 +1139,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if len(res['rows']) == 0:
                 return gone(gettext(self.not_found_error_msg()))
 
-            return super(TableView, self).truncate(
+            return super().truncate(
                 gid, sid, did, scid, tid, res
             )
 
@@ -1141,7 +1160,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         """
         # Below will decide if it's simple drop or drop with cascade call
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Convert str 'true' to boolean type
         is_enable_trigger = data['is_enable_trigger']
@@ -1150,7 +1169,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             SQL = render_template(
                 "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -1167,6 +1186,17 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            SQL = render_template(
+                "/".join([
+                    self.trigger_template_path, 'get_enabled_triggers.sql'
+                ]),
+                tid=tid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 success=1,
                 info=gettext("Trigger(s) have been disabled")
@@ -1174,7 +1204,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 else gettext("Trigger(s) have been enabled"),
                 data={
                     'id': tid,
-                    'scid': scid
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
                 }
             )
 
@@ -1219,7 +1250,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             SQL = render_template(
                 "/".join([self.table_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -1264,7 +1295,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -1369,7 +1400,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1417,7 +1448,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1468,7 +1499,8 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1521,7 +1553,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template(
             "/".join([self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         if not status:
@@ -1574,7 +1606,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         """
         data = {}
         data['schema'], data['name'] = \
-            super(TableView, self).get_schema_and_table_name(tid)
+            super().get_schema_and_table_name(tid)
 
         if data['name'] is None:
             return gone(gettext(self.not_found_error_msg()))
@@ -1601,14 +1633,14 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         SQL = render_template("/".join(
             [self.table_template_path, self._PROPERTIES_SQL]),
             did=did, scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
         )
         status, res = self.conn.execute_dict(SQL)
         sql = ''
 
         if status:
             self.cmd = 'delete'
-            sql = super(TableView, self).get_delete_sql(res)
+            sql = super().get_delete_sql(res['rows'][0])
             self.cmd = None
 
         return sql

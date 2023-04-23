@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -36,11 +36,11 @@ with open(req_file, 'r') as req_lines:
 
 requires = []
 kerberos_extras = []
-# Ensure the Wheel will use psycopg2-binary, not the source distro, and stick
+# Ensure the Wheel will use psycopg-binary, not the source distro, and stick
 # gssapi in it's own list
 for index, req in enumerate(all_requires):
-    if 'psycopg2' in req:
-        req = req.replace('psycopg2', 'psycopg2-binary')
+    if 'psycopg[c]' in req:
+        req = req.replace('psycopg[c]', 'psycopg[binary]')
 
     if 'gssapi' in req:
         kerberos_extras.append(req)
@@ -56,8 +56,12 @@ setup(
     version=config.APP_VERSION,
 
     description='PostgreSQL Tools',
-    long_description='Administration and management tools for '
-                     'the PostgreSQL database.',
+    long_description='pgAdmin is the most popular and feature rich Open '
+                     'Source administration and development platform for '
+                     'PostgreSQL, the most advanced Open Source database in '
+                     'the world.\n\npgAdmin may be used on Linux, Unix, '
+                     'macOS and Windows to manage PostgreSQL and EDB '
+                     'Advanced Server 10 and above.',
 
     url='https://www.pgadmin.org/',
 
@@ -71,10 +75,11 @@ setup(
         'Development Status :: 5 - Production/Stable',
 
         # Supported programming languages
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11'
     ],
 
     keywords='pgadmin4,postgresql,postgres',

@@ -11,7 +11,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
     OWNER TO {{ conn|qtIdent(data.seqowner) }};
 
 {% endif %}
-{% if (data.owned_table == None or data.owned_table is not defined) and (o_data.owned_table is defined and o_data.owned_table != None) and (data.owned_column == None or data.owned_column is not defined) %}
+{% if (data.owned_table == None) and (data.owned_column == None) %}
 ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
     OWNED BY NONE;
 {% elif (data.owned_table is defined or data.owned_column is defined) and (data.owned_table != o_data.owned_table or data.owned_column != o_data.owned_column) %}
@@ -20,7 +20,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
 {% endif %}
 {% if data.current_value is defined %}
 {% set seqname = conn|qtIdent(o_data.schema, data.name) %}
-SELECT setval({{ seqname|qtLiteral }}, {{ data.current_value }}, true);
+SELECT setval({{ seqname|qtLiteral(conn) }}, {{ data.current_value }}, true);
 
 {% endif %}
 {% set defquery = '' %}
@@ -60,7 +60,7 @@ ALTER SEQUENCE IF EXISTS {{ conn|qtIdent(o_data.schema, data.name) }}
 {% endif %}
 {% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON SEQUENCE {{ seqname }}
-    IS {{ data.comment|qtLiteral }};
+    IS {{ data.comment|qtLiteral(conn) }};
 
 {% endif %}
 {% if data.securities and data.securities|length > 0 %}

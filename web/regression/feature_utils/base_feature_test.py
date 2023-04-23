@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -62,12 +62,9 @@ class BaseFeatureTest(BaseTestGenerator):
         pass
 
     def tearDown(self):
-        python2_failures = hasattr(
-            self, "_resultForDoCleanups") and self.current_test_failed()
-
         python3_failures = hasattr(self, '_outcome') and self.any_step_failed()
 
-        if python2_failures or python3_failures:
+        if python3_failures:
             self._screenshot()
 
         self.after()
@@ -97,7 +94,7 @@ class BaseFeatureTest(BaseTestGenerator):
         self.ensure_directory_exists(screenshots_server_directory)
 
         date = datetime.now().strftime("%Y.%m.%d_%H.%M.%S")
-        python_version = sys.version.split(" ")[0]
+        python_version = sys.version.split(" ", maxsplit=1)[0]
 
         self.page.driver.save_screenshot(
             '{0}/{1}-{2}-Python-{3}.png'.format(

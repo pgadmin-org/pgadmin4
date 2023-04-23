@@ -16,6 +16,6 @@ FROM
     ) sub ON sub.jlgjobid = j.jobid
     LEFT JOIN pgagent.pga_jobclass jc ON (j.jobjclid = jc.jclid)
 {% if jid %}
-WHERE j.jobid = {{ jid|qtLiteral }}::integer
+WHERE j.jobid = {{ jid|qtLiteral(conn) }}::integer
 {% endif %}
 ORDER BY j.jobname;

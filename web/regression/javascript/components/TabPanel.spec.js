@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -37,12 +37,12 @@ describe('TabPanel', ()=>{
   });
 
   it('init', ()=>{
-    expect(panelInst.getDOMNode().hidden).toBeTrue();
+    expect(panelInst.find('div').at(0).getDOMNode().hidden).toBeTrue();
     expect(panelInst.find('h1')).not.toBe(null);
   });
 
   it('tab select', ()=>{
     panelInst.setProps({value: 0});
-    expect(panelInst.getDOMNode().hidden).toBeFalse();
+    expect(panelInst.find('div').at(0).getDOMNode().hidden).toBeFalse();
   });
 });

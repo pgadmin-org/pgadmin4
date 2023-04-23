@@ -110,7 +110,7 @@
         ]
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while grant permissions.')"
       },
       "expected_data": {
@@ -137,7 +137,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while getting list of object for grant wizard.')"
       },
       "expected_data": {
@@ -164,7 +164,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while getting list of object for grant wizard.')"
       },
       "expected_data": {

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import { isEmptyString } from 'sources/validators';
 import _ from 'lodash';
 
 export default class SubscriptionSchema extends BaseUISchema{
-  constructor(fieldOptions={}, node_info, initValues) {
+  constructor(fieldOptions={}, node_info={}, initValues={}) {
     super({
       name: undefined,
       subowner: undefined,
@@ -53,9 +53,7 @@ export default class SubscriptionSchema extends BaseUISchema{
   get SSL_MODES() { return ['prefer', 'require', 'verify-ca', 'verify-full']; }
 
   isDisable(){
-    if (this.isNew())
-      return false;
-    return true;
+    return !this.isNew();
   }
   isSameDB(state){
     let host = state.host,
@@ -76,9 +74,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       db   = state.db,
       port = state.port,
       username = state.username;
-    if ((!_.isUndefined(host) && host) && (!_.isUndefined(db) && db) && (!_.isUndefined(port) && port) && (!_.isUndefined(username) && username))
-      return false;
-    return true;
+    return !((!_.isUndefined(host) && host) && (!_.isUndefined(db) && db) && (!_.isUndefined(port) && port) && (!_.isUndefined(username) && username));
   }
   isConnect(state){
     if(!_.isUndefined(state.connect) && !state.connect){
@@ -105,14 +101,7 @@ export default class SubscriptionSchema extends BaseUISchema{
     return [{
       id: 'name', label: gettext('Name'), type: 'text',
       mode: ['properties', 'create', 'edit'], noEmpty: true,
-      visible: function() {
-        if(!_.isUndefined(this.node_info['node_info'])
-            && !_.isUndefined(this.node_info['node_info'].version)
-            && this.node_info['node_info'].version >= 100000) {
-          return true;
-        }
-        return false;
-      },
+      min_version: 100000
     },{
       id: 'oid', label: gettext('OID'), cell: 'string', mode: ['properties'],
       type: 'text',
@@ -123,9 +112,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       type: 'select',
       mode: ['edit', 'properties', 'create'], controlProps: { allowClear: false},
       disabled: function(){
-        if(obj.isNew())
-          return true;
-        return false;
+        return obj.isNew();
       },
     },{
       id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
@@ -161,7 +148,8 @@ export default class SubscriptionSchema extends BaseUISchema{
       }
     },
     {
-      id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
+      id: 'password', label: gettext('Password'), type: 'password',
+      controlProps: { maxLength: null},
       group: gettext('Connection'),
       mode: ['create', 'edit'], skipChange: true,
       deps: ['connect_now'],
@@ -176,7 +164,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       mode: ['properties', 'edit', 'create'],
     },
     {
-      id: 'pub', label: gettext('Publication'), type: 'text', group: gettext('Connection'),
+      id: 'proppub', label: gettext('Publication'), type: 'text', group: gettext('Connection'),
       mode: ['properties'],
     },
     {
@@ -257,7 +245,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslcert = state.sslcert;
+        let sslcert = state.sslcert;
         return !_.isUndefined(sslcert) && !_.isNull(sslcert);
       },
     },{
@@ -265,7 +253,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslkey = state.sslkey;
+        let sslkey = state.sslkey;
         return !_.isUndefined(sslkey) && !_.isNull(sslkey);
       },
     },{
@@ -273,7 +261,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslrootcert = state.sslrootcert;
+        let sslrootcert = state.sslrootcert;
         return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
       },
     },{
@@ -281,7 +269,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       group: gettext('SSL'), mode: ['properties'],
       deps: ['sslmode'],
       visible: function(state) {
-        var sslcrl = state.sslcrl;
+        let sslcrl = state.sslcrl;
         return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
       },
     },{
@@ -379,16 +367,14 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('host', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('host', errmsg);
+      setError('host', null);
     }
     if(isEmptyString(state.username)) {
       errmsg = gettext('Username must be specified.');
       setError('username', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('username', errmsg);
+      setError('username', null);
     }
 
     if(isEmptyString(state.port)) {
@@ -396,8 +382,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('port', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('port', errmsg);
+      setError('port', null);
     }
 
     if(isEmptyString(state.pub)) {
@@ -405,8 +390,7 @@ export default class SubscriptionSchema extends BaseUISchema{
       setError('pub', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('pub', errmsg);
+      setError('pub', null);
     }
 
     if (state.use_ssh_tunnel) {
@@ -415,8 +399,7 @@ export default class SubscriptionSchema extends BaseUISchema{
         setError('tunnel_host', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_host', errmsg);
+        setError('tunnel_host', null);
       }
 
       if(isEmptyString(state.tunnel_port)) {
@@ -424,8 +407,7 @@ export default class SubscriptionSchema extends BaseUISchema{
         setError('tunnel_port', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_port', errmsg);
+        setError('tunnel_port', null);
       }
 
       if(isEmptyString(state.tunnel_username)) {
@@ -433,8 +415,7 @@ export default class SubscriptionSchema extends BaseUISchema{
         setError('tunnel_username', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_username', errmsg);
+        setError('tunnel_username', null);
       }
 
       if (state.tunnel_authentication) {
@@ -443,8 +424,7 @@ export default class SubscriptionSchema extends BaseUISchema{
           setError('tunnel_identity_file', errmsg);
           return true;
         } else {
-          errmsg = null;
-          setError('tunnel_identity_file', errmsg);
+          setError('tunnel_identity_file', null);
         }
       }
     }

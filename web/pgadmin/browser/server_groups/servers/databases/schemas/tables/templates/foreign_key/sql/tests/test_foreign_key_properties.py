@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -38,10 +38,7 @@ class TestColumnForeignKeyGetConstraintCols(BaseTestGenerator):
                            " and pg_attribute.attname = 'some_column'")
             table_id, column_id = cursor.fetchone()
 
-            if connection.server_version < 90100:
-                self.versions_to_test = ['default']
-            else:
-                self.versions_to_test = ['9.1_plus']
+            self.versions_to_test = ['default']
 
             for version in self.versions_to_test:
                 template_file = os.path.join(

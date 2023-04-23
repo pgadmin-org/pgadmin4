@@ -2,16 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import time
-import random
-import simplejson as json
+import secrets
+import json
 import uuid
-import re
 
 from regression import parent_node_dict
 
@@ -46,7 +45,7 @@ def run_import_export_job(tester, job_id, expected_params, assert_in,
             break
         # Check the process list
         response1 = tester.get('/misc/bgprocess/?_={0}'.format(
-            random.randint(1, 9999999)))
+            secrets.choice(range(1, 9999999))))
         assert_equal(response1.status_code, 200)
         process_list = json.loads(response1.data.decode('utf-8'))
 
@@ -70,7 +69,7 @@ def run_import_export_job(tester, job_id, expected_params, assert_in,
 
     io_file = None
     if 'details' in the_process:
-        io_det = the_process['details']
+        io_det = the_process['details']['message']
 
         temp_io_det = io_det.upper()
 
@@ -82,19 +81,19 @@ def run_import_export_job(tester, job_id, expected_params, assert_in,
 
     if expected_params['expected_cmd_opts']:
         for opt in expected_params['expected_cmd_opts']:
-            assert_in(opt, the_process['details'])
+            assert_in(opt, the_process['details']['cmd'])
     if expected_params['not_expected_cmd_opts']:
         for opt in expected_params['not_expected_cmd_opts']:
-            assert_not_in(opt, the_process['details'])
+            assert_not_in(opt, the_process['details']['cmd'])
 
     # Check the process details
     p_details = tester.get('/misc/bgprocess/{0}?_={1}'.format(
-        job_id, random.randint(1, 9999999))
+        job_id, secrets.choice(range(1, 9999999)))
     )
     assert_equal(p_details.status_code, 200)
 
     p_details = tester.get('/misc/bgprocess/{0}/{1}/{2}/?_={3}'.format(
-        job_id, 0, 0, random.randint(1, 9999999))
+        job_id, 0, 0, secrets.choice(range(1, 9999999)))
     )
     assert_equal(p_details.status_code, 200)
     p_details_data = json.loads(p_details.data.decode('utf-8'))
@@ -108,7 +107,7 @@ def run_import_export_job(tester, job_id, expected_params, assert_in,
 
         p_details = tester.get(
             '/misc/bgprocess/{0}/{1}/{2}/?_={3}'.format(
-                job_id, out, err, random.randint(1, 9999999))
+                job_id, out, err, secrets.choice(range(1, 9999999)))
         )
         assert_equal(p_details.status_code, 200)
         p_details_data = json.loads(p_details.data.decode('utf-8'))

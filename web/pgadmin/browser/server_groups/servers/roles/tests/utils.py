@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -145,10 +145,10 @@ def delete_role(connection, role_names):
             role_count = pg_cursor.fetchone()
             if role_count:
                 old_isolation_level = connection.isolation_level
-                connection.set_isolation_level(0)
+                utils.set_isolation_level(connection, 0)
                 pg_cursor = connection.cursor()
                 pg_cursor.execute("DROP ROLE %s" % role_name)
-                connection.set_isolation_level(old_isolation_level)
+                utils.set_isolation_level(connection, old_isolation_level)
                 connection.commit()
         connection.close()
     except Exception as exception:

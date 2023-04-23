@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -53,7 +53,7 @@ class FunctionAddTestCase(BaseTestGenerator):
             is_positive_test=False,
             mocking_required=True,
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_scalar",
                 "return_value": "(False, 'Mocked Internal Server "
                                 "Error while create new function get sql.')"
@@ -67,7 +67,7 @@ class FunctionAddTestCase(BaseTestGenerator):
             is_positive_test=False,
             mocking_required=True,
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_dict",
                 "return_value": "(False, 'Mocked Internal Server "
                                 "Error while create new function.')"
@@ -90,7 +90,7 @@ class FunctionAddTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will add function under schema node. """
-        super(FunctionAddTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
         db_user = self.server["username"]
         data = {

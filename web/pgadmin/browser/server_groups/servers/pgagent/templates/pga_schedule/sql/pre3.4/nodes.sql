@@ -4,8 +4,8 @@ FROM
     pgagent.pga_schedule
 WHERE
 {% if jscid %}
-    jscid = {{ jscid|qtLiteral }}::integer
+    jscid = {{ jscid|qtLiteral(conn) }}::integer
 {% else %}
-    jscjobid = {{ jid|qtLiteral }}::integer
+    jscjobid = {{ jid|qtLiteral(conn) }}::integer
 {% endif %}
 ORDER BY jscname;

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -16,11 +16,11 @@ Create Date: 2017-03-13 12:27:30.543908
 """
 import base64
 import os
-import sys
-
 import config
+import sqlalchemy as sa
+from alembic import op
 from pgadmin.model import db, Server
-from pgadmin.setup import get_version
+from pgadmin.setup import get_version_for_migration
 
 # revision identifiers, used by Alembic.
 
@@ -31,200 +31,149 @@ depends_on = None
 
 
 def upgrade():
-    version = get_version()
+    version = get_version_for_migration(op)
     # Changes introduced in schema version 2
     if version < 2:
         # Create the 'server' table
         db.metadata.create_all(db.engine, tables=[Server.__table__])
     if version < 3:
-        db.engine.execute(
-            'ALTER TABLE server ADD COLUMN comment TEXT(1024)'
-        )
+        op.add_column('server', sa.Column('comment', sa.String(length=1024)))
     if version < 4:
-        db.engine.execute(
-            'ALTER TABLE server ADD COLUMN password TEXT(64)'
-        )
+        op.add_column('server', sa.Column('password', sa.String()))
     if version < 5:
-        db.engine.execute('ALTER TABLE server ADD COLUMN role text(64)')
+        op.add_column('server', sa.Column('role', sa.String(length=64)))
     if version < 6:
-        db.engine.execute("ALTER TABLE server RENAME TO server_old")
-        db.engine.execute("""
-    CREATE TABLE server (
-        id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        servergroup_id INTEGER NOT NULL,
-        name VARCHAR(128) NOT NULL,
-        host VARCHAR(128) NOT NULL,
-        port INTEGER NOT NULL CHECK (port >= 1024 AND port <= 65534),
-        maintenance_db VARCHAR(64) NOT NULL,
-        username VARCHAR(64) NOT NULL,
-        ssl_mode VARCHAR(16) NOT NULL CHECK (
-            ssl_mode IN (
-                'allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full'
-                )),
-        comment VARCHAR(1024), password TEXT(64), role text(64),
-        PRIMARY KEY (id),
-        FOREIGN KEY(user_id) REFERENCES user (id),
-        FOREIGN KEY(servergroup_id) REFERENCES servergroup (id)
-    )""")
-        db.engine.execute("""
-    INSERT INTO server (
-        id, user_id, servergroup_id, name, host, port, maintenance_db, username,
-        ssl_mode, comment, password, role
-    ) SELECT
-        id, user_id, servergroup_id, name, host, port, maintenance_db, username,
-        ssl_mode, comment, password, role
-    FROM server_old""")
-        db.engine.execute("DROP TABLE server_old")
+        with op.batch_alter_table("server") as batch_op:
+            batch_op.create_check_constraint(
+                "ck_port_range",
+                "port >= 1024 AND port <= 65535"
+            )
 
+            batch_op.create_check_constraint(
+                "ck_ssl_mode",
+                "ssl_mode IN ('allow', 'prefer', 'require', 'disable', \
+                'verify-ca', 'verify-full')"
+            )
     if version < 8:
-        db.engine.execute("""
-    CREATE TABLE module_preference(
-        id INTEGER PRIMARY KEY,
-        name VARCHAR(256) NOT NULL
-        )""")
+        op.create_table(
+            'module_preference',
+            sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
+            sa.Column('name', sa.String(length=256), nullable=False),
+            sa.PrimaryKeyConstraint('id'))
 
-        db.engine.execute("""
-    CREATE TABLE preference_category(
-        id INTEGER PRIMARY KEY,
-        mid INTEGER,
-        name VARCHAR(256) NOT NULL,
+        op.create_table(
+            'preference_category',
+            sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
+            sa.Column('mid', sa.Integer(),),
+            sa.Column('name', sa.String(length=256), nullable=False),
+            sa.ForeignKeyConstraint(['mid'], ['module_preference.id'], ),
+            sa.PrimaryKeyConstraint('id'))
 
-        FOREIGN KEY(mid) REFERENCES module_preference(id)
-        )""")
+        op.create_table(
+            'preferences',
+            sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
+            sa.Column('cid', sa.Integer(), nullable=False),
+            sa.Column('name', sa.String(length=256), nullable=False),
+            sa.ForeignKeyConstraint(['cid'], ['preference_category.id'], ),
+            sa.PrimaryKeyConstraint('id'))
 
-        db.engine.execute("""
-    CREATE TABLE preferences (
-
-        id INTEGER PRIMARY KEY,
-        cid INTEGER NOT NULL,
-        name VARCHAR(256) NOT NULL,
-
-        FOREIGN KEY(cid) REFERENCES preference_category (id)
-        )""")
-
-        db.engine.execute("""
-    CREATE TABLE user_preferences (
-
-        pid INTEGER,
-        uid INTEGER,
-        value VARCHAR(1024) NOT NULL,
-
-        PRIMARY KEY (pid, uid),
-        FOREIGN KEY(pid) REFERENCES preferences (pid),
-        FOREIGN KEY(uid) REFERENCES user (id)
-        )""")
+        op.create_table(
+            'user_preferences',
+            sa.Column('pid', sa.Integer(), nullable=False),
+            sa.Column('uid', sa.Integer(), nullable=False),
+            sa.Column('value', sa.String(length=1024), nullable=False),
+            sa.ForeignKeyConstraint(['pid'], ['preferences.id'],
+                                    ondelete='CASCADE'),
+            sa.ForeignKeyConstraint(['uid'], ['user.id'], ondelete='CASCADE'),
+            sa.PrimaryKeyConstraint('pid', 'uid'))
 
     if version < 9:
-        db.engine.execute("""
-    CREATE TABLE IF NOT EXISTS debugger_function_arguments (
-        server_id INTEGER ,
-        database_id INTEGER ,
-        schema_id INTEGER ,
-        function_id INTEGER ,
-        arg_id INTEGER ,
-        is_null INTEGER NOT NULL CHECK (is_null >= 0 AND is_null <= 1) ,
-        is_expression INTEGER NOT NULL CHECK (is_expression >= 0 AND is_expression <= 1) ,
-        use_default INTEGER NOT NULL CHECK (use_default >= 0 AND use_default <= 1) ,
-        value TEXT,
-        PRIMARY KEY (server_id, database_id, schema_id, function_id, arg_id)
-        )""")
-
+        op.create_table(
+            'debugger_function_arguments',
+            sa.Column('server_id', sa.Integer(), nullable=False),
+            sa.Column('database_id', sa.Integer(), nullable=False),
+            sa.Column('schema_id', sa.Integer(), nullable=False),
+            sa.Column('function_id', sa.Integer(), nullable=False),
+            sa.Column('arg_id', sa.Integer(), nullable=False),
+            sa.Column('is_null', sa.Integer(), nullable=False),
+            sa.Column('is_expression', sa.Integer(), nullable=False),
+            sa.Column('use_default', sa.Integer()),
+            sa.Column('value', sa.String(), nullable=False),
+            sa.CheckConstraint('is_null >= 0 AND is_null <= 1'),
+            sa.CheckConstraint('is_expression >= 0 AND is_expression <= 1'),
+            sa.CheckConstraint('use_default >= 0 AND use_default <= 1'),
+            sa.PrimaryKeyConstraint('server_id', 'database_id', 'schema_id',
+                                    'function_id', 'arg_id'))
     if version < 10:
-        db.engine.execute("""
-    CREATE TABLE process(
-        user_id INTEGER NOT NULL,
-        pid TEXT NOT NULL,
-        desc TEXT NOT NULL,
-        command TEXT NOT NULL,
-        arguments TEXT,
-        start_time TEXT,
-        end_time TEXT,
-        logdir TEXT,
-        exit_code INTEGER,
-        acknowledge TEXT,
-        PRIMARY KEY(pid),
-        FOREIGN KEY(user_id) REFERENCES user (id)
-        )""")
+        op.create_table(
+            'process',
+            sa.Column('user_id', sa.Integer(), nullable=False),
+            sa.Column('pid', sa.String(), nullable=False),
+            sa.Column('desc', sa.String(), nullable=False),
+            sa.Column('command', sa.String(), nullable=False),
+            sa.Column('arguments', sa.String()),
+            sa.Column('start_time', sa.String()),
+            sa.Column('end_time', sa.String()),
+            sa.Column('logdir', sa.String()),
+            sa.Column('exit_code', sa.Integer()),
+            sa.Column('acknowledge', sa.String()),
+            sa.ForeignKeyConstraint(['user_id'], ['user.id'],
+                                    ondelete='CASCADE'),
+            sa.PrimaryKeyConstraint('pid'))
 
     if version < 11:
-        db.engine.execute("""
-    UPDATE role
-        SET name = 'Administrator',
-        description = 'pgAdmin Administrator Role'
-        WHERE name = 'Administrators'
-        """)
+        # get metadata from current connection
+        meta = sa.MetaData()
+        # define table representation
+        meta.reflect(op.get_bind(), only=('role',))
+        role_table = sa.Table('role', meta)
 
-        db.engine.execute("""
-    INSERT INTO role ( name, description )
-                VALUES ('User', 'pgAdmin User Role')
-        """)
+        op.execute(
+            role_table.update().where(role_table.c.name == 'Administrators')
+            .values(name='Administrator',
+                    description='pgAdmin Administrator Role'))
 
-    if version < 12:
-        db.engine.execute("ALTER TABLE server RENAME TO server_old")
-        db.engine.execute("""
-    CREATE TABLE server (
-        id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        servergroup_id INTEGER NOT NULL,
-        name VARCHAR(128) NOT NULL,
-        host VARCHAR(128) NOT NULL,
-        port INTEGER NOT NULL CHECK (port >= 1024 AND port <= 65535),
-        maintenance_db VARCHAR(64) NOT NULL,
-        username VARCHAR(64) NOT NULL,
-        ssl_mode VARCHAR(16) NOT NULL CHECK (
-            ssl_mode IN (
-                'allow', 'prefer', 'require', 'disable', 'verify-ca', 'verify-full'
-                )),
-        comment VARCHAR(1024), password TEXT(64), role text(64),
-        PRIMARY KEY (id),
-        FOREIGN KEY(user_id) REFERENCES user (id),
-        FOREIGN KEY(servergroup_id) REFERENCES servergroup (id)
-    )""")
-        db.engine.execute("""
-    INSERT INTO server (
-        id, user_id, servergroup_id, name, host, port, maintenance_db, username,
-        ssl_mode, comment, password, role
-    ) SELECT
-        id, user_id, servergroup_id, name, host, port, maintenance_db, username,
-        ssl_mode, comment, password, role
-    FROM server_old""")
-        db.engine.execute("DROP TABLE server_old")
+        op.bulk_insert(role_table,
+                       [{'name': 'User', 'description': 'pgAdmin User Role'}])
 
     if version < 13:
-        db.engine.execute("""
-    ALTER TABLE SERVER
-        ADD COLUMN discovery_id TEXT
-        """)
+        op.add_column('server', sa.Column('discovery_id', sa.String()))
 
     if version < 14:
-        db.engine.execute("""
-    CREATE TABLE keys (
-        name TEST NOT NULL,
-        value TEXT NOT NULL,
-        PRIMARY KEY (name))
-                    """)
+        keys_table = op.create_table(
+            'keys',
+            sa.Column('name', sa.String(), nullable=False),
+            sa.Column('value', sa.String(), nullable=False),
+            sa.PrimaryKeyConstraint('name'))
 
-        sql = "INSERT INTO keys (name, value) VALUES ('CSRF_SESSION_KEY', '%s')" % base64.urlsafe_b64encode(
-            os.urandom(32)).decode()
-        db.engine.execute(sql)
+        secret_key = base64.urlsafe_b64encode(os.urandom(32)).decode()
+        if hasattr(config, 'SECRET_KEY'):
+            secret_key = config.SECRET_KEY
 
-        sql = "INSERT INTO keys (name, value) VALUES ('SECRET_KEY', '%s')" % base64.urlsafe_b64encode(
-            os.urandom(32)).decode()
-        db.engine.execute(sql)
-
-        # If SECURITY_PASSWORD_SALT is not in the config, but we're upgrading, then it must (unless the
-        # user edited the main config - which they shouldn't have done) have been at it's default
-        # value, so we'll use that. Otherwise, use whatever we can find in the config.
+        # If SECURITY_PASSWORD_SALT is not in the config, but we're upgrading,
+        # then it must (unless the user edited the main config - which they
+        # shouldn't have done) have been at it's default value, so we'll use
+        # that. Otherwise, use whatever we can find in the config.
+        security_password_salt = 'SuperSecret3'
         if hasattr(config, 'SECURITY_PASSWORD_SALT'):
-            sql = "INSERT INTO keys (name, value) VALUES ('SECURITY_PASSWORD_SALT', '%s')" % config.SECURITY_PASSWORD_SALT
-        else:
-            sql = "INSERT INTO keys (name, value) VALUES ('SECURITY_PASSWORD_SALT', 'SuperSecret3')"
-        db.engine.execute(sql)
+            security_password_salt = config.SECURITY_PASSWORD_SALT
 
-    db.engine.execute(
-        'UPDATE version set value="%s" WHERE name = "ConfigDB"' % config.SETTINGS_SCHEMA_VERSION
-    )
+        op.bulk_insert(keys_table,
+                       [{'name': 'CSRF_SESSION_KEY', 'value':
+                           base64.urlsafe_b64encode(os.urandom(32)).decode()},
+                        {'name': 'SECRET_KEY', 'value': secret_key},
+                        {'name': 'SECURITY_PASSWORD_SALT',
+                         'value': security_password_salt}])
+
+    # get metadata from current connection
+    meta = sa.MetaData()
+    # define table representation
+    meta.reflect(op.get_bind(), only=('version',))
+    version_table = sa.Table('version', meta)
+
+    op.execute(
+        version_table.update().where(version_table.c.name == 'ConfigDB')
+        .values(value=config.SETTINGS_SCHEMA_VERSION))
     # ### end Alembic commands ###
 
 

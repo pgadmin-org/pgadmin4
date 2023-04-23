@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 import json
 import uuid
 from unittest.mock import patch
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -32,6 +32,7 @@ class ExclusionConstraintAddTestCase(BaseTestGenerator):
                                          exclusion_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         # Load test data
         self.data = self.test_data
 

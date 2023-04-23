@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
@@ -49,10 +57,7 @@ export default class CheckConstraintSchema extends BaseUISchema {
       id: 'comment', label: gettext('Comment'), type: 'multiline', cell: 'text',
       mode: ['properties', 'create', 'edit'],
       deps:['name'], disabled: function(state) {
-        if(isEmptyString(state.name)) {
-          return true;
-        }
-        return false;
+        return isEmptyString(state.name);
       },
       depChange: (state)=>{
         if(isEmptyString(state.name)) {
@@ -62,17 +67,14 @@ export default class CheckConstraintSchema extends BaseUISchema {
     },{
       id: 'consrc', label: gettext('Check'), type: 'multiline', cell: 'text',
       group: gettext('Definition'), mode: ['properties', 'create', 'edit'],
-      readonly: obj.isReadonly, editable: false, noEmpty: true,
+      readonly: obj.isReadonly, editable: true, noEmpty: true,
     },{
       id: 'connoinherit', label: gettext('No inherit?'), type: 'switch', cell: 'switch',
       group: gettext('Definition'), mode: ['properties', 'create', 'edit'], min_version: 90200,
       deps: [['is_partitioned']],
       disabled: function() {
         // Disabled if table is a partitioned table.
-        if(obj.inTable && obj.top?.sessData.is_partitioned) {
-          return true;
-        }
-        return false;
+        return obj.inTable && obj.top?.sessData.is_partitioned;
       },
       depChange: ()=>{
         if(obj.inTable && obj.top?.sessData.is_partitioned) {
@@ -88,10 +90,7 @@ export default class CheckConstraintSchema extends BaseUISchema {
         if(obj.inTable && obj.top && !obj.top.isNew()) {
           return !(_.isUndefined(state.oid) || state.convalidated);
         }
-        if(!obj.isNew(state) && !obj.origData.convalidated) {
-          return true;
-        }
-        return false;
+        return !obj.isNew(state) && !obj.origData.convalidated;
       },
       mode: ['properties', 'create', 'edit'],
     }];

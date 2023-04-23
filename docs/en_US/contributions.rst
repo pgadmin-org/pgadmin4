@@ -15,7 +15,7 @@ development process used to develop, improve, and maintain the pgAdmin client.
 
 .. toctree::
    
-   submitting_patches
+   submitting_pull_requests
    code_overview
    coding_standards
    code_snippets

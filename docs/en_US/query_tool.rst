@@ -7,7 +7,7 @@
 The Query Tool is a powerful, feature-rich environment that allows you to
 execute arbitrary SQL commands and review the result set.  You can access the
 Query Tool via the *Query Tool* menu option on the *Tools* menu, or through the
-context menu of select nodes of the Browser tree control.  The Query Tool
+context menu of select nodes of the Object explorer control.  The Query Tool
 allows you to:
 
 * Issue ad-hoc SQL queries.
@@ -105,6 +105,45 @@ can save time in typing long object names. Text containing the object name will 
 fully qualified with schema. Double quotes will be added if required.
 For functions and procedures, the function name along with parameter names will
 be pasted in the Query Tool.
+
+Query History Panel
+*******************
+
+Use the *Query History* tab to review activity for the current session:
+
+.. image:: images/query_output_history.png
+    :alt: Query tool history panel
+    :align: center
+
+The Query History tab displays information about recent commands:
+
+* The date and time that a query was invoked.
+* The text of the query.
+* The number of rows returned by the query.
+* The amount of time it took the server to process the query and return a
+  result set.
+* Messages returned by the server (not noted on the *Messages* tab).
+* The source of the query (indicated by icons corresponding to the toolbar).
+
+You can show or hide the queries generated internally by pgAdmin (during
+'View/Edit Data' or 'Save Data' operations).
+
+You can remove a single query by selecting it and clicking on the *Remove*
+button. If you would like to remove all of the histories from the
+*Query History* tab, then click on the *Remove All* button.
+
+By using the *Copy* button, you can copy a particular query to the clipboard,
+and with the *Copy to Query Editor* button, you can copy a specific query to
+the Query Editor tab. During this operation, all existing content in the
+Query Editor is erased.
+
+Query History is maintained across sessions for each database on a per-user
+basis when running in Query Tool mode. In View/Edit Data mode, history is not
+retained. By default, the last 20 queries are stored for each database. This
+can be adjusted in ``config_local.py`` or ``config_system.py`` (see the
+:ref:`config.py <config_py>` documentation) by overriding the
+`MAX_QUERY_HIST_STORED` value. See the :ref:`Deployment <deployment>` section
+for more information.
 
 The Data Output Panel
 *********************
@@ -207,7 +246,7 @@ the *Data Output* tab.
 * Table
 
 *Table* tab shows the plan details in table format, it generates table format
-similar to *explain.depsez.com*. Each row of the table represent the data for a
+similar to *explain.depesz.com*. Each row of the table represent the data for a
 *Explain Plan Node*. It may contain the node information, exclusive timing,
 inclusive timing, actual vs planned rows differences, actual rows, planned
 rows, loops.
@@ -288,38 +327,117 @@ particular channel.
     :alt: Query tool notifications panel
     :align: center
 
-Query History Panel
-*******************
+Graph Visualiser Panel
+**********************
 
-Use the *Query History* tab to review activity for the current session:
+Click the Graph Visualiser button in the toolbar to generate the *Graphs* of
+the query results. The graph visualiser supports Line Charts, Stacked Line Charts,
+Bar Charts, Stacked Bar Charts, and Pie Charts.
 
-.. image:: images/query_output_history.png
-    :alt: Query tool history panel
+.. image:: images/query_graph_visualiser_panel.png
+    :alt: Query tool graph visualiser panel
     :align: center
 
-The Query History tab displays information about recent commands:
+* Graph Type
 
-* The date and time that a query was invoked.
-* The text of the query.
-* The number of rows returned by the query.
-* The amount of time it took the server to process the query and return a
-  result set.
-* Messages returned by the server (not noted on the *Messages* tab).
-* The source of the query (indicated by icons corresponding to the toolbar).
+Choose the type of the graph that you would like to generate.
 
-You can show or hide the queries generated internally by pgAdmin (during
-'View/Edit Data' or 'Save Data' operations).
+.. image:: images/query_graph_type.png
+    :alt: Query tool graph visualiser graph type
+    :align: center
 
-To erase the content of the *Query History* tab, select *Clear history* from
-the *Clear* drop-down menu.
+* X Axis
 
-Query History is maintained across sessions for each database on a per-user
-basis when running in Query Tool mode. In View/Edit Data mode, history is not
-retained. By default, the last 20 queries are stored for each database. This
-can be adjusted in ``config_local.py`` or ``config_system.py`` (see the
-:ref:`config.py <config_py>` documentation) by overriding the
-`MAX_QUERY_HIST_STORED` value. See the :ref:`Deployment <deployment>` section
-for more information.
+Choose the column whose value you wish to display on X-axis from the *X Axis*
+dropdown. Select the *<Row Number>* option to use the number of rows as labels
+on the X-axis.
+
+.. image:: images/query_graph_xaxis.png
+    :alt: Query tool graph visualiser xaxis
+    :align: center
+
+* Y Axis
+
+Choose the columns whose value you wish to display on Y-axis from the *Y Axis*
+dropdown. Users can choose multiple columns. Choose the *<Select All>* option
+from the drop-down menu to select all the columns.
+
+.. image:: images/query_graph_yaxis.png
+    :alt: Query tool graph visualiser yaxis
+    :align: center
+
+* Download and Zoom button
+
+Zooming is performed by clicking and selecting an area over the chart with the
+mouse. The *Zoom to original* button will bring you back to the original zoom
+level.
+
+Click the *Download* button on the button bar to download the chart.
+
+.. image:: images/query_graph_toolbar.png
+    :alt: Query tool graph visualiser toolbar
+    :align: center
+
+Line Chart
+==========
+
+The *Line Chart* can be generated by selecting the 'Line Chart'
+from the Graph Type drop-down, selecting the X-axis and the Y-axis, and
+clicking on the 'Generate' button. Below is an example of a chart of employee
+names and their salaries.
+
+.. image:: images/query_line_chart.png
+    :alt: Query tool graph visualiser line chart
+    :align: center
+
+Set *Use different data point styles?* option to true in the :ref:`preferences`,
+to show data points in a different style on each graph lines.
+
+Stacked Line Chart
+==================
+
+The *Stacked Line Chart* can be generated by selecting the 'Stacked Line Chart'
+from the Graph Type drop-down, selecting the X-axis and the Y-axis, and
+clicking on the 'Generate' button.
+
+.. image:: images/query_stacked_line_chart.png
+    :alt: Query tool graph visualiser stacked line chart
+    :align: center
+
+Bar Chart
+==========
+
+The *Bar Chart* can be generated by selecting the 'Bar Chart'
+from the Graph Type drop-down, selecting the X-axis and the Y-axis, and
+clicking on the 'Generate' button.
+
+.. image:: images/query_bar_chart.png
+    :alt: Query tool graph visualiser bar chart
+    :align: center
+
+Stacked Bar Chart
+=================
+
+The *Stacked Bar Chart* can be generated by selecting the 'Stacked Bar Chart'
+from the Graph Type drop-down, selecting the X-axis and the Y-axis, and
+clicking on the 'Generate' button.
+
+
+.. image:: images/query_stacked_bar_chart.png
+    :alt: Query tool graph visualiser stacked bar chart
+    :align: center
+
+Pie Chart
+=========
+
+The *Pie Chart* can be generated by selecting the 'Pie Chart'
+from the Graph Type drop-down, selecting the Label and Value, and
+clicking on the 'Generate' button.
+
+
+.. image:: images/query_pie_chart.png
+    :alt: Query tool graph visualiser pie chart
+    :align: center
 
 Connection Status
 *****************
@@ -339,13 +457,13 @@ User can connect to another server or database from existing open session of que
 * Click on the connection link next to connection status.
 * Now click on the *<New Connection>* option from the dropdown.
 
-.. image:: images/new_connection_options.png
+.. image:: images/query_tool_new_connection_options.png
     :alt: Query tool connection options
     :align: center
 
-* Now select server, database, user, and role to connect and click OK.
+* Now select server, database, user, and role to connect and click on the 'Save' button.
 
-.. image:: images/new_connection_dialog.png
+.. image:: images/query_tool_new_connection_dialog.png
     :alt: Query tool connection dialog
     :align: center
 
@@ -367,26 +485,15 @@ To create a macro, select the *Manage Macros* option from the *Macros* menu on t
    :alt: Query Tool Manage Macros dialogue
    :align: center
 
-To clear a macro, select the macro on the *Manage Macros* dialogue, and then click the *Clear* button.
-
-.. image:: images/query_tool_macros_clear_row.png
-   :alt: Query Tool Manage Macros clear the row
-   :align: center
-
-The server will prompt you for confirmation to clear the macro.
+To delete a macro, select the macro on the *Manage Macros* dialogue, and then click the *Delete* button.
+The server will prompt you for confirmation to delete the macro.
 
 .. image:: images/query_tool_macros_clear_confirmation.png
    :alt: Query Tool Manage Macros Clear row confirmation
    :align: center
 
-To clear all macros, click on the *Clear* button on left side of the key. The server will prompt you for confirmation to clear all the rows.
-
-.. image:: images/query_tool_macros_clear_all.png
-   :alt: Query Tool Macros Clear All
-   :align: center
-
 To execute a macro, simply select the appropriate shortcut keys, or select it from the *Macros* menu.
 
-.. image:: images/query_tool_macros_execution.png
+.. image:: images/query_output_data.png
    :alt: Query Tool Macros Execution
    :align: center

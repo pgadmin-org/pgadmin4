@@ -1,13 +1,20 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: c6974f64df08
 Revises: a39bd015b644
 Create Date: 2021-04-22 10:06:21.282770
 
 """
-from pgadmin.model import db
-
+from alembic import op
+import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -18,9 +25,7 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE sharedserver ADD COLUMN osid INTEGER'
-    )
+    op.add_column('sharedserver', sa.Column('osid', sa.Integer()))
 
 
 def downgrade():

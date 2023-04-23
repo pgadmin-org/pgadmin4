@@ -2,17 +2,23 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MainMenuFactory from '../../browser/static/js/MainMenuFactory';
+import AppMenuBar from '../js/AppMenuBar';
+import Theme from '../js/Theme';
+
 define('app', [
-  'sources/pgadmin', 'bundled_browser', 'pgadmin.datagrid',
+  'sources/pgadmin', 'bundled_browser',
 ], function(pgAdmin) {
-  var initializeModules = function(Object) {
-    for (var key in Object) {
-      var module = Object[key];
+  let initializeModules = function(Object) {
+    for (let key in Object) {
+      let module = Object[key];
 
       if (module && module.init && typeof module.init == 'function') {
         try {
@@ -24,7 +30,7 @@ define('app', [
       }
       else if (module && module.Init && typeof module.Init == 'function') {
         try {
-          module.init();
+          module.Init();
         }
         catch (e) {
           console.warn(e.stack || e);
@@ -38,6 +44,14 @@ define('app', [
   initializeModules(pgAdmin.Browser);
   initializeModules(pgAdmin.Tools);
 
-  // create menus after all modules are initialized.
-  pgAdmin.Browser.create_menus();
+  // Add menus from back end.
+  pgAdmin.Browser.utils.addBackendMenus(pgAdmin.Browser);
+
+  // Create menus after all modules are initialized.
+  MainMenuFactory.createMainMenus();
+
+  const menuContainerEle = document.querySelector('#main-menu-container');
+  if(menuContainerEle) {
+    ReactDOM.render(<Theme><AppMenuBar /></Theme>, document.querySelector('#main-menu-container'));
+  }
 });

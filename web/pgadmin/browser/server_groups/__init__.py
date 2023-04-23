@@ -2,19 +2,18 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Defines views for management of server groups"""
 
-import simplejson as json
+import json
 from abc import ABCMeta, abstractmethod
 
-import six
 from flask import request, jsonify, render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import NodeView
@@ -123,15 +122,23 @@ class ServerGroupModule(BrowserPluginModule):
         """
         pass
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .servers import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
+
 
 class ServerGroupMenuItem(MenuItem):
     def __init__(self, **kwargs):
         kwargs.setdefault("type", ServerGroupModule.node_type)
-        super(ServerGroupMenuItem, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
-@six.add_metaclass(ABCMeta)
-class ServerGroupPluginModule(BrowserPluginModule):
+class ServerGroupPluginModule(BrowserPluginModule, metaclass=ABCMeta):
     """
     Base class for server group plugins.
     """
@@ -228,7 +235,7 @@ class ServerGroupView(NodeView):
             id=gid).first()
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         if servergroup is None:
@@ -287,7 +294,7 @@ class ServerGroupView(NodeView):
     def create(self):
         """Creates new server-group """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         if data['name'] != '':
             try:

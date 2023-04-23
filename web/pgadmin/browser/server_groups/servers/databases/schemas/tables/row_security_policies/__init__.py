@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements policy Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
@@ -56,7 +56,7 @@ class RowSecurityModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext('RLS Policies')
 
     def __init__(self, *args, **kwargs):
-        super(RowSecurityModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90500
         self.max_ver = None
 
@@ -178,7 +178,7 @@ class RowSecurityView(PGChildNodeView):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(RowSecurityView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -198,16 +198,11 @@ class RowSecurityView(PGChildNodeView):
             schema, table = row_security_policies_utils.get_parent(self.conn,
                                                                    kwargs[
                                                                        'tid'])
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
             self.schema = schema
             self.table = table
             # Set template path for the sql scripts
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
             self.template_path = 'row_security_policies/sql/#{0}#'.format(
@@ -315,7 +310,7 @@ class RowSecurityView(PGChildNodeView):
         sql = render_template("/".join(
             [self.template_path, self._PROPERTIES_SQL]
         ), plid=plid, scid=scid, policy_table_id=tid,
-            datlastsysoid=self.datlastsysoid)
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(sql)
 
         if not status:
@@ -355,7 +350,7 @@ class RowSecurityView(PGChildNodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         data['schema'] = self.schema
         data['table'] = self.table
@@ -372,7 +367,7 @@ class RowSecurityView(PGChildNodeView):
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]),
                                   data=data,
-                                  conn=self.conn,
+                                  conn=self.conn
                                   )
             status, res = self.conn.execute_scalar(sql)
             if not status:
@@ -381,7 +376,7 @@ class RowSecurityView(PGChildNodeView):
             # we need oid to add object in tree at browser
             sql = render_template(
                 "/".join([self.template_path, 'get_position.sql']),
-                tid=tid, data=data
+                tid=tid, data=data, conn=self.conn
             )
             status, plid = self.conn.execute_scalar(sql)
             if not status:
@@ -410,7 +405,7 @@ class RowSecurityView(PGChildNodeView):
         :return:
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             sql, name = row_security_policies_utils.get_sql(
@@ -446,7 +441,7 @@ class RowSecurityView(PGChildNodeView):
         """
         if plid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [plid]}
@@ -555,7 +550,8 @@ class RowSecurityView(PGChildNodeView):
 
         SQL = row_security_policies_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, scid=scid,
-            plid=plid, policy_table_id=tid, datlastsysoid=self.datlastsysoid)
+            plid=plid, policy_table_id=tid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
         return ajax_response(response=SQL)
 
@@ -619,7 +615,7 @@ class RowSecurityView(PGChildNodeView):
             data['schema'] = self.schema
             data['table'] = self.table
             sql, name = row_security_policies_utils.get_sql(
-                self.conn, data=data, scid=scid, plid=oid,
+                self.conn, data=data, scid=scid, plid=oid, policy_table_id=tid,
                 schema=self.schema, table=self.table)
 
             sql = sql.strip('\n').strip(' ')
@@ -632,15 +628,15 @@ class RowSecurityView(PGChildNodeView):
             sql = row_security_policies_utils.get_reverse_engineered_sql(
                 self.conn, schema=schema, table=self.table, scid=scid,
                 plid=oid, policy_table_id=tid,
-                datlastsysoid=self.datlastsysoid, with_header=False)
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                with_header=False)
 
         drop_sql = ''
         if drop_req:
-            drop_sql = '\n' + self.delete(gid=1, sid=sid, did=did,
-                                          scid=scid, tid=tid,
-                                          plid=oid, only_sql=True)
+            drop_sql = self.delete(gid=1, sid=sid, did=did,
+                                   scid=scid, tid=tid, plid=oid, only_sql=True)
         if drop_sql != '':
-            sql = drop_sql + '\n\n' + sql
+            sql = drop_sql + '\n\n'
         return sql
 
     @check_precondition
@@ -660,7 +656,8 @@ class RowSecurityView(PGChildNodeView):
 
         if not oid:
             SQL = render_template("/".join([self.template_path,
-                                            self._NODES_SQL]), tid=tid)
+                                            self._NODES_SQL]), tid=tid,
+                                  schema_diff=True)
             status, policies = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(policies)

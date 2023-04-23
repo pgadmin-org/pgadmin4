@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@ export function getNodeVariableSchema(nodeObj, treeNodeInfo, itemNodeData, hasDa
   }
   return new VariableSchema(
     ()=>getNodeAjaxOptions('vopts', nodeObj, treeNodeInfo, itemNodeData, null, (vars)=>{
-      var res = [];
+      let res = [];
       _.each(vars, function(v) {
         res.push({
           'value': v.name,
@@ -51,12 +51,18 @@ export default class VariableSchema extends BaseUISchema {
       value: undefined,
       role: null,
       database: null,
+      keyword: null,
     });
     this.vnameOptions = vnameOptions;
     this.databaseOptions = databaseOptions;
     this.roleOptions = roleOptions;
     this.varTypes = {};
     this.keys = keys;
+    this.allReadOnly = false;
+  }
+
+  setAllReadOnly(isReadOnly) {
+    this.allReadOnly = isReadOnly;
   }
 
   setVarTypes(options) {
@@ -67,6 +73,19 @@ export default class VariableSchema extends BaseUISchema {
     });
   }
 
+  getPlaceHolderMsg(variable) {
+    let msg = '';
+    if (variable?.min_server_version && variable?.max_server_version) {
+      msg = gettext('%s <= Supported version >= %s', variable?.max_server_version, variable?.min_server_version);
+    } else if (variable?.min_server_version) {
+      msg = gettext('Supported version >= %s', variable?.min_server_version);
+    } else if (variable?.max_server_version) {
+      msg = gettext('Supported version <= %s', variable?.max_server_version);
+    }
+
+    return msg;
+  }
+
   getValueFieldProps(variable) {
     switch(variable?.vartype) {
     case 'bool':
@@ -74,17 +93,44 @@ export default class VariableSchema extends BaseUISchema {
     case 'enum':
       return {
         cell: 'select',
-        options: (variable.enumvals || []).map((val)=>({
+        options: (variable.enumvals || []).map((val)=>(typeof(val)=='string' ? {
           label: val,
           value: val
-        }))
+        }: val)),
+        controlProps: {
+          placeholder: this.getPlaceHolderMsg(variable)
+        }
       };
     case 'integer':
-      return 'int';
+      return {
+        cell: 'int',
+        controlProps: {
+          placeholder: this.getPlaceHolderMsg(variable)
+        }
+      };
     case 'real':
-      return 'numeric';
+      return {
+        cell: 'numeric',
+        controlProps: {
+          placeholder: this.getPlaceHolderMsg(variable)
+        }
+      };
     case 'string':
-      return 'text';
+      return {
+        cell: 'text',
+        controlProps: {
+          placeholder: this.getPlaceHolderMsg(variable)
+        }
+      };
+    case 'file':
+      return {
+        cell: 'file',
+        controlProps: {
+          dialogType: 'select_file',
+          supportedTypes: ['*'],
+          placeholder: this.getPlaceHolderMsg(variable)
+        }
+      };
     default:
       return '';
     }
@@ -99,8 +145,8 @@ export default class VariableSchema extends BaseUISchema {
       },
       {
         id: 'name', label: gettext('Name'), type:'text',
-        readonly: function(state) {
-          return !obj.isNew(state);
+        editable: function(state) {
+          return obj.isNew(state) || !obj.allReadOnly;
         },
         cell: ()=>({
           cell: 'select',
@@ -110,8 +156,15 @@ export default class VariableSchema extends BaseUISchema {
         }),
       },
       {
+        id: 'keyword', label: gettext('Keyword'), type: '', cell: '',
+        deps: ['name'], minWidth: 25,
+        depChange: (state, source, topState, actionObj)=>{
+          return { keyword: actionObj.value };
+        }
+      },
+      {
         id: 'value', label: gettext('Value'), type: 'text',
-        deps: ['name'],
+        deps: ['name'], editable: !obj.allReadOnly,
         depChange: (state, source)=>{
           if(source[source.length-1] == 'name') {
             let variable = this.varTypes[state.name];

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -59,12 +59,12 @@ def create_publication(server, db_name, publication_name):
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "CREATE publication %s FOR ALL TABLES" % \
                 (publication_name)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get role oid of newly added publication
         pg_cursor.execute("select oid from pg_catalog.pg_publication pub "
@@ -139,11 +139,11 @@ def delete_publication(server, db_name, publication_name):
         publication_count = pg_cursor.fetchone()
         if publication_count:
             old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
+            utils.set_isolation_level(connection, 0)
             pg_cursor = connection.cursor()
             query = "DROP publication %s" % publication_name
             pg_cursor.execute(query)
-            connection.set_isolation_level(old_isolation_level)
+            utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
         connection.close()
     except Exception:

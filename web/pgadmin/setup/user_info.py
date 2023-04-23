@@ -2,16 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import config
 import string
-import random
+import secrets
 import os
-import re
 import getpass
 from pgadmin.utils.constants import ENTER_EMAIL_ADDRESS
 
@@ -22,7 +21,7 @@ def user_info_desktop():
     print("NOTE: Configuring authentication for DESKTOP mode.")
     email = config.DESKTOP_USER
     p1 = ''.join([
-        random.choice(string.ascii_letters + string.digits)
+        secrets.choice(string.ascii_letters + string.digits)
         for _ in range(32)
     ])
     return email, p1
@@ -56,13 +55,13 @@ def user_info_server():
             email = input(ENTER_EMAIL_ADDRESS)
 
         p1, p2 = pprompt()
-        while p1 != p2 or len(p1) < 6:
+        while p1 != p2 or len(p1) < config.PASSWORD_LENGTH_MIN:
             if p1 != p2:
                 print('Passwords do not match. Please try again.')
             else:
                 print(
-                    'Password must be at least 6 characters. '
-                    'Please try again.'
+                    'Password must be at least {} characters. '
+                    'Please try again.'.format(config.PASSWORD_LENGTH_MIN)
                 )
             p1, p2 = pprompt()
 

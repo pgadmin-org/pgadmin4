@@ -52,7 +52,7 @@
        },
        "mocking_required": true,
        "mock_data": {
-         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
          "return_value": "(False, 'Mocked Internal Server Error')"
        },
        "expected_data": {
@@ -86,7 +86,7 @@
        },
        "mocking_required": true,
        "mock_data": {
-         "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
          "return_value": "(True, 'Mocking the scalar output'), (False, 'Mocked Internal Server Error while creating domain')"
        },
        "expected_data": {
@@ -120,7 +120,7 @@
       },
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, True),(True, True), (False, 'Mocked Internal Server Error while creating domain')"
       },
       "expected_data": {
@@ -148,7 +148,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
         "return_value": "(False, 'Mocked Internal Server Error while deleting a domain')"
       },
       "expected_data": {
@@ -162,7 +162,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(False, 'Mocked Internal Server Error while deleting a domain')"
       },
       "expected_data": {
@@ -208,7 +208,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(False, 'Mocked Internal Server Error while fetching a domain')"
       },
       "expected_data": {
@@ -226,7 +226,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "[(True, True),(False, 'Mocked Internal Server Error while fetching a domain')]"
       },
       "expected_data": {
@@ -288,7 +288,7 @@
       },
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
         "return_value": "(False, 'Mocked Internal Server Error')"
       },
       "expected_data": {
@@ -319,7 +319,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
         "return_value": "(False, 'Mocked Internal Server Error while fetching a domain nodes')"
       },
       "expected_data": {
@@ -345,7 +345,7 @@
       "node": true,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_2darray",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_2darray",
         "return_value": "(False, 'Mocked Internal Server Error while fetching a domain nodes')"
       },
       "expected_data": {
@@ -383,7 +383,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while fetching a domain')"
       },
       "expected_data": {
@@ -409,7 +409,7 @@
       "domain_list": true,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while fetching a domain')"
       },
       "expected_data": {
@@ -518,7 +518,7 @@
       },
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error')"
       },
       "expected_data": {

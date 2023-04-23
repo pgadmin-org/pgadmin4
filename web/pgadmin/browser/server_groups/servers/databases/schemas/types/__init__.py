@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,9 +11,9 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 import re
 
 import pgadmin.browser.server_groups.servers.databases as database
@@ -63,7 +63,7 @@ class TypeModule(SchemaChildModule):
             *args:
             **kwargs:
         """
-        super(TypeModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -217,7 +217,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     })
 
     keys_to_ignore = ['oid', 'typnamespace', 'typrelid', 'typarray', 'alias',
-                      'schema', 'oid-2', 'type_acl', 'rngcollation', 'attnum']
+                      'schema', 'oid-2', 'type_acl', 'rngcollation', 'attnum',
+                      'typowner']
 
     def check_precondition(f):
         """
@@ -233,15 +234,6 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-
-            # We need datlastsysoid to check if current type is system type
-            self.datlastsysoid = 0
-            if (
-                self.manager.db_info is not None and
-                kwargs['did'] in self.manager.db_info
-            ):
-                self.datlastsysoid = self.manager.db_info[kwargs['did']][
-                    'datlastsysoid']
 
             # Declare allows acl on type
             self.acl = ['U']
@@ -277,7 +269,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         SQL = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects)
 
         status, res = self.conn.execute_dict(SQL)
@@ -603,7 +595,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.template_path,
                       self._PROPERTIES_SQL]),
             scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -753,7 +745,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  subtype=True)
+                                  subtype=True, conn=self.conn)
             status, rset = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -783,7 +775,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  subtype_opclass=True, data=data)
+                                  subtype_opclass=True, data=data,
+                                  conn=self.conn)
             if SQL:
                 status, rset = self.conn.execute_2darray(SQL)
                 if not status:
@@ -814,7 +807,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         try:
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  get_opcintype=True, data=data)
+                                  get_opcintype=True, data=data,
+                                  conn=self.conn)
             if SQL:
                 status, opcintype = self.conn.execute_scalar(SQL)
                 if not status:
@@ -855,7 +849,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # else we will disable the combobox
             SQL = render_template("/".join([self.template_path,
                                             self._GET_SUBTYPES_SQL]),
-                                  getoid=True, data=data)
+                                  getoid=True, data=data, conn=self.conn)
             if SQL:
                 status, oid = self.conn.execute_scalar(SQL)
                 if not status:
@@ -1009,7 +1003,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
            tid: Type ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_error, errmsg = TypeView._checks_for_create_type(data)
@@ -1048,7 +1042,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 # we need scid to update in browser tree
                 SQL = render_template("/".join([self.template_path,
                                                 'get_scid.sql']),
-                                      schema=data['schema'])
+                                      schema=data['schema'], conn=self.conn)
                 status, scid = self.conn.execute_scalar(SQL)
                 if not status:
                     return internal_server_error(errormsg=scid)
@@ -1056,7 +1050,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # we need oid to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  scid=scid, data=data)
+                                  scid=scid, data=data, conn=self.conn)
             status, tid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=tid)
@@ -1086,7 +1080,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             SQL, name = self.get_sql(gid, sid, data, scid, tid)
@@ -1099,7 +1093,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 return internal_server_error(errormsg=res)
 
             SQL = render_template("/".join([self.template_path,
-                                            'get_scid.sql']), tid=tid)
+                                            'get_scid.sql']),
+                                  tid=tid, conn=self.conn)
 
             # Get updated schema oid
             status, scid = self.conn.execute_scalar(SQL)
@@ -1126,7 +1121,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if tid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [tid]}
@@ -1156,7 +1151,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     "/".join([self.template_path,
                               self._PROPERTIES_SQL]),
                     scid=scid, tid=tid,
-                    datlastsysoid=self.datlastsysoid,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                     show_system_objects=self.blueprint.show_system_objects
                 )
                 status, res = self.conn.execute_dict(sql)
@@ -1222,7 +1217,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         # converting nested request data in proper json format
         for key, val in req.items():
             if key in ['composite', 'enum', 'seclabels', 'typacl']:
-                data[key] = json.loads(val, encoding='utf-8')
+                data[key] = json.loads(val)
             else:
                 data[key] = val
 
@@ -1362,7 +1357,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.template_path,
                       self._PROPERTIES_SQL]),
             scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -1430,7 +1425,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             "/".join([self.template_path,
                       self._PROPERTIES_SQL]),
             scid=scid, tid=tid,
-            datlastsysoid=self.datlastsysoid,
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects
         )
         status, res = self.conn.execute_dict(SQL)
@@ -1550,7 +1545,9 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         res = dict()
         SQL = render_template("/".join([self.template_path,
                                         self._NODES_SQL]),
-                              scid=scid, datlastsysoid=self.datlastsysoid)
+                              scid=scid,
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

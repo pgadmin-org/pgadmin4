@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,17 +12,66 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 
 import { getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
-import _ from 'underscore';
+import _ from 'lodash';
 import getApiInstance from 'sources/api_instance';
 import { isEmptyString } from 'sources/validators';
 
+function isTlengthEditable(state, options) {
+  // We will store type from selected from combobox
+  let of_type = state.type;
+  // iterating over all the types
+  _.each(options, function(o) {
+    // if type from selected from combobox matches in options
+    if ( of_type == o.value ) {
+      // if length is allowed for selected type
+      if(o.length)
+      {
+        // set the values in state
+        state.is_tlength = true;
+        state.min_val = o.min_val;
+        state.max_val = o.max_val;
+      } else {
+        // set the values in state
+        state.is_tlength = false;
+      }
+    }
+  });
+  return state.is_tlength;
+}
+
+function isPrecisionEditable(state, options) {
+  // We will store type from selected from combobox
+  let of_type = state.type;
+  // iterating over all the types
+  _.each(options, function(o) {
+    // if type from selected from combobox matches in options
+    if ( of_type == o.value ) {
+      // if precession is allowed for selected type
+      if(o.precision)
+      {
+        // set the values in model
+        state.is_precision = true;
+        state.min_val = o.min_val;
+        state.max_val = o.max_val;
+      } else {
+        // set the values in model
+        state.is_precision = false;
+      }
+    }
+  });
+  return state.is_precision;
+}
+
+function getTypes(nodeObj, treeNodeInfo, itemNodeData) {
+  return getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
+    cacheLevel: 'domain'
+  });
+}
 
 function getCompositeSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new CompositeSchema(
     {
-      types: () => getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
-        cacheLevel: 'domain'
-      }),
+      types: () => { return getTypes(nodeObj, treeNodeInfo, itemNodeData); },
       collations: () => getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData)
     }
   );
@@ -36,12 +85,12 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
         return new Promise((resolve, reject)=>{
           const api = getApiInstance();
 
-          var _url = nodeObj.generate_url.apply(
+          let _url = nodeObj.generate_url.apply(
             nodeObj, [
               null, 'get_subopclass', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data;
+          let data;
 
           if(!_.isUndefined(typname) && typname != ''){
             api.get(_url, {
@@ -64,12 +113,12 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
         return new Promise((resolve, reject)=>{
           const api = getApiInstance();
 
-          var _url = nodeObj.generate_url.apply(
+          let _url = nodeObj.generate_url.apply(
             nodeObj, [
               null, 'get_canonical', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data = [];
+          let data = [];
 
           if(!_.isUndefined(name) && name != '' && name != null){
             api.get(_url, {
@@ -91,12 +140,12 @@ function getRangeSchema(nodeObj, treeNodeInfo, itemNodeData) {
         return new Promise((resolve, reject)=>{
           const api = getApiInstance();
 
-          var _url = nodeObj.generate_url.apply(
+          let _url = nodeObj.generate_url.apply(
             nodeObj, [
               null, 'get_stypediff', itemNodeData, false,
               treeNodeInfo,
             ]);
-          var data;
+          let data;
 
           if(!_.isUndefined(typname) && typname != '' &&
               !_.isUndefined(opcname) && opcname != ''){
@@ -126,9 +175,7 @@ function getExternalSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new ExternalSchema(
     {
       externalFunctionsList: () => getNodeAjaxOptions('get_external_functions', nodeObj, treeNodeInfo, itemNodeData),
-      types: () => getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
-        cacheLevel: 'domain'
-      })
+      types: () => { return getTypes(nodeObj, treeNodeInfo, itemNodeData); },
     }, {
       node_info: treeNodeInfo
     }
@@ -138,11 +185,13 @@ function getExternalSchema(nodeObj, treeNodeInfo, itemNodeData) {
 function getDataTypeSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new DataTypeSchema(
     {
-      types: () => getNodeAjaxOptions('get_types', nodeObj, treeNodeInfo, itemNodeData, {
-        cacheLevel: 'domain'
-      })
+      types: () => { return getTypes(nodeObj, treeNodeInfo, itemNodeData); }
     }
   );
+}
+
+function isVisible(state, type) {
+  return state.typtype === type;
 }
 
 class EnumerationSchema extends BaseUISchema {
@@ -159,7 +208,7 @@ class EnumerationSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [
       {
         id: 'label', label: gettext('Label'),
@@ -173,7 +222,7 @@ class EnumerationSchema extends BaseUISchema {
 }
 
 class RangeSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, node_info, initValues) {
+  constructor(fieldOptions = {}, node_info={}, initValues={}) {
     super({
       typname: null,
       oid: undefined,
@@ -195,7 +244,7 @@ class RangeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       // We will disable range type control in edit mode
       id: 'typname', label: gettext('Subtype'),
@@ -249,18 +298,7 @@ class RangeSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -277,18 +315,7 @@ class RangeSchema extends BaseUISchema {
             placeholder: '',
             width: '100%',
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -303,7 +330,7 @@ class RangeSchema extends BaseUISchema {
           return disableCollNameControl;
 
         // To check if collation is allowed?
-        var of_subtype = state.typname;
+        let of_subtype = state.typname;
         if(!_.isUndefined(of_subtype)) {
           // iterating over all the types
           _.each(state.subtypes, function(s) {
@@ -336,18 +363,7 @@ class RangeSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -377,18 +393,7 @@ class RangeSchema extends BaseUISchema {
           controlProps: {
             allowClear: true,
             filter: (options) => {
-              let res = [];
-              if (state) {
-                options.forEach((option) => {
-                  if(option && option.label == '') {
-                    return;
-                  }
-                  res.push({ label: option.label, value: option.value });
-                });
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.getFilterOptions(state, options);
             }
           }
         };
@@ -412,7 +417,7 @@ class RangeSchema extends BaseUISchema {
 }
 
 class ExternalSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, node_info, initValues) {
+  constructor(fieldOptions = {}, node_info={}, initValues={}) {
     super({
       name: null,
       typinput: undefined,
@@ -465,7 +470,7 @@ class ExternalSchema extends BaseUISchema {
 
   // Function will help us to fill combobox
   external_func_combo(control) {
-    var result = [];
+    let result = [];
     _.each(control, function(item) {
 
       if(item && item.label == '') {
@@ -479,8 +484,35 @@ class ExternalSchema extends BaseUISchema {
     return result;
   }
 
+  filterFunctionOptions(state, options) {
+    let res = [];
+    if (state && this.isNew(state)) {
+      res = this.external_func_combo(options);
+    } else {
+      res = options;
+    }
+    return res;
+  }
+
+  getFunctionType(state) {
+    let obj = this;
+    return {
+      type: 'select',
+      options: obj.fieldOptions.externalFunctionsList,
+      optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
+      controlProps: {
+        allowClear: true,
+        placeholder: '',
+        width: '100%',
+        filter: (options) => {
+          return obj.filterFunctionOptions(state, options);
+        }
+      }
+    };
+  }
+
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'spacer_ctrl', group: gettext('Required'), mode: ['edit', 'create'], type: 'spacer',
     },{
@@ -491,50 +523,14 @@ class ExternalSchema extends BaseUISchema {
         return !obj.isNew(state);
       },
       type: (state) => {
-        return {
-          type: 'select',
-          options: obj.fieldOptions.externalFunctionsList,
-          optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
-          controlProps: {
-            allowClear: true,
-            placeholder: '',
-            width: '100%',
-            filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
-            }
-          }
-        };
+        return obj.getFunctionType(state);
       },
     }, {
       id: 'typoutput', label: gettext('Output function'),
       mode: ['properties', 'create', 'edit'],
       group: gettext('Required'),
       type: (state) => {
-        return {
-          type: 'select',
-          options: obj.fieldOptions.externalFunctionsList,
-          optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
-          controlProps: {
-            allowClear: true,
-            placeholder: '',
-            width: '100%',
-            filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
-            }
-          }
-        };
+        return obj.getFunctionType(state);
       },
       readonly: function (state) {
         return !obj.isNew(state);
@@ -586,13 +582,7 @@ class ExternalSchema extends BaseUISchema {
             placeholder: '',
             width: '100%',
             filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
+              return obj.filterFunctionOptions(state, options);
             }
           }
         };
@@ -705,25 +695,7 @@ class ExternalSchema extends BaseUISchema {
       id: 'typanalyze', label: gettext('Analyze function'),
       group: gettext('Optional-1'),
       type: (state) => {
-        return {
-          type: 'select',
-          options: obj.fieldOptions.externalFunctionsList,
-          optionsLoaded: (options) => { obj.fieldOptions.externalFunctionsList = options; },
-          controlProps: {
-            allowClear: true,
-            placeholder: '',
-            width: '100%',
-            filter: (options) => {
-              let res = [];
-              if (state && obj.isNew(state)) {
-                res = obj.external_func_combo(options);
-              } else {
-                res = options;
-              }
-              return res;
-            }
-          }
-        };
+        return obj.getFunctionType(state);
       },
       mode: ['properties', 'create','edit'],
       disabled: () => obj.inCatalog(),
@@ -872,7 +844,7 @@ class ExternalSchema extends BaseUISchema {
 }
 
 class CompositeSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       oid: undefined,
       is_sys_type: false,
@@ -908,8 +880,16 @@ class CompositeSchema extends BaseUISchema {
     return 'oid';
   }
 
+  onTypeChange(state, changeSource) {
+    if(_.isArray(changeSource) && changeSource[2] == 'type') {
+      return {...state
+        , value: null
+      };
+    }
+  }
+
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'member_name', label: gettext('Member Name'),
       type: 'text', cell: 'text'
@@ -939,31 +919,9 @@ class CompositeSchema extends BaseUISchema {
           };
         }
       },
-      editable: (state) => {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if(obj.type_options) {
-          // iterating over all the types
-          _.each(obj.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-              // if length is allowed for selected type
-              if(o.length)
-              {
-                // set the values in state
-                state.is_tlength = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in state
-                state.is_tlength = false;
-              }
-              return;
-            }
-          });
-        }
-        return state.is_tlength;
-      },
+      editable: (state)=>{
+        return isTlengthEditable(state, obj.type_options);
+      }
     }, {
       // Note: There are ambiguities in the PG catalogs and docs between
       // precision and scale. In the UI, we try to follow the docs as
@@ -971,44 +929,15 @@ class CompositeSchema extends BaseUISchema {
       id: 'precision', label: gettext('Scale'), deps: ['type'],
       type: 'text', disabled: false, cell: 'int',
       depChange: (state, changeSource)=>{
-        if(_.isArray(changeSource) && changeSource[2] == 'type') {
-          return {...state
-            , value: null
-          };
-        }
+        return obj.onTypeChange(state, changeSource);
       },
       editable: (state) => {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if(obj.type_options) {
-          // iterating over all the types
-          _.each(obj.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-              // if precession is allowed for selected type
-              if(o.precision)
-              {
-                // set the values in state
-                state.is_precision = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in state
-                state.is_precision = false;
-              }
-            }
-          });
-        }
-        return state.is_precision;
+        return isPrecisionEditable(state, obj.type_options);
       },
     }, {
       id: 'collation', label: gettext('Collation'), type: 'text',
       depChange: (state, changeSource)=>{
-        if(_.isArray(changeSource) && changeSource[2] == 'type') {
-          return {...state
-            , value: null
-          };
-        }
+        return obj.onTypeChange(state, changeSource);
       },
       cell: ()=>({
         cell: 'select', options: obj.fieldOptions.collations,
@@ -1019,8 +948,8 @@ class CompositeSchema extends BaseUISchema {
       deps: ['type'],
       editable: (state) => {
         // We will store type from selected from combobox
-        var of_type = state.type;
-        var flag = false;
+        let of_type = state.type;
+        let flag = false;
         if(obj.type_options) {
           // iterating over all the types
           _.each(obj.type_options, function(o) {
@@ -1054,9 +983,8 @@ class CompositeSchema extends BaseUISchema {
         return true;
       }
       if(_.isUndefined(errmsg) || errmsg == null) {
-        errmsg = null;
-        setError('member_name', errmsg);
-        setError('type', errmsg);
+        setError('member_name', null);
+        setError('type', null);
       }
     }
     return false;
@@ -1065,7 +993,7 @@ class CompositeSchema extends BaseUISchema {
 
 class DataTypeSchema extends BaseUISchema {
 
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       oid: undefined,
       is_sys_type: false,
@@ -1095,7 +1023,7 @@ class DataTypeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var dataTypeObj = this;
+    let dataTypeObj = this;
     return [{
       id: 'type',
       label: gettext('Data Type'),
@@ -1117,7 +1045,7 @@ class DataTypeSchema extends BaseUISchema {
           controlProps: {
             allowClear: false,
             filter: (options) => {
-              var data_types = [];
+              let data_types = [];
               options.forEach((option) => {
                 if (!(option.value.includes('[]'))) {
                   data_types.push(option);
@@ -1140,9 +1068,7 @@ class DataTypeSchema extends BaseUISchema {
       readonly: function (state) {
         return !dataTypeObj.isNew(state);
       },
-      visible: function (state) {
-        return state.typtype === 'V';
-      }
+      visible: (state) => isVisible(state, 'V'),
     },{
     // Note: There are ambiguities in the PG catalogs and docs between
     // precision and scale. In the UI, we try to follow the docs as
@@ -1157,12 +1083,10 @@ class DataTypeSchema extends BaseUISchema {
       readonly: function (state) {
         return !dataTypeObj.isNew(state);
       },
-      visible: function (state) {
-        return state.typtype === 'N';
-      },
+      visible: (state) => isVisible(state, 'N'),
       disabled: function(state) {
 
-        var of_type = state.type,
+        let of_type = state.type,
           flag = true;
         if (state.type_options) {
           _.each(state.type_options, function (o) {
@@ -1182,28 +1106,9 @@ class DataTypeSchema extends BaseUISchema {
         }, 10);
         return flag;
       },
-      editable: function(state) {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if (state.type_options) {
-          // iterating over all the types
-          _.each(state.type_options, function (o) {
-          // if type from selected from combobox matches in options
-            if (of_type == o.value) {
-              // if length is allowed for selected type
-              if (o.length) {
-                // set the values in state
-                state.is_tlength = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in staet
-                state.is_tlength = false;
-              }
-            }
-          });
-        }
-        return state.is_tlength;
+      editable: (state)=>{
+        let options = state.type_options;
+        return isTlengthEditable(state, options);
       }
     },{
       // Note: There are ambiguities in the PG catalogs and docs between
@@ -1219,11 +1124,9 @@ class DataTypeSchema extends BaseUISchema {
         return !dataTypeObj.isNew(state);
       },
       cell: 'int',
-      visible: function (state) {
-        return state.typtype === 'N';
-      },
+      visible: (state) => isVisible(state, 'N'),
       disabled: function(state) {
-        var of_type = state.type,
+        let of_type = state.type,
           flag = true;
         _.each(state.type_options, function(o) {
           if ( of_type == o.value ) {
@@ -1243,35 +1146,15 @@ class DataTypeSchema extends BaseUISchema {
         return flag;
       },
       editable: function(state) {
-        // We will store type from selected from combobox
-        var of_type = state.type;
-        if(state.type_options) {
-          // iterating over all the types
-          _.each(state.type_options, function(o) {
-            // if type from selected from combobox matches in options
-            if ( of_type == o.value ) {
-              // if precession is allowed for selected type
-              if(o.precision)
-              {
-                // set the values in model
-                state.is_precision = true;
-                state.min_val = o.min_val;
-                state.max_val = o.max_val;
-              } else {
-                // set the values in model
-                state.is_precision = false;
-              }
-            }
-          });
-        }
-        return state.is_precision;
+        let options = state.type_options;
+        return isPrecisionEditable(state, options);
       },
     }];
   }
 }
 
 export default class TypeSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getCompositeSchema, getRangeSchema, getExternalSchema, getDataTypeSchema, fieldOptions = {}, initValues) {
+  constructor(getPrivilegeRoleSchema, compositeSchema, rangeSchema, externalSchema, dataTypeSchema, fieldOptions = {}, initValues={}) {
     super({
       name: null,
       oid: undefined,
@@ -1289,10 +1172,10 @@ export default class TypeSchema extends BaseUISchema {
       ...fieldOptions
     };
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
-    this.compositeSchema = getCompositeSchema(); // create only once the composite schema to avoid initializing the current (i.e. top)
-    this.getRangeSchema = getRangeSchema;
-    this.getExternalSchema = getExternalSchema;
-    this.getDataTypeSchema = getDataTypeSchema;
+    this.compositeSchema = compositeSchema(); // create only once the composite schema to avoid initializing the current (i.e. top)
+    this.getRangeSchema = rangeSchema;
+    this.getExternalSchema = externalSchema;
+    this.getDataTypeSchema = dataTypeSchema;
     this.nodeInfo = this.fieldOptions.node_info;
   }
 
@@ -1307,7 +1190,6 @@ export default class TypeSchema extends BaseUISchema {
       tempCol.forEach(function(enumVal) {
         if(enumVal == undefined) {
           dontAddColumn = true;
-          return;
         }
       });
     }
@@ -1315,8 +1197,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   schemaCheck(state) {
-    if(this.fieldOptions.node_info && 'schema' in this.fieldOptions.node_info)
-    {
+    if(this.fieldOptions.node_info && this.fieldOptions.node_info?.schema) {
       if(!state)
         return true;
       if (this.isNew(state)) {
@@ -1333,7 +1214,7 @@ export default class TypeSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'name', label: gettext('Name'), cell: 'string',
       type: 'text', mode: ['properties', 'create', 'edit'],
@@ -1388,7 +1269,7 @@ export default class TypeSchema extends BaseUISchema {
       },
       controlProps: { allowClear: false },
       options: function() {
-        var typetype = [
+        let typetype = [
           {label: gettext('Composite'), value: 'c'},
           {label: gettext('Enumeration'), value: 'e'},
           {label: gettext('External'), value: 'b'},
@@ -1419,9 +1300,7 @@ export default class TypeSchema extends BaseUISchema {
           state.composite.splice(0, state.composite.length);
         }
       },
-      visible: (state) => {
-        return state.typtype === 'c';
-      },
+      visible: (state) => isVisible(state, 'c'),
     },
     {
       id: 'enum', label: gettext('Enumeration type'),
@@ -1440,9 +1319,7 @@ export default class TypeSchema extends BaseUISchema {
       disabled: () => obj.inCatalog(),
       deps: ['typtype'],
       uniqueCol : ['label'],
-      visible: function(state) {
-        return state.typtype === 'e';
-      },
+      visible: (state) => isVisible(state, 'e'),
     }, {
       type: 'nested-fieldset',
       group: gettext('Definition'),
@@ -1459,9 +1336,7 @@ export default class TypeSchema extends BaseUISchema {
       group: gettext('Definition'),
       label: '',
       mode: ['edit', 'create'],
-      visible: (state) => {
-        return state.typtype && state.typtype === 'r';
-      },
+      visible: (state) => isVisible(state, 'r'),
       deps: ['typtype'],
       schema: obj.getRangeSchema(),
     }, {
@@ -1469,9 +1344,7 @@ export default class TypeSchema extends BaseUISchema {
       group: gettext('Definition'),
       label: gettext('External Type'), deps: ['typtype'],
       mode: ['create', 'edit'], tabPanelExtraClasses:'inline-tab-panel-padded',
-      visible: function(state) {
-        return state.typtype === 'b';
-      },
+      visible: (state) => isVisible(state, 'b'),
       schema: obj.getExternalSchema(),
     },
     {
@@ -1483,143 +1356,80 @@ export default class TypeSchema extends BaseUISchema {
       id: 'member_list', label: gettext('Members'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'c') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'c'),
     },{
       id: 'enum_list', label: gettext('Labels'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'e') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'e'),
     },
     {
       id: 'typname', label: gettext('SubType'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'opcname', label: gettext('Subtype operator class'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'collname', label: gettext('Collation'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'rngcanonical', label: gettext('Canonical function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'rngsubdiff', label: gettext('Subtype diff function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'r') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'r'),
     },
     {
       id: 'typinput', label: gettext('Input function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'b') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'b'),
     },
     {
       id: 'typoutput', label: gettext('Output function'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'b') {
-          return true;
-        }
-        return false;
-      },
+      visible: (state) => isVisible(state, 'b'),
     },
     {
       id: 'type', label: gettext('Data Type'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
       visible: function(state) {
-        if(state.typtype === 'N' || state.typtype === 'V') {
-          return true;
-        }
-        return false;
+        return state.typtype === 'N' || state.typtype === 'V';
       }
     },
     {
       id: 'tlength', label: gettext('Length/Precision'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'N') {
-          return true;
-        }
-        return false;
-      }
+      visible: (state) => isVisible(state, 'N'),
     },
     {
       id: 'precision', label: gettext('Scale'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'N') {
-          return true;
-        }
-        return false;
-      }
+      visible: (state) => isVisible(state, 'N'),
     },
     {
       id: 'maxsize', label: gettext('Size'), cell: 'string',
       type: 'text', mode: ['properties'], group: gettext('Definition'),
       disabled: () => obj.inCatalog(),
-      visible: function(state) {
-        if(state.typtype === 'V') {
-          return true;
-        }
-        return false;
-      }
+      visible: (state) => isVisible(state, 'V'),
     },
     {
       id: 'type_acl', label: gettext('Privileges'), cell: 'string',
@@ -1646,7 +1456,7 @@ export default class TypeSchema extends BaseUISchema {
         // Do not allow to add when shell type is selected
         // Clear acl & security label collections as well
         if (state.typtype === 'p') {
-          var acl = state.typacl;
+          let acl = state.typacl;
           if(acl && acl.length > 0)
             acl.splice(0, acl.length);
         }
@@ -1664,7 +1474,7 @@ export default class TypeSchema extends BaseUISchema {
         // Do not allow to add when shell type is selected
         // Clear acl & security label collections as well
         if (state.typtype === 'p') {
-          var secLabs = state.seclabels;
+          let secLabs = state.seclabels;
           if(secLabs && secLabs.length > 0)
             secLabs.splice(0, secLabs.length);
         }

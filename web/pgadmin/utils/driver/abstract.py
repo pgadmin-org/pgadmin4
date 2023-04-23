@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,22 +10,18 @@
 """Implement the Base class for Driver and Connection"""
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-
-import six
-
 from .registry import DriverRegistry
 
 
-@six.add_metaclass(DriverRegistry)
-class BaseDriver(object):
+class BaseDriver(metaclass=DriverRegistry):
     """
-    class BaseDriver(object):
+    class BaseDriver():
 
     This is a base class for different server types.
     Inherit this class to implement different type of database driver
     implementation.
 
-    (For PostgreSQL/EDB Postgres Advanced Server, we will be using psycopg2)
+    (For PostgreSQL/EDB Postgres Advanced Server, we will be using psycopg)
 
     Abstract Properties:
     -------- ----------
@@ -50,11 +46,13 @@ class BaseDriver(object):
       configuration.
     """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def version(cls):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def libpq_version(cls):
         pass
 
@@ -71,10 +69,9 @@ class BaseDriver(object):
         pass
 
 
-@six.add_metaclass(ABCMeta)
-class BaseConnection(object):
+class BaseConnection(metaclass=ABCMeta):
     """
-    class BaseConnection(object)
+    class BaseConnection()
 
         It is a base class for database connection. A different connection
         drive must implement this to expose abstract methods for this server.

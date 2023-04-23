@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,9 +11,9 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
 import pgadmin.browser.server_groups.servers.databases as database
 from config import PG_DEFAULT_DRIVER
@@ -56,7 +56,7 @@ class SequenceModule(SchemaChildModule):
     _COLLECTION_LABEL = _("Sequences")
 
     def __init__(self, *args, **kwargs):
-        super(SequenceModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -139,10 +139,6 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     self.conn = self.manager.connection(did=kwargs['did'])
                 else:
                     self.conn = self.manager.connection()
-                self.datlastsysoid = \
-                    self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                    if self.manager.db_info is not None and \
-                    kwargs['did'] in self.manager.db_info else 0
                 self.datistemplate = False
                 if (
                     self.manager.db_info is not None and
@@ -208,10 +204,17 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         res = []
+        show_internal = False
+        # If show_system_objects is true then no need to hide any sequences.
+        if self.blueprint.show_system_objects:
+            show_internal = True
+
         SQL = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             scid=scid,
-            seid=seid
+            seid=seid,
+            show_internal=show_internal,
+            conn=self.conn
         )
         status, rset = self.conn.execute_dict(SQL)
         if not status:
@@ -231,8 +234,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 status=200
             )
 
-        sequence_nodes = self._get_sequence_nodes(rset['rows'])
-        for row in sequence_nodes:
+        for row in rset['rows']:
             res.append(
                 self.blueprint.generate_browser_node(
                     row['oid'],
@@ -315,7 +317,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         for row in res['rows']:
             sql = render_template(
@@ -386,7 +389,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -431,7 +434,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._OID_SQL]),
             name=data['name'],
-            schema=data['schema']
+            schema=data['schema'],
+            conn=self.conn
         )
         sql = sql.strip('\n').strip(' ')
 
@@ -467,7 +471,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if seid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [seid]}
@@ -531,7 +535,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         sql, name = self.get_SQL(gid, sid, did, data, scid, seid)
         # Most probably this is due to error
@@ -546,7 +550,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
-            seid=seid
+            seid=seid,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
@@ -583,7 +588,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -897,7 +902,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     'schemas/pg/#{0}#/sql/get_name.sql'.format(
                         self.manager.version
                     ),
-                    scid=scid
+                    scid=scid,
+                    conn=self.conn
                 )
             )
             if not status:
@@ -932,7 +938,9 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         sql = render_template("/".join([self.template_path,
-                                        self._NODES_SQL]), scid=scid)
+                                        self._NODES_SQL]), scid=scid,
+                              schema_diff=True,
+                              conn=self.conn)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=res)

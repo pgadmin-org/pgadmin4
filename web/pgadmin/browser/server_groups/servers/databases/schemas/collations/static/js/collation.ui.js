@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import gettext from 'sources/gettext';
 import { isEmptyString } from 'sources/validators';
 
 export default class CollationSchema extends BaseUISchema {
-  constructor(fieldOptions = {},initValues) {
+  constructor(fieldOptions = {},initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -79,9 +79,7 @@ export default class CollationSchema extends BaseUISchema {
           // Enable copy_collation only if locale & lc_* is not provided
           if (state.locale)
             return true;
-          if (state.lc_collate || state.lc_type)
-            return true;
-          return false;
+          return state.lc_collate || state.lc_type;
         },
         deps: ['locale', 'lc_collate', 'lc_type'],
       },
@@ -94,9 +92,7 @@ export default class CollationSchema extends BaseUISchema {
           // Enable localy only if lc_* & copy_collation is not provided
           if (state.lc_collate || state.lc_type)
             return true;
-          if (state.copy_collation)
-            return true;
-          return false;
+          return state.copy_collation;
         }
       },
       {

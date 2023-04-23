@@ -2,20 +2,20 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 
-import { getNodeAjaxOptions,getNodeListByName } from '../../../../../../static/js/node_ajax';
+import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
 import ExtensionsSchema from './extension.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.extension', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   /*
    * Create and Add an Extension Collection into nodes
@@ -76,134 +76,28 @@ define('pgadmin.node.extension', [
           name: 'create_extension_on_coll', node: 'coll-extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_extension', node: 'extension', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_extension', node: 'database', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Extension...'),
-          icon: 'wcTabIcon icon-extension', data: {action: 'create'},
+          data: {action: 'create'},
           enable: pgBrowser.Nodes['database'].is_conn_allow,
         },
         ]);
       },
 
-      /*
-       * Define model for the Node and specify the properties
-       * of the model in schema.
-       */
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [
-          {
-            id: 'name', label: gettext('Name'), first_empty: true,
-            type: 'text', mode: ['properties', 'create', 'edit'],
-            visible: true, url:'avails', readonly: function(m) {
-              return !m.isNew();
-            },
-            transform: function(data, cell) {
-              var res = [],
-                control = cell || this,
-                label = control.model.get('name');
-
-              if (!control.model.isNew()) {
-                res.push({label: label, value: label});
-              }
-              else {
-                if (data && _.isArray(data)) {
-                  _.each(data, function(d) {
-                    if (d.installed_version === null)
-
-                      /*
-                       * d contains json data and sets into
-                       * select's option control
-                       *
-                       * We need to stringify data because formatter will
-                       * convert Array Object as [Object] string
-                       */
-                      res.push({label: d.name, value: JSON.stringify(d)});
-                  });
-                }
-              }
-              return res;
-            },
-
-            /*
-             * extends NodeAjaxOptionsControl to override the properties
-             * getValueFromDOM which takes stringified data from option of
-             * select control and parse it. And `onChange` takes the stringified
-             * data from select's option, thus convert it to json format and set the
-             * data into Model which is used to enable/disable the schema field.
-             */
-            control: Backform.NodeAjaxOptionsControl.extend({
-              getValueFromDOM: function() {
-                var data = this.formatter.toRaw(
-                  _.unescape(this.$el.find('select').val()), this.model);
-                /*
-                 * return null if data is empty to prevent it from
-                 * throwing parsing error. Adds check as name can be empty
-                 */
-                if (data === '') {
-                  return null;
-                }
-                else if (typeof(data) === 'string') {
-                  data=JSON.parse(data);
-                }
-                return data.name;
-              },
-
-              /*
-               * When name is changed, extract value from its select option and
-               * set attributes values into the model
-               */
-              onChange: function() {
-                Backform.NodeAjaxOptionsControl.prototype.onChange.apply(
-                  this, arguments
-                );
-                var selectedValue = this.$el.find('select').val();
-                if (selectedValue.trim() != '') {
-                  var d = this.formatter.toRaw(selectedValue, this.model);
-                  if(typeof(d) === 'string')
-                    d=JSON.parse(d);
-                  this.model.set({
-                    'version' : '',
-                    'relocatable': (
-                      (!_.isNull(d.relocatable[0]) &&
-                        !_.isUndefined(d.relocatable[0])) ? d.relocatable[0]: ''
-                    ),
-                  });
-                } else {
-                  this.model.set({
-                    'version': '', 'relocatable': true, 'schema': '',
-                  });
-                }
-              },
-            }),
-          },
-          {
-            id: 'oid', label: gettext('OID'), cell: 'string',
-            type: 'text', mode: ['properties'],
-          },
-          {
-            id: 'owner', label: gettext('Owner'), control: 'node-list-by-name',
-            mode: ['properties'], node: 'role', cell: 'string',
-            cache_level: 'server',
-          },
-          {
-            id: 'comment', label: gettext('Comment'), cell: 'string',
-            type: 'multiline', readonly: true,
-          },
-        ],
-      }),
       getSchema: (treeNodeInfo, itemNodeData)=>{
         let nodeObj = pgAdmin.Browser.Nodes['extension'];
-        let schema = new ExtensionsSchema(
+        return new ExtensionsSchema(
           {
-            extensionsList:()=>getNodeAjaxOptions('avails', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'}, 
+            role:()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
+            extensionsList:()=>getNodeAjaxOptions('avails', nodeObj, treeNodeInfo, itemNodeData, { cacheLevel: 'server'},
               (data)=>{
                 let res = [];
                 if (data && _.isArray(data)) {
@@ -216,7 +110,6 @@ define('pgadmin.node.extension', [
             schemaList:()=>getNodeListByName('schema', treeNodeInfo, itemNodeData)
           }
         );
-        return schema;
       }
     });
   }

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,14 +13,14 @@ import config
 import copy
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.preferences import Preferences
 from werkzeug.exceptions import InternalServerError
 from pgadmin.utils.constants import BINARY_PATHS
 from pgadmin.utils import set_binary_path, replace_binary_path
 
 
-class ServerType(object):
+class ServerType():
     """
     Server Type
 
@@ -42,7 +42,7 @@ class ServerType(object):
         self.spriority = priority
         self.utility_path = None
 
-        assert (server_type not in ServerType.registry)
+        assert server_type not in ServerType.registry
         ServerType.registry[server_type] = self
 
     @property
@@ -61,6 +61,36 @@ class ServerType(object):
     def register_preferences(cls):
         paths = Preferences('paths', _('Paths'))
         bin_paths = copy.deepcopy(BINARY_PATHS)
+
+        def path_converter(old_path):
+            """
+            This function is used to convert old path to the
+            new paths which are in JSON format.
+            """
+            bin_paths_server_based = \
+                copy.deepcopy(BINARY_PATHS['pg_bin_paths'])
+            if key == 'ppas':
+                bin_paths_server_based = \
+                    copy.deepcopy(BINARY_PATHS['as_bin_paths'])
+
+            if not ServerType.is_binary_path_of_type_json(old_path):
+                set_binary_path(old_path, bin_paths_server_based,
+                                key, set_as_default=True)
+            else:
+                bin_path_dict = \
+                    {item['version']: item for item in bin_paths_server_based}
+                old_path_dict = \
+                    {item['version']: item for item in json.loads(old_path)}
+
+                for item in bin_path_dict:
+                    bin_path_dict[item].update(old_path_dict.get(item, {}))
+
+                bin_paths_server_based = list(bin_path_dict.values())
+
+            # Set the DEFAULT_BINARY_PATHS if any
+            ServerType.set_default_binary_path(bin_paths_server_based, key)
+
+            return json.dumps(bin_paths_server_based)
 
         for key in cls.registry:
             st = cls.registry[key]
@@ -91,28 +121,6 @@ class ServerType(object):
                     category_label=_('Binary paths')
                 )
 
-            def path_converter(old_path):
-                """
-                This function is used to convert old path to the
-                new paths which are in JSON format.
-                """
-                bin_paths_server_based = \
-                    copy.deepcopy(BINARY_PATHS['pg_bin_paths'])
-                if key == 'ppas':
-                    bin_paths_server_based = \
-                        copy.deepcopy(BINARY_PATHS['as_bin_paths'])
-
-                if not ServerType.is_binary_path_of_type_json(old_path):
-                    set_binary_path(old_path, bin_paths_server_based,
-                                    key, set_as_default=True)
-                else:
-                    bin_paths_server_based = json.loads(old_path)
-
-                # Set the DEFAULT_BINARY_PATHS if any
-                ServerType.set_default_binary_path(bin_paths_server_based, key)
-
-                return json.dumps(bin_paths_server_based)
-
             # Run the migrate user preferences.
             paths.migrate_user_preferences(st.utility_path.pid,
                                            path_converter)
@@ -126,7 +134,7 @@ class ServerType(object):
             self.stype, self.desc, self.spriority
         )
 
-    def instance_of(self, version):
+    def instance_of(self):
         return True
 
     @property

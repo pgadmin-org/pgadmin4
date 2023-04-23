@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -20,7 +20,10 @@ things:
 
 from flask_security import UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.mutable import MutableDict
+import sqlalchemy.types as types
 import uuid
+import json
 
 ##########################################################################
 #
@@ -30,7 +33,7 @@ import uuid
 #
 ##########################################################################
 
-SCHEMA_VERSION = 31
+SCHEMA_VERSION = 35
 
 ##########################################################################
 #
@@ -40,6 +43,7 @@ SCHEMA_VERSION = 31
 
 db = SQLAlchemy()
 USER_ID = 'user.id'
+SERVER_ID = 'server.id'
 
 # Define models
 roles_users = db.Table(
@@ -47,6 +51,26 @@ roles_users = db.Table(
     db.Column('user_id', db.Integer(), db.ForeignKey(USER_ID)),
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
+
+
+class PgAdminDbBinaryString(types.TypeDecorator):
+    """
+    To make binary string storing compatible with both
+    SQLite and PostgreSQL, convert the bin data to hex
+    to store and convert hex back to binary to get
+    """
+    cache_ok = True
+    impl = types.String
+
+    def process_bind_param(self, value, dialect):
+        return value.hex() if hasattr(value, 'hex') \
+            else value
+
+    def process_result_value(self, value, dialect):
+        try:
+            return bytes.fromhex(value)
+        except Exception as _:
+            return value
 
 
 class Version(db.Model):
@@ -70,10 +94,10 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
-    password = db.Column(db.String(256))
+    password = db.Column(PgAdminDbBinaryString())
     active = db.Column(db.Boolean(), nullable=False)
     confirmed_at = db.Column(db.DateTime())
-    masterpass_check = db.Column(db.String(256))
+    masterpass_check = db.Column(PgAdminDbBinaryString())
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
     auth_source = db.Column(db.String(16), unique=True, nullable=False)
@@ -89,7 +113,7 @@ class Setting(db.Model):
     __tablename__ = 'setting'
     user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
     setting = db.Column(db.String(256), primary_key=True)
-    value = db.Column(db.String(1024))
+    value = db.Column(db.Text())
 
 
 class ServerGroup(db.Model):
@@ -127,27 +151,19 @@ class Server(db.Model):
     )
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=True)
-    hostaddr = db.Column(db.String(128), nullable=True)
     port = db.Column(
         db.Integer(),
         db.CheckConstraint('port >= 1 AND port <= 65534'),
         nullable=False)
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
-    password = db.Column(db.String(64), nullable=True)
+    password = db.Column(PgAdminDbBinaryString())
     save_password = db.Column(
         db.Integer(),
         db.CheckConstraint('save_password >= 0 AND save_password <= 1'),
         nullable=False
     )
     role = db.Column(db.String(64), nullable=True)
-    ssl_mode = db.Column(
-        db.String(16),
-        db.CheckConstraint(
-            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', "
-            "'verify-ca', 'verify-full')"
-        ),
-        nullable=False)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
     servers = db.relationship(
@@ -156,20 +172,11 @@ class Server(db.Model):
         lazy='joined'
     )
     db_res = db.Column(db.Text(), nullable=True)
-    passfile = db.Column(db.Text(), nullable=True)
-    sslcert = db.Column(db.Text(), nullable=True)
-    sslkey = db.Column(db.Text(), nullable=True)
-    sslrootcert = db.Column(db.Text(), nullable=True)
-    sslcrl = db.Column(db.Text(), nullable=True)
-    sslcompression = db.Column(
-        db.Integer(),
-        db.CheckConstraint('sslcompression >= 0 AND sslcompression <= 1'),
-        nullable=False
-    )
-    bgcolor = db.Column(db.Text(10), nullable=True)
-    fgcolor = db.Column(db.Text(10), nullable=True)
+    passexec_cmd = db.Column(db.Text(), nullable=True)
+    passexec_expiration = db.Column(db.Integer(), nullable=True)
+    bgcolor = db.Column(db.String(10), nullable=True)
+    fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
-    connect_timeout = db.Column(db.Integer(), nullable=False)
     use_ssh_tunnel = db.Column(
         db.Integer(),
         db.CheckConstraint('use_ssh_tunnel >= 0 AND use_ssh_tunnel <= 1'),
@@ -188,9 +195,11 @@ class Server(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
-    tunnel_password = db.Column(db.String(64), nullable=True)
+    tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
+    cloud_status = db.Column(db.Integer(), nullable=False, default=0)
+    connection_params = db.Column(MutableDict.as_mutable(types.JSON))
 
     @property
     def serialize(self):
@@ -201,33 +210,27 @@ class Server(db.Model):
             "servergroup_id": self.servergroup_id,
             "name": self.name,
             "host": self.host,
-            "hostaddr": self.hostaddr,
             "port": self.port,
             "maintenance_db": self.maintenance_db,
             "username": self.username,
             "password": self.password,
             "save_password": self.save_password,
             "role": self.role,
-            "ssl_mode": self.ssl_mode,
             "comment": self.comment,
             "discovery_id": self.discovery_id,
             "db_res": self.db_res,
-            "passfile": self.passfile,
-            "sslcert": self.sslcert,
-            "sslkey": self.sslkey,
-            "sslrootcert": self.sslrootcert,
-            "sslcrl": self.sslcrl,
-            "sslcompression": self.sslcompression,
+            "passexec_cmd": self.passexec_cmd,
+            "passexec_expiration": self.passexec_expiration,
             "bgcolor": self.bgcolor,
             "fgcolor": self.fgcolor,
             "service": self.service,
-            "connect_timeout": self.connect_timeout,
             "use_ssh_tunnel": self.use_ssh_tunnel,
             "tunnel_host": self.tunnel_host,
             "tunnel_port": self.tunnel_port,
             "tunnel_authentication": self.tunnel_authentication,
             "tunnel_identity_file": self.tunnel_identity_file,
-            "tunnel_password": self.tunnel_password
+            "tunnel_password": self.tunnel_password,
+            "connection_params": self.connection_params
         }
 
 
@@ -324,6 +327,11 @@ class Process(db.Model):
     acknowledge = db.Column(db.String(), nullable=True)
     utility_pid = db.Column(db.Integer, nullable=False)
     process_state = db.Column(db.Integer, nullable=False)
+    server_id = db.Column(
+        db.Integer,
+        db.ForeignKey('server.id'),
+        nullable=True
+    )
 
 
 class Keys(db.Model):
@@ -341,10 +349,10 @@ class QueryHistoryModel(db.Model):
         db.Integer, db.ForeignKey(USER_ID), nullable=False, primary_key=True
     )
     sid = db.Column(
-        db.Integer(), db.ForeignKey('server.id'), nullable=False,
+        db.Integer(), db.ForeignKey(SERVER_ID), nullable=False,
         primary_key=True)
     dbname = db.Column(db.String(), nullable=False, primary_key=True)
-    query_info = db.Column(db.String(), nullable=False)
+    query_info = db.Column(PgAdminDbBinaryString(), nullable=False)
     last_updated_flag = db.Column(db.String(), nullable=False)
 
 
@@ -357,7 +365,7 @@ class Database(db.Model):
     schema_res = db.Column(db.String(256), nullable=True)
     server = db.Column(
         db.Integer,
-        db.ForeignKey('server.id'),
+        db.ForeignKey(SERVER_ID),
         nullable=False,
         primary_key=True
     )
@@ -370,7 +378,7 @@ class SharedServer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     osid = db.Column(
         db.Integer,
-        db.ForeignKey('server.id'),
+        db.ForeignKey(SERVER_ID),
         nullable=False
     )
     user_id = db.Column(
@@ -388,26 +396,18 @@ class SharedServer(db.Model):
     )
     name = db.Column(db.String(128), nullable=False)
     host = db.Column(db.String(128), nullable=True)
-    hostaddr = db.Column(db.String(128), nullable=True)
     port = db.Column(
         db.Integer(),
         nullable=True)
     maintenance_db = db.Column(db.String(64), nullable=True)
     username = db.Column(db.String(64), nullable=False)
-    password = db.Column(db.String(64), nullable=True)
+    password = db.Column(PgAdminDbBinaryString())
     save_password = db.Column(
         db.Integer(),
         db.CheckConstraint('save_password >= 0 AND save_password <= 1'),
         nullable=False
     )
     role = db.Column(db.String(64), nullable=True)
-    ssl_mode = db.Column(
-        db.String(16),
-        db.CheckConstraint(
-            "ssl_mode IN ('allow', 'prefer', 'require', 'disable', "
-            "'verify-ca', 'verify-full')"
-        ),
-        nullable=False)
     comment = db.Column(db.String(1024), nullable=True)
     discovery_id = db.Column(db.String(128), nullable=True)
     servers = db.relationship(
@@ -416,20 +416,9 @@ class SharedServer(db.Model):
         lazy='joined'
     )
     db_res = db.Column(db.Text(), nullable=True)
-    passfile = db.Column(db.Text(), nullable=True)
-    sslcert = db.Column(db.Text(), nullable=True)
-    sslkey = db.Column(db.Text(), nullable=True)
-    sslrootcert = db.Column(db.Text(), nullable=True)
-    sslcrl = db.Column(db.Text(), nullable=True)
-    sslcompression = db.Column(
-        db.Integer(),
-        db.CheckConstraint('sslcompression >= 0 AND sslcompression <= 1'),
-        nullable=False
-    )
-    bgcolor = db.Column(db.Text(10), nullable=True)
-    fgcolor = db.Column(db.Text(10), nullable=True)
+    bgcolor = db.Column(db.String(10), nullable=True)
+    fgcolor = db.Column(db.String(10), nullable=True)
     service = db.Column(db.Text(), nullable=True)
-    connect_timeout = db.Column(db.Integer(), nullable=False)
     use_ssh_tunnel = db.Column(
         db.Integer(),
         db.CheckConstraint('use_ssh_tunnel >= 0 AND use_ssh_tunnel <= 1'),
@@ -448,8 +437,9 @@ class SharedServer(db.Model):
         nullable=False
     )
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
-    tunnel_password = db.Column(db.String(64), nullable=True)
+    tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
+    connection_params = db.Column(MutableDict.as_mutable(types.JSON))
 
 
 class Macros(db.Model):
@@ -473,3 +463,15 @@ class UserMacros(db.Model):
     )
     name = db.Column(db.String(1024), nullable=False)
     sql = db.Column(db.Text(), nullable=False)
+
+
+class UserMFA(db.Model):
+    """Stores the options for the MFA for a particular user."""
+    __tablename__ = 'user_mfa'
+    user_id = db.Column(db.Integer, db.ForeignKey(USER_ID), primary_key=True)
+    mfa_auth = db.Column(db.String(64), primary_key=True)
+    options = db.Column(db.Text(), nullable=True)
+    user = db.relationship(
+        'User',
+        backref=db.backref('user', cascade="all, delete-orphan")
+    )

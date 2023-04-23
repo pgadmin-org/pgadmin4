@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,6 +13,12 @@ from pgadmin.tools.restore import RestoreMessage
 from pgadmin.utils.route import BaseTestGenerator
 from pickle import dumps, loads
 from unittest.mock import patch, MagicMock
+from pgadmin.utils.preferences import Preferences
+import datetime
+import pytz
+
+start_time = \
+    datetime.datetime.now(pytz.utc).strftime("%Y-%m-%d %H:%M:%S.%f %z")
 
 
 class BatchProcessTest(BaseTestGenerator):
@@ -46,20 +52,24 @@ class BatchProcessTest(BaseTestGenerator):
          ))
     ]
 
-    @patch('pgadmin.tools.restore.RestoreMessage.get_server_details')
+    @patch.object(Preferences, 'module', return_value=MagicMock())
+    @patch('pgadmin.tools.restore.RestoreMessage.get_server_name')
     @patch('pgadmin.misc.bgprocess.processes.Popen')
     @patch('pgadmin.misc.bgprocess.processes.db')
     @patch('pgadmin.tools.restore.current_user')
     @patch('pgadmin.misc.bgprocess.processes.current_user')
     def runTest(self, current_user_mock, current_user, db_mock,
-                popen_mock, get_server_details_mock):
+                popen_mock, get_server_name_mock, pref_module):
         with self.app.app_context():
             current_user.id = 1
             current_user_mock.id = 1
             current_app.PGADMIN_RUNTIME = False
 
             def db_session_add_mock(j):
-                cmd_obj = loads(j.desc)
+                try:
+                    cmd_obj = loads(bytes.fromhex(j.desc))
+                except Exception:
+                    cmd_obj = loads(j.desc)
                 self.assertTrue(isinstance(cmd_obj, IProcessDesc))
                 self.assertEqual(cmd_obj.bfile, self.class_params['bfile'])
                 self.assertEqual(cmd_obj.cmd,
@@ -75,10 +85,14 @@ class BatchProcessTest(BaseTestGenerator):
                                      self.class_params['database']
                                  ))
 
-            get_server_details_mock.return_value = \
-                self.class_params['name'], \
-                self.class_params['host'], \
-                self.class_params['port']
+            pref_module.return_value.preference.return_value.get. \
+                return_value = 5
+
+            get_server_name_mock.return_value = "{0} ({1}:{2})" \
+                .format(
+                    self.class_params['name'],
+                    self.class_params['host'],
+                    self.class_params['port'])
 
             db_mock.session.add.side_effect = db_session_add_mock
             db_mock.session.commit = MagicMock(return_value=True)
@@ -110,13 +124,15 @@ class BatchProcessTest(BaseTestGenerator):
             def __init__(self, desc, args, cmd):
                 self.pid = 1
                 self.exit_code = 1
-                self.start_time = '2018-04-17 06:18:56.315445 +0000'
+                self.start_time = start_time
                 self.end_time = None
                 self.desc = dumps(desc)
                 self.arguments = " ".join(args)
                 self.command = cmd
                 self.acknowledge = None
                 self.process_state = 0
+                self.utility_pid = 123
+                self.server_id = None
 
         mock_result = process_mock.query.filter_by.return_value
         mock_result.first.return_value = TestMockProcess(
@@ -142,21 +158,21 @@ class BatchProcessTest(BaseTestGenerator):
     @patch('pgadmin.misc.bgprocess.processes.Process')
     @patch('pgadmin.misc.bgprocess.processes.BatchProcess.'
            'update_process_info')
-    @patch('pgadmin.misc.bgprocess.processes.BatchProcess.'
-           '_operate_orphan_process')
-    def _check_list(self, p, restore_obj, _operate_orphan_process_mock,
+    def _check_list(self, p, restore_obj,
                     update_process_info_mock, process_mock):
         class TestMockProcess():
             def __init__(self, desc, args, cmd):
                 self.pid = 1
                 self.exit_code = 1
-                self.start_time = '2018-04-17 06:18:56.315445 +0000'
+                self.start_time = start_time
                 self.end_time = None
                 self.desc = dumps(desc)
                 self.arguments = " ".join(args)
                 self.command = cmd
                 self.acknowledge = None
                 self.process_state = 0
+                self.utility_pid = 123
+                self.server_id = None
 
         process_mock.query.filter_by.return_value = [
             TestMockProcess(restore_obj,
@@ -165,7 +181,6 @@ class BatchProcessTest(BaseTestGenerator):
         ]
 
         update_process_info_mock.return_value = [True, True]
-        _operate_orphan_process_mock.return_value = False
 
         ret_value = p.list()
         self.assertEqual(1, len(ret_value))

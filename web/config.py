@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # config.py - Core application configuration settings
@@ -42,8 +42,8 @@ APP_ICON = 'pg-icon'
 #
 
 # Application version number components
-APP_RELEASE = 6
-APP_REVISION = 1
+APP_RELEASE = 7
+APP_REVISION = 0
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -52,7 +52,7 @@ APP_SUFFIX = ''
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 60100
+APP_VERSION_INT = 70000
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
@@ -62,7 +62,7 @@ else:
     APP_VERSION = '%s.%s-%s' % (APP_RELEASE, APP_REVISION, APP_SUFFIX)
 
 # Copyright string for display in the app
-APP_COPYRIGHT = 'Copyright (C) 2013 - 2021, The pgAdmin Development Team'
+APP_COPYRIGHT = 'Copyright (C) 2013 - 2023, The pgAdmin Development Team'
 
 ##########################################################################
 # Misc stuff
@@ -82,6 +82,7 @@ LANGUAGES = {
     'ja': 'Japanese',
     'ko': 'Korean',
     'pl': 'Polish',
+    'pt_BR': 'Portuguese (Brazilian)',
     'ru': 'Russian',
     'es': 'Spanish',
 }
@@ -107,10 +108,11 @@ NODE_BLACKLIST = []
 # We only set SERVER_MODE if it's not already set. That's to allow the
 # runtime to force it to False.
 #
-# NOTE: If you change the value of SERVER_MODE in an included config file,
-#       you may also need to redefine any values below that are derived
-#       from it, notably various paths such as LOG_FILE and anything
-#       using DATA_DIR.
+# NOTE: If you change the value of SERVER_MODE or DATA_DIR in an included
+#       config file, you may also need to redefine any values below that are
+#       derived from it, notably various paths such as LOG_FILE, SQLITE_PATH,
+#       SESSION_DB_PATH, STORAGE_DIR, KERBEROS_CCACHE_DIR, and
+#       AZURE_CREDENTIAL_CACHE_DIR
 
 if (not hasattr(builtins, 'SERVER_MODE')) or builtins.SERVER_MODE is None:
     SERVER_MODE = True
@@ -189,6 +191,9 @@ ALLOWED_HOSTS = []
 
 # Hashing algorithm used for password storage
 SECURITY_PASSWORD_HASH = 'pbkdf2_sha512'
+
+# Minimum password length
+PASSWORD_LENGTH_MIN = 6
 
 # Reverse Proxy parameters
 # You must tell the middleware how many proxies set each header
@@ -298,11 +303,28 @@ LOG_ROTATION_MAX_LOG_FILES = 90  # Maximum number of backups to retain
 ##########################################################################
 
 # The default driver used for making connection with PostgreSQL
-PG_DEFAULT_DRIVER = 'psycopg2'
+PG_DEFAULT_DRIVER = 'psycopg3'
 
 # Maximum allowed idle time in minutes before which releasing the connection
 # for the particular session. (in minutes)
 MAX_SESSION_IDLE_TIME = 60
+
+##########################################################################
+# External Database Settings
+#
+# All configuration settings are stored by default in the SQLite database.
+# In order to use external databases like PostgreSQL sets the value of
+# CONFIG_DATABASE_URI like below:
+# dialect+driver://username:password@host:port/database
+#
+# PostgreSQL:
+# postgresql://username:password@host:port/database
+# Specify Schema Name
+# postgresql://username:password@host:port/database?options=-csearch_path=pgadmin
+# Using PGPASS file
+# postgresql://username@host:port?options=-csearch_path=pgadmin
+##########################################################################
+CONFIG_DATABASE_URI = ''
 
 ##########################################################################
 # User account and settings storage
@@ -447,19 +469,19 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
     "pg": "",
-    "pg-9.6": "",
     "pg-10": "",
     "pg-11": "",
     "pg-12": "",
     "pg-13": "",
     "pg-14": "",
+    "pg-15": "",
     "ppas": "",
-    "ppas-9.6": "",
     "ppas-10": "",
     "ppas-11": "",
     "ppas-12": "",
     "ppas-13": "",
-    "ppas-14": ""
+    "ppas-14": "",
+    "ppas-15": ""
 }
 
 ##########################################################################
@@ -643,11 +665,24 @@ LDAP_ANONYMOUS_BIND = False
 # OpenLDAP example: CN=Users,dc=example,dc=com
 LDAP_BASE_DN = '<Base-DN>'
 
+# Configure the bind format string
+# Default: LDAP_BIND_FORMAT="
+#   {LDAP_USERNAME_ATTRIBUTE}={LDAP_USERNAME},{LDAP_BASE_DN}"
+# The current available options are:
+# LDAP_USERNAME_ATTRIBUTE, LDAP_USERNAME, LDAP_BASE_DN
+# Example: LDAP_BIND_FORMAT="myldapuser@sales.example.com"
+#          LDAP_BIND_FORMAT="NET\\myldapuser"
+LDAP_BIND_FORMAT = '{LDAP_USERNAME_ATTRIBUTE}={LDAP_USERNAME},{LDAP_BASE_DN}'
+
 ##########################################################################
 
 # Search ldap for further authentication (REQUIRED)
 # It can be optional while bind as pgAdmin user
 LDAP_SEARCH_BASE_DN = '<Search-Base-DN>'
+
+# The LDAP attribute indicates whether the DN (Distinguished Names)
+# are case sensitive or not
+LDAP_DN_CASE_SENSITIVE = False
 
 # Filter string for the user search.
 # For OpenLDAP, '(cn=*)' may well be enough.
@@ -686,6 +721,12 @@ KRB_AUTO_CREATE_USER = True
 
 KERBEROS_CCACHE_DIR = os.path.join(DATA_DIR, 'krbccache')
 
+#############################################################################
+# Create local directory to store azure credential cache
+#############################################################################
+
+AZURE_CREDENTIAL_CACHE_DIR = os.path.join(DATA_DIR, 'azurecredentialcache')
+
 ##########################################################################
 # OAuth2 Configuration
 ##########################################################################
@@ -709,6 +750,8 @@ OAUTH2_CONFIG = [
         # URL is used for authentication,
         # Ex: https://github.com/login/oauth/authorize
         'OAUTH2_AUTHORIZATION_URL': None,
+        # server metadata url might optional for your provider
+        'OAUTH2_SERVER_METADATA_URL': None,
         # Oauth base url, ex: https://api.github.com/
         'OAUTH2_API_BASE_URL': None,
         # Name of the Endpoint, ex: user
@@ -716,6 +759,10 @@ OAUTH2_CONFIG = [
         # Oauth scope, ex: 'openid email profile'
         # Note that an 'email' claim is required in the resulting profile
         'OAUTH2_SCOPE': None,
+        # The claim which is used for the username. If the value is empty the
+        # email is used as username, but if a value is provided,
+        # the claim has to exist.
+        'OAUTH2_USERNAME_CLAIM': None,
         # Font-awesome icon, ex: fa-github
         'OAUTH2_ICON': None,
         # UI button colour, ex: #0000ff
@@ -744,6 +791,29 @@ WEBSERVER_AUTO_CREATE_USER = True
 WEBSERVER_REMOTE_USER = 'REMOTE_USER'
 
 ##########################################################################
+# Two-factor Authentication Configuration
+##########################################################################
+
+# Set it to True, to enable the two-factor authentication
+MFA_ENABLED = True
+
+# Set it to True, to ask the users to register forcefully for the
+# two-authentication methods on logged-in.
+MFA_FORCE_REGISTRATION = False
+
+# pgAdmin supports Two-factor authentication by either sending an one-time code
+# to an email, or using the TOTP based application like Google Authenticator.
+MFA_SUPPORTED_METHODS = ["email", "authenticator"]
+
+# NOTE: Please set the 'Mail server settings' to use 'email' as two-factor
+#       authentication method.
+
+# Subject for the email verification code
+# Default: <APP_NAME> - Verification Code
+# e.g.  pgAdmin 4 - Verification Code
+MFA_EMAIL_SUBJECT = None
+
+##########################################################################
 # PSQL tool settings
 ##########################################################################
 # This will enable PSQL tool in pgAdmin when running in server mode.
@@ -760,43 +830,34 @@ ENABLE_PSQL = False
 ENABLE_BINARY_PATH_BROWSING = False
 
 ##########################################################################
-# Local config settings
+# In server mode, the SHARED_STORAGE setting is used to enable shared storage.
+# Specify the name, path, and restricted_access values that should be shared
+# between users. When restricted_access is set to True, non-admin users cannot
+# upload/add, delete, or rename files/folders in shared storage, only admins
+# can do that. Users must provide the absolute path to the folder, and the name
+# can be anything they see on the user interface.
+# [{ 'name': 'Shared 1', 'path': '/shared_folder',
+#   'restricted_access': True/False}]
 ##########################################################################
+SHARED_STORAGE = []
 
-# Load distribution-specific config overrides
-try:
-    from config_distro import *
-except ImportError:
-    pass
+#############################################################################
+# AUTO_DISCOVER_SERVERS setting is used to enable the pgAdmin to discover the
+# database server automatically on the local machine.
+# When it is set to False, pgAdmin will not discover servers installed on
+# the local machine.
+#############################################################################
+AUTO_DISCOVER_SERVERS = True
 
-# Load local config overrides
-try:
-    from config_local import *
-except ImportError:
-    pass
+#############################################################################
+# SERVER_HEARTBEAT_TIMEOUT is used to send the server heartbeat to server
+# from the client. This will resolve the orphan database issue once
+# browser tab is closed.
+#############################################################################
+SERVER_HEARTBEAT_TIMEOUT = 30  # In seconds
 
-# Load system config overrides. We do this last, so that the sysadmin can
-# override anything they want from a config file that's in a protected system
-# directory and away from pgAdmin to avoid invalidating signatures.
-system_config_dir = '/etc/pgadmin'
-if sys.platform.startswith('win32'):
-    system_config_dir = os.environ['CommonProgramFiles'] + '/pgadmin'
-elif sys.platform.startswith('darwin'):
-    system_config_dir = '/Library/Preferences/pgadmin'
-
-if os.path.exists(system_config_dir + '/config_system.py'):
-    try:
-        sys.path.insert(0, system_config_dir)
-        from config_system import *
-    except ImportError:
-        pass
-
-# Override DEFAULT_SERVER value from environment variable.
-if 'PGADMIN_CONFIG_DEFAULT_SERVER' in os.environ:
-    DEFAULT_SERVER = os.environ['PGADMIN_CONFIG_DEFAULT_SERVER']
-
-# Disable USER_INACTIVITY_TIMEOUT when SERVER_MODE=False
-if not SERVER_MODE:
-    USER_INACTIVITY_TIMEOUT = 0
-    # Enable PSQL in Desktop Mode.
-    ENABLE_PSQL = True
+#############################################################################
+# Patch the default config with custom config and other manipulations
+#############################################################################
+from pgadmin.evaluate_config import evaluate_and_patch_config
+locals().update(evaluate_and_patch_config(locals()))

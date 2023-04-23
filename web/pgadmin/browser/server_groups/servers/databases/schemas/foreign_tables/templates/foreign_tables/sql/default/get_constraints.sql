@@ -1,5 +1,5 @@
 SELECT
-    conname, contype, consrc
+    oid as conoid, conname, contype, consrc, connoinherit, convalidated, conislocal
 FROM
     pg_catalog.pg_constraint
 WHERE

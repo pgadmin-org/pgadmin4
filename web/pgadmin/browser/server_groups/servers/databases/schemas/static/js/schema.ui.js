@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@ import SecLabelSchema from '../../../../static/js/sec_label.ui';
 import { isEmptyString } from 'sources/validators';
 
 export default class PGSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
       namespaceowner: undefined,
@@ -94,7 +94,7 @@ export default class PGSchema extends BaseUISchema {
   }
 
   validate(state, setError) {
-    var errmsg = null;
+    let errmsg = null;
 
     // Validation of mandatory fields
     if (isEmptyString(state.name)) {

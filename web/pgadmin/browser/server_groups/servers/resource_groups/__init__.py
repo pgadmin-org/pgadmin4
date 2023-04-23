@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Resource Groups for PPAS 9.4 and above"""
 
-import simplejson as json
+import json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import NodeView
 from pgadmin.utils.ajax import make_json_response, \
@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import make_json_response, \
 from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
 
 
 class ResourceGroupModule(CollectionNodeModule):
@@ -64,7 +65,7 @@ class ResourceGroupModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(ResourceGroupModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 90400
         self.max_ver = None
@@ -167,6 +168,8 @@ class ResourceGroupView(NodeView):
     _PROPERTIES_SQL = 'properties.sql'
     _CREATE_SQL = 'create.sql'
     _UPDATE_SQL = 'update.sql'
+    _NODES_SQL = 'nodes.sql'
+    _DELETE_SQL = 'delete.sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -201,7 +204,7 @@ class ResourceGroupView(NodeView):
         self.conn = None
         self.template_path = None
 
-        super(ResourceGroupView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -217,11 +220,6 @@ class ResourceGroupView(NodeView):
             self.driver = get_driver(PG_DEFAULT_DRIVER)
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection()
-
-            self.datlastsysoid = \
-                self.manager.db_info[self.manager.did]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                self.manager.did in self.manager.db_info else 0
 
             self.datistemplate = False
             if (
@@ -276,7 +274,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
 
-        sql = render_template("/".join([self.sql_path, 'nodes.sql']),
+        sql = render_template("/".join([self.sql_path, self._NODES_SQL]),
                               rgid=rg_id)
         status, result = self.conn.execute_2darray(sql)
         if not status:
@@ -308,7 +306,7 @@ class ResourceGroupView(NodeView):
             sid: Server ID
         """
         res = []
-        sql = render_template("/".join([self.sql_path, 'nodes.sql']))
+        sql = render_template("/".join([self.sql_path, self._NODES_SQL]))
         status, result = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=result)
@@ -349,7 +347,8 @@ class ResourceGroupView(NodeView):
             return gone(gettext("""Could not find the resource group."""))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=res['rows'][0],
@@ -389,7 +388,7 @@ class ResourceGroupView(NodeView):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_error, errmsg = ResourceGroupView._check_req_parameters(
@@ -425,7 +424,7 @@ class ResourceGroupView(NodeView):
             # resource group
             sql = render_template(
                 "/".join([self.sql_path, 'getoid.sql']),
-                rgname=data['name']
+                rgname=data['name'], conn=self.conn
             )
             # Checking if we are not executing empty query
             rg_id = 0
@@ -485,7 +484,7 @@ class ResourceGroupView(NodeView):
             'name', 'cpu_rate_limit', 'dirty_rate_limit'
         ]
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -540,7 +539,7 @@ class ResourceGroupView(NodeView):
         """
         if rg_id is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [rg_id]}
@@ -549,7 +548,7 @@ class ResourceGroupView(NodeView):
             for rg_id in data['ids']:
                 # Get name for resource group from rg_id
                 sql = render_template(
-                    "/".join([self.sql_path, 'delete.sql']),
+                    "/".join([self.sql_path, self._DELETE_SQL]),
                     rgid=rg_id, conn=self.conn
                 )
                 status, rgname = self.conn.execute_scalar(sql)
@@ -570,7 +569,7 @@ class ResourceGroupView(NodeView):
 
                 # drop resource group
                 sql = render_template(
-                    "/".join([self.sql_path, 'delete.sql']),
+                    "/".join([self.sql_path, self._DELETE_SQL]),
                     rgname=rgname, conn=self.conn
                 )
                 status, res = self.conn.execute_scalar(sql)
@@ -599,7 +598,7 @@ class ResourceGroupView(NodeView):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

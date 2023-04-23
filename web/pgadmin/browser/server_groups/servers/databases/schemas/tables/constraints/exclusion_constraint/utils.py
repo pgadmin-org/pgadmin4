@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for Exclusion Constraint. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -228,7 +228,7 @@ def get_sql(conn, data, did, tid, exid=None, template_path=None):
             name = data['name'] = old_data['name']
 
         sql = render_template("/".join([template_path, 'update.sql']),
-                              data=data, o_data=old_data)
+                              data=data, o_data=old_data, conn=conn)
     else:
         if 'columns' not in data or \
                 (isinstance(data['columns'], list) and
@@ -276,7 +276,7 @@ def get_oper_class(conn, indextype, template_path=None):
     :return:
     """
     SQL = render_template("/".join([template_path, 'get_oper_class.sql']),
-                          indextype=indextype)
+                          indextype=indextype, conn=conn)
 
     status, res = conn.execute_2darray(SQL)
     if not status:
@@ -301,7 +301,7 @@ def get_operator(conn, coltype, show_sysobj, template_path=None):
     :return:
     """
     SQL = render_template("/".join([template_path, 'get_operator.sql']),
-                          type=coltype, show_sysobj=show_sysobj)
+                          type=coltype, show_sysobj=show_sysobj, conn=conn)
 
     status, res = conn.execute_2darray(SQL)
     if not status:

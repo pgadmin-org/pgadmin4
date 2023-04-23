@@ -2,20 +2,20 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module implementing the about box."""
 
-import sys
-from flask import Response, render_template, __version__, url_for, request
-from flask_babelex import gettext
+from flask import Response, render_template, request
+from flask_babel import gettext
 from flask_security import current_user, login_required
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.utils.ajax import make_json_response
 import config
 import httpagentparser
 from pgadmin.model import User
@@ -42,13 +42,6 @@ class AboutModule(PgAdminModule):
             ]
         }
 
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.about',
-            'path': url_for('about.index') + 'about',
-            'when': None
-        }]
-
     def get_exposed_url_endpoints(self):
         return ['about.index']
 
@@ -74,6 +67,7 @@ def index():
     info['os_details'] = os_details
     info['config_db'] = config.SQLITE_PATH
     info['log_file'] = config.LOG_FILE
+    info['version'] = config.APP_VERSION
 
     if config.SERVER_MODE:
         info['app_mode'] = gettext('Server')
@@ -98,16 +92,17 @@ def index():
             if isinstance(getattr(config, setting), str):
                 settings = \
                     settings + '{} = "{}"\n'.format(
-                        setting, gettext(getattr(config, setting)))
+                        setting, getattr(config, setting))
             else:
                 settings = \
                     settings + '{} = {}\n'.format(
-                        setting, gettext(getattr(config, setting)))
+                        setting, getattr(config, setting))
 
     info['settings'] = settings
 
-    return render_template(
-        MODULE_NAME + '/index.html', info=info, _=gettext
+    return make_json_response(
+        data=info,
+        status=200
     )
 
 

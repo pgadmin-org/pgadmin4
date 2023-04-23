@@ -14,7 +14,7 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} PROCEDURE {{ conn|qtIden
 {% endif %}
 )
 {% endif %}
-LANGUAGE {{ data.lanname|qtLiteral }}{% if data.prosecdef %}
+LANGUAGE {{ data.lanname|qtLiteral(conn) }}{% if data.prosecdef %}
 
     SECURITY DEFINER {% endif %}
 {% if data.lanname == 'edbspl' %}
@@ -27,13 +27,19 @@ LANGUAGE {{ data.lanname|qtLiteral }}{% if data.prosecdef %}
 
     ROWS {{data.prorows}}{% endif -%}{% endif %}{% if data.variables %}{% for v in data.variables %}
 
-    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral }}{% endif %}{% endfor -%}
+    SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor -%}
 {% endif %}
 
 AS {% if data.lanname == 'c' %}
-{{ data.probin|qtLiteral }}, {{ data.prosrc_c|qtLiteral }}
+{{ data.probin|qtLiteral(conn) }}, {{ data.prosrc_c|qtLiteral(conn) }}
 {% else %}
 $BODY${{ data.prosrc }}$BODY${% endif -%};
+
+{% if data.funcowner %}
+ALTER PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
+    OWNER TO {{ conn|qtIdent(data.funcowner) }};
+{% endif -%}
+
 {% if data.acl and not is_sql %}
 {% for p in data.acl %}
 
@@ -46,7 +52,7 @@ $BODY${{ data.prosrc }}$BODY${% endif -%};
 {% if data.description %}
 
 COMMENT ON PROCEDURE {{ conn|qtIdent(data.pronamespace, data.name) }}({{data.func_args_without}})
-    IS {{ data.description|qtLiteral  }};
+    IS {{ data.description|qtLiteral(conn)  }};
 {% endif -%}
 {% if data.seclabels %}
 {% for r in data.seclabels %}

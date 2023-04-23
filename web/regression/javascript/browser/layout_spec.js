@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
 import {pgBrowser} from 'pgadmin.browser.layout';
 import 'wcdocker';
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
 describe('layout related functions test', function() {
   let menu_items = null;
@@ -25,24 +25,24 @@ describe('layout related functions test', function() {
   beforeEach(function(){
     pgBrowser.preferences_cache = dummy_cache;
     pgBrowser.docker = {
-      'lockLayout': ()=>{},
+      'lockLayout': ()=>{/*This is intentional (SonarQube)*/},
     };
 
     _.extend(pgBrowser,{
-      'menus': {
+      'all_menus_cache': {
         'file': {
           'mnu_locklayout': {
             'menu_items': [
-              {'name': 'mnu_lock_none', change_checked: ()=> {}},
-              {'name': 'mnu_lock_docking', change_checked: ()=> {}},
-              {'name': 'mnu_lock_full', change_checked: ()=> {}},
+              {'name': 'mnu_lock_none', change_checked: ()=> {/*This is intentional (SonarQube)*/}},
+              {'name': 'mnu_lock_docking', change_checked: ()=> {/*This is intentional (SonarQube)*/}},
+              {'name': 'mnu_lock_full', change_checked: ()=> {/*This is intentional (SonarQube)*/}},
             ],
           },
         },
       },
     });
 
-    menu_items = pgBrowser.menus.file.mnu_locklayout.menu_items;
+    menu_items = pgBrowser.all_menus_cache.file.mnu_locklayout.menu_items;
   });
 
   describe('for menu actions', function() {
@@ -72,19 +72,19 @@ describe('layout related functions test', function() {
 
   describe('lock_layout', function() {
     let change_checked_test= function(menu_name) {
-      for(let i=0; i<menu_items.length; i++) {
-        if(menu_items[i].name == menu_name) {
-          expect(menu_items[i].change_checked).toHaveBeenCalledWith(true);
+      for(let mnu_val of menu_items) {
+        if(mnu_val.name == menu_name) {
+          expect(mnu_val.change_checked).toHaveBeenCalledWith(true);
         } else {
-          expect(menu_items[i].change_checked).toHaveBeenCalledWith(false);
+          expect(mnu_val.change_checked).toHaveBeenCalledWith(false);
         }
       }
     };
 
     beforeEach(function(){
       spyOn(pgBrowser.docker, 'lockLayout');
-      for(let i=0; i<menu_items.length; i++) {
-        spyOn(menu_items[i], 'change_checked');
+      for(let mnu_val of menu_items) {
+        spyOn(mnu_val, 'change_checked');
       }
     });
 

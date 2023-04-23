@@ -1,6 +1,5 @@
 SELECT
-    d.oid, d.typname as name, d.typbasetype, pg_catalog.format_type(b.oid,NULL) as basetype,
-    pg_catalog.pg_get_userbyid(d.typowner) as owner,
+    d.oid, d.typname as name, d.typbasetype, pg_catalog.format_type(b.oid,NULL) as basetype, pg_catalog.pg_get_userbyid(d.typowner) as owner,
     c.oid AS colloid, pg_catalog.format_type(b.oid, d.typtypmod) AS fulltype,
     CASE WHEN length(cn.nspname::text) > 0 AND length(c.collname::text) > 0 THEN
     pg_catalog.concat(cn.nspname, '."', c.collname,'"')
@@ -28,8 +27,8 @@ LEFT OUTER JOIN
     pg_catalog.pg_namespace cn ON c.collnamespace=cn.oid
 WHERE
     d.typnamespace = {{scid}}::oid
-    {% if doid %}
-    AND d.oid={{doid}}::oid
-    {% endif %}
+{% if doid %}
+  AND d.oid={{doid}}::oid
+{% endif %}
 ORDER BY
     d.typname;

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,6 +10,7 @@ import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import * as createEngineLib from '@projectstorm/react-diagrams';
 import TEST_TABLES_DATA from './test_tables';
 import { FakeLink, FakeNode } from './fake_item';
+import { PortModelAlignment } from '@projectstorm/react-diagrams';
 
 describe('ERDCore', ()=>{
   let eleFactory = jasmine.createSpyObj('nodeFactories', {
@@ -77,7 +78,7 @@ describe('ERDCore', ()=>{
     });
 
     it('registerModelEvent', ()=>{
-      let fn = ()=>{};
+      let fn = ()=>{/*This is intentional (SonarQube)*/};
       erdCoreObj.registerModelEvent('someEvent', fn);
       expect(erdCoreObj.getModel().registerListener).toHaveBeenCalledWith({
         'someEvent': fn,
@@ -120,15 +121,16 @@ describe('ERDCore', ()=>{
     });
 
     it('getNewPort', ()=>{
-      let data = {name: 'link1'};
-      let options = {opt1: 'val1'};
-      erdCoreObj.getNewPort('porttype', data, options);
-
-      expect(erdEngine.getPortFactories().getFactory).toHaveBeenCalledWith('porttype');
+      erdEngine.getPortFactories().getFactory().generateModel.calls.reset();
+      erdCoreObj.getNewPort('port1', PortModelAlignment.LEFT);
+      expect(erdEngine.getPortFactories().getFactory).toHaveBeenCalledWith('onetomany');
       expect(erdEngine.getPortFactories().getFactory().generateModel).toHaveBeenCalledWith({
         initialConfig: {
-          data:data,
-          options:options,
+          data: null,
+          options: {
+            name: 'port1',
+            alignment: PortModelAlignment.LEFT
+          },
         },
       });
     });
@@ -156,8 +158,7 @@ describe('ERDCore', ()=>{
     it('addLink', ()=>{
       let node1 = new FakeNode({'name': 'table1'}, 'id1');
       let node2 = new FakeNode({'name': 'table2'}, 'id2');
-      spyOn(node1, 'addPort').and.callThrough();
-      spyOn(node2, 'addPort').and.callThrough();
+      spyOn(erdCoreObj, 'getOptimumPorts').and.returnValue([{name: 'port-1'}, {name: 'port-3'}]);
       let nodesDict = {
         'id1': node1,
         'id2': node2,
@@ -169,11 +170,6 @@ describe('ERDCore', ()=>{
       spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
         return link;
       });
-      spyOn(erdCoreObj, 'getNewPort').and.callFake(function(type, initData, options) {
-        return {
-          name: options.name,
-        };
-      });
 
       erdCoreObj.addLink({
         'referenced_column_attnum': 1,
@@ -182,8 +178,6 @@ describe('ERDCore', ()=>{
         'local_table_uid': 'id2',
       }, 'onetomany');
 
-      expect(nodesDict['id1'].addPort).toHaveBeenCalledWith({name: 'port-1'});
-      expect(nodesDict['id2'].addPort).toHaveBeenCalledWith({name: 'port-3'});
       expect(link.setSourcePort).toHaveBeenCalledWith({name: 'port-1'});
       expect(link.setTargetPort).toHaveBeenCalledWith({name: 'port-3'});
     });
@@ -245,7 +239,7 @@ describe('ERDCore', ()=>{
             return {'name': name};
           },
           addPort: function() {
-
+            /*This is intentional (SonarQube)*/
           },
           getData: function() {
             return table;
@@ -256,8 +250,8 @@ describe('ERDCore', ()=>{
 
       spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
         return {
-          setSourcePort: function() {},
-          setTargetPort: function() {},
+          setSourcePort: function() {/*This is intentional (SonarQube)*/},
+          setTargetPort: function() {/*This is intentional (SonarQube)*/},
         };
       });
       spyOn(erdCoreObj, 'getNewPort').and.returnValue({id: 'id'});
@@ -265,7 +259,7 @@ describe('ERDCore', ()=>{
         return new FakeNode({}, `id-${data.name}`);
       });
       spyOn(erdCoreObj, 'addLink');
-      spyOn(erdCoreObj, 'dagreDistributeNodes');
+      spyOn(erdCoreObj, 'dagreDistributeNodes').and.callFake(()=>{/* intentionally empty */});
 
       erdCoreObj.deserializeData(TEST_TABLES_DATA);
       expect(erdCoreObj.addNode).toHaveBeenCalledTimes(TEST_TABLES_DATA.length);
@@ -295,13 +289,6 @@ describe('ERDCore', ()=>{
       expect(JSON.stringify(erdCoreObj.getNodesData())).toEqual(JSON.stringify([
         {name:'node1'}, {name:'node2'},
       ]));
-    });
-
-    it('dagreDistributeNodes', ()=>{
-      spyOn(erdCoreObj.dagre_engine, 'redistribute');
-      erdCoreObj.dagreDistributeNodes();
-      expect(erdEngine.getLinkFactories().getFactory().calculateRoutingMatrix).toHaveBeenCalled();
-      expect(erdCoreObj.dagre_engine.redistribute).toHaveBeenCalledWith(erdEngine.getModel());
     });
 
     it('zoomIn', ()=>{

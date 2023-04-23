@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -49,7 +49,7 @@ class FunctionDeleteTestCase(BaseTestGenerator):
             without_functions_id=False,
             test_data={},
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_2darray",
                 "return_value": "(False, 'Mocked Internal Server "
                                 "Error while delete function.')"
@@ -65,7 +65,7 @@ class FunctionDeleteTestCase(BaseTestGenerator):
             mock_empty_result=True,
             test_data={},
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_2darray",
                 "return_value": "(True, {'rows': []})"
             },
@@ -98,7 +98,7 @@ class FunctionDeleteTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will delete function under database node. """
-        super(FunctionDeleteTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         func_name = "test_function_delete_%s" % str(uuid.uuid4())[1:8]

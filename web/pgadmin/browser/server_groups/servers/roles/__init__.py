@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,9 +10,9 @@ import re
 from functools import wraps
 
 import pgadmin.browser.server_groups as sg
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 import dateutil.parser as dateutil_parser
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -21,9 +21,10 @@ from pgadmin.utils.ajax import make_json_response, \
     internal_server_error, forbidden, success_return, gone
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.constants import ERROR_FETCHING_ROLE_INFORMATION
+from pgadmin.utils.exception import ExecuteError
 
 from config import PG_DEFAULT_DRIVER
-from flask_babelex import gettext
+from flask_babel import gettext
 
 _REASSIGN_OWN_SQL = 'reassign_own.sql'
 
@@ -36,7 +37,7 @@ class RoleModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(RoleModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid):
         """
@@ -525,23 +526,20 @@ rolmembership:{
         @wraps(f)
         def wrap(self, **kwargs):
             if request.data:
-                data = json.loads(request.data, encoding='utf-8')
+                data = json.loads(request.data)
             else:
                 data = dict()
-                req = request.args or request.form
-
-                for key in req:
-
-                    val = req[key]
-                    if key in [
-                        'rolcanlogin', 'rolsuper', 'rolcreatedb',
-                        'rolcreaterole', 'rolinherit', 'rolreplication',
-                        'rolcatupdate', 'variables', 'rolmembership',
-                        'seclabels', 'rolmembers'
-                    ]:
-                        data[key] = json.loads(val, encoding='utf-8')
-                    else:
-                        data[key] = val
+                for k, v in request.args.items():
+                    try:
+                        # comments should be taken as is because if user enters
+                        # a json comment it is parsed by loads which should not
+                        # happen
+                        if k in ('comment',):
+                            data[k] = v
+                        else:
+                            data[k] = json.loads(v)
+                    except ValueError:
+                        data[k] = v
 
             invalid_msg_arr = [
                 self._validate_rolname(kwargs.get('rid', -1), data),
@@ -665,10 +663,6 @@ rolmembership:{
                         _("Connection to the server has been lost.")
                     )
 
-                self.datlastsysoid = \
-                    self.manager.db_info[self.manager.did]['datlastsysoid'] \
-                    if self.manager.db_info is not None and \
-                    self.manager.did in self.manager.db_info else 0
                 self.datistemplate = False
                 if (
                     self.manager.db_info is not None and
@@ -834,6 +828,7 @@ rolmembership:{
             )
         )
 
+        variables = self.variables(None, None, rid)
         if not status:
             return internal_server_error(
                 _(ERROR_FETCHING_ROLE_INFORMATION + "\n{0}").format(res))
@@ -843,10 +838,11 @@ rolmembership:{
             return gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
-
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
+        res = {**res['rows'][0], 'variables': variables['rows']}
         return ajax_response(
-            response=res['rows'][0],
+            response=res,
             status=200
         )
 
@@ -855,7 +851,7 @@ rolmembership:{
 
         if rid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [rid]}
@@ -1129,12 +1125,12 @@ rolmembership:{
             query = render_template(
                 "/".join([self.sql_path, 'dependents.sql']),
                 fetch_dependents=True, rid=rid,
-                lastsysoid=db_row['datlastsysoid']
+                lastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
 
             status, result = temp_conn.execute_dict(query)
             if not status:
-                current_app.logger.error(result)
+                raise ExecuteError(result)
 
             RoleView._handle_dependents_data(result, types, dependents, db_row)
 
@@ -1227,8 +1223,8 @@ rolmembership:{
 
         return dependents
 
-    @check_precondition()
-    def variables(self, gid, sid, rid):
+    # @check_precondition()
+    def variables(self, gid, sid, rid, as_json=False):
 
         status, rset = self.conn.execute_dict(
             render_template(self.sql_path + 'variables.sql',
@@ -1242,7 +1238,8 @@ rolmembership:{
                     "Error retrieving variable information for the role.\n{0}"
                 ).format(rset)
             )
-
+        if not as_json:
+            return rset
         return make_json_response(
             data=rset['rows']
         )
@@ -1297,7 +1294,7 @@ WHERE
         status, res = conn.execute_scalar(SQL)
 
         if not status:
-            return status, res
+            raise ExecuteError(res)
 
         return status, res
 
@@ -1319,13 +1316,13 @@ WHERE
             data = dict()
 
             if request.data:
-                data = json.loads(request.data, encoding='utf-8')
+                data = json.loads(request.data)
             else:
                 rargs = request.args or request.form
                 for k, v in rargs.items():
                     try:
-                        data[k] = json.loads(v, encoding='utf-8')
-                    except ValueError as ve:
+                        data[k] = json.loads(v)
+                    except ValueError:
                         data[k] = v
 
             required_args = ['role_op', 'did', 'old_role_name',
@@ -1369,7 +1366,7 @@ WHERE
         Returns: Json object with success/failure status
         """
         if request.data:
-            data = json.loads(request.data, encoding='utf-8')
+            data = json.loads(request.data)
         else:
             data = request.args or request.form
 
@@ -1410,9 +1407,6 @@ WHERE
 
             status, old_role_name = self._execute_role_reassign(conn, rid)
 
-            if not status:
-                raise Exception(old_role_name)
-
             data['old_role_name'] = old_role_name
 
             is_reassign = True if data['role_op'] == 'reassign' else False
@@ -1427,15 +1421,9 @@ WHERE
                 status, new_role_name = \
                     self._execute_role_reassign(conn, data['new_role_id'])
 
-                if not status:
-                    raise Exception(new_role_name)
-
                 data['new_role_name'] = new_role_name
 
-            status, res = self._execute_role_reassign(conn, None, data)
-
-            if not status:
-                raise Exception(res)
+            self._execute_role_reassign(conn, None, data)
 
             if is_already_connected is False and can_disconn:
                 manager.release(did=did)

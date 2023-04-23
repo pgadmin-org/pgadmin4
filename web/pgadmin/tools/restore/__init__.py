@@ -2,24 +2,26 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Restore Utility"""
 
-import simplejson as json
+import json
 import os
 
 from flask import render_template, request, current_app, \
     url_for, Response
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, does_utility_exist, get_server
-from pgadmin.utils.ajax import make_json_response, bad_request
+    fs_short_path, document_dir, does_utility_exist, get_server, \
+    filename_with_file_manager_path
+from pgadmin.utils.ajax import make_json_response, bad_request, \
+    internal_server_error
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
@@ -32,7 +34,7 @@ server_info = {}
 
 class RestoreModule(PgAdminModule):
     """
-    class RestoreModule(Object):
+    class RestoreModule():
 
         It is a utility which inherits PgAdminModule
         class and define methods to load its own
@@ -40,17 +42,6 @@ class RestoreModule(PgAdminModule):
     """
 
     LABEL = _('Restore')
-
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.restore',
-            'path': url_for('restore.index') + 'restore',
-            'when': None
-        }]
 
     def get_exposed_url_endpoints(self):
         """
@@ -67,9 +58,10 @@ blueprint = RestoreModule(
 
 
 class RestoreMessage(IProcessDesc):
-    def __init__(self, _sid, _bfile, *_args):
+    def __init__(self, _sid, _bfile, *_args, **_kwargs):
         self.sid = _sid
         self.bfile = _bfile
+        self.database = _kwargs['database'] if 'database' in _kwargs else None
         self.cmd = ''
 
         def cmd_arg(x):
@@ -86,10 +78,11 @@ class RestoreMessage(IProcessDesc):
             else:
                 self.cmd += cmd_arg(arg)
 
-    def get_server_details(self):
-
-        # Fetch the server details like hostname, port, roles etc
+    def get_server_name(self):
         s = get_server(self.sid)
+
+        if s is None:
+            return _("Not available")
 
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -98,42 +91,25 @@ class RestoreMessage(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
-        return s.name, host, port
+        return "{0} ({1}:{2})".format(s.name, host, port)
 
     @property
     def message(self):
-        name, host, port = self.get_server_details()
-
-        return _("Restoring backup on the server '{0}'").format(
-            "{0} ({1}:{2})".format(
-                html.safe_str(name),
-                html.safe_str(host),
-                html.safe_str(port)
-            ),
-        )
+        return _("Restoring backup on the server '{0}'")\
+            .format(self.get_server_name())
 
     @property
     def type_desc(self):
         return _("Restoring backup on the server")
 
     def details(self, cmd, args):
-        name, host, port = self.get_server_details()
-        res = '<div>'
-
-        res += html.safe_str(
-            _(
-                "Restoring backup on the server '{0}'..."
-            ).format(
-                "{0} ({1}:{2})".format(name, host, port)
-            )
-        )
-
-        res += '</div><div class="py-1">'
-        res += _("Running command:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(cmd + self.cmd)
-        res += '</div></div>'
-        return res
+        return {
+            "message": self.message,
+            "cmd": cmd + self.cmd,
+            "server": self.get_server_name(),
+            "object": getattr(self, 'database', ''),
+            "type": _("Restore"),
+        }
 
 
 @blueprint.route("/")
@@ -155,42 +131,20 @@ def script():
     )
 
 
-def filename_with_file_manager_path(_file):
-    """
-    Args:
-        file: File name returned from client file manager
-
-    Returns:
-        Filename to use for backup with full path taken from preference
-    """
-    # Set file manager directory from preference
-    storage_dir = get_storage_directory()
-
-    if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
-    elif not os.path.isabs(_file):
-        _file = os.path.join(document_dir(), _file)
-
-    if not os.path.isfile(_file) and not os.path.exists(_file):
-        return None
-
-    return fs_short_path(_file)
-
-
 def _get_create_req_data():
     """
     Get data from request for create restore job.
     :return: return data if no error occurred.
     """
     if request.form:
-        data = json.loads(request.form['data'], encoding='utf-8')
+        data = json.loads(request.form['data'])
     else:
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
 
     try:
         _file = filename_with_file_manager_path(data['file'])
     except Exception as e:
-        return True, bad_request(errormsg=str(e)), data
+        return True, internal_server_error(errormsg=str(e)), data, None
 
     if _file is None:
         return True, make_json_response(
@@ -211,10 +165,10 @@ def _connect_server(sid):
     server = get_server(sid)
 
     if server is None:
-        return make_json_response(
+        return True, make_json_response(
             success=0,
             errormsg=_("Could not find the specified server.")
-        )
+        ), None, None, None, None, None
 
     # To fetch MetaData for the server
     from pgadmin.utils.driver import get_driver
@@ -228,7 +182,7 @@ def _connect_server(sid):
         return True, make_json_response(
             success=0,
             errormsg=_("Please connect to the server first.")
-        ), driver, manager, conn, connected
+        ), driver, manager, conn, connected, server
 
     return False, '', driver, manager, conn, connected, server
 
@@ -420,16 +374,18 @@ def create_restore_job(sid):
                 data['file'].encode('utf-8') if hasattr(
                     data['file'], 'encode'
                 ) else data['file'],
-                *args
+                *args,
+                database=data['database']
             ),
             cmd=utility, args=args
         )
         manager.export_password_env(p.id)
         # Check for connection timeout and if it is greater than 0 then
         # set the environment variable PGCONNECT_TIMEOUT.
-        if manager.connect_timeout > 0:
+        timeout = manager.get_connection_param_value('connect_timeout')
+        if timeout and int(timeout) > 0:
             env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+            env['PGCONNECT_TIMEOUT'] = str(timeout)
             p.set_env_variables(server, env=env)
         else:
             p.set_env_variables(server)
@@ -445,7 +401,7 @@ def create_restore_job(sid):
         )
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'Success': 1}
+        data={'job_id': jid, 'desc': p.desc.message, 'Success': 1}
     )
 
 

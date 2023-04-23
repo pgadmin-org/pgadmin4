@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -92,13 +92,44 @@ export default function(basicSettings) {
       inputBorderColor: '#dde0e6',
       inputDisabledBg: '#f3f5f9',
       headerBg: '#fff',
+      activeBorder: '#326690',
       activeColor: '#326690',
       tableBg: '#fff',
       activeStepBg: '#326690',
       activeStepFg: '#FFFFFF',
       stepBg: '#ddd',
       stepFg: '#000',
-      toggleBtnBg: '#000'
+      toggleBtnBg: '#000',
+      editorToolbarBg: '#ebeef3',
+      qtDatagridBg: '#fff',
+      qtDatagridSelectFg: '#222',
+      cardHeaderBg: '#fff',
+      emptySpaceBg: '#ebeef3',
+      textMuted: '#646B82',
+      erdCanvasBg: '#fff',
+      erdGridColor: '#bac1cd',
+      explain: {
+        sev2: {
+          color: '#222222',
+          bg: '#FFEE88',
+        },
+        sev3: {
+          color: '#FFFFFF',
+          bg: '#EE8800'
+        },
+        sev4: {
+          color: '#FFFFFF',
+          bg: '#880000'
+        },
+      },
+      schemaDiff: {
+        diffRowColor: '#fff9c4',
+        sourceRowColor: '#ffebee',
+        targetRowColor: '#fbe3bf',
+        diffColorFg: '#222',
+        diffSelectFG: '#222',
+        diffSelCheckbox: '#d6effc'
+      }
     }
   });
 }

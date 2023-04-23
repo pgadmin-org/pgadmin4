@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -31,6 +31,8 @@ def parse_priv_from_db(db_privileges):
         'grantee': db_privileges['grantee'],
         'privileges': []
     }
+    if 'acltype' in db_privileges:
+        acl['acltype'] = db_privileges['acltype']
 
     privileges = []
     for idx, priv in enumerate(db_privileges['privileges']):
@@ -133,12 +135,16 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
             if 'old_grantee' in priv and priv['old_grantee'] != 'PUBLIC' \
             else grantee
 
+        acltype = priv['acltype'] if 'acltype' in priv else 'defaultacls'
+
         # Appending and returning all ACL
         privileges.append({
+            'grantor': priv['grantor'],
             'grantee': grantee,
             'with_grant': priv_with_grant,
             'without_grant': priv_without_grant,
-            'old_grantee': old_grantee
+            'old_grantee': old_grantee,
+            'acltype': acltype
         })
 
     return privileges
@@ -266,23 +272,6 @@ def remove_saved_passwords(user_id):
             .filter(Server.user_id == user_id) \
             .update({Server.password: None, Server.tunnel_password: None})
         db.session.commit()
-    except Exception as _:
+    except Exception:
         db.session.rollback()
         raise
-
-
-def does_server_exists(sid, user_id):
-
-    """
-    This function will return True if server is existing for a user
-    :param sid: server id
-    :param user_id: user id
-    :return: Boolean
-    """
-    # **kwargs parameter can be added to function to filter with more
-    # parameters.
-    try:
-        return True if Server.query.filter_by(
-            id=sid).first() is not None else False
-    except Exception:
-        return False

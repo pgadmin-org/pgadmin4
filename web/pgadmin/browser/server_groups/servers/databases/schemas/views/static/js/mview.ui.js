@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class MViewSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getVacuumSettingsSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, getVacuumSettingsSchema, fieldOptions={}, initValues={}) {
     super({
       spcname: undefined,
       toast_autovacuum_enabled: 'x',
@@ -132,8 +132,7 @@ export default class MViewSchema extends BaseUISchema {
         setError('definition', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('definition', errmsg);
+        setError('definition', null);
       }
 
       if (state.definition) {
@@ -146,9 +145,8 @@ export default class MViewSchema extends BaseUISchema {
       }
       return false;
     } else {
-      errmsg = null;
       _.each(['definition'], (item) => {
-        setError(item, errmsg);
+        setError(item, null);
       });
     }
   }

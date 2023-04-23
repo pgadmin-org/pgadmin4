@@ -12,11 +12,15 @@ LEFT OUTER JOIN
 WHERE
     pr.prokind IN ('f', 'w')
 {% if fnid %}
-    AND pr.oid = {{ fnid|qtLiteral }}
+    AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
 {% if scid %}
     AND pronamespace = {{scid}}::oid
 {% endif %}
-    AND typname IN ('trigger', 'event_trigger') AND lanname != 'edbspl'
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = pr.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
+{% endif %}
+    AND typname IN ('trigger', 'event_trigger')
 ORDER BY
     proname;

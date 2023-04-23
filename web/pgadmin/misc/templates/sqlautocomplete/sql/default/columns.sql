@@ -15,7 +15,7 @@ FROM    pg_catalog.pg_attribute att
             ON def.adrelid = att.attrelid
             AND def.adnum = att.attnum
 WHERE   nsp.nspname IN ({{schema_names}})
-        AND cls.relkind = ANY(array['r'])
+        AND cls.relkind = ANY(array['r', 'p'])
         AND NOT att.attisdropped
         AND att.attnum  > 0
 ORDER BY 1, 2, att.attnum

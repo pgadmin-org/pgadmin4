@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,12 +11,11 @@ import EDBFuncSchema from './edbfunc.ui';
 
 /* Create and Register Procedure Collection and Node. */
 define('pgadmin.node.edbproc', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.node.edbfunc', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege',
+  'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, EdbFunction
+  gettext, url_for, pgAdmin, pgBrowser
 ) {
 
   if (!pgBrowser.Nodes['coll-edbproc']) {
@@ -54,24 +53,6 @@ define('pgadmin.node.edbproc', [
       },
       canDrop: false,
       canDropCascade: false,
-      model: EdbFunction.model.extend({
-        defaults: _.extend({},
-          EdbFunction.model.prototype.defaults,
-          {
-            lanname: 'edbspl',
-          }
-        ),
-        isVisible: function() {
-          if (this.name == 'sysfunc') { return false; }
-          else if (this.name == 'sysproc') { return true; }
-          return false;
-        },
-        validate: function()
-        {
-          return null;
-        },
-      }
-      ),
       getSchema: () => {
         return new EDBFuncSchema(
           {}, {

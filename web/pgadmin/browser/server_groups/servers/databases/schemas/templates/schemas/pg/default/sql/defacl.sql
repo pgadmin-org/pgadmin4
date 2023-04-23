@@ -3,7 +3,8 @@ SELECT
     WHEN 'r' THEN 'deftblacl'
     WHEN 'S' THEN 'defseqacl'
     WHEN 'f' THEN 'deffuncacl'
-    ELSE 'UNKNOWN - ' || a.deftype
+    WHEN 'T' THEN 'deftypeacl'
+    ELSE 'UNKNOWN - ' || a.deftype::text
     END AS deftype,
     COALESCE(gt.rolname, 'PUBLIC') grantee, g.rolname grantor, pg_catalog.array_agg(a.privilege_type) as privileges, pg_catalog.array_agg(a.is_grantable) as grantable
 FROM
@@ -22,7 +23,7 @@ FROM
         WHEN 'TRUNCATE' THEN 'D'
         WHEN 'UPDATE' THEN 'w'
         WHEN 'USAGE' THEN 'U'
-        ELSE 'UNKNOWN'
+        ELSE 'UNKNOWN - ' || (acl).privilege_type
         END AS privilege_type,
         defaclobjtype as deftype
     FROM

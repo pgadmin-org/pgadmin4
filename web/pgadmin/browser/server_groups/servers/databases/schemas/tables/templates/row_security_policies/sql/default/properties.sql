@@ -1,6 +1,7 @@
 SELECT
     pl.oid AS oid,
     pl.polname AS name,
+    rw.permissive as type,
     rw.cmd AS event,
     rw.qual AS using,
     rw.qual AS using_orig,

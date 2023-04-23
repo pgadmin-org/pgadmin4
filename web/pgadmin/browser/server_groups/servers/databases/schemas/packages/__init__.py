@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,9 +11,9 @@
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
 import pgadmin.browser.server_groups.servers.databases as database
 from config import PG_DEFAULT_DRIVER
@@ -57,7 +57,7 @@ class PackageModule(SchemaChildModule):
     _COLLECTION_LABEL = _("Packages")
 
     def __init__(self, *args, **kwargs):
-        super(PackageModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90100
         self.max_ver = None
         self.server_type = ['ppas']
@@ -75,6 +75,21 @@ class PackageModule(SchemaChildModule):
         initialized.
         """
         return database.DatabaseModule.node_type
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .edbfuncs import blueprint as module
+        self.submodules.append(module)
+
+        from .edbfuncs import procedure_blueprint as module
+        self.submodules.append(module)
+
+        from .edbvars import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = PackageModule(__name__)
@@ -371,7 +386,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for arg in required_args:
@@ -396,7 +411,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             "/".join([
                 self.template_path, self._OID_SQL
             ]),
-            name=data['name'], scid=scid
+            name=data['name'], scid=scid, conn=self.conn
         )
 
         sql = sql.strip('\n').strip(' ')
@@ -433,7 +448,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if pkgid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [pkgid]}
@@ -499,7 +514,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         sql, name = self.getSQL(data=data, scid=scid, pkgid=pkgid)
@@ -537,7 +552,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -830,7 +845,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
             return res
 
         sql = render_template("/".join([self.template_path,
-                                        self._NODES_SQL]), scid=scid)
+                                        self._NODES_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=res)

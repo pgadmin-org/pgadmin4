@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Primary key constraint Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -67,7 +67,7 @@ class IndexConstraintModule(ConstraintTypeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(IndexConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, tid):
         """
@@ -242,11 +242,6 @@ class IndexConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -304,7 +299,8 @@ class IndexConstraintView(PGChildNodeView):
         if cid:
             result = res[0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or self.datistemplate)
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=result,
@@ -502,7 +498,7 @@ class IndexConstraintView(PGChildNodeView):
         return: data.
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -512,7 +508,7 @@ class IndexConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -620,7 +616,8 @@ class IndexConstraintView(PGChildNodeView):
                     "/".join([self.template_path, self._OID_SQL]),
                     tid=tid,
                     constraint_type=self.constraint_type,
-                    name=data['name']
+                    name=data['name'],
+                    conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -662,7 +659,7 @@ class IndexConstraintView(PGChildNodeView):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -682,7 +679,8 @@ class IndexConstraintView(PGChildNodeView):
                 "/".join([self.template_path, self._OID_SQL]),
                 tid=tid,
                 constraint_type=self.constraint_type,
-                name=data['name']
+                name=data['name'],
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -717,7 +715,7 @@ class IndexConstraintView(PGChildNodeView):
         """
         if cid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [cid]}
@@ -798,7 +796,7 @@ class IndexConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -885,7 +883,9 @@ class IndexConstraintView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, self._CREATE_SQL]),
             data=data,
-            constraint_name=self.constraint_name)
+            constraint_name=self.constraint_name,
+            conn=self.conn
+        )
 
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

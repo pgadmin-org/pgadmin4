@@ -40,7 +40,6 @@
   }
 }
 
-/* darken % taken from bootstrap - button_variant */
 .wcFrameButton:hover, .wcFrameButtonHover,  .wcFrameButton:focus {
   background-color: $btn-frame-close-bg;
 }
@@ -62,9 +61,6 @@
 
   display: -webkit-flex; /* Safari */
   display: flex;
-}
-
-.wcFrameButtonBar {
   flex-direction: row-reverse;
 }
 
@@ -167,6 +163,10 @@
   border-bottom: $panel-border;
 }
 
+.wcFloating .wcFrameTitleBar.wcNotMoveable {
+  cursor: move; //overriding the existing cursor behavior for not moveable panels
+}
+
 .wcTabIcon {
   background-position: center;
   padding: 0rem 0.75rem;
@@ -193,7 +193,7 @@
 }
 
 .wcFrameEdgeN, .wcFrameEdgeS {
-  height: $splitter-hover-width/2 + 1;
+  height: math.div($splitter-hover-width, 2) + 1;
 }
 
 .wcFrameEdgeN {
@@ -205,7 +205,7 @@
 }
 
 .wcFrameEdgeW, .wcFrameEdgeE {
-  width: $splitter-hover-width/2 + 1;
+  width: math.div($splitter-hover-width, 2) + 1;
 }
 
 .wcFrameEdgeW {
@@ -261,7 +261,7 @@
 
 .wcMenuList, .context-menu-list {
   border: 1px solid $dropdown-border-color;
-  z-index: 9999 !important;
+  z-index: 1999 !important;
   background-color: $dropdown-bg;
   box-shadow: $dropdown-box-shadow;
   border-radius: $dropdown-border-radius;
@@ -342,4 +342,26 @@
 
 .wcMenuSubMenu::before{
   content: none;
+}
+
+.tooltip {
+  font-size: 0.7rem;
+  line-height: 1.4em;
+}
+
+.tooltip.show {
+  opacity: 1;
+}
+
+.wcTooltip-shortcut {
+  justify-content: center;
+  margin-top: 0.125rem;
+  display: flex
+}
+
+.wcTooltip-shortcut-key{
+  padding: 0 0.25rem;
+  border: 1px solid $border-color;
+  margin-right: 0.125rem;
+  border-radius: $border-radius
 }

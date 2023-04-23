@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,12 +10,13 @@
 import { getNodeAjaxOptions } from '../../../../../static/js/node_ajax';
 import PgaJobSchema from './pga_job.ui';
 import { getNodePgaJobStepSchema } from '../../steps/static/js/pga_jobstep.ui';
+import Notify from '../../../../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../../../../static/js/api_instance';
 
 define('pgadmin.node.pga_job', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/gettext', 'sources/url_for', 'jquery', 'pgadmin.browser',
   'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify) {
+], function(gettext, url_for, $, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     pgBrowser.Nodes['coll-pga_job'] =
@@ -57,17 +58,16 @@ define('pgadmin.node.pga_job', [
           name: 'create_pga_job_on_coll', node: 'coll-pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('pgAgent Job...'),
-          icon: 'wcTabIcon icon-pga_job', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_pga_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('pgAgent Job...'),
-          icon: 'wcTabIcon icon-pga_job', data: {action: 'create'},
+          data: {action: 'create'},
         }, {
           name: 'run_now_pga_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'run_pga_job_now',
           priority: 4, label: gettext('Run now'), data: {action: 'create'},
-          icon: 'fa fa-play-circle',
         }]);
       },
 
@@ -83,51 +83,24 @@ define('pgadmin.node.pga_job', [
         );
       },
 
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'jobid',
-        schema: [{
-          id: 'jobname', label: gettext('Name'), type: 'text',
-          cellHeaderClasses: 'width_percent_30',
-        },{
-          id: 'jobid', label: gettext('ID'), mode: ['properties'],
-          type: 'int',
-        },{
-          id: 'jobenabled', label: gettext('Enabled?'), type: 'switch',
-          cellHeaderClasses: 'width_percent_5',
-        },{
-          id: 'jobnextrun', type: 'text', mode: ['properties'],
-          label: gettext('Next run'), cellHeaderClasses: 'width_percent_20',
-        },{
-          id: 'joblastrun', type: 'text', mode: ['properties'],
-          label: gettext('Last run'), cellHeaderClasses: 'width_percent_20',
-        },{
-          id: 'jlgstatus', type: 'text', label: gettext('Last result'),
-          cellHeaderClasses: 'width_percent_5', mode: ['properties'],
-        },{
-          id: 'jobdesc', label: gettext('Comment'), type: 'multiline',
-          cellHeaderClasses: 'width_percent_15',
-        }],
-      }),
       /* Run pgagent job now */
       run_pga_job_now: function(args) {
-        var input = args || {},
+        let input = args || {},
           obj = this,
           t = pgBrowser.tree,
           i = input.item || t.selected(),
           d = i  ? t.itemData(i) : undefined;
 
         if (d) {
-          $.ajax({
-            url: obj.generate_url(i, 'run_now', d, true),
-            method:'PUT',
-          })
-          // 'pgagent.pga_job' table updated with current time to run the job
-          // now.
-            .done(function() { t.unload(i); })
-            .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
-            });
+          getApiInstance().put(
+            obj.generate_url(i, 'run_now', d, true),
+          ).then(({data: res})=> {
+            Notify.success(res.info);
+            t.unload(i);
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         }
 
         return false;

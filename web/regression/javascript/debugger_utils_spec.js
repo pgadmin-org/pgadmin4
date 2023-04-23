@@ -2,49 +2,15 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
 
 import {
-  setFocusToDebuggerEditor,
   getProcedureId,
+  getFunctionId,
 } from '../../pgadmin/tools/debugger/static/js/debugger_utils';
-
-describe('setFocusToDebuggerEditor', function () {
-  let editor;
-  editor = jasmine.createSpyObj('editor', ['focus']);
-
-  let tab_key = {
-    which: 9,
-    keyCode: 9,
-  };
-
-  let enter_key = {
-    which: 13,
-    keyCode: 13,
-  };
-
-  describe('setFocusToDebuggerEditor', function () {
-    it('returns undefined if no command is passed', function () {
-      expect(setFocusToDebuggerEditor(editor, null)).toEqual(undefined);
-    });
-  });
-
-  describe('setFocusToDebuggerEditor', function () {
-    it('should call focus on editor', function () {
-      setFocusToDebuggerEditor(editor, enter_key);
-      expect(editor.focus).toHaveBeenCalled();
-    });
-  });
-
-  describe('setFocusToDebuggerEditor', function () {
-    it('should not call focus on editor and returns undefined', function () {
-      expect(setFocusToDebuggerEditor(editor, tab_key)).toEqual(undefined);
-    });
-  });
-});
 
 describe('getProcedureId', function () {
   let treeInfroProc = {
@@ -83,3 +49,31 @@ describe('getProcedureId', function () {
   });
 });
 
+describe('getFunctionId', function () {
+  let treeInfroFunc = {
+    'function': {
+      '_id': 123,
+    },
+  };
+  let treeInfroInvalidFuncId = {
+    'function': {
+      '_id': null,
+    },
+  };
+
+  let fakeTreeInfro;
+
+  describe('Should return proper object id', function () {
+    it('returns valid function id', function () {
+      expect(getFunctionId(treeInfroFunc)).toEqual(123);
+    });
+
+    it('returns undefined for fake tree info', function () {
+      expect(getFunctionId(fakeTreeInfro)).toEqual(undefined);
+    });
+
+    it('returns undefined for invalid function id', function () {
+      expect(getFunctionId(treeInfroInvalidFuncId)).toEqual(undefined);
+    });
+  });
+});

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 # #########################################################################
@@ -221,6 +221,8 @@ def edit_browsers_json(browser_name, browser_version):
                     'port': '4444', 'path': '/wd/hub'}})
             (existing_data['firefox']['versions']).update(data_to_insert)
             updated_data = existing_data
+            print(updated_data)
+
     else:
         print("Browser version not matched")
         file_edited = False

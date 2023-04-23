@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -24,11 +24,13 @@ export default class ExtensionsSchema extends BaseUISchema {
     });
     fieldOptions = {
       extensionsList: [],
+      role:[],
       schemaList: [],
       ...fieldOptions,
     };
     this.extensionsList = fieldOptions.extensionsList;
     this.schemaList = fieldOptions.schemaList;
+    this.role = fieldOptions.role;
   }
 
   get idAttribute() {
@@ -90,17 +92,19 @@ export default class ExtensionsSchema extends BaseUISchema {
         mode: ['properties'],
       },
       {
+        id: 'owner', label: gettext('Owner'),
+        options: this.role,
+        type: 'select',
+        mode: ['properties'], controlProps: { allowClear: false},
+      },
+      {
         id: 'schema', label: gettext('Schema'), type: 'select',
         mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
         first_empty: true, deps: ['name'],
-        controlProps: { allowClear: false }, editable: false,
+        controlProps: { allowClear: true }, editable: false,
         options: this.schemaList,
         disabled: function (state) {
-          /*
-           * enable or disable schema field if model's relocatable
-           * attribute is True or False
-           */
-          return (!state.relocatable);
+          return !obj.isNew(state) && !state.relocatable;
         },
       },
       {
@@ -166,8 +170,7 @@ export default class ExtensionsSchema extends BaseUISchema {
       setError('name', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('name', errmsg);
+      setError('name', null);
     }
     return false;
   }

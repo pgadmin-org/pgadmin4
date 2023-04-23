@@ -117,6 +117,8 @@ The toolbar options are:
 +-------------------------+-----------------------------------------------------------------------------------------------------------+
 | *Stop*                  | Click the *Stop* icon to halt the execution of a program.                                                 |
 +-------------------------+-----------------------------------------------------------------------------------------------------------+
+| *Help*                  | Click the *Help* icon to open debugger documentation.                                                     |
++-------------------------+-----------------------------------------------------------------------------------------------------------+
 
 The top panel of the debugger window displays the program body; click in the
 grey margin next to a line number to add a breakpoint.  The highlighted line in

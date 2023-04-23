@@ -2,17 +2,17 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Grant Wizard"""
 
-import simplejson as json
+import json
 from flask import Response, url_for
 from flask import render_template, request, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required
 from urllib.parse import unquote
 
@@ -35,13 +35,11 @@ server_info = {}
 
 class GrantWizardModule(PgAdminModule):
     """
-    class GrantWizardModule(Object):
+    class GrantWizardModule():
 
         It is a wizard which inherits PgAdminModule
         class and define methods to load its own
         javascript file.
-
-    LABEL = gettext('Browser')
     """
 
     def get_own_stylesheets(self):
@@ -51,24 +49,6 @@ class GrantWizardModule(PgAdminModule):
         """
         stylesheets = []
         return stylesheets
-
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        scripts = []
-        scripts.append({
-            'name': 'pgadmin.tools.grant_wizard',
-            'path': url_for('grant_wizard.index') + 'grant_wizard',
-            'when': None
-        })
-        scripts.append({
-            'name': 'pgadmin.browser.wizard',
-            'path': url_for('browser.static', filename='js/wizard'),
-            'when': None
-        })
-        return scripts
 
     def show_system_objects(self):
         """
@@ -263,6 +243,22 @@ def _get_rows_for_type(conn, ntype, server_prop, node_id):
     return status, res
 
 
+def get_node_sql_with_type(node_id, node_type, server_prop,
+                           get_schema_sql_url, show_sysobj):
+    if node_type == 'database':
+        sql = render_template("/".join(
+            [server_prop['template_path'], get_schema_sql_url]),
+            show_sysobj=show_sysobj)
+        ntype = 'schema'
+    else:
+        sql = render_template("/".join(
+            [server_prop['template_path'], get_schema_sql_url]),
+            show_sysobj=show_sysobj, nspid=node_id)
+        ntype = node_type
+
+    return sql, ntype
+
+
 @blueprint.route(
     '/<int:sid>/<int:did>/<int:node_id>/<node_type>/',
     methods=['GET'], endpoint='objects'
@@ -287,16 +283,9 @@ def properties(sid, did, node_id, node_type):
     conn = manager.connection(did=did)
 
     show_sysobj = blueprint.show_system_objects().get()
-    if node_type == 'database':
-        sql = render_template("/".join(
-            [server_prop['template_path'], get_schema_sql_url]),
-            show_sysobj=show_sysobj)
-        ntype = 'schema'
-    else:
-        sql = render_template("/".join(
-            [server_prop['template_path'], get_schema_sql_url]),
-            show_sysobj=show_sysobj, nspid=node_id)
-        ntype = node_type
+
+    sql, ntype = get_node_sql_with_type(node_id, node_type, server_prop,
+                                        get_schema_sql_url, show_sysobj)
 
     status, res = conn.execute_dict(sql)
 
@@ -369,6 +358,17 @@ def properties(sid, did, node_id, node_type):
     )
 
 
+def get_req_data():
+    return request.form if request.form else json.loads(request.data.decode())
+
+
+def set_priv_for_package(server_prop, data, acls):
+    if server_prop['server_type'] == 'ppas':
+        data['priv']['package'] = parse_priv_to_db(
+            data['acl'],
+            acls['package']['acl'])
+
+
 @blueprint.route(
     '/sql/<int:sid>/<int:did>/',
     methods=['POST'], endpoint='modified_sql'
@@ -380,7 +380,7 @@ def msql(sid, did):
     This function will return modified SQL
     """
     server_prop = server_info
-    data = request.form if request.form else json.loads(request.data.decode())
+    data = get_req_data()
     # Form db connection
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
     conn = manager.connection(did=did)
@@ -416,10 +416,7 @@ def msql(sid, did):
                 acls['foreign_table']['acl'])
 
             # Logic for setting privileges only for ppas
-            if server_prop['server_type'] == 'ppas':
-                data['priv']['package'] = parse_priv_to_db(
-                    data['acl'],
-                    acls['package']['acl'])
+            set_priv_for_package(server_prop, data, acls)
 
         # Pass database objects and get SQL for privileges
         sql_data = ''
@@ -484,6 +481,29 @@ def msql(sid, did):
         )
 
 
+def parse_priv(data, acls, server_prop):
+    if 'acl' in data:
+        # Get function acls
+        data['priv']['function'] = parse_priv_to_db(
+            data['acl'],
+            acls['function']['acl'])
+
+        data['priv']['sequence'] = parse_priv_to_db(
+            data['acl'],
+            acls['sequence']['acl'])
+
+        data['priv']['table'] = parse_priv_to_db(
+            data['acl'],
+            acls['table']['acl'])
+
+        data['priv']['foreign_table'] = parse_priv_to_db(
+            data['acl'],
+            acls['foreign_table']['acl'])
+
+        # Logic for setting privileges only for ppas
+        set_priv_for_package(server_prop, data, acls)
+
+
 @blueprint.route(
     '/<int:sid>/<int:did>/', methods=['POST'], endpoint='apply'
 )
@@ -495,7 +515,7 @@ def save(sid, did):
     Database Objects
     """
     server_prop = server_info
-    data = request.form if request.form else json.loads(request.data.decode())
+    data = get_req_data()
 
     # Form db connection and we use conn to execute sql
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
@@ -514,30 +534,7 @@ def save(sid, did):
 
         # Parse privileges
         data['priv'] = {}
-        if 'acl' in data:
-            # Get function acls
-            data['priv']['function'] = parse_priv_to_db(
-                data['acl'],
-                acls['function']['acl'])
-
-            data['priv']['sequence'] = parse_priv_to_db(
-                data['acl'],
-                acls['sequence']['acl'])
-
-            data['priv']['table'] = parse_priv_to_db(
-                data['acl'],
-                acls['table']['acl'])
-
-            data['priv']['foreign_table'] = parse_priv_to_db(
-                data['acl'],
-                acls['foreign_table']['acl'])
-
-            # Logic for setting privileges only for ppas
-            if server_prop['server_type'] == 'ppas':
-                data['priv']['package'] = parse_priv_to_db(
-                    data['acl'],
-                    acls['package']['acl'])
-
+        parse_priv(data, acls, server_prop)
         # Pass database objects and get SQL for privileges
         # Pass database objects and get SQL for privileges
         sql_data = ''

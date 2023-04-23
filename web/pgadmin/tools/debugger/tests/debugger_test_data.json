@@ -24,7 +24,7 @@
       "add_extension": true,
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
       },
       "expected_data": {
@@ -41,7 +41,7 @@
       "node_type": "function",
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(True, {'rows': []})"
       },
       "expected_data": {
@@ -58,7 +58,7 @@
       "node_type": "function",
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(False, 'Mocked Internal Server Error while checking function is debuggable.')"
       },
       "expected_data": {
@@ -76,7 +76,7 @@
       "node_type": "function",
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, 0),(False, 'Mocked Internal Server Error ')"
       },
       "expected_data": {
@@ -109,7 +109,7 @@
       "node_type": "function",
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, '0'), (True, '0')"
       },
       "expected_data": {
@@ -156,7 +156,7 @@
         "evnt_insert": true
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
       },
       "expected_data": {
@@ -191,7 +191,7 @@
       "add_extension": true,
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
       },
       "expected_data": {
@@ -209,7 +209,7 @@
       "add_extension": true,
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
       },
       "expected_data": {
@@ -227,7 +227,7 @@
       "add_extension": true,
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
       },
       "expected_data": {
@@ -245,7 +245,7 @@
       "add_extension": true,
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connect",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connect",
         "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize direct.')"
       },
       "expected_data": {
@@ -309,7 +309,7 @@
         "evnt_insert": true
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while checking debugger initialize target direct.')"
       },
       "expected_data": {
@@ -336,7 +336,7 @@
         "evnt_insert": true
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, 0), (False, 'Mocked Internal Server Error while checking debugger initialize target direct.')"
       },
       "expected_data": {
@@ -363,7 +363,7 @@
         "evnt_insert": true
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, {})"
       },
       "expected_data": {
@@ -390,7 +390,7 @@
         "evnt_insert": true
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, ''), (True, ''), (False,'Mocking invalid debugger.')"
       },
       "expected_data": {
@@ -456,7 +456,7 @@
       "add_extension": true,
       "test_data": {},
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -548,7 +548,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -610,7 +610,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -674,7 +674,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -800,7 +800,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -831,7 +831,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.poll",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.poll",
         "return_value": "(False, 'Mock internal server error while poll data for debugger.')"
       },
       "expected_data": {
@@ -1001,7 +1001,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -1099,7 +1099,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
       },
       "expected_data": {
@@ -1133,7 +1133,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_async",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_async",
         "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
       },
       "expected_data": {
@@ -1197,7 +1197,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -1229,7 +1229,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.poll",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.poll",
         "return_value": "(False, 'Mocking internal error for poll debugger result.')"
       },
       "expected_data": {
@@ -1261,7 +1261,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.poll",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.poll",
         "return_value": "(False, 'Mocking internal error for poll debugger result.')"
       },
       "expected_data": {
@@ -1358,7 +1358,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
       },
       "expected_data": {
@@ -1391,7 +1391,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -1516,7 +1516,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while fetching function details for debugger.')"
       },
       "expected_data": {
@@ -1548,7 +1548,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {
@@ -1581,7 +1581,7 @@
         "variables": []
       },
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connected",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connected",
         "return_value": "False"
       },
       "expected_data": {

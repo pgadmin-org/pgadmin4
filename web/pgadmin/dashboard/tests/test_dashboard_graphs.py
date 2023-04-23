@@ -2,15 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 from pgadmin.utils.route import BaseTestGenerator
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from regression import parent_node_dict
-import simplejson as json
+import json
 
 
 class DashboardGraphsTestCase(BaseTestGenerator):

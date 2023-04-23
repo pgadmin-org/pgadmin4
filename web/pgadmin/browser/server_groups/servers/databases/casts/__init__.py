@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Cast Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
@@ -51,7 +51,7 @@ class CastModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext('Casts')
 
     def __init__(self, *args, **kwargs):
-        super(CastModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """
@@ -190,7 +190,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(CastView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -209,11 +209,6 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set template path for the SQL scripts
             self.template_path = 'casts/sql/#{0}#'.format(self.manager.version)
-
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
 
             self.datistemplate = False
             if (
@@ -238,7 +233,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         last_system_oid = 0 if self.blueprint.show_system_objects else \
-            self.datlastsysoid
+            self._DATABASE_LAST_SYSTEM_OID
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             datlastsysoid=last_system_oid,
@@ -270,7 +265,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         last_system_oid = 0 if self.blueprint.show_system_objects else \
-            self.datlastsysoid
+            self._DATABASE_LAST_SYSTEM_OID
 
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
@@ -348,12 +343,13 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         last_system_oid = 0 if not self.blueprint.show_system_objects else \
-            self.datlastsysoid
+            self._DATABASE_LAST_SYSTEM_OID
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             cid=cid,
             datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects
+            showsysobj=self.blueprint.show_system_objects,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -383,7 +379,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -407,13 +403,14 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             # we need oid to add object in tree at browser, below sql will
             # gives the same
             last_system_oid = 0 if self.blueprint.show_system_objects else \
-                self.datlastsysoid
+                self._DATABASE_LAST_SYSTEM_OID
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 srctyp=data['srctyp'],
                 trgtyp=data['trgtyp'],
                 datlastsysoid=last_system_oid,
-                showsysobj=self.blueprint.show_system_objects
+                showsysobj=self.blueprint.show_system_objects,
+                conn=self.conn
             )
             status, cid = self.conn.execute_scalar(sql)
             if not status:
@@ -441,7 +438,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         :return:
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             sql, name = self.get_sql(gid, sid, did, data, cid)
@@ -481,7 +478,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if cid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [cid]}
 
@@ -584,12 +581,13 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if cid is not None:
             last_system_oid = 0 if self.blueprint.show_system_objects else \
-                self.datlastsysoid
+                self._DATABASE_LAST_SYSTEM_OID
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 cid=cid,
                 datlastsysoid=last_system_oid,
-                showsysobj=self.blueprint.show_system_objects
+                showsysobj=self.blueprint.show_system_objects,
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
 
@@ -604,7 +602,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             old_data = res['rows'][0]
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=data, o_data=old_data
+                data=data, o_data=old_data, conn=self.conn
             )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
@@ -614,7 +612,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
                     data=data, conn=self.conn
                 )
             else:
-                return "-- definition incomplete", None
+                return gettext("-- definition incomplete"), None
             return sql, data['srctyp'] + "->" + data["trgtyp"]
 
     @check_precondition
@@ -629,13 +627,14 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         sql = render_template("/".join([self.template_path,
                                         self._FUNCTIONS_SQL]),
                               srctyp=data['srctyp'],
-                              trgtyp=data['trgtyp'])
+                              trgtyp=data['trgtyp'],
+                              conn=self.conn)
         status, rset = self.conn.execute_dict(sql)
 
         if not status:
@@ -769,14 +768,11 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
 
-        last_system_oid = 0
-        if self.manager.db_info is not None and did in self.manager.db_info:
-            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
-
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects
+            "/".join([self.template_path, self._NODES_SQL]),
+            datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+            showsysobj=self.blueprint.show_system_objects,
+            schema_diff=True
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:

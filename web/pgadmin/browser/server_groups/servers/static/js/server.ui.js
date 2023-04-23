@@ -2,33 +2,29 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
 import _ from 'lodash';
-import {Address4, Address6} from 'ip-address';
-
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import pgAdmin from 'sources/pgadmin';
 import {default as supportedServers} from 'pgadmin.server.supported_servers';
-
 import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from 'sources/validators';
+import VariableSchema from './variable.ui';
 
 export default class ServerSchema extends BaseUISchema {
-  constructor(serverGroupOptions=[], userId, initValues) {
+  constructor(serverGroupOptions=[], userId=0, initValues={}) {
     super({
       gid: undefined,
       id: undefined,
       name: '',
       bgcolor: '',
       fgcolor: '',
-      sslmode: 'prefer',
       host: '',
-      hostaddr: '',
       port: 5432,
       db: 'postgres',
       username: current_user.name,
@@ -37,12 +33,8 @@ export default class ServerSchema extends BaseUISchema {
       password: undefined,
       save_password: false,
       db_res: [],
-      passfile: undefined,
-      sslcompression: false,
-      sslcert: undefined,
-      sslkey: undefined,
-      sslrootcert: undefined,
-      sslcrl: undefined,
+      passexec: undefined,
+      passexec_expiration: undefined,
       service: undefined,
       use_ssh_tunnel: 0,
       tunnel_host: undefined,
@@ -52,36 +44,29 @@ export default class ServerSchema extends BaseUISchema {
       tunnel_password: undefined,
       tunnel_authentication: false,
       save_tunnel_password: false,
-      connect_timeout: 10,
+      connection_string: undefined,
+      connection_params: [
+        {'name': 'sslmode', 'value': 'prefer', 'keyword': 'sslmode'},
+        {'name': 'connect_timeout', 'value': 10, 'keyword': 'connect_timeout'}],
       ...initValues,
     });
 
     this.serverGroupOptions = serverGroupOptions;
+    this.paramSchema = new VariableSchema(this.getConnectionParameters(), null, null, ['name', 'keyword', 'value']);
     this.userId = userId;
-    _.bindAll(this, 'isShared', 'isSSL');
+    _.bindAll(this, 'isShared');
   }
 
-  get SSL_MODES() { return ['prefer', 'require', 'verify-ca', 'verify-full']; }
+  initialise(state) {
+    this.paramSchema.setAllReadOnly(this.isConnected(state));
+  }
 
   isShared(state) {
-    if(!this.isNew(state) && this.userId != current_user.id && state.shared) {
-      return true;
-    }
-    return false;
+    return !this.isNew(state) && this.userId != current_user.id && state.shared;
   }
 
   isConnected(state) {
     return Boolean(state.connected);
-  }
-
-  isSSL(state) {
-    return this.SSL_MODES.indexOf(state.sslmode) == -1;
-  }
-
-  isValidLib() {
-    // older version of libpq do not support 'passfile' parameter in
-    // connect method, valid libpq must have version >= 100000
-    return pgAdmin.Browser.utils.pg_libpq_version < 100000;
   }
 
   get baseFields() {
@@ -104,11 +89,8 @@ export default class ServerSchema extends BaseUISchema {
       {
         id: 'server_owner', label: gettext('Shared Server Owner'), type: 'text', mode: ['properties'],
         visible: function(state) {
-          var serverOwner = obj.userId;
-          if (state.shared && serverOwner != current_user.id && pgAdmin.server_mode == 'True'){
-            return true;
-          }
-          return false;
+          let serverOwner = obj.userId;
+          return state.shared && serverOwner != current_user.id && pgAdmin.server_mode == 'True';
         },
       },
       {
@@ -142,23 +124,19 @@ export default class ServerSchema extends BaseUISchema {
         id: 'shared', label: gettext('Shared?'), type: 'switch',
         mode: ['properties', 'create', 'edit'],
         readonly: function(state){
-          var serverOwner = obj.userId;
-          if (!obj.isNew(state) && serverOwner != current_user.id) {
-            return true;
-          }
-          return false;
+          let serverOwner = obj.userId;
+          return !obj.isNew(state) && serverOwner != current_user.id;
         }, visible: function(){
-          if (current_user.is_admin && pgAdmin.server_mode == 'True')
-            return true;
-
-          return false;
+          return current_user.is_admin && pgAdmin.server_mode == 'True';
         },
       },
       {
         id: 'comment', label: gettext('Comments'), type: 'multiline', group: null,
         mode: ['properties', 'edit', 'create'],
-      },
-      {
+      }, {
+        id: 'connection_string', label: gettext('Connection String'), type: 'multiline',
+        group: gettext('Connection'), mode: ['properties'], readonly: true,
+      }, {
         id: 'host', label: gettext('Host name/address'), type: 'text', group: gettext('Connection'),
         mode: ['properties', 'edit', 'create'], disabled: obj.isShared,
         depChange: (state)=>{
@@ -209,12 +187,15 @@ export default class ServerSchema extends BaseUISchema {
         id: 'gss_encrypted', label: gettext('GSS encrypted?'), type: 'switch',
         group: gettext('Connection'), mode: ['properties'], visible: obj.isConnected,
       },{
-        id: 'password', label: gettext('Password'), type: 'password', maxlength: null,
+        id: 'password', label: gettext('Password'), type: 'password',
         group: gettext('Connection'),
         mode: ['create'],
         deps: ['connect_now', 'kerberos_conn'],
         visible: function(state) {
           return state.connect_now && obj.isNew(state);
+        },
+        controlProps: {
+          maxLength: null
         },
         disabled: function(state) {return state.kerberos_conn;},
       },{
@@ -225,9 +206,7 @@ export default class ServerSchema extends BaseUISchema {
           return state.connect_now && obj.isNew(state);
         },
         disabled: function(state) {
-          if (!current_user.allow_save_password || state.kerberos_conn)
-            return true;
-          return false;
+          return !current_user.allow_save_password || state.kerberos_conn;
         },
       },{
         id: 'role', label: gettext('Role'), type: 'text', group: gettext('Connection'),
@@ -236,103 +215,13 @@ export default class ServerSchema extends BaseUISchema {
         id: 'service', label: gettext('Service'), type: 'text',
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
         group: gettext('Connection'),
-      },
-      {
-        id: 'sslmode', label: gettext('SSL mode'), type: 'select', group: gettext('SSL'),
-        controlProps: {
-          allowClear: false,
-        },
-        mode: ['properties', 'edit', 'create'], disabled: obj.isConnected,
-        options: [
-          {label: gettext('Allow'), value: 'allow'},
-          {label: gettext('Prefer'), value: 'prefer'},
-          {label: gettext('Require'), value: 'require'},
-          {label: gettext('Disable'), value: 'disable'},
-          {label: gettext('Verify-CA'), value: 'verify-ca'},
-          {label: gettext('Verify-Full'), value: 'verify-full'},
-        ],
-      },
-      {
-        id: 'sslcert', label: gettext('Client certificate'), type: 'file',
-        group: gettext('SSL'), mode: ['edit', 'create'],
-        disabled: obj.isSSL, readonly: obj.isConnected,
-        controlProps: {
-          dialogType: 'select_file', supportedTypes: ['*'],
-        },
-        deps: ['sslmode'],
-      },
-      {
-        id: 'sslkey', label: gettext('Client certificate key'), type: 'file',
-        group: gettext('SSL'), mode: ['edit', 'create'],
-        disabled: obj.isSSL, readonly: obj.isConnected,
-        controlProps: {
-          dialogType: 'select_file', supportedTypes: ['*'],
-        },
-        deps: ['sslmode'],
-      },{
-        id: 'sslrootcert', label: gettext('Root certificate'), type: 'file',
-        group: gettext('SSL'), mode: ['edit', 'create'],
-        disabled: obj.isSSL, readonly: obj.isConnected,
-        controlProps: {
-          dialogType: 'select_file', supportedTypes: ['*'],
-        },
-        deps: ['sslmode'],
-      },{
-        id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'file',
-        group: gettext('SSL'), mode: ['edit', 'create'],
-        disabled: obj.isSSL, readonly: obj.isConnected,
-        controlProps: {
-          dialogType: 'select_file', supportedTypes: ['*'],
-        },
-        deps: ['sslmode'],
-      },
-      {
-        id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
-        mode: ['edit', 'create'], group: gettext('SSL'),
-        disabled: obj.isSSL, readonly: obj.isConnected,
-        deps: ['sslmode'],
-      },
-      {
-        id: 'sslcert', label: gettext('Client certificate'), type: 'text',
-        group: gettext('SSL'), mode: ['properties'],
-        deps: ['sslmode'],
-        visible: function(state) {
-          var sslcert = state.sslcert;
-          return !_.isUndefined(sslcert) && !_.isNull(sslcert);
-        },
-      },{
-        id: 'sslkey', label: gettext('Client certificate key'), type: 'text',
-        group: gettext('SSL'), mode: ['properties'],
-        deps: ['sslmode'],
-        visible: function(state) {
-          var sslkey = state.sslkey;
-          return !_.isUndefined(sslkey) && !_.isNull(sslkey);
-        },
-      },{
-        id: 'sslrootcert', label: gettext('Root certificate'), type: 'text',
-        group: gettext('SSL'), mode: ['properties'],
-        deps: ['sslmode'],
-        visible: function(state) {
-          var sslrootcert = state.sslrootcert;
-          return !_.isUndefined(sslrootcert) && !_.isNull(sslrootcert);
-        },
-      },{
-        id: 'sslcrl', label: gettext('Certificate revocation list'), type: 'text',
-        group: gettext('SSL'), mode: ['properties'],
-        deps: ['sslmode'],
-        visible: function(state) {
-          var sslcrl = state.sslcrl;
-          return !_.isUndefined(sslcrl) && !_.isNull(sslcrl);
-        },
-      },{
-        id: 'sslcompression', label: gettext('SSL compression?'), type: 'switch',
-        mode: ['properties'], group: gettext('SSL'),
-        deps: ['sslmode'],
-        visible: function(state) {
-          return _.indexOf(obj.SSL_MODES, state.sslmode) != -1;
-        },
-      },
-      {
+      }, {
+        id: 'connection_params', label: gettext('Connection Parameters'),
+        type: 'collection', group: gettext('Parameters'),
+        schema: this.paramSchema, mode: ['edit', 'create'], uniqueCol: ['name'],
+        canAdd: (state)=> !obj.isConnected(state), canEdit: false,
+        canDelete: (state)=> !obj.isConnected(state),
+      }, {
         id: 'use_ssh_tunnel', label: gettext('Use SSH tunneling'), type: 'switch',
         mode: ['properties', 'edit', 'create'], group: gettext('SSH Tunnel'),
         disabled: function() {
@@ -395,6 +284,9 @@ export default class ServerSchema extends BaseUISchema {
         disabled: function(state) {
           return !state.use_ssh_tunnel;
         },
+        controlProps: {
+          maxLength: null
+        },
         readonly: obj.isConnected,
       }, {
         id: 'save_tunnel_password', label: gettext('Save password?'),
@@ -406,36 +298,25 @@ export default class ServerSchema extends BaseUISchema {
         disabled: function(state) {
           return (!current_user.allow_save_tunnel_password || !state.use_ssh_tunnel);
         },
-      }, {
-        id: 'hostaddr', label: gettext('Host address'), type: 'text', group: gettext('Advanced'),
-        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
       },
       {
         id: 'db_res', label: gettext('DB restriction'), type: 'select', group: gettext('Advanced'),
         options: [],
         mode: ['properties', 'edit', 'create'], readonly: obj.isConnected, controlProps: {
-          multiple: true, allowClear: false, creatable: true, noDropdown: true},
+          multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: 'Specify the databases to be restrict...'},
       },
       {
-        id: 'passfile', label: gettext('Password file'), type: 'file',
-        group: gettext('Advanced'), mode: ['edit', 'create'],
-        disabled: obj.isValidLib, readonly: obj.isConnected,
-        controlProps: {
-          dialogType: 'select_file', supportedTypes: ['*'],
-        },
+        id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
       },
       {
-        id: 'passfile', label: gettext('Password file'), type: 'text',
-        group: gettext('Advanced'), mode: ['properties'],
+        id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
         visible: function(state) {
-          var passfile = state.passfile;
-          return !_.isUndefined(passfile) && !_.isNull(passfile);
+          return !_.isEmpty(state.passexec_cmd);
         },
-      },{
-        id: 'connect_timeout', label: gettext('Connection timeout (seconds)'),
-        type: 'int', group: gettext('Advanced'),
-        mode: ['properties', 'edit', 'create'], readonly: obj.isConnected,
-        min: 0,
       }
     ];
   }
@@ -444,31 +325,24 @@ export default class ServerSchema extends BaseUISchema {
     let errmsg = null;
 
     if (isEmptyString(state.service)) {
-      errmsg = gettext('Either Host name, Address or Service must be specified.');
-      if(isEmptyString(state.host) && isEmptyString(state.hostaddr)) {
+      errmsg = gettext('Either Host name or Service must be specified.');
+      if(isEmptyString(state.host)) {
         setError('host', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('host', errmsg);
-        setError('hostaddr', errmsg);
+        setError('host', null);
       }
 
-      /* IP address validate */
-      if (state.hostaddr) {
-        try {
-          new Address4(state.hostaddr);
-        } catch(e) {
-          try {
-            new Address6(state.hostaddr);
-          } catch(ex) {
-            errmsg = gettext('Host address must be valid IPv4 or IPv6 address.');
-            setError('hostaddr', errmsg);
-            return true;
-          }
+      /* Hostname, IP address validate */
+      if (state.host) {
+        // Check for leading and trailing spaces.
+        if (/(^\s)|(\s$)/.test(state.host)){
+          errmsg = gettext('Host name must be valid hostname or IPv4 or IPv6 address.');
+          setError('host', errmsg);
+          return true;
+        } else {
+          setError('host', null);
         }
-      } else {
-        setError('hostaddr', null);
       }
 
       if(isEmptyString(state.username)) {
@@ -476,8 +350,7 @@ export default class ServerSchema extends BaseUISchema {
         setError('username', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('username', errmsg);
+        setError('username', null);
       }
 
       if(isEmptyString(state.port)) {
@@ -485,13 +358,11 @@ export default class ServerSchema extends BaseUISchema {
         setError('port', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('port', errmsg);
+        setError('port', null);
       }
     } else {
-      errmsg = null;
-      _.each(['host', 'hostaddr', 'db', 'username', 'port'], (item) => {
-        setError(item, errmsg);
+      _.each(['host', 'db', 'username', 'port'], (item) => {
+        setError(item, null);
       });
     }
 
@@ -501,8 +372,7 @@ export default class ServerSchema extends BaseUISchema {
         setError('tunnel_host', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_host', errmsg);
+        setError('tunnel_host', null);
       }
 
       if(isEmptyString(state.tunnel_port)) {
@@ -510,8 +380,7 @@ export default class ServerSchema extends BaseUISchema {
         setError('tunnel_port', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_port', errmsg);
+        setError('tunnel_port', null);
       }
 
       if(isEmptyString(state.tunnel_username)) {
@@ -519,8 +388,7 @@ export default class ServerSchema extends BaseUISchema {
         setError('tunnel_username', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tunnel_username', errmsg);
+        setError('tunnel_username', null);
       }
 
       if (state.tunnel_authentication) {
@@ -529,11 +397,98 @@ export default class ServerSchema extends BaseUISchema {
           setError('tunnel_identity_file', errmsg);
           return true;
         } else {
-          errmsg = null;
-          setError('tunnel_identity_file', errmsg);
+          setError('tunnel_identity_file', null);
         }
       }
     }
     return false;
+  }
+
+  getConnectionParameters() {
+    return [{
+      'value': 'hostaddr', 'label': gettext('Host address'), 'vartype': 'string'
+    }, {
+      'value': 'passfile', 'label': gettext('Password file'), 'vartype': 'file'
+    }, {
+      'value': 'channel_binding', 'label': gettext('Channel binding'), 'vartype': 'enum',
+      'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
+      'min_server_version': '13'
+    }, {
+      'value': 'connect_timeout', 'label': gettext('Connection timeout (seconds)'), 'vartype': 'integer'
+    }, {
+      'value': 'client_encoding', 'label': gettext('Client encoding'), 'vartype': 'string'
+    },  {
+      'value': 'options', 'label': gettext('Options'), 'vartype': 'string'
+    }, {
+      'value': 'application_name', 'label': gettext('Application name'), 'vartype': 'string'
+    }, {
+      'value': 'fallback_application_name', 'label': gettext('Fallback application name'), 'vartype': 'string'
+    }, {
+      'value': 'keepalives', 'label': gettext('Keepalives'), 'vartype': 'integer'
+    }, {
+      'value': 'keepalives_idle', 'label': gettext('Keepalives idle (seconds)'), 'vartype': 'integer'
+    }, {
+      'value': 'keepalives_interval', 'label': gettext('Keepalives interval (seconds)'), 'vartype': 'integer'
+    }, {
+      'value': 'keepalives_count', 'label': gettext('Keepalives count'), 'vartype': 'integer'
+    }, {
+      'value': 'tcp_user_timeout', 'label': gettext('TCP user timeout (milliseconds)'), 'vartype': 'integer',
+      'min_server_version': '12'
+    },  {
+      'value': 'tty', 'label': gettext('TTY'), 'vartype': 'string',
+      'max_server_version': '13'
+    }, {
+      'value': 'replication', 'label': gettext('Replication'), 'vartype': 'enum',
+      'enumvals': [gettext('on'), gettext('off'), gettext('database')],
+      'min_server_version': '11'
+    }, {
+      'value': 'gssencmode', 'label': gettext('GSS encmode'), 'vartype': 'enum',
+      'enumvals': [gettext('prefer'), gettext('require'), gettext('disable')],
+      'min_server_version': '12'
+    }, {
+      'value': 'sslmode', 'label': gettext('SSL mode'), 'vartype': 'enum',
+      'enumvals': [gettext('allow'), gettext('prefer'), gettext('require'),
+        gettext('disable'), gettext('verify-ca'), gettext('verify-full')]
+    }, {
+      'value': 'sslcompression', 'label': gettext('SSL compression?'), 'vartype': 'bool',
+    }, {
+      'value': 'sslcert', 'label': gettext('Client certificate'), 'vartype': 'file'
+    }, {
+      'value': 'sslkey', 'label': gettext('Client certificate key'), 'vartype': 'file'
+    }, {
+      'value': 'sslpassword', 'label': gettext('SSL password'), 'vartype': 'string',
+      'min_server_version': '13'
+    }, {
+      'value': 'sslrootcert', 'label': gettext('Root certificate'), 'vartype': 'file'
+    }, {
+      'value': 'sslcrl', 'label': gettext('Certificate revocation list'), 'vartype': 'file',
+    }, {
+      'value': 'sslcrldir', 'label': gettext('Certificate revocation list directory'), 'vartype': 'file',
+      'min_server_version': '14'
+    }, {
+      'value': 'sslsni', 'label': gettext('Server name indication'), 'vartype': 'bool',
+      'min_server_version': '14'
+    }, {
+      'value': 'requirepeer', 'label': gettext('Require peer'), 'vartype': 'string',
+    }, {
+      'value': 'ssl_min_protocol_version', 'label': gettext('SSL min protocol version'),
+      'vartype': 'enum', 'min_server_version': '13',
+      'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
+        gettext('TLSv1.3')]
+    }, {
+      'value': 'ssl_max_protocol_version', 'label': gettext('SSL max protocol version'),
+      'vartype': 'enum', 'min_server_version': '13',
+      'enumvals': [gettext('TLSv1'), gettext('TLSv1.1'), gettext('TLSv1.2'),
+        gettext('TLSv1.3')]
+    }, {
+      'value': 'krbsrvname', 'label': gettext('Kerberos service name'), 'vartype': 'string',
+    }, {
+      'value': 'gsslib', 'label': gettext('GSS library'), 'vartype': 'string',
+    }, {
+      'value': 'target_session_attrs', 'label': gettext('Target session attribute'),
+      'vartype': 'enum',
+      'enumvals': [gettext('any'), gettext('read-write'), gettext('read-only'),
+        gettext('primary'), gettext('standby'), gettext('prefer-standby')]
+    }];
   }
 }

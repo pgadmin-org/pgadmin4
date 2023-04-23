@@ -2,21 +2,21 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
 import SynonymSchema from './synonym.ui';
+import _ from 'lodash';
 
 define('pgadmin.node.synonym', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify,
-  schemaChild, schemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode) {
 
   if (!pgBrowser.Nodes['coll-synonym']) {
     pgAdmin.Browser.Nodes['coll-synonym'] =
@@ -51,21 +51,21 @@ define('pgadmin.node.synonym', [
           name: 'create_synonym_on_coll', node: 'coll-synonym', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Synonym...'),
-          icon: 'wcTabIcon icon-synonym', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },{
           name: 'create_synonym', node: 'synonym', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Synonym...'),
-          icon: 'wcTabIcon icon-synonym', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },{
           name: 'create_synonym', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Synonym...'),
-          icon: 'wcTabIcon icon-synonym', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },
@@ -83,7 +83,7 @@ define('pgadmin.node.synonym', [
             }),
             synobjschema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
               // Exclude PPAS catalogs
-              var exclude_catalogs = ['pg_catalog', 'sys', 'dbo', 'pgagent', 'information_schema', 'dbms_job_procedure'];
+              let exclude_catalogs = ['pg_catalog', 'sys', 'dbo', 'pgagent', 'information_schema', 'dbms_job_procedure'];
               return m && _.indexOf(exclude_catalogs, m.label) == -1;
             }),
             getTargetObjectOptions: (targettype, synobjschema) =>
@@ -100,71 +100,19 @@ define('pgadmin.node.synonym', [
           }
         );
       },
-
-      model: pgAdmin.Browser.Node.Model.extend({
-        isNew: function() {
-          return !this.fetchFromServer;
-        },
-        idAttribute: 'oid',
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-            this.set({
-              'owner': userInfo.name,
-              'synobjschema': schemaInfo._label,
-              'schema': schemaInfo._label,
-              'targettype': 'r',
-            }, {silent: true});
-          } else {
-            this.fetchFromServer = true;
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          disabled: 'inSchema', readonly: function(m) { return !m.isNew(); },
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'owner', label: gettext('Owner'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-          readonly: true , control: 'node-list-by-name',
-          node: 'role', visible: false,
-        }],
-
-        // We will disable everything if we are under catalog node
-        inSchema: function() {
-          if(this.node_info &&  'catalog' in this.node_info)
-          {
-            return true;
-          }
-          return false;
-        },
-      }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         if (server && server.server_type === 'pg')
           return false;
 
         // If it is catalog then don't allow user to create synonyms
-        if (treeData['catalog'] != undefined)
-          return false;
-
-        // by default we do not want to allow create menu
-        return true;
+        return treeData['catalog'] == undefined;
       },
     });
 

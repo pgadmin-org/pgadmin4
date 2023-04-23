@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """ Implements Trigger Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
@@ -67,14 +67,14 @@ class TriggerModule(CollectionNodeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(TriggerModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def backend_supported(self, manager, **kwargs):
         """
         Load this module if vid is view, we will not load it under
         material view
         """
-        if super(TriggerModule, self).backend_supported(manager, **kwargs):
+        if super().backend_supported(manager, **kwargs):
             conn = manager.connection(did=kwargs['did'])
 
             if 'vid' not in kwargs:
@@ -244,8 +244,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
     })
 
     # Schema Diff: Keys to ignore while comparing
-    keys_to_ignore = ['oid', 'xmin', 'nspname', 'tgrelid', 'tgfoid', 'prosrc',
-                      'oid-2']
+    keys_to_ignore = ['oid', 'xmin', 'nspname', 'tgrelid', 'tgfoid', 'oid-2']
 
     def check_precondition(f):
         """
@@ -262,17 +261,9 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            # We need datlastsysoid to check if current trigger is system
-            # trigger
-            self.datlastsysoid = self.manager.db_info[
-                kwargs['did']
-            ]['datlastsysoid'] if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             # we will set template path for sql scripts
             self.table_template_path = compile_template_path(
                 'tables/sql',
-                self.manager.server_type,
                 self.manager.version
             )
             self.template_path = 'triggers/sql/{0}/#{1}#'.format(
@@ -321,38 +312,36 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 return gone(
                     gettext("Could not find the specified trigger function"))
 
-            # For language EDB SPL we should not display any node.
-            if rset['rows'][0]['lanname'] != 'edbspl':
-                trigger_function_schema_oid = rset['rows'][0]['tfuncschoid']
+            trigger_function_schema_oid = rset['rows'][0]['tfuncschoid']
 
-                sql = render_template("/".join(
-                    [self.trigger_function_template_path, self._NODE_SQL]),
-                    scid=trigger_function_schema_oid,
-                    fnid=rset['rows'][0]['tfuncoid']
-                )
-                status, res = self.conn.execute_2darray(sql)
-                if not status:
-                    return internal_server_error(errormsg=rset)
+            sql = render_template("/".join(
+                [self.trigger_function_template_path, self._NODE_SQL]),
+                scid=trigger_function_schema_oid,
+                fnid=rset['rows'][0]['tfuncoid']
+            )
+            status, res = self.conn.execute_2darray(sql)
+            if not status:
+                return internal_server_error(errormsg=rset)
 
-                if len(res['rows']) == 0:
-                    return gone(gettext(
-                        "Could not find the specified trigger function"))
+            if len(res['rows']) == 0:
+                return gone(gettext(
+                    "Could not find the specified trigger function"))
 
-                row = res['rows'][0]
-                func_name = row['name']
-                # If trigger function is from another schema then we should
-                # display the name as schema qulified name.
-                if scid != trigger_function_schema_oid:
-                    func_name = \
-                        rset['rows'][0]['tfuncschema'] + '.' + row['name']
+            row = res['rows'][0]
+            func_name = row['name']
+            # If trigger function is from another schema then we should
+            # display the name as schema qulified name.
+            if scid != trigger_function_schema_oid:
+                func_name = \
+                    rset['rows'][0]['tfuncschema'] + '.' + row['name']
 
-                trigger_func = current_app.blueprints['NODE-trigger_function']
-                nodes.append(trigger_func.generate_browser_node(
-                    row['oid'], trigger_function_schema_oid,
-                    gettext(func_name),
-                    icon="icon-trigger_function", funcowner=row['funcowner'],
-                    language=row['lanname'], inode=False)
-                )
+            trigger_func = current_app.blueprints['NODE-trigger_function']
+            nodes.append(trigger_func.generate_browser_node(
+                row['oid'], trigger_function_schema_oid,
+                gettext(func_name),
+                icon="icon-trigger_function", funcowner=row['funcowner'],
+                language=row['lanname'], inode=False)
+            )
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -543,7 +532,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         SQL = render_template("/".join([self.template_path,
                                         self._PROPERTIES_SQL]),
                               tid=tid, trid=trid,
-                              datlastsysoid=self.datlastsysoid)
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
         status, res = self.conn.execute_dict(SQL)
 
@@ -575,7 +564,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -585,7 +574,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -621,7 +610,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             # we need oid to add object in tree at browser
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  tid=tid, data=data)
+                                  tid=tid, data=data, conn=self.conn)
             status, trid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=tid)
@@ -655,7 +644,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if trid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [trid]}
@@ -668,10 +657,10 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             for trid in data['ids']:
                 # We will first fetch the trigger name for current request
                 # so that we create template for dropping trigger
-                SQL = render_template("/".join([self.template_path,
-                                                self._PROPERTIES_SQL]),
-                                      tid=tid, trid=trid,
-                                      datlastsysoid=self.datlastsysoid)
+                SQL = render_template(
+                    "/".join([self.template_path, self._PROPERTIES_SQL]),
+                    tid=tid, trid=trid,
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -721,7 +710,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
            trid: Trigger ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -730,7 +719,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             SQL, name = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=trid,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects)
 
             if not isinstance(SQL, str):
@@ -745,7 +734,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             # so we need to return new OID of trigger.
             SQL = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
-                tid=tid, data=data
+                tid=tid, data=data, conn=self.conn
             )
             status, new_trid = self.conn.execute_scalar(SQL)
             if not status:
@@ -754,7 +743,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
                                   tid=tid, trid=new_trid,
-                                  datlastsysoid=self.datlastsysoid)
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(SQL)
 
@@ -801,7 +790,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -812,7 +801,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         try:
             sql, name = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=trid,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects)
             if not isinstance(sql, str):
                 return sql
@@ -843,7 +832,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         SQL = trigger_utils.get_reverse_engineered_sql(
             self.conn, schema=self.schema, table=self.table, tid=tid,
-            trid=trid, datlastsysoid=self.datlastsysoid,
+            trid=trid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
             show_system_objects=self.blueprint.show_system_objects)
 
         return ajax_response(response=SQL)
@@ -868,7 +857,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         if data:
             SQL, name = trigger_utils.get_sql(
                 self.conn, data=data, tid=tid, trid=oid,
-                datlastsysoid=self.datlastsysoid,
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                 show_system_objects=self.blueprint.show_system_objects,
                 is_schema_diff=True)
 
@@ -887,7 +876,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
                 SQL = trigger_utils.get_reverse_engineered_sql(
                     self.conn, schema=schema, table=self.table, tid=tid,
-                    trid=oid, datlastsysoid=self.datlastsysoid,
+                    trid=oid, datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
                     show_system_objects=self.blueprint.show_system_objects,
                     template_path=None, with_header=False)
 
@@ -908,7 +897,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         is_enable_trigger = data['is_enable_trigger']
@@ -918,7 +907,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.template_path,
                                             self._PROPERTIES_SQL]),
                                   tid=tid, trid=trid,
-                                  datlastsysoid=self.datlastsysoid)
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
 
             status, res = self.conn.execute_dict(SQL)
             if not status:
@@ -946,13 +935,25 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            SQL = render_template(
+                "/".join([
+                    self.template_path, 'get_enabled_triggers.sql'
+                ]),
+                tid=tid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
             return make_json_response(
                 success=1,
                 info="Trigger updated",
                 data={
                     'id': trid,
                     'tid': tid,
-                    'scid': scid
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
                 }
             )
         except Exception as e:
@@ -1027,7 +1028,8 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             res = data
         else:
             SQL = render_template("/".join([self.template_path,
-                                            self._NODES_SQL]), tid=tid)
+                                            self._NODES_SQL]), tid=tid,
+                                  schema_diff=True)
             status, triggers = self.conn.execute_2darray(SQL)
             if not status:
                 current_app.logger.error(triggers)

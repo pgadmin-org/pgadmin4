@@ -61,7 +61,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
   }
 
   get baseFields() {
-    var obj = this;
+    let obj = this;
     return [{
       id: 'autovacuum_custom', label: gettext('Custom auto-vacuum?'),
       group: gettext('Table'), mode: ['edit', 'create'], skipChange: true,
@@ -74,11 +74,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
           return true;
         }
 
-        if(obj.inCatalog)
-        {
-          return false;
-        }
-        return true;
+        return !obj.inCatalog;
       },
       depChange(state) {
         if(state.is_partitioned) {
@@ -96,10 +92,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       ],
       deps: ['autovacuum_custom'],
       disabled: function(state) {
-        if(obj.inCatalog && state.autovacuum_custom) {
-          return false;
-        }
-        return true;
+        return !(obj.inCatalog && state.autovacuum_custom);
       },
       depChange: function(state) {
         if(obj.inCatalog && state.autovacuum_custom) {
@@ -122,10 +115,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       disabled: function(state) {
         // We need to check additional condition to toggle enable/disable
         // for table auto-vacuum
-        if(obj.inCatalog && (obj.top.isNew() || state.hastoasttable)) {
-          return false;
-        }
-        return true;
+        return !(obj.inCatalog && (obj.top.isNew() || state.hastoasttable));
       }
     },
     {
@@ -139,10 +129,7 @@ export default class VacuumSettingsSchema extends BaseUISchema {
       ],
       deps:['toast_autovacuum'],
       disabled: function(state) {
-        if(obj.inCatalog && state.toast_autovacuum) {
-          return false;
-        }
-        return true;
+        return !(obj.inCatalog && state.toast_autovacuum);
       },
       depChange: function(state) {
         if(obj.inCatalog && state.toast_autovacuum) {

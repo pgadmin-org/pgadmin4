@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -125,12 +125,13 @@ class BackupMessageTest(BaseTestGenerator):
     ]
 
     @patch('pgadmin.utils.get_storage_directory')
-    @patch('pgadmin.tools.backup.BackupMessage.get_server_details')
-    def runTest(self, get_server_details_mock, get_storage_directory_mock):
-        get_server_details_mock.return_value = \
-            self.class_params['name'],\
-            self.class_params['host'],\
-            self.class_params['port']
+    @patch('pgadmin.tools.backup.BackupMessage.get_server_name')
+    def runTest(self, get_server_name_mock, get_storage_directory_mock):
+        get_server_name_mock.return_value = "{0} ({1}:{2})"\
+            .format(
+                self.class_params['name'],
+                self.class_params['host'],
+                self.class_params['port'])
 
         backup_obj = BackupMessage(
             self.class_params['type'],
@@ -149,4 +150,4 @@ class BackupMessageTest(BaseTestGenerator):
         obj_details = backup_obj.details(self.class_params['cmd'],
                                          self.class_params['args'])
 
-        self.assertIn(self.expected_details_cmd, obj_details)
+        self.assertEqual(self.expected_details_cmd, obj_details['cmd'])

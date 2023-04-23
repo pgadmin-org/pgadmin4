@@ -11,8 +11,8 @@ passwords. This is applicable only for desktop mode users.
   the first time after starting the application.
 * Once you set the master password, all the existing saved passwords will be
   re-encrypted using the master password.
-* The server passwords which are saved in the SQLite DB file are encrypted and
-  decrypted using the master password.
+* The server passwords which are saved in the SQLite DB file or External
+  Database are encrypted and decrypted using the master password.
 
 .. image:: images/master_password_set.png
     :alt: Set master password

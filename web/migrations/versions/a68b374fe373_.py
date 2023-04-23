@@ -1,4 +1,11 @@
-
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
 """Added columns for SSH tunneling
 
 Revision ID: a68b374fe373
@@ -8,7 +15,6 @@ Create Date: 2018-04-05 13:59:57.588355
 """
 from alembic import op
 import sqlalchemy as sa
-from pgadmin.model import db
 
 # revision identifiers, used by Alembic.
 revision = 'a68b374fe373'
@@ -18,24 +24,14 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN use_ssh_tunnel INTEGER DEFAULT 0'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN tunnel_host TEXT'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN tunnel_port TEXT'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN tunnel_username TEXT'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN tunnel_authentication INTEGER DEFAULT 0'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN tunnel_identity_file TEXT'
-    )
+    op.add_column('server', sa.Column('use_ssh_tunnel', sa.Integer(),
+                                      server_default='0'))
+    op.add_column('server', sa.Column('tunnel_host', sa.String()))
+    op.add_column('server', sa.Column('tunnel_port', sa.String()))
+    op.add_column('server', sa.Column('tunnel_username', sa.String()))
+    op.add_column('server', sa.Column('tunnel_authentication', sa.Integer(),
+                                      server_default='0'))
+    op.add_column('server', sa.Column('tunnel_identity_file', sa.String()))
 
 
 def downgrade():

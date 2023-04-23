@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,13 +12,11 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import SequenceSchema from './sequence.ui';
 
 define('pgadmin.node.sequence', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild,
-  schemaChildTreeNode
+  gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   // Extend the browser's collection class for sequence collection
@@ -58,20 +56,17 @@ define('pgadmin.node.sequence', [
           name: 'create_sequence_on_coll', node: 'coll-sequence', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Sequence...'),
-          icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_sequence', node: 'sequence', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Sequence...'),
-          icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_sequence', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Sequence...'),
-          icon: 'wcTabIcon icon-sequence', data: {action: 'create', check: false},
-          enable: 'canCreate',
+          data: {action: 'create', check: false}, enable: 'canCreate',
         },
         ]);
 
@@ -84,10 +79,7 @@ define('pgadmin.node.sequence', [
             role: ()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
             schema: ()=>getNodeListByName('schema', treeNodeInfo, itemNodeData, {}, (m)=>{
               // If schema name start with pg_* then we need to exclude them
-              if (m.label.match(/^pg_/)) {
-                return false;
-              }
-              return true;
+              return !(m.label.match(/^pg_/));
             }),
             allTables: ()=>getNodeListByName('table', treeNodeInfo, itemNodeData, {includeItemKeys: ['_id']}),
             getColumns: (params)=>{
@@ -106,41 +98,6 @@ define('pgadmin.node.sequence', [
           }
         );
       },
-
-      // Define the model for sequence node.
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-            var schemaInfo = args.node_info.schema;
-
-            this.set({'seqowner': userInfo.name}, {silent: true});
-            this.set({'schema': schemaInfo._label}, {silent: true});
-          }
-          pgBrowser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        // Define the schema for sequence node.
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text', mode: ['properties'],
-        },{
-          id: 'seqowner', label: gettext('Owner'), cell: 'string',
-          type: 'text', mode: ['properties', 'create', 'edit'], node: 'role',
-          control: Backform.NodeListByNameControl,
-        },{
-          id: 'comment', label: gettext('Comment'), type: 'multiline',
-          mode: ['properties', 'create', 'edit'],
-        }],
-      }),
     });
   }
 

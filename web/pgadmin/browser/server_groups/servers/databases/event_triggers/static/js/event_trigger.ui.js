@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export default class EventTriggerSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       oid: undefined,
       name: undefined,
@@ -118,14 +118,12 @@ export default class EventTriggerSchema extends BaseUISchema {
         setError('eventfunname', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('eventfunname', errmsg);
+        setError('eventfunname', null);
       }
 
     } else {
-      errmsg = null;
       _.each(['eventfunname'], (item) => {
-        setError(item, errmsg);
+        setError(item, null);
       });
     }
   }

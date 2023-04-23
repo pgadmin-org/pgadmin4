@@ -2,19 +2,21 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import { getNodeForeignKeySchema } from './foreign_key.ui';
+import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.foreign_key', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'backbone',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
-  'pgadmin.browser.collection',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, Backbone, pgAdmin, pgBrowser, Alertify
+  gettext, url_for, pgAdmin, pgBrowser
 ) {
   // Extend the browser's node class for foreign key node
   if (!pgBrowser.Nodes['foreign_key']) {
@@ -42,13 +44,12 @@ define('pgadmin.node.foreign_key', [
           name: 'create_foreign_key_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign key...'),
-          icon: 'wcTabIcon icon-foreign_key', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'validate_foreign_key', node: 'foreign_key', module: this,
           applies: ['object', 'context'], callback: 'validate_foreign_key',
           category: 'validate', priority: 4, label: gettext('Validate foreign key'),
-          icon: 'fa fa-link', enable : 'is_not_valid',
+          enable : 'is_not_valid',
         },
         ]);
       },
@@ -57,21 +58,18 @@ define('pgadmin.node.foreign_key', [
       },
       callbacks: {
         validate_foreign_key: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            var data = d;
-            $.ajax({
-              url: obj.generate_url(i, 'validate', d, true),
-              type:'GET',
-            })
-              .done(function(res) {
+            let data = d;
+            getApiInstance().get(obj.generate_url(i, 'validate', d, true))
+              .then(({data: res})=>{
                 if (res.success == 1) {
-                  Alertify.success(res.info);
+                  Notify.success(res.info);
                   t.removeIcon(i);
                   data.valid = true;
                   data.icon = 'icon-foreign_key';
@@ -80,8 +78,8 @@ define('pgadmin.node.foreign_key', [
                   setTimeout(function() {t.select(i);}, 100);
                 }
               })
-              .fail(function(xhr, status, error) {
-                Alertify.pgRespErrorNotify(xhr, error);
+              .catch((error)=>{
+                Notify.pgRespErrorNotify(error);
                 t.unload(i);
               });
           }
@@ -93,10 +91,10 @@ define('pgadmin.node.foreign_key', [
       },
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [],
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [],
           immediate_parent_table_found = false,
           is_immediate_parent_table_partitioned = false,
           s_version = t.getTreeNodeHierarchy(i).server.version;

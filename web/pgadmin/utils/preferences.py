@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,11 +13,11 @@ module within the system.
 """
 
 import decimal
-import simplejson as json
+import json
 
 import dateutil.parser as dateutil_parser
 from flask import current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import current_user
 
 from pgadmin.model import db, Preferences as PrefTable, \
@@ -25,7 +25,7 @@ from pgadmin.model import db, Preferences as PrefTable, \
     PreferenceCategory as PrefCategoryTbl
 
 
-class _Preference(object):
+class _Preference():
     """
     Internal class representing module, and categoy bound preference.
     """
@@ -66,11 +66,13 @@ class _Preference(object):
         self.label = label
         self._type = _type
         self.help_str = kwargs.get('help_str', None)
+        self.control_props = kwargs.get('control_props', None)
         self.min_val = kwargs.get('min_val', None)
         self.max_val = kwargs.get('max_val', None)
         self.options = kwargs.get('options', None)
-        self.select2 = kwargs.get('select2', None)
+        self.select = kwargs.get('select', None)
         self.fields = kwargs.get('fields', None)
+        self.hidden = kwargs.get('hidden', None)
         self.allow_blanks = kwargs.get('allow_blanks', None)
         self.disabled = kwargs.get('disabled', False)
         self.dependents = kwargs.get('dependents', None)
@@ -146,10 +148,14 @@ class _Preference(object):
             for opt in self.options:
                 if 'value' in opt and opt['value'] == res.value:
                     return True, res.value
-            if self.select2 and self.select2['tags']:
+
+            if self.control_props and self.control_props['creatable']:
+                return True, res.value
+
+            if self.select and self.select['tags']:
                 return True, res.value
             return True, self.default
-        if self._type == 'select2':
+        if self._type == 'select':
             if res.value:
                 res.value = res.value.replace('[', '')
                 res.value = res.value.replace(']', '')
@@ -190,7 +196,9 @@ class _Preference(object):
                 has_value = next((True for opt in self.options
                                   if 'value' in opt and opt['value'] == value),
                                  False)
-                assert (has_value or (self.select2 and self.select2['tags']))
+                assert (has_value or (self.control_props and
+                                      (self.control_props['tags'] or
+                                       self.control_props['creatable'])))
             elif self._type == 'date':
                 value = parser_map[self._type](value).date()
             else:
@@ -248,19 +256,21 @@ class _Preference(object):
             'label': self.label or self.name,
             'type': self._type,
             'help_str': self.help_str,
+            'control_props': self.control_props,
             'min_val': self.min_val,
             'max_val': self.max_val,
             'options': self.options,
-            'select2': self.select2,
+            'select': self.select,
             'value': self.get(),
             'fields': self.fields,
+            'hidden': self.hidden,
             'disabled': self.disabled,
             'dependents': self.dependents
         }
         return res
 
 
-class Preferences(object):
+class Preferences():
     """
     class Preferences
 
@@ -339,6 +349,7 @@ class Preferences(object):
             cat = self.categories[c]
             interm = {
                 'id': cat['id'],
+                'name': cat['name'],
                 'label': cat['label'] or cat['name'],
                 'preferences': []
             }
@@ -393,7 +404,7 @@ class Preferences(object):
         return res
 
     def register(
-            self, category, name, label, _type, default, **kwargs
+        self, category, name, label, _type, default, **kwargs
     ):
         """
         register
@@ -414,7 +425,7 @@ class Preferences(object):
         :param options:
         :param help_str:
         :param category_label:
-        :param select2: select2 control extra options
+        :param select: select control extra options
         :param fields: field schema (if preference has more than one field to
                         take input from user e.g. keyboardshortcut preference)
         :param allow_blanks: Flag specify whether to allow blank value.
@@ -424,9 +435,11 @@ class Preferences(object):
         max_val = kwargs.get('max_val', None)
         options = kwargs.get('options', None)
         help_str = kwargs.get('help_str', None)
+        control_props = kwargs.get('control_props', {})
         category_label = kwargs.get('category_label', None)
-        select2 = kwargs.get('select2', None)
+        select = kwargs.get('select', None)
         fields = kwargs.get('fields', None)
+        hidden = kwargs.get('hidden', None)
         allow_blanks = kwargs.get('allow_blanks', None)
         disabled = kwargs.get('disabled', False)
         dependents = kwargs.get('dependents', None)
@@ -440,14 +453,15 @@ class Preferences(object):
         assert _type in (
             'boolean', 'integer', 'numeric', 'date', 'datetime',
             'options', 'multiline', 'switch', 'node', 'text', 'radioModern',
-            'keyboardshortcut', 'select2', 'selectFile', 'threshold'
+            'keyboardshortcut', 'select', 'selectFile', 'threshold'
         ), "Type cannot be found in the defined list!"
 
         (cat['preferences'])[name] = res = _Preference(
             cat['id'], name, label, _type, default, help_str=help_str,
             min_val=min_val, max_val=max_val, options=options,
-            select2=select2, fields=fields, allow_blanks=allow_blanks,
-            disabled=disabled, dependents=dependents
+            select=select, fields=fields, allow_blanks=allow_blanks,
+            disabled=disabled, dependents=dependents,
+            control_props=control_props, hidden=hidden
         )
 
         return res
@@ -483,7 +497,7 @@ class Preferences(object):
 
     @classmethod
     def register_preference(
-            cls, module, category, name, label, _type, **kwargs
+        cls, module, category, name, label, _type, **kwargs
     ):
         """
         register
@@ -503,6 +517,7 @@ class Preferences(object):
         max_val = kwargs.get('max_val', None)
         options = kwargs.get('options', None)
         help_str = kwargs.get('help_str', None)
+        control_props = kwargs.get('control_props', None)
         module_label = kwargs.get('module_label', None)
         category_label = kwargs.get('category_label', None)
 
@@ -516,6 +531,7 @@ class Preferences(object):
         return m.register(
             category, name, label, _type, default, min_val=min_val,
             max_val=max_val, options=options, help_str=help_str,
+            control_props=control_props,
             category_label=category_label
         )
 

@@ -18,7 +18,7 @@
   position: absolute;
   overflow: auto;
   top: $title-height;
-  bottom: $footer-height-calc; //similar to alertify footer
+  bottom: $footer-height-calc;
   left: 0;
   right: 0;
 }
@@ -28,7 +28,7 @@
   padding: $footer-padding
 }
 
-/* match the alertify footer */
+/* match the footer */
 .pgadmin-wizard .wizard-footer {
   min-height: $footer-min-height;
   border: none;

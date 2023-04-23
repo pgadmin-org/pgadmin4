@@ -30,12 +30,12 @@ END {{ conn|qtIdent(data.name) }};
 
 {% if data.description is not defined and o_data.description %}
 COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
-    IS {{o_data.description|qtLiteral}};
+    IS {{o_data.description|qtLiteral(conn)}};
 {% endif %}
 {% endif %}
 {% if data.description is defined  and o_data.description != data.description %}
 COMMENT ON TRIGGER {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(o_data.nspname, o_data.relname) }}
-    IS {{data.description|qtLiteral}};
+    IS {{data.description|qtLiteral(conn)}};
 {% endif %}
 {% if data.is_enable_trigger is defined  and o_data.is_enable_trigger != data.is_enable_trigger %}
 {% set enable_map = {'R':'ENABLE REPLICA', 'A':'ENABLE ALWAYS', 'O':'ENABLE', 'D':'DISABLE'} %}

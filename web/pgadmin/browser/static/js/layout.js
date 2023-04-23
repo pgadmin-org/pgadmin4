@@ -2,22 +2,22 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import pgAdmin from 'sources/pgadmin';
 import url_for from 'sources/url_for';
-import $ from 'jquery';
-import * as Alertify from 'pgadmin.alertifyjs';
 import gettext from 'sources/gettext';
 import 'wcdocker';
 import pgWindow from 'sources/window';
+import Notify from '../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../static/js/api_instance';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
 /* Add cache related methods and properties */
 _.extend(pgBrowser, {
@@ -29,8 +29,8 @@ _.extend(pgBrowser, {
 
   // Build the default layout
   buildDefaultLayout: function(docker) {
-    var browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
-    var dashboardPanel = docker.addPanel(
+    let browserPanel = docker.addPanel('browser', wcDocker.DOCK.LEFT);
+    let dashboardPanel = docker.addPanel(
       'dashboard', wcDocker.DOCK.RIGHT, browserPanel);
     docker.addPanel('properties', wcDocker.DOCK.STACKED, dashboardPanel, {
       tabOrientation: wcDocker.TAB.TOP,
@@ -42,25 +42,34 @@ _.extend(pgBrowser, {
       'dependencies', wcDocker.DOCK.STACKED, dashboardPanel);
     docker.addPanel(
       'dependents', wcDocker.DOCK.STACKED, dashboardPanel);
+    docker.addPanel(
+      'processes', wcDocker.DOCK.STACKED, dashboardPanel);
   },
 
   save_current_layout: function(layout_id, docker) {
     if(docker) {
-      var layout = docker.save(),
+      let layout = docker.save(),
         settings = { setting: layout_id, value: layout };
-      $.ajax({
-        type: 'POST',
-        url: url_for('settings.store_bulk'),
-        data: settings,
-      });
+
+      getApiInstance().post(url_for('settings.store_bulk'), settings);
     }
   },
 
-  restore_layout: function(docker, layout, defaultLayoutCallback) {
+  restore_layout: function(docker, layout, defaultLayoutCallback, checkLayout= false) {
     // Try to restore the layout if there is one
     if (layout != '') {
       try {
         docker.restore(layout);
+        if(checkLayout) {
+          // Check restore layout is restored pgAdmin 4 layout successfully if not then reset layout to default pgAdmin 4 layout.
+          let _panel = docker.findPanels('properties');
+          if(_panel.length == 0 && defaultLayoutCallback){
+            // clear the wcDocker before reset layout.
+            docker.clear();
+            Notify.info(gettext('pgAdmin has reset the layout because the previously saved layout is invalid.'), null);
+            defaultLayoutCallback(docker);
+          }
+        }
       }
       catch(err) {
         docker.clear();
@@ -101,8 +110,8 @@ _.extend(pgBrowser, {
 
   lock_layout: function(docker, op) {
     let menu_items = [];
-    if('mnu_locklayout' in this.menus['file']) {
-      menu_items = this.menus['file']['mnu_locklayout']['menu_items'];
+    if('mnu_locklayout' in this.all_menus_cache['file']) {
+      menu_items = this.all_menus_cache['file']['mnu_locklayout']['menu_items'];
     }
 
     switch(op) {
@@ -131,17 +140,15 @@ _.extend(pgBrowser, {
   save_lock_layout: function(op) {
     let browser = pgWindow.pgAdmin.Browser;
 
-    $.ajax({
-      url: url_for('browser.lock_layout'),
-      method: 'PUT',
-      contentType: 'application/json',
-      data: JSON.stringify({
+    getApiInstance().put(
+      url_for('browser.lock_layout'),
+      JSON.stringify({
         'value': op,
-      }),
-    }).done(function() {
+      })
+    ).then(()=> {
       browser.cache_preferences('browser');
-    }).fail(function(xhr, error) {
-      Alertify.pgNotifier(error, xhr, gettext('Failed to save the lock layout setting.'));
+    }).catch(function(error) {
+      Notify.pgNotifier('error', error, gettext('Failed to save the lock layout setting.'));
     });
   },
 

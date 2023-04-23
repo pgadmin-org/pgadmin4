@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -71,30 +71,27 @@ export class DefaultArgumentSchema extends BaseUISchema {
   }
 
   isEditable() {
-    var node_info = this.node_info;
+    let node_info = this.node_info;
     if(node_info && 'catalog' in node_info) {
       return false;
     }
     return _.isUndefined(this.isNew) ? true : this.isNew();
   }
   isInCatalog(state){
-    var node_info = this.node_info;
+    let node_info = this.node_info;
     if(node_info && 'catalog' in node_info) {
       return false;
     }
     // Below will disable default value cell if argument mode is 'INOUT' or 'OUT' as
     // user cannot set default value for out parameters.
-    if(!_.isUndefined(state.argmode) && !_.isUndefined(state.name) &&
+    return !(!_.isUndefined(state.argmode) && !_.isUndefined(state.name) &&
        state.name == 'argdefval' &&
-       (state.argmode == 'INOUT' || state.argmode == 'OUT')) {
-      return false;
-    }
-    return true;
+       (state.argmode == 'INOUT' || state.argmode == 'OUT'));
   }
 }
 
 export default class FunctionSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, getNodeVariableSchema, fieldOptions={}, node_info, type, initValues) {
+  constructor(getPrivilegeRoleSchema, getNodeVariableSchema, fieldOptions={}, node_info={}, type='function', initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -148,9 +145,8 @@ export default class FunctionSchema extends BaseUISchema {
   }
 
   isVisible(state) {
-    if(!(this.type === 'procedure')){
-      if (state.sysproc) { return false; }
-      return true;
+    if(this.type !== 'procedure'){
+      return !state.sysproc;
     }else{
       if (state.sysfunc) {
         return false;
@@ -209,7 +205,13 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'funcowner', label: gettext('Owner'), cell: 'string',
       options: this.fieldOptions.role, type: 'select',
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog() : obj.isGreaterThan95,
+      disabled: (state) => {
+        if (this.type !== 'procedure') {
+          obj.inCatalog(state);
+        } else {
+          obj.isGreaterThan95(state);
+        }
+      },
       noEmpty: true,
     },{
       id: 'pronamespace', label: gettext('Schema'), cell: 'string',
@@ -228,10 +230,7 @@ export default class FunctionSchema extends BaseUISchema {
       id: 'sysproc', label: gettext('System procedure?'),
       cell:'boolean', type: 'switch',
       mode: ['properties'], visible: () => {
-        if(this.type === 'procedure'){
-          return true;
-        }
-        return false;
+        return this.type === 'procedure';
       },
     },{
       id: 'description', label: gettext('Comment'), cell: 'string',
@@ -262,25 +261,21 @@ export default class FunctionSchema extends BaseUISchema {
         if(this.type === 'procedure'){
           return this.node_info['node_info'].server.version < 110000;
         }
-        if (this.node_info && 'catalog' in this.node_info) {
-          return true;
-        }
-        return false;
+
+        return this.node_info && 'catalog' in this.node_info;
       }
     },
     {
       id: 'probin', label: gettext('Object file'), cell: 'string',
       type: 'text', group: gettext('Definition'), deps: ['lanname'], visible:
       function(state) {
-        if (state.lanname == 'c') { return true; }
-        return false;
+        return state.lanname == 'c';
       }, disabled: obj.inCatalog(),
     },{
       id: 'prosrc_c', label: gettext('Link symbol'), cell: 'string',
       type: 'text', group: gettext('Definition'),  deps: ['lanname'], visible:
       function(state) {
-        if (state.lanname == 'c') { return true; }
-        return false;
+        return state.lanname == 'c';
       }, disabled: obj.inCatalog(),
     },
     {
@@ -301,10 +296,7 @@ export default class FunctionSchema extends BaseUISchema {
       group: gettext('Code'), deps: ['lanname'],
       isFullTab: true,
       visible: function(state) {
-        if (state.lanname === 'c') {
-          return false;
-        }
-        return true;
+        return state.lanname !== 'c';
       }, disabled: obj.inCatalog(),
     },{
       id: 'provolatile', label: gettext('Volatility'), cell: 'text',
@@ -314,7 +306,7 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'VOLATILE', 'value': 'v'},
         {'label': 'STABLE', 'value': 's'},
         {'label': 'IMMUTABLE', 'value': 'i'},
-      ], disabled: (!(this.type === 'procedure')) ? obj.inCatalog() : obj.isGreaterThan95,
+      ], disabled: (this.type !== 'procedure') ? obj.inCatalog() : obj.isGreaterThan95,
       controlProps: {allowClear: false},
     },{
       id: 'proretset', label: gettext('Returns a set?'), type: 'switch',
@@ -327,7 +319,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'prosecdef', label: gettext('Security of definer?'),
       group: gettext('Options'), type: 'switch',
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): ()=>{
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): ()=>{
         return obj.node_info['node_info'].server.version < 90500;
       },
     },{
@@ -343,19 +335,19 @@ export default class FunctionSchema extends BaseUISchema {
         {'label': 'RESTRICTED', 'value': 'r'},
         {'label': 'SAFE', 'value': 's'},
       ],
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan96,
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isGreaterThan96,
       min_version: 90600,
       controlProps: {allowClear: false},
     },{
       id: 'procost', label: gettext('Estimated cost'), group: gettext('Options'),
       cell:'string', type: 'text', deps: ['lanname'],
-      disabled: (!(this.type === 'procedure')) ? obj.isDisabled: obj.isGreaterThan95,
+      disabled: (this.type !== 'procedure') ? obj.isDisabled: obj.isGreaterThan95,
     },{
       id: 'prorows', label: gettext('Estimated rows'), type: 'text',
       deps: ['proretset'], visible: obj.isVisible,
       readonly: (state) => {
         let isReadonly = true;
-        if(state.proretset == true) {
+        if(state.proretset) {
           isReadonly = false;
         }
         return isReadonly;
@@ -364,7 +356,7 @@ export default class FunctionSchema extends BaseUISchema {
     },{
       id: 'proleakproof', label: gettext('Leak proof?'),
       group: gettext('Options'), cell:'boolean', type: 'switch', min_version: 90200,
-      disabled: (!(this.type === 'procedure')) ? obj.inCatalog(): obj.isGreaterThan95,
+      disabled: (this.type !== 'procedure') ? obj.inCatalog(): obj.isGreaterThan95,
       deps: ['lanname'],
     },{
       id: 'prosupportfunc', label: gettext('Support function'),
@@ -374,9 +366,7 @@ export default class FunctionSchema extends BaseUISchema {
           return true;
         }
 
-        if (obj.node_info['node_info'].server.user.is_superuser)
-          return false;
-        return true;
+        return !(obj.node_info['node_info'].server.user.is_superuser);
       },
       group: gettext('Options'), visible: obj.isVisible,
       options: this.fieldOptions.getSupportFunctions, min_version: 120000,
@@ -405,20 +395,19 @@ export default class FunctionSchema extends BaseUISchema {
       canEdit: false, canDelete: true, uniqueCol : ['provider'],
       disabled: obj.inCatalog(),
       visible: function() {
-        return this.node_info && !(this.type === 'procedure');
+        return this.node_info && this.type !== 'procedure';
       },
     },
     ];
   }
   validate(state, setError) {
     let errmsg = null;
-    if (!(this.type === 'procedure') &&(isEmptyString(state.prorettypename))) {
+    if (this.type !== 'procedure' &&(isEmptyString(state.prorettypename))) {
       errmsg = gettext('Return type cannot be empty.');
       setError('prorettypename', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('prorettypename', errmsg);
+      setError('prorettypename', null);
     }
 
     if ((String(state.lanname) == 'c')) {
@@ -427,8 +416,7 @@ export default class FunctionSchema extends BaseUISchema {
         setError('probin', errmsg);
         return true;
       }else {
-        errmsg = null;
-        setError('probin', errmsg);
+        setError('probin', null);
       }
 
       if (isEmptyString(state.prosrc_c)) {
@@ -436,8 +424,7 @@ export default class FunctionSchema extends BaseUISchema {
         setError('prosrc_c', errmsg);
         return true;
       }else {
-        errmsg = null;
-        setError('prosrc_c', errmsg);
+        setError('prosrc_c', null);
       }
 
     }else {
@@ -447,8 +434,7 @@ export default class FunctionSchema extends BaseUISchema {
         setError('prosrc', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('prosrc', errmsg);
+        setError('prosrc', null);
       }
     }
   }

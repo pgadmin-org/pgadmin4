@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -30,6 +30,7 @@ class IndexesAddTestCase(BaseTestGenerator):
                                          indexes_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -60,11 +61,13 @@ class IndexesAddTestCase(BaseTestGenerator):
         if self.is_positive_test:
             response = indexes_utils.api_create_index(self)
             indexes_utils.assert_status_code(self, response)
-            index_response = indexes_utils.verify_index(self.server,
-                                                        self.db_name,
-                                                        self.index_name)
-            self.assertIsNot(index_response, "Could not find the newly "
-                                             "created index.")
+            # In case of unnamed index the below logic is not required
+            if hasattr(self, 'index_name'):
+                index_response = indexes_utils.verify_index(self.server,
+                                                            self.db_name,
+                                                            self.index_name)
+                self.assertIsNot(index_response, "Could not find the newly "
+                                                 "created index.")
 
         else:
             if self.mocking_required:

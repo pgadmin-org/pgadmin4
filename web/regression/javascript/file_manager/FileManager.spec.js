@@ -1,0 +1,358 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
+import jasmineEnzyme from 'jasmine-enzyme';
+import React from 'react';
+import '../helper/enzyme.helper';
+import { createMount } from '@material-ui/core/test-utils';
+import Theme from '../../../pgadmin/static/js/Theme';
+import FileManager, { FileManagerUtils, getComparator } from '../../../pgadmin/misc/file_manager/static/js/components/FileManager';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios/index';
+import getApiInstance from '../../../pgadmin/static/js/api_instance';
+import * as pgUtils from '../../../pgadmin/static/js/utils';
+
+const files = [
+  {
+    'Filename': 'file1.sql',
+    'Path': '/home/file1',
+    'file_type': 'sql',
+    'Protected': 0,
+    'Properties': {
+      'Date Created': 'Fri Oct 22 16:59:24 2021',
+      'Date Modified': 'Tue Oct 12 14:08:00 2021',
+      'Size': '1.4 MB'
+    }
+  },
+  {
+    'Filename': 'folder1',
+    'Path': '/home/folder1',
+    'file_type': 'dir',
+    'Protected': 0,
+    'Properties': {
+      'Date Created': 'Fri Oct 22 16:59:24 2021',
+      'Date Modified': 'Tue Oct 12 14:08:00 2021',
+      'Size': '1.4 MB'
+    }
+  }
+];
+const transId = 140391;
+const configData = {
+  'transId': transId,
+  'options': {
+    'culture': 'en',
+    'lang': 'py',
+    'defaultViewMode':'list',
+    'autoload': true,
+    'showFullPath': false,
+    'dialog_type': 'select_folder',
+    'show_hidden_files': false,
+    'fileRoot': '/home/current',
+    'capabilities': [
+      'select_folder', 'select_file', 'download',
+      'rename', 'delete', 'upload', 'create'
+    ],
+    'allowed_file_types': [
+      '*',
+      'sql',
+      'backup'
+    ],
+    'platform_type': 'darwin',
+    'show_volumes': true,
+    'homedir': '/home/',
+    'last_selected_format': '*',
+    'storage_folder': ''
+  },
+  'security': {
+    'uploadPolicy': '',
+    'uploadRestrictions': [
+      '*',
+      'sql',
+      'backup'
+    ]
+  },
+  'upload': {
+    'multiple': true,
+    'number': 20,
+    'fileSizeLimit': 50,
+    'imagesOnly': false
+  }
+};
+
+const sharedStorageConfig = ['Shared Storage'];
+const restrictedSharedStorage = [];
+
+const params={
+  dialog_type: 'select_file',
+};
+
+describe('FileManger', ()=>{
+  let mount;
+  let networkMock;
+
+  /* Use createMount so that material ui components gets the required context */
+  /* https://material-ui.com/guides/testing/#api */
+  beforeAll(()=>{
+    mount = createMount();
+    networkMock = new MockAdapter(axios);
+    networkMock.onPost(`/file_manager/filemanager/${transId}/`).reply(200, {data: {result: files}});
+    networkMock.onPost(`/file_manager/save_file_dialog_view/${transId}`).reply(200, {});
+    networkMock.onDelete(`/file_manager/delete_trans_id/${transId}`).reply(200, {});
+  });
+
+  afterAll(() => {
+    mount.cleanUp();
+    networkMock.restore();
+  });
+
+  beforeEach(()=>{
+    jasmineEnzyme();
+  });
+
+  describe('FileManger', ()=>{
+    let closeModal=jasmine.createSpy('closeModal'),
+      onOK=jasmine.createSpy('onOK'),
+      onCancel=jasmine.createSpy('onCancel'),
+      ctrlMount = (props)=>{
+        return mount(<Theme>
+          <FileManager
+            params={params}
+            closeModal={closeModal}
+            onOK={onOK}
+            onCancel={onCancel}
+            sharedStorages={sharedStorageConfig}
+            restrictedSharedStorage={restrictedSharedStorage}
+            {...props}
+          />
+        </Theme>);
+      };
+
+    it('init', (done)=>{
+      networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
+      let ctrl = ctrlMount({});
+      setTimeout(()=>{
+        ctrl.update();
+        ctrl.find('button[name="menu-options"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="List View"]').simulate('click');
+        ctrl.update();
+        expect(ctrl.find('ListView').length).toBe(1);
+        expect(ctrl.find('GridView').length).toBe(0);
+        expect(ctrl.find('InputText[data-label="file-path"]').prop('value')).toBe('/home/current');
+        ctrl.find('button[name="menu-options"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="Grid View"]').simulate('click');
+        setTimeout(()=>{
+          ctrl.update();
+          expect(ctrl.find('ListView').length).toBe(0);
+          expect(ctrl.find('GridView').length).toBe(1);
+          done();
+        }, 500);
+      }, 0);
+    });
+
+    it('Change Shared Storage', (done)=>{
+      networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
+      let ctrl = ctrlMount({});
+      setTimeout(()=>{
+        ctrl.update();
+        ctrl.find('button[name="menu-shared-storage"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="Shared Storage"]').simulate('click');
+        ctrl.update();
+        expect(ctrl.find('Shared Storage').length).toBe(0);
+        done();
+      }, 0);
+    });
+
+    it('Change Storage to My Storage', (done)=>{
+      networkMock.onPost('/file_manager/init').reply(200, {'data': configData});
+      networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply(200, {'success':1,'errormsg':'','info':'','result':null,'data':null});
+      let ctrl = ctrlMount({});
+      setTimeout(()=>{
+        ctrl.update();
+        ctrl.find('button[name="menu-shared-storage"]').simulate('click');
+        ctrl.find('Memo(MenuItem)[data-label="my_storage"]').simulate('click');
+        ctrl.update();
+        expect(ctrl.find('my_storage').length).toBe(0);
+        done();
+      }, 0);
+    });
+
+    describe('getComparator', ()=>{
+      it('Filename', ()=>{
+        expect(getComparator({columnKey: 'Filename', direction: 'ASC'})({Filename:'a'}, {Filename:'b'})).toBe(-1);
+        expect(getComparator({columnKey: 'Filename', direction: 'DESC'})({Filename:'a'}, {Filename:'b'})).toBe(1);
+        expect(getComparator({columnKey: 'Filename', direction: 'ASC'})({Filename:'a'}, {Filename:'A'})).toBe(-1);
+      });
+
+      it('Properties.DateModified', ()=>{
+        expect(getComparator({columnKey: 'Properties.DateModified', direction: 'ASC'})(
+          {Properties:{'Date Modified':'Tue Feb 25 11:36:28 2020'}}, {Properties:{'Date Modified':'Tue Feb 26 11:36:28 2020'}})
+        ).toBe(-1);
+        expect(getComparator({columnKey: 'Properties.DateModified', direction: 'DESC'})(
+          {Properties:{'Date Modified':'Tue Feb 25 11:36:28 2020'}}, {Properties:{'Date Modified':'Tue Feb 26 11:36:28 2020'}})
+        ).toBe(1);
+        expect(getComparator({columnKey: 'Properties.DateModified', direction: 'ASC'})(
+          {Properties:{'Date Modified':'Tue Feb 25 11:36:28 2020'}}, {Properties:{'Date Modified':'Tue Feb 25 11:36:28 2020'}})
+        ).toBe(0);
+      });
+
+      it('Properties.Size', ()=>{
+        expect(getComparator({columnKey: 'Properties.Size', direction: 'ASC'})(
+          {Properties:{'Size':'1 KB'}}, {Properties:{'Size':'1 MB'}})
+        ).toBe(-1);
+        expect(getComparator({columnKey: 'Properties.Size', direction: 'DESC'})(
+          {Properties:{'Size':'1 MB'}}, {Properties:{'Size':'1 GB'}})
+        ).toBe(1);
+        expect(getComparator({columnKey: 'Properties.Size', direction: 'ASC'})(
+          {Properties:{'Size':'1 MB'}}, {Properties:{'Size':'1 MB'}})
+        ).toBe(0);
+      });
+    });
+  });
+});
+
+describe('FileManagerUtils', ()=>{
+  let api, fmObj, networkMock;
+  beforeEach(()=>{
+    networkMock = new MockAdapter(axios);
+    networkMock.onDelete(`/file_manager/delete_trans_id/${transId}`).reply(200, {});
+    networkMock.onPost(`/file_manager/filemanager/${transId}/`).reply((config)=>{
+      let retVal = {};
+      let apiData = JSON.parse(config.data);
+      let headers = {};
+      if(apiData.mode == 'addfolder') {
+        retVal = {data: {result: {
+          Name: apiData.name,
+          Path: '/home/'+apiData.name,
+          'Date Modified': 'Tue Feb 25 11:36:28 2020',
+        }}};
+      } else if(apiData.mode == 'rename') {
+        retVal = {data: {result: {
+          'New Path': '/home/'+apiData.new,
+          'New Name': apiData.new,
+        }}};
+      } else if(apiData.mode == 'download') {
+        retVal = 'blobdata';
+        headers = {filename: 'newfile1'};
+      } else if(apiData.mode == 'is_file_exist') {
+        retVal = {data: {result: {Code: 1}}};
+      }
+      return [200, retVal, headers];
+    });
+
+    api = getApiInstance();
+    fmObj = new FileManagerUtils(api, params);
+    fmObj.config = configData;
+  });
+
+  afterEach(()=>{
+    networkMock.restore();
+  });
+
+  it('showHiddenFiles', ()=>{
+    expect(fmObj.showHiddenFiles).toBe(false);
+    networkMock.onPut(`/file_manager/save_show_hidden_file_option/${transId}`).reply(200, {});
+    fmObj.showHiddenFiles = true;
+    expect(fmObj.config.options?.show_hidden_files).toBe(true);
+  });
+
+  it('setLastVisitedDir', async ()=>{
+    let calledPath = null;
+    networkMock.onPost(`/file_manager/save_last_dir/${transId}`).reply((config)=>{
+      calledPath = JSON.parse(config.data).path;
+      return [200, {}];
+    });
+    await fmObj.setLastVisitedDir('/home/xyz');
+    expect(calledPath).toBe('/home/xyz');
+  });
+
+  it('setDialogView', async ()=>{
+    networkMock.onPost(`/file_manager/save_file_dialog_view/${transId}`).reply(200, {});
+    await fmObj.setDialogView('grid');
+    expect(fmObj.config.options.defaultViewMode).toBe('grid');
+  });
+
+  it('setFileType', async ()=>{
+    networkMock.onPost('/settings/save_file_format_setting/').reply(200, {});
+    await fmObj.setFileType('pgerd');
+    expect(fmObj.config.options.last_selected_format).toBe('pgerd');
+  });
+
+  it('join', ()=>{
+    expect(fmObj.join('/dir1/dir2', 'file1')).toBe('/dir1/dir2/file1');
+    expect(fmObj.join('/dir1/dir2/', 'file1')).toBe('/dir1/dir2/file1');
+  });
+
+  it('addFolder', async ()=>{
+    let res = await fmObj.addFolder({Filename: 'newfolder', 'storage_folder': 'my_storage'});
+    expect(res).toEqual({
+      Filename: 'newfolder',
+      Path: '/home/newfolder',
+      file_type: 'dir',
+      Properties: {
+        'Date Modified': 'Tue Feb 25 11:36:28 2020',
+      }
+    });
+  });
+
+  it('rename', async ()=>{
+    let row = {Filename: 'newfolder1', Path: '/home/newfolder'};
+    let res = await fmObj.renameItem(row);
+    expect(res).toEqual({
+      Filename: 'newfolder1',
+      Path: '/home/newfolder1',
+    });
+  });
+
+  it('deleteItem', async ()=>{
+    let row = {Filename: 'newfolder', Path: '/home/newfolder'};
+    let path = await fmObj.deleteItem(row, '');
+    expect(path).toBe('/home/newfolder');
+
+    path = await fmObj.deleteItem(row, '', 'file1');
+    expect(path).toBe('/home/newfolder/file1');
+  });
+
+  it('checkPermission', async ()=>{
+    networkMock.reset();
+    networkMock.onPost(`/file_manager/filemanager/${transId}/`).reply(200, {
+      data: {
+        result: {
+          Code: 1,
+        }
+      }
+    });
+    let res = await fmObj.checkPermission('/home/newfolder');
+    expect(res).toEqual(null);
+
+    networkMock.onPost(`/file_manager/filemanager/${transId}/`).reply(200, {
+      data: {
+        result: {
+          Code: 0,
+          Error: 'file error'
+        }
+      }
+    });
+    res = await fmObj.checkPermission('/home/newfolder');
+    expect(res).toEqual('file error');
+  });
+
+  it('isFileExists', async ()=>{
+    let res = await fmObj.isFileExists('/home/newfolder', 'newfile1');
+    expect(res).toBe(true);
+  });
+
+  it('downloadFile', async ()=>{
+    spyOn(pgUtils, 'downloadBlob');
+    let row = {Filename: 'newfile1', Path: '/home/newfile1', 'storage_folder': 'my_storage'};
+    await fmObj.downloadFile(row);
+    expect(pgUtils.downloadBlob).toHaveBeenCalledWith('blobdata', 'newfile1');
+  });
+});

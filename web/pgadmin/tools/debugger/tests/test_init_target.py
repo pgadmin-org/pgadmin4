@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -31,7 +31,7 @@ class InitTargetDebugger(BaseTestGenerator):
                                          debugger_utils.test_cases)
 
     def setUp(self):
-        super(InitTargetDebugger, self).setUp()
+        super().setUp()
         self.debugger_error = 'The debugger plugin is not enabled. ' \
                               'Please add the plugin to the shared_preload_' \
                               'libraries setting in the postgresql.conf file' \
@@ -89,13 +89,13 @@ class InitTargetDebugger(BaseTestGenerator):
 
     def initialize_traget(self):
         if hasattr(self, 'create_trigger_func') and self.create_trigger_func:
-            return self.tester.get(
+            return self.tester.post(
                 self.url + str(self.trans_id) + '/' + str(self.server_id) +
                 '/' + str(self.db_id) + '/' + str(self.schema_id) +
                 '/' + str(self.table_id) + '/' +
                 str(self.trigger_id), content_type='application/json')
         else:
-            return self.tester.get(
+            return self.tester.post(
                 self.url + str(self.trans_id) + '/' + str(self.server_id) +
                 '/' + str(self.db_id) + '/' + str(self.schema_id) +
                 '/' + str(self.func_id),

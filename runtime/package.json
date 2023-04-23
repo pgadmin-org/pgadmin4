@@ -5,11 +5,12 @@
   "repository": "https://github.com/postgres/pgadmin4.git",
   "author": "pgAdmin Development Team (https://www.pgadmin.org/)",
   "license": "PostgreSQL",
-  "chromium-args": "--disable-popup-blocking",
+  "chromium-args": "--disable-popup-blocking --disable-gpu",
   "user-agent": "Nwjs:%nwver-%osinfo-%chromium_ver",
+  "nodejs": true,
   "window": {
-    "width": 440,
-    "height": 170,
+    "width": 750,
+    "height": 600,
     "toolbar": false,
     "fullscreen": false,
     "frame": false,
@@ -19,12 +20,12 @@
     "icon": "assets/pgAdmin4.png"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^1.3.5",
     "bootstrap": "^4.5.3"
   },
   "devDependencies": {
-    "eslint": "^6.3.0",
-    "nw": "0.55.0"
+    "eslint": "^8.38.0",
+    "nw": "^0.72.0"
   },
   "scripts": {
     "linter": "yarn eslint --no-eslintrc -c .eslintrc.js --ext .js ."

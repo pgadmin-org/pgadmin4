@@ -2,18 +2,18 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements the pgAgent Jobs Node"""
 from functools import wraps
-import simplejson as json
+import json
 from datetime import datetime, time
 
 from flask import render_template, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
 from config import PG_DEFAULT_DRIVER
 
@@ -111,6 +111,19 @@ SELECT EXISTS(
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .schedules import blueprint as module
+        self.submodules.append(module)
+
+        from .steps import blueprint as module
+        self.submodules.append(module)
+
+        super().register(app, options)
+
 
 blueprint = JobModule(__name__)
 
@@ -160,7 +173,7 @@ class JobView(PGChildNodeView):
             # Set the template path for the sql scripts.
             self.template_path = 'pga_job/sql/pre3.4'
 
-            if not ('pgAgent' in self.manager.db_info):
+            if 'pgAgent'not in self.manager.db_info:
                 status, res = self.conn.execute_dict("""
 SELECT EXISTS(
         SELECT 1 FROM information_schema.columns
@@ -394,7 +407,7 @@ SELECT EXISTS(
 
         if jid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [jid]}

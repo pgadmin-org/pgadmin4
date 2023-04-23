@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -24,14 +24,17 @@ class SQLTemplateTestBase(BaseTestGenerator):
     ]
 
     def __init__(self):
-        super(SQLTemplateTestBase, self).__init__()
+        super().__init__()
         self.database_name = -1
 
     def test_setup(self, connection, cursor):
         # To be implemented by child classes
         pass
 
-    def generate_sql(self, version):
+    def get_server_version(self, connection):
+        return connection.info.server_version
+
+    def generate_sql(self, connection):
         # To be implemented by child classes
         pass
 
@@ -50,7 +53,7 @@ class SQLTemplateTestBase(BaseTestGenerator):
             cursor = connection.cursor()
             self.test_setup(connection, cursor)
 
-            sql = self.generate_sql(connection.server_version)
+            sql = self.generate_sql(connection)
 
             cursor = connection.cursor()
             cursor.execute(sql)
@@ -69,7 +72,7 @@ class SQLTemplateTestBase(BaseTestGenerator):
         """
         # Iterate all the mapping directories and check the file is exist
         # in the specified folder. If it exists then return the path.
-        for directory in get_version_mapping_directories(self.server['type']):
+        for directory in get_version_mapping_directories():
             if directory['number'] > version:
                 continue
 

@@ -2,14 +2,14 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import uuid
 
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
@@ -23,7 +23,7 @@ class DatabaseDeleteTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        self.db_name = "db_delete_%s" % str(uuid.uuid4())[1:8],
+        self.db_name = "db_delete_%s" % str(uuid.uuid4())[1:8]
         self.db_id = utils.create_database(self.server, self.db_name)
         self.server_id = parent_node_dict["server"][-1]["server_id"]
         db_dict = {"server_id": self.server_id, "db_id": self.db_id,

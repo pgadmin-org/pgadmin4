@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,10 +10,9 @@
 import PgaJobScheduleSchema from './pga_schedule.ui';
 
 define('pgadmin.node.pga_schedule', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'moment', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
 ], function(
-  gettext, url_for, $, _, pgAdmin, moment, pgBrowser
+  gettext, url_for, pgBrowser
 ) {
 
   if (!pgBrowser.Nodes['coll-pga_schedule']) {
@@ -50,39 +49,23 @@ define('pgadmin.node.pga_schedule', [
           name: 'create_pga_schedule_on_job', node: 'pga_job', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schedule...'),
-          icon: 'wcTabIcon icon-pga_schedule', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_pga_schedule_on_coll', node: 'coll-pga_schedule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schedule...'),
-          icon: 'wcTabIcon icon-pga_schedule', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_pga_schedule', node: 'pga_schedule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Schedule...'),
-          icon: 'wcTabIcon icon-pga_schedule', data: {action: 'create'},
+          data: {action: 'create'},
         }]);
       },
 
       getSchema: function() {
         return new PgaJobScheduleSchema();
       },
-
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'jscid',
-        schema: [{
-          id: 'jscid', label: gettext('ID'), type: 'int',
-          cellHeaderClasses: 'width_percent_5', mode: ['properties'],
-        },{
-          id: 'jscname', label: gettext('Name'), type: 'text',
-          cellHeaderClasses: 'width_percent_45',
-          disabled: function() { return false; },
-        },{
-          id: 'jscenabled', label: gettext('Enabled?'), type: 'switch',
-          disabled: function() { return false; },
-          cellHeaderClasses: 'width_percent_5',
-        }],
-      }),
     });
   }
 

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -39,7 +39,7 @@ class FunctionGetNodesTestCase(BaseTestGenerator):
                 is_positive_test=False,
                 mocking_required=True,
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_2darray",
                     "return_value": "(False, 'Mocked Internal Server "
                                     "Error while get function nodes.')"
@@ -70,7 +70,7 @@ class FunctionGetNodesTestCase(BaseTestGenerator):
                 mocking_required=True,
                 with_function_id=True,
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_2darray",
                     "return_value": "(True, {'rows':[]})"
                 },
@@ -105,7 +105,7 @@ class FunctionGetNodesTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will get function nodes under schema. """
-        super(FunctionGetNodesTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
 
         if self.is_positive_test:

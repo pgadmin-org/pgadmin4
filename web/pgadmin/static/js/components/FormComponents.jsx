@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,32 +10,39 @@
 
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Box, FormControl, OutlinedInput, FormHelperText,
-  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper } from '@material-ui/core';
+import {
+  Box, FormControl, OutlinedInput, FormHelperText,
+  Grid, IconButton, FormControlLabel, Switch, Checkbox, useTheme, InputLabel, Paper, Select as MuiSelect, Radio,
+} from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import ReportProblemIcon from '@material-ui/icons/ReportProblemRounded';
-import InfoIcon from '@material-ui/icons/InfoRounded';
+import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded';
 import DescriptionIcon from '@material-ui/icons/Description';
-import Select, {components as RSComponents} from 'react-select';
+import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
+import Select, { components as RSComponents } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
-import Pickr from '@simonwep/pickr';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import HTMLReactParse from 'html-react-parser';
-import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
+import { KeyboardDateTimePicker, KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import * as DateFns from 'date-fns';
 
 import CodeMirror from './CodeMirror';
 import gettext from 'sources/gettext';
-import { showFileDialog } from '../helpers/legacyConnector';
 import _ from 'lodash';
 import { DefaultButton, PrimaryButton, PgIconButton } from './Buttons';
 import CustomPropTypes from '../custom_prop_types';
+import KeyboardShortcuts from './KeyboardShortcuts';
+import QueryThresholds from './QueryThresholds';
+import SelectThemes from './SelectThemes';
+import { showFileManager } from '../helpers/showFileManager';
+import { withColorPicker } from '../helpers/withColorPicker';
+import { useWindowSize } from '../custom_hooks';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -54,8 +61,9 @@ const useStyles = makeStyles((theme) => ({
   formLabel: {
     margin: theme.spacing(0.75, 0.75, 0.75, 0.75),
     display: 'flex',
+    wordBreak: 'break-word'
   },
-  formLabelError:  {
+  formLabelError: {
     color: theme.palette.error.main,
   },
   sql: {
@@ -91,19 +99,22 @@ export const MESSAGE_TYPE = {
   ERROR: 'Error',
   INFO: 'Info',
   CLOSE: 'Close',
+  WARNING: 'Warning'
 };
 
 /* Icon based on MESSAGE_TYPE */
-function FormIcon({type, close=false, ...props}) {
+function FormIcon({ type, close = false, ...props }) {
   let TheIcon = null;
-  if(close) {
+  if (close) {
     TheIcon = CloseIcon;
-  } else if(type === MESSAGE_TYPE.SUCCESS) {
-    TheIcon = CheckIcon;
-  } else if(type === MESSAGE_TYPE.ERROR) {
-    TheIcon = ReportProblemIcon;
-  } else if(type === MESSAGE_TYPE.INFO) {
-    TheIcon = InfoIcon;
+  } else if (type === MESSAGE_TYPE.SUCCESS) {
+    TheIcon = CheckRoundedIcon;
+  } else if (type === MESSAGE_TYPE.ERROR) {
+    TheIcon = ErrorRoundedIcon;
+  } else if (type === MESSAGE_TYPE.INFO) {
+    TheIcon = InfoRoundedIcon;
+  } else if (type === MESSAGE_TYPE.WARNING) {
+    TheIcon = WarningRoundedIcon;
   }
 
   return <TheIcon fontSize="small" {...props} />;
@@ -114,21 +125,21 @@ FormIcon.propTypes = {
 };
 
 /* Wrapper on any form component to add label, error indicator and help message */
-export function FormInput({children, error, className, label, helpMessage, required, testcid}) {
+export function FormInput({ children, error, className, label, helpMessage, required, testcid }) {
   const classes = useStyles();
   const cid = testcid || _.uniqueId('c');
   const helpid = `h${cid}`;
   return (
     <Grid container spacing={0} className={className}>
       <Grid item lg={3} md={3} sm={3} xs={12}>
-        <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error?classes.formLabelError : null)} required={required}>
+        <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
           {label}
-          <FormIcon type={MESSAGE_TYPE.ERROR} style={{marginLeft: 'auto', visibility: error ? 'unset' : 'hidden'}}/>
+          <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
         </InputLabel>
       </Grid>
       <Grid item lg={9} md={9} sm={9} xs={12}>
         <FormControl error={Boolean(error)} fullWidth>
-          {React.cloneElement(children, {cid, helpid})}
+          {React.cloneElement(children, { cid, helpid })}
         </FormControl>
         <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
       </Grid>
@@ -145,14 +156,17 @@ FormInput.propTypes = {
   testcid: PropTypes.any,
 };
 
-export function InputSQL({value, options, onChange, className, ...props}) {
+export function InputSQL({ value, options, onChange, className, controlProps, inputRef, ...props }) {
   const classes = useStyles();
   const editor = useRef();
 
   return (
     <CodeMirror
-      currEditor={(obj)=>editor.current=obj}
-      value={value||''}
+      currEditor={(obj) => {
+        editor.current = obj;
+        inputRef?.(obj);
+      }}
+      value={value || ''}
       options={{
         lineNumbers: true,
         mode: 'text/x-pgsql',
@@ -160,10 +174,11 @@ export function InputSQL({value, options, onChange, className, ...props}) {
       }}
       className={clsx(classes.sql, className)}
       events={{
-        change: (cm)=>{
+        change: (cm) => {
           onChange && onChange(cm.getValue());
         },
       }}
+      {...controlProps}
       {...props}
     />
   );
@@ -174,15 +189,17 @@ InputSQL.propTypes = {
   onChange: PropTypes.func,
   readonly: PropTypes.bool,
   className: CustomPropTypes.className,
+  controlProps: PropTypes.object,
+  inputRef: CustomPropTypes.ref,
 };
 
-export function FormInputSQL({hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props}) {
-  if(noLabel) {
-    return <InputSQL value={value} options={controlProps} {...props}/>;
+export function FormInputSQL({ hasError, required, label, className, helpMessage, testcid, value, controlProps, noLabel, ...props }) {
+  if (noLabel) {
+    return <InputSQL value={value} options={controlProps} {...props} />;
   } else {
     return (
       <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid} >
-        <InputSQL value={value} options={controlProps} {...props}/>
+        <InputSQL value={value} options={controlProps} {...props} />
       </FormInput>
     );
   }
@@ -209,9 +226,10 @@ const DATE_TIME_FORMAT = {
   TIME_24: 'HH:mm:ss',
 };
 
-export function InputDateTimePicker({value, onChange, readonly, controlProps, ...props}) {
+export function InputDateTimePicker({ value, onChange, readonly, controlProps, ...props }) {
   let format = '';
   let placeholder = '';
+  let regExp = /[a-zA-Z]/;
   if (controlProps?.pickerType === 'Date') {
     format = controlProps.format || DATE_TIME_FORMAT.DATE;
     placeholder = controlProps.placeholder || 'YYYY-MM-DD';
@@ -223,15 +241,15 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
     placeholder = controlProps.placeholder || 'YYYY-MM-DD HH:mm:ss Z';
   }
 
-  const handleChange = (dateVal, stringVal)=> {
+  const handleChange = (dateVal, stringVal) => {
     onChange(stringVal);
   };
 
   /* Value should be a date object instead of string */
-  value = _.isUndefined(value) ? null : value;
-  if(!_.isNull(value)) {
+  value = _.isUndefined(value) || regExp.test(value) ? null : value;
+  if (!_.isNull(value)) {
     let parseValue = DateFns.parse(value, format, new Date());
-    if(!DateFns.isValid(parseValue)) {
+    if (!DateFns.isValid(parseValue)) {
       parseValue = DateFns.parseISO(value);
     }
     value = !DateFns.isValid(parseValue) ? value : parseValue;
@@ -239,7 +257,7 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
 
   if (readonly) {
     return (<InputText value={value ? DateFns.format(value, format) : value}
-      readonly={readonly} controlProps={{placeholder: controlProps.placeholder}} {...props}/>);
+      readonly={readonly} controlProps={{ placeholder: controlProps.placeholder }} {...props} />);
   }
 
   let commonProps = {
@@ -263,20 +281,20 @@ export function InputDateTimePicker({value, onChange, readonly, controlProps, ..
   if (controlProps?.pickerType === 'Date') {
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker {...commonProps}/>
+        <KeyboardDatePicker {...commonProps} />
       </MuiPickersUtilsProvider>
     );
   } else if (controlProps?.pickerType === 'Time') {
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardTimePicker {...commonProps}/>
+        <KeyboardTimePicker {...commonProps} />
       </MuiPickersUtilsProvider>
     );
   }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDateTimePicker {...commonProps}/>
+      <KeyboardDateTimePicker {...commonProps} />
     </MuiPickersUtilsProvider>
   );
 }
@@ -288,10 +306,10 @@ InputDateTimePicker.propTypes = {
   controlProps: PropTypes.object,
 };
 
-export function FormInputDateTimePicker({hasError, required, label, className, helpMessage, testcid, ...props}) {
+export function FormInputDateTimePicker({ hasError, required, label, className, helpMessage, testcid, ...props }) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputDateTimePicker {...props}/>
+      <InputDateTimePicker {...props} />
     </FormInput>
   );
 }
@@ -309,23 +327,24 @@ FormInputDateTimePicker.propTypes = {
 
 /* Use forwardRef to pass ref prop to OutlinedInput */
 export const InputText = forwardRef(({
-  cid, helpid, readonly, disabled, maxlength=255, value, onChange, controlProps, type, ...props}, ref)=>{
+  cid, helpid, readonly, disabled, value, onChange, controlProps, type, size, inputStyle, ...props }, ref) => {
 
-  const classes = useStyles();
+  const maxlength = typeof(controlProps?.maxLength) != 'undefined' ? controlProps.maxLength : 255;
+
   const patterns = {
     'numeric': '^-?[0-9]\\d*\\.?\\d*$',
     'int': '^-?[0-9]\\d*$',
   };
-  let onChangeFinal = (e)=>{
+  let onChangeFinal = (e) => {
     let changeVal = e.target.value;
 
     /* For type number, we set type as tel with number regex to get validity.*/
-    if(['numeric', 'int', 'tel'].indexOf(type) > -1) {
-      if(!e.target.validity.valid && changeVal !== '' && changeVal !== '-') {
+    if (['numeric', 'int', 'tel'].indexOf(type) > -1) {
+      if (!e.target.validity.valid && changeVal !== '' && changeVal !== '-') {
         return;
       }
     }
-    if(controlProps?.formatter) {
+    if (controlProps?.formatter) {
       changeVal = controlProps.formatter.toRaw(changeVal);
     }
     onChange && onChange(changeVal);
@@ -333,21 +352,28 @@ export const InputText = forwardRef(({
 
   let finalValue = (_.isNull(value) || _.isUndefined(value)) ? '' : value;
 
-  if(controlProps?.formatter) {
+  if (controlProps?.formatter) {
     finalValue = controlProps.formatter.fromRaw(finalValue);
   }
 
-  return(
+  const filteredProps = _.pickBy(props, (_v, key)=>(
+    /* When used in ButtonGroup, following props should be skipped */
+    !['color', 'disableElevation', 'disableFocusRipple', 'disableRipple'].includes(key)
+  ));
+
+  return (
     <OutlinedInput
       ref={ref}
       color="primary"
       fullWidth
-      className={classes.formInput}
+      margin={size == 'small' ? 'dense' : 'none'}
       inputProps={{
         id: cid,
         maxLength: controlProps?.multiline ? null : maxlength,
         'aria-describedby': helpid,
-        ...(type ? {pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type]} : {})
+        ...(type ? { pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type] } : {}),
+        style: inputStyle || {},
+        autoComplete: 'new-password',
       }}
       readOnly={Boolean(readonly)}
       disabled={Boolean(disabled)}
@@ -355,9 +381,12 @@ export const InputText = forwardRef(({
       notched={false}
       value={(_.isNull(finalValue) || _.isUndefined(finalValue)) ? '' : finalValue}
       onChange={onChangeFinal}
+      {
+        ...(controlProps?.onKeyDown && { onKeyDown: controlProps.onKeyDown })
+      }
       {...controlProps}
-      {...props}
-      {...(['numeric', 'int'].indexOf(type) > -1 ? {type: 'tel'} : {type: type})}
+      {...filteredProps}
+      {...(['numeric', 'int'].indexOf(type) > -1 ? { type: 'tel' } : { type: type })}
     />
   );
 });
@@ -368,17 +397,18 @@ InputText.propTypes = {
   label: PropTypes.string,
   readonly: PropTypes.bool,
   disabled: PropTypes.bool,
-  maxlength: PropTypes.number,
   value: PropTypes.any,
   onChange: PropTypes.func,
   controlProps: PropTypes.object,
   type: PropTypes.string,
+  size: PropTypes.string,
+  inputStyle: PropTypes.object
 };
 
-export function FormInputText({hasError, required, label, className, helpMessage, testcid, ...props}) {
+export function FormInputText({ hasError, required, label, className, helpMessage, testcid, ...props }) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputText label={label} {...props}/>
+      <InputText label={label} {...props} />
     </FormInput>
   );
 }
@@ -391,17 +421,37 @@ FormInputText.propTypes = {
   testcid: PropTypes.string,
 };
 
-/* Using the existing file dialog functions using showFileDialog */
-export function InputFileSelect({controlProps, onChange, disabled, readonly, ...props}) {
+export function InputFileSelect({ controlProps, onChange, disabled, readonly, isvalidate = false, hideBrowseButton=false,validate, ...props }) {
   const inpRef = useRef();
-  const onFileSelect = (value)=>{
-    onChange && onChange(decodeURI(value));
-    inpRef.current.focus();
+  let textControlProps = {};
+  if(controlProps?.placeholder) {
+    const {placeholder} = controlProps;
+    textControlProps = {placeholder};
+  }
+  const showFileDialog = ()=>{
+    let params = {
+      supported_types: controlProps.supportedTypes || [],
+      dialog_type: controlProps.dialogType || 'select_file',
+      dialog_title: controlProps.dialogTitle || '',
+      btn_primary: controlProps.btnPrimary || '',
+    };
+    showFileManager(params, (fileName)=>{
+      onChange && onChange(decodeURI(fileName));
+      inpRef.current.focus();
+    });
   };
+
   return (
-    <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} {...props} endAdornment={
-      <IconButton onClick={()=>showFileDialog(controlProps, onFileSelect)}
-        disabled={disabled||readonly} aria-label={gettext('Select a file')}><FolderOpenRoundedIcon /></IconButton>
+    <InputText ref={inpRef} disabled={disabled} readonly={readonly} onChange={onChange} controlProps={textControlProps} {...props} endAdornment={
+      <>
+        {!hideBrowseButton &&
+        <IconButton onClick={showFileDialog}
+          disabled={disabled || readonly} aria-label={gettext('Select a file')}><FolderOpenRoundedIcon /></IconButton>
+        }
+        {isvalidate &&
+          <PgIconButton title={gettext('Validate')} style={{ border: 'none' }} disabled={!props.value} onClick={() => { validate(props.value); }} icon={<AssignmentTurnedIn />}></PgIconButton>
+        }
+      </>
     } />
   );
 }
@@ -410,14 +460,18 @@ InputFileSelect.propTypes = {
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
   readonly: PropTypes.bool,
+  isvalidate: PropTypes.bool,
+  validate: PropTypes.func,
+  value: PropTypes.string,
+  hideBrowseButton: PropTypes.bool
 };
 
 export function FormInputFileSelect({
-  hasError, required, label, className, helpMessage, testcid, ...props}) {
+  hasError, required, label, className, helpMessage, testcid, ...props }) {
 
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputFileSelect required={required} label={label} {...props}/>
+      <InputFileSelect required={required} label={label} {...props} />
     </FormInput>
   );
 }
@@ -430,13 +484,13 @@ FormInputFileSelect.propTypes = {
   testcid: PropTypes.string,
 };
 
-export function InputSwitch({cid, helpid, value, onChange, readonly, controlProps, ...props}) {
+export function InputSwitch({ cid, helpid, value, onChange, readonly, controlProps, ...props }) {
   const classes = useStyles();
   return (
     <Switch color="primary"
       checked={Boolean(value)}
       onChange={
-        readonly ? ()=>{} : onChange
+        readonly ? () => {/*This is intentional (SonarQube)*/ } : onChange
       }
       id={cid}
       inputProps={{
@@ -458,11 +512,11 @@ InputSwitch.propTypes = {
   controlProps: PropTypes.object,
 };
 
-export function FormInputSwitch({hasError, required, label, className, helpMessage, testcid, ...props}) {
+export function FormInputSwitch({ hasError, required, label, className, helpMessage, testcid, ...props }) {
 
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputSwitch {...props}/>
+      <InputSwitch {...props} />
     </FormInput>
   );
 }
@@ -475,7 +529,7 @@ FormInputSwitch.propTypes = {
   testcid: PropTypes.string,
 };
 
-export function InputCheckbox({cid, helpid, value, onChange, controlProps, readonly, ...props}) {
+export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, ...props }) {
   controlProps = controlProps || {};
   return (
     <FormControlLabel
@@ -483,10 +537,10 @@ export function InputCheckbox({cid, helpid, value, onChange, controlProps, reado
         <Checkbox
           id={cid}
           checked={Boolean(value)}
-          onChange={readonly ? ()=>{} : onChange}
+          onChange={readonly ? () => {/*This is intentional (SonarQube)*/ } : onChange}
           color="primary"
-          inputProps={{'aria-describedby': helpid}}
-          {...props}/>
+          inputProps={{ 'aria-describedby': helpid }}
+          {...props} />
       }
       label={controlProps.label}
     />
@@ -501,12 +555,12 @@ InputCheckbox.propTypes = {
   readonly: PropTypes.bool,
 };
 
-export function FormInputCheckbox({hasError, required, label,
-  className, helpMessage, testcid, ...props}) {
+export function FormInputCheckbox({ hasError, required, label,
+  className, helpMessage, testcid, ...props }) {
 
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputCheckbox {...props}/>
+      <InputCheckbox {...props} />
     </FormInput>
   );
 }
@@ -519,31 +573,68 @@ FormInputCheckbox.propTypes = {
   testcid: PropTypes.string,
 };
 
+export function InputRadio({ helpid, value, onChange, controlProps, readonly, ...props }) {
+  const classes = useStyles();
+  controlProps = controlProps || {};
+  return (
+    <FormControlLabel
+      control={
+        <Radio
+          color="primary"
+          checked={props?.disabled ? false : value }
+          onChange={
+            readonly ? () => {
+              /*This is intentional (SonarQube)*/ } : onChange
+          }
+          value={value}
+          name="radio-button-demo"
+          inputProps={{ 'aria-label': value, 'aria-describedby': helpid }}
+          style={{ padding: 0 }}
+          disableRipple
+          {...props}
+        />
 
-export function InputToggle({cid, value, onChange, options, disabled, readonly, ...props}) {
+      }
+      label={controlProps.label}
+      className={(readonly || props.disabled) ? classes.readOnlySwitch : null}
+    />
+  );
+}
+InputRadio.propTypes = {
+  helpid: PropTypes.string,
+  value: PropTypes.bool,
+  controlProps: PropTypes.object,
+  onChange: PropTypes.func,
+  readonly: PropTypes.bool,
+  disabled: PropTypes.bool,
+  labelPlacement: PropTypes.string
+};
+
+export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled, readonly, ...props }, ref) => {
   return (
     <ToggleButtonGroup
       id={cid}
       value={value}
       exclusive
-      onChange={(e, val)=>{val!==null && onChange(val);}}
+      onChange={(e, val) => { val !== null && onChange(val); }}
       {...props}
     >
       {
-        (options||[]).map((option)=>{
+        (options || []).map((option, i) => {
           const isSelected = option.value === value;
           const isDisabled = disabled || option.disabled || (readonly && !isSelected);
           return (
-            <ToggleButton key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
+            <ToggleButton ref={i == 0 ? ref : null} key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
               disabled={isDisabled} aria-label={option.label}>
-              <CheckRoundedIcon style={{visibility: isSelected ? 'visible': 'hidden'}}/>&nbsp;{option.label}
+              <CheckRoundedIcon style={{ visibility: isSelected ? 'visible' : 'hidden' }} />&nbsp;{option.label}
             </ToggleButton>
           );
         })
       }
     </ToggleButtonGroup>
   );
-}
+});
+InputToggle.displayName = 'InputToggle';
 InputToggle.propTypes = {
   cid: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
@@ -554,12 +645,11 @@ InputToggle.propTypes = {
   readonly: PropTypes.bool,
 };
 
-export function FormInputToggle({hasError, required, label,
-  className, helpMessage, testcid, ...props}) {
-
+export function FormInputToggle({ hasError, required, label,
+  className, helpMessage, testcid, inputRef, ...props }) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputToggle {...props}/>
+      <InputToggle ref={inputRef} {...props} />
     </FormInput>
   );
 }
@@ -570,14 +660,15 @@ FormInputToggle.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  inputRef: CustomPropTypes.ref
 };
 
 /* react-select package is used for select input
  * Customizing the select styles to fit existing theme
  */
-const customReactSelectStyles = (theme, readonly)=>({
+const customReactSelectStyles = (theme, readonly) => ({
   input: (provided) => {
-    return {...provided, padding: 0, margin: 0, color: 'inherit'};
+    return { ...provided, padding: 0, margin: 0, color: 'inherit' };
   },
   singleValue: (provided) => {
     return {
@@ -593,29 +684,36 @@ const customReactSelectStyles = (theme, readonly)=>({
     borderColor: theme.otherVars.inputBorderColor,
     ...(state.isFocused ? {
       borderColor: theme.palette.primary.main,
-      boxShadow: 'inset 0 0 0 1px '+theme.palette.primary.main,
+      boxShadow: 'inset 0 0 0 1px ' + theme.palette.primary.main,
       '&:hover': {
         borderColor: theme.palette.primary.main,
       }
     } : {}),
   }),
-  dropdownIndicator: (provided)=>({
+  dropdownIndicator: (provided) => ({
     ...provided,
     padding: '0rem 0.25rem',
   }),
-  indicatorsContainer: (provided)=>({
+  indicatorsContainer: (provided) => ({
     ...provided,
-    ...(readonly ? {display: 'none'} : {})
+    ...(readonly ? { display: 'none' } : {})
   }),
-  clearIndicator: (provided)=>({
+  clearIndicator: (provided) => ({
     ...provided,
     padding: '0rem 0.25rem',
   }),
-  valueContainer: (provided)=>({
+  valueContainer: (provided) => ({
     ...provided,
     padding: theme.otherVars.reactSelect.padding,
   }),
-  menu: (provided)=>({
+  groupHeading: (provided) => ({
+    ...provided,
+    color: 'inherit',
+    fontSize: '0.85em',
+    fontWeight: 'bold',
+    textTransform: 'none',
+  }),
+  menu: (provided) => ({
     ...provided,
     backgroundColor: theme.palette.background.default,
     color: theme.palette.text.primary,
@@ -623,42 +721,46 @@ const customReactSelectStyles = (theme, readonly)=>({
     border: '1px solid ' + theme.otherVars.inputBorderColor,
     marginTop: '2px',
   }),
-  menuPortal: (provided)=>({
+  menuPortal: (provided) => ({
     ...provided, zIndex: 9999,
     backgroundColor: 'inherit',
     color: 'inherit',
   }),
-  option: (provided, state)=>{
+  option: (provided, state) => {
+    let bgColor = 'inherit';
+    if (state.isFocused) {
+      bgColor = theme.palette.grey[400];
+    } else if (state.isSelected) {
+      bgColor = theme.palette.primary.light;
+    }
     return {
       ...provided,
       padding: '0.5rem',
       color: 'inherit',
-      backgroundColor: state.isFocused ?
-        theme.palette.grey[400] : (state.isSelected ?
-          theme.palette.primary.light : 'inherit'),
+      backgroundColor: bgColor,
     };
   },
-  multiValue: (provided)=>({
+  multiValue: (provided) => ({
     ...provided,
     backgroundColor: theme.palette.grey[400],
   }),
-  multiValueLabel: (provided)=>({
+  multiValueLabel: (provided) => ({
     ...provided,
     fontSize: '1em',
     zIndex: 99,
     color: theme.palette.text.primary
   }),
-  multiValueRemove: (provided)=>({
+  multiValueRemove: (provided) => ({
     ...provided,
     '&:hover': {
       backgroundColor: 'unset',
       color: theme.palette.error.main,
     },
-    ...(readonly ? {display: 'none'} : {})
+    ...(readonly ? { display: 'none' } : {})
   }),
 });
 
-function OptionView({image, label}) {
+function OptionView({ image, label }) {
   const classes = useStyles();
   return (
     <>
@@ -670,6 +772,16 @@ function OptionView({image, label}) {
 OptionView.propTypes = {
   image: PropTypes.string,
   label: PropTypes.string,
+};
+
+function CustomSelectInput(props) {
+  const { maxLength } = props.selectProps;
+  return (
+    <RSComponents.Input {...props} maxLength={maxLength} />
+  );
+}
+CustomSelectInput.propTypes = {
+  selectProps: PropTypes.object,
 };
 
 function CustomSelectOption(props) {
@@ -694,58 +806,96 @@ CustomSelectSingleValue.propTypes = {
   data: PropTypes.object,
 };
 
+export function flattenSelectOptions(options) {
+  return _.flatMap(options, (option) => {
+    if (option.options) {
+      return option.options;
+    } else {
+      return option;
+    }
+  });
+}
+
 function getRealValue(options, value, creatable, formatter) {
   let realValue = null;
-  if(_.isArray(value)) {
+  if (_.isArray(value)) {
     realValue = [...value];
     /* If multi select options need to be in some format by UI, use formatter */
-    if(formatter) {
+    if (formatter) {
       realValue = formatter.fromRaw(realValue, options);
     } else {
-      if(creatable) {
-        realValue = realValue.map((val)=>({label:val, value: val}));
+      if (creatable) {
+        realValue = realValue.map((val) => ({ label: val, value: val }));
       } else {
-        realValue = realValue.map((val)=>(_.find(options, (option)=>_.isEqual(option.value, val))));
+        realValue = realValue.map((val) => (_.find(options, (option) => _.isEqual(option.value, val))));
       }
     }
   } else {
-    realValue = _.find(options, (option)=>option.value==value) ||
-        (creatable && !_.isUndefined(value) && !_.isNull(value) ? {label:value, value: value} : null);
+    let flatOptions = flattenSelectOptions(options);
+    realValue = _.find(flatOptions, (option) => option.value == value) ||
+      (creatable && !_.isUndefined(value) && !_.isNull(value) ? { label: value, value: value } : null);
   }
   return realValue;
 }
+export function InputSelectNonSearch({ options, ...props }) {
+  return <MuiSelect native {...props} variant="outlined">
+    {(options || []).map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+  </MuiSelect>;
+}
+InputSelectNonSearch.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.shape,
+    value: PropTypes.any,
+  })),
+};
 
-export function InputSelect({
-  cid, onChange, options, readonly=false, value, controlProps={}, optionsLoaded, optionsReloadBasis, disabled, ...props}) {
+export const InputSelect = forwardRef(({
+  cid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, ...props }, ref) => {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 
-  /* React will always take options var as changed parameter. So,
+  useWindowSize();
+
+  /* React will always take options let as changed parameter. So,
   We cannot run the below effect with options dependency as it will keep on
   loading the options. optionsReloadBasis is helpful to avoid repeated
   options load. If optionsReloadBasis value changes, then options will be loaded again.
   */
-  useEffect(()=>{
-    let optPromise = options, umounted=false;
-    if(typeof options === 'function') {
+  useEffect(() => {
+    let optPromise = options, umounted = false;
+    if (typeof options === 'function') {
       optPromise = options();
     }
+    setFinalOptions([[], true]);
     Promise.resolve(optPromise)
-      .then((res)=>{
+      .then((res) => {
         /* If component unmounted, dont update state */
-        if(!umounted) {
+        if (!umounted) {
           optionsLoaded && optionsLoaded(res, value);
+          /* Auto select if any option has key as selected */
+          const flatRes = flattenSelectOptions(res || []);
+          let selectedVal;
+          if (controlProps.multiple) {
+            selectedVal = _.filter(flatRes, (o) => o.selected)?.map((o) => o.value);
+          } else {
+            selectedVal = _.find(flatRes, (o) => o.selected)?.value;
+          }
+
+          if ((!_.isUndefined(selectedVal) && !_.isArray(selectedVal)) || (_.isArray(selectedVal) && selectedVal.length != 0)) {
+            onChange && onChange(selectedVal);
+          }
           setFinalOptions([res || [], false]);
         }
       });
-    return ()=>umounted=true;
+    return () => umounted = true;
   }, [optionsReloadBasis]);
 
 
   /* Apply filter if any */
   const filteredOptions = (controlProps.filter && controlProps.filter(finalOptions)) || finalOptions;
-  let realValue = getRealValue(filteredOptions, value, controlProps.creatable, controlProps.formatter);
-  if(realValue && _.isPlainObject(realValue) && _.isUndefined(realValue.value)) {
+  const flatFiltered = flattenSelectOptions(filteredOptions);
+  let realValue = getRealValue(flatFiltered, value, controlProps.creatable, controlProps.formatter);
+  if (realValue && _.isPlainObject(realValue) && _.isUndefined(realValue.value)) {
     console.error('Undefined option value not allowed', realValue, filteredOptions);
   }
   const otherProps = {
@@ -756,21 +906,21 @@ export function InputSelect({
 
   const styles = customReactSelectStyles(theme, readonly || disabled);
 
-  const onChangeOption = useCallback((selectVal, action)=>{
-    if(_.isArray(selectVal)) {
+  const onChangeOption = useCallback((selectVal) => {
+    if (_.isArray(selectVal)) {
       // Check if select all option is selected
-      if (!_.isUndefined(selectVal.find(x => x.label === 'Select All'))) {
+      if (!_.isUndefined(selectVal.find(x => x.label === '<Select All>'))) {
         selectVal = filteredOptions;
       }
       /* If multi select options need to be in some format by UI, use formatter */
-      if(controlProps.formatter) {
+      if (controlProps.formatter) {
         selectVal = controlProps.formatter.toRaw(selectVal, filteredOptions);
       } else {
-        selectVal = selectVal.map((option)=>option.value);
+        selectVal = selectVal.map((option) => option.value);
       }
-      onChange && onChange(selectVal, action.name);
+      onChange && onChange(selectVal);
     } else {
-      onChange && onChange(selectVal ? selectVal.value : null, action.name);
+      onChange && onChange(selectVal ? selectVal.value : null);
     }
   }, [onChange, filteredOptions]);
 
@@ -778,30 +928,41 @@ export function InputSelect({
     components: {
       Option: CustomSelectOption,
       SingleValue: CustomSelectSingleValue,
+      IndicatorSeparator: controlProps.noDropdown ? null: RSComponents.IndicatorSeparator,
+      DropdownIndicator: controlProps.noDropdown ? null: RSComponents.DropdownIndicator,
+      Input: CustomSelectInput,
     },
     isMulti: Boolean(controlProps.multiple),
     openMenuOnClick: !readonly,
     onChange: onChangeOption,
     isLoading: isLoading,
-    options: controlProps.allowSelectAll ? [{ label: gettext('Select All'), value: '*' }, ...filteredOptions] : filteredOptions,
+    options: controlProps.allowSelectAll ? [{ label: gettext('<Select All>'), value: '*' }, ...filteredOptions] : filteredOptions,
     value: realValue,
     menuPortalTarget: document.body,
     styles: styles,
     inputId: cid,
     placeholder: (readonly || disabled) ? '' : controlProps.placeholder || gettext('Select an item...'),
+    maxLength: controlProps.maxLength,
     ...otherProps,
-    ...props
+    ...props,
   };
-  if(!controlProps.creatable) {
+  if (!controlProps.creatable) {
     return (
-      <Select {...commonProps}/>
+      <Select ref={ref} {...commonProps} />
     );
   } else {
     return (
-      <CreatableSelect {...commonProps}/>
+      <CreatableSelect
+        ref={ref}
+        {...commonProps}
+        noOptionsMessage={() =>
+          !controlProps.noDropdown ? 'No options' : null
+        }
+      />
     );
   }
-}
+});
+InputSelect.displayName = 'InputSelect';
 InputSelect.propTypes = {
   cid: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array, PropTypes.bool]),
@@ -816,11 +977,10 @@ InputSelect.propTypes = {
 
 
 export function FormInputSelect({
-  hasError, required, className, label, helpMessage, testcid, ...props}) {
-
+  hasError, required, className, label, helpMessage, testcid, ...props }) {
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputSelect {...props}/>
+      <InputSelect ref={props.inputRef} {...props} />
     </FormInput>
   );
 }
@@ -831,122 +991,20 @@ FormInputSelect.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  inputRef: CustomPropTypes.ref
 };
 
-/* React wrapper on color pickr */
-export function InputColor({value, controlProps, disabled, onChange, currObj}) {
-  const pickrOptions = {
-    showPalette: true,
-    allowEmpty: true,
-    colorFormat: 'HEX',
-    defaultColor: null,
-    position: 'right-middle',
-    clearText: gettext('No color'),
-    ...controlProps,
-    disabled: disabled,
-  };
-  const eleRef = useRef();
-  const pickrObj = useRef();
+const ColorButton = withColorPicker(PgIconButton);
+export function InputColor({ value, controlProps, disabled, onChange, currObj }) {
   const classes = useStyles();
 
-  const setColor = (value)=>{
-    pickrObj.current &&
-      pickrObj.current.setColor((_.isUndefined(value) || value == '') ? pickrOptions.defaultColor : value);
-  };
-
-  const destroyPickr = ()=>{
-    if(pickrObj.current) {
-      pickrObj.current.destroy();
-      pickrObj.current = null;
-    }
-  };
-
-  const initPickr = ()=>{
-    /* pickr does not have way to update options, need to
-    destroy and recreate pickr to reflect options */
-    destroyPickr();
-
-    pickrObj.current = new Pickr({
-      el: eleRef.current,
-      useAsButton: true,
-      theme: 'monolith',
-      swatches: [
-        '#000', '#666', '#ccc', '#fff', '#f90', '#ff0', '#0f0',
-        '#f0f', '#f4cccc', '#fce5cd', '#d0e0e3', '#cfe2f3', '#ead1dc', '#ea9999',
-        '#b6d7a8', '#a2c4c9', '#d5a6bd', '#e06666','#93c47d', '#76a5af', '#c27ba0',
-        '#f1c232', '#6aa84f', '#45818e', '#a64d79', '#bf9000', '#0c343d', '#4c1130',
-      ],
-      position: pickrOptions.position,
-      strings: {
-        clear: pickrOptions.clearText,
-      },
-      components: {
-        palette: pickrOptions.showPalette,
-        preview: true,
-        hue: pickrOptions.showPalette,
-        interaction: {
-          clear: pickrOptions.allowEmpty,
-          defaultRepresentation: pickrOptions.colorFormat,
-          disabled: pickrOptions.disabled,
-        },
-      },
-    }).on('init', instance => {
-      setColor(value);
-      disabled && instance.disable();
-
-      const {lastColor} = instance.getRoot().preview;
-      const {clear} = instance.getRoot().interaction;
-
-      /* Cycle the keyboard navigation within the color picker */
-      clear.addEventListener('keydown', (e)=>{
-        if(e.keyCode === 9) {
-          e.preventDefault();
-          e.stopPropagation();
-          lastColor.focus();
-        }
-      });
-
-      lastColor.addEventListener('keydown', (e)=>{
-        if(e.keyCode === 9 && e.shiftKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          clear.focus();
-        }
-      });
-    }).on('clear', () => {
-      onChange && onChange('');
-    }).on('change', (color) => {
-      onChange && onChange(color.toHEXA().toString());
-    }).on('show', (color, instance) => {
-      const {palette} = instance.getRoot().palette;
-      palette.focus();
-    }).on('hide', (instance) => {
-      const button = instance.getRoot().button;
-      button.focus();
-    });
-
-    if(currObj) {
-      currObj(pickrObj.current);
-    }
-  };
-
-  useEffect(()=>{
-    initPickr();
-    return ()=>{
-      destroyPickr();
-    };
-  }, [...Object.values(pickrOptions)]);
-
-  useEffect(()=>{
-    if(pickrObj.current) {
-      setColor(value);
-    }
-  }, [value]);
-
-  let btnStyles = {backgroundColor: value};
+  let btnStyles = { backgroundColor: value };
   return (
-    <PgIconButton ref={eleRef} title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={pickrOptions.disabled}
-      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />}
+    <ColorButton title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={disabled}
+      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />} options={{
+        ...controlProps,
+        disabled: disabled
+      }} onChange={onChange} value={value} currObj={currObj}
     />
   );
 }
@@ -959,11 +1017,11 @@ InputColor.propTypes = {
 };
 
 export function FormInputColor({
-  hasError, required, className, label, helpMessage, testcid, ...props}) {
+  hasError, required, className, label, helpMessage, testcid, ...props }) {
 
   return (
     <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <InputColor {...props}/>
+      <InputColor {...props} />
     </FormInput>
   );
 }
@@ -976,9 +1034,9 @@ FormInputColor.propTypes = {
   testcid: PropTypes.string,
 };
 
-export function PlainString({controlProps, value}) {
+export function PlainString({ controlProps, value }) {
   let finalValue = value;
-  if(controlProps?.formatter) {
+  if (controlProps?.formatter) {
     finalValue = controlProps.formatter.fromRaw(finalValue);
   }
   return <span>{finalValue}</span>;
@@ -988,12 +1046,13 @@ PlainString.propTypes = {
   value: PropTypes.any,
 };
 
-export function FormNote({text, className}) {
+export function FormNote({ text, className, controlProps }) {
   const classes = useStyles();
+  /* If raw, then remove the styles and icon */
   return (
     <Box className={className}>
-      <Paper elevation={0} className={classes.noteRoot}>
-        <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>
+      <Paper elevation={0} className={controlProps?.raw ? '' : classes.noteRoot}>
+        {!controlProps?.raw && <Box paddingRight="0.25rem"><DescriptionIcon fontSize="small" /></Box>}
         <Box>{HTMLReactParse(text || '')}</Box>
       </Paper>
     </Box>
@@ -1002,9 +1061,10 @@ export function FormNote({text, className}) {
 FormNote.propTypes = {
   text: PropTypes.string,
   className: CustomPropTypes.className,
+  controlProps: PropTypes.object,
 };
 
-const useStylesFormFooter = makeStyles((theme)=>({
+const useStylesFormFooter = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(0.5),
     position: 'absolute',
@@ -1020,6 +1080,7 @@ const useStylesFormFooter = makeStyles((theme)=>({
     padding: theme.spacing(0.5),
     display: 'flex',
     alignItems: 'center',
+    minHeight: '36px',
   },
   containerSuccess: {
     borderColor: theme.palette.success.main,
@@ -1035,8 +1096,25 @@ const useStylesFormFooter = makeStyles((theme)=>({
   iconError: {
     color: theme.palette.error.main,
   },
+  containerInfo: {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.light,
+  },
+  iconInfo: {
+    color: theme.palette.primary.main,
+  },
+  containerWarning: {
+    borderColor: theme.palette.warning.main,
+    backgroundColor: theme.palette.warning.light,
+  },
+  iconWarning: {
+    color: theme.palette.warning.main,
+  },
   message: {
     marginLeft: theme.spacing(0.5),
+  },
+  messageCenter: {
+    margin: 'auto',
   },
   closeButton: {
     marginLeft: 'auto',
@@ -1044,28 +1122,129 @@ const useStylesFormFooter = makeStyles((theme)=>({
 }));
 
 /* The form footer used mostly for showing error */
-export function FormFooterMessage({type=MESSAGE_TYPE.SUCCESS, message, closable=true, onClose=()=>{}}) {
+export function FormFooterMessage({style, ...props}) {
   const classes = useStylesFormFooter();
 
-  if(!message) {
+  if (!props.message) {
     return <></>;
   }
   return (
-    <Box className={classes.root}>
-      <Box className={clsx(classes.container, classes[`container${type}`])}>
-        <FormIcon type={type} className={classes[`icon${type}`]}/>
-        <Box className={classes.message}>{message}</Box>
-        {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
-          <FormIcon close={true}/>
-        </IconButton>}
-      </Box>
+    <Box className={classes.root} style={style}>
+      <NotifierMessage {...props}></NotifierMessage>
     </Box>
   );
 }
 
 FormFooterMessage.propTypes = {
+  style: PropTypes.object,
+  message: PropTypes.string,
+};
+
+const useStylesKeyboardShortcut = makeStyles(() => ({
+  customRow: {
+    paddingTop: 5
+  }
+}));
+
+export function FormInputKeyboardShortcut({ hasError, label, className, helpMessage, onChange, ...props }) {
+  const classes = useStylesKeyboardShortcut();
+  return (
+    <FormInput label={label} error={hasError} className={clsx(classes.customRow, className)} helpMessage={helpMessage}>
+      <KeyboardShortcuts onChange={onChange} {...props} />
+    </FormInput>
+
+  );
+}
+FormInputKeyboardShortcut.propTypes = {
+  hasError: PropTypes.bool,
+  label: PropTypes.string,
+  className: CustomPropTypes.className,
+  helpMessage: PropTypes.string,
+  testcid: PropTypes.string,
+  onChange: PropTypes.func
+};
+
+export function FormInputQueryThreshold({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
+  const cid = _.uniqueId('c');
+  const helpid = `h${cid}`;
+  return (
+    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+      <QueryThresholds cid={cid} helpid={helpid} onChange={onChange} {...props} />
+    </FormInput>
+
+  );
+}
+FormInputQueryThreshold.propTypes = {
+  hasError: PropTypes.bool,
+  label: PropTypes.string,
+  className: CustomPropTypes.className,
+  helpMessage: PropTypes.string,
+  testcid: PropTypes.string,
+  onChange: PropTypes.func
+};
+
+
+export function FormInputSelectThemes({ hasError, label, className, helpMessage, testcid, onChange, ...props }) {
+  const cid = _.uniqueId('c');
+  const helpid = `h${cid}`;
+  return (
+    <FormInput label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+      <SelectThemes cid={cid} helpid={helpid} onChange={onChange} {...props} />
+    </FormInput>
+  );
+}
+
+FormInputSelectThemes.propTypes = {
+  hasError: PropTypes.bool,
+  label: PropTypes.string,
+  className: CustomPropTypes.className,
+  helpMessage: PropTypes.string,
+  testcid: PropTypes.string,
+  onChange: PropTypes.func
+};
+
+
+export function NotifierMessage({
+  type = MESSAGE_TYPE.SUCCESS, message, style, closable = true, showIcon=true, textCenter=false,
+  onClose = () => {/*This is intentional (SonarQube)*/ }}) {
+  const classes = useStylesFormFooter();
+
+  return (
+    <Box className={clsx(classes.container, classes[`container${type}`])} style={style}>
+      {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
+      <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
+      {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>
+        <FormIcon close={true} />
+      </IconButton>}
+    </Box>
+  );
+}
+
+NotifierMessage.propTypes = {
   type: PropTypes.oneOf(Object.values(MESSAGE_TYPE)).isRequired,
   message: PropTypes.string,
   closable: PropTypes.bool,
+  showIcon: PropTypes.bool,
+  textCenter: PropTypes.bool,
   onClose: PropTypes.func,
+  style: PropTypes.object,
+};
+
+
+export function FormButton({required, label,
+  className, helpMessage, onClick, disabled, ...props }) {
+  return (
+    <FormInput required={required} label={label} className={className}  helpMessage={helpMessage}>
+      <PrimaryButton onClick={onClick} disabled={disabled} >{gettext(props.btnName)}</PrimaryButton>
+    </FormInput>
+  );
+}
+FormButton.propTypes = {
+  required: PropTypes.bool,
+  label: PropTypes.string,
+  className: CustomPropTypes.className,
+  helpMessage: PropTypes.string,
+  onClick: PropTypes.func,
+  disabled: PropTypes.bool,
+  btnName: PropTypes.string
 };

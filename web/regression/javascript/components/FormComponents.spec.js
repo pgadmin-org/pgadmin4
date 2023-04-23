@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,10 +17,10 @@ import { OutlinedInput, FormHelperText, IconButton, FormControlLabel,
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
-import ReportProblemIcon from '@material-ui/icons/ReportProblemRounded';
-import InfoIcon from '@material-ui/icons/InfoRounded';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import CloseIcon from '@material-ui/icons/CloseRounded';
-import CheckIcon from '@material-ui/icons/CheckCircleOutlineRounded';
+import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
+import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
 
 
 import {FormInputText, FormInputFileSelect, FormInputSQL,
@@ -28,10 +28,10 @@ import {FormInputText, FormInputFileSelect, FormInputSQL,
   FormInputColor,
   FormFooterMessage,
   MESSAGE_TYPE} from '../../../pgadmin/static/js/components/FormComponents';
-import * as legacyConnector from '../../../pgadmin/static/js/helpers/legacyConnector';
 import CodeMirror from '../../../pgadmin/static/js/components/CodeMirror';
 import { ToggleButton } from '@material-ui/lab';
 import { DefaultButton, PrimaryButton } from '../../../pgadmin/static/js/components/Buttons';
+import * as showFileManager from '../../../pgadmin/static/js/helpers/showFileManager';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('FormComponents', ()=>{
@@ -51,6 +51,16 @@ describe('FormComponents', ()=>{
     jasmineEnzyme();
   });
 
+  let onAccessibility = (ctrl)=> {
+    expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
+    expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
+    let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
+    expect(inputProps).toEqual(jasmine.objectContaining({
+      id: 'inpCid',
+      'aria-describedby': 'hinpCid',
+    }));
+  };
+
   describe('FormInputText', ()=>{
     let ThemedFormInputText = withTheme(FormInputText), ctrl;
 
@@ -64,10 +74,11 @@ describe('FormComponents', ()=>{
           /* InputText */
           readonly={false}
           disabled={false}
-          maxlength={50}
+
           value={'thevalue'}
           controlProps={{
-            extraprop: 'test'
+            extraprop: 'test',
+            maxLength: 50,
           }}
         />);
     });
@@ -85,7 +96,7 @@ describe('FormComponents', ()=>{
     });
 
     it('props change', ()=>{
-      let onChange = ()=>{};
+      let onChange = ()=>{/*This is intentional (SonarQube)*/};
       ctrl.setProps({
         readonly: true,
         disabled: true,
@@ -99,13 +110,7 @@ describe('FormComponents', ()=>{
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-      let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
-      expect(inputProps).toEqual(jasmine.objectContaining({
-        id: 'inpCid',
-        'aria-describedby': 'hinpCid',
-      }));
+      onAccessibility(ctrl);
     });
   });
 
@@ -113,7 +118,7 @@ describe('FormComponents', ()=>{
     let ThemedFormInputFileSelect = withTheme(FormInputFileSelect), ctrl;
 
     beforeEach(()=>{
-      spyOn(legacyConnector, 'showFileDialog').and.callFake((controlProps, onFileSelect)=>{
+      spyOn(showFileManager, 'showFileManager').and.callFake((controlProps, onFileSelect)=>{
         onFileSelect('selected/file');
       });
       ctrl = mount(
@@ -167,13 +172,7 @@ describe('FormComponents', ()=>{
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-      let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
-      expect(inputProps).toEqual(jasmine.objectContaining({
-        id: 'inpCid',
-        'aria-describedby': 'hinpCid',
-      }));
+      onAccessibility(ctrl);
     });
   });
 
@@ -198,9 +197,7 @@ describe('FormComponents', ()=>{
     it('init', ()=>{
       expect(ctrl.find(InputLabel).text()).toBe('First');
       expect(ctrl.find(CodeMirror).prop('value')).toEqual('thevalue');
-      expect(ctrl.find(CodeMirror).prop('options')).toEqual(jasmine.objectContaining({
-        op1: 'test'
-      }));
+      expect(ctrl.find(CodeMirror).prop('options')).toEqual(jasmine.objectContaining({'op1': 'test'}));
       expect(ctrl.find(FormHelperText).text()).toBe('some help message');
     });
   });
@@ -560,7 +557,7 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(CheckIcon).exists()).toBeTrue();
+      expect(ctrl.find(CheckRoundedIcon).exists()).toBeTrue();
       expect(ctrl.text()).toBe('Some message');
     });
 
@@ -568,12 +565,17 @@ describe('FormComponents', ()=>{
       ctrl.setProps({
         type: MESSAGE_TYPE.ERROR,
       });
-      expect(ctrl.find(ReportProblemIcon).exists()).toBeTrue();
+      expect(ctrl.find(ErrorRoundedIcon).exists()).toBeTrue();
 
       ctrl.setProps({
         type: MESSAGE_TYPE.INFO,
       });
-      expect(ctrl.find(InfoIcon).exists()).toBeTrue();
+      expect(ctrl.find(InfoRoundedIcon).exists()).toBeTrue();
+
+      ctrl.setProps({
+        type: MESSAGE_TYPE.WARNING,
+      });
+      expect(ctrl.find(WarningRoundedIcon).exists()).toBeTrue();
     });
 
     it('closable', ()=>{

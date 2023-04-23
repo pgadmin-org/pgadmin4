@@ -2,16 +2,16 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 import sys
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_TABS_SETTINGS, \
-    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER
-from flask_security import current_user
+    PREF_LABEL_OPTIONS, QT_DEFAULT_PLACEHOLDER, VW_EDT_DEFAULT_PLACEHOLDER
+from flask import current_app
 import config
 
 LOCK_LAYOUT_LEVEL = {
@@ -27,6 +27,13 @@ def register_browser_preferences(self):
         gettext("Show system objects?"), 'boolean', False,
         category_label=PREF_LABEL_DISPLAY
     )
+
+    self.show_user_defined_templates = self.preference.register(
+        'display', 'show_user_defined_templates',
+        gettext("Show template databases?"), 'boolean', False,
+        category_label=PREF_LABEL_DISPLAY
+    )
+
     if config.SERVER_MODE:
         self.hide_shared_server = self.preference.register(
             'display', 'hide_shared_server',
@@ -39,23 +46,11 @@ def register_browser_preferences(self):
         )
 
     self.preference.register(
-        'display', 'enable_acitree_animation',
-        gettext("Enable browser tree animation?"), 'boolean', True,
-        category_label=PREF_LABEL_DISPLAY
-    )
-
-    self.preference.register(
-        'display', 'enable_alertify_animation',
-        gettext("Enable dialogue/notification animation?"), 'boolean',
-        True, category_label=PREF_LABEL_DISPLAY
-    )
-
-    self.preference.register(
         'display', 'browser_tree_state_save_interval',
-        gettext("Browser tree state saving interval"), 'integer',
+        gettext("Object explorer tree state saving interval"), 'integer',
         30, category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
-            'Browser tree state saving interval in seconds. '
+            'Object explorer state saving interval in seconds. '
             'Use -1 to disable the tree saving mechanism.'
         )
     )
@@ -123,6 +118,17 @@ def register_browser_preferences(self):
         )
     )
 
+    self.table_row_count_threshold = self.preference.register(
+        'processes', 'process_retain_days',
+        gettext("Process details/logs retention days"), 'integer', 5,
+        min_val=1,
+        category_label=gettext('Processes'),
+        help_str=gettext(
+            'After this many days, the process info and logs '
+            'will be automatically cleared.'
+        )
+    )
+
     fields = [
         {'name': 'key', 'type': 'keyCode', 'label': gettext('Key')},
         {'name': 'shift', 'type': 'checkbox', 'label': gettext('Shift')},
@@ -133,7 +139,7 @@ def register_browser_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'browser_tree',
-        gettext('Browser tree'),
+        gettext('Object Explorer'),
         'keyboardshortcut',
         {
             'alt': True,
@@ -175,65 +181,66 @@ def register_browser_preferences(self):
         fields=fields
     )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_file',
-        gettext('File main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 70, 'char': 'f'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+    if not current_app.PGADMIN_RUNTIME:
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_file',
+            gettext('File main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 70, 'char': 'f'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_object',
-        gettext('Object main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 79, 'char': 'o'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_object',
+            gettext('Object main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 79, 'char': 'o'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_tools',
-        gettext('Tools main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 76, 'char': 'l'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_tools',
+            gettext('Tools main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 76, 'char': 'l'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
-    self.preference.register(
-        'keyboard_shortcuts',
-        'main_menu_help',
-        gettext('Help main menu'),
-        'keyboardshortcut',
-        {
-            'alt': True,
-            'shift': True,
-            'control': False,
-            'key': {'key_code': 72, 'char': 'h'}
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=fields
-    )
+        self.preference.register(
+            'keyboard_shortcuts',
+            'main_menu_help',
+            gettext('Help main menu'),
+            'keyboardshortcut',
+            {
+                'alt': True,
+                'shift': True,
+                'control': False,
+                'key': {'key_code': 72, 'char': 'h'}
+            },
+            category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+            fields=fields
+        )
 
     self.preference.register(
         'keyboard_shortcuts',
@@ -418,7 +425,7 @@ def register_browser_preferences(self):
     self.preference.register(
         'keyboard_shortcuts',
         'sub_menu_refresh',
-        gettext('Refresh browser tree'),
+        gettext('Refresh object explorer'),
         'keyboardshortcut',
         {
             'alt': False,
@@ -483,7 +490,7 @@ def register_browser_preferences(self):
     self.ve_edt_tab_title = self.preference.register(
         'tab_settings', 'vw_edt_tab_title_placeholder',
         gettext("View/Edit data tab title"),
-        'text', '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%',
+        'text', VW_EDT_DEFAULT_PLACEHOLDER,
         category_label=PREF_LABEL_DISPLAY,
         help_str=gettext(
             'Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, '
@@ -519,7 +526,7 @@ def register_browser_preferences(self):
 
     self.open_in_new_tab = self.preference.register(
         'tab_settings', 'new_browser_tab_open',
-        gettext("Open in new browser tab"), 'select2', None,
+        gettext("Open in new browser tab"), 'select', None,
         category_label=PREF_LABEL_OPTIONS,
         options=ope_new_tab_options,
         help_str=gettext(
@@ -527,7 +534,7 @@ def register_browser_preferences(self):
             'or PSQL Tool from the drop-down to set '
             'open in new browser tab for that particular module.'
         ),
-        select2={
+        control_props={
             'multiple': True, 'allowClear': False,
             'tags': True, 'first_empty': False,
             'selectOnClose': False, 'emptyOptions': True,

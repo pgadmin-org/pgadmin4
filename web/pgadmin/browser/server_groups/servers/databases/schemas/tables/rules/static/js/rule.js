@@ -2,18 +2,20 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 import RuleSchema from './rule.ui';
-
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.rule', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
-  'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.alertifyjs',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, SchemaChildTreeNode, alertify) {
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'pgadmin.browser',
+  'pgadmin.node.schema.dir/schema_child_tree_node',
+], function(gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode) {
 
   /**
     Create and add a rule collection into nodes
@@ -85,50 +87,45 @@ define('pgadmin.node.rule', [
           name: 'create_rule_on_coll', node: 'coll-rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 1, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'create_rule', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Rule...'),
-          icon: 'wcTabIcon icon-rule', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },
         {
           name: 'enable_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'enable_rule',
           category: 'connect', priority: 3, label: gettext('Enable'),
-          icon: 'fa fa-check', enable: 'canCreate_with_rule_enable',
+          enable: 'canCreate_with_rule_enable',
         },{
           name: 'disable_rule', node: 'rule', module: this,
           applies: ['object', 'context'], callback: 'disable_rule',
           category: 'drop', priority: 3, label: gettext('Disable'),
-          icon: 'fa fa-times', enable: 'canCreate_with_rule_disable'
+          enable: 'canCreate_with_rule_disable'
         }
         ]);
       },
       callbacks: {
         /* Enable rule */
         enable_rule: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -137,15 +134,10 @@ define('pgadmin.node.rule', [
           if (!d)
             return false;
 
-          var data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'obj' , d, true),
-            type:'PUT',
-            data: {'is_enable_rule' : 'O'},
-            dataType: 'json',
-          })
-            .done(function() {
-              alertify.success('Rule updated.');
+          let data = d;
+          getApiInstance().put(obj.generate_url(i, 'obj' , d, true), {'is_enable_rule' : 'O'})
+            .then(()=>{
+              Notify.success('Rule updated.');
               t.removeIcon(i);
               data.icon = 'icon-rule';
               t.addIcon(i, {icon: data.icon});
@@ -157,14 +149,13 @@ define('pgadmin.node.rule', [
                 t.select(i);
               }, 10);
             })
-            .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
-              t.unload(i);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
             });
         },
         /* Disable rule */
         disable_rule: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -173,15 +164,10 @@ define('pgadmin.node.rule', [
           if (!d)
             return false;
 
-          var data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'obj' , d, true),
-            type:'PUT',
-            data: {'is_enable_rule' : 'D'},
-            dataType: 'json',
-          })
-            .done(function() {
-              alertify.success('Rule updated');
+          let data = d;
+          getApiInstance().put(obj.generate_url(i, 'obj' , d, true), {'is_enable_rule' : 'D'})
+            .then(()=>{
+              Notify.success('Rule updated');
               t.removeIcon(i);
               data.icon = 'icon-rule-bad';
               t.addIcon(i, {icon: data.icon});
@@ -193,9 +179,8 @@ define('pgadmin.node.rule', [
                 t.select(i);
               }, 10);
             })
-            .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error, gettext('Disable rule failed'));
-              t.unload(i);
+            .catch((error)=>{
+              Notify.pgRespErrorNotify(error);
             });
         },
       },
@@ -207,54 +192,6 @@ define('pgadmin.node.rule', [
           }
         );
       },
-      /**
-        Define model for the rule node and specify the node
-        properties of the model in schema.
-       */
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [{
-          id: 'name', label: gettext('Name'),
-          type: 'text', disabled: function(m) {
-            // disable name field it it is system rule
-            if (m && m.get('name') == '_RETURN') {
-              return true;
-            }
-            if (m.isNew && m.isNew() || m.node_info && m.node_info.server.version >= 90400) {
-              return false;
-            }
-            return true;
-          },
-        },
-        {
-          id: 'oid', label: gettext('OID'),
-          type: 'text', mode: ['properties'],
-        },
-        {
-          id: 'comment', label: gettext('Comment'), cell: 'string', type: 'multiline',
-        },
-        ],
-        validate: function() {
-
-          // Triggers specific error messages for fields
-          var err = {},
-            errmsg,
-            field_name = this.get('name');
-          if (_.isUndefined(field_name) || _.isNull(field_name) ||
-            String(field_name).replace(/^\s+|\s+$/g, '') === '')
-          {
-            err['name'] = gettext('Please specify name.');
-            errmsg = err['name'];
-            this.errorModel.set('name', errmsg);
-            return errmsg;
-          }
-          else
-          {
-            this.errorModel.unset('name');
-          }
-          return null;
-        },
-      }),
 
       // Show or hide create rule menu option on parent node
       canCreate: function(itemData, item, data) {
@@ -263,7 +200,7 @@ define('pgadmin.node.rule', [
         if (data && data.check === false)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData;
+        let t = pgBrowser.tree, i = item, d = itemData;
 
         // To iterate over tree to check parent node
         while (i) {
@@ -275,7 +212,7 @@ define('pgadmin.node.rule', [
           if ('coll-rule' == d._type) {
 
             //Check if we are not child of rule
-            var prev_i = t.hasParent(i) ? t.parent(i) : null,
+            let prev_i = t.hasParent(i) ? t.parent(i) : null,
               prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
               prev_k = t.hasParent(prev_j) ? t.parent(prev_j) : null,
               prev_f = prev_k ? t.itemData(prev_k) : null;
@@ -287,9 +224,9 @@ define('pgadmin.node.rule', [
             then allow to create Rule
            */
           else if('view' == d._type || 'table' == d._type){
-            prev_i = t.hasParent(i) ? t.parent(i) : null;
-            prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null;
-            var prev_e = prev_j ? t.itemData(prev_j) : null;
+            let prev_i = t.hasParent(i) ? t.parent(i) : null,
+              prev_j = t.hasParent(prev_i) ? t.parent(prev_i) : null,
+              prev_e = prev_j ? t.itemData(prev_j) : null;
             return (!_.isNull(prev_e) && prev_e._type == 'schema');
           }
           i = t.hasParent(i) ? t.parent(i) : null;
@@ -302,7 +239,7 @@ define('pgadmin.node.rule', [
       },
 
       canCreate_with_rule_enable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -312,7 +249,7 @@ define('pgadmin.node.rule', [
       },
       // Check to whether rule is enable ?
       canCreate_with_rule_disable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

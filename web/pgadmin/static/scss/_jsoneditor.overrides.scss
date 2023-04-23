@@ -18,7 +18,6 @@
     font-size: $navbar-font-size !important;
     line-height: $line-height-base !important;
     background-image:none !important;
-    font-weight: 600 !important;
     border-radius: $border-radius;
     border-color:$color-gray;
     opacity: 1;
@@ -100,7 +99,6 @@
     font-size: $font-size-base !important;
     line-height: $line-height-base !important;
     background-image:none !important;
-    font-weight: 600 !important;
     border-radius: $border-radius;
     border-color:$color-gray;
     opacity: 1;
@@ -230,7 +228,9 @@ div.jsoneditor td.jsoneditor-tree {
 }
 
 pre.jsoneditor-preview{
- background-color: $color-gray-lighter !important;
+  background-color: $color-gray-lighter !important;
+  opacity: 0.8;
+  color: $color-fg;
 }
 
 
@@ -318,7 +318,7 @@ div.jsoneditor-value[contenteditable=true]:hover
 .jsoneditor .jsoneditor-text-errors {
   width: 100%;
   border-collapse: collapse;
-  border-top: 1px solid $color-gray;;
+  border-top: 1px solid $color-gray;
 }
 
 
@@ -381,10 +381,6 @@ div.jsoneditor-value[contenteditable=true]:hover
     font-size: $font-size-base !important;
     font-family: $font-family-primary !important;
     padding: 4px;
-}
-
-a:focus, input[type=checkbox]:focus, select:focus{
-   outline:none !important;
 }
 
 .jsoneditor-modal option{

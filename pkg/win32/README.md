@@ -141,7 +141,7 @@ want to build an installer.
 
 1. Check out the source code:
 
-        git clone https://git.postgresql.org/git/pgadmin4.git
+        git clone https://github.com/pgadmin-org/pgadmin4.git
 
 2. Install and build the JS dependencies:
 
@@ -155,6 +155,7 @@ want to build an installer.
         python -m venv venv
         pip install -r web\regression\requirements.txt
         pip install sphinx
+        pip install sphinxcontrib-youtube
 
 You should now be able to run the pgAdmin Python application, or build the
 desktop runtime.

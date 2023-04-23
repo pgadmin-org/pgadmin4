@@ -10,7 +10,7 @@
       },
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.connect",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.connect",
         "return_value": "(False, 'Mocked Internal Server Error while checking db connect.')"
       },
       "expected_data": {

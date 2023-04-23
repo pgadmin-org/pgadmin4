@@ -1,13 +1,13 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 
-class TreeAreaLocators():
+class TreeAreaLocators:
     """This will contains element locators for tree area, will also contain
     parametrized xpath where applicable"""
 
@@ -98,46 +98,48 @@ class TreeAreaLocators():
                % schema_name
 
     # Schema child
+    child_node_exp_status = \
+        "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
+        "following-sibling::div//span[span[text()='%s']]/" \
+        "preceding-sibling::i[@class='directory-toggle open']"
+
+    child_node = "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
+                 "following-sibling::div//span[text()='%s']"
+
     @staticmethod
     def schema_child_node_exp_status(schema_name, child_node_name):
-        return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
-               "following-sibling::div//span[span[text()='%s']]/" \
-               "preceding-sibling::i[@class='directory-toggle open']" \
-               % (schema_name, child_node_name)
+        return TreeAreaLocators.child_node_exp_status \
+            % (schema_name, child_node_name)
 
     @staticmethod
     def schema_child_node(schema_name, child_node_name):
+        return TreeAreaLocators.child_node % (schema_name, child_node_name)
+
+    @staticmethod
+    def schema_child_node_expand_icon_xpath(schema_name, child_node_name):
         return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
-               "following-sibling::div//span[text()='%s']" \
-               % (schema_name, child_node_name)
+               "following-sibling::div//span[text()='%s']/../" \
+               "preceding-sibling::i" % (schema_name, child_node_name)
 
     # Database child
     @staticmethod
     def database_child_node_exp_status(database_name, child_node_name):
-        return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
-               "following-sibling::div//span[span[text()='%s']]/" \
-               "preceding-sibling::i[@class='directory-toggle open']"\
-               % (database_name, child_node_name)
+        return TreeAreaLocators.child_node_exp_status \
+            % (database_name, child_node_name)
 
     @staticmethod
     def database_child_node(database_name, child_node_name):
-        return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
-               "following-sibling::div//span[text()='%s']" \
-               % (database_name, child_node_name)
+        return TreeAreaLocators.child_node % (database_name, child_node_name)
 
     # Server child
     @staticmethod
     def server_child_node_exp_status(server_name, child_node_name):
-        return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
-               "following-sibling::div//span[span[text()='%s']]/" \
-               "preceding-sibling::i[@class='directory-toggle open']"\
-               % (server_name, child_node_name)
+        return TreeAreaLocators.child_node_exp_status \
+            % (server_name, child_node_name)
 
     @staticmethod
     def server_child_node(server_name, child_node_name):
-        return "//div[div[span[span[starts-with(text(),'%s')]]]]/" \
-               "following-sibling::div//span[text()='%s']" \
-               % (server_name, child_node_name)
+        return TreeAreaLocators.child_node % (server_name, child_node_name)
 
     # Table Node
     @staticmethod
@@ -157,7 +159,7 @@ class TreeAreaLocators():
     # Context element option
     @staticmethod
     def context_menu_element(schema_name):
-        return "//li/span[text()='%s']" % schema_name
+        return "[role='menuitem'][data-label='%s']" % schema_name
 
     # Old xpaths
     # server_group_sub_nodes_exp_status = \

@@ -2,52 +2,62 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
+import React from 'react';
 import { generateNodeUrl } from './node_ajax';
+import MainMenuFactory from './MainMenuFactory';
+import _ from 'lodash';
+import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
+import { checkMasterPassword } from '../../../static/js/Dialogs/index';
+import { pgHandleItemError } from '../../../static/js/utils';
+import { Search } from './quick_search/trigger_search';
+import { send_heartbeat, stop_heartbeat } from './heartbeat';
+import getApiInstance from '../../../static/js/api_instance';
+import { copyToClipboard } from '../../../static/js/clipboard';
 
 define('pgadmin.browser', [
-  'sources/gettext', 'sources/url_for', 'require', 'jquery', 'underscore',
-  'bootstrap', 'sources/pgadmin', 'pgadmin.alertifyjs', 'bundled_codemirror',
+  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/pgadmin', 'bundled_codemirror',
   'sources/check_node_visibility', './toolbar', 'pgadmin.help',
   'sources/csrf', 'sources/utils', 'sources/window', 'pgadmin.authenticate.kerberos',
   'sources/tree/tree_init',
-  'pgadmin.browser.utils', 'wcdocker', 'jquery.contextmenu', 'jquery.aciplugin',
-  'jquery.acitree',
+  'pgadmin.browser.utils',
   'pgadmin.browser.preferences', 'pgadmin.browser.messages',
-  'pgadmin.browser.menu', 'pgadmin.browser.panel', 'pgadmin.browser.layout',
-  'pgadmin.browser.runtime', 'pgadmin.browser.error', 'pgadmin.browser.frame',
+  'pgadmin.browser.panel', 'pgadmin.browser.layout',
+  'pgadmin.browser.frame',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
-  'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state','jquery.acisortable',
-  'jquery.acifragment',
+  'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
+  /* wcDocker dependencies */
+  'bootstrap', 'jquery-contextmenu', 'wcdocker',
 ], function(
-  gettext, url_for, require, $, _,
-  Bootstrap, pgAdmin, Alertify, codemirror,
+  gettext, url_for, $,
+  pgAdmin, codemirror,
   checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils, pgWindow,
   Kerberos, InitTree,
 ) {
   window.jQuery = window.$ = $;
   // Some scripts do export their object in the window only.
   // Generally the one, which do no have AMD support.
-  var wcDocker = window.wcDocker;
+  let wcDocker = window.wcDocker;
   $ = $ || window.jQuery || window.$;
-  var CodeMirror = codemirror.default;
+  let CodeMirror = codemirror.default;
 
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
-  var select_object_msg = gettext('Please select an object in the tree view.');
+  let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  let select_object_msg = gettext('Please select an object in the tree view.');
 
   csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
 
   Kerberos.validate_kerberos_ticket();
 
-  var panelEvents = {};
+  let panelEvents = {};
   panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
     if (this.isVisible()) {
-      var obj = pgAdmin.Browser,
+      let obj = pgAdmin.Browser,
         i   = obj.tree ? obj.tree.selected() : undefined,
         d   = i ? obj.tree.itemData(i) : undefined;
 
@@ -59,12 +69,33 @@ define('pgadmin.browser', [
     }
   };
 
-  var initializeBrowserTree = pgAdmin.Browser.initializeBrowserTree =
+  let initializeBrowserTree = pgAdmin.Browser.initializeBrowserTree =
     function(b) {
+      const draggableTypes = [
+        'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar',
+        'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule',
+        'trigger trigger_function',
+        'edbfunc function edbproc procedure'
+      ];
       InitTree.initBrowserTree(b).then(() => {
+        const getQualifiedName = (data, item)=>{
+          if(draggableTypes[0].includes(data._type)) {
+            return pgadminUtils.fully_qualify(b, data, item);
+          } else if(draggableTypes[1].includes(data._type)) {
+            return pgadminUtils.quote_ident(data._label);
+          } else if(draggableTypes[3].includes(data._type)) {
+            let newData = {...data};
+            let parsedFunc = pgadminUtils.parseFuncParams(newData._label);
+            newData._label = parsedFunc.func_name;
+            return pgadminUtils.fully_qualify(b, newData, item);
+          } else {
+            return data._label;
+          }
+        };
+
         b.tree.registerDraggableType({
-          'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar' : (data, item, treeNodeInfo)=>{
-            let text = pgadminUtils.fully_qualify(b, data, item);
+          [draggableTypes[0]] : (data, item, treeNodeInfo)=>{
+            let text = getQualifiedName(data, item);
             return {
               text: text,
               objUrl: generateNodeUrl.call(pgBrowser.Nodes[data._type], treeNodeInfo, 'properties', data, true),
@@ -75,21 +106,16 @@ define('pgadmin.browser', [
               },
             };
           },
-          'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule' : (data)=>{
-            return pgadminUtils.quote_ident(data._label);
+          [draggableTypes[1]] : (data)=>{
+            return getQualifiedName(data);
           },
-          'trigger trigger_function' : (data)=>{
-            return data._label;
+          [draggableTypes[2]] : (data)=>{
+            return getQualifiedName(data);
           },
-          'edbfunc function edbproc procedure' : (data, item)=>{
-            let newData = {...data},
-              parsedFunc = null,
-              dropVal = '',
+          [draggableTypes[3]] : (data, item)=>{
+            let parsedFunc = pgadminUtils.parseFuncParams(data._label),
+              dropVal = getQualifiedName(data, item),
               curPos = {from: 0, to: 0};
-
-            parsedFunc = pgadminUtils.parseFuncParams(newData._label);
-            newData._label = parsedFunc.func_name;
-            dropVal = pgadminUtils.fully_qualify(b, newData, item);
 
             if(parsedFunc.params.length > 0) {
               dropVal = dropVal + '(';
@@ -112,6 +138,10 @@ define('pgadmin.browser', [
               cur: curPos,
             };
           },
+        });
+
+        b.tree.onNodeCopy((data, item)=>{
+          copyToClipboard(getQualifiedName(data, item));
         });
       }, () => {console.warn('Tree Load Error');});
     };
@@ -171,7 +201,7 @@ define('pgadmin.browser', [
         let ih = window.innerHeight;
         if (ih > passed_height){
           return passed_height;
-        }else{
+        } else {
           if (ih > pgAdmin.Browser.stdH.lg)
             return pgAdmin.Browser.stdH.lg;
           else if (ih > pgAdmin.Browser.stdH.md)
@@ -188,16 +218,16 @@ define('pgadmin.browser', [
       // Panel to keep the left hand browser tree
       'browser': new pgAdmin.Browser.Panel({
         name: 'browser',
-        title: gettext('Browser'),
+        title: gettext('Object Explorer'),
         showTitle: true,
         isCloseable: false,
         isPrivate: true,
         icon: '',
         limit: 1,
-        content: '<div id="tree" class="aciTree"></div>',
-        onCreate: function(panel, $container) {
+        content: '<div id="tree" class="browser-tree"></div>',
+        onCreate: function(panel, container) {
           toolBar.initializeToolbar(panel, wcDocker);
-          $container.addClass('pg-no-overflow');
+          container.classList.add('pg-no-overflow');
         },
       }),
       // Properties of the object node
@@ -210,10 +240,10 @@ define('pgadmin.browser', [
         isPrivate: true,
         elContainer: true,
         limit: 1,
-        content: '<div class="obj_properties container-fluid h-100"><div role="status" class="pg-panel-message">' + select_object_msg + '</div></div>',
+        content: '<div class="obj_properties"><div role="status" class="pg-panel-message">' + select_object_msg + '</div></div>',
         events: panelEvents,
-        onCreate: function(myPanel, $container) {
-          $container.addClass('pg-no-overflow');
+        onCreate: function(myPanel, container) {
+          container.classList.add('pg-no-overflow');
         },
       }),
       // Statistics of the object
@@ -226,7 +256,7 @@ define('pgadmin.browser', [
         isPrivate: false,
         limit : 1,
         canHide: true,
-        content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-statistics-message">' + select_object_msg + '</div><div class="pg-panel-statistics-container d-none"></div></div>',
+        content: '<div></div>',
         events: panelEvents,
       }),
       // Reversed engineered SQL for the object
@@ -238,7 +268,7 @@ define('pgadmin.browser', [
         isCloseable: false,
         isPrivate: true,
         limit: 1,
-        content: '<label for="sql-textarea" class="sr-only">' + gettext('SQL Code') + '</label><div class="sql_textarea"><textarea id="sql-textarea" name="sql-textarea" title="' + gettext('SQL Code') + '"></textarea></div>',
+        content: '<div></div>',
       }),
       // Dependencies of the object
       'dependencies': new pgAdmin.Browser.Panel({
@@ -250,7 +280,7 @@ define('pgadmin.browser', [
         isPrivate: false,
         canHide: true,
         limit: 1,
-        content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependencies-container d-none"></div></div>',
+        content: '<div></div>',
         events: panelEvents,
       }),
       // Dependents of the object
@@ -263,16 +293,29 @@ define('pgadmin.browser', [
         isPrivate: false,
         limit: 1,
         canHide: true,
-        content: '<div class="negative-space p-2"><div role="status" class="pg-panel-message pg-panel-depends-message">' + select_object_msg + '</div><div class="pg-panel-dependents-container d-none"></div></div>',
+        content: '<div></div>',
+        events: panelEvents,
+      }),
+      // Background processes
+      'processes': new pgAdmin.Browser.Panel({
+        name: 'processes',
+        title: gettext('Processes'),
+        icon: '',
+        width: 500,
+        isCloseable: true,
+        isPrivate: false,
+        limit: 1,
+        canHide: true,
+        content: '<div></div>',
         events: panelEvents,
       }),
     },
     // We also support showing dashboards, HTML file, external URL
     frames: {},
     /* Menus */
-    // pgAdmin.Browser.MenuItem.add_menus(...) will register all the menus
+    // add_menus(...) will register all the menus
     // in this container
-    menus: {
+    all_menus_cache: {
       // All context menu goes here under certain menu types.
       // i.e. context: {'server': [...], 'server-group': [...]}
       context: {},
@@ -289,9 +332,12 @@ define('pgadmin.browser', [
       // Help menus
       help: {},
     },
+    MainMenus: [],
+    BrowserContextMenu: [],
+
     add_panels: function() {
       /* Add hooked-in panels by extensions */
-      var panels = JSON.parse(pgBrowser.panels_items);
+      let panels = JSON.parse(pgBrowser.panels_items);
       _.each(panels, function(panel) {
         if (panel.isIframe) {
           pgBrowser.frames[panel.name] = new pgBrowser.Frame({
@@ -325,9 +371,18 @@ define('pgadmin.browser', [
     },
     menu_categories: {
       /* name, label (pair) */
+      'register': {
+        label: gettext('Register'),
+        priority: 1,
+        /* separator above this menu */
+        above: false,
+        below: true,
+        /* icon: 'fa fa-magic', */
+        single: true,
+      },
       'create': {
         label: gettext('Create'),
-        priority: 1,
+        priority: 2,
         /* separator above this menu */
         above: false,
         below: true,
@@ -337,68 +392,136 @@ define('pgadmin.browser', [
     },
     // A callback to load/fetch a script when a certain node is loaded
     register_script: function(n, m, p) {
-      var scripts = this.scripts;
+      let scripts = this.scripts;
       scripts[n] = _.isArray(scripts[n]) ? scripts[n] : [];
       scripts[n].push({'name': m, 'path': p, loaded: false});
     },
     masterpass_callback_queue: [],
+    getMenuList: function(name, item, d, skipDisabled=false) {
+      let obj = this;
+      //This 'checkNoMenuOptionForNode' function will check if showMenu flag is present or not for selected node
+      let {flag,showMenu}=MainMenuFactory.checkNoMenuOptionForNode(d);
+      if(flag){
+        if(showMenu===false){
+          return [MainMenuFactory.createMenuItem({
+            enable : false,
+            label: gettext('No menu available for this object.'),
+            name:'',
+            priority: 1,
+            category: 'create',
+          })];
+        }
+      }else{
+        let category = {
+          'common': []
+        };
+        const nodeTypeMenus = obj.all_menus_cache[name][d._type];
+        for(let key of Object.keys(nodeTypeMenus)) {
+          let menuItem = nodeTypeMenus[key];
+          let menuCategory = menuItem.category ?? 'common';
+          category[menuCategory] = category[menuCategory] ?? [];
+          category[menuCategory].push(menuItem);
+        }
+        let menuItemList = [];
+
+        for(let c in category) {
+          if((c in obj.menu_categories || category[c].length > 1) && c != 'common' ) {
+            let allMenuItemsDisabled = true;
+            category[c].forEach((mi)=> {
+              mi.checkAndSetDisabled(d, item);
+              if(allMenuItemsDisabled) {
+                allMenuItemsDisabled = mi.isDisabled;
+              }
+            });
+
+            const categoryMenuOptions = obj.menu_categories[c];
+            let label = categoryMenuOptions?.label ?? c;
+            let priority = categoryMenuOptions?.priority ?? 10;
+
+            if(categoryMenuOptions?.above) {
+              menuItemList.push(MainMenuFactory.getSeparator(label, priority));
+            }
+            if(!allMenuItemsDisabled && skipDisabled) {
+              let _menuItem = MainMenuFactory.createMenuItem({
+                name: c,
+                label: label,
+                module: c,
+                category: c,
+                menu_items: category[c],
+                priority: priority
+              });
+
+              menuItemList.push(_menuItem);
+            } else if(!skipDisabled){
+              let _menuItem = MainMenuFactory.createMenuItem({
+                name: c,
+                label: label,
+                module:c,
+                category: c,
+                menu_items: category[c],
+                priority: priority
+              });
+
+              menuItemList.push(_menuItem);
+            }
+            if(categoryMenuOptions?.below) {
+              menuItemList.push(MainMenuFactory.getSeparator(label, priority));
+            }
+          } else {
+            category[c].forEach((c)=> {
+              c.checkAndSetDisabled(d, item);
+            });
+
+            category[c].forEach((m)=> {
+              if(!skipDisabled) {
+                menuItemList.push(m);
+              } else if(skipDisabled && !m.isDisabled){
+                menuItemList.push(m);
+              }
+            });
+          }
+        }
+
+        return menuItemList;
+      }
+    },
     // Enable/disable menu options
     enable_disable_menus: function(item) {
-      // Mechanism to enable/disable menus depending on the condition.
-      var obj = this,
-        // menu navigation bar
-        navbar = $('#navbar-menu > ul').first(),
-        // Drop down menu for objects
-        $obj_mnu = navbar.find('li#mnu_obj .dropdown-menu').first(),
-        // data for current selected object
-        d = item ? obj.tree.itemData(item) : undefined,
-        update_menuitem = function(m) {
-          if (m instanceof pgAdmin.Browser.MenuItem) {
-            m.update(d, item);
-          } else {
-            for (var key in m) {
-              update_menuitem(m[key]);
-            }
-          }
-        };
-
+      let obj = this;
+      let d = item ? obj.tree.itemData(item) : undefined;
       toolBar.enable(gettext('View Data'), false);
       toolBar.enable(gettext('Filtered Rows'), false);
 
-      // All menus from the object menus (except the create drop-down
-      // menu) needs to be removed.
-      $obj_mnu.empty();
-
       // All menus (except for the object menus) are already present.
-      // They will just require to check, wheather they are
+      // They will just require to check, whether they are
       // enabled/disabled.
-      _.each([
-        {m: 'file', id: '#mnu_file'},
-        {m: 'management', id: '#mnu_management'},
-        {m: 'tools', id: '#mnu_tools'},
-        {m: 'help', id:'#mnu_help'}], function(o) {
-        _.each( obj.menus[o.m], function(m) { update_menuitem(m); });
+      pgBrowser.MainMenus.filter((m)=>m.name != 'object').forEach((menu) => {
+        menu.menuItems.forEach((mitem) => {
+          mitem.checkAndSetDisabled(d, item);
+        });
       });
 
       // Create the object menu dynamically
-      if (item && obj.menus['object'] && obj.menus['object'][d._type]) {
-        pgAdmin.Browser.MenuCreator(
-          obj.Nodes, $obj_mnu, obj.menus['object'][d._type], obj.menu_categories, d, item
-        );
+      let objectMenu = pgBrowser.MainMenus.find((menu) => menu.name == 'object');
+      if (item && obj.all_menus_cache['object']?.[d._type]) {
+        let menuItemList = obj.getMenuList('object', item, d);
+        objectMenu && MainMenuFactory.refreshMainMenuItems(objectMenu, menuItemList);
+        let ctxMenuList = obj.getMenuList('context', item, d, true);
+        obj.BrowserContextMenu = MainMenuFactory.getContextMenu(ctxMenuList);
       } else {
-        // Create a dummy 'no object seleted' menu
-        var create_submenu = pgAdmin.Browser.MenuGroup(
-          obj.menu_categories['create'], [{
-            $el: $('<li><a class="dropdown-item disabled" href="#" role="menuitem">' + gettext('No object selected') + '</a></li>'),
-            priority: 1,
+        objectMenu && MainMenuFactory.refreshMainMenuItems(objectMenu, [
+          MainMenuFactory.createMenuItem({
+            name: '',
+            label: gettext('No object selected'),
             category: 'create',
-            update: function() {},
-          }], false);
-        $obj_mnu.append(create_submenu.$el);
+            priority: 1,
+            enable: false,
+          })
+        ]);
       }
     },
     init: function() {
-      var obj=this;
+      let obj=this;
       if (obj.initialized) {
         return;
       }
@@ -429,8 +552,8 @@ define('pgadmin.browser', [
         });
 
         // Stored layout in database from the previous session
-        var layout = pgBrowser.utils.layout;
-        obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj));
+        let layout = pgBrowser.utils.layout;
+        obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj), true);
 
         obj.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
           obj.save_current_layout('Browser/Layout', obj.docker);
@@ -438,26 +561,19 @@ define('pgadmin.browser', [
       }
 
       initializeBrowserTree(obj);
+      initializeModalProvider();
+      initializeNotifier();
 
-      // Syntax highlight the SQL Pane
-      if(document.getElementById('sql-textarea')){
-        obj.editor = CodeMirror.fromTextArea(
-          document.getElementById('sql-textarea'), {
-            lineNumbers: true,
-            mode: 'text/x-pgsql',
-            readOnly: true,
-            extraKeys: pgAdmin.Browser.editor_shortcut_keys,
-            screenReaderLabel: gettext('SQL'),
-          });
-      }
       /* Cache may take time to load for the first time
        * Reflect the changes once cache is available
        */
       let cacheIntervalId = setInterval(()=> {
         let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
-        if(sqlEditPreferences) {
+        let browserPreferences = obj.get_preferences_for_module('browser');
+        if(sqlEditPreferences && browserPreferences) {
           clearInterval(cacheIntervalId);
           obj.reflectPreferences('sqleditor');
+          obj.reflectPreferences('browser');
         }
       }, 500);
 
@@ -466,65 +582,45 @@ define('pgadmin.browser', [
         obj.reflectPreferences('sqleditor');
       });
 
+      /* Check for browser preference changes */
+      obj.onPreferencesChange('browser', function() {
+        obj.reflectPreferences('browser');
+      });
+
       setTimeout(function() {
         obj?.editor?.setValue('-- ' + select_object_msg);
         obj?.editor?.refresh();
       }, 10);
 
-      // Build the treeview context menu
-      $('#tree').contextMenu({
-        selector: '.file-entry',
-        autoHide: false,
-        build: function(element) {
-          var item = obj.tree.itemFrom(element),
-            d = obj.tree.itemData(item),
-            menus = obj.menus['context'][d._type],
-            $div = $('<div></div>'),
-            context_menu = {};
-
-          if(item) obj.tree.select(item);
-          pgAdmin.Browser.MenuCreator(
-            obj.Nodes, $div, menus, obj.menu_categories, d, item, context_menu
-          );
-
-          return {
-            autoHide: false,
-            items: context_menu,
-          };
-        },
-        events: {
-          hide: function() {
-            // Return focus to the tree
-            obj.keyboardNavigation.bindLeftTree();
-          },
-        },
-      });
-
       // Register scripts and add menus
       pgBrowser.utils.registerScripts(this);
-      pgBrowser.utils.addMenus(obj);
-
-      let headers = {};
-      headers[pgAdmin.csrf_token_header] = pgAdmin.csrf_token;
 
       // Ping the server every 5 minutes
       setInterval(function() {
-        $.ajax({
-          url: url_for('misc.cleanup'),
-          type:'POST',
-          headers: headers,
-        })
-          .done(function() {})
-          .fail(function() {});
+        getApiInstance().post(
+          url_for('misc.cleanup')
+        ).then(()=> {
+          /*This is intentional (SonarQube)*/
+        }).catch(function() {
+          /*This is intentional (SonarQube)*/
+        });
       }, 300000);
+
+      obj.Events.on(
+        'pgadmin:server:connected', send_heartbeat.bind(obj)
+      );
+
+      obj.Events.on(
+        'pgadmin:server:disconnect', stop_heartbeat.bind(obj)
+      );
 
       obj.set_master_password('');
       obj.check_corrupted_db_file();
-      obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode, obj);
-      obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode, obj);
-      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact, obj);
-      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode, obj);
-      obj.Events.on('pgadmin-browser:panel-browser:' + wcDocker.EVENT.RESIZE_ENDED, obj.onResizeEnded, obj);
+      obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
+      obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact.bind(obj));
+      obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
+      obj.Events.on('pgadmin-browser:panel-browser:' + wcDocker.EVENT.RESIZE_ENDED, obj.onResizeEnded.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */
@@ -536,137 +632,29 @@ define('pgadmin.browser', [
       if (this.tree) this.tree.resizeTree();
     },
     check_corrupted_db_file: function() {
-      $.ajax({
-        url: url_for('browser.check_corrupted_db_file'),
-        type: 'GET',
-        dataType: 'json',
-        contentType: 'application/json',
-      }).done((res)=> {
+      getApiInstance().get(
+        url_for('browser.check_corrupted_db_file')
+      ).then(({data: res})=> {
         if(res.data.length > 0) {
 
-          Alertify.alert(
+          Notify.alert(
             'Warning',
             'pgAdmin detected unrecoverable corruption in it\'s SQLite configuration database. ' +
             'The database has been backed up and recreated with default settings. '+
             'It may be possible to recover data such as query history manually from '+
             'the original/corrupt file using a tool such as DB Browser for SQLite if desired.'+
             '<br><br>Original file: ' + res.data + '<br>Replacement file: ' +
-            res.data.substring(0, res.data.length - 14)
-          )
-            .set({'closable': true,
-              'onok': function() {
-              },
-            });
-
-
+            res.data.substring(0, res.data.length - 14),
+          );
         }
-      }).fail(function(xhr, status, error) {
-        Alertify.alert(error);
+      }).catch(function(error) {
+        Notify.alert(error);
       });
     },
-    init_master_password: function() {
-      let self = this;
-      // Master password dialog
-      if (!Alertify.dlgMasterPass) {
-        Alertify.dialog('dlgMasterPass', function factory() {
-          return {
-            main: function(title, message, reset) {
-              this.set('title', title);
-              this.message = message;
-              this.reset = reset;
-            },
-            build: function() {
-              Alertify.pgDialogBuild.apply(this);
-            },
-            setup:function() {
-              return {
-                buttons:[{
-                  text: '',
-                  className: 'btn btn-primary-icon pull-left fa fa-question pg-alertify-icon-button',
-                  attrs: {
-                    name: 'dialog_help',
-                    type: 'button',
-                    label: gettext('Master password'),
-                    url: url_for('help.static', {
-                      'filename': 'master_password.html',
-                    }),
-                  },
-                },{
-                  text: gettext('Reset Master Password'), className: 'btn btn-secondary fa fa-trash-alt pg-alertify-button pull-left',
-                },{
-                  text: gettext('Cancel'), className: 'btn btn-secondary fa fa-times pg-alertify-button',
-                  key: 27,
-                },{
-                  text: gettext('OK'), key: 13, className: 'btn btn-primary fa fa-check pg-alertify-button',
-                }],
-                focus: {element: '#password', select: true},
-                options: {
-                  modal: true, resizable: false, maximizable: false, pinnable: false,
-                },
-              };
-            },
-            prepare:function() {
-              let _self = this;
-              _self.setContent(_self.message);
-              /* Reset button hide */
-              if(!_self.reset) {
-                $(_self.__internal.buttons[1].element).addClass('d-none');
-              } else {
-                $(_self.__internal.buttons[1].element).removeClass('d-none');
-              }
-            },
-            callback: function(event) {
-              let parentDialog = this;
-
-              if (event.index == 3) {
-                /* OK Button */
-                self.set_master_password(
-                  $('#frmMasterPassword #password').val(),
-                  true,parentDialog.set_callback,
-                );
-              } else if(event.index == 2) {
-                /* Cancel button */
-                self.masterpass_callback_queue = [];
-              } else if(event.index == 1) {
-                /* Reset Button */
-                event.cancel = true;
-
-                Alertify.confirm(gettext('Reset Master Password'),
-                  gettext('This will remove all the saved passwords. This will also remove established connections to '
-                    + 'the server and you may need to reconnect again. Do you wish to continue?'),
-                  function() {
-                    /* If user clicks Yes */
-                    self.reset_master_password();
-                    parentDialog.close();
-                    return true;
-                  },
-                  function() {/* If user clicks No */ return true;}
-                ).set('labels', {
-                  ok: gettext('Yes'),
-                  cancel: gettext('No'),
-                });
-              } else if(event.index == 0) {
-                /* help Button */
-                event.cancel = true;
-                self.showHelp(
-                  event.button.element.name,
-                  event.button.element.getAttribute('url'),
-                  null, null
-                );
-                return;
-              }
-            },
-          };
-        });
-      }
-    },
-
     check_master_password: function(on_resp_callback) {
-      $.ajax({
-        url: url_for('browser.check_master_password'),
-        type: 'GET',
-        contentType: 'application/json',
-      }).done((res)=> {
+      getApiInstance().get(
+        url_for('browser.check_master_password')
+      ).then(({data: res})=> {
         if(on_resp_callback) {
           if(res.data) {
             on_resp_callback(true);
@@ -674,57 +662,36 @@ define('pgadmin.browser', [
             on_resp_callback(false);
           }
         }
-      }).fail(function(xhr, status, error) {
-        Alertify.pgRespErrorNotify(xhr, error);
+      }).catch(function(error) {
+        Notify.pgRespErrorNotify(error);
       });
     },
 
     reset_master_password: function() {
       let self = this;
-      $.ajax({
-        url: url_for('browser.set_master_password'),
-        type: 'DELETE',
-        contentType: 'application/json',
-      }).done((res)=> {
+      getApiInstance().delete(
+        url_for('browser.set_master_password')
+      ).then(({data: res})=> {
         if(!res.data) {
           self.set_master_password('');
         }
-      }).fail(function(xhr, status, error) {
-        Alertify.pgRespErrorNotify(xhr, error);
+      }).catch(function(error) {
+        Notify.pgRespErrorNotify(error);
       });
     },
 
-    set_master_password: function(password='', button_click=false, set_callback=()=>{}) {
+    set_master_password: function(password='',
+      set_callback=()=>{/*This is intentional (SonarQube)*/},
+      cancel_callback=()=>{/*This is intentional (SonarQube)*/}) {
       let data=null, self = this;
 
-      data = JSON.stringify({
+      data = {
         'password': password,
-        'button_click': button_click,
-      });
+      };
 
       self.masterpass_callback_queue.push(set_callback);
-
-      $.ajax({
-        url: url_for('browser.set_master_password'),
-        type: 'POST',
-        data: data,
-        dataType: 'json',
-        contentType: 'application/json',
-      }).done((res)=> {
-        if(!res.data.present) {
-          self.init_master_password();
-          Alertify.dlgMasterPass(res.data.title, res.data.content, res.data.reset);
-        } else {
-          setTimeout(()=>{
-            while(self.masterpass_callback_queue.length > 0) {
-              let callback = self.masterpass_callback_queue.shift();
-              callback();
-            }
-          }, 500);
-        }
-      }).fail(function(xhr, status, error) {
-        Alertify.pgRespErrorNotify(xhr, error);
-      });
+      // Check master passowrd.
+      checkMasterPassword(data, self.masterpass_callback_queue, cancel_callback);
     },
 
     bind_beforeunload: function() {
@@ -762,16 +729,14 @@ define('pgadmin.browser', [
 
     // Add menus of module/extension at appropriate menu
     add_menus: function(menus) {
-      var self = this,
-        pgMenu = this.menus,
-        MenuItem = pgAdmin.Browser.MenuItem;
+      let self = this,
+        pgMenu = this.all_menus_cache;
+
       _.each(menus, function(m) {
         _.each(m.applies, function(a) {
           /* We do support menu type only from this list */
-          if ($.inArray(a, [
-            'context', 'file', 'edit', 'object',
-            'management', 'tools', 'help']) >= 0) {
-            var _menus;
+          if(['context', 'file', 'edit', 'object','management', 'tools', 'help'].indexOf(a) > -1){
+            let _menus;
 
             // If current node is not visible in browser tree
             // then return from here
@@ -796,15 +761,41 @@ define('pgadmin.browser', [
             }
 
             let get_menuitem_obj = function(_m) {
-              return new MenuItem({
-                name: _m.name, label: _m.label, module: _m.module,
-                category: _m.category, callback: _m.callback,
-                priority: _m.priority, data: _m.data, url: _m.url || '#',
-                target: _m.target, icon: _m.icon,
-                enable: (_m.enable == '' ? true : (_.isString(_m.enable) &&
-                  _m.enable.toLowerCase() == 'false') ?
-                  false : _m.enable),
-                node: _m.node, checked: _m.checked, below: _m.below,
+              let enable = _m.enable;
+              if(_m.enable == '') {
+                enable = true;
+              } else if(_.isString(_m.enable) && _m.enable.toLowerCase() == 'false') {
+                enable = false;
+              }
+
+              // This is to handel quick search callback
+              if(gettext(_m.label) == gettext('Quick Search')) {
+                _m.callback = () => {
+                  // Render Search component
+                  Notify.showModal(gettext('Quick Search'), (closeModal) => {
+                    return <Search closeModal={closeModal}/>;
+                  },
+                  { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: false}
+                  );
+                };
+              }
+
+              return MainMenuFactory.createMenuItem({
+                name: _m.name,
+                label: _m.label,
+                module: _m.module,
+                category: _m.category,
+                callback: typeof _m.module == 'object' && _m.module[_m.callback] && _m.callback in _m.module[_m.callback] ? _m.module[_m.callback] : _m.callback,
+                priority: _m.priority,
+                data: _m.data,
+                url: _m.url || '#',
+                target: _m.target,
+                icon: _m.icon,
+                enable: enable ? enable : true,
+                node: _m.node,
+                checked: _m.checked,
+                below: _m.below,
+                applies: _m.applies,
               });
             };
 
@@ -814,8 +805,8 @@ define('pgadmin.browser', [
               if(m.menu_items) {
                 let sub_menu_items = [];
 
-                for(let i=0; i<m.menu_items.length; i++) {
-                  sub_menu_items.push(get_menuitem_obj(m.menu_items[i]));
+                for(let mnu_val of m.menu_items) {
+                  sub_menu_items.push(get_menuitem_obj(mnu_val));
                 }
                 _menus[m.name]['menu_items'] = sub_menu_items;
               }
@@ -830,60 +821,10 @@ define('pgadmin.browser', [
         });
       });
     },
-    // Create the menus
-    create_menus: function() {
-
-      /* Create menus */
-      var navbar = $('#navbar-menu > ul').first();
-      var obj = this;
-
-      _.each([
-        {menu: 'file', id: '#mnu_file'},
-        {menu: 'management', id: '#mnu_management'},
-        {menu: 'tools', id: '#mnu_tools'},
-        {menu: 'help', id:'#mnu_help'}],
-      function(o) {
-        var $mnu = navbar.children(o.id).first(),
-          $dropdown = $mnu.children('.dropdown-menu').first();
-        $dropdown.empty();
-        if(o.menu == 'help'){
-          $dropdown.append('<div id="quick-search-component"></div>');
-          $dropdown.append('<div class="menu-groups"><span class="fa fa-list" style="font-weight:900 !important;"></span> &nbsp;' + gettext('SUGGESTED SITES') + '</div>');
-        }
-
-        if (pgAdmin.Browser.MenuCreator(
-          obj.Nodes, $dropdown, obj.menus[o.menu], obj.menu_categories
-        )) {
-          $mnu.removeClass('d-none');
-        }
-      });
-
-      navbar.children('#mnu_obj').removeClass('d-none');
-      obj.enable_disable_menus();
-    },
-    // General function to handle callbacks for object or dialog help.
-    showHelp: function(type, url, node, item) {
-      if (type == 'object_help') {
-        // Construct the URL
-        var server = pgBrowser.tree.getTreeNodeHierarchy(item).server;
-        var baseUrl = pgBrowser.utils.pg_help_path;
-        var fullUrl = help.getHelpUrl(baseUrl, url, server.version);
-
-        window.open(fullUrl, 'postgres_help');
-      } else if(type == 'dialog_help') {
-        if (pgWindow && pgWindow.default) {
-          pgWindow.default.open(url, 'pgadmin_help');
-        }
-        else {
-          window.open(url, 'pgadmin_help');
-        }
-      }
-      $('#live-search-field').focus();
-    },
     _findTreeChildNode: function(_i, _d, _o) {
-      var loaded = _o.t.wasLoad(_i),
+      let loaded = _o.t.wasLoad(_i),
         onLoad = function() {
-          var items = _o.t.children(_i),
+          let items = _o.t.children(_i),
             i, d, n, idx = 0, size = items.length;
           for (; idx < size; idx++) {
             i = items[idx];
@@ -927,7 +868,7 @@ define('pgadmin.browser', [
             onLoad();
           },
           () => {
-            var fail = _o && _o.o && _o.o.fail;
+            let fail = _o && _o.o && _o.o.fail;
             if (fail && typeof(fail) == 'function') {
               fail.apply(_o.t, []);
             }
@@ -939,21 +880,20 @@ define('pgadmin.browser', [
         _o.notFound && typeof(_o.notFound) == 'function' &&
           _o.notFound(_d);
       }
-
-      return;
     },
 
     onAddTreeNode: function(_data, _hierarchy, _opts) {
-      var ctx = {
+      let ctx = {
           b: this, // Browser
           d: null, // current parent
           hasId: true,
           i: null, // current item
           p: _.toArray(_hierarchy || {}).sort(
             function(a, b) {
-              return (a.priority === b.priority) ? 0 : (
-                a.priority < b.priority ? -1 : 1
-              );
+              if (a.priority === b.priority) {
+                return 0;
+              }
+              return (a.priority < b.priority ? -1 : 1);
             }
           ), // path of the parent
           pathOfTreeItems: [], // path Item
@@ -961,7 +901,7 @@ define('pgadmin.browser', [
           o: _opts,
         },
         traversePath = function() {
-          var _ctx = this, data;
+          let _ctx = this, data;
 
           _ctx.success = traversePath;
           if (_ctx.p.length) {
@@ -986,11 +926,11 @@ define('pgadmin.browser', [
         addItemNode = function() {
           // Append the new data in the tree under the current item.
           // We may need to pass it to proper collection node.
-          var _ctx = this,
+          let _ctx = this,
             first = (_ctx.i || this.t.wasLoad(_ctx.i)) &&
             this.t.first(_ctx.i),
             findChildNode = function(success, notFound) {
-              var __ctx = this;
+              let __ctx = this;
               __ctx.success = success;
               __ctx.notFound = notFound;
 
@@ -1006,13 +946,13 @@ define('pgadmin.browser', [
               }
             }.bind(_ctx),
             addNode = function() {
-              var __ctx = this,
+              let __ctx = this,
                 items = __ctx.t.children(__ctx.i),
                 s = 0, e = items.length - 1, i,
                 linearSearch = function() {
                   while (e >= s) {
                     i = items[s];
-                    var d = __ctx.t.itemData(i);
+                    let d = __ctx.t.itemData(i);
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _data._id) == 1)
                         return true;
@@ -1031,7 +971,7 @@ define('pgadmin.browser', [
                   return false;
                 },
                 binarySearch = function() {
-                  var d, m;
+                  let d, m;
                   // Binary search only outperforms Linear search for n > 44.
                   // Reference:
                   // https://en.wikipedia.org/wiki/Binary_search_algorithm#cite_note-30
@@ -1105,8 +1045,8 @@ define('pgadmin.browser', [
                   }
                 });
               } else {
-                var _append = function() {
-                  var ___ctx = this,
+                let _append = function() {
+                  let ___ctx = this,
                     _parent_data = ___ctx.t.itemData(___ctx.i);
 
                   ___ctx.t.append(___ctx.i, _data).then(
@@ -1171,7 +1111,7 @@ define('pgadmin.browser', [
               findChildNode(
                 selectNode,
                 function() {
-                  var o = this && this.o;
+                  let o = this && this.o;
                   if (
                     o && o.fail && typeof(o.fail) == 'function'
                   ) {
@@ -1181,7 +1121,7 @@ define('pgadmin.browser', [
               );
             },
             () => {
-              var o = this && this.o;
+              let o = this && this.o;
               if (
                 o && o.fail && typeof(o.fail) == 'function'
               ) {
@@ -1199,23 +1139,22 @@ define('pgadmin.browser', [
       if (!ctx.t.wasInit() || !_data) {
         return;
       }
-      _data._label = _data.label;
-      _data.label = _.escape(_data.label);
 
       traversePath();
     },
 
     onUpdateTreeNode: function(_old, _new, _hierarchy, _opts) {
-      var ctx = {
+      let ctx = {
           b: this, // Browser
           d: null, // current parent
           i: null, // current item
           hasId: true,
           p: _.toArray(_hierarchy || {}).sort(
             function(a, b) {
-              return (a.priority === b.priority) ? 0 : (
-                a.priority < b.priority ? -1 : 1
-              );
+              if (a.priority === b.priority) {
+                return 0;
+              }
+              return (a.priority < b.priority ? -1 : 1);
             }
           ), // path of the old object
           pathOfTreeItems: [], // path items
@@ -1227,18 +1166,18 @@ define('pgadmin.browser', [
           op: null,
         },
         errorOut = function() {
-          var fail = this.o && this.o.fail;
+          let fail = this.o && this.o.fail;
           if (fail && typeof(fail) == 'function') {
             fail.apply(this.t, [this.i, _new, _old]);
           }
         }.bind(ctx),
         deleteNode = function() {
-          var self = this,
+          let self = this,
             pathOfTreeItems = this.pathOfTreeItems,
             findParent = function() {
               if (pathOfTreeItems.length) {
                 pathOfTreeItems.pop();
-                var length = pathOfTreeItems.length;
+                let length = pathOfTreeItems.length;
                 this.i = (length && pathOfTreeItems[length - 1].item) || null;
                 this.d = (length && pathOfTreeItems[length - 1].d) || null;
 
@@ -1255,7 +1194,7 @@ define('pgadmin.browser', [
               }
             }.bind(this);
 
-          var _item_parent = (this.i
+          let _item_parent = (this.i
             && this.t.hasParent(this.i)
               && this.t.parent(this.i)) || null,
             _item_grand_parent = _item_parent ?
@@ -1269,22 +1208,34 @@ define('pgadmin.browser', [
             this.i && this.d && this.old._id == this.d._id &&
               this.old._type == this.d._type
           ) {
-            var _parent = this.t.parent(this.i) || null;
+            let _parent = this.t.parent(this.i) || null;
 
             // If there is no parent then just update the node
             if(this.t.isRootNode(_parent) ||
              (_parent && _parent.length == 0 && ctx.op == 'UPDATE')) {
-              updateNode();
+              //Update node if browser has single child node.
+              if(this.t.children().length === 1) {
+                updateNode();
+              } else {
+                let that = this;
+                this.t.remove(this.i).then(() => {
+                  that.t.before(that.i, that.new).then((new_item) => {
+                    that.t.select(new_item);
+                  }, () => {
+                    console.warn('Failed to add before..', arguments);
+                  });
+                });
+              }
             } else {
-              var postRemove = function() {
+              let postRemove = function() {
                 // If item has parent but no grand parent
                 if (_item_parent.path !== '/browser' && !_item_grand_parent) {
-                  var parent = null;
+                  let parent = null;
                   // We need to search in all parent siblings (eg: server groups)
-                  var parents = this.t.siblings(this.i) || [];
+                  let parents = this.t.siblings(this.i) || [];
                   parents.push(this.i);
                   _.each(parents, function (p) {
-                    var d = self.t.itemData(p);
+                    let d = self.t.itemData(p);
                     // If new server group found then assign it parent
                     if(d._id == self.new._pid) {
                       parent = p;
@@ -1302,13 +1253,11 @@ define('pgadmin.browser', [
                     // it right now.
                     this.notFound = errorOut;
 
-                    // var _d = {_id: this.new._pid, _type: self.d._type};
-                    var loaded = this.t.wasLoad(parent),
+                    let loaded = this.t.wasLoad(parent),
                       onLoad = function() {
                         self.i = parent;
                         self.pathOfTreeItems.push({coll: false, item: parent, d: self.d});
                         self.success();
-                        return;
                       };
 
                     if (!loaded && self.load) {
@@ -1317,7 +1266,7 @@ define('pgadmin.browser', [
                           onLoad();
                         },
                         () => {
-                          var fail = self && self.o && self.o.fail;
+                          let fail = self && self.o && self.o.fail;
                           if (
                             fail && typeof(fail) == 'function'
                           ) {
@@ -1329,10 +1278,9 @@ define('pgadmin.browser', [
                       onLoad();
                     }
                   }
-                  return;
                 } else {
                   // This is for rest of the nodes
-                  var _parentData = this.d;
+                  let _parentData = this.d;
                   // Find the grand-parent, or the collection node of parent.
                   findParent();
 
@@ -1353,7 +1301,6 @@ define('pgadmin.browser', [
                   } else {
                     addItemNode();
                   }
-                  return;
                 }
               }.bind(this);
 
@@ -1375,12 +1322,12 @@ define('pgadmin.browser', [
 
         }.bind(ctx),
         findNewParent = function(_d) {
-          var findParent = function() {
-            var pathOfTreeItems = this.pathOfTreeItems;
+          let findParent = function() {
+            let pathOfTreeItems = this.pathOfTreeItems;
 
             if (pathOfTreeItems.length) {
               pathOfTreeItems.pop();
-              var length = pathOfTreeItems.length;
+              let length = pathOfTreeItems.length;
               this.i = (length && pathOfTreeItems[length - 1].item) || null;
               this.d = (length && pathOfTreeItems[length - 1].d) || null;
 
@@ -1427,11 +1374,11 @@ define('pgadmin.browser', [
           if (
             this.i && this.d && this.new._type == this.d._type
           ) {
-            var self = this,
+            let self = this,
               _id = this.d._id;
             if (this.new._id != this.d._id) {
               // Found the new oid, update its node_id
-              var node_data = this.t.itemData(ctx.i);
+              let node_data = this.t.itemData(ctx.i);
               node_data._id = _id = this.new._id;
             }
             if (this.new._id == _id) {
@@ -1448,19 +1395,17 @@ define('pgadmin.browser', [
               this.t.openPath(this.i);
               this.t.deselect(this.i);
 
-              // select tree item after few milliseconds
-              setTimeout(function() {
-                self.t.select(self.i);
-              }, 10);
+              // select tree item
+              self.t.select(self.i);
             }
           }
-          var success = this.o && this.o.success;
+          let success = this.o && this.o.success;
           if (success && typeof(success) == 'function') {
             success.apply(this.t, [this.i, _old, _new]);
           }
         }.bind(ctx),
         traversePath = function() {
-          var _ctx = this, data;
+          let _ctx = this, data;
 
           _ctx.success = traversePath;
           if (_ctx.p.length) {
@@ -1487,11 +1432,11 @@ define('pgadmin.browser', [
           return true;
         }.bind(ctx),
         addItemNode = function() {
-          var _ctx = this,
+          let _ctx = this,
             first = (_ctx.i || this.t.wasLoad(_ctx.i)) &&
             this.t.first(_ctx.i),
             findChildNode = function(success, notFound) {
-              var __ctx = this;
+              let __ctx = this;
               __ctx.success = success;
               __ctx.notFound = notFound;
 
@@ -1507,13 +1452,13 @@ define('pgadmin.browser', [
               }
             }.bind(_ctx),
             addNode = function() {
-              var __ctx = this,
+              let __ctx = this,
                 items = __ctx.t.children(__ctx.i),
                 s = 0, e = items.length - 1, i,
                 linearSearch = function() {
                   while (e >= s) {
                     i = items[s];
-                    var d = __ctx.t.itemData(i);
+                    let d = __ctx.t.itemData(i);
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _new._id) == 1)
                         return true;
@@ -1533,7 +1478,7 @@ define('pgadmin.browser', [
                 binarySearch = function() {
                   while (e - s > 22) {
                     i = items[s];
-                    var d = __ctx.t.itemData(i);
+                    let d = __ctx.t.itemData(i);
                     if (d._type === 'column') {
                       if (pgAdmin.numeric_comparator(d._id, _new._id) != -1)
                         return true;
@@ -1557,7 +1502,7 @@ define('pgadmin.browser', [
                       i = null;
                       return false;
                     }
-                    var m = s + Math.round((e - s) / 2);
+                    let m = s + Math.round((e - s) / 2);
                     i = items[m];
                     d = __ctx.t.itemData(i);
                     if(d._type === 'column'){
@@ -1599,7 +1544,7 @@ define('pgadmin.browser', [
                   }
                 });
               } else {
-                var _appendNode = function() {
+                let _appendNode = function() {
                   __ctx.t.append(__ctx.i, _new).then(
                     (new_item) => {
                       __ctx.t.openPath(new_item);
@@ -1624,6 +1569,8 @@ define('pgadmin.browser', [
                 // If the current node's inode is false
                 if (__ctx.i && !__ctx.t.isInode(__ctx.i)) {
                   __ctx.t.setInode(__ctx.i, {success: _appendNode});
+                  // Open the collection node.
+                  pgBrowser.tree.open(__ctx.i);
                 } else {
                   // Handle case for node without parent i.e. server-group
                   // or if parent node's inode is true.
@@ -1639,7 +1586,7 @@ define('pgadmin.browser', [
               findChildNode(
                 selectNode,
                 function() {
-                  var o = this && this.o;
+                  let o = this && this.o;
                   if (
                     o && o.fail && typeof(o.fail) == 'function'
                   ) {
@@ -1649,7 +1596,7 @@ define('pgadmin.browser', [
               );
             },
             () => {
-              var o = this && this.o;
+              let o = this && this.o;
               if (
                 o && o.fail && typeof(o.fail) == 'function'
               ) {
@@ -1702,11 +1649,10 @@ define('pgadmin.browser', [
       this.tree.refresh(_i).then(() =>{
         if (_opts && _opts.success) _opts.success();
       });
-      return;
     },
 
     onRefreshTreeNode: function(_i, _opts) {
-      var _d = _i && this.tree.itemData(_i),
+      let _d = _i && this.tree.itemData(_i),
         n = _d && _d._type && this.Nodes[_d._type],
         ctx = {
           b: this, // Browser
@@ -1749,7 +1695,7 @@ define('pgadmin.browser', [
             ctx.b._refreshNode(ctx, ctx.branch);
           },
           error: function() {
-            var fail = (_opts.o && _opts.o.fail) || _opts.fail;
+            let fail = (_opts.o && _opts.o.fail) || _opts.fail;
 
             if (typeof(fail) == 'function') {
               fail();
@@ -1758,62 +1704,52 @@ define('pgadmin.browser', [
         });
         return;
       }
-      var fetchNodeInfo = function(__i, __d, __n) {
-        var info = __n.getTreeNodeHierarchy(__i),
+
+      let api = getApiInstance();
+      let fetchNodeInfo = function(__i, __d, __n) {
+        let info = __n.getTreeNodeHierarchy(__i),
           url = __n.generate_url(__i, 'nodes', __d, true);
 
-        $.ajax({
-          url: url,
-          type: 'GET',
-          cache: false,
-          dataType: 'json',
-        })
-          .done(function(res) {
+        api.get(
+          url
+        ).then(({data: res})=> {
           // Node information can come as result/data
-            var newData = res.result || res.data;
+          let newData = res.result || res.data;
 
-            newData._label = newData.label;
-            newData.label = _.escape(newData.label);
+          newData._label = newData.label;
+          newData.label = _.escape(newData.label);
 
-            ctx.t.setLabel(ctx.i, {label: newData.label});
-            ctx.t.addIcon(ctx.i, {icon: newData.icon});
-            ctx.t.setId(ctx.i, {id: newData.id});
-            if (newData.inode)
-              ctx.t.setInode(ctx.i, {inode: true});
+          ctx.t.setLabel(ctx.i, {label: newData.label});
+          ctx.t.addIcon(ctx.i, {icon: newData.icon});
+          ctx.t.setId(ctx.i, {id: newData.id});
+          if (newData.inode)
+            ctx.t.setInode(ctx.i, {inode: true});
 
-            // This will update the tree item data.
-            var itemData = ctx.t.itemData(ctx.i);
-            _.extend(itemData, newData);
+          // This will update the tree item data.
+          let itemData = ctx.t.itemData(ctx.i);
+          _.extend(itemData, newData);
 
-            if (
-              __n.can_expand && typeof(__n.can_expand) == 'function'
-            ) {
-              if (!__n.can_expand(itemData)) {
-                ctx.t.unload(ctx.i);
-                return;
-              }
+          if (
+            __n.can_expand && typeof(__n.can_expand) == 'function'
+          ) {
+            if (!__n.can_expand(itemData)) {
+              ctx.t.unload(ctx.i);
+              return;
             }
-            ctx.b._refreshNode(ctx, ctx.branch);
-            var success = (ctx.o && ctx.o.success) || ctx.success;
-            if (success && typeof(success) == 'function') {
-              success();
-            }
-          })
-          .fail(function(xhr, error, status) {
-            if (
-              !Alertify.pgHandleItemError(
-                xhr, error, status, {item: __i, info: info}
-              )
-            ) {
-              var contentType = xhr.getResponseHeader('Content-Type'),
-                jsonResp = (
-                  contentType &&
-                  contentType.indexOf('application/json') == 0 &&
-                  JSON.parse(xhr.responseText)
-                ) || {};
-
-              if (xhr.status == 410 && jsonResp.success == 0) {
-                var parent = ctx.t.parent(ctx.i);
+          }
+          ctx.b._refreshNode(ctx, ctx.branch);
+          let success = (ctx.o && ctx.o.success) || ctx.success;
+          if (success && typeof(success) == 'function') {
+            success();
+          }
+        }).catch(function(error) {
+          if (!pgHandleItemError(
+            error, {item: __i, info: info}
+          )) {
+            if(error.response.headers['content-type'] == 'application/json') {
+              let jsonResp = error.response.data ?? {};
+              if(error.response.status == 410 && jsonResp.success == 0) {
+                let parent = ctx.t.parent(ctx.i);
 
                 ctx.t.remove(ctx.i, {
                   success: function() {
@@ -1828,20 +1764,21 @@ define('pgadmin.browser', [
                   },
                 });
               }
-
-              Alertify.pgNotifier(error, xhr, gettext('Error retrieving details for the node.'), function (msg) {
-                if (msg == 'CRYPTKEY_SET') {
-                  fetchNodeInfo(__i, __d, __n);
-                } else {
-                  console.warn(arguments);
-                }
-              });
             }
-          });
+
+            Notify.pgNotifier('error', error, gettext('Error retrieving details for the node.'), function (msg) {
+              if (msg == 'CRYPTKEY_SET') {
+                fetchNodeInfo(__i, __d, __n);
+              } else {
+                console.warn(arguments);
+              }
+            });
+          }
+        });
       }.bind(this);
 
       if (n && n.collection_node) {
-        var p = ctx.i = this.tree.parent(_i),
+        let p = ctx.i = this.tree.parent(_i),
           unloadNode = function() {
             this.tree.unload(_i, {
               success: function() {
@@ -1894,11 +1831,10 @@ define('pgadmin.browser', [
     },
 
     removeChildTreeNodesById: function(_parentNode, _collType, _childIds) {
-      var tree_local = pgBrowser.tree;
+      let tree_local = pgBrowser.tree, childNode, childNodeData;
       if(_parentNode && _collType) {
-        var children = tree_local.children(_parentNode),
-          idx = 0, size = children.length,
-          childNode, childNodeData;
+        let children = tree_local.children(_parentNode),
+          idx = 0, size = children.length;
 
         _parentNode = null;
 
@@ -1914,9 +1850,8 @@ define('pgadmin.browser', [
       }
 
       if (_parentNode) {
-        children = tree_local.children(_parentNode);
-        idx = 0;
-        size = children.length;
+        let children = tree_local.children(_parentNode),
+          idx = 0, size = children.length;
 
         for (; idx < size; idx++) {
           childNode = children[idx];
@@ -1932,7 +1867,7 @@ define('pgadmin.browser', [
     },
 
     removeTreeNode: function(_node, _selectNext, _parentNode) {
-      var tree_local = pgBrowser.tree,
+      let tree_local = pgBrowser.tree,
         nodeToSelect = null;
 
       if (!_node)
@@ -1960,7 +1895,7 @@ define('pgadmin.browser', [
     },
 
     findSiblingTreeNode: function(_node, _id) {
-      var tree_local = pgBrowser.tree,
+      let tree_local = pgBrowser.tree,
         parentNode = tree_local.parent(_node),
         siblings = tree_local.children(parentNode),
         idx = 0, nodeData, node;
@@ -1976,7 +1911,7 @@ define('pgadmin.browser', [
     },
 
     findParentTreeNodeByType: function(_node, _parentType) {
-      var tree_local = pgBrowser.tree,
+      let tree_local = pgBrowser.tree,
         nodeData,
         node = _node;
 
@@ -1991,7 +1926,7 @@ define('pgadmin.browser', [
     },
 
     findChildCollectionTreeNode: function(_node, _collType) {
-      var tree_local = pgBrowser.tree,
+      let tree_local = pgBrowser.tree,
         nodeData, idx = 0,
         node,
         children = _node && tree_local.children(_node);
@@ -2010,9 +1945,10 @@ define('pgadmin.browser', [
     },
 
     addChildTreeNodes: function(_treeHierarchy, _node, _type, _arrayIds, _callback) {
-      var module = _type in pgBrowser.Nodes && pgBrowser.Nodes[_type],
+      let api = getApiInstance();
+      let module = _type in pgBrowser.Nodes && pgBrowser.Nodes[_type],
         childTreeInfo = _arrayIds.length && _.extend(
-          {}, _.mapObject(_treeHierarchy, function(_val) {
+          {}, _.mapValues(_treeHierarchy, function(_val) {
             _val.priority -= 1; return _val;
           })),
         arrayChildNodeData = [],
@@ -2024,7 +1960,7 @@ define('pgadmin.browser', [
             return;
           }
 
-          var childDummyInfo = {
+          let childDummyInfo = {
               '_id': _arrayIds.pop(), '_type': _type, 'priority': 0,
             },
             childNodeUrl;
@@ -2034,22 +1970,19 @@ define('pgadmin.browser', [
             null, 'nodes', childDummyInfo, true, childTreeInfo
           );
 
-          var _node = _node || arguments[1];
+          _node = _node || arguments[1];
 
-          $.ajax({
-            url: childNodeUrl,
-            dataType: 'json',
-          })
-            .done(function(res) {
-              if (res.success) {
-                arrayChildNodeData.push(res.data);
-              }
-              fetchNodeInfo(_callback);
-            })
-            .fail(function(xhr, status, error) {
-              Alertify.pgRespErrorNotify(xhr, error);
-              fetchNodeInfo(_callback);
-            });
+          api.get(
+            childNodeUrl
+          ).then(({data: res})=> {
+            if (res.success) {
+              arrayChildNodeData.push(res.data);
+            }
+            fetchNodeInfo(_callback);
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            fetchNodeInfo(_callback);
+          });
         };
 
 
@@ -2081,8 +2014,8 @@ define('pgadmin.browser', [
     },
 
     _refreshNode: function(_ctx, _d) {
-      var traverseNodes = function(__d) {
-        var __ctx = this, idx = 0, ctx, d,
+      let traverseNodes = function(__d) {
+        let __ctx = this, idx = 0, ctx, d,
           size = (__d.branch && __d.branch.length) || 0,
           findNode = function(i_findNode, d_findNode, ctx_findNode) {
             setTimeout(
@@ -2094,7 +2027,7 @@ define('pgadmin.browser', [
 
         for (; idx < size; idx++) {
           d = __d.branch[idx];
-          var n = __ctx.b.Nodes[d._type];
+          let n = __ctx.b.Nodes[d._type];
           ctx = {
             b: __ctx.b,
             t: __ctx.t,
@@ -2152,27 +2085,6 @@ define('pgadmin.browser', [
       brace_matching: pgBrowser.utils.braceMatching,
       indent_with_tabs: pgBrowser.utils.is_indent_with_tabs,
     },
-
-    // This function will return the name and version of the browser.
-    get_browser: function() {
-      var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
-      if(/trident/i.test(M[1])) {
-        tem=/\brv[ :]+(\d+)/g.exec(ua) || [];
-        return {name:'IE', version:(tem[1]||'')};
-      }
-
-      if(M[1]==='Chrome') {
-        tem=ua.match(/\bOPR|Edge\/(\d+)/);
-        if(tem!=null) {return {name:tem[0], version:tem[1]};}
-      }
-
-      M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
-      if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
-      return {
-        name: M[0],
-        version: M[1],
-      };
-    },
   });
 
   /* Remove paste event mapping from CodeMirror's emacsy KeyMap binding
@@ -2186,9 +2098,6 @@ define('pgadmin.browser', [
   if (pgBrowser.utils.useSpaces == 'True') {
     pgAdmin.Browser.editor_shortcut_keys.Tab = 'insertSoftTab';
   }
-  setTimeout(function(){
-    $('#mnu_about').closest('li').before('<li class="dropdown-divider"></li>');
-  }, 100);
 
   return pgAdmin.Browser;
 });

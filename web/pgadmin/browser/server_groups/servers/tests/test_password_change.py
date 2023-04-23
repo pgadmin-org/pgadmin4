@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -97,8 +97,8 @@ class DBPasswordChange(BaseTestGenerator):
         self.assertEqual(response.status_code,
                          self.expected_data['status_code'])
 
-        self.assertEquals(render_template_mock.called, True)
-        self.assertEquals(self.manager.update_session.called,
-                          self.expected_data['update_session'])
+        self.assertEqual(render_template_mock.called, True)
+        self.assertEqual(self.manager.update_session.called,
+                         self.expected_data['update_session'])
         self.assertEqual(
             self.manager.connection().pq_encrypt_password_conn.called, True)

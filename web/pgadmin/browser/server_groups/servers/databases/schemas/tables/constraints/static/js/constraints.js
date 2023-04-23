@@ -2,18 +2,18 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 define('pgadmin.node.constraints', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
   'pgadmin.node.unique_constraint', 'pgadmin.node.check_constraint',
   'pgadmin.node.foreign_key', 'pgadmin.node.exclusion_constraint',
   'pgadmin.node.primary_key',
-], function(gettext, $, _, pgAdmin, pgBrowser) {
+], function(gettext, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-constraints']) {
     pgAdmin.Browser.Nodes['coll-constraints'] =
@@ -43,24 +43,6 @@ define('pgadmin.node.constraints', [
 
         pgBrowser.add_menus([]);
       },
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        defaults: {
-          name: undefined,
-          oid: undefined,
-          comment: undefined,
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), type: 'text',
-          mode: ['properties', 'create', 'edit'],
-        },{
-          id: 'oid', label: gettext('Oid'), cell: 'string',
-          type: 'text' , mode: ['properties'],
-        },{
-          id: 'comment', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-        }],
-      }),
     });
   }
 

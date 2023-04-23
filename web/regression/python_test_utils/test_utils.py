@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,11 +12,10 @@ import traceback
 import os
 import sys
 import uuid
-import psycopg2
 import sqlite3
 import shutil
 from functools import partial
-import random
+import secrets
 import importlib
 
 from selenium.webdriver.support.wait import WebDriverWait
@@ -36,10 +35,12 @@ import regression
 from regression import test_setup
 
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import BINARY_PATHS
+from pgadmin.utils.constants import BINARY_PATHS, PSYCOPG3
 from pgadmin.utils import set_binary_path
 
 from functools import wraps
+import psycopg
+
 
 CURRENT_PATH = os.path.abspath(os.path.join(os.path.dirname(
     os.path.realpath(__file__)), "../"))
@@ -51,8 +52,8 @@ file_name = os.path.realpath(__file__)
 
 def get_db_connection(db, username, password, host, port, sslmode="prefer"):
     """This function returns the connection object of psycopg"""
-    connection = psycopg2.connect(
-        database=db,
+    connection = psycopg.connect(
+        dbname=db,
         user=username,
         password=password,
         host=host,
@@ -60,6 +61,19 @@ def get_db_connection(db, username, password, host, port, sslmode="prefer"):
         sslmode=sslmode
     )
     return connection
+
+
+def get_server_version(connection):
+    return connection.info.server_version
+
+
+def set_isolation_level(connection, level):
+    if level == 0:
+        connection.rollback()
+        connection.autocommit = True
+    else:
+        connection.autocommit = False
+        connection.isolation_level = level
 
 
 def login_tester_account(tester):
@@ -131,40 +145,58 @@ def clear_node_info_dict():
 def create_database(server, db_name, encoding=None):
     """This function used to create database and returns the database id"""
     db_id = ''
-    try:
-        connection = get_db_connection(
-            server['db'],
-            server['username'],
-            server['db_password'],
-            server['host'],
-            server['port'],
-            server['sslmode']
-        )
-        old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
-        pg_cursor = connection.cursor()
-        if encoding is None:
-            pg_cursor.execute(
-                '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
-        else:
-            pg_cursor.execute(
-                '''CREATE DATABASE "%s" TEMPLATE template0
-                ENCODING='%s' LC_COLLATE='%s' LC_CTYPE='%s' ''' %
-                (db_name, encoding[0], encoding[1], encoding[1]))
-        connection.set_isolation_level(old_isolation_level)
-        connection.commit()
+    connection = get_db_connection(
+        server['db'],
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
+    old_isolation_level = connection.isolation_level
+    set_isolation_level(connection, 0)
+    connection.autocommit = True
+    pg_cursor = connection.cursor()
+    if encoding is None:
+        pg_cursor.execute(
+            '''CREATE DATABASE "%s" TEMPLATE template0''' % db_name)
+    else:
+        pg_cursor.execute(
+            '''CREATE DATABASE "%s" TEMPLATE template0
+            ENCODING='%s' LC_COLLATE='%s' LC_CTYPE='%s' ''' %
+            (db_name, encoding[0], encoding[1], encoding[1]))
+    connection.autocommit = False
+    set_isolation_level(connection, old_isolation_level)
+    connection.commit()
 
-        # Get 'oid' from newly created database
-        pg_cursor.execute("SELECT db.oid from pg_catalog.pg_database db WHERE"
-                          " db.datname='%s'" % db_name)
-        oid = pg_cursor.fetchone()
-        if oid:
-            db_id = oid[0]
-        connection.close()
-        return db_id
-    except Exception:
-        traceback.print_exc(file=sys.stderr)
-        return db_id
+    # Get 'oid' from newly created database
+    pg_cursor.execute("SELECT db.oid from pg_catalog.pg_database db WHERE"
+                      " db.datname='%s'" % db_name)
+    oid = pg_cursor.fetchone()
+    if oid:
+        db_id = oid[0]
+    connection.close()
+
+    # In PostgreSQL 15 the default public schema that every database has
+    # will have a different set of permissions. In fact, before PostgreSQL
+    # 15, every user could manipulate the public schema of a database he is
+    # not owner. Since the upcoming new version, only the database owner
+    # will be granted full access to the public schema, while other users
+    # will need to get an explicit GRANT
+    connection = get_db_connection(
+        db_name,
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
+    pg_cursor = connection.cursor()
+    pg_cursor.execute('''GRANT ALL ON SCHEMA public TO PUBLIC''')
+    connection.commit()
+    connection.close()
+
+    return db_id
 
 
 def create_table(server, db_name, table_name, extra_columns=[]):
@@ -188,7 +220,7 @@ def create_table(server, db_name, table_name, extra_columns=[]):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
 
         extra_columns_sql = ", " + ", ".join(extra_columns) \
             if len(extra_columns) > 0 else ''
@@ -210,7 +242,7 @@ def create_table(server, db_name, table_name, extra_columns=[]):
             VALUES ('Yet-Another-Name', 14,
             'cool info')''' % table_name)
 
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -267,10 +299,10 @@ def create_table_with_query(server, db_name, query):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -292,14 +324,14 @@ def create_constraint(server,
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute('''
             ALTER TABLE "%s"
               ADD CONSTRAINT "%s" %s (some_column)
             ''' % (table_name, constraint_name, constraint_type.upper()))
 
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -329,7 +361,7 @@ def create_type(server, db_name, type_name, type_fields=[]):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
 
         type_fields_sql = ", ".join(type_fields)
 
@@ -337,7 +369,7 @@ def create_type(server, db_name, type_name, type_fields=[]):
         pg_cursor.execute(
             '''CREATE TYPE %s AS (%s)''' % (type_name, type_fields_sql))
 
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -355,8 +387,12 @@ def create_debug_function(server, db_name, function_name="test_func"):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
+        try:
+            pg_cursor.execute('''CREATE EXTENSION pldbgapi;''')
+        except Exception:
+            pass
         pg_cursor.execute('''
             CREATE OR REPLACE FUNCTION public."%s"()
               RETURNS text
@@ -372,7 +408,7 @@ def create_debug_function(server, db_name, function_name="test_func"):
               END;
             $function$;
             ''' % function_name)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -390,12 +426,12 @@ def drop_debug_function(server, db_name, function_name="test_func"):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute('''
             DROP FUNCTION public."%s"();
             ''' % function_name)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -434,14 +470,14 @@ def grant_role(server, db_name, role_name="test_role",
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         sql_query = '''GRANT "%s" TO %s;''' % (grant_role, role_name)
 
         pg_cursor.execute(
             sql_query
         )
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -459,7 +495,7 @@ def create_role(server, db_name, role_name="test_role"):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         sql_query = '''
             CREATE USER "%s" WITH
@@ -469,13 +505,13 @@ def create_role(server, db_name, role_name="test_role"):
               CREATEDB
               NOCREATEROLE
             ''' % (role_name)
-        if connection.server_version > 90100:
+        if get_server_version(connection) > 90100:
             sql_query += '\nNOREPLICATION'
 
         pg_cursor.execute(
             sql_query
         )
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -493,12 +529,12 @@ def drop_role(server, db_name, role_name="test_role"):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute('''
             DROP USER "%s"
             ''' % role_name)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -509,7 +545,7 @@ def drop_database(connection, database_name):
     """This function used to drop the database"""
     if database_name not in ["postgres", "template1", "template0"]:
         pg_cursor = connection.cursor()
-        if connection.server_version >= 90100:
+        if connection.info.server_version >= 90100:
             pg_cursor.execute(
                 "SELECT pg_terminate_backend(pg_stat_activity.pid) "
                 "FROM pg_stat_activity "
@@ -527,9 +563,9 @@ def drop_database(connection, database_name):
                           " db.datname='%s'" % database_name)
         if pg_cursor.fetchall():
             old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
+            set_isolation_level(connection, 0)
             pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
-            connection.set_isolation_level(old_isolation_level)
+            set_isolation_level(connection, old_isolation_level)
             connection.commit()
             connection.close()
 
@@ -539,7 +575,7 @@ def drop_database_multiple(connection, database_names):
     for database_name in database_names:
         if database_name not in ["postgres", "template1", "template0"]:
             pg_cursor = connection.cursor()
-            if connection.server_version >= 90100:
+            if get_server_version(connection) >= 90100:
                 pg_cursor.execute(
                     "SELECT pg_terminate_backend(pg_stat_activity.pid) "
                     "FROM pg_stat_activity "
@@ -557,9 +593,9 @@ def drop_database_multiple(connection, database_names):
                               " db.datname='%s'" % database_name)
             if pg_cursor.fetchall():
                 old_isolation_level = connection.isolation_level
-                connection.set_isolation_level(0)
+                set_isolation_level(connection, 0)
                 pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
-                connection.set_isolation_level(old_isolation_level)
+                set_isolation_level(connection, old_isolation_level)
                 connection.commit()
     connection.close()
 
@@ -573,9 +609,9 @@ def drop_tablespace(connection):
         for table_space in table_spaces:
             if table_space[0] not in ["pg_default", "pg_global"]:
                 old_isolation_level = connection.isolation_level
-                connection.set_isolation_level(0)
+                set_isolation_level(connection, 0)
                 pg_cursor.execute("DROP TABLESPACE %s" % table_space[0])
-                connection.set_isolation_level(old_isolation_level)
+                set_isolation_level(connection, old_isolation_level)
                 connection.commit()
     connection.close()
 
@@ -587,10 +623,10 @@ def create_server(server):
     cur = conn.cursor()
     server_details = (1, SERVER_GROUP, server['name'], server['host'],
                       server['port'], server['db'], server['username'],
-                      server['role'], server['sslmode'], server['comment'])
+                      server['role'], server['comment'])
     cur.execute('INSERT INTO server (user_id, servergroup_id, name, host, '
-                'port, maintenance_db, username, role, ssl_mode,'
-                ' comment) VALUES (?,?,?,?,?,?,?,?,?,?)', server_details)
+                'port, maintenance_db, username, role,'
+                ' comment) VALUES (?,?,?,?,?,?,?,?,?)', server_details)
     server_id = cur.lastrowid
     conn.commit()
     conn.close()
@@ -633,9 +669,11 @@ def add_db_to_parent_node_dict(srv_id, db_id, test_db_name):
     })
 
 
-def add_schema_to_parent_node_dict(srv_id, db_id, schema_id, schema_name):
+def add_schema_to_parent_node_dict(srv_id, db_name, db_id, schema_id,
+                                   schema_name):
     """ This function stores the schema details into parent dict """
     server_information = {"server_id": srv_id, "db_id": db_id,
+                          "test_db_name": db_name,
                           "schema_id": schema_id,
                           "schema_name": schema_name}
     regression.parent_node_dict["schema"].append(server_information)
@@ -653,7 +691,8 @@ def create_parent_server_node(server_info):
     srv_id = create_server(server_info)
     # Create database
     test_db_name = "test_db_%s" % str(uuid.uuid4())[1:6]
-    db_id = create_database(server_info, test_db_name)
+    encodings = ['UTF-8', 'C', 'C']
+    db_id = create_database(server_info, test_db_name, encodings)
     add_db_to_parent_node_dict(srv_id, db_id, test_db_name)
     # Create schema
     schema_name = "test_schema_%s" % str(uuid.uuid4())[1:6]
@@ -668,7 +707,7 @@ def create_parent_server_node(server_info):
 
     schema = regression.schema_utils.create_schema(connection, schema_name)
     return add_schema_to_parent_node_dict(
-        srv_id, db_id, schema[0], schema[1]
+        srv_id, test_db_name, db_id, schema[0], schema[1]
     )
 
 
@@ -749,7 +788,7 @@ def get_db_server(sid):
     cur = conn.cursor()
     server = cur.execute(
         'SELECT name, host, port, maintenance_db,'
-        ' username, ssl_mode FROM server where id=%s' % sid
+        ' username FROM server where id=%s' % sid
     )
     server = server.fetchone()
     if server:
@@ -758,14 +797,13 @@ def get_db_server(sid):
         db_port = server[2]
         db_name = server[3]
         username = server[4]
-        ssl_mode = server[5]
         config_servers = test_setup.config_data['server_credentials']
         # Get the db password from config file for appropriate server
         db_password = get_db_password(config_servers, name, host, db_port)
         if db_password:
             # Drop database
             connection = get_db_connection(
-                db_name, username, db_password, host, db_port, ssl_mode
+                db_name, username, db_password, host, db_port
             )
     conn.close()
     return connection
@@ -1114,11 +1152,11 @@ def create_schema(server, db_name, schema_name):
             server['sslmode']
         )
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             '''CREATE SCHEMA "%s"''' % schema_name)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
     except Exception:
@@ -1131,30 +1169,27 @@ def get_server_type(server):
     :param server:
     :return:
     """
-    try:
-        connection = get_db_connection(
-            server['db'],
-            server['username'],
-            server['db_password'],
-            server['host'],
-            server['port'],
-            server['sslmode']
-        )
+    connection = get_db_connection(
+        server['db'],
+        server['username'],
+        server['db_password'],
+        server['host'],
+        server['port'],
+        server['sslmode']
+    )
 
-        pg_cursor = connection.cursor()
-        # Get 'version' string
-        pg_cursor.execute("SELECT version()")
-        version_string = pg_cursor.fetchone()
-        connection.close()
-        if isinstance(version_string, tuple):
-            version_string = version_string[0]
+    pg_cursor = connection.cursor()
+    # Get 'version' string
+    pg_cursor.execute("SELECT version()")
+    version_string = pg_cursor.fetchone()
+    connection.close()
+    if isinstance(version_string, tuple):
+        version_string = version_string[0]
 
-        if "EnterpriseDB" in version_string:
-            return 'ppas'
+    if "EnterpriseDB" in version_string:
+        return 'ppas'
 
-        return 'pg'
-    except Exception:
-        traceback.print_exc(file=sys.stderr)
+    return 'pg'
 
 
 def check_binary_path_or_skip_test(cls, utility_name):
@@ -1178,30 +1213,8 @@ def check_binary_path_or_skip_test(cls, utility_name):
             cls.skipTest(ret_val)
 
 
-def get_watcher_dialogue_status(self):
-    """This will get watcher dialogue status"""
-    import time
-    attempts = 120
-    status = None
-    while attempts > 0:
-        try:
-            status = self.page.find_by_css_selector(
-                ".pg-bg-status-text").text
-
-            if 'Failed' in status:
-                break
-            if status == 'Started' or status == 'Running...':
-                attempts -= 1
-                time.sleep(.5)
-            else:
-                break
-        except Exception:
-            attempts -= 1
-    return status
-
-
 def get_driver_version():
-    version = getattr(psycopg2, '__version__', None)
+    version = getattr(psycopg, '__version__', None)
     return version
 
 
@@ -1380,7 +1393,7 @@ def launch_url_in_browser(driver_instance, url, title='pgAdmin 4', timeout=50):
                 raise WebDriverException(exception_msg)
 
 
-def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
+def get_remote_webdriver(hub_url, browser, browser_ver, test_name, url_client):
     """
     This functions returns remote web-driver instance created in selenoid
     machine.
@@ -1394,15 +1407,17 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
         test_name.replace(' ', '_') + '_' + browser + browser_ver
     driver_local = None
     desired_capabilities = {
-        "version": browser_ver,
-        "enableVNC": True,
-        "enableVideo": True,
-        "enableLog": True,
-        "videoName": test_name + ".mp4",
-        "logName": test_name + ".log",
-        "name": test_name,
-        "timeZone": "Asia/Kolkata",
-        "sessionTimeout": "180s"
+        "browserVersion": browser_ver,
+        "selenoid:options": {
+            "enableVNC": True,
+            "enableVideo": True,
+            "enableLog": True,
+            "videoName": test_name + ".mp4",
+            "logName": test_name + ".log",
+            "name": test_name,
+            "timeZone": "Asia/Kolkata",
+            "sessionTimeout": "180s"
+        }
     }
 
     if browser == 'firefox':
@@ -1417,6 +1432,8 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name):
     elif browser == 'chrome':
         options = Options()
         options.add_argument("--window-size=1280,1024")
+        options.add_argument(
+            '--unsafely-treat-insecure-origin-as-secure=' + url_client)
         desired_capabilities["browserName"] = "chrome"
         driver_local = webdriver.Remote(
             command_executor=hub_url,
@@ -1440,10 +1457,8 @@ def get_parallel_sequential_module_list(module_list):
     # list of files consisting tests that needs to be
     # executed sequentially
     sequential_tests_file = [
-        'pgadmin.feature_tests.pg_utilities_backup_restore_test',
-        'pgadmin.feature_tests.pg_utilities_maintenance_test',
-        'pgadmin.feature_tests.keyboard_shortcut_test'
-    ]
+        'regression.feature_tests.pg_utilities_backup_restore_test',
+        'regression.feature_tests.pg_utilities_maintenance_test']
 
     #  list of tests can be executed in parallel
     parallel_tests = list(module_list)
@@ -1697,7 +1712,7 @@ def create_user(user_details):
         return user_id
     except Exception as exception:
         traceback.print_exc(file=sys.stderr)
-        raise ("Error while creating server. %s" % exception)
+        raise "Error while creating server. %s" % exception
 
 
 def get_test_user(self, user_details,
@@ -1755,22 +1770,25 @@ def create_users_for_parallel_tests(tester):
     @param tester: test client
     @return: uer details dict
     """
-    login_username = 'ui_test_user' + str(random.randint(1000, 9999)) +\
+    login_username = 'ui_test_user' + str(secrets.choice(range(1000, 9999))) +\
                      '@edb.com'
     user_details = {'login_username': login_username,
                     'login_password': 'adminedb'}
-    response = tester.post(
-        '/user_management/user/',
-        data=json.dumps(dict(username=user_details['login_username'],
-                             email=user_details['login_username'],
-                             newPassword=user_details['login_password'],
-                             confirmPassword=user_details['login_password'],
-                             active=True,
-                             role="1"
-                             )),
-        follow_redirects=True)
-    user_id = json.loads(response.data.decode('utf-8'))['id']
-    user_details['user_id'] = user_id
+
+    user_data = dict()
+    user_data['added'] = [{'username': user_details['login_username'],
+                           'email': user_details['login_username'],
+                           'newPassword': user_details['login_password'],
+                           'confirmPassword': user_details['login_password'],
+                           'active': True,
+                           'role': "1"}]
+    tester.post('/user_management/save', data=json.dumps(user_data))
+
+    response = tester.get('/user_management/user/')
+    user_res = json.loads(response.data.decode('utf-8'))
+    for item in user_res:
+        if item['email'] == login_username:
+            user_details['user_id'] = item['id']
     return user_details
 
 
@@ -1798,7 +1816,7 @@ def module_patch(*args):
             patch.getter = lambda: imported
             patch.attribute = '.'.join(components[i:])
             return patch
-        except Exception as exc:
+        except Exception:
             pass
 
     # did not find a module, just return the default mock

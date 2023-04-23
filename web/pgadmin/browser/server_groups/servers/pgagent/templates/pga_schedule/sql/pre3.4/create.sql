@@ -3,7 +3,7 @@ DO $$
 DECLARE
     scid integer;
 BEGIN
-{{ SCHEDULE.INSERT(jid, data) }}
+{{ SCHEDULE.INSERT(jid, data, conn) }}
 END
 $$;{% if fetch_id %}
 

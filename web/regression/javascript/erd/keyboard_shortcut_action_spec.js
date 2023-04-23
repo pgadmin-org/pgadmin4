@@ -2,11 +2,11 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import {KeyboardShortcutAction} from 'pgadmin.tools.erd/erd_tool/ui_components/BodyWidget';
+import {KeyboardShortcutAction} from 'pgadmin.tools.erd/erd_tool/components/ERDTool';
 
 describe('KeyboardShortcutAction', ()=>{
   let keyAction = null;

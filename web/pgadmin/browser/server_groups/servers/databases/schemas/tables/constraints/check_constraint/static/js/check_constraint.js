@@ -2,19 +2,22 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import CheckConstraintSchema from './check_constraint.ui';
+import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
+import _ from 'lodash';
+import getApiInstance from '../../../../../../../../../../static/js/api_instance';
 
 // Check Constraint Module: Node
 define('pgadmin.node.check_constraint', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.alertifyjs',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, alertify, schemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, schemaChildTreeNode) {
 
   // Check Constraint Node
   if (!pgBrowser.Nodes['check_constraint']) {
@@ -40,13 +43,12 @@ define('pgadmin.node.check_constraint', [
           name: 'create_check_constraint_on_coll', node: 'coll-constraints', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 5, label: gettext('Check...'),
-          icon: 'wcTabIcon icon-check_constraint', data: {action: 'create', check: true},
-          enable: 'canCreate',
+          data: {action: 'create', check: true}, enable: 'canCreate',
         },{
           name: 'validate_check_constraint', node: 'check_constraint', module: this,
           applies: ['object', 'context'], callback: 'validate_check_constraint',
           category: 'validate', priority: 4, label: gettext('Validate check constraint'),
-          icon: 'fa fa-link', enable : 'is_not_valid', data: {action: 'edit', check: true},
+          enable : 'is_not_valid', data: {action: 'edit', check: true},
         },
         ]);
 
@@ -60,21 +62,18 @@ define('pgadmin.node.check_constraint', [
       },
       callbacks: {
         validate_check_constraint: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            var data = d;
-            $.ajax({
-              url: obj.generate_url(i, 'validate', d, true),
-              type:'GET',
-            })
-              .done(function(res) {
+            let data = d;
+            getApiInstance().get(obj.generate_url(i, 'validate', d, true))
+              .then(({data: res})=>{
                 if (res.success == 1) {
-                  alertify.success(res.info);
+                  Notify.success(res.info);
                   t.removeIcon(i);
                   data.valid = true;
                   data.icon = 'icon-check_constraint';
@@ -83,8 +82,8 @@ define('pgadmin.node.check_constraint', [
                   setTimeout(function() {t.select(i);}, 100);
                 }
               })
-              .fail(function(xhr, status, error) {
-                alertify.pgRespErrorNotify(xhr, error);
+              .catch((error)=>{
+                Notify.pgRespErrorNotify(error);
                 t.unload(i);
               });
           }
@@ -98,10 +97,10 @@ define('pgadmin.node.check_constraint', [
       // Below function will enable right click menu for creating check constraint.
       canCreate: function(itemData, item, data) {
         // If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
-        var t = pgBrowser.tree, i = item, d = itemData, parents = [];
+        let t = pgBrowser.tree, i = item, d = itemData, parents = [];
         // To iterate over tree to check parent node
         while (i) {
           // If it is schema then allow user to c reate table

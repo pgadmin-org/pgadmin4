@@ -2,23 +2,13 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
-import {generateTitle} from '../../../datagrid/static/js/datagrid_panel_title';
-import {_set_dynamic_tab} from '../../../datagrid/static/js/show_query_tool';
 
-function setFocusToDebuggerEditor(editor, command) {
-  const TAB = 9;
-  if (!command)
-    return;
-  let key = command.which || command.keyCode;
-  // Keys other than Tab key
-  if (key !== TAB) {
-    editor.focus();
-  }
-}
+import {generateTitle} from '../../../sqleditor/static/js/sqleditor_title';
+import {_set_dynamic_tab} from '../../../sqleditor/static/js/show_query_tool';
 
 function getFunctionId(treeInfoObject) {
   let objectId;
@@ -45,39 +35,39 @@ function getProcedureId(treeInfoObject) {
 }
 
 function setDebuggerTitle(panel, preferences, function_name, schema_name, database_name, custom_title=null, pgBrowser=null) {
-  var debugger_title_placeholder = '';
+  let debugger_title_placeholder = '';
   if(custom_title) {
     debugger_title_placeholder = custom_title;
   } else {
     debugger_title_placeholder = preferences['debugger_tab_title_placeholder'];
   }
 
-  var function_data = function_name.split('(');
+  let function_data = function_name.split('(');
   function_name = get_function_name(function_name);
 
-  var args_list = function_data[function_data.length - 1].split(')');
-  var args = '';
+  let args_list = function_data[function_data.length - 1].split(')');
+  let args = '';
   if(args_list.length > 0) {
     args = args.concat(args_list[0]);
   }
 
-  var title_data = {
+  let title_data = {
     'function_name': function_name,
     'args': args,
     'schema': schema_name,
     'database': database_name,
     'type': 'debugger',
   };
-  var title = generateTitle(debugger_title_placeholder, title_data);
+  let title = generateTitle(debugger_title_placeholder, title_data);
   _set_dynamic_tab(pgBrowser, preferences['dynamic_tabs']);
   panel.title('<span>'+ title +'</span>');
 }
 
 function get_function_name(function_name) {
-  var function_data = function_name.split('(');
+  let function_data = function_name.split('(');
   function_data.splice(-1, 1);
-  var index = null;
-  var func_name = '';
+  let index = null;
+  let func_name = '';
   for(index=0; index < function_data.length; index++) {
     func_name = func_name.concat(function_data[index]);
     if (index != function_data.length -1) {
@@ -86,10 +76,26 @@ function get_function_name(function_name) {
   }
   return func_name;
 }
+function getAppropriateLabel(treeInfo) {
+  if (treeInfo.function) {
+    return treeInfo.function.label;
+  } else if (treeInfo.trigger_function) {
+    return treeInfo.trigger_function.label;
+  } else if (treeInfo.trigger) {
+    return treeInfo.trigger.label;
+  } else if(treeInfo.edbfunc) {
+    return treeInfo.edbfunc.label;
+  } else if(treeInfo.edbproc) {
+    return treeInfo.edbproc.label;
+  }
+  else {
+    return treeInfo.procedure.label;
+  }
+}
 
 module.exports = {
-  setFocusToDebuggerEditor: setFocusToDebuggerEditor,
   getFunctionId: getFunctionId,
   getProcedureId: getProcedureId,
   setDebuggerTitle: setDebuggerTitle,
+  getAppropriateLabel: getAppropriateLabel,
 };

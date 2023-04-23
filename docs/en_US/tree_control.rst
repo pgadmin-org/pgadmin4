@@ -8,7 +8,7 @@ The left pane of the main window displays a tree control (the *pgAdmin* tree
 control) that provides access to the objects that reside on a server.
 
 .. image:: /images/main_left_pane.png
-    :alt: Browser tree panel
+    :alt: object explorer panel
     :align: center
 
 You can expand nodes in the tree control to view the database objects that
@@ -53,7 +53,7 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Disconnect Database...*  | Click to terminate a database connection.                                                                                 |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Disconnect Server...*    | Click to refresh the currently selected object.                                                                           |
+| *Disconnect from server*  | Click to disconnect from the currently selected server.                                                                   |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Drop Cascade*            | Click to delete the currently selected object and all dependent objects from the server.                                  |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
@@ -79,7 +79,7 @@ The context-sensitive menus associated with *Tables* and nested *Table* nodes pr
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
 | Option                  | Action                                                                                                                       |
 +=========================+==============================================================================================================================+
-| *Import/Export...*      | Click open the :ref:`Import/Export... <import_export_data>` dialog to import data to or export data from the selected table. |
+| *Import/Export Data...* | Click open the :ref:`Import/Export... <import_export_data>` dialog to import data to or export data from the selected table. |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+
 | *Reset Statistics*      | Click to reset statistics for the selected table.                                                                            |
 +-------------------------+------------------------------------------------------------------------------------------------------------------------------+

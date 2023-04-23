@@ -2,7 +2,7 @@
 ##
 ## pgAdmin 4 - PostgreSQL Tools
 ##
-## Copyright (C) 2013 - 2021, The pgAdmin Development Team
+## Copyright (C) 2013 - 2023, The pgAdmin Development Team
 ## This software is released under the PostgreSQL Licence
 ##
 ##########################################################################
@@ -14,8 +14,7 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
-from alembic import op
-import sqlalchemy as sa
+from pgadmin.model import db
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.

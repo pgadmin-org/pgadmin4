@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 #########################################################################
@@ -80,7 +80,8 @@ def __get_class_name(self, name, kwargs):
     return name
 
 
-def create_registry_metaclass(name, package, decorate_as_module=True):
+def create_registry_metaclass(name, package, load_modules=__load_modules,
+                              decorate_as_module=True):
 
     class_params = {
         # constructor
@@ -93,7 +94,7 @@ def create_registry_metaclass(name, package, decorate_as_module=True):
 
         # Member functions
         "get": __get,
-        "load_modules": __load_modules,
+        "load_modules": load_modules,
         "_name_": name,
         "_decorate_cls_name": __get_module_name
         if decorate_as_module is True else __get_class_name,

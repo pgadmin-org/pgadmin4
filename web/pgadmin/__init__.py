@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -15,6 +15,7 @@ import sys
 import re
 import ipaddress
 import traceback
+import shutil
 
 from types import MethodType
 from collections import defaultdict
@@ -23,8 +24,8 @@ from importlib import import_module
 from flask import Flask, abort, request, current_app, session, url_for
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
-from flask_babelex import Babel, gettext
-from flask_babelex import gettext as _
+from flask_babel import Babel, gettext
+from flask_babel import gettext as _
 from flask_login import user_logged_in, user_logged_out
 from flask_mail import Mail
 from flask_paranoid import Paranoid
@@ -33,10 +34,11 @@ from flask_security.utils import login_user, logout_user
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
+from jinja2 import select_autoescape
 
 from pgadmin.model import db, Role, Server, SharedServer, ServerGroup, \
     User, Keys, Version, SCHEMA_VERSION as CURRENT_SCHEMA_VERSION
-from pgadmin.utils import PgAdminModule, driver, KeyManager
+from pgadmin.utils import PgAdminModule, driver, KeyManager, heartbeat
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.session import create_session_interface, pga_unauthorised
 from pgadmin.utils.versioned_template_loader import VersionedTemplateLoader
@@ -47,6 +49,7 @@ from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin import authenticate
 from pgadmin.utils.security_headers import SecurityHeaders
 from pgadmin.utils.constants import KERBEROS, OAUTH2, INTERNAL, LDAP, WEBSERVER
+
 
 # Explicitly set the mime-types so that a corrupted windows registry will not
 # affect pgAdmin 4 to be load properly. This will avoid the issues that may
@@ -70,25 +73,29 @@ class PgAdmin(Flask):
     def __init__(self, *args, **kwargs):
         # Set the template loader to a postgres-version-aware loader
         self.jinja_options = ImmutableDict(
-            extensions=['jinja2.ext.autoescape', 'jinja2.ext.with_'],
+            autoescape=select_autoescape(enabled_extensions=('html', 'xml')),
             loader=VersionedTemplateLoader(self)
         )
         self.logout_hooks = []
 
-        super(PgAdmin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def find_submodules(self, basemodule):
-        for module_name in find_modules(basemodule, True):
-            if module_name in self.config['MODULE_BLACKLIST']:
+        try:
+            for module_name in find_modules(basemodule, True):
+                if module_name in self.config['MODULE_BLACKLIST']:
+                    self.logger.info(
+                        'Skipping blacklisted module: %s' % module_name
+                    )
+                    continue
                 self.logger.info(
-                    'Skipping blacklisted module: %s' % module_name
-                )
-                continue
-            self.logger.info('Examining potential module: %s' % module_name)
-            module = import_module(module_name)
-            for key in list(module.__dict__.keys()):
-                if isinstance(module.__dict__[key], PgAdminModule):
-                    yield module.__dict__[key]
+                    'Examining potential module: %s' % module_name)
+                module = import_module(module_name)
+                for key in list(module.__dict__.keys()):
+                    if isinstance(module.__dict__[key], PgAdminModule):
+                        yield module.__dict__[key]
+        except Exception:
+            return []
 
     @property
     def submodules(self):
@@ -118,24 +125,17 @@ class PgAdmin(Flask):
         # like 'localhost/pgadmin4' then we have to append '/pgadmin4'
         # into endpoints
         #############################################################
-        import config
-        is_wsgi_root_present = False
-        if config.SERVER_MODE:
-            pgadmin_root_path = url_for('browser.index')
-            if pgadmin_root_path != '/browser/':
-                is_wsgi_root_present = True
-                wsgi_root_path = pgadmin_root_path.replace(
-                    '/browser/', ''
-                )
+        wsgi_root_path = ''
+        if url_for('browser.index') != '/browser/':
+            wsgi_root_path = url_for('browser.index').replace(
+                '/browser/', ''
+            )
 
         def get_full_url_path(url):
             """
             Generate endpoint URL at per WSGI alias
             """
-            if is_wsgi_root_present and url:
-                return wsgi_root_path + url
-            else:
-                return url
+            return wsgi_root_path + url
 
         # Fetch all endpoints and their respective url
         for rule in current_app.url_map.iter_rules('static'):
@@ -145,6 +145,8 @@ class PgAdmin(Flask):
             for endpoint in module.exposed_endpoints:
                 for rule in current_app.url_map.iter_rules(endpoint):
                     yield rule.endpoint, get_full_url_path(rule.rule)
+
+        yield 'pgadmin.root', wsgi_root_path
 
     @property
     def javascripts(self):
@@ -217,7 +219,7 @@ def create_app(app_name=None):
 
         config.SECURITY_RECOVERABLE = True
         config.SECURITY_CHANGEABLE = True
-        # Now we'll open change password page in alertify dialog
+        # Now we'll open change password page in dialog
         # we don't want it to redirect to main page after password
         # change operation so we will open the same password change page again.
         config.SECURITY_POST_CHANGE_VIEW = 'browser.change_password'
@@ -297,16 +299,13 @@ def create_app(app_name=None):
     # Initialise i18n
     babel = Babel(app)
 
-    app.logger.debug('Available translations: %s' % babel.list_translations())
-
-    @babel.localeselector
     def get_locale():
         """Get the language for the user."""
         language = 'en'
         if config.SERVER_MODE is False:
             # Get the user language preference from the miscellaneous module
             user_id = None
-            if current_user.is_authenticated:
+            if current_user and current_user.is_authenticated:
                 user_id = current_user.id
             else:
                 user = user_datastore.find_user(email=config.DESKTOP_USER)
@@ -333,19 +332,24 @@ def create_app(app_name=None):
 
         return language
 
+    babel.init_app(app, locale_selector=get_locale)
     ##########################################################################
     # Setup authentication
     ##########################################################################
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
-        .format(config.SQLITE_PATH.replace('\\', '/'),
-                getattr(config, 'SQLITE_TIMEOUT', 500)
-                )
+    if config.CONFIG_DATABASE_URI is not None and \
+            len(config.CONFIG_DATABASE_URI) > 0:
+        app.config['SQLALCHEMY_DATABASE_URI'] = config.CONFIG_DATABASE_URI
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}?timeout={1}' \
+            .format(config.SQLITE_PATH.replace('\\', '/'),
+                    getattr(config, 'SQLITE_TIMEOUT', 500)
+                    )
 
     # Override USER_DOES_NOT_EXIST and INVALID_PASSWORD messages from flask.
     app.config['SECURITY_MSG_USER_DOES_NOT_EXIST'] = \
         app.config['SECURITY_MSG_INVALID_PASSWORD'] = \
         (gettext("Incorrect username or password."), "error")
+    app.config['SECURITY_PASSWORD_LENGTH_MIN'] = config.PASSWORD_LENGTH_MIN
 
     # Create database connection object and mailer
     db.init_app(app)
@@ -353,6 +357,9 @@ def create_app(app_name=None):
     ##########################################################################
     # Upgrade the schema (if required)
     ##########################################################################
+    from config import SQLITE_PATH
+    from pgadmin.setup import db_upgrade
+
     def backup_db_file():
         """
         Create a backup of the current database file
@@ -368,7 +375,7 @@ def create_app(app_name=None):
             os.environ[
                 'CORRUPTED_DB_BACKUP_FILE'] = backup_file_name
             app.logger.info('Database migration completed.')
-        except Exception as e:
+        except Exception:
             app.logger.error('Database migration failed')
             app.logger.error(traceback.format_exc())
             raise RuntimeError('Migration failed')
@@ -380,7 +387,9 @@ def create_app(app_name=None):
         try:
             db_upgrade(app)
             os.environ['CORRUPTED_DB_BACKUP_FILE'] = ''
-        except Exception as e:
+        except Exception:
+            app.logger.error('Database migration failed')
+            app.logger.error(traceback.format_exc())
             backup_db_file()
 
         # check all tables are present in the db.
@@ -391,55 +400,86 @@ def create_app(app_name=None):
                 ' database'.format(invalid_tb_names))
             backup_db_file()
 
-    with app.app_context():
-        # Run migration for the first time i.e. create database
-        from config import SQLITE_PATH
-        from pgadmin.setup import db_upgrade
-
-        # If version not available, user must have aborted. Tables are not
-        # created and so its an empty db
-        if not os.path.exists(SQLITE_PATH) or get_version() == -1:
-            # If running in cli mode then don't try to upgrade, just raise
-            # the exception
-            if not cli_mode:
-                upgrade_db()
+    def run_migration_for_sqlite():
+        with app.app_context():
+            # Run migration for the first time i.e. create database
+            # If version not available, user must have aborted. Tables are not
+            # created and so its an empty db
+            if not os.path.exists(SQLITE_PATH) or get_version() == -1:
+                # If running in cli mode then don't try to upgrade, just raise
+                # the exception
+                if not cli_mode:
+                    upgrade_db()
+                else:
+                    if not os.path.exists(SQLITE_PATH):
+                        raise FileNotFoundError(
+                            'SQLite database file "' + SQLITE_PATH +
+                            '" does not exists.')
+                    raise RuntimeError(
+                        'The configuration database file is not valid.')
             else:
-                if not os.path.exists(SQLITE_PATH):
-                    raise FileNotFoundError(
-                        'SQLite database file "' + SQLITE_PATH +
-                        '" does not exists.')
-                raise RuntimeError(
-                    'The configuration database file is not valid.')
-        else:
-            schema_version = get_version()
+                schema_version = get_version()
 
-            # Run migration if current schema version is greater than the
-            # schema version stored in version table
-            if CURRENT_SCHEMA_VERSION >= schema_version:
-                upgrade_db()
+                # Run migration if current schema version is greater than the
+                # schema version stored in version table
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    # Take a backup of the old database file.
+                    try:
+                        prev_database_file_name = \
+                            "{0}.prev.bak".format(SQLITE_PATH)
+                        shutil.copyfile(SQLITE_PATH, prev_database_file_name)
+                    except Exception as e:
+                        app.logger.error(e)
+
+                    upgrade_db()
+                else:
+                    # check all tables are present in the db.
+                    is_db_error, invalid_tb_names = check_db_tables()
+                    if is_db_error:
+                        app.logger.error(
+                            'Table(s) {0} are missing in the'
+                            ' database'.format(invalid_tb_names))
+                        backup_db_file()
+
+                # Update schema version to the latest
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    set_version(CURRENT_SCHEMA_VERSION)
+                    db.session.commit()
+
+            if os.name != 'nt':
+                os.chmod(config.SQLITE_PATH, 0o600)
+
+    def run_migration_for_others():
+        with app.app_context():
+            # Run migration for the first time i.e. create database
+            # If version not available, user must have aborted. Tables are not
+            # created and so its an empty db
+            if get_version() == -1:
+                db_upgrade(app)
             else:
-                # check all tables are present in the db.
-                is_db_error, invalid_tb_names = check_db_tables()
-                if is_db_error:
-                    app.logger.error(
-                        'Table(s) {0} are missing in the'
-                        ' database'.format(invalid_tb_names))
-                    backup_db_file()
+                schema_version = get_version()
 
-            # Update schema version to the latest
-            if CURRENT_SCHEMA_VERSION > schema_version:
-                set_version(CURRENT_SCHEMA_VERSION)
-                db.session.commit()
+                # Run migration if current schema version is greater than
+                # the schema version stored in version table.
+                if CURRENT_SCHEMA_VERSION > schema_version:
+                    db_upgrade(app)
+                    # Update schema version to the latest
+                    set_version(CURRENT_SCHEMA_VERSION)
+                    db.session.commit()
 
-        if os.name != 'nt':
-            os.chmod(config.SQLITE_PATH, 0o600)
+    # Run the migration as per specified by the user.
+    if config.CONFIG_DATABASE_URI is not None and \
+            len(config.CONFIG_DATABASE_URI) > 0:
+        run_migration_for_others()
+    else:
+        run_migration_for_sqlite()
 
     Mail(app)
 
     # Don't bother paths when running in cli mode
     if not cli_mode:
-        import pgadmin.utils.paths as paths
-        paths.init_app(app)
+        from pgadmin.utils import paths
+        paths.init_app()
 
     # Setup Flask-Security
     user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -507,6 +547,7 @@ def create_app(app_name=None):
     ##########################################################################
     driver.init_app(app)
     authenticate.init_app(app)
+    heartbeat.init_app(app)
 
     ##########################################################################
     # Register language to the preferences after login
@@ -533,6 +574,12 @@ def create_app(app_name=None):
     ##########################################################################
     @user_logged_in.connect_via(app)
     def on_user_logged_in(sender, user):
+
+        # If Auto Discover servers is turned off then return from the
+        # function.
+        if not config.AUTO_DISCOVER_SERVERS:
+            return
+
         # Keep hold of the user ID
         user_id = user.id
 
@@ -542,7 +589,7 @@ def create_app(app_name=None):
             user_id=user_id
         ).order_by("id")
 
-        if servergroups.count() > 0:
+        if int(servergroups.count()) > 0:
             servergroup = servergroups.first()
             servergroup_id = servergroup.id
 
@@ -556,7 +603,7 @@ def create_app(app_name=None):
                 discovery_id=svr_discovery_id
             ).order_by("id")
 
-            if servers.count() > 0:
+            if int(servers.count()) > 0:
                 return
 
             svr = Server(user_id=user_id,
@@ -566,8 +613,9 @@ def create_app(app_name=None):
                          port=port,
                          maintenance_db='postgres',
                          username=superuser,
-                         ssl_mode='prefer',
-                         comment=svr_comment,
+                         connection_params={'sslmode': 'prefer',
+                                            'connect_timeout': 10},
+                         comment=comment,
                          discovery_id=discovery_id)
 
             db.session.add(svr)
@@ -666,7 +714,9 @@ def create_app(app_name=None):
                                svr_superuser, svr_port, svr_discovery_id,
                                svr_comment)
 
-        except Exception:
+        except Exception as e:
+            print(str(e))
+            db.session.rollback()
             pass
 
     @user_logged_in.connect_via(app)
@@ -689,23 +739,25 @@ def create_app(app_name=None):
 
         for mdl in current_app.logout_hooks:
             try:
-                mdl.on_logout(user)
+                mdl.on_logout()
             except Exception as e:
                 current_app.logger.exception(e)
-
-        # remove key
-        current_app.keyManager.reset()
 
         _driver = get_driver(PG_DEFAULT_DRIVER)
         _driver.gc_own()
 
+        # remove key
+        current_app.keyManager.reset()
+
     ##########################################################################
     # Load plugin modules
     ##########################################################################
-    for module in app.find_submodules('pgadmin'):
+    from .submodules import get_submodules
+    for module in get_submodules():
         app.logger.info('Registering blueprint module: %s' % module)
-        app.register_blueprint(module)
-        app.register_logout_hook(module)
+        if app.blueprints.get(module.name) is None:
+            app.register_blueprint(module)
+            app.register_logout_hook(module)
 
     @app.before_request
     def limit_host_addr():
@@ -714,7 +766,7 @@ def create_app(app_name=None):
         HTTP request to avoid Host Header Injection attack
         :return: None/JSON response with 403 HTTP status code
         """
-        client_host = str(request.host).split(':')[0]
+        client_host = str(request.host).split(':', maxsplit=1)[0]
         valid = True
         allowed_hosts = config.ALLOWED_HOSTS
 
@@ -774,11 +826,10 @@ def create_app(app_name=None):
                 )
                 abort(401)
             login_user(user)
-        elif config.SERVER_MODE and \
-                not current_user.is_authenticated and \
-                request.endpoint in ('redirects.index', 'security.login'):
-            if app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
-                return authenticate.login()
+        elif config.SERVER_MODE and not current_user.is_authenticated and \
+                request.endpoint in ('redirects.index', 'security.login') and \
+                app.PGADMIN_EXTERNAL_AUTH_SOURCE in [KERBEROS, WEBSERVER]:
+            return authenticate.login()
         # if the server is restarted the in memory key will be lost
         # but the user session may still be active. Logout the user
         # to get the key again when login
@@ -886,5 +937,5 @@ def create_app(app_name=None):
     ##########################################################################
     # All done!
     ##########################################################################
-    socketio.init_app(app)
+    socketio.init_app(app, cors_allowed_origins="*")
     return app

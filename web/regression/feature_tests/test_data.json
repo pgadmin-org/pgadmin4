@@ -1,0 +1,54 @@
+{
+  "comment": {
+    "sample_test_case": {
+      "colno": ["value to set", "value to verify", "data type"]
+    }
+  },
+  "table_insert_update_cases": {
+    "add": {
+      "1": [1, "1", "int", "Value at 0 index is actual value(to be inserted), Value at index 1 is expected value, int is column type"],
+      "2": ["", "1", "int"],
+      "3": ["", "[null]", "int"],
+      "4": ["", "Hello World", "text"],
+      "5": ["\"\"", "", "text", "Two double quotes"],
+      "6": ["\\\"\\\"", "\"\"", "text", "double backslash followed by a double quote"],
+      "7": ["\\\\\"\\\\\"", "\\\\\"\\\\\"", "text", "double backslash followed by a double quote"],
+      "8": ["", "[null]", "text"],
+      "9": ["", "[51, 52]", "json"],
+      "10": ["[61,62]", "[61,62]", "json"],
+      "11": ["true", "true", "bool"],
+      "12": ["", "[null]", "bool"],
+      "13": ["false", "false", "bool"],
+      "14": ["", "[null]", "text[]"],
+      "15": ["{}", "{}", "text[]"],
+      "16": ["{data,NULL,'',\"\"}", "{data,NULL,'',\"\"}", "text[]"],
+      "17": ["{}", "{}", "int[]"],
+      "18": ["{123,123,456}", "{123,123,456}", "int[]"],
+      "19": ["", "[null]", "boolean[]"],
+      "20": ["{false,null,true}", "{f,NULL,t}", "boolean[]"]
+    },
+    "copy": {
+      "1": [2, "2", "int"],
+      "2": ["1", "1", "int"],
+      "5": ["\"\"", "", "text"]
+    },
+    "update": {
+      "4": ["Hello World Again", "Hello World Again", "text"]
+    }
+  },
+  "table_insert_update_nonint": {
+    "add": {
+      "1": ["pk%ey1", "pk%ey1", "text"],
+      "2": ["sometext", "sometext", "text"],
+      "3": [123, "123", "int"]
+    },
+    "copy": {
+      "1": ["pk%ey2", "pk%ey2", "text"]
+    },
+    "update": {
+      "1": ["pk%ey1", "pk%ey1", "text"],
+      "2": ["sometextchange", "sometextchange", "text"],
+      "3": [321, "321", "int"]
+    }
+  }
+}

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -24,6 +24,7 @@ class PgAgentPutScheduleTestCase(BaseTestGenerator):
                                          schedules_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         flag, msg = pgagent_utils.is_valid_server_to_run_pgagent(self)
         if not flag:
             self.skipTest(msg)

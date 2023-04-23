@@ -68,7 +68,7 @@ $table-bg: $color-gray-lighter;
 // SET sql text selection background color.
 $sql-editor-selection-bg: #536270;
 
-$color-editor-fg: #7dc9f1;
+$color-editor-fg: $white;
 $color-editor-keyword: #db7c74;
 $color-editor-number: #7fcc5c;
 $color-editor-string: #e4e487;
@@ -82,6 +82,8 @@ $color-editor-foldmarker: #0000FF !default;
 $color-editor-activeline: #323e43 !default;
 $color-editor-activeline-light: $color-editor-activeline;
 $color-editor-activeline-border-color: none;
+
+$login-page-background: $color-bg;
 
 $explain-sev-2-bg: #ded17e;
 $explain-sev-3-bg: #824d18;
@@ -124,8 +126,6 @@ $color-success-hover-fg: $color-fg;
 
 $datagrid-selected-color: $color-primary-fg;
 
-$select2-placeholder: #999;
-
 $span-text-color: #9D9FA1 !default;
 $span-text-color-hover: $white !default;
 $quick-search-a-text-color: $white !default;
@@ -138,8 +138,6 @@ $erd-canvas-bg: $color-gray-light;
 $erd-canvas-grid: #444952;
 $erd-link-color: $color-fg;
 $erd-link-selected-color: $color-fg;
-
-$select2-readonly: $color-bg;
 
 // psql tool variables
 $psql-background: $color-bg;

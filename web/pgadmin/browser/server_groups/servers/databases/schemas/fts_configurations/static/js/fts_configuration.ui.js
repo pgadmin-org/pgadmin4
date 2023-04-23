@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ class TokenSchema extends BaseUISchema {
 }
 
 export default class FTSConfigurationSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,        // FTS Configuration name
       owner: undefined,       // FTS Configuration owner
@@ -131,7 +131,7 @@ export default class FTSConfigurationSchema extends BaseUISchema {
         options: this.fieldOptions.parsers,
         //disable parser when user select copy_config manually and vica-versa
         disabled: function(state) {
-          var copy_config = state.copy_config;
+          let copy_config = state.copy_config;
           return (_.isNull(copy_config) ||
                   _.isUndefined(copy_config) ||
                   copy_config === '') ? false : true;
@@ -144,7 +144,7 @@ export default class FTSConfigurationSchema extends BaseUISchema {
         options: this.fieldOptions.copyConfig,
         //disable copy_config when user select parser manually and vica-versa
         disabled: function(state) {
-          var parser = state.prsname;
+          let parser = state.prsname;
           return (_.isNull(parser) ||
                   _.isUndefined(parser) ||
                   parser === '') ? false : true;

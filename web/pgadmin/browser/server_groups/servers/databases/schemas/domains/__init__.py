@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,11 +11,11 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
@@ -53,7 +53,7 @@ class DomainModule(SchemaChildModule):
     _COLLECTION_LABEL = gettext("Domains")
 
     def __init__(self, *args, **kwargs):
-        super(DomainModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -70,6 +70,15 @@ class DomainModule(SchemaChildModule):
         initialized.
         """
         return databases.DatabaseModule.node_type
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .domain_constraints import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = DomainModule(__name__)
@@ -184,7 +193,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
         :return: if any error return error, else return req.
         """
         if request.data:
-            req = json.loads(request.data, encoding='utf-8')
+            req = json.loads(request.data)
         else:
             req = request.args or request.form
 
@@ -223,7 +232,7 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                 req[key] is not None
             ):
                 # Coverts string into python list as expected.
-                data[key] = json.loads(req[key], encoding='utf-8')
+                data[key] = json.loads(req[key])
             elif key == 'typnotnull':
                 if req[key] == 'true' or req[key] is True:
                     data[key] = True
@@ -282,11 +291,6 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -299,7 +303,6 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # we will set template path for sql scripts
             self.template_path = compile_template_path(
                 'domains/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 
@@ -458,7 +461,7 @@ It may have been removed by another user or moved to another schema.
 
         # Set System Domain Status
         data['sysdomain'] = False
-        if doid <= self.manager.db_info[did]['datlastsysoid'] or \
+        if doid <= self._DATABASE_LAST_SYSTEM_OID or \
                 self.datistemplate:
             data['sysdomain'] = True
 
@@ -594,7 +597,8 @@ AND relkind != 'c'))"""
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),
                               basensp=data['basensp'],
-                              name=data['name'])
+                              name=data['name'],
+                              conn=self.conn)
         status, doid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=doid)
@@ -602,7 +606,8 @@ AND relkind != 'c'))"""
         # Get updated schema oid
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),
-                              doid=doid)
+                              doid=doid,
+                              conn=self.conn)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=scid)
@@ -631,7 +636,7 @@ AND relkind != 'c'))"""
         """
         if doid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [doid]}
@@ -702,7 +707,8 @@ AND relkind != 'c'))"""
         # Get Schema Id
         SQL = render_template("/".join([self.template_path,
                                         self._OID_SQL]),
-                              doid=doid)
+                              doid=doid,
+                              conn=self.conn)
         status, scid = self.conn.execute_scalar(SQL)
         if not status:
             return internal_server_error(errormsg=scid)
@@ -831,8 +837,8 @@ AND relkind != 'c'))"""
                 data['is_schema_diff'] = True
 
             SQL = render_template(
-                "/".join([self.template_path, 'update.sql']),
-                data=data, o_data=old_data)
+                "/".join([self.template_path, self._UPDATE_SQL]),
+                data=data, o_data=old_data, conn=self.conn)
         return SQL, data
 
     def get_sql(self, gid, sid, data, scid, doid=None, is_schema_diff=False):
@@ -935,7 +941,8 @@ AND relkind != 'c'))"""
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODE_SQL]), scid=scid)
+                                        self._NODE_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=rset)

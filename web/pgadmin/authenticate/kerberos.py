@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,7 +13,7 @@ import base64
 from os import environ, path, remove
 
 from werkzeug.datastructures import Headers, MultiDict
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask import request, Response, session,\
     current_app, render_template, flash, url_for
 from flask_security.views import _security
@@ -53,10 +53,10 @@ if config.KRB_KTNAME and config.KRB_KTNAME != '<KRB5_KEYTAB_FILE>':
 
 
 class KerberosModule(PgAdminModule):
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options, first_registration)
+        super().register(app, options)
 
     def get_exposed_url_endpoints(self):
         return ['kerberos.login',
@@ -163,7 +163,7 @@ class KerberosAuthentication(BaseAuthentication):
         return gettext("kerberos")
 
     def validate(self, form):
-        return True
+        return True, None
 
     def authenticate(self, frm):
 
@@ -177,10 +177,11 @@ class KerberosAuthentication(BaseAuthentication):
         negotiate = False
         headers = Headers()
         authorization = request.headers.get("Authorization", None)
-        form_class = _security.login_form
+        form_class = _security.forms.get('login_form').cls
+        req_json = request.get_json(silent=True)
 
-        if request.json:
-            form = form_class(MultiDict(request.json))
+        if req_json:
+            form = form_class(MultiDict(req_json))
         else:
             form = form_class()
 
@@ -263,7 +264,7 @@ class KerberosAuthentication(BaseAuthentication):
         del_creds = getattr(context, 'delegated_creds', None)
         if del_creds:
             deleg_creds = context.delegated_creds
-            del(deleg_creds)
+            del deleg_creds
 
     def __auto_create_user(self, username):
         """Add the kerberos user to the internal SQLite database."""
@@ -272,6 +273,10 @@ class KerberosAuthentication(BaseAuthentication):
             user = User.query.filter_by(
                 username=username, auth_source=KERBEROS).first()
             if user is None:
+                create_msg = ("Creating user {0} with email {1} "
+                              "from auth source KERBEROS.")
+                current_app.logger.info(create_msg.format(username,
+                                                          username))
                 return create_user({
                     'username': username,
                     'email': username,

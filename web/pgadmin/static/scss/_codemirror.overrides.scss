@@ -9,6 +9,7 @@
   font-family: monospace, monospace;
   background-color: $color-editor-bg !important;
   color: $color-editor-fg;
+  border-radius: inherit;
 }
 
 /* Ensure the codemirror editor displays full height gutters when resized */
@@ -113,6 +114,11 @@
   width: .9em;
 }
 
+.breakpoints {
+  width: .9em;
+  cursor: pointer;
+}
+
 .CodeMirror-foldgutter-open,
 .CodeMirror-foldgutter-folded {
   cursor: pointer;
@@ -166,6 +172,9 @@
       background: $sql-hint-active-bg;
       color: $sql-hint-active-fg;
     }
+    & .sqleditor-hint {
+      padding-left: 20px;
+    }
   }
 }
 
@@ -207,3 +216,6 @@
   background-color: $sql-editor-disable-bg !important;
 }
 
+.sql-editor-mark {
+  border-bottom: 2px dotted red;
+}

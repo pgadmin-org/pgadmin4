@@ -10,7 +10,7 @@ DROP {{ conn|qtIdent(variable.umoption) }}{% endfor %}
 {% if is_valid_added_options %}
 ALTER USER MAPPING FOR {{ conn|qtIdent(o_data.name) }} SERVER {{ conn|qtIdent(fdwdata.name) }}
     OPTIONS ({% for variable in data.umoptions.added %}{% if loop.index != 1 %}, {% endif %}
-ADD {{ conn|qtIdent(variable.umoption) }} {{ variable.umvalue|qtLiteral }}{% endfor %}
+ADD {{ conn|qtIdent(variable.umoption) }} {{ variable.umvalue|qtLiteral(conn) }}{% endfor %}
 );
 
 {% endif %}
@@ -19,7 +19,7 @@ ADD {{ conn|qtIdent(variable.umoption) }} {{ variable.umvalue|qtLiteral }}{% end
 {% if is_valid_changed_options %}
 ALTER USER MAPPING FOR {{ conn|qtIdent(o_data.name) }} SERVER {{ conn|qtIdent(fdwdata.name) }}
     OPTIONS ({% for variable in data.umoptions.changed %}{% if loop.index != 1 %}, {% endif %}
-SET {{ conn|qtIdent(variable.umoption) }} {{ variable.umvalue|qtLiteral }}{% endfor %}
+SET {{ conn|qtIdent(variable.umoption) }} {{ variable.umvalue|qtLiteral(conn) }}{% endfor %}
 );
 
 {% endif %}

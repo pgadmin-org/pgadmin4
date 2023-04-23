@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,7 +11,7 @@ import json
 import uuid
 from unittest.mock import patch
 
-from pgadmin.utils import server_utils as server_utils
+from pgadmin.utils import server_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.tests \
     import utils as tables_utils
 from pgadmin.browser.server_groups.servers.databases.schemas.tests import \
@@ -24,6 +24,7 @@ from regression.python_test_utils import test_utils as utils
 from . import utils as compound_triggers_utils
 
 import sys
+from config import PG_DEFAULT_DRIVER
 
 
 class CompoundTriggersUpdateTestCase(BaseTestGenerator):
@@ -32,7 +33,7 @@ class CompoundTriggersUpdateTestCase(BaseTestGenerator):
                                          compound_triggers_utils.test_cases)
 
     def setUp(self):
-        super(CompoundTriggersUpdateTestCase, self).setUp()
+        super().setUp()
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
@@ -122,8 +123,8 @@ class CompoundTriggersUpdateTestCase(BaseTestGenerator):
 
             with patch(self.mock_data["function_name"],
                        side_effect=self.mock_data["return_value"]), patch(
-                'pgadmin.utils.driver.psycopg2.connection.Connection.'
-                'execute_scalar',
+                'pgadmin.utils.driver.{0}.connection.Connection.'
+                'execute_scalar'.format(PG_DEFAULT_DRIVER),
                 side_effect=[(True, True),
                              (True, "Mocked response")]):
                 response = self.update_compound_trigger()

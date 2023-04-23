@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,9 +12,9 @@
 import datetime
 import decimal
 
-import simplejson as json
+import json
 from flask import Response
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
 
 class DataTypeJSONEncoder(json.JSONEncoder):
@@ -26,8 +26,14 @@ class DataTypeJSONEncoder(json.JSONEncoder):
             return (datetime.datetime.min + obj).time().isoformat()
         if isinstance(obj, decimal.Decimal):
             return float(obj)
+        if isinstance(obj, bytes):
+            return obj.decode('utf-8')
+        try:
+            retval = json.JSONEncoder.default(self, obj)
+        except TypeError:
+            retval = obj
 
-        return json.JSONEncoder.default(self, obj)
+        return retval
 
 
 class ColParamsJSONDecoder(json.JSONDecoder):
@@ -58,8 +64,7 @@ def get_no_cache_header():
 
 
 def make_json_response(
-        success=1, errormsg='', info='', result=None, data=None, status=200,
-        encoding='utf-8'
+        success=1, errormsg='', info='', result=None, data=None, status=200
 ):
     """Create a HTML response document describing the results of a request and
     containing the data."""
@@ -72,7 +77,7 @@ def make_json_response(
 
     return Response(
         response=json.dumps(doc, cls=DataTypeJSONEncoder,
-                            separators=(',', ':'), encoding=encoding),
+                            separators=(',', ':')),
         status=status,
         mimetype="application/json",
         headers=get_no_cache_header()
@@ -80,7 +85,7 @@ def make_json_response(
 
 
 def make_response(response=None, status=200):
-    """Create a JSON response handled by the backbone models."""
+    """Create a JSON response"""
     return Response(
         response=json.dumps(
             response, cls=DataTypeJSONEncoder, separators=(',', ':')),
@@ -177,3 +182,8 @@ def service_unavailable(errormsg=_("Service Unavailable"), info='',
         result=result,
         data=data
     )
+
+
+def plain_text_response(message=''):
+    response = Response(message, status=200, mimetype="text/plain")
+    return response

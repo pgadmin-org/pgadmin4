@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 export default class EDBFuncSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, initValues) {
+  constructor(fieldOptions = {}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -33,9 +33,7 @@ export default class EDBFuncSchema extends BaseUISchema {
   }
 
   isVisible(state) {
-    if (state.name == 'sysfunc') { return true; }
-    else if (state.name == 'sysproc') { return true; }
-    return false;
+    return state.name == 'sysfunc' || state.name == 'sysproc';
   }
 
   get idAttribute() {
@@ -77,10 +75,7 @@ export default class EDBFuncSchema extends BaseUISchema {
       group: gettext('Code'),
       type: 'sql', isFullTab: true,
       visible: function(state) {
-        if (state.lanname == 'c') {
-          return false;
-        }
-        return true;
+        return state.lanname !== 'c';
       },
       disabled: true,
     }];

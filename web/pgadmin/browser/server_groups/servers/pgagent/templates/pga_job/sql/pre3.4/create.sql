@@ -11,18 +11,18 @@ BEGIN
 INSERT INTO pgagent.pga_job(
     jobjclid, jobname, jobdesc, jobhostagent, jobenabled
 ) VALUES (
-    {{ data.jobjclid|qtLiteral }}::integer, {{ data.jobname|qtLiteral }}::text, {{ data.jobdesc|qtLiteral }}::text, {{ data.jobhostagent|qtLiteral }}::text, {% if data.jobenabled %}true{% else %}false{% endif %}
+    {{ data.jobjclid|qtLiteral(conn) }}::integer, {{ data.jobname|qtLiteral(conn) }}::text, {{ data.jobdesc|qtLiteral(conn) }}::text, {{ data.jobhostagent|qtLiteral(conn) }}::text, {% if data.jobenabled %}true{% else %}false{% endif %}
 
 ) RETURNING jobid INTO jid;{% if 'jsteps' in data and data.jsteps|length > 0 %}
 
 
 -- Steps
-{% for step in data.jsteps %}{{ STEP.INSERT(has_connstr, None, step) }}{% endfor %}
+{% for step in data.jsteps %}{{ STEP.INSERT(has_connstr, None, step, conn) }}{% endfor %}
 {% endif %}{% if 'jschedules' in data and data.jschedules|length > 0 %}
 
 
 -- Schedules
-{% for schedule in data.jschedules %}{{ SCHEDULE.INSERT(None, schedule) }}{% endfor %}
+{% for schedule in data.jschedules %}{{ SCHEDULE.INSERT(None, schedule, conn) }}{% endfor %}
 {% endif %}
 
 END

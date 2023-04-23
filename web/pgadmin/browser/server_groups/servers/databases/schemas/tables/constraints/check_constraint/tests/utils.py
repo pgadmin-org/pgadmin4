@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -107,7 +107,7 @@ def create_check_constraint(server, db_name, schema_name, table_name,
                                              server['host'],
                                              server['port'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         if query_val is None:
             query = "ALTER TABLE %s.%s ADD CONSTRAINT %s CHECK ( (id > 0)) " \
@@ -119,7 +119,7 @@ def create_check_constraint(server, db_name, schema_name, table_name,
         else:
             query = eval(query_val)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get oid of newly added check constraint
         pg_cursor.execute(

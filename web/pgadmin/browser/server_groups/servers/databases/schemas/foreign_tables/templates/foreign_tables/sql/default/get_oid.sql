@@ -6,8 +6,8 @@ FROM
 JOIN
     pg_catalog.pg_namespace bn ON bn.oid=c.relnamespace
 WHERE
-    bn.nspname = {{ basensp|qtLiteral }}
-    AND c.relname={{ name|qtLiteral }};
+    bn.nspname = {{ basensp|qtLiteral(conn) }}
+    AND c.relname={{ name|qtLiteral(conn) }};
 
 {% elif foid %}
 SELECT

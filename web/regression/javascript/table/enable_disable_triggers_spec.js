@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -16,19 +16,26 @@ import {
 import {TreeFake} from '../tree/tree_fake';
 import {TreeNode} from '../../../pgadmin/static/js/tree/tree_nodes';
 
+let beforeEachResponseError = (networkMock)=> {
+  networkMock.onPut(/.*/).reply(() => {
+    return [500, {
+      success: 0,
+      errormsg: 'some error message',
+    }];
+  });
+};
+
 describe('#enableTriggers', () => {
   let networkMock;
   let tree;
-  let alertify;
+  let Notify;
   let generateUrlSpy;
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
     tree = new TreeFake();
 
     spyOn(tree, 'unload').and.callFake(function() {
-      return new Promise((resolve)=>{
-        resolve('Success!');
-      });
+      return Promise.resolve('Success!');
     });
 
     const server1 = tree.addNewNode('server1', {_id: 1}, ['<li>server1</li>']);
@@ -47,18 +54,18 @@ describe('#enableTriggers', () => {
     const tableNoData = tree.addNewNode('table-no-data', undefined, ['<li>table-no-data</li>']);
     tree.addChild(schema1, tableNoData);
 
-    alertify = jasmine.createSpyObj('alertify', ['success', 'error']);
+    Notify = jasmine.createSpyObj('Notify', ['success', 'error']);
     generateUrlSpy = jasmine.createSpy('generateUrl');
     generateUrlSpy.and.returnValue('/some/place');
   });
 
   describe('no node is selected', () => {
     it('does not send the request to the backend', (done) => {
-      networkMock.onAny('.*').reply(200, () => {
+      networkMock.onAny('.*').reply(200, () => { /*This is intentional (SonarQube)*/
       });
 
       setTimeout(() => {
-        expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+        expect(enableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
         done();
       }, 0);
     });
@@ -70,10 +77,11 @@ describe('#enableTriggers', () => {
         tree.selectNode([{id: 'table-no-data'}]);
 
         networkMock.onAny('.*').reply(200, () => {
+          /*This is intentional (SonarQube)*/
         });
 
         setTimeout(() => {
-          expect(enableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+          expect(enableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
           done();
         }, 0);
       });
@@ -89,21 +97,24 @@ describe('#enableTriggers', () => {
             return [200, {
               success: 1,
               info: 'some information',
+              data: {
+                has_enable_triggers: '1'
+              }
             }];
           });
         });
 
         it('displays an alert box with success', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          enableTriggers(tree, alertify, generateUrlSpy, {});
+          enableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.success).toHaveBeenCalledWith('some information');
+            expect(Notify.success).toHaveBeenCalledWith('some information');
             done();
           }, 0);
         });
 
         it('reloads the node', (done) => {
-          enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          enableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(tree.selected()).toEqual(['<li>table1</li>']);
             done();
@@ -111,7 +122,7 @@ describe('#enableTriggers', () => {
         });
 
         it('call backend with the correct parameters', (done) => {
-          enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          enableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(networkMockCalledWith.data).toEqual(JSON.stringify({is_enable_trigger: 'O'}));
             done();
@@ -121,25 +132,20 @@ describe('#enableTriggers', () => {
 
       describe('backend responds with error', () => {
         beforeEach(() => {
-          networkMock.onPut(/.*/).reply(() => {
-            return [500, {
-              success: 0,
-              errormsg: 'some error message',
-            }];
-          });
+          beforeEachResponseError(networkMock);
         });
 
         it('displays an error alert', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          enableTriggers(tree, alertify, generateUrlSpy, {});
+          enableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.error).toHaveBeenCalledWith('some error message');
+            expect(Notify.error).toHaveBeenCalledWith('some error message');
             done();
           }, 0);
         });
 
         it('unload the node', (done) => {
-          enableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          enableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
 
           setTimeout(() => {
             expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toEqual(0);
@@ -154,7 +160,7 @@ describe('#enableTriggers', () => {
 describe('#disableTriggers', () => {
   let networkMock;
   let tree;
-  let alertify;
+  let Notify;
   let generateUrlSpy;
   beforeEach(() => {
     networkMock = new MockAdapter(axios);
@@ -175,13 +181,11 @@ describe('#disableTriggers', () => {
     const tableNoData = new TreeNode('table-no-data', undefined, ['<li>table-no-data</li>']);
     tree.addChild(schema1, tableNoData);
 
-    alertify = jasmine.createSpyObj('alertify', ['success', 'error']);
+    Notify = jasmine.createSpyObj('Notify', ['success', 'error']);
     generateUrlSpy = jasmine.createSpy('generateUrl');
     generateUrlSpy.and.returnValue('/some/place');
     spyOn(tree, 'unload').and.callFake(function() {
-      return new Promise((resolve)=>{
-        resolve('Success!');
-      });
+      return Promise.resolve('Success!');
     });
 
   });
@@ -189,10 +193,11 @@ describe('#disableTriggers', () => {
   describe('no node is selected', () => {
     it('does not send the request to the backend', (done) => {
       networkMock.onAny('.*').reply(200, () => {
+        /*This is intentional (SonarQube)*/
       });
 
       setTimeout(() => {
-        expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+        expect(disableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
         done();
       }, 0);
     });
@@ -204,10 +209,11 @@ describe('#disableTriggers', () => {
         tree.selectNode([{id: 'table-no-data'}]);
 
         networkMock.onAny('.*').reply(200, () => {
+          /*This is intentional (SonarQube)*/
         });
 
         setTimeout(() => {
-          expect(disableTriggers(tree, alertify, generateUrlSpy, {})).toEqual(false);
+          expect(disableTriggers(tree, Notify, generateUrlSpy, {})).toEqual(false);
           done();
         }, 0);
       });
@@ -223,21 +229,24 @@ describe('#disableTriggers', () => {
             return [200, {
               success: 1,
               info: 'some information',
+              data: {
+                has_enable_triggers: '0'
+              }
             }];
           });
         });
 
         it('displays an alert box with success', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          disableTriggers(tree, alertify, generateUrlSpy, {});
+          disableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.success).toHaveBeenCalledWith('some information');
+            expect(Notify.success).toHaveBeenCalledWith('some information');
             done();
           }, 0);
         });
 
         it('reloads the node', (done) => {
-          disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          disableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(tree.selected()).toEqual(['<li>table1</li>']);
             done();
@@ -245,7 +254,7 @@ describe('#disableTriggers', () => {
         });
 
         it('call backend with the correct parameters', (done) => {
-          disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          disableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
           setTimeout(() => {
             expect(networkMockCalledWith.data).toEqual(JSON.stringify({is_enable_trigger: 'D'}));
             done();
@@ -255,25 +264,20 @@ describe('#disableTriggers', () => {
 
       describe('backend responds with error', () => {
         beforeEach(() => {
-          networkMock.onPut(/.*/).reply(() => {
-            return [500, {
-              success: 0,
-              errormsg: 'some error message',
-            }];
-          });
+          beforeEachResponseError(networkMock);
         });
 
         it('displays an error alert', (done) => {
           tree.selectNode([{id: 'table1'}]);
-          disableTriggers(tree, alertify, generateUrlSpy, {});
+          disableTriggers(tree, Notify, generateUrlSpy, {});
           setTimeout(() => {
-            expect(alertify.error).toHaveBeenCalledWith('some error message');
+            expect(Notify.error).toHaveBeenCalledWith('some error message');
             done();
           }, 0);
         });
 
         it('unload the node', (done) => {
-          disableTriggers(tree, alertify, generateUrlSpy, {item: [{id: 'table1'}]});
+          disableTriggers(tree, Notify, generateUrlSpy, {item: [{id: 'table1'}]});
 
           setTimeout(() => {
             expect(tree.findNodeByDomElement([{id: 'table1'}]).children.length).toEqual(0);

@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ const weekdays = [
   ];
 
 export class ExceptionsSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       jexdate: null,
       jextime: null,
@@ -159,7 +159,7 @@ const BooleanArrayFormatter = {
 };
 
 export class DaysSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       ...initValues,
     });
@@ -201,7 +201,7 @@ export class DaysSchema extends BaseUISchema {
 }
 
 export class TimesSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       ...initValues,
     });
@@ -235,7 +235,7 @@ export class TimesSchema extends BaseUISchema {
 }
 
 export default class PgaJobScheduleSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       jscid: null,
       jscjobid: null,

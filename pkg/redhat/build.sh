@@ -6,18 +6,20 @@ set -e
 # Debugging shizz
 trap 'ERRCODE=$? && if [ ${ERRCODE} -ne 0 ]; then echo "The command \"${BASH_COMMAND}\" failed in \"${FUNCNAME}\" with exit code ${ERRCODE}."; fi' EXIT
 
-OS_VERSION=$(cat /etc/os-release | grep "^VERSION_ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
-OS_NAME=$(cat /etc/os-release | grep "^ID=" | awk -F "=" '{ print $2 }' | sed 's/"//g')
 OS_ARCH=$(arch)
 
-# Make sure we get the right libpq
-export PATH=/usr/pgsql-14/bin:$PATH
+# Make sure we get the latest libpq
+export PATH=$(ls -d /usr/pgsql-1* | sort -r | head -1)/bin:$PATH
+
+# Stop creating pyc files.
+export PYTHONDONTWRITEBYTECODE=1
 
 # Common Linux build functions
+# shellcheck disable=SC1091
 source pkg/linux/build-functions.sh
 
 # Assemble the "standard" installation footprint
-_setup_env $0 "redhat"
+_setup_env "$0" "redhat"
 _cleanup "rpm"
 _setup_dirs
 _create_python_virtualenv "redhat"
@@ -27,7 +29,7 @@ _copy_code
 
 # Get an RPM-compatible version number
 RPM_VERSION=${APP_RELEASE}.${APP_REVISION}
-if [ ! -z ${APP_SUFFIX} ]; then
+if [ -n "${APP_SUFFIX}" ]; then
     RPM_VERSION=${RPM_VERSION}_${APP_SUFFIX}
 fi
 
@@ -41,11 +43,14 @@ echo "Creating the server package..."
 cat << EOF > "${BUILDROOT}/server.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
-# Bytecompiling Python 3 doesn't work on RHEL/CentOS 7, so make it a no-op
-%if 0%{?rhel} && 0%{?rhel} == 7
-%define __python /bin/true
-%endif
+# Disable RPATH checking, as it will fail with some of the paths in the Python
+# virtualenv, in particular Pillow.libs.
+%global __brp_check_rpaths %{nil}
+
+# Don't strip binaries when packaging them as this might break cpython modules
+%define __strip /bin/true
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
@@ -57,10 +62,16 @@ Summary:	The core server package for pgAdmin.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
 
-Requires:	python3, postgresql-libs >= 11, krb5-libs
+Requires:	${PYTHON_BINARY}, libpq5, krb5-libs
 
 %description
 The core server package for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
+
+%pre
+rm -rf /usr/pgadmin4/venv
+if [ -d /usr/pgadmin4/web ]; then
+  cd /usr/pgadmin4/web && rm -rf \$(ls -A -I config_local.py)
+fi
 
 %build
 
@@ -84,6 +95,7 @@ echo "Creating the desktop package..."
 cat << EOF > "${BUILDROOT}/desktop.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
@@ -131,6 +143,7 @@ echo "Creating the web package..."
 cat << EOF > "${BUILDROOT}/web.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
@@ -142,11 +155,7 @@ BuildArch:	noarch
 Summary:	The web interface for pgAdmin, hosted under Apache HTTPD.
 License:	PostgreSQL
 URL:		https://www.pgadmin.org/
-%if 0%{?rhel} && 0%{?rhel} == 7
-Requires:	${APP_NAME}-server = ${RPM_VERSION}, httpd, pgadmin4-python3-mod_wsgi
-%else
-Requires:	${APP_NAME}-server = ${RPM_VERSION}, httpd, python3-mod_wsgi
-%endif
+Requires:	${APP_NAME}-server = ${RPM_VERSION}, httpd, ${PYTHON_BINARY_WITHOUT_DOTS}-mod_wsgi
 
 %description
 The web interface for pgAdmin, hosted under Apache HTTPD. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
@@ -178,6 +187,7 @@ echo "Creating the meta package..."
 cat << EOF > "${BUILDROOT}/meta.spec"
 %global __requires_exclude_from ^/.*$
 %global __provides_exclude_from ^/.*$
+%global _build_id_links none
 
 %undefine __brp_mangle_shebangs
 %undefine __brp_ldconfig
@@ -205,26 +215,13 @@ EOF
 # Build the Redhat package for the meta package
 rpmbuild --define "pga_build_root ${BUILDROOT}" -bb "${BUILDROOT}/meta.spec"
 
-#
-# mod_wsgi for CentOS 7
-#
-if [ ${OS_VERSION} == 7 ]; then
-    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi-exports.patch" ${HOME}/rpmbuild/SOURCES
-    cp "${SOURCEDIR}/pkg/redhat/pgadmin4-python3-mod_wsgi.conf" ${HOME}/rpmbuild/SOURCES
-    curl -o ${HOME}/rpmbuild/SOURCES/mod_wsgi-4.7.1.tar.gz https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.7.1
-    rpmbuild -bb "${SOURCEDIR}/pkg/redhat/pgadmin4-python-mod_wsgi.spec"
-fi
-
 # Get the libpq we need
-yumdownloader -y --downloadonly --destdir=$DISTROOT postgresql14-libs
+yumdownloader -y --downloadonly --destdir="${DISTROOT}" libpq5 libpq5-devel postgresql$(ls -d /usr/pgsql-1* | sort -r | head -1 | awk -F '-' '{ print $2 }')-libs
 
 #
 # Get the results!
 #
-cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-*${RPM_VERSION}-*.${OS_ARCH}.rpm "${DISTROOT}/"
-cp ${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-*${RPM_VERSION}-*.noarch.rpm "${DISTROOT}/"
-if [ ${OS_VERSION} == 7 ]; then
-    cp ${HOME}/rpmbuild/RPMS/${OS_ARCH}/pgadmin4-python3-mod_wsgi-4.7.1-2.el7.x86_64.rpm "${DISTROOT}/"
-fi
+cp "${HOME}/rpmbuild/RPMS/${OS_ARCH}/${APP_NAME}-"*"${RPM_VERSION}-"*".${OS_ARCH}.rpm" "${DISTROOT}/"
+cp "${HOME}/rpmbuild/RPMS/noarch/${APP_NAME}-"*"${RPM_VERSION}-"*".noarch.rpm" "${DISTROOT}/"
 
 echo "Completed. RPMs created in ${DISTROOT}."

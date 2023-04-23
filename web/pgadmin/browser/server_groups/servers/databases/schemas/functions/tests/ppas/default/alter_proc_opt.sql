@@ -4,12 +4,15 @@
 
 CREATE OR REPLACE PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"(
 	i1 integer)
-    STABLE SECURITY DEFINER
+    VOLATILE SECURITY DEFINER PARALLEL RESTRICTED
     COST 120
     SET application_name='pgadmin'
-AS begin
+AS   begin
 select 1;
 end;
+
+ALTER PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"
+    OWNER TO enterprisedb;
 
 COMMENT ON PROCEDURE public."Proc1_$%{}[]()&*^!@""'`\/#"
     IS 'some comment';

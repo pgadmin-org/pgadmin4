@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for Indexes. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -99,6 +99,9 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
         "/".join([template_path, 'column_details.sql']), idx=idx
     )
     status, rset = conn.execute_2darray(SQL)
+    # Remove column if duplicate column is present in list.
+    rset['rows'] = [i for n, i in enumerate(rset['rows']) if
+                    i not in rset['rows'][n + 1:]]
     if not status:
         return internal_server_error(errormsg=rset)
 
@@ -181,7 +184,6 @@ def _get_create_sql(data, template_path, conn, mode, name,
     :return:
     """
     required_args = {
-        'name': 'Name',
         'columns': 'Columns'
     }
     for arg in required_args:

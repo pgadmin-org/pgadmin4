@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -31,6 +31,7 @@ class IndexesAddTestCase(BaseTestGenerator):
                                          indexes_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         """ This function will set up pre-requisite """
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]

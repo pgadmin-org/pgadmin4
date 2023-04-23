@@ -5,9 +5,9 @@
 `View/Edit Data`:index:
 ***********************
 
-To view or modify data, right click on a table or view name in the *Browser*
-tree control.  When the context menu opens, use the *View/Edit Data* menu to
-specify the number of rows you would like to display in the editor panel.
+To view or modify data, right click on a table or view name in the
+*Object Explorer*. When the context menu opens, use the *View/Edit Data* menu
+to specify the number of rows you would like to display in the editor panel.
 
 .. image:: images/editgrid.png
     :alt: Edit grid window
@@ -215,8 +215,7 @@ To add new column(s) in data sorting grid, click on the [+] icon.
 
 To delete a row from the grid, click the trash icon.
 
-* Click the *Help* button (?) to access online help.
-* Click the *Ok* button to save work.
+* Click the *Save* button to save work.
 * Click the *Close* button to discard current changes and close the dialog.
 
 .. toctree::

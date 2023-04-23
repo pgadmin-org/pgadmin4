@@ -30,7 +30,7 @@
     display: block;
 }
 
-/* CSS to make subnode control look preety in backgrid - START */
+/* CSS to make subnode control look pretty - START */
 .dashboard-tab-container .subnode-dialog .form-control {
     font-size: inherit;
 }
@@ -43,46 +43,6 @@
     max-height:100px;
 }
 
-.dashboard-tab-container .sub-node-form > ul.tab-content {
-  padding-left: 0px;
-  left: 0px;
-}
-
-.dashboard-tab-container .sub-node-form > ul.pg-el-sm-12,
-.dashboard-tab-container .sub-node-form > ul.pg-el-md-12,
-.dashboard-tab-container .sub-node-form > ul.pg-el-lg-12,
-.dashboard-tab-container .sub-node-form > ul.pg-el-xs-12 {
-  padding: 0px;
-}
-
-.dashboard-tab-container .subnode-dialog .control-label {
-  font-weight: inherit;
-}
-
-.dashboard-tab-container .backgrid.presentation td.editable:not(.edit-cell) {
-  padding-right: 25px
-}
-
-.dashboard-tab-container .subnode-dialog .pgadmin-control-group {
-  padding: 5px;
-}
-
-.dashboard-container .delete-cell .fa-times-circle:before {
-  font-size: 14px;
-}
-
-.dashboard-tab-container .pg-el-container[el=sm] .pg-el-sm-12 {
-    margin-bottom: 0%;
-}
-
 .dashboard-hidden {
   display: none;
-}
-
-div#dashboard-activity div.tab-content > div.tab-pane table.backgrid.table-bordered {
-  border: none;
-}
-
-div#dashboard-activity div.tab-content > div.tab-pane table.backgrid.table-bordered tr > td:first-child {
-  border-left: none !important;
 }

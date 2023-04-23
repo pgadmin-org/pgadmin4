@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { emptyValidator } from 'sources/validators';
 
 export default class SynonymSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       targettype: 'r',
       ...initValues,
@@ -70,11 +70,7 @@ export default class SynonymSchema extends BaseUISchema {
         readonly: function(state) {
           // If tagetType is synonym then disable it
           if(!obj.inCatalog()) {
-            if(state.targettype == 's') {
-              return true;
-            } else {
-              return false;
-            }
+            return state.targettype == 's';
           }
           return true;
         },

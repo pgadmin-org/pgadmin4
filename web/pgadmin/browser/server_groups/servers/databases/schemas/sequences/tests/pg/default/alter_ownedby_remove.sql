@@ -7,7 +7,8 @@ CREATE SEQUENCE IF NOT EXISTS public."Seq1_$%{}[]()&*^!@""'`\/#"
     START 5
     MINVALUE 5
     MAXVALUE 900
-    CACHE 1;
+    CACHE 1
+    OWNED BY tableforownedby.col2;
 
 ALTER SEQUENCE public."Seq1_$%{}[]()&*^!@""'`\/#"
     OWNER TO postgres;

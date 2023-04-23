@@ -2,14 +2,14 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import json
 import uuid
-import random
+import secrets
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -35,7 +35,7 @@ class ERDInitialize(BaseTestGenerator):
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database to add the schema.")
 
-        trans_id = random.randint(1, 9999999)
+        trans_id = secrets.choice(range(1, 9999999))
         url = '/erd/initialize/{trans_id}/{sgid}/{sid}/{did}'.format(
             trans_id=trans_id, sgid=self.sgid, sid=self.sid, did=self.did)
 
@@ -44,6 +44,7 @@ class ERDInitialize(BaseTestGenerator):
         response_data = json.loads(response.data.decode('utf-8'))
         self.assertEqual(response_data['data'], {
             'connId': str(trans_id),
+            'database': self.db_name,
             'serverVersion': self.server_information['server_version'],
         })
 

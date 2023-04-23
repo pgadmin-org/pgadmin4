@@ -2,14 +2,14 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module implementing the pgAdmin help system."""
 from flask import url_for
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.menu import MenuItem, Panel
 from pgadmin.utils.preferences import Preferences
@@ -23,6 +23,12 @@ class HelpModule(PgAdminModule):
         """Return a (set) of dicts of help menu items, with name, priority,
         URL, target and onclick code."""
         return {'help_items': [
+            MenuItem(name='mnu_quick_search_help',
+                     label=gettext('Quick Search'),
+                     priority=99,
+                     target='pgadmin_quick_search_help',
+                     icon='fa fa-question',
+                     url='#'),
             MenuItem(name='mnu_online_help',
                      label=gettext('Online Help'),
                      priority=100,

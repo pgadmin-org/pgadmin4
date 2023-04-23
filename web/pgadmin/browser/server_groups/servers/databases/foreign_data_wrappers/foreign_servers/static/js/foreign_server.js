@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,10 +12,9 @@ import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.u
 import ForeignServerSchema from './foreign_server.ui';
 
 define('pgadmin.node.foreign_server', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore', 'sources/pgadmin',
-  'pgadmin.browser', 'pgadmin.backform', 'pgadmin.browser.collection',
-  'pgadmin.browser.server.privilege',
-], function(gettext, url_for, $, _, pgAdmin, pgBrowser, Backform) {
+  'sources/gettext', 'sources/url_for', 'sources/pgadmin',
+  'pgadmin.browser', 'pgadmin.browser.collection',
+], function(gettext, url_for, pgAdmin, pgBrowser) {
 
   // Extend the browser's collection class for foreign server collection
   if (!pgBrowser.Nodes['coll-foreign_server']) {
@@ -56,17 +55,17 @@ define('pgadmin.node.foreign_server', [
           name: 'create_foreign_server_on_coll', node: 'coll-foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_foreign_server', node: 'foreign_server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+          data: {action: 'create'},
         },{
           name: 'create_foreign_server', node: 'foreign_data_wrapper', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Foreign Server...'),
-          icon: 'wcTabIcon icon-foreign_server', data: {action: 'create'},
+          data: {action: 'create'},
         },
         ]);
       },
@@ -82,45 +81,6 @@ define('pgadmin.node.foreign_server', [
           }
         );
       },
-
-      // Defining model for foreign server node
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-
-        // Default values!
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-
-          if (isNew) {
-            var userInfo = pgBrowser.serverInfo[args.node_info.server._id].user;
-
-            this.set({'fsrvowner': userInfo.name}, {silent: true});
-          }
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-        },
-
-        // Defining schema for the foreign server node
-        schema: [
-          {
-            id: 'name', label: gettext('Name'), cell: 'string',
-            type: 'text', disabled: function() {
-              return (
-                this.mode == 'edit' && this.node_info.server.version < 90200
-              );
-            },
-          }, {
-            id: 'oid', label: gettext('OID'), cell: 'string',
-            type: 'text', mode: ['properties'],
-          }, {
-            id: 'fsrvowner', label: gettext('Owner'), type: 'text',
-            control: Backform.NodeListByNameControl, node: 'role',
-            mode: ['edit', 'create', 'properties'], select2: { allowClear: false },
-          }, {
-            id: 'description', label: gettext('Comment'), cell: 'string',
-            type: 'multiline',
-          },
-        ],
-      }),
     });
 
   }

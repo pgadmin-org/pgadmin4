@@ -2,21 +2,21 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements User Mapping Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from pgadmin.browser.server_groups.servers.utils import \
     validate_options, tokenize_options
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
@@ -25,6 +25,7 @@ from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.utils.constants import PGADMIN_STRING_SEPARATOR
 
 
 class UserMappingModule(CollectionNodeModule):
@@ -68,7 +69,7 @@ class UserMappingModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(UserMappingModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, fid, fsid):
         """
@@ -224,11 +225,6 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -387,7 +383,8 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(self.not_found_error_msg())
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         if res['rows'][0]['umoptions'] is not None:
             res['rows'][0]['umoptions'] = tokenize_options(
@@ -415,7 +412,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -492,7 +489,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             sql, name = self.get_sql(data=data, fsid=fsid, umid=umid)
@@ -533,7 +530,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if umid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [umid]}
 
@@ -547,7 +544,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         try:
             sql = render_template("/".join([self.template_path,
-                                            'properties.sql']),
+                                            self._PROPERTIES_SQL]),
                                   umid=umid, conn=self.conn)
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -655,7 +652,7 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:
@@ -904,7 +901,8 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
         res = dict()
 
         sql = render_template("/".join([self.template_path,
-                                        'properties.sql']))
+                                        self._PROPERTIES_SQL]),
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -916,7 +914,14 @@ class UserMappingView(PGChildNodeView, SchemaDiffObjectCompare):
                 # the empty list.
                 if 'umoptions' in data and data['umoptions'] is None:
                     data['umoptions'] = []
-                res[row['name']] = data
+
+                mapping_name = row['name']
+                if 'srvname' in data:
+                    mapping_name = \
+                        row['name'] + PGADMIN_STRING_SEPARATOR + \
+                        data['srvname']
+
+                res[mapping_name] = data
 
         return res
 

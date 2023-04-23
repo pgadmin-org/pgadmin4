@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,9 +11,9 @@
 import math
 from functools import wraps
 from flask import render_template, url_for, Response, g, request
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required
-import simplejson as json
+import json
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_response as ajax_response,\
     internal_server_error
@@ -21,7 +21,8 @@ from pgadmin.utils.ajax import precondition_required
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.menu import Panel
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS
+from pgadmin.utils.constants import PREF_LABEL_DISPLAY, MIMETYPE_APP_JS, \
+    PREF_LABEL_REFRESH_RATES
 
 from config import PG_DEFAULT_DRIVER
 
@@ -30,17 +31,10 @@ MODULE_NAME = 'dashboard'
 
 class DashboardModule(PgAdminModule):
     def __init__(self, *args, **kwargs):
-        super(DashboardModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_own_menuitems(self):
         return {}
-
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.dashboard',
-            'path': url_for('dashboard.index') + 'dashboard',
-            'when': None
-        }]
 
     def get_own_stylesheets(self):
         """
@@ -73,7 +67,7 @@ class DashboardModule(PgAdminModule):
         """
         help_string = gettext('The number of seconds between graph samples.')
 
-        # Register options for the PG and PPAS help paths
+        # Register options for Dashboards
         self.dashboard_preference = Preferences(
             'dashboards', gettext('Dashboards')
         )
@@ -81,40 +75,40 @@ class DashboardModule(PgAdminModule):
         self.session_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'session_stats_refresh',
             gettext("Session statistics refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
         self.tps_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'tps_stats_refresh',
             gettext("Transaction throughput refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
         self.ti_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'ti_stats_refresh',
             gettext("Tuples in refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
         self.to_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'to_stats_refresh',
             gettext("Tuples out refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
         self.bio_stats_refresh = self.dashboard_preference.register(
             'dashboards', 'bio_stats_refresh',
             gettext("Block I/O statistics refresh rate"), 'integer',
-            1, min_val=1, max_val=999999,
-            category_label=gettext('Graphs'),
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
             help_str=help_string
         )
 
@@ -134,23 +128,6 @@ class DashboardModule(PgAdminModule):
                              'will be displayed on dashboards.')
         )
 
-        self.graph_data_points = self.dashboard_preference.register(
-            'display', 'graph_data_points',
-            gettext("Show graph data points?"), 'boolean', False,
-            category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, data points will be '
-                             'visible on graph lines.')
-        )
-
-        self.graph_mouse_track = self.dashboard_preference.register(
-            'display', 'graph_mouse_track',
-            gettext("Show mouse hover tooltip?"), 'boolean', True,
-            category_label=PREF_LABEL_DISPLAY,
-            help_str=gettext('If set to True, tooltip will appear on mouse '
-                             'hover on the graph lines giving the data point '
-                             'details')
-        )
-
         self.long_running_query_threshold = self.dashboard_preference.register(
             'display', 'long_running_query_threshold',
             gettext('Long running query thresholds'), 'threshold',
@@ -158,6 +135,44 @@ class DashboardModule(PgAdminModule):
             help_str=gettext('Set the warning and alert threshold value to '
                              'highlight the long-running queries on the '
                              'dashboard.')
+        )
+
+        # Register options for Graphs
+        self.graphs_preference = Preferences(
+            'graphs', gettext('Graphs')
+        )
+
+        self.graph_data_points = self.graphs_preference.register(
+            'graphs', 'graph_data_points',
+            gettext("Show graph data points?"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, data points will be '
+                             'visible on graph lines.')
+        )
+
+        self.use_diff_point_style = self.graphs_preference.register(
+            'graphs', 'use_diff_point_style',
+            gettext("Use different data point styles?"), 'boolean', False,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, data points will be visible '
+                             'in a different style on each graph lines.')
+        )
+
+        self.graph_mouse_track = self.graphs_preference.register(
+            'graphs', 'graph_mouse_track',
+            gettext("Show mouse hover tooltip?"), 'boolean', True,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('If set to True, tooltip will appear on mouse '
+                             'hover on the graph lines giving the data point '
+                             'details')
+        )
+
+        self.graph_line_border_width = self.graphs_preference.register(
+            'graphs', 'graph_line_border_width',
+            gettext("Chart line width"), 'integer',
+            1, min_val=1, max_val=10,
+            category_label=PREF_LABEL_DISPLAY,
+            help_str=gettext('Set the width of the lines on the line chart.')
         )
 
     def get_exposed_url_endpoints(self):
@@ -399,8 +414,8 @@ def dashboard_stats(sid=None, did=None):
         status, res = g.conn.execute_dict(sql)
 
         for chart_row in res['rows']:
-            resp_data[chart_row['chart_name']] = \
-                json.loads(chart_row['chart_data'])
+            resp_data[chart_row['chart_name']] = json.loads(
+                chart_row['chart_data'])
 
     return ajax_response(
         response=resp_data,

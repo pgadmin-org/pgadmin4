@@ -2,26 +2,26 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
 """Implements Backup Utility"""
 
-import simplejson as json
+import json
 import os
 import functools
 import operator
 
 from flask import render_template, request, current_app, \
     url_for, Response
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, does_utility_exist, get_server
-from pgadmin.utils.ajax import make_json_response, bad_request
+    fs_short_path, document_dir, does_utility_exist, get_server, \
+    filename_with_file_manager_path
+from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
@@ -35,7 +35,7 @@ server_info = {}
 
 class BackupModule(PgAdminModule):
     """
-    class BackupModule(Object):
+    class BackupModule():
 
         It is a utility which inherits PgAdminModule
         class and define methods to load its own
@@ -43,17 +43,6 @@ class BackupModule(PgAdminModule):
     """
 
     LABEL = _('Backup')
-
-    def get_own_javascripts(self):
-        """"
-        Returns:
-            list: js files used by this module
-        """
-        return [{
-            'name': 'pgadmin.tools.backup',
-            'path': url_for('backup.index') + 'backup',
-            'when': None
-        }]
 
     def show_system_objects(self):
         """
@@ -76,7 +65,7 @@ blueprint = BackupModule(
 )
 
 
-class BACKUP(object):
+class BACKUP():
     """
     Constants defined for Backup utilities
     """
@@ -114,8 +103,11 @@ class BackupMessage(IProcessDesc):
             else:
                 self.cmd += cmd_arg(arg)
 
-    def get_server_details(self):
+    def get_server_name(self):
         s = get_server(self.sid)
+
+        if s is None:
+            return _("Not available")
 
         from pgadmin.utils.driver import get_driver
         driver = get_driver(PG_DEFAULT_DRIVER)
@@ -124,7 +116,7 @@ class BackupMessage(IProcessDesc):
         host = manager.local_bind_host if manager.use_ssh_tunnel else s.host
         port = manager.local_bind_port if manager.use_ssh_tunnel else s.port
 
-        return s.name, host, port
+        return "{0} ({1}:{2})".format(s.name, host, port)
 
     @property
     def type_desc(self):
@@ -140,77 +132,43 @@ class BackupMessage(IProcessDesc):
 
     @property
     def message(self):
-        name, host, port = self.get_server_details()
-        name = html.safe_str(name)
-        host = html.safe_str(host)
-        port = html.safe_str(port)
+        server_name = self.get_server_name()
 
         if self.backup_type == BACKUP.OBJECT:
             return _(
                 "Backing up an object on the server '{0}' "
                 "from database '{1}'"
-            ).format(self.args_str.format(name, host, port),
-                     html.safe_str(self.database)
-                     )
+            ).format(server_name, self.database)
         if self.backup_type == BACKUP.GLOBALS:
             return _("Backing up the global objects on "
                      "the server '{0}'").format(
-                self.args_str.format(
-                    name, host, port
-                )
+                server_name
             )
         elif self.backup_type == BACKUP.SERVER:
             return _("Backing up the server '{0}'").format(
-                self.args_str.format(
-                    name, host, port
-                )
+                server_name
             )
         else:
             # It should never reach here.
             return "Unknown Backup"
 
     def details(self, cmd, args):
-        name, host, port = self.get_server_details()
-
-        res = '<div>'
-
+        server_name = self.get_server_name()
+        backup_type = _("Backup")
         if self.backup_type == BACKUP.OBJECT:
-            msg = _(
-                "Backing up an object on the server '{0}' "
-                "from database '{1}'..."
-            ).format(
-                self.args_str.format(
-                    name, host, port
-                ),
-                self.database
-            )
-            res += html.safe_str(msg)
+            backup_type = _("Backup Object")
         elif self.backup_type == BACKUP.GLOBALS:
-            msg = _("Backing up the global objects on "
-                    "the server '{0}'...").format(
-                self.args_str.format(
-                    name, host, port
-                )
-            )
-            res += html.safe_str(msg)
+            backup_type = _("Backup Globals")
         elif self.backup_type == BACKUP.SERVER:
-            msg = _("Backing up the server '{0}'...").format(
-                self.args_str.format(
-                    name, host, port
-                )
-            )
-            res += html.safe_str(msg)
-        else:
-            # It should never reach here.
-            res += "Backup"
+            backup_type = _("Backup Server")
 
-        res += '</div><div class="py-1">'
-        res += _("Running command:")
-        res += '<div class="pg-bg-cmd enable-selection p-1">'
-        res += html.safe_str(cmd + self.cmd)
-        res += '</div></div>'
-
-        return res
+        return {
+            "message": self.message,
+            "cmd": cmd + self.cmd,
+            "server": server_name,
+            "object": self.database,
+            "type": backup_type,
+        }
 
 
 @blueprint.route("/")
@@ -230,40 +188,6 @@ def script():
         status=200,
         mimetype=MIMETYPE_APP_JS
     )
-
-
-def filename_with_file_manager_path(_file, create_file=True):
-    """
-    Args:
-        file: File name returned from client file manager
-        create_file: Set flag to False when file creation doesn't required
-    Returns:
-        Filename to use for backup with full path taken from preference
-    """
-    # Set file manager directory from preference
-    storage_dir = get_storage_directory()
-    if storage_dir:
-        _file = os.path.join(storage_dir, _file.lstrip('/').lstrip('\\'))
-    elif not os.path.isabs(_file):
-        _file = os.path.join(document_dir(), _file)
-
-    def short_filepath():
-        short_path = fs_short_path(_file)
-        # fs_short_path() function may return empty path on Windows
-        # if directory doesn't exists. In that case we strip the last path
-        # component and get the short path.
-        if os.name == 'nt' and short_path == '':
-            base_name = os.path.basename(_file)
-            dir_name = os.path.dirname(_file)
-            short_path = fs_short_path(dir_name) + '\\' + base_name
-        return short_path
-
-    if create_file:
-        # Touch the file to get the short path of the file on windows.
-        with open(_file, 'a'):
-            return short_filepath()
-
-    return short_filepath()
 
 
 def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
@@ -404,12 +328,14 @@ def create_backup_objects_job(sid):
         None
     """
 
-    data = json.loads(request.data, encoding='utf-8')
+    data = json.loads(request.data)
     backup_obj_type = data.get('type', 'objects')
 
     try:
         backup_file = filename_with_file_manager_path(
             data['file'], (data.get('format', '') != 'directory'))
+    except PermissionError as e:
+        return unauthorized(errormsg=str(e))
     except Exception as e:
         return bad_request(errormsg=str(e))
 
@@ -479,9 +405,10 @@ def create_backup_objects_job(sid):
         manager.export_password_env(p.id)
         # Check for connection timeout and if it is greater than 0 then
         # set the environment variable PGCONNECT_TIMEOUT.
-        if manager.connect_timeout > 0:
+        timeout = manager.get_connection_param_value('connect_timeout')
+        if timeout and int(timeout) > 0:
             env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(manager.connect_timeout)
+            env['PGCONNECT_TIMEOUT'] = str(timeout)
             p.set_env_variables(server, env=env)
         else:
             p.set_env_variables(server)
@@ -498,7 +425,7 @@ def create_backup_objects_job(sid):
 
     # Return response
     return make_json_response(
-        data={'job_id': jid, 'Success': 1}
+        data={'job_id': jid, 'desc': p.desc.message, 'Success': 1}
     )
 
 

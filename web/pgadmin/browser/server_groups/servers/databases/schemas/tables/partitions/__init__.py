@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,13 +10,13 @@
 """ Implements Partitions Node """
 
 import re
-import random
-import simplejson as json
+import secrets
+import json
 import pgadmin.browser.server_groups.servers.databases.schemas as schema
 from flask import render_template, request, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
-    import DataTypeReader, VacuumSettings
+    import DataTypeReader
 from pgadmin.utils.ajax import internal_server_error, \
     make_response as ajax_response, gone
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.utils \
@@ -83,7 +83,7 @@ class PartitionsModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(PartitionsModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 100000
         self.max_ver = None
         self.min_ppasver = 100000
@@ -116,34 +116,24 @@ class PartitionsModule(CollectionNodeModule):
         """
         return backend_supported(self, manager, **kwargs)
 
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         """
         Override the default register function to automatically register
         sub-modules of table node under partition table node.
         """
 
-        if first_registration:
-            self.submodules = list(app.find_submodules(self.import_name))
-
-        super(CollectionNodeModule, self).register(
-            app, options, first_registration
-        )
-
-        for module in self.submodules:
-            if first_registration:
-                module.parentmodules.append(self)
-            app.register_blueprint(module)
+        self.submodules = []
+        super().register(app, options)
 
         # Now add sub modules of table node to partition table node.
-        if first_registration:
-            # Exclude 'partition' module for now to avoid cyclic import issue.
-            modules_to_skip = ['partition', 'column']
-            for parent in self.parentmodules:
-                if parent.node_type == 'table':
-                    self.submodules += [
-                        submodule for submodule in parent.submodules
-                        if submodule.node_type not in modules_to_skip
-                    ]
+        # Exclude 'partition' module for now to avoid cyclic import issue.
+        modules_to_skip = ['partition', 'column']
+        for parent in self.parentmodules:
+            if parent.node_type == 'table':
+                self.submodules += [
+                    submodule for submodule in parent.submodules
+                    if submodule.node_type not in modules_to_skip
+                ]
 
     @property
     def module_use_template_javascript(self):
@@ -269,7 +259,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         SQL = render_template("/".join([self.partition_template_path,
                                         self._PROPERTIES_SQL]),
                               did=did, scid=scid, tid=tid,
-                              datlastsysoid=self.datlastsysoid)
+                              datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -298,7 +288,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         """
         SQL = render_template(
             "/".join([self.partition_template_path, self._NODES_SQL]),
-            scid=scid, tid=tid, ptid=ptid
+            scid=scid, tid=tid, ptid=ptid, did=did
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -356,10 +346,13 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
 
         status, res = self._fetch_properties(did, scid, tid, ptid)
 
+        if not status:
+            return res
+
         if len(res['rows']) == 0:
             return gone(self.not_found_error_msg())
 
-        return super(PartitionsView, self).properties(
+        return super().properties(
             gid, sid, did, scid, ptid, res=res)
 
     def _fetch_properties(self, did, scid, tid, ptid=None):
@@ -375,7 +368,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.partition_template_path,
                                             self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+                                  ptid=ptid,
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -411,19 +405,20 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.partition_template_path,
                                             self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+                                  ptid=ptid,
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             status, result = self.conn.execute_dict(SQL)
             if not status:
                 current_app.logger.error(result)
                 return False
 
-            res = super(PartitionsView, self).properties(
+            res = super().properties(
                 0, sid, did, scid, ptid, result)
 
         else:
             SQL = render_template(
                 "/".join([self.partition_template_path, self._NODES_SQL]),
-                scid=scid, tid=tid
+                scid=scid, tid=tid, schema_diff=True
             )
             status, partitions = self.conn.execute_2darray(SQL)
             if not status:
@@ -431,18 +426,18 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 return False
 
             for row in partitions['rows']:
-                SQL = render_template("/".join([self.partition_template_path,
-                                                self._PROPERTIES_SQL]),
-                                      did=did, scid=scid, tid=tid,
-                                      ptid=row['oid'],
-                                      datlastsysoid=self.datlastsysoid)
+                SQL = render_template(
+                    "/".join([self.partition_template_path,
+                              self._PROPERTIES_SQL]),
+                    did=did, scid=scid, tid=tid, ptid=row['oid'],
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
                 status, result = self.conn.execute_dict(SQL)
 
                 if not status:
                     current_app.logger.error(result)
                     return False
 
-                data = super(PartitionsView, self).properties(
+                data = super().properties(
                     0, sid, did, scid, row['oid'], result, False
                 )
                 res[row['name']] = data
@@ -466,6 +461,9 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         main_sql = []
 
         status, res = self._fetch_properties(did, scid, tid, ptid)
+
+        if not status:
+            return res
 
         if len(res['rows']) == 0:
             return gone(self.not_found_error_msg())
@@ -494,7 +492,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         # the partitioned(base) table.
         target_data['orig_name'] = target_data['name']
         target_data['name'] = 'temp_partitioned_{0}'.format(
-            random.randint(1, 9999999))
+            secrets.choice(range(1, 9999999)))
         # For PG/EPAS 11 and above when we copy the data from original
         # table to temporary table for schema diff, we will have to create
         # a default partition to prevent the data loss.
@@ -517,7 +515,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         # Create temporary name for partitions
         for item in source_data['partitions']:
             item['temp_partition_name'] = 'partition_{0}'.format(
-                random.randint(1, 9999999))
+                secrets.choice(range(1, 9999999)))
 
         partition_data['partitions'] = source_data['partitions']
 
@@ -566,7 +564,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         # Get schema oid of partition
         status, pscid = self.conn.execute_scalar(
             render_template("/".join([self.table_template_path,
-                                      self._GET_SCHEMA_OID_SQL]), tid=ptid))
+                                      self._GET_SCHEMA_OID_SQL]), tid=ptid,
+                            conn=self.conn))
         if not status:
             return internal_server_error(errormsg=scid)
 
@@ -636,12 +635,15 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
         if ptid is not None:
             status, res = self._fetch_properties(did, scid, tid, ptid)
+
+            if not status:
+                return res
 
         SQL, name = self.get_sql(did, scid, ptid, data, res)
         SQL = re.sub('\n{2,}', '\n\n', SQL)
@@ -667,7 +669,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
            ptid: Partition Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -677,14 +679,17 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
         try:
             status, res = self._fetch_properties(did, scid, tid, ptid)
 
-            return super(PartitionsView, self).update(
+            if not status:
+                return res
+
+            return super().update(
                 gid, sid, did, scid, ptid, data=data, res=res, parent_id=tid)
         except Exception as e:
             return internal_server_error(errormsg=str(e))
@@ -706,12 +711,13 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template("/".join([self.partition_template_path,
                                             self._PROPERTIES_SQL]),
                                   did=did, scid=scid, tid=tid,
-                                  ptid=ptid, datlastsysoid=self.datlastsysoid)
+                                  ptid=ptid,
+                                  datlastsysoid=self._DATABASE_LAST_SYSTEM_OID)
             status, res = self.conn.execute_dict(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
 
-            return super(PartitionsView, self).truncate(
+            return super().truncate(
                 gid, sid, did, scid, ptid, res
             )
 
@@ -733,7 +739,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         """
         if ptid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [ptid]}
@@ -744,7 +750,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                     "/".join([self.partition_template_path,
                               self._PROPERTIES_SQL]),
                     did=did, scid=scid, tid=tid, ptid=ptid,
-                    datlastsysoid=self.datlastsysoid
+                    datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
                 )
                 status, res = self.conn.execute_dict(SQL)
                 if not status:
@@ -761,7 +767,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                         )
                     )
 
-                status, res = super(PartitionsView, self).delete(
+                status, res = super().delete(
                     gid, sid, did, scid, tid, res)
 
                 if not status:
@@ -789,7 +795,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
            ptid: Partition Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Convert str 'true' to boolean type
         is_enable_trigger = data['is_enable_trigger']
@@ -798,7 +804,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             SQL = render_template(
                 "/".join([self.partition_template_path, self._PROPERTIES_SQL]),
                 did=did, scid=scid, tid=tid, ptid=ptid,
-                datlastsysoid=self.datlastsysoid
+                datlastsysoid=self._DATABASE_LAST_SYSTEM_OID
             )
             status, res = self.conn.execute_dict(SQL)
             if not status:

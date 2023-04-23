@@ -11,9 +11,9 @@ FROM pg_catalog.pg_attribute att
     LEFT OUTER JOIN pg_catalog.pg_namespace ns ON ns.oid=cs.relnamespace
     LEFT OUTER JOIN pg_catalog.pg_index pi ON pi.indrelid=att.attrelid AND indisprimary
 WHERE
-    att.attrelid = {{ tid|qtLiteral }}::oid
+    att.attrelid = {{ tid|qtLiteral(conn) }}::oid
 {% if clid %}
-    AND att.attnum = {{ clid|qtLiteral }}
+    AND att.attnum = {{ clid|qtLiteral(conn) }}
 {% endif %}
 {### To show system objects ###}
 {% if not show_sys_objects and not has_oids %}

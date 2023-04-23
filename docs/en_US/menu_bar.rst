@@ -53,20 +53,20 @@ following options (in alphabetical order):
 | *Clear SSH Tunnel Password* | If you have saved the ssh tunnel password, click to clear the saved password.                                            |
 |                             | Enable only when password is already saved.                                                                              |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Connect Server...*         | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
+| *Connect Server*            | Click to open the :ref:`Connect to Server <connect_to_server>` dialog to establish a connection with a server.           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
 |                             | Your selection opens a *Create* dialog for creating a new object.                                                        |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Delete/Drop*               | Click to delete the currently selected object from the server.                                                           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Disconnect Server...*      | Click to disconnect the currently selected server.                                                                       |
+| *Disconnect from server*    | Click to disconnect from the currently selected server.                                                                  |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Drop Cascade*              | Click to delete the currently selected object and all dependent objects from the server.                                 |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Properties...*             | Click to review or modify the currently selected object's properties.                                                    |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Refresh...*                | Click to refresh the currently selected object.                                                                          |
+| *Refresh*                   | Click to refresh the currently selected object.                                                                          |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Remove Server*             | Click to remove the currently selected server.                                                                           |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
@@ -80,8 +80,11 @@ following options (in alphabetical order):
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *View Data*                 | Click to access a context menu that provides several options for viewing data (see below).                               |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Generate ERD*              | Click to open the ERD tool with automatically generated diagram for the database selected.                               |
+| *ERD For Database*          | Click to open the ERD tool with automatically generated diagram for the database selected.                               |
 |                             | This option is available only when a database is selected. Options are displayed on the flyout menu.                     |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *ERD For Table*             | Click to open the ERD tool with automatically generated diagram for the table selected.                                  |
+|                             | This option is available only when a table is selected. Options are displayed on the flyout menu.                        |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 
 The Tools Menu
@@ -96,40 +99,40 @@ Use the *Tools* menu to access the following options (in alphabetical order):
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | Option                    | Action                                                                                                                                    |
 +===========================+===========================================================================================================================================+
-| *Add named restore point* | Click to open the :ref:`Add named restore point... <add_restore_point_dialog>` dialog to take a point-in-time snapshot of the current     |
-|                           | server state.                                                                                                                             |
+| *ERD Tool*                | Click to open the :ref:`ERD Tool <erd_tool>` and start designing your database.                                                           |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Backup...*               | Click to open the :ref:`Backup... <backup_dialog>` dialog to backup database objects.                                                     |
+| *Grant Wizard...*         | Click to access the :ref:`Grant Wizard <grant_wizard>` tool.                                                                              |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *PSQL Tool*               | Click to open the :ref:`PSQL Tool <psql_tool>` and start PSQL in the current database context.                                            |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Query tool*              | Click to open the :ref:`Query tool <query_tool>` for the currently selected object.                                                       |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Schema Diff*             | Click to open the :ref:`Schema Diff <schema_diff_feature>` and start comparing two database or two schema.                                |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Backup Globals...*       | Click to open the :ref:`Backup Globals... <backup_globals_dialog>` dialog to backup cluster objects.                                      |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Backup Server...*        | Click to open the :ref:`Backup Server... <backup_server_dialog>` dialog to backup a server.                                               |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Grant Wizard...*         | Click to access the :ref:`Grant Wizard <grant_wizard>` tool.                                                                              |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Import/Export...*        | Click to open the :ref:`Import/Export data... <import_export_data>` dialog to import or export data from a table.                         |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Maintenance...*          | Click to open the :ref:`Maintenance... <maintenance_dialog>` dialog to VACUUM, ANALYZE, REINDEX, or CLUSTER.                              |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Pause replay of WAL*     | Click to pause the replay of the WAL log.                                                                                                 |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Query tool*              | Click to open the :ref:`Query tool <query_tool>` for the currently selected object.                                                       |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Reload Configuration...* | Click to update configuration files without restarting the server.                                                                        |
+| *Backup...*               | Click to open the :ref:`Backup... <backup_dialog>` dialog to backup database objects.                                                     |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Restore...*              | Click to access the :ref:`Restore <restore_dialog>` dialog to restore database files from a backup.                                       |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Resume replay of WAL*    | Click to resume the replay of the WAL log.                                                                                                |
+| *Import/Export Data...*   | Click to open the :ref:`Import/Export data... <import_export_data>` dialog to import or export data from a table.                         |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Storage Manager*         | Click to open the :ref:`Storage Manager <storage_manager>` to upload, delete, or download the backup files.                               |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *New ERD Project*         | Click to open the :ref:`ERD Tool <erd_tool>` and start designing your database.                                                           |
-+---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *Schema Diff*             | Click to open the :ref:`Schema Diff <schema_diff_feature>` and start comparing two database or two schema.                                |
+| *Maintenance...*          | Click to open the :ref:`Maintenance... <maintenance_dialog>` dialog to VACUUM, ANALYZE, REINDEX, or CLUSTER.                              |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 | *Search Objects...*       | Click to open the :ref:`Search Objects... <search_objects>` and start searching any kind of objects in a database.                        |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
-| *PSQL Tool*               | Click to open the :ref:`PSQL Tool <psql_tool>` and start PSQL in the current database context.                                            |
+| *Add named restore point* | Click to open the :ref:`Add named restore point... <add_restore_point_dialog>` dialog to take a point-in-time snapshot of the current     |
+|                           | server state.                                                                                                                             |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Pause replay of WAL*     | Click to pause the replay of the WAL log.                                                                                                 |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Resume replay of WAL*    | Click to resume the replay of the WAL log.                                                                                                |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Reload Configuration...* | Click to update configuration files without restarting the server.                                                                        |
++---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
+| *Storage Manager*         | Click to open the :ref:`Storage Manager <storage_manager>` to upload, delete, or download the backup files.                               |
 +---------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
 The Help Menu

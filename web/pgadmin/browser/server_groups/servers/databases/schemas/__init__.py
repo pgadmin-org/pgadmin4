@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,11 +10,11 @@
 import re
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers as servers
+from pgadmin.browser.server_groups import servers
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule, PGChildModule
 from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
@@ -79,7 +79,7 @@ class SchemaModule(CollectionNodeModule):
         self.min_ver = None
         self.max_ver = None
 
-        super(SchemaModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did):
         """
@@ -103,6 +103,73 @@ class SchemaModule(CollectionNodeModule):
         """
         return False
 
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .aggregates import blueprint as module
+        self.submodules.append(module)
+
+        from .catalog_objects import blueprint as module
+        self.submodules.append(module)
+
+        from .collations import blueprint as module
+        self.submodules.append(module)
+
+        from .domains import blueprint as module
+        self.submodules.append(module)
+
+        from .foreign_tables import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_configurations import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_dictionaries import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_parsers import blueprint as module
+        self.submodules.append(module)
+
+        from .fts_templates import blueprint as module
+        self.submodules.append(module)
+
+        from .functions import blueprint as module
+        self.submodules.append(module)
+
+        from .functions import trigger_function_blueprint as module
+        self.submodules.append(module)
+
+        from .functions import procedure_blueprint as module
+        self.submodules.append(module)
+
+        from .operators import blueprint as module
+        self.submodules.append(module)
+
+        from .packages import blueprint as module
+        self.submodules.append(module)
+
+        from .sequences import blueprint as module
+        self.submodules.append(module)
+
+        from .synonyms import blueprint as module
+        self.submodules.append(module)
+
+        from .tables import blueprint as module
+        self.submodules.append(module)
+
+        from .types import blueprint as module
+        self.submodules.append(module)
+
+        from .views import view_blueprint as module
+        self.submodules.append(module)
+
+        from .views import mview_blueprint as module
+        self.submodules.append(module)
+
+        super().register(app, options)
+
 
 class CatalogModule(SchemaModule):
     """
@@ -113,6 +180,13 @@ class CatalogModule(SchemaModule):
 
     _NODE_TYPE = 'catalog'
     _COLLECTION_LABEL = gettext("Catalogs")
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        super().register(app, options)
 
 
 schema_blueprint = SchemaModule(__name__)
@@ -140,11 +214,6 @@ def check_precondition(f):
             return gone(errormsg=gettext("Could not find the server."))
 
         self.conn = self.manager.connection(did=kwargs['did'])
-        self.datlastsysoid = \
-            self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-            if self.manager.db_info is not None and \
-            kwargs['did'] in self.manager.db_info else 0
-
         self.datistemplate = False
         if (
             self.manager.db_info is not None and
@@ -248,7 +317,7 @@ class SchemaView(PGChildNodeView):
         Initialize the variables used by methods of SchemaView.
         """
 
-        super(SchemaView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.manager = None
         self.conn = None
@@ -275,7 +344,7 @@ class SchemaView(PGChildNodeView):
             acls = render_template(
                 "/".join([self.template_path, 'allowed_privs.json'])
             )
-            acls = json.loads(acls, encoding='utf-8')
+            acls = json.loads(acls)
         except Exception as e:
             current_app.logger.exception(e)
 
@@ -343,7 +412,8 @@ class SchemaView(PGChildNodeView):
         SQL = render_template(
             "/".join([self.template_path, 'sql/acl.sql']),
             _=gettext,
-            scid=scid
+            scid=scid,
+            conn=self.conn
         )
         status, acl = self.conn.execute_dict(SQL)
         if not status:
@@ -449,7 +519,8 @@ class SchemaView(PGChildNodeView):
             show_sysobj=show_system_objects,
             _=gettext,
             scid=scid,
-            schema_restrictions=param
+            schema_restrictions=param,
+            conn=self.conn
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -509,7 +580,8 @@ class SchemaView(PGChildNodeView):
             "/".join([self.template_path, self._SQL_PREFIX + self._NODES_SQL]),
             show_sysobj=self.blueprint.show_system_objects,
             _=gettext,
-            scid=scid
+            scid=scid,
+            conn=self.conn
         )
 
         status, rset = self.conn.execute_2darray(SQL)
@@ -571,7 +643,8 @@ It may have been removed by another user.
         # Making copy of output for future use
         copy_data = dict(res['rows'][0])
         copy_data['is_sys_obj'] = (
-            copy_data['oid'] <= self.datlastsysoid or self.datistemplate)
+            copy_data['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         copy_data = self._formatter(copy_data, scid)
 
         return ajax_response(
@@ -590,8 +663,19 @@ It may have been removed by another user.
            did: Database ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
+
+        for k, v in data.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('comment',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v, encoding='utf-8')
+            except (ValueError, TypeError, KeyError):
+                data[k] = v
 
         required_args = {
             'name': 'Name'
@@ -625,7 +709,7 @@ It may have been removed by another user.
             # below sql will gives the same
             SQL = render_template(
                 "/".join([self.template_path, 'sql/oid.sql']),
-                schema=data['name'], _=gettext
+                schema=data['name'], _=gettext, conn=self.conn
             )
 
             status, scid = self.conn.execute_scalar(SQL)
@@ -656,7 +740,7 @@ It may have been removed by another user.
            scid: Schema ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         try:
             SQL, name = self.get_sql(gid, sid, data, scid)
@@ -691,7 +775,7 @@ It may have been removed by another user.
 
         if scid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [scid]}
@@ -762,7 +846,7 @@ It may have been removed by another user.
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -921,7 +1005,7 @@ It may have been removed by another user.
 
         SQL = render_template(
             "/".join([self.template_path, 'sql/is_catalog.sql']),
-            scid=kwargs['scid'], _=gettext
+            scid=kwargs['scid'], _=gettext, conn=self.conn
         )
 
         status, res = self.conn.execute_dict(SQL)
@@ -986,7 +1070,7 @@ class CatalogView(SchemaView):
         Initialize the variables used by methods of SchemaView.
         """
 
-        super(CatalogView, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.template_initial = 'catalog'
 
@@ -1008,7 +1092,7 @@ class CatalogView(SchemaView):
         if scid is None:
             return bad_request('Cannot create a catalog schema!')
 
-        return super(CatalogView, self).get_sql(gid, sid, data, scid)
+        return super().get_sql(gid, sid, data, scid)
 
     @check_precondition
     def sql(self, gid, sid, did, scid):

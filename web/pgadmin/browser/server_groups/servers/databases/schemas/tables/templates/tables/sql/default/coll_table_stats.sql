@@ -19,11 +19,11 @@ SELECT
         + COALESCE((SELECT SUM(pg_catalog.pg_relation_size(indexrelid))
                         FROM pg_catalog.pg_index WHERE indrelid=cl.reltoastrelid)::int8, 0) END
         + COALESCE((SELECT SUM(pg_catalog.pg_relation_size(indexrelid))
-                        FROM pg_catalog.pg_index WHERE indrelid=st.relid)::int8, 0) AS {{ conn|qtIdent(_('Size')) }}
+                        FROM pg_catalog.pg_index WHERE indrelid=st.relid)::int8, 0) AS {{ conn|qtIdent(_('Total Size')) }}
 FROM
     pg_catalog.pg_stat_all_tables st
 JOIN
-    pg_catalog.pg_class cl on cl.oid=st.relid
+    pg_catalog.pg_class cl on cl.oid=st.relid and cl.relkind IN ('r','s','t','p')
 WHERE
-    schemaname = {{schema_name|qtLiteral}}
+    schemaname = {{schema_name|qtLiteral(conn)}}
 ORDER BY st.relname;

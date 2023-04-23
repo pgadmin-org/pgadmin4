@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -14,7 +14,8 @@ Revises: ef590e979b0d
 Create Date: 2017-11-14 19:09:04.674575
 
 """
-from pgadmin.model import db
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '02b9dccdcfcb'
@@ -24,12 +25,8 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN bgcolor TEXT(10)'
-    )
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN fgcolor TEXT(10)'
-    )
+    op.add_column('server', sa.Column('bgcolor', sa.String(length=10)))
+    op.add_column('server', sa.Column('fgcolor', sa.String(length=10)))
 
 
 def downgrade():

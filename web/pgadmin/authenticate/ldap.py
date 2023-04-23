@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,11 +12,11 @@
 import ssl
 import config
 from ldap3 import Connection, Server, Tls, ALL, ALL_ATTRIBUTES, ANONYMOUS,\
-    SIMPLE
+    SIMPLE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError,\
     LDAPInvalidScopeError, LDAPAttributeError, LDAPInvalidFilterError,\
     LDAPStartTLSError, LDAPSSLConfigurationError
-from flask_babelex import gettext
+from flask_babel import gettext
 from urllib.parse import urlparse
 
 from .internal import BaseAuthentication
@@ -24,10 +24,14 @@ from pgadmin.model import User, ServerGroup, db, Role
 from flask import current_app
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import LDAP
-
+from sqlalchemy import func
+from flask_security import login_user
 
 ERROR_SEARCHING_LDAP_DIRECTORY = gettext(
     "Error searching the LDAP directory: {}")
+
+ERROR_CONNECTING_LDAP_SERVER = gettext(
+    "Error connecting to the LDAP server: {}\n")
 
 
 class LDAPAuthentication(BaseAuthentication):
@@ -61,10 +65,13 @@ class LDAPAuthentication(BaseAuthentication):
         # username and password
         if not self.bind_user and not self.bind_pass and\
                 self.anonymous_bind is False:
-            user_dn = "{0}={1},{2}".format(config.LDAP_USERNAME_ATTRIBUTE,
-                                           self.username,
-                                           config.LDAP_BASE_DN
-                                           )
+
+            user_dn = config.LDAP_BIND_FORMAT\
+                .format(
+                    LDAP_USERNAME=self.username,
+                    LDAP_BASE_DN=config.LDAP_BASE_DN,
+                    LDAP_USERNAME_ATTRIBUTE=config.LDAP_USERNAME_ATTRIBUTE
+                )
 
             self.bind_user = user_dn
             self.bind_pass = self.password
@@ -93,7 +100,11 @@ class LDAPAuthentication(BaseAuthentication):
                 return status, msg
 
         if 'mail' in ldap_user:
-            user_email = ldap_user['mail'].value
+            mail = ldap_user['mail'].value
+            if isinstance(mail, list) and len(mail) > 0:
+                user_email = mail[0]
+            else:
+                user_email = ldap_user['mail'].value
 
         return self.__auto_create_user(user_email)
 
@@ -105,54 +116,84 @@ class LDAPAuthentication(BaseAuthentication):
         if not status:
             return status, server
 
+        auto_bind = AUTO_BIND_TLS_BEFORE_BIND if self.start_tls \
+            else AUTO_BIND_NO_TLS
+
         # Create the connection
         try:
             if self.anonymous_bind:
                 self.conn = Connection(server,
-                                       auto_bind=True,
+                                       auto_bind=auto_bind,
                                        authentication=ANONYMOUS
                                        )
             else:
                 self.conn = Connection(server,
                                        user=self.bind_user,
                                        password=self.bind_pass,
-                                       auto_bind=True,
+                                       auto_bind=auto_bind,
                                        authentication=SIMPLE
                                        )
 
         except LDAPSocketOpenError as e:
             current_app.logger.exception(
-                "Error connecting to the LDAP server: {}\n".format(e))
-            return False, gettext("Error connecting to the LDAP server: {}\n"
-                                  ).format(e.args[0])
+                ERROR_CONNECTING_LDAP_SERVER.format(e))
+            return False, ERROR_CONNECTING_LDAP_SERVER.format(e.args[0])
         except LDAPBindError as e:
             current_app.logger.exception(
                 "Error binding to the LDAP server.")
-            return False, gettext("Error binding to the LDAP server.")
+            return False, gettext("Error binding to the LDAP server: {}\n".
+                                  format(e.args[0]))
+        except LDAPStartTLSError as e:
+            current_app.logger.exception(
+                "Error starting TLS: {}\n".format(e))
+            return False, gettext("Error starting TLS: {}\n"
+                                  ).format(e.args[0])
         except Exception as e:
             current_app.logger.exception(
-                "Error connecting to the LDAP server: {}\n".format(e))
-            return False, gettext("Error connecting to the LDAP server: {}\n"
-                                  ).format(e.args[0])
+                ERROR_CONNECTING_LDAP_SERVER.format(e))
+            return False, ERROR_CONNECTING_LDAP_SERVER.format(e.args[0])
 
-        # Enable TLS if STARTTLS is configured
-        if self.start_tls:
-            try:
-                self.conn.start_tls()
-            except LDAPStartTLSError as e:
-                current_app.logger.exception(
-                    "Error starting TLS: {}\n".format(e))
-                return False, gettext("Error starting TLS: {}\n"
-                                      ).format(e.args[0])
+        return True, None
 
+    def login(self, form):
+        user = getattr(form, 'user', None)
+        if user is None:
+            if config.LDAP_DN_CASE_SENSITIVE:
+                user = User.query.filter_by(username=self.username).first()
+            else:
+                user = User.query.filter(
+                    func.lower(User.username) == func.lower(
+                        self.username)).first()
+
+        if user is None:
+            current_app.logger.exception(
+                self.messages('USER_DOES_NOT_EXIST'))
+            return False, self.messages('USER_DOES_NOT_EXIST')
+
+        # Login user through flask_security
+        status = login_user(user)
+        if not status:
+            current_app.logger.exception(self.messages('LOGIN_FAILED'))
+            return False, self.messages('LOGIN_FAILED')
+        current_app.logger.info(
+            "LDAP user {0} logged in.".format(user))
         return True, None
 
     def __auto_create_user(self, user_email):
         """Add the ldap user to the internal SQLite database."""
         if config.LDAP_AUTO_CREATE_USER:
-            user = User.query.filter_by(
-                username=self.username).first()
+            if config.LDAP_DN_CASE_SENSITIVE:
+                user = User.query.filter_by(username=self.username).first()
+            else:
+                user = User.query.filter(
+                    func.lower(User.username) == func.lower(
+                        self.username)).first()
+
             if user is None:
+                create_msg = ("Creating user {0} with email {1} "
+                              "from auth source LDAP.")
+                current_app.logger.info(create_msg.format(self.username,
+                                                          user_email))
                 return create_user({
                     'username': self.username,
                     'email': user_email,

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,11 +11,11 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, current_app, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
@@ -58,7 +58,7 @@ class FtsConfigurationModule(SchemaChildModule):
         self.min_ver = None
         self.max_ver = None
         self.manager = None
-        super(FtsConfigurationModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -210,7 +210,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(FtsConfigurationView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -226,11 +226,6 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -262,7 +257,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid
+            scid=scid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -378,7 +373,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            cfgid=cfgid
+            cfgid=cfgid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -393,7 +389,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         # In edit mode fetch token/dictionary list also
         sql = render_template(
@@ -427,7 +424,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -479,7 +476,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
-            scid=data['schema']
+            scid=data['schema'],
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
         if not status:
@@ -507,8 +505,14 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         :param cfgid: fts Configuration id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
+
+        if cfgid == 0 or cfgid is None:
+            return gone(
+                _("Could not find the FTS Configuration node to update.")
+            )
+
         # Fetch sql query to update fts Configuration
         sql, name = self.get_sql(gid, sid, did, scid, data, cfgid)
         # Most probably this is due to error
@@ -557,7 +561,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if cfgid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [cfgid]}
@@ -575,8 +579,9 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 status, res = self.conn.execute_dict(sql)
                 if not status:
                     return internal_server_error(errormsg=res)
-                elif not res['rows']:
+                elif not res['rows'] or len(res['rows']) == 0:
                     return make_json_response(
+                        status=410,
                         success=0,
                         errormsg=_(
                             'Error: Object not found.'
@@ -631,7 +636,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -698,7 +703,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 cfgid=cfgid,
-                scid=scid
+                scid=scid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -741,7 +747,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=new_data, o_data=old_data
+                data=new_data, o_data=old_data, conn=self.conn
             )
             # Fetch sql query for modified data
             if 'name' in data:
@@ -782,7 +788,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=rset)
 
-        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
+        datlastsysoid = self._DATABASE_LAST_SYSTEM_OID
 
         # Empty set is added before actual list as initially it will be visible
         # at parser control while creating a new FTS Configuration
@@ -817,7 +823,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=rset)
 
-        datlastsysoid = self.manager.db_info[did]['datlastsysoid']
+        datlastsysoid = self._DATABASE_LAST_SYSTEM_OID
 
         # Empty set is added before actual list as initially it will be visible
         # at copy_config control while creating a new FTS Configuration
@@ -943,7 +949,7 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                 data = {'schema': scid}
                 # Fetch schema name from schema oid
                 sql = render_template("/".join([self.template_path,
-                                                'schema.sql']),
+                                                self._SCHEMA_SQL]),
                                       data=data,
                                       conn=self.conn,
                                       )
@@ -1014,7 +1020,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODES_SQL]), scid=scid)
+                                        self._NODES_SQL]), scid=scid,
+                              schema_diff=True)
         status, fts_cfg = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

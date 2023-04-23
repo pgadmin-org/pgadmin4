@@ -2,16 +2,17 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 from flask import current_app, render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import DATABASE_LAST_SYSTEM_OID
 
 
 def get_node_blueprint(node_type):
@@ -44,7 +45,7 @@ class SearchObjectsHelper:
             'fts_configuration', 'extension', 'language',
             'event_trigger', 'foreign_server', 'user_mapping',
             'foreign_data_wrapper', 'row_security_policy',
-            'publication', 'subscription'
+            'publication', 'subscription', 'aggregate', 'operator'
         ] if node_types is None else node_types
 
     @property
@@ -111,9 +112,7 @@ class SearchObjectsHelper:
     def search(self, text, obj_type=None):
         skip_obj_type = []
         conn = self.manager.connection(did=self.did)
-        last_system_oid = (self.manager.db_info[self.did])['datlastsysoid'] \
-            if self.manager.db_info is not None and self.did in \
-            self.manager.db_info else 0
+        last_system_oid = DATABASE_LAST_SYSTEM_OID
 
         show_node_prefs = self.get_show_node_prefs()
         node_labels = self.get_supported_types(skip_check=True)

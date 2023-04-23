@@ -1,5 +1,12 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: 7fedf8531802
 Revises: aff1436e3c8c
@@ -8,7 +15,6 @@ Create Date: 2020-02-26 11:24:54.353288
 """
 from alembic import op
 import sqlalchemy as sa
-from pgadmin.model import db
 
 # revision identifiers, used by Alembic.
 revision = '7fedf8531802'
@@ -18,33 +24,25 @@ depends_on = None
 
 
 def upgrade():
+    op.add_column('user', sa.Column('username', sa.String(length=256),
+                                    nullable=False, server_default=''))
+    op.add_column('user', sa.Column('auth_source', sa.String(length=256),
+                                    nullable=False, server_default='internal'))
+    with op.batch_alter_table("user") as batch_op:
+        batch_op.alter_column('email', nullable=True)
+        batch_op.drop_constraint('user_unique_constraint')
+        batch_op.create_unique_constraint('user_unique_constraint',
+                                          ['username', 'auth_source'])
 
-    db.engine.execute("ALTER TABLE user RENAME TO user_old")
+    # For internal email is a user name, so update the existing records.
+    meta = sa.MetaData()
+    # define table representation
+    meta.reflect(op.get_bind(), only=('user',))
+    user_table = sa.Table('user', meta)
 
-    db.engine.execute("""
-        CREATE TABLE user (
-            id INTEGER NOT NULL,
-            username VARCHAR(256) NOT NULL,
-            email VARCHAR(256),
-            password VARCHAR(256),
-            active BOOLEAN NOT NULL,
-            confirmed_at DATETIME,
-            masterpass_check VARCHAR(256),
-            auth_source VARCHAR(256) NOT NULL DEFAULT 'internal',
-            PRIMARY KEY (id),
-            UNIQUE (username, auth_source),
-            CHECK (active IN (0, 1))
-        );
-        """)
-
-    db.engine.execute("""
-        INSERT INTO user (
-            id, username, email, password, active, confirmed_at, masterpass_check
-        ) SELECT
-            id, email, email, password, active, confirmed_at, masterpass_check
-        FROM user_old""")
-
-    db.engine.execute("DROP TABLE user_old")
+    op.execute(
+        user_table.update().values(username=user_table.c.email)
+    )
 
 
 def downgrade():

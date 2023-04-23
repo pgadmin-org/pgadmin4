@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,12 +12,12 @@ define(
   ['sources/gettext', 'sources/pgadmin'],
   function(gettext, pgAdmin) {
 
-  var pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
+  let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   if (pgBrowser.messages)
     return pgBrowser.messages;
 
-  var messages = pgBrowser.messages = {
+  let messages = pgBrowser.messages = {
     'SERVER_LOST': gettext('Connection to the server has been lost.'),
     'CLICK_FOR_DETAILED_MSG': gettext('Click here for details.'),
     'GENERAL_CATEGORY': gettext('General'),

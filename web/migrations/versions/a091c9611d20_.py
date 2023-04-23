@@ -1,13 +1,20 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: a091c9611d20
 Revises: 84700139beb0
 Create Date: 2020-07-14 17:20:22.705737
 
 """
-from pgadmin.model import db
-
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'a091c9611d20'
@@ -17,55 +24,54 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN shared BOOLEAN'
-    )
+    op.add_column('server', sa.Column('shared', sa.Boolean()))
+    op.create_table(
+        'sharedserver',
+        sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
+        sa.Column('user_id', sa.Integer(), nullable=False),
+        sa.Column('server_owner', sa.String(length=64)),
+        sa.Column('servergroup_id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=128), nullable=False),
+        sa.Column('host', sa.String(length=128)),
+        sa.Column('port', sa.Integer(), nullable=False),
+        sa.Column('maintenance_db', sa.String(length=64)),
+        sa.Column('username', sa.String(length=64)),
+        sa.Column('password', sa.String()),
+        sa.Column('role', sa.String(length=64)),
+        sa.Column('ssl_mode', sa.String(length=16), nullable=False),
+        sa.Column('comment', sa.String(length=1024)),
+        sa.Column('discovery_id', sa.String(length=128)),
+        sa.Column('hostaddr', sa.String(length=1024)),
+        sa.Column('db_res', sa.String()),
+        sa.Column('passfile', sa.String()),
+        sa.Column('sslcert', sa.String()),
+        sa.Column('sslkey', sa.String()),
+        sa.Column('sslrootcert', sa.String()),
+        sa.Column('sslcrl', sa.String()),
+        sa.Column('sslcompression', sa.Integer(), server_default='0'),
+        sa.Column('bgcolor', sa.String(length=10)),
+        sa.Column('fgcolor', sa.String(length=10)),
+        sa.Column('service', sa.String()),
+        sa.Column('use_ssh_tunnel', sa.Integer(), server_default='0'),
+        sa.Column('tunnel_host', sa.String()),
+        sa.Column('tunnel_port', sa.String()),
+        sa.Column('tunnel_username', sa.String()),
+        sa.Column('tunnel_authentication', sa.Integer(), server_default='0'),
+        sa.Column('tunnel_identity_file', sa.String()),
+        sa.Column('shared', sa.Boolean(), nullable=False),
+        sa.Column('save_password', sa.Integer(), server_default='0'),
+        sa.Column('tunnel_password', sa.String()),
+        sa.Column('connect_timeout', sa.Integer()),
+        sa.CheckConstraint("ssl_mode IN ('allow', 'prefer', 'require', \
+            'disable', 'verify-ca', 'verify-full')"),
+        sa.ForeignKeyConstraint(['servergroup_id'], ['servergroup.id'], ),
+        sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
+        sa.PrimaryKeyConstraint('id'))
 
-    db.engine.execute("""
-            CREATE TABLE sharedserver (
-            id	INTEGER NOT NULL,
-            user_id	INTEGER NOT NULL,
-            server_owner VARCHAR(64),
-            servergroup_id	INTEGER NOT NULL,
-            name	VARCHAR(128) NOT NULL,
-            host	VARCHAR(128),
-            port	INTEGER NOT NULL CHECK(port >= 1 AND port <= 65534),
-            maintenance_db	VARCHAR(64),
-            username	VARCHAR(64),
-            password	VARCHAR(64),
-            role	VARCHAR(64),
-            ssl_mode	VARCHAR(16) NOT NULL CHECK(ssl_mode IN
-                ( 'allow' , 'prefer' , 'require' , 'disable' ,
-                  'verify-ca' , 'verify-full' )
-            ),
-            comment	VARCHAR(1024),
-            discovery_id	VARCHAR(128),
-            hostaddr	TEXT(1024),
-            db_res	TEXT,
-            passfile	TEXT,
-            sslcert	TEXT,
-            sslkey	TEXT,
-            sslrootcert	TEXT,
-            sslcrl	TEXT,
-            sslcompression	INTEGER DEFAULT 0,
-            bgcolor TEXT(10),
-            fgcolor TEXT(10),
-            service TEXT,
-            use_ssh_tunnel INTEGER DEFAULT 0,
-            tunnel_host TEXT,
-            tunnel_port TEXT,
-            tunnel_username TEXT,
-            tunnel_authentication INTEGER DEFAULT 0,
-            tunnel_identity_file TEXT,
-            shared BOOLEAN NOT NULL,
-            save_password BOOLEAN NOT NULL,
-            tunnel_password VARCHAR(64),
-            connect_timeout INTEGER ,
-            PRIMARY KEY(id),
-            FOREIGN KEY(user_id) REFERENCES user(id),
-            FOREIGN KEY(servergroup_id) REFERENCES servergroup(id)
-        );
-    """)
+    # Named constraint
+    with op.batch_alter_table("sharedserver") as batch_op:
+        batch_op.create_check_constraint('ck_shared_server_port',
+                                         'port >= 1024 AND port <= 65535')
 
 
 def downgrade():

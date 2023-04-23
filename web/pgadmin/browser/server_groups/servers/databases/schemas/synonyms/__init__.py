@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """ Implements Synonym Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -61,7 +61,7 @@ class SynonymModule(SchemaChildModule):
             **kwargs:
         """
 
-        super(SynonymModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90100
         self.max_ver = None
         self.server_type = ['ppas']
@@ -206,10 +206,6 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                     )
                 )
 
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -348,7 +344,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -369,7 +365,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template("/".join([self.template_path,
                                             'get_objects.sql']),
                                   trgTyp=data['trgTyp'],
-                                  trgSchema=data['trgSchema'])
+                                  trgSchema=data['trgSchema'],
+                                  conn=self.conn)
             status, rset = self.conn.execute_dict(sql)
 
             if not status:
@@ -428,7 +425,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
                 return False, gone(self.not_found_error_msg())
 
             res['rows'][0]['is_sys_obj'] = (
-                res['rows'][0]['oid'] <= self.datlastsysoid or
+                res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
                 self.datistemplate)
             return True, res['rows'][0]
         except Exception as e:
@@ -447,7 +444,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         required_args = [
@@ -510,7 +507,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if syid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [syid]}
@@ -565,7 +562,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
            syid: Synonym ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         SQL, name = self.get_sql(gid, sid, data, scid, syid)
         # Most probably this is due to error
@@ -604,7 +601,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
         data = dict()
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -655,7 +652,7 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
 
             for arg in required_args:
                 if arg not in data:
-                    return "-- missing definition"
+                    return gettext("-- missing definition")
 
             name = data['name']
             SQL = render_template("/".join([self.template_path,
@@ -758,7 +755,8 @@ class SynonymView(PGChildNodeView, SchemaDiffObjectCompare):
             return res
 
         SQL = render_template("/".join([self.template_path,
-                                        self._PROPERTIES_SQL]), scid=scid)
+                                        self._PROPERTIES_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

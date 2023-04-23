@@ -2,12 +2,12 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import { PortModel } from '@projectstorm/react-diagrams-core';
+import { PortModel, PortModelAlignment } from '@projectstorm/react-diagrams-core';
 import {OneToManyLinkModel} from '../links/OneToManyLink';
 import { AbstractModelFactory } from '@projectstorm/react-canvas-core';
 
@@ -16,7 +16,6 @@ const TYPE = 'onetomany';
 export default class OneToManyPortModel extends PortModel {
   constructor({options}) {
     super({
-      subtype: 'notset',
       ...options,
       type: TYPE,
     });
@@ -32,20 +31,23 @@ export default class OneToManyPortModel extends PortModel {
     return new OneToManyLinkModel({});
   }
 
-  getSubtype() {
-    return this.options.subtype;
-  }
-
   deserialize(event) {
+    /* Make it backward compatible */
+    const alignment = event.data?.name?.split('-').slice(-1)[0];
+    if(event.data?.name && ![PortModelAlignment.LEFT, PortModelAlignment.RIGHT].includes(alignment)) {
+      event.data.name += '-' + PortModelAlignment.RIGHT;
+    }
     super.deserialize(event);
-    this.options.subtype = event.data.subtype || 'notset';
   }
 
   serialize() {
     return {
       ...super.serialize(),
-      subtype: this.options.subtype,
     };
+  }
+
+  getAlignment() {
+    return this.options.alignment;
   }
 }
 

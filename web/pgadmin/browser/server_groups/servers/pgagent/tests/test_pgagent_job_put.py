@@ -2,13 +2,13 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 from unittest.mock import patch
 
-import simplejson as json
+import json
 import uuid
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -22,6 +22,7 @@ class PgAgentPutTestCase(BaseTestGenerator):
                                          pgagent_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         flag, msg = pgagent_utils.is_valid_server_to_run_pgagent(self)
         if not flag:
             self.skipTest(msg)

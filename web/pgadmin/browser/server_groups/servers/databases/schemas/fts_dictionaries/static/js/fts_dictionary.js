@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,13 +11,12 @@ import { getNodeAjaxOptions, getNodeListByName, getNodeListById} from '../../../
 import FTSDictionarySchema from './fts_dictionary.ui';
 
 define('pgadmin.node.fts_dictionary', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
-  'sources/pgadmin', 'pgadmin.browser', 'pgadmin.backform',
+  'sources/gettext', 'sources/url_for',
+  'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, schemaChild,
-  schemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, schemaChild, schemaChildTreeNode
 ) {
 
   // Extend the collection class for FTS Dictionary
@@ -56,19 +55,18 @@ define('pgadmin.node.fts_dictionary', [
           name: 'create_fts_dictionary_on_schema', node: 'schema', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Dictionary...'),
-          icon: 'wcTabIcon icon-fts_dictionary', data: {action: 'create'},
-          enable: 'canCreate',
+          data: {action: 'create'}, enable: 'canCreate',
         },{
           name: 'create_fts_dictionary_on_coll', node: 'coll-fts_dictionary',
           module: this, applies: ['object', 'context'],  priority: 4,
           callback: 'show_obj_properties', category: 'create',
           label: gettext('FTS Dictionary...'), data: {action: 'create'},
-          icon: 'wcTabIcon icon-fts_dictionary', enable: 'canCreate',
+          enable: 'canCreate',
         },{
           name: 'create_fts_dictionary', node: 'fts_dictionary', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('FTS Dictionary...'),
-          icon: 'wcTabIcon icon-fts_dictionary', data: {action: 'create'},
+          data: {action: 'create'},
           enable: 'canCreate',
         }]);
       },
@@ -88,31 +86,6 @@ define('pgadmin.node.fts_dictionary', [
           }
         );
       },
-
-      // Defining backform model for FTS Dictionary node
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        initialize: function(attrs, args) {
-          var isNew = (_.size(attrs) === 0);
-          pgAdmin.Browser.Node.Model.prototype.initialize.apply(this, arguments);
-
-          if (isNew) {
-            var user = pgBrowser.serverInfo[args.node_info.server._id].user;
-            this.set({
-              'owner': user.name,
-              'schema': args.node_info.schema._id,
-            }, {silent: true});
-          }
-        },
-        // Defining schema for fts dictionary
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', cellHeaderClasses: 'width_percent_50',
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', cellHeaderClasses: 'width_percent_50',
-        }],
-      }),
     });
   }
 

@@ -2,22 +2,25 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """A blueprint module providing utility functions for the application."""
 
-import pgadmin.utils.driver as driver
-from flask import url_for, render_template, Response, request
-from flask_babelex import gettext
+from pgadmin.utils import driver
+from flask import url_for, render_template, Response, request, current_app
+from flask_babel import gettext
+from flask_security import login_required
 from pgadmin.utils import PgAdminModule, replace_binary_path
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
 from pgadmin.utils.constants import MIMETYPE_APP_JS, UTILITIES_ARRAY
 from pgadmin.utils.ajax import precondition_required, make_json_response
+from pgadmin.utils.heartbeat import log_server_heartbeat,\
+    get_server_heartbeat, stop_server_heartbeat
 import config
 import subprocess
 import os
@@ -28,22 +31,6 @@ MODULE_NAME = 'misc'
 
 class MiscModule(PgAdminModule):
     LABEL = gettext('Miscellaneous')
-
-    def get_own_javascripts(self):
-        return [
-            {
-                'name': 'pgadmin.misc.explain',
-                'path': url_for('misc.index') + 'explain/explain',
-                'preloaded': False
-            }, {
-                'name': 'snap.svg',
-                'path': url_for(
-                    'misc.static', filename='explain/vendor/snap.svg/' + (
-                        'snap.svg' if config.DEBUG else 'snap.svg-min'
-                    )),
-                'preloaded': False
-            }
-        ]
 
     def get_own_stylesheets(self):
         stylesheets = []
@@ -67,7 +54,10 @@ class MiscModule(PgAdminModule):
             'user_language', 'user_language',
             gettext("User language"), 'options', 'en',
             category_label=gettext('User language'),
-            options=lang_options
+            options=lang_options,
+            control_props={
+                'allowClear': False,
+            }
         )
 
         theme_options = []
@@ -90,8 +80,11 @@ class MiscModule(PgAdminModule):
             gettext("Theme"), 'options', 'standard',
             category_label=gettext('Themes'),
             options=theme_options,
+            control_props={
+                'allowClear': False,
+            },
             help_str=gettext(
-                'A refresh is required to apply the theme. Below is the '
+                'A refresh is required to apply the theme. Above is the '
                 'preview of the theme'
             )
         )
@@ -102,7 +95,36 @@ class MiscModule(PgAdminModule):
             list: a list of url endpoints exposed to the client.
         """
         return ['misc.ping', 'misc.index', 'misc.cleanup',
-                'misc.validate_binary_path']
+                'misc.validate_binary_path', 'misc.log_heartbeat',
+                'misc.stop_heartbeat', 'misc.get_heartbeat']
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .bgprocess import blueprint as module
+        self.submodules.append(module)
+
+        from .cloud import blueprint as module
+        self.submodules.append(module)
+
+        from .dependencies import blueprint as module
+        self.submodules.append(module)
+
+        from .dependents import blueprint as module
+        self.submodules.append(module)
+
+        from .file_manager import blueprint as module
+        self.submodules.append(module)
+
+        from .sql import blueprint as module
+        self.submodules.append(module)
+
+        from .statistics import blueprint as module
+        self.submodules.append(module)
+
+        super().register(app, options)
 
 
 # Initialise the module
@@ -135,6 +157,46 @@ def cleanup():
     # Cleanup session files.
     cleanup_session_files()
     return ""
+
+
+@blueprint.route("/heartbeat/log", methods=['POST'])
+@pgCSRFProtect.exempt
+def log_heartbeat():
+    data = None
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    status, msg = log_server_heartbeat(data)
+    if status:
+        return make_json_response(data=msg, status=200)
+    else:
+        return make_json_response(data=msg, status=404)
+
+
+@blueprint.route("/heartbeat/stop", methods=['POST'])
+@pgCSRFProtect.exempt
+def stop_heartbeat():
+    data = None
+    if hasattr(request.data, 'decode'):
+        data = request.data.decode('utf-8')
+
+    if data != '':
+        data = json.loads(data)
+
+    status, msg = stop_server_heartbeat(data)
+    return make_json_response(data=msg,
+                              status=200)
+
+
+@blueprint.route("/get_heartbeat/<int:sid>", methods=['GET'])
+@pgCSRFProtect.exempt
+def get_heartbeat(sid):
+    heartbeat_data = get_server_heartbeat(sid)
+    return make_json_response(data=heartbeat_data,
+                              status=200)
 
 
 @blueprint.route("/explain/explain.js")
@@ -177,10 +239,11 @@ def shutdown():
 @blueprint.route("/validate_binary_path",
                  endpoint="validate_binary_path",
                  methods=["POST"])
+@login_required
 def validate_binary_path():
     """
     This function is used to validate the specified utilities path by
-    running the utilities with there versions.
+    running the utilities with their versions.
     """
     data = None
     if hasattr(request.data, 'decode'):
@@ -201,6 +264,10 @@ def validate_binary_path():
                               (utility + '.exe'))))
 
             try:
+                # if path doesn't exist raise exception
+                if not os.path.exists(binary_path):
+                    current_app.logger.warning('Invalid binary path.')
+                    raise Exception()
                 # Get the output of the '--version' command
                 version_string = \
                     subprocess.getoutput('"{0}" --version'.format(full_path))

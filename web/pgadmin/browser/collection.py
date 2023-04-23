@@ -2,16 +2,15 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 from abc import ABCMeta, abstractmethod
 
-import six
-from flask import url_for, render_template
-from flask_babelex import gettext
+from flask import render_template
+from flask_babel import gettext
 from pgadmin.browser import BrowserPluginModule
 from pgadmin.browser.utils import PGChildModule
 from pgadmin.utils import PgAdminModule
@@ -19,8 +18,7 @@ from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PGADMIN_NODE
 
 
-@six.add_metaclass(ABCMeta)
-class CollectionNodeModule(PgAdminModule, PGChildModule):
+class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
     """
     Base class for collection node submodules.
     """
@@ -58,33 +56,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         module.
         """
         return True
-
-    def get_own_javascripts(self):
-        scripts = []
-
-        if self.module_use_template_javascript:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for('browser.index'
-                                ) + '%s/module' % self.node_type,
-                'when': self.script_load,
-                'is_template': True
-            }])
-        else:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for(
-                    '%s.static' % self.name,
-                    filename=('js/%s' % self.node_type)
-                ),
-                'when': self.script_load,
-                'is_template': False
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
 
     def generate_browser_node(
             self, node_id, parent_id, label, icon, **kwargs
@@ -236,6 +207,16 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         else:
             return False
 
+    @property
+    def show_database_template(self):
+        """
+        Show/Hide the user defined template in the database server.
+        """
+        if self.pref_show_user_defined_templates:
+            return self.pref_show_user_defined_templates.get()
+        else:
+            return False
+
     def register_preferences(self):
         """
         register_preferences
@@ -251,6 +232,8 @@ class CollectionNodeModule(PgAdminModule, PGChildModule):
         self.pref_show_system_objects = self.browser_preference.preference(
             'show_system_objects'
         )
+        self.pref_show_user_defined_templates = \
+            self.browser_preference.preference('show_user_defined_templates')
         self.pref_show_node = self.browser_preference.register(
             'node', 'show_node_' + self.node_type,
             self.collection_label, 'node', self.SHOW_ON_BROWSER,

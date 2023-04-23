@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,8 +13,8 @@ import url_for from 'sources/url_for';
 
 const extractSearchResult = (list) => {
   let result = {};
-  for (let idx = 0; idx < list.length; idx++) {
-    let link = list[idx].getElementsByTagName('A');
+  for (let list_val of list) {
+    let link = list_val.getElementsByTagName('A');
     // we are not going to display more than first 10 result as per design
     if (link.length == 0) {
       break;
@@ -51,43 +51,47 @@ export function onlineHelpSearch(param, props) {
     let iframeHTML = content.document;
     window.pooling = setInterval(() => {
       let resultEl = iframeHTML.getElementById('search-results');
-      let searchResultsH2Tags = resultEl.getElementsByTagName('h2');
-      let list = resultEl && resultEl.getElementsByTagName('LI');
       let pooling = window.pooling;
-      if ((list && list.length > 0 )) {
-        let res = extractSearchResult(list);
-        // After getting the data, we need to call the Parent component function
-        // which will render the data on the screen
-        if (searchResultsH2Tags[0]['childNodes'][0]['textContent'] != 'Searching') {
-          window.clearInterval(pooling);
+      if(resultEl) {
+        let searchResultsH2Tags = resultEl.getElementsByTagName('h2');
+        let list = resultEl && resultEl.getElementsByTagName('LI');
+        if ((list && list.length > 0 )) {
+          let res = extractSearchResult(list);
+          // After getting the data, we need to call the Parent component function
+          // which will render the data on the screen
+          if (searchResultsH2Tags[0]['childNodes'][0]['textContent'] != 'Searching') {
+            window.clearInterval(pooling);
+            setState(state => ({
+              ...state,
+              fetched: true,
+              clearedPooling: true,
+              url: srcURL,
+              data: res,
+            }));
+            isIFrameLoaded = false;
+            ReactDOM.unmountComponentAtNode(document.getElementById('quick-search-iframe-container'));
+          } else {
+            setState(state => ({
+              ...state,
+              fetched: true,
+              clearedPooling: false,
+              url: srcURL,
+              data: res,
+            }));
+          }
+        } else if(searchResultsH2Tags[0]['childNodes'][0]['textContent'] == 'Search Results') {
           setState(state => ({
             ...state,
             fetched: true,
             clearedPooling: true,
             url: srcURL,
-            data: res,
+            data: {},
           }));
-          isIFrameLoaded = false;
           ReactDOM.unmountComponentAtNode(document.getElementById('quick-search-iframe-container'));
-        } else {
-          setState(state => ({
-            ...state,
-            fetched: true,
-            clearedPooling: false,
-            url: srcURL,
-            data: res,
-          }));
+          isIFrameLoaded = false;
+          window.clearInterval(pooling);
         }
-      } else if(searchResultsH2Tags[0]['childNodes'][0]['textContent'] == 'Search Results') {
-        setState(state => ({
-          ...state,
-          fetched: true,
-          clearedPooling: true,
-          url: srcURL,
-          data: {},
-        }));
-        ReactDOM.unmountComponentAtNode(document.getElementById('quick-search-iframe-container'));
-        isIFrameLoaded = false;
+      } else {
         window.clearInterval(pooling);
       }
     }, 500);

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -30,6 +30,7 @@ class TableGetPreTablecreationParametersTestCase(BaseTestGenerator):
         tables_utils.test_cases)
 
     def setUp(self):
+        super().setUp()
         # Load test data
         self.data = self.test_data
 
@@ -59,13 +60,6 @@ class TableGetPreTablecreationParametersTestCase(BaseTestGenerator):
         self.table_id = tables_utils.create_table(self.server, self.db_name,
                                                   self.schema_name,
                                                   self.table_name)
-        # self.table_id = tables_utils.create_table_for_partition(
-        #     self.server,
-        #     self.db_name,
-        #     self.schema_name,
-        #     self.table_name,
-        #     'partitioned',
-        #     'list')
 
     def runTest(self):
         """This function will delete added table under schema node."""

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for Foreign Keys. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ObjectGone, ExecuteError
 from functools import wraps
@@ -243,7 +243,7 @@ def get_sql(conn, data, tid, fkid=None, template_path=None):
                                                       template_path, conn)
 
         sql = render_template("/".join([template_path, 'update.sql']),
-                              data=data, o_data=old_data)
+                              data=data, o_data=old_data, conn=conn)
 
         if 'autoindex' in data and data['autoindex'] and \
                 ('coveringindex' in data and data['coveringindex'] != ''):
@@ -355,8 +355,8 @@ def _checks_for_schema_diff(table, schema, data):
 
     if 'remote_schema' not in data:
         data['remote_schema'] = None
-    elif 'schema' in data and (schema is None or schema == ''):
-        data['remote_schema'] = data['schema']
+        if 'schema' in data and (schema is None or schema == ''):
+            data['remote_schema'] = data['schema']
 
     if 'remote_table' not in data:
         data['remote_table'] = None

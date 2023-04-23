@@ -2,17 +2,18 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////////////////
 
 import gettext from 'sources/gettext';
+import Notify from '../helpers/Notifier';
 
-export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle, alertify) {
+export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle) {
   let serverInformation = null;
-  let aciTreeItem = item || pgBrowser.tree.selected();
-  let treeNode = pgBrowser.tree.findNodeByDomElement(aciTreeItem);
+  let treeItem = item || pgBrowser.tree.selected();
+  let treeNode = pgBrowser.tree.findNodeByDomElement(treeItem);
 
   if (treeNode) {
     let nodeData;
@@ -30,7 +31,7 @@ export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle, a
 
     if (databaseNode !== null) {
       if (nodeData._label.indexOf('=') >= 0) {
-        alertify.alert(
+        Notify.alert(
           gettext(errorAlertTitle),
           gettext(
             'Databases with = symbols in the name cannot be backed up or restored using this utility.'
@@ -47,19 +48,19 @@ export function retrieveAncestorOfTypeServer(pgBrowser, item, errorAlertTitle, a
   }
 
   if (serverInformation === null) {
-    alertify.alert(
+    Notify.alert(
       gettext(errorAlertTitle),
-      gettext('Please select server or child node from the browser tree.')
+      gettext('Please select server or child node from the object explorer.')
     );
   }
 
   return serverInformation;
 }
 
-export function retrieveAncestorOfTypeDatabase(pgBrowser, item, errorAlertTitle, alertify) {
+export function retrieveAncestorOfTypeDatabase(pgBrowser, item, errorAlertTitle) {
   let databaseInfo = null;
-  let aciTreeItem = item || pgBrowser.tree.selected();
-  let treeNode = pgBrowser.tree.findNodeByDomElement(aciTreeItem);
+  let treeItem = item || pgBrowser.tree.selected();
+  let treeNode = pgBrowser.tree.findNodeByDomElement(treeItem);
   if (treeNode) {
     if(treeNode.getData()._type === 'database') {
       databaseInfo = treeNode.getData();
@@ -79,7 +80,7 @@ export function retrieveAncestorOfTypeDatabase(pgBrowser, item, errorAlertTitle,
   }
 
   if (databaseInfo === null) {
-    alertify.alert(
+    Notify.alert(
       gettext(errorAlertTitle),
       gettext('Please select a database or its child node from the browser.')
     );

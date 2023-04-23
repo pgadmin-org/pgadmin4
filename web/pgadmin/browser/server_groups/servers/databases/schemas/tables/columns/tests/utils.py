@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -103,12 +103,12 @@ def create_column(server, db_name, schema_name, table_name, col_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "ALTER TABLE %s.%s ADD COLUMN %s %s" % \
                 (schema_name, table_name, col_name, col_data_type)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get column position of newly added column
         pg_cursor.execute("select attnum from pg_attribute where"
@@ -151,13 +151,13 @@ def create_identity_column(server, db_name, schema_name, table_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "ALTER TABLE %s.%s ADD COLUMN %s %s " \
                 "GENERATED ALWAYS AS IDENTITY" % \
                 (schema_name, table_name, col_name, col_data_type)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get column position of newly added column
         pg_cursor.execute("select attnum from pg_attribute where"

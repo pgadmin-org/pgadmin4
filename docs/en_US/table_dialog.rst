@@ -470,7 +470,7 @@ Use the *Partition* tab to create that partition as a partitioned table.
 * Select a partition type from the *Partition Type* selection box.
 * Use the *Partition Keys* panel to define the partition keys.
 
-View of multi level Partitioned Table in browser tree:
+View of multi level Partitioned Table in object explorer:
 
 .. image:: images/table_partition_tree.png
     :alt: Table dialog partition tree

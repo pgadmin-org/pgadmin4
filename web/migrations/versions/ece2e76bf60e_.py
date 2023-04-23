@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -15,7 +15,8 @@ Create Date: 2018-10-18 14:45:13.483068
 
 """
 
-from pgadmin.model import db
+from alembic import op
+import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'ece2e76bf60e'
@@ -25,9 +26,7 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE process ADD COLUMN utility_pid INTEGER'
-    )
+    op.add_column('process', sa.Column('utility_pid', sa.Integer()))
 
 
 def downgrade():

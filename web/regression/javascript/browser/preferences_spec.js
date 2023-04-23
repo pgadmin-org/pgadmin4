@@ -2,15 +2,15 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import {pgBrowser} from 'pgadmin.browser.preferences';
-import $ from 'jquery';
+import EventBus from '../../../pgadmin/static/js/helpers/EventBus';
 
-var dummy_cache = [
+let dummy_cache = [
   {
     id: 1,
     mid: 1,
@@ -44,6 +44,7 @@ describe('preferences related functions test', function() {
   describe('get preference data related functions', function(){
     beforeEach(function(){
       pgBrowser.preferences_cache = dummy_cache;
+      pgBrowser.Events = new EventBus();
     });
 
     it('generate_preference_version', function() {
@@ -101,62 +102,13 @@ describe('preferences related functions test', function() {
       });
     });
 
-    it('reflectPreferences', function() {
-
-      let editorOptions = {
-        'tabSize':2,
-        'lineWrapping':false,
-        'autoCloseBrackets':true,
-        'matchBrackets':true,
-      };
-      pgBrowser.preferences_cache.push({
-        id: 4, mid: 3, module:'sqleditor', name:'sql_font_size', value: 1.456,
-      });
-      pgBrowser.preferences_cache.push({
-        id: 4, mid: 3, module:'sqleditor', name:'tab_size', value: editorOptions.tabSize,
-      });
-      pgBrowser.preferences_cache.push({
-        id: 4, mid: 3, module:'sqleditor', name:'wrap_code', value: editorOptions.lineWrapping,
-      });
-      pgBrowser.preferences_cache.push({
-        id: 4, mid: 3, module:'sqleditor', name:'insert_pair_brackets', value: editorOptions.autoCloseBrackets,
-      });
-      pgBrowser.preferences_cache.push({
-        id: 4, mid: 3, module:'sqleditor', name:'brace_matching', value: editorOptions.matchBrackets,
-      });
-
-      /* Spies */
-      pgBrowser.editor = jasmine.createSpyObj(
-        'CodeMirror', ['setOption','refresh','getWrapperElement']
-      );
-      spyOn($.fn, 'css');
-
-      /* Call */
-      pgBrowser.reflectPreferences();
-
-      /* Tests */
-      expect(pgBrowser.editor.getWrapperElement).toHaveBeenCalled();
-      //expect($.fn.css).toHaveBeenCalledWith('font-size', '1.46em');
-
-      let setOptionCalls = pgBrowser.editor.setOption.calls;
-      expect(setOptionCalls.count()).toEqual(Object.keys(editorOptions).length);
-
-      for(let i = 0; i < Object.keys(editorOptions).length; i++) {
-        let option = Object.keys(editorOptions)[i];
-        expect(setOptionCalls.argsFor(i)).toEqual([option, editorOptions[option]]);
-      }
-      expect(pgBrowser.editor.refresh).toHaveBeenCalled();
-    });
-
     it('onPreferencesChange', function() {
+      spyOn(pgBrowser.Events, 'on');
 
-      window.parent.$ = $;
-      spyOn($.fn, 'on');
-
-      var eventHandler = jasmine.createSpy('eventHandler');
+      let eventHandler = jasmine.createSpy('eventHandler');
       pgBrowser.onPreferencesChange('somemodule', eventHandler);
-      if($.fn.on.calls.mostRecent()) {
-        expect($.fn.on.calls.mostRecent().args[0]).toEqual('prefchange:somemodule');
+      if(pgBrowser.Events.on.calls.mostRecent()) {
+        expect(pgBrowser.Events.on.calls.mostRecent().args[0]).toEqual('prefchange:somemodule');
       }
     });
   });

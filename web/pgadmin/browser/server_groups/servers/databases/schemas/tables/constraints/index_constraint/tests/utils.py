@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -112,12 +112,12 @@ def create_index_constraint(server, db_name, schema_name, table_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "ALTER TABLE %s.%s ADD CONSTRAINT %s %s (id)" % \
                 (schema_name, table_name, key_name, key_type)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get oid of newly added index constraint
         pg_cursor.execute("SELECT conindid FROM pg_catalog.pg_constraint "
@@ -183,12 +183,12 @@ def create_unique_index(server, db_name, schema_name, table_name,
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "CREATE UNIQUE INDEX CONCURRENTLY %s ON %s.%s (%s)" % \
                 (index_name, schema_name, table_name, column_name)
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
         connection.close()
     except Exception:

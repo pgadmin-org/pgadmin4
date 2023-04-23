@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -88,7 +88,7 @@ class FtsDictionaryDeleteTestCase(BaseTestGenerator):
             str(0),
             follow_redirects=True)
 
-        self.assertEqual(negative_delete_response.status_code, 500)
+        self.assertEqual(negative_delete_response.status_code, 410)
 
     def tearDown(self):
         """This function disconnect the test database."""

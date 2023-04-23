@@ -2,25 +2,34 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import { DefaultNodeModel, DiagramEngine, PortWidget } from '@projectstorm/react-diagrams';
+import { DefaultNodeModel, DiagramEngine, PortModelAlignment, PortWidget } from '@projectstorm/react-diagrams';
 import { AbstractReactFactory } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
-import { IconButton, DetailsToggleButton } from '../ui_components/ToolBar';
 import SchemaIcon from 'top/browser/server_groups/servers/databases/schemas/static/img/schema.svg';
 import TableIcon from 'top/browser/server_groups/servers/databases/schemas/tables/static/img/table.svg';
 import PrimaryKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/primary_key.svg';
 import ForeignKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/img/foreign_key.svg';
 import ColumnIcon from 'top/browser/server_groups/servers/databases/schemas/tables/columns/static/img/column.svg';
+import UniqueKeyIcon from 'top/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/img/unique_constraint.svg';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
+import { PgIconButton } from '../../../../../../static/js/components/Buttons';
+import NoteRoundedIcon from '@material-ui/icons/NoteRounded';
+import VisibilityRoundedIcon from '@material-ui/icons/VisibilityRounded';
+import VisibilityOffRoundedIcon from '@material-ui/icons/VisibilityOffRounded';
+import { withStyles } from '@material-ui/styles';
+import clsx from 'clsx';
+import { Box } from '@material-ui/core';
+
 
 const TYPE = 'table';
+const TABLE_WIDTH = 175;
 
 export class TableNodeModel extends DefaultNodeModel {
   constructor({otherInfo, ...options}) {
@@ -28,6 +37,7 @@ export class TableNodeModel extends DefaultNodeModel {
       ...options,
       type: TYPE,
     });
+    this.width = TABLE_WIDTH;
 
     this._note = otherInfo.note || '';
     this._metadata = {
@@ -41,13 +51,16 @@ export class TableNodeModel extends DefaultNodeModel {
         /* Once the data is available, it is no more a promise */
         this._data = data;
         this._metadata = {
+          ...this._metadata,
           data_failed: false,
           is_promise: false,
         };
         this.fireEvent(this._metadata, 'dataAvaiable');
         this.fireEvent({}, 'nodeUpdated');
+        this.fireEvent({}, 'selectionChanged');
       }).catch(()=>{
         this._metadata = {
+          ...this._metadata,
           data_failed: true,
           is_promise: true,
         };
@@ -61,8 +74,15 @@ export class TableNodeModel extends DefaultNodeModel {
     }
   }
 
-  getPortName(attnum) {
-    return `coll-port-${attnum}`;
+  getPortName(attnum, alignment) {
+    if(alignment) {
+      return `coll-port-${attnum}-${alignment}`;
+    }
+    return `coll-port-${attnum}-right`;
+  }
+
+  getPortAttnum(portName) {
+    return portName.split('-')[2];
   }
 
   setNote(note) {
@@ -75,6 +95,25 @@ export class TableNodeModel extends DefaultNodeModel {
 
   getMetadata() {
     return this._metadata;
+  }
+
+  setMetadata(metadata) {
+    this._metadata = {
+      ...this._metadata,
+      ...metadata,
+    };
+  }
+
+  getLinks() {
+    let links = {};
+    this.getPorts();
+    Object.values(this.getPorts()).forEach((port)=>{
+      links = {
+        ...links,
+        ...port.getLinks(),
+      };
+    });
+    return links;
   }
 
   addColumn(col) {
@@ -94,17 +133,6 @@ export class TableNodeModel extends DefaultNodeModel {
   }
 
   setData(data) {
-    let self = this;
-    /* Remove the links if column dropped or primary key removed */
-    _.differenceWith(this._data.columns, data.columns, function(existing, incoming) {
-      return existing.attnum == incoming.attnum && incoming.is_primary_key == true;
-    }).forEach((col)=>{
-      let existPort = self.getPort(self.getPortName(col.attnum));
-      if(existPort && existPort.getSubtype() == 'one') {
-        existPort.removeAllLinks();
-        self.removePort(existPort);
-      }
-    });
     this._data = data;
     this.fireEvent({}, 'nodeUpdated');
   }
@@ -142,7 +170,7 @@ export class TableNodeModel extends DefaultNodeModel {
 
 function RowIcon({icon}) {
   return (
-    <div className="table-icon">
+    <div style={{padding: '0rem 0.125rem'}}>
       <img src={icon} crossOrigin="anonymous"/>
     </div>
   );
@@ -152,8 +180,60 @@ RowIcon.propTypes = {
   icon: PropTypes.any.isRequired,
 };
 
+const styles = (theme)=>({
+  tableNode: {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.primary,
+    ...theme.mixins.panelBorder.all,
+    borderRadius: theme.shape.borderRadius,
+    position: 'relative',
+    width: `${TABLE_WIDTH}px`,
+    fontSize: '0.8em',
+    '& div:last-child': {
+      borderBottomLeftRadius: 'inherit',
+      borderBottomRightRadius: 'inherit',
+    }
+  },
+  tableNodeSelected: {
+    borderColor: theme.palette.primary.main,
+  },
+  tableSection: {
+    ...theme.mixins.panelBorder.bottom,
+    padding: '0.125rem 0.25rem',
+    display: 'flex',
+  },
+  columnSection: {
+    display:'flex',
+    width: '100%' ,
+    ...theme.mixins.panelBorder.bottom,
+  },
+  columnName: {
+    display:'flex',
+    width: '100%' ,
+    padding: '0.125rem 0.25rem',
+    wordBreak: 'break-all',
+  },
+  tableToolbar: {
+    background: theme.otherVars.editorToolbarBg,
+    borderTopLeftRadius: 'inherit',
+    borderTopRightRadius: 'inherit',
+  },
+  tableNameText: {
+    fontWeight: 'bold',
+    wordBreak: 'break-all',
+    margin: 'auto 0',
+  },
+  error: {
+    color: theme.palette.error.main,
+  },
+  noteBtn: {
+    marginLeft: 'auto',
+    backgroundColor: theme.palette.warning.main,
+    color: theme.palette.warning.contrastText,
+  }
+});
 
-export class TableNodeWidget extends React.Component {
+class TableNodeWidgetRaw extends React.Component {
   constructor(props) {
     super(props);
 
@@ -165,6 +245,12 @@ export class TableNodeWidget extends React.Component {
       toggleDetails: (event) => {
         this.setState({show_details: event.show_details});
       },
+      changeColors: (event)=>{
+        this.props.node.setMetadata({
+          fillColor: event.fillColor, textColor: event.textColor,
+        });
+        this.setState({});
+      },
       dataAvaiable: ()=>{
         /* Just re-render */
         this.setState({});
@@ -172,34 +258,48 @@ export class TableNodeWidget extends React.Component {
     });
   }
 
-  generateColumn(col, tableData) {
-    let port = this.props.node.getPort(this.props.node.getPortName(col.attnum));
+  generateColumn(col, localFkCols, localUkCols) {
+    let leftPort = this.props.node.getPort(this.props.node.getPortName(col.attnum, PortModelAlignment.LEFT));
+    let rightPort = this.props.node.getPort(this.props.node.getPortName(col.attnum, PortModelAlignment.RIGHT));
+
     let icon = ColumnIcon;
-    let localFkCols = [];
-    (tableData.foreign_key||[]).forEach((fk)=>{
-      localFkCols.push(...fk.columns.map((c)=>c.local_column));
-    });
+    /* Less priority */
+    if(localUkCols.indexOf(col.name) > -1) {
+      icon = UniqueKeyIcon;
+    }
     if(col.is_primary_key) {
       icon = PrimaryKeyIcon;
     } else if(localFkCols.indexOf(col.name) > -1) {
       icon = ForeignKeyIcon;
     }
+
+    let cltype = col.cltype;
+    if(col.attlen) {
+      cltype += '('+ col.attlen + (col.attprecision ? ',' + col.attprecision : '') +')';
+    }
+
+    const {classes} = this.props;
     return (
-      <div className='d-flex col-row' key={col.attnum}>
-        <div className='d-flex col-row-data'>
+      <Box className={classes.columnSection} key={col.attnum} data-test="column-row">
+        <Box marginRight="auto" padding="0" minHeight="0" display="flex" alignItems="center">
+          {this.generatePort(leftPort)}
+        </Box>
+        <Box className={classes.columnName}>
           <RowIcon icon={icon} />
-          <div className="my-auto">
-            <span className='col-name'>{col.name}</span>&nbsp;
+          <Box margin="auto 0">
+            <span data-test="column-name">{col.name}</span>&nbsp;
             {this.state.show_details &&
-            <span className='col-datatype'>{col.cltype}{col.attlen ? ('('+ col.attlen + (col.attprecision ? ','+col.attprecision : '') +')') : ''}</span>}
-          </div>
-        </div>
-        <div className="ml-auto col-row-port">{this.generatePort(port)}</div>
-      </div>
+            <span data-test="column-type">{cltype}</span>}
+          </Box>
+        </Box>
+        <Box marginLeft="auto" padding="0" minHeight="0" display="flex" alignItems="center">
+          {this.generatePort(rightPort)}
+        </Box>
+      </Box>
     );
   }
 
-  generatePort = port => {
+  generatePort = (port) => {
     if(port) {
       return (
         <PortWidget engine={this.props.engine} port={port} key={port.getID()} className={'port-' + port.options.alignment} />
@@ -211,49 +311,68 @@ export class TableNodeWidget extends React.Component {
   toggleShowDetails = (e) => {
     e.preventDefault();
     this.setState((prevState)=>({show_details: !prevState.show_details}));
-  }
+  };
 
   render() {
-    let tableData = this.props.node.getData();
+    let tableData = this.props.node.getData() || {};
     let tableMetaData = this.props.node.getMetadata();
+    let localFkCols = [];
+    (tableData.foreign_key||[]).forEach((fk)=>{
+      localFkCols.push(...fk.columns.map((c)=>c.local_column));
+    });
+    let localUkCols = [];
+    (tableData.unique_constraint||[]).forEach((uk)=>{
+      localUkCols.push(...uk.columns.map((c)=>c.column));
+    });
+    const {classes} = this.props;
+    const styles = {
+      backgroundColor: tableMetaData.fillColor,
+      color: tableMetaData.textColor,
+    };
     return (
-      <div className={'table-node ' + (this.props.node.isSelected() ? 'selected': '') } onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}}>
-        <div className="table-toolbar">
-          <DetailsToggleButton className='btn-xs' showDetails={this.state.show_details}
-            onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}}
-            disabled={tableMetaData.is_promise} />
+      <div className={clsx(classes.tableNode, (this.props.node.isSelected() ? classes.tableNodeSelected: ''))}
+        onDoubleClick={()=>{this.props.node.fireEvent({}, 'editTable');}} style={styles}>
+        <div className={clsx(classes.tableSection, classes.tableToolbar)}>
+          <PgIconButton size="xs" title={gettext('Show Details')} icon={this.state.show_details ? <VisibilityRoundedIcon /> : <VisibilityOffRoundedIcon />}
+            onClick={this.toggleShowDetails} onDoubleClick={(e)=>{e.stopPropagation();}} />
           {this.props.node.getNote() &&
-            <IconButton icon="far fa-sticky-note" className="btn-xs btn-warning ml-auto" onClick={()=>{
-              this.props.node.fireEvent({}, 'showNote');
-            }} title="Check note"/>}
+            <PgIconButton size="xs" className={classes.noteBtn}
+              title={gettext('Check Note')} icon={<NoteRoundedIcon />}
+              onClick={()=>{
+                this.props.node.fireEvent({}, 'showNote');
+              }}
+            />}
         </div>
         {tableMetaData.is_promise && <>
-          <div className="d-flex table-name-data">
-            {!tableMetaData.data_failed && <div className="table-name my-auto">{gettext('Fetching...')}</div>}
-            {tableMetaData.data_failed && <div className="table-name my-auto fetch-error">{gettext('Failed to get data. Please delete this table.')}</div>}
+          <div className={classes.tableSection}>
+            {!tableMetaData.data_failed && <div className={classes.tableNameText}>{gettext('Fetching...')}</div>}
+            {tableMetaData.data_failed && <div className={clsx(classes.tableNameText, classes.error)}>{gettext('Failed to get data. Please delete this table.')}</div>}
           </div>
         </>}
         {!tableMetaData.is_promise && <>
-          <div className="d-flex table-schema-data">
+          <div className={classes.tableSection}>
             <RowIcon icon={SchemaIcon}/>
-            <div className="table-schema my-auto">{tableData.schema}</div>
+            <div className={classes.tableNameText} data-test="schema-name">{tableData.schema}</div>
           </div>
-          <div className="d-flex table-name-data">
+          <div className={classes.tableSection}>
             <RowIcon icon={TableIcon} />
-            <div className="table-name my-auto">{tableData.name}</div>
+            <div className={classes.tableNameText} data-test="table-name">{tableData.name}</div>
           </div>
-          <div className="table-cols">
-            {_.map(tableData.columns, (col)=>this.generateColumn(col, tableData))}
-          </div>
+          {tableData.columns.length > 0 && <div>
+            {_.map(tableData.columns, (col)=>this.generateColumn(col, localFkCols, localUkCols))}
+          </div>}
         </>}
       </div>
     );
   }
 }
 
-TableNodeWidget.propTypes = {
+export const TableNodeWidget = withStyles(styles)(TableNodeWidgetRaw);
+
+TableNodeWidgetRaw.propTypes = {
   node: PropTypes.instanceOf(TableNodeModel),
   engine: PropTypes.instanceOf(DiagramEngine),
+  classes: PropTypes.object,
 };
 
 export class TableNodeFactory extends AbstractReactFactory {

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -37,6 +37,7 @@ class GrantWizardSaveGetSQLTestCase(BaseTestGenerator):
     )
 
     def setUp(self):
+        super().setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         self.did = self.database_info["db_id"]

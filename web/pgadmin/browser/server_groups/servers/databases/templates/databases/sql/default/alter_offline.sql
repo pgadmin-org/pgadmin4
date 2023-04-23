@@ -9,7 +9,7 @@ ALTER DATABASE {{ conn|qtIdent(data.name) }} OWNER TO {{ conn|qtIdent(data.datow
 {# Change the comments/description #}
 {% if data.comments is defined %}
 COMMENT ON DATABASE {{ conn|qtIdent(data.name) }}
-    IS {{ data.comments|qtLiteral }};
+    IS {{ data.comments|qtLiteral(conn) }};
 {% endif %}
 {# Change the connection limit #}
 {% if data.datconnlimit %}

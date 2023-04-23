@@ -4,4 +4,4 @@ FROM
     pg_catalog.pg_constraint
 WHERE
     contypid = {{doid}}::oid
-    AND conname={{ name|qtLiteral }};
+    AND conname={{ name|qtLiteral(conn) }};

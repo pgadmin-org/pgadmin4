@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,10 +12,9 @@
 from functools import wraps
 
 from flask import render_template, make_response
-from flask_babelex import gettext
+from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases.schemas \
-    .packages as packages
+from pgadmin.browser.server_groups.servers.databases.schemas import packages
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
@@ -62,7 +61,7 @@ class EdbVarModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(EdbVarModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.min_ver = 90100
         self.max_ver = None
@@ -211,7 +210,8 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
 
         SQL = render_template("/".join([self.sql_template_path,
                                         self._NODE_SQL]),
-                              pkgid=pkgid)
+                              pkgid=pkgid,
+                              conn=self.conn)
         status, res = self.conn.execute_dict(SQL)
 
         if not status:
@@ -237,7 +237,7 @@ class EdbVarView(PGChildNodeView, DataTypeReader):
         res = []
         SQL = render_template(
             "/".join([self.sql_template_path, self._NODE_SQL]),
-            pkgid=pkgid
+            pkgid=pkgid, conn=self.conn
         )
         status, rset = self.conn.execute_2darray(SQL)
 

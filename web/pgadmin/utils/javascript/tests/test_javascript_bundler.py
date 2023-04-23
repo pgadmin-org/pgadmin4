@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -20,7 +20,7 @@ class JavascriptBundlerTestCase(BaseTestGenerator):
     scenarios = [('scenario name: JavascriptBundlerTestCase', dict())]
 
     def __init__(self, methodName='runTest'):
-        super(BaseTestGenerator, self).__init__(methodName)
+        super().__init__(methodName)
         self.mockOs = None
         self.mockSubprocessCall = None
 

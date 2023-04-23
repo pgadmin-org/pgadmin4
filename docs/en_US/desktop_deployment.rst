@@ -19,7 +19,7 @@ pgAdmin server and opens a window to render the user interface.
 .. seealso:: For detailed instructions on building and configuring pgAdmin from
     scratch, please see the README file in the top level directory of the source code.
     For convenience, you can find the latest version of the file
-    `here <https://git.postgresql.org/gitweb/?p=pgadmin4.git;a=blob;f=README.md>`_,
+    `here <https://github.com/pgadmin-org/pgadmin4/blob/master/README.md>`_,
     but be aware that this may differ from the version included with the source code
     for a specific version of pgAdmin.
 
@@ -78,22 +78,25 @@ Use the *Runtime Menu* to access the *Configuration* dialog:
     :alt: Runtime Configuration
     :align: center
 
-Following are the details of the *Fixed port number?*, *Port Number*, and *Connection
-Timeout* configuration parameters:
+Following are the details of the *Fixed port number?*, *Port Number*, *Connection
+Timeout*, and 'Open Documentation in Default Browser?' configuration parameters:
 
 .. table::
    :class: longtable
    :widths: 2 1 4
 
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | Key                      | Type               | Purpose                                                       |
-   +==========================+====================+===============================================================+
-   | FixedPort                | Boolean            | Use a fixed network port number rather than a random one.     |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | PortNumber               | Integer            | The port number to use, if using a fixed port.                |
-   +--------------------------+--------------------+---------------------------------------------------------------+
-   | ConnectionTimeout        | Integer            | The number of seconds to wait for application server startup. |
-   +--------------------------+--------------------+---------------------------------------------------------------+
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | Key                                    | Type               | Purpose                                                       |
+   +========================================+====================+===============================================================+
+   | FixedPort                              | Boolean            | Use a fixed network port number rather than a random one.     |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | PortNumber                             | Integer            | The port number to use, if using a fixed port.                |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | ConnectionTimeout                      | Integer            | The number of seconds to wait for application server startup. |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
+   | Open Documentation in Default Browser  | Boolean            | By checking this option, all documentation links will open in |
+   |                                        |                    | the default browser instead of in a new window.               |
+   +----------------------------------------+--------------------+---------------------------------------------------------------+
 
 Log dialog
 ----------

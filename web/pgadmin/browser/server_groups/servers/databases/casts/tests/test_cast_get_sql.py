@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -24,7 +24,7 @@ class CastsGetSqlTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will create cast."""
-        super(CastsGetSqlTestCase, self).setUp()
+        super().setUp()
         self.inv_data = self.inventory_data
         self.default_db = self.server["db"]
         self.database_info = parent_node_dict['database'][-1]

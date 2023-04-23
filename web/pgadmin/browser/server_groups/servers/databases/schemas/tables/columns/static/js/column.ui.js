@@ -1,3 +1,12 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema from 'top/browser/server_groups/servers/static/js/variable.ui';
@@ -96,27 +105,19 @@ export default class ColumnSchema extends BaseUISchema {
   // Check whether the column is identity column or not
   isIdentityColumn(state) {
     let isIdentity = state.attidentity;
-    if(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity))
-      return false;
-    return true;
+    return !(!_.isUndefined(isIdentity) && !_.isNull(isIdentity) && !_.isEmpty(isIdentity));
   }
 
   // Check whether the column is a identity column
   isTypeIdentity(state) {
     let colconstype = state.colconstype;
-    if (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'i') {
-      return true;
-    }
-    return false;
+    return (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'i');
   }
 
   // Check whether the column is a generated column
   isTypeGenerated(state) {
     let colconstype = state.colconstype;
-    if (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'g') {
-      return true;
-    }
-    return false;
+    return (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'g');
   }
 
   // We will check if we are under schema node & in 'create' mode
@@ -145,6 +146,10 @@ export default class ColumnSchema extends BaseUISchema {
       }
     }
     return null;
+  }
+
+  attCell(state) {
+    return { cell: this.attlenRange(state) ? 'int' : '' };
   }
 
   get baseFields() {
@@ -185,23 +190,20 @@ export default class ColumnSchema extends BaseUISchema {
           return true;
         }
 
-        var name = state.name;
+        let name = state.name;
 
-        if(!obj.inSchemaWithColumnCheck(state)
-          && (_.isUndefined(name)  || _.isNull(name) || name == '')) {
-          return true;
-        }
-        return false;
+        return (!obj.inSchemaWithColumnCheck(state)
+          && (_.isUndefined(name)  || _.isNull(name) || name == ''));
       },
       editable: function(state) {
         // If primary key already exist then disable.
         if (
-          obj.top && ((
+          obj.top && (
             !_.isUndefined(obj.top.origData['oid'])
               && !_.isUndefined(obj.top.origData['primary_key'])
               && obj.top.origData['primary_key'].length > 0
               && !_.isUndefined(obj.top.origData['primary_key'][0]['oid'])
-          ))
+          )
         ) {
           return false;
         }
@@ -216,10 +218,7 @@ export default class ColumnSchema extends BaseUISchema {
           return false;
         }
 
-        if(!obj.inSchemaWithColumnCheck(state)) {
-          return true;
-        }
-        return false;
+        return !obj.inSchemaWithColumnCheck(state);
       },
     },{
       id: 'attnum', label: gettext('Position'), cell: 'text',
@@ -281,9 +280,7 @@ export default class ColumnSchema extends BaseUISchema {
       id: 'attlen', label: gettext('Length/Precision'),
       deps: ['cltype'], type: 'int', group: gettext('Definition'), width: 120, disableResizing: true,
       cell: (state)=>{
-        return {
-          cell: obj.attlenRange(state) ? 'int' : '',
-        };
+        return obj.attCell(state);
       },
       depChange: (state)=>{
         let range = this.attlenRange(state);
@@ -308,12 +305,14 @@ export default class ColumnSchema extends BaseUISchema {
         return Boolean(obj.attlenRange(state));
       },
     },{
+      id: 'min_val_attlen', skipChange: true, visible: false, type: '',
+    },{
+      id: 'max_val_attlen', skipChange: true, visible: false, type: '',
+    },{
       id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
       deps: ['cltype'], type: 'int', group: gettext('Definition'),
       cell: (state)=>{
-        return {
-          cell: obj.attlenRange(state) ? 'int' : '',
-        };
+        return obj.attCell(state);
       },
       depChange: (state)=>{
         let range = this.attprecisionRange(state);
@@ -337,6 +336,10 @@ export default class ColumnSchema extends BaseUISchema {
         }
         return Boolean(this.attprecisionRange(state));
       },
+    },{
+      id: 'min_val_attprecision', skipChange: true, visible: false, type: '',
+    },{
+      id: 'max_val_attprecision', skipChange: true, visible: false, type: '',
     },{
       id: 'collspcname', label: gettext('Collation'), cell: 'select',
       type: 'select', group: gettext('Definition'),
@@ -378,11 +381,11 @@ export default class ColumnSchema extends BaseUISchema {
       type: 'text', group: gettext('Constraints'), deps: ['cltype', 'colconstype'],
       readonly: obj.inSchemaWithColumnCheck,
       disabled: function(state) {
-        var isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
+        let isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         isDisabled = isDisabled || state.colconstype != 'n';
         return isDisabled;
       }, depChange: (state)=>{
-        var isDisabled = false;
+        let isDisabled = false;
         if(!obj.inSchemaWithModelCheck(state)) {
           isDisabled = ['serial', 'bigserial', 'smallserial'].indexOf(state.cltype) > -1;
         }
@@ -392,10 +395,7 @@ export default class ColumnSchema extends BaseUISchema {
         }
       }, editable: function(state) {
         // inheritedfrom has value then we should disable it
-        if (!isEmptyString(state.inheritedfrom) || !this.editableCheckForTable(state)) {
-          return false;
-        }
-        return true;
+        return !(!isEmptyString(state.inheritedfrom) || !this.editableCheckForTable(state));
       },
     },{
       id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
@@ -415,7 +415,7 @@ export default class ColumnSchema extends BaseUISchema {
       cell: 'text',
       group: gettext('Constraints'),
       type: (state)=>{
-        var options = [
+        let options = [
           {'label': gettext('NONE'), 'value': 'n'},
           {'label': gettext('IDENTITY'), 'value': 'i'},
         ];
@@ -442,10 +442,7 @@ export default class ColumnSchema extends BaseUISchema {
         };
       },
       disabled: function(state) {
-        if (!this.isNew(state) && state.colconstype == 'g') {
-          return true;
-        }
-        return false;
+        return (!this.isNew(state) && state.colconstype == 'g');
       }, min_version: 100000,
     }, {
       id: 'attidentity', label: gettext('Identity'),
@@ -550,7 +547,7 @@ export default class ColumnSchema extends BaseUISchema {
   }
 
   validate(state, setError) {
-    var msg = undefined;
+    let msg = undefined;
 
     if (!_.isUndefined(state.cltype) && !isEmptyString(state.attlen)) {
       // Validation for Length field

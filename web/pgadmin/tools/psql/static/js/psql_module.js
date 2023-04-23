@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,26 +11,27 @@ import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { SearchAddon } from 'xterm-addon-search';
 import { io } from 'socketio';
-import Alertify from 'pgadmin.alertifyjs';
 import {enable} from 'pgadmin.browser.toolbar';
 import 'wcdocker';
 import {getRandomInt, hasBinariesConfiguration, registerDetachEvent} from 'sources/utils';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
-
-import {generateTitle, refresh_db_node} from 'tools/datagrid/static/js/datagrid_panel_title';
+import Notify from '../../../../static/js/helpers/Notifier';
+import { copyToClipboard } from '../../../../static/js/clipboard';
+import { openNewWindow } from '../../../../static/js/utils';
+import {generateTitle, refresh_db_node} from 'tools/sqleditor/static/js/sqleditor_title';
 
 
 export function setPanelTitle(psqlToolPanel, panelTitle) {
   psqlToolPanel.title('<span title="'+panelTitle+'">'+panelTitle+'</span>');
 }
 
-var wcDocker = window.wcDocker;
+let wcDocker = window.wcDocker;
 
-export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) {
-  var pgBrowser = Browser;
-  var terminal = Terminal;
-  var parentData = null;
+export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
+  let pgBrowser = Browser;
+  let terminal = Terminal;
+  let parentData = null;
   /* Return back, this has been called more than once */
   if (pgBrowser.psql)
     return pgBrowser.psql;
@@ -42,7 +43,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       this.initialized = true;
       csrfToken.setPGCSRFToken(pgAdmin.csrf_token_header, pgAdmin.csrf_token);
       // Define the nodes on which the menus to be appear
-      var menus = [{
+      let menus = [{
         name: 'psql',
         module: this,
         applies: ['tools'],
@@ -58,7 +59,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       }
 
       // Creating a new pgBrowser frame to show the data.
-      var psqlFrameType = new pgBrowser.Frame({
+      let psqlFrameType = new pgBrowser.Frame({
         name: 'frm_psqltool',
         showTitle: true,
         isCloseable: true,
@@ -66,7 +67,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         url: 'about:blank',
       });
 
-      var self = this;
+      let self = this;
       /* Cache may take time to load for the first time
        * Keep trying till available
        */
@@ -92,7 +93,7 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     */
     psqlToolEnabled: function(obj) {
 
-      var isEnabled = (() => {
+      let isEnabled = (() => {
         if (!_.isUndefined(obj) && !_.isNull(obj) && pgAdmin['enable_psql']) {
           if (_.indexOf(pgAdmin.unsupported_nodes, obj._type) == -1) {
             if (obj._type == 'database' && obj.allowConn) {
@@ -113,25 +114,25 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       enable(gettext('PSQL Tool'), isEnabled);
       return isEnabled;
     },
-    psql_tool: function(data, aciTreeIdentifier, gen=false) {
-      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, aciTreeIdentifier, gettext('PSQL Error'), Alertify);
-      if (!hasBinariesConfiguration(pgBrowser, serverInformation, Alertify)) {
+    psql_tool: function(data, treeIdentifier, gen=false) {
+      const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
+      if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
         return;
       }
 
-      const node = pgBrowser.tree.findNodeByDomElement(aciTreeIdentifier);
+      const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
       if (node === undefined || !node.getData()) {
-        Alertify.alert(
+        Notify.alert(
           gettext('PSQL Error'),
           gettext('No object selected.')
         );
         return;
       }
 
-      parentData = pgBrowser.tree.getTreeNodeHierarchy(aciTreeIdentifier);
+      parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
 
       if(_.isUndefined(parentData.server)) {
-        Alertify.alert(
+        Notify.alert(
           gettext('PSQL Error'),
           gettext('Please select a server/database object.')
         );
@@ -140,15 +141,15 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
 
       const transId = getRandomInt(1, 9999999);
 
-      var panelTitle = '';
+      let panelTitle = '';
       // Set psql tab title as per prefrences setting.
-      var title_data = {
+      let title_data = {
         'database': parentData.database ? parentData.database.label : 'postgres' ,
-        'username': parentData.server.user_name,
+        'username': parentData.server.user.name,
         'server': parentData.server.label,
         'type': 'psql_tool',
       };
-      var tab_title_placeholder = pgBrowser.get_preferences_for_module('browser').psql_tab_title_placeholder;
+      let tab_title_placeholder = pgBrowser.get_preferences_for_module('browser').psql_tab_title_placeholder;
       panelTitle = generateTitle(tab_title_placeholder, title_data);
 
       const [panelUrl, panelCloseUrl, db_label] = this.getPanelUrls(transId, panelTitle, parentData, gen);
@@ -164,17 +165,15 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
           document.getElementById("psqlToolForm").submit();
         </script>
       `;
-      var open_new_tab = pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
+      let open_new_tab = pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
       if (open_new_tab && open_new_tab.includes('psql_tool')) {
-        var newWin = window.open('', '_blank');
-        newWin.document.write(psqlToolForm);
-        newWin.document.title = panelTitle;
+        openNewWindow(psqlToolForm, panelTitle);
       } else {
         /* On successfully initialization find the properties panel,
          * create new panel and add it to the dashboard panel.
          */
-        var propertiesPanel = pgBrowser.docker.findPanels('properties');
-        var psqlToolPanel = pgBrowser.docker.addPanel('frm_psqltool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+        let propertiesPanel = pgBrowser.docker.findPanels('properties');
+        let psqlToolPanel = pgBrowser.docker.addPanel('frm_psqltool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
 
         registerDetachEvent(psqlToolPanel);
 
@@ -183,25 +182,25 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
         psqlToolPanel.icon('fas fa-terminal psql-tab-style');
         psqlToolPanel.focus();
 
-        var openPSQLToolURL = function(j) {
+        let openPSQLToolURL = function(j) {
           // add spinner element
-          let $spinner_el =
-            $(`<div class="pg-sp-container">
-                  <div class="pg-sp-content">
-                      <div class="row">
-                          <div class="col-12 pg-sp-icon"></div>
-                      </div>
-                  </div>
-              </div>`).appendTo($(j).data('embeddedFrame').$container);
+          const frame = j.frameData.embeddedFrame;
+          const spinner = document.createElement('div');
+          spinner.setAttribute('class', 'pg-sp-container');
+          spinner.innerHTML = `
+            <div class="pg-sp-content">
+              <div class="pg-sp-icon"></div>
+            </div>
+          `;
+
+          frame.$container[0].appendChild(spinner);
 
           let init_poller_id = setInterval(function() {
-            var frameInitialized = $(j).data('frameInitialized');
-            if (frameInitialized) {
+            if (j.frameData.frameInitialized) {
               clearInterval(init_poller_id);
-              var frame = $(j).data('embeddedFrame');
               if (frame) {
                 frame.onLoaded(()=>{
-                  $spinner_el.remove();
+                  spinner.remove();
                 });
                 frame.openHTML(psqlToolForm);
               }
@@ -214,21 +213,21 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       }
 
     },
-    getPanelUrls: function(transId, panelTitle, parentData) {
+    getPanelUrls: function(transId, panelTitle, pData) {
       let openUrl = url_for('psql.panel', {
         trans_id: transId,
       });
       const misc_preferences = pgBrowser.get_preferences_for_module('misc');
-      var theme = misc_preferences.theme;
+      let theme = misc_preferences.theme;
 
-      openUrl += `?sgid=${parentData.server_group._id}`
-        +`&sid=${parentData.server._id}`
-        +`&did=${parentData.database._id}`
-        +`&server_type=${parentData.server.server_type}`
+      openUrl += `?sgid=${pData.server_group._id}`
+        +`&sid=${pData.server._id}`
+        +`&did=${pData.database._id}`
+        +`&server_type=${pData.server.server_type}`
         + `&theme=${theme}`;
       let db_label = '';
-      if(parentData.database && parentData.database._id) {
-        db_label = _.escape(parentData.database._label.replace('\\', '\\\\'));
+      if(pData.database && pData.database._id) {
+        db_label = _.escape(pData.database._label.replace('\\', '\\\\'));
         db_label = db_label.replace('\'', '\'');
         db_label = db_label.replace('"', '\"');
         openUrl += `&db=${db_label}`;
@@ -243,13 +242,11 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     },
     psql_terminal: function() {
       // theme colors
-      var term = new terminal({
+      return new terminal({
         cursorBlink: true,
         macOptionIsMeta: true,
         scrollback: 5000,
       });
-
-      return term;
     },
     psql_Addon: function(term) {
       const fitAddon = this.psql_fit_screen();
@@ -276,10 +273,14 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       return new SearchAddon();
     },
     psql_socket: function() {
-      return io('/pty', {pingTimeout: 120000, pingInterval: 25000});
+      return io('/pty', {
+        path: `${url_for('pgadmin.root')}/socket.io`,
+        pingTimeout: 120000,
+        pingInterval: 25000
+      });
     },
     set_theme: function(term) {
-      var theme = {
+      let theme = {
         background: getComputedStyle(document.documentElement).getPropertyValue('--psql-background'),
         foreground: getComputedStyle(document.documentElement).getPropertyValue('--psql-foreground'),
         cursor: getComputedStyle(document.documentElement).getPropertyValue('--psql-cursor'),
@@ -330,27 +331,30 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
       term.attachCustomKeyEventHandler(e => {
         e.stopPropagation();
         if(e.type=='keydown' && (e.metaKey || e.ctrlKey) && (e.key == 'c' || e.key == 'C')) {
-          document.execCommand('copy');
+          let selected_text = term.getSelection();
+          navigator.permissions.query({ name: 'clipboard-write' }).then(function(result) {
+            if(result.state === 'granted' || result.state === 'prompt') {
+              copyToClipboard(selected_text);
+            } else{
+              Notify.alert(gettext('Clipboard write permission required'), gettext('To copy data from PSQL terminal, Clipboard write permission required.'));
+            }
+          });
         }
 
-        if (e.ctrlKey && platform == 'win32') {
-          return false;
-        }
-
-        return true;
+        return !(e.ctrlKey && platform == 'win32');
       });
 
       term.textarea.addEventListener('paste', function() {
         navigator.permissions.query({ name: 'clipboard-read' }).then(function(result) {
           if(result.state === 'granted' || result.state === 'prompt') {
             navigator.clipboard.readText().then( clipText => {
-              var selected_text = clipText;
+              let selected_text = clipText;
               if (selected_text.length > 0) {
                 socket.emit('socket_input', {'input': selected_text, 'key_name': 'paste'});
               }
             });
           } else{
-            Alertify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
+            Notify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
           }
         });
       });
@@ -362,12 +366,12 @@ export function initialize(gettext, url_for, $, _, pgAdmin, csrfToken, Browser) 
     check_db_name_change: function(db_name, o_db_name) {
       if (db_name != o_db_name) {
 
-        var selected_item = pgWindow.pgAdmin.Browser.tree.selected(),
+        let selected_item = pgWindow.pgAdmin.Browser.tree.selected(),
           tree_data = pgWindow.pgAdmin.Browser.tree.translateTreeNodeIdFromReactTree(selected_item),
           database_data = pgWindow.pgAdmin.Browser.tree.findNode(tree_data[3]),
           dbNode = database_data.domNode;
 
-        var message = `Current database has been moved or renamed to ${o_db_name}. Click on the OK button to refresh the database name, and reopen the psql again.`;
+        let message = `Current database has been moved or renamed to ${o_db_name}. Click on the OK button to refresh the database name, and reopen the psql again.`;
         refresh_db_node(message, dbNode);
       }
     },

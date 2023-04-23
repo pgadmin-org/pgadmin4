@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -39,7 +39,7 @@ class FunctionPutTestCase(BaseTestGenerator):
             mocking_required=True,
             is_mock_function=False,
             mock_data={
-                "function_name": "pgadmin.utils.driver.psycopg2."
+                "function_name": "pgadmin.utils.driver.psycopg3."
                                  "connection.Connection.execute_scalar",
                 "return_value": "(False, 'Mocked Internal Server "
                                 "Error while create new function get sql.')"
@@ -140,7 +140,7 @@ class FunctionPutTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will update function under database node. """
-        super(FunctionPutTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
         func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]
 

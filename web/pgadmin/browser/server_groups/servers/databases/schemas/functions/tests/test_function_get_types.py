@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -62,7 +62,7 @@ class FunctionGetTypesTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will get function nodes under schema. """
-        super(FunctionGetTypesTestCase, self).runTest()
+        super().runTest()
         self = funcs_utils.set_up(self)
 
         if self.is_positive_test:

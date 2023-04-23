@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -40,7 +40,7 @@ class FunctionGetTestCase(BaseTestGenerator):
                 is_positive_test=False,
                 mocking_required=True,
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_dict",
                     "return_value": "(False, 'Mocked Internal Server "
                                     "Error while get properties.')"
@@ -57,7 +57,7 @@ class FunctionGetTestCase(BaseTestGenerator):
                 is_positive_test=False,
                 mocking_required=True,
                 mock_data={
-                    "function_name": "pgadmin.utils.driver.psycopg2."
+                    "function_name": "pgadmin.utils.driver.psycopg3."
                                      "connection.Connection.execute_dict",
                     "return_value": "(False, {'rows': []})"
                 },
@@ -79,7 +79,7 @@ class FunctionGetTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will delete function under database node. """
-        super(FunctionGetTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         func_name = "test_function_get_%s" % str(uuid.uuid4())[1:8]

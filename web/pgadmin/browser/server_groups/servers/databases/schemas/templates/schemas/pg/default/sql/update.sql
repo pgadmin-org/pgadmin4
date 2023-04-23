@@ -16,7 +16,7 @@ ALTER SCHEMA {{ conn|qtIdent(data.name) }}
 {# Update the comments/description #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {# Change the privileges #}
@@ -45,27 +45,27 @@ COMMENT ON SCHEMA {{ conn|qtIdent(data.name) }}
 {# Change the default privileges #}
 {% for defacl, type in [
     ('deftblacl', 'TABLES'), ('defseqacl', 'SEQUENCES'),
-    ('deffuncacl', 'FUNCTIONS')]
+    ('deffuncacl', 'FUNCTIONS'), ('deftypeacl', 'TYPES')]
 %}
 {% if data[defacl] %}{% set acl = data[defacl] %}
 {% if 'deleted' in acl %}
 {% for priv in acl.deleted %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'changed' in acl %}
 {% for priv in acl.changed %}
 {% if priv.grantee != priv.old_grantee %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.old_grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.old_grantee, priv.grantor) }}
 {% else %}
-{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee) }}
+{{ DEFAULT_PRIVILEGE.UNSET(conn, 'SCHEMA', data.name, type, priv.grantee, priv.grantor) }}
 {% endif %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% if 'added' in acl %}
 {% for priv in acl.added %}
-{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant) }}
+{{ DEFAULT_PRIVILEGE.SET(conn,'SCHEMA', data.name, type, priv.grantee, priv.without_grant, priv.with_grant, priv.grantor) }}
 {% endfor %}
 {% endif %}
 {% endif %}

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,12 +13,12 @@ import sys
 import traceback
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, request, jsonify, \
     current_app
-from flask_babelex import gettext
+from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils import \
     SchemaChildModule, DataTypeReader
@@ -60,7 +60,7 @@ class ForeignTableModule(SchemaChildModule):
     _COLLECTION_LABEL = gettext("Foreign Tables")
 
     def __init__(self, *args, **kwargs):
-        super(ForeignTableModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -237,7 +237,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         def wrap(self, **kwargs):
 
             if request.data:
-                req = json.loads(request.data, encoding='utf-8')
+                req = json.loads(request.data)
             else:
                 req = request.args or request.form
 
@@ -336,7 +336,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
 
         if not isinstance(req[key], list) and req[key]:
-            data[key] = json.loads(req[key], encoding='utf-8')
+            data[key] = json.loads(req[key])
         elif req[key]:
             data[key] = req[key]
 
@@ -383,11 +383,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             # Get database connection
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = \
                 self.manager.db_info[kwargs['did']]['datistemplate'] \
                 if self.manager.db_info is not None and \
@@ -397,7 +392,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             # on the server version.
             self.template_path = compile_template_path(
                 'foreign_tables/sql/',
-                self.manager.server_type,
                 self.manager.version
             )
 
@@ -642,10 +636,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            current_app.logger.error(
-                traceback.print_exception(exc_type,
-                                          exc_value, exc_traceback, limit=2))
-
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition
@@ -685,14 +675,6 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 )
         except Exception:
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            current_app.logger.error(traceback.print_exception(
-                exc_type,
-                exc_value,
-                exc_traceback,
-                limit=2
-            )
-            )
-
             return internal_server_error(errormsg=str(exc_value))
 
     @check_precondition
@@ -732,7 +714,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
                                   basensp=basensp,
-                                  name=self.request['name'])
+                                  name=self.request['name'],
+                                  conn=self.conn)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -766,7 +749,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         if foid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [foid]}
@@ -844,7 +827,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  foid=foid)
+                                  foid=foid,
+                                  conn=self.conn)
             status, res = self.conn.execute_2darray(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
@@ -902,7 +886,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
                               data=data, is_sql=True,
-                              add_not_exists_clause=True
+                              add_not_exists_clause=True,
+                              conn=self.conn
                               )
 
         if not json_resp:
@@ -1089,11 +1074,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 sql = render_template(
                     "/".join([self.template_path,
                               'foreign_table_schema_diff.sql']),
-                    data=data, o_data=old_data)
+                    data=data, o_data=old_data, conn=self.conn)
             else:
                 sql = render_template(
                     "/".join([self.template_path, self._UPDATE_SQL]),
-                    data=data, o_data=old_data
+                    data=data, o_data=old_data, conn=self.conn
                 )
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
@@ -1105,7 +1090,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                                                ["a", "r", "w", "x"])
 
             sql = render_template("/".join([self.template_path,
-                                            self._CREATE_SQL]), data=data)
+                                            self._CREATE_SQL]), data=data,
+                                  conn=self.conn)
             return sql, data['name']
 
     @check_precondition
@@ -1191,7 +1177,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         data = res['rows'][0]
         data['is_sys_obj'] = (
-            data['oid'] <= self.datlastsysoid or self.datistemplate)
+            data['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         if self.manager.version >= 90200:
             # Fetch privileges
@@ -1542,7 +1529,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODE_SQL]), scid=scid)
+                                        self._NODE_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

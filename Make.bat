@@ -211,7 +211,8 @@ REM Main build sequence Ends
     RD /Q /S "%WD%\web\pgadmin\static\js\generated\.cache" 1> nul 2>&1
 
     ECHO Copying web directory...
-    XCOPY /S /I /E /H /Y "%WD%\web" "%BUILDROOT%\web" > nul || EXIT /B 1
+    ROBOCOPY /S "%WD%\web" "%BUILDROOT%\web" > nul
+    CALL :CHECK_ROBOCOPY_ERROR
 
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
@@ -246,6 +247,7 @@ REM Main build sequence Ends
 
     ECHO Building docs...
     CALL pip install sphinx || EXIT /B 1
+    CALL pip install sphinxcontrib-youtube || EXIT /B 1
     MKDIR "%BUILDROOT%\docs\en_US\html"
     CD "%WD%\docs\en_US"
     CALL "%TMPDIR%\venv\Scripts\python.exe" build_code_snippet.py || EXIT /B 1
@@ -272,17 +274,16 @@ REM Main build sequence Ends
     REM YARN END
 
     REM WGET
-    REM Comment out the below for loop as the latest version (0.57.0) having
-    REM some problem, so for the time being hardcoded the version to 0.55.0
     REM FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
     REM :GET_NW
-    REM    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
-    REM    IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
+    REM     wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
+    REM     IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
 
-    REM tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
-
-    SET "NW_VERSION=0.55.0"
+    REM Remove the above commented code once below issue is fixed
+    REM Pining NWjs because of https://github.com/nwjs/nw.js/issues/8039 in 0.74.0
+    SET "NW_VERSION=0.72.0"
     wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
+
     tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
     REM WGET END
 
@@ -352,7 +353,7 @@ REM Main build sequence Ends
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
-    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /t http://time.certum.pl "%DISTROOT%\%INSTALLERNAME%"
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%DISTROOT%\%INSTALLERNAME%"
     IF %ERRORLEVEL% NEQ 0 (
         ECHO.
         ECHO ************************************************************
@@ -371,3 +372,6 @@ REM Main build sequence Ends
 
     EXIT /B 1
 
+:CHECK_ROBOCOPY_ERROR
+    IF %ERRORLEVEL% GEQ 8 EXIT /B %ERRORLEVEL%
+    EXIT /B 0

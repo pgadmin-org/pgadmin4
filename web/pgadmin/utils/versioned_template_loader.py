@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -14,7 +14,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
     def get_source(self, environment, template):
         specified_version_number, exists = parse_version(template)
         if not exists:
-            return super(VersionedTemplateLoader, self).get_source(
+            return super().get_source(
                 environment, template
             )
 
@@ -31,7 +31,7 @@ class VersionedTemplateLoader(DispatchingJinjaLoader):
             ])
 
             try:
-                return super(VersionedTemplateLoader, self).get_source(
+                return super().get_source(
                     environment, template_path
                 )
             except TemplateNotFound:
@@ -64,20 +64,20 @@ def parse_template(template):
 def get_version_mapping(template):
     template_path_parts = template.split("#", 3)
 
-    server_type = None
     if len(template_path_parts) == 4:
         _, server_type, _, _ = template_path_parts
 
-    return get_version_mapping_directories(server_type)
+    return get_version_mapping_directories()
 
 
-def get_version_mapping_directories(server_type):
+def get_version_mapping_directories():
     """
     This function will return all the version mapping directories
     :param server_type:
     :return:
     """
-    return ({'name': "14_plus", 'number': 140000},
+    return ({'name': "15_plus", 'number': 150000},
+            {'name': "14_plus", 'number': 140000},
             {'name': "13_plus", 'number': 130000},
             {'name': "12_plus", 'number': 120000},
             {'name': "11_plus", 'number': 110000},

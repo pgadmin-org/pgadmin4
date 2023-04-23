@@ -2,13 +2,13 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import json
-
+import sys
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from . import utils as debugger_utils
@@ -18,6 +18,8 @@ from pgadmin.browser.server_groups.servers.databases.schemas.functions \
     .tests import utils as funcs_utils
 from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as db_utils
+from config import PG_DEFAULT_DRIVER
+from pgadmin.utils.constants import PSYCOPG3
 
 
 class DebuggerClearAllBreakpoint(BaseTestGenerator):
@@ -27,7 +29,11 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
                                          debugger_utils.test_cases)
 
     def setUp(self):
-        super(DebuggerClearAllBreakpoint, self).setUp()
+        super().setUp()
+
+        if sys.platform == 'win32':
+            self.skipTest('PSQL disabled for windows')
+
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
@@ -58,13 +64,13 @@ class DebuggerClearAllBreakpoint(BaseTestGenerator):
 
     def clear_all_breakpoint(self):
         if hasattr(self, 'no_breakpoint') and self.no_breakpoint:
-            breakpoint_data = {"breakpoint_list": ''}
+            breakpoint_data = {"breakpoint_list": None}
         else:
-            breakpoint_data = {"breakpoint_list": 3}
+            breakpoint_data = {"breakpoint_list": '3'}
 
         return self.tester.post(
             self.url + str(self.trans_id),
-            data=breakpoint_data)
+            data=json.dumps(breakpoint_data))
 
     def runTest(self):
         """

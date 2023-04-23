@@ -44,7 +44,7 @@ the **Flask-Security** module to manage application security and users, and
 provides options for self-service password reset and password changes etc.
 
 Whether in desktop or server mode, each user's settings are stored in a SQLite
-database which is also used to store the user accounts. This is initially
+OR external database which is also used to store the user accounts. This is initially
 created using the **setup.py** script which will create the database file and
 schema within it, and add the first user account (with administrative
 privileges) and a default server group for them. A **settings** table is also
@@ -194,7 +194,7 @@ Nodes
 *****
 
 Nodes are very similar to modules, it represents an individual node or,
-collection object on the browser treeview. To recognised as a node module, a
+collection object on the object explorer treeview. To recognised as a node module, a
 Python package (along with javascript modules) must be created. This must:
 
 1) Be placed within the **web/pgadmin/browser/** directory, and
@@ -207,8 +207,8 @@ Front End
 
 pgAdmin uses javascript extensively for the front-end implementation. It uses
 require.js to allow the lazy loading (or, say load only when required),
-bootstrap for UI look and feel, Backbone for data manipulation of a node,
-Backform for generating properties/create dialog for selected node. We have
+bootstrap and MaterialUI for UI look and feel, React for generating
+properties/create dialog for selected node. We have
 divided each module in small chunks as much as possible. Not all javascript
 modules are required to be loaded (i.e. loading a javascript module for
 database will make sense only when a server node is loaded completely.) Please

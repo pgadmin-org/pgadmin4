@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import OptionsSchema from '../../../../../static/js/options.ui';
 
 export default class ForeignServerSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       fsrvtype: undefined,

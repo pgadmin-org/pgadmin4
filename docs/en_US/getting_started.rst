@@ -33,7 +33,9 @@ Mode is pre-configured for security.
 
    deployment
    login
+   mfa
    user_management
+   change_ownership
    change_user_password
    restore_locked_user
    ldap

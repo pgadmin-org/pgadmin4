@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from 'top/browser/server_groups/servers/static/js/sec_label.ui';
@@ -6,7 +14,6 @@ import { isEmptyString } from 'sources/validators';
 import PrimaryKeySchema from '../../constraints/index_constraint/static/js/primary_key.ui';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../static/js/SchemaView';
 import { PartitionKeysSchema, PartitionsSchema } from './partition.utils.ui';
-import { pgAlertify } from '../../../../../../../../static/js/helpers/legacyConnector';
 import CheckConstraintSchema from '../../constraints/check_constraint/static/js/check_constraint.ui';
 import UniqueConstraintSchema from '../../constraints/index_constraint/static/js/unique_constraint.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../static/js/node_ajax';
@@ -15,6 +22,7 @@ import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui'
 import { getNodeForeignKeySchema } from '../../constraints/foreign_key/static/js/foreign_key.ui';
 import { getNodeExclusionConstraintSchema } from '../../constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
+import Notify from '../../../../../../../../static/js/helpers/Notifier';
 
 export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   const spcname = ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
@@ -31,11 +39,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
         cacheNode: 'database',
       }, (d)=>{
         // If schema name start with pg_* then we need to exclude them
-        if(d && d.label.match(/^pg_/))
-        {
-          return false;
-        }
-        return true;
+        return !(d && d.label.match(/^pg_/));
       }),
       spcname: spcname,
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', tableNode, treeNodeInfo, itemNodeData),
@@ -87,14 +91,18 @@ export class ConstraintsSchema extends BaseUISchema {
   changeColumnOptions(colOptions) {
     this.primaryKeyObj.changeColumnOptions(colOptions);
     this.fkObj.changeColumnOptions(colOptions);
+    this.uniqueConsObj.changeColumnOptions(colOptions);
     if(!this.inErd) {
-      this.uniqueConsObj.changeColumnOptions(colOptions);
       this.exConsObj.changeColumnOptions(colOptions);
     }
   }
 
   anyColumnAdded(state) {
     return _.some(_.map(state.columns, 'name'));
+  }
+
+  canAdd(state) {
+    return !(state.is_partitioned && this.top.getServerVersion() < 110000);
   }
 
   get baseFields() {
@@ -108,14 +116,12 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       canAddRow: function(state) {
         return ((state.primary_key||[]).length < 1 && obj.anyColumnAdded(state));
       },
+      expandEditOnAdd: true,
       depChange: (state, source, topState, actionObj)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {primary_key: []};
@@ -137,14 +143,12 @@ export class ConstraintsSchema extends BaseUISchema {
       group: gettext('Foreign Key'), mode: ['edit', 'create'],
       canEdit: true, canDelete: true, deps:['is_partitioned', 'columns'],
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       columns : ['name', 'columns','references_table_name'],
       disabled: this.inCatalog,
       canAddRow: obj.anyColumnAdded,
+      expandEditOnAdd: true,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {foreign_key: []};
@@ -162,7 +166,7 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'consrc'],
       disabled: this.inCatalog,
     },{
-      id: 'unique_group', type: 'group', label: gettext('Unique'), visible: !this.inErd,
+      id: 'unique_group', type: 'group', label: gettext('Unique'),
     },{
       id: 'unique_constraint', label: '',
       schema: this.uniqueConsObj,
@@ -172,12 +176,10 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       canAddRow: obj.anyColumnAdded,
+      expandEditOnAdd: true,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {unique_constraint: []};
@@ -194,12 +196,10 @@ export class ConstraintsSchema extends BaseUISchema {
       columns : ['name', 'columns', 'constraint'],
       disabled: this.inCatalog,
       canAdd: function(state) {
-        if (state.is_partitioned && obj.top.getServerVersion() < 110000) {
-          return false;
-        }
-        return true;
+        return obj.canAdd(state);
       },
       canAddRow: obj.anyColumnAdded,
+      expandEditOnAdd: true,
       depChange: (state)=>{
         if (state.is_partitioned && obj.top.getServerVersion() < 110000 || state.columns?.length <= 0) {
           return {exclude_constraint: []};
@@ -216,17 +216,11 @@ export class LikeSchema extends BaseUISchema {
   }
 
   isLikeDisable(state) {
-    if(!this.top.inSchemaWithModelCheck(state) && isEmptyString(state.typname)) {
-      return false;
-    }
-    return true;
+    return !(!this.top.inSchemaWithModelCheck(state) && isEmptyString(state.typname));
   }
 
   isRelationDisable(state) {
-    if(isEmptyString(state.like_relation)) {
-      return true;
-    }
-    return false;
+    return isEmptyString(state.like_relation);
   }
 
   resetVals(state) {
@@ -284,7 +278,7 @@ export class LikeSchema extends BaseUISchema {
 }
 
 export default class TableSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, schemas={}, getPrivilegeRoleSchema=()=>{}, getColumns=()=>[],
+  constructor(fieldOptions={}, nodeInfo={}, schemas={}, getPrivilegeRoleSchema=()=>{/*This is intentional (SonarQube)*/}, getColumns=()=>[],
     getCollations=()=>[], getOperatorClass=()=>[], getAttachTables=()=>[], initValues={}, inErd=false) {
     super({
       name: undefined,
@@ -343,7 +337,7 @@ export default class TableSchema extends BaseUISchema {
     const SUPPORTED_KEYS = [
       'name', 'schema', 'description', 'rlspolicy', 'forcerlspolicy', 'fillfactor',
       'toast_tuple_target', 'parallel_workers', 'relhasoids', 'relpersistence',
-      'columns', 'primary_key', 'foreign_key',
+      'columns', 'primary_key', 'foreign_key', 'unique_constraint',
     ];
     newData = _.pick(newData, SUPPORTED_KEYS);
 
@@ -387,27 +381,20 @@ export default class TableSchema extends BaseUISchema {
         return t.tid;
       }
     }
-    return;
   }
 
   // Check for column grid when to Add
   canAddRowColumns(state) {
     if(!this.inCatalog()) {
       // if of_type then disable add in grid
-      if (!isEmptyString(state.typname)) {
-        return false;
-      }
-      return true;
+      return isEmptyString(state.typname);
     }
     return false;
   }
 
   // Check for column grid when to edit/delete (for each row)
   canEditDeleteRowColumns(colstate) {
-    if (!isEmptyString(colstate.inheritedfrom)) {
-      return false;
-    }
-    return true;
+    return isEmptyString(colstate.inheritedfrom);
   }
 
   isPartitioned(state) {
@@ -462,18 +449,14 @@ export default class TableSchema extends BaseUISchema {
           return false;
         }
         // Always show in case of create mode
-        if (obj.isNew(state) || state.is_partitioned)
-          return true;
-        return false;
+        return (obj.isNew(state) || state.is_partitioned);
       },
     },{
       id: 'is_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
       type: 'switch', mode: ['properties', 'create', 'edit'],
       min_version: 100000, visible: !this.inErd,
       readonly: function(state) {
-        if (!obj.isNew(state))
-          return true;
-        return false;
+        return !obj.isNew(state);
       },
     },{
       id: 'is_sys_table', label: gettext('System table?'), cell: 'switch',
@@ -493,10 +476,7 @@ export default class TableSchema extends BaseUISchema {
         if(state.adding_inherit_cols || state.is_partitioned){
           return true;
         }
-        if(!obj.inCatalog() && isEmptyString(state.typname)) {
-          return false;
-        }
-        return true;
+        return !(!obj.inCatalog() && isEmptyString(state.typname));
       },
       depChange: (state, source, topState, actionObj)=>{
         if(actionObj.type == SCHEMA_STATE_ACTIONS.SET_VALUE && actionObj.path[0] == 'coll_inherits') {
@@ -535,14 +515,14 @@ export default class TableSchema extends BaseUISchema {
 
           if(tabColsResponse) {
             tabColsResponse.then((res)=>{
-              resolve((state)=>{
+              resolve((tmpstate)=>{
                 let finalCols = res.map((col)=>obj.columnsSchema.getNewData(col));
                 let currentSelectedCols = [];
-                if (!_.isEmpty(state.columns)){
-                  currentSelectedCols = state.columns;
+                if (!_.isEmpty(tmpstate.columns)){
+                  currentSelectedCols = tmpstate.columns;
                 }
                 let colNameList = [];
-                state.columns.forEach((col=>{
+                tmpstate.columns.forEach((col=>{
                   colNameList.push(col.name);
                 }));
                 for (let col of Object.values(finalCols)) {
@@ -576,9 +556,9 @@ export default class TableSchema extends BaseUISchema {
             removeOid = this.getTableOid(tabName);
           }
           if(removeOid) {
-            resolve((state)=>{
-              let finalCols = state.columns;
-              _.remove(state.columns, (col)=>col.inheritedid==removeOid);
+            resolve((tmpstate)=>{
+              let finalCols = tmpstate.columns;
+              _.remove(tmpstate.columns, (col)=>col.inheritedid==removeOid);
               obj.changeColumnOptions(finalCols);
               return {
                 adding_inherit_cols: false,
@@ -598,9 +578,9 @@ export default class TableSchema extends BaseUISchema {
       group: 'advanced', min_version: 90600,
       depChange: (state)=>{
         if (state.rlspolicy && this.origData.rlspolicy != state.rlspolicy) {
-          pgAlertify().alert(
+          Notify.alert(
             gettext('Check Policy?'),
-            gettext('Please check if any policy exist. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
+            gettext('Please check if any policy exists. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
           );
         }
       }
@@ -638,7 +618,7 @@ export default class TableSchema extends BaseUISchema {
       deps: ['typname', 'is_partitioned'],
       depChange: (state, source, topState, actionObj)=>{
         if(source[0] === 'columns') {
-          /* In ERD, attnum is an imp var for setting the links
+          /* In ERD, attnum is an imp let for setting the links
           Here, attnum is set to max avail value.
           */
           let columns = state.columns;
@@ -685,6 +665,7 @@ export default class TableSchema extends BaseUISchema {
       },
       canAdd: this.canAddRowColumns,
       canEdit: true, canDelete: true,
+      canReorder: (state)=>(this.inErd || this.isNew(state)),
       // For each row edit/delete button enable/disable
       canEditRow: this.canEditDeleteRowColumns,
       canDeleteRow: this.canEditDeleteRowColumns,
@@ -701,10 +682,7 @@ export default class TableSchema extends BaseUISchema {
       mode: ['properties', 'create', 'edit'], group: 'advanced', deps: ['coll_inherits'],
       visible: !this.inErd,
       disabled: (state)=>{
-        if(!obj.inSchemaWithModelCheck(state) && isEmptyString(state.coll_inherits)) {
-          return false;
-        }
-        return true;
+        return !(!obj.inSchemaWithModelCheck(state) && isEmptyString(state.coll_inherits));
       }, options: this.fieldOptions.typname, optionsLoaded: (res)=>{
         obj.ofTypeTables = res;
       },
@@ -730,7 +708,7 @@ export default class TableSchema extends BaseUISchema {
         };
         if(!isEmptyString(state.typname) && isEmptyString(actionObj.oldState.typname)) {
           return new Promise((resolve)=>{
-            pgAlertify().confirm(
+            Notify.confirm(
               gettext('Remove column definitions?'),
               gettext('Changing \'Of type\' will remove column definitions.'),
               function () {
@@ -750,7 +728,7 @@ export default class TableSchema extends BaseUISchema {
             setColumns(resolve);
           });
         } else {
-          return Promise.resolve(()=>{});
+          return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
         }
       },
     },
@@ -818,7 +796,7 @@ export default class TableSchema extends BaseUISchema {
       editable: false, type: 'select', controlProps: {allowClear: false},
       group: 'partition', deps: ['is_partitioned'],
       options: function() {
-        var options = [{
+        let options = [{
           label: gettext('Range'), value: 'range',
         },{
           label: gettext('List'), value: 'list',
@@ -834,9 +812,7 @@ export default class TableSchema extends BaseUISchema {
       mode:['create'],
       min_version: 100000,
       disabled: function(state) {
-        if (!state.is_partitioned)
-          return true;
-        return false;
+        return !state.is_partitioned;
       },
       readonly: function(state) {return !obj.isNew(state);},
     },
@@ -849,14 +825,12 @@ export default class TableSchema extends BaseUISchema {
       deps: ['is_partitioned', 'partition_type', 'typname'],
       canEdit: false, canDelete: true,
       canAdd: function(state) {
-        if (obj.isNew(state) && state.is_partitioned)
-          return true;
-        return false;
+        return obj.isNew(state) && state.is_partitioned;
       },
       canAddRow: function(state) {
         let columnsExist = false;
 
-        var maxRowCount = 1000;
+        let maxRowCount = 1000;
         if (state.partition_type && state.partition_type == 'list')
           maxRowCount = 1;
 
@@ -922,9 +896,7 @@ export default class TableSchema extends BaseUISchema {
       customDeleteMsg: gettext('Are you sure you wish to detach this partition?'),
       columns:['is_attach', 'partition_name', 'is_default', 'values_from', 'values_to', 'values_in', 'values_modulus', 'values_remainder'],
       canAdd: function(state) {
-        if (state.is_partitioned)
-          return true;
-        return false;
+        return state.is_partitioned;
       },
       min_version: 100000,
     },
@@ -981,7 +953,7 @@ export default class TableSchema extends BaseUISchema {
       id: 'seclabels', label: gettext('Security labels'), canEdit: false,
       schema: new SecLabelSchema(), editable: false, canAdd: true,
       type: 'collection', min_version: 90100, mode: ['edit', 'create'],
-      group: 'security_group', canDelete: true, control: 'unique-col-collection',
+      group: 'security_group', canDelete: true,
     },{
       id: 'vacuum_settings_str', label: gettext('Storage settings'),
       type: 'multiline', group: 'advanced', mode: ['properties'],

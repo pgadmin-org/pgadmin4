@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -46,12 +46,12 @@ class CheckRecoveryCodeTestCase(BaseTestGenerator):
                 res = json.loads(response.data.decode('utf-8'))
                 self.assertEqual(res['data']['in_recovery'], True)
                 self.assertEqual(res['data']['wal_pause'], self.pause)
-                self.assertEquals(response.status_code,
-                                  self.expected_data["status_code"])
+                self.assertEqual(response.status_code,
+                                 self.expected_data["status_code"])
         else:
             response = self.run_test_cases()
-            self.assertEquals(response.status_code,
-                              self.expected_data["status_code"])
+            self.assertEqual(response.status_code,
+                             self.expected_data["status_code"])
 
     def run_test_cases(self):
 

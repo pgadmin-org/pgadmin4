@@ -4,10 +4,18 @@
 `Enabling Kerberos Authentication`:index:
 *****************************************
 
+**Prerequisite:** Kerberos understanding and setup
+
+Reference: https://web.mit.edu/kerberos/
+
 To configure Kerberos authentication, you must setup your Kerberos Server and
-generate a ticket on the client using *kinit*. To enable Kerberos authentication
-for pgAdmin, you must configure the Kerberos settings in *config_local.py* or
-*config_system.py* (see the :ref:`config.py <config_py>` documentation) on the
+obtain a ticket on the client using *kinit*.
+
+Note: Active Directory users with Kerberos support do not require kinit.
+
+To enable Kerberos authentication for pgAdmin, you must configure the
+Kerberos settings in *config_local.py* or *config_system.py*
+(see the :ref:`config.py <config_py>` documentation) on the
 system where pgAdmin is installed in Server mode. You can copy these settings
 from *config.py* file and modify the values for the following parameters.
 
@@ -38,10 +46,10 @@ from *config.py* file and modify the values for the following parameters.
 Keytab file for HTTP Service
 ============================
 
-* Generate the *Keytab* file for the HTTP service principal and copy it to the
-  *pgAdmin* webserver machine. Ensure that the operating system user owning
-  the *pgAdmin* webserver is the owner of this file and should be accessible
-  by that user.
+* Generate the *Keytab* file for the HTTP service principal HTTP/<host-name>@realm,
+  and copy it to the *pgAdmin* webserver machine. Ensure that the operating system
+  user owning the *pgAdmin* webserver is the owner of this file and should be
+  accessible by that user.
 
 * Please note that either you should set *default_keytab_name* parameter in
   *krb5.conf* file or the environment variable *KRB5_KTNAME*. If not set then

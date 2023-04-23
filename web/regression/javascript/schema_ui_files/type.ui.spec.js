@@ -2,22 +2,17 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
 import { createMount } from '@material-ui/core/test-utils';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui';
-
 import TypeSchema, { EnumerationSchema, getCompositeSchema, getExternalSchema, getRangeSchema, getDataTypeSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('TypeSchema', ()=>{
 
@@ -35,12 +30,7 @@ describe('TypeSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
-    pgAdmin.Browser.utils.support_ssh_tunnel = true;
+    genericBeforeEach();
   });
 
   describe('composite schema describe', () => {
@@ -57,40 +47,8 @@ describe('TypeSchema', ()=>{
 
       spyOn(compositeCollObj, 'type_options').and.returnValue(compositeCollObj.fieldOptions.types());
 
-      mount(<SchemaView
-        formType='dialog'
-        schema={compositeCollObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
-
-      mount(<SchemaView
-        formType='dialog'
-        schema={compositeCollObj}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        getInitData={getInitData}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getCreateView(compositeCollObj));
+      mount(getEditView(compositeCollObj, getInitData));
     });
 
     it('composite validate', () => {
@@ -143,40 +101,8 @@ describe('TypeSchema', ()=>{
         ()=>[]
       );
 
-      mount(<SchemaView
-        formType='dialog'
-        schema={enumerationCollObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
-
-      mount(<SchemaView
-        formType='dialog'
-        schema={enumerationCollObj}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{}}
-        getInitData={getInitData}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getCreateView(enumerationCollObj));
+      mount(getEditView(enumerationCollObj, getInitData));
     });
   });
 
@@ -190,40 +116,8 @@ describe('TypeSchema', ()=>{
       spyOn(externalCollObj.fieldOptions, 'externalFunctionsList').and.returnValue([{ label: '', value: ''}, { label: 'lb1', cbtype: 'typmodin', value: 'val1'}, { label: 'lb2', cbtype: 'all', value: 'val2'}]);
       spyOn(externalCollObj.fieldOptions, 'types').and.returnValue([{ label: '', value: ''}]);
 
-      mount(<SchemaView
-        formType='dialog'
-        schema={externalCollObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
-
-      mount(<SchemaView
-        formType='dialog'
-        schema={externalCollObj}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        getInitData={getInitData}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getCreateView(externalCollObj));
+      mount(getEditView(externalCollObj, getInitData));
     });
 
     it('external validate', () => {
@@ -252,40 +146,8 @@ describe('TypeSchema', ()=>{
       spyOn(rangeCollObj.fieldOptions, 'typnameList').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
       spyOn(rangeCollObj.fieldOptions, 'collationsList').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
 
-      mount(<SchemaView
-        formType='dialog'
-        schema={rangeCollObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
-
-      mount(<SchemaView
-        formType='dialog'
-        schema={rangeCollObj}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        getInitData={getInitData}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getCreateView(rangeCollObj));
+      mount(getEditView(rangeCollObj, getInitData));
     });
 
     it('range validate', () => {
@@ -305,41 +167,8 @@ describe('TypeSchema', ()=>{
     it('data type collection', ()=>{
 
       spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
-
-      mount(<SchemaView
-        formType='dialog'
-        schema={dataTypeObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
-
-      mount(<SchemaView
-        formType='dialog'
-        schema={dataTypeObj}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{}}
-        getInitData={getInitData}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />);
+      mount(getCreateView(dataTypeObj));
+      mount(getEditView(dataTypeObj, getInitData));
     });
 
     it('tlength editable', ()=>{
@@ -391,54 +220,14 @@ describe('TypeSchema', ()=>{
   );
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={typeSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(typeSchemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={typeSchemaObj}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      getInitData={getInitData}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getEditView(typeSchemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={typeSchemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(typeSchemaObj, getInitData));
   });
 });

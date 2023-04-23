@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Exclusion constraint Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -67,7 +67,7 @@ class ExclusionConstraintModule(ConstraintTypeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(ExclusionConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, tid):
         """
@@ -222,11 +222,6 @@ class ExclusionConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -285,7 +280,8 @@ class ExclusionConstraintView(PGChildNodeView):
         if exid:
             result = res[0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or self.datistemplate)
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=result,
@@ -486,7 +482,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -525,7 +521,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         required_args = ['columns']
 
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
         data = self.parse_input_data(data)
         arg_missing = self.check_required_args(data, required_args)
         if arg_missing is not None:
@@ -577,7 +573,7 @@ class ExclusionConstraintView(PGChildNodeView):
             else:
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
-                    name=data['name']
+                    name=data['name'], conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -620,7 +616,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -637,7 +633,7 @@ class ExclusionConstraintView(PGChildNodeView):
 
             sql = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
-                name=data['name']
+                name=data['name'], conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -673,7 +669,7 @@ class ExclusionConstraintView(PGChildNodeView):
         """
         if exid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [exid]}
@@ -747,7 +743,7 @@ class ExclusionConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -800,7 +796,8 @@ class ExclusionConstraintView(PGChildNodeView):
             data['table'] = self.table
 
             SQL = render_template(
-                "/".join([self.template_path, self._CREATE_SQL]), data=data)
+                "/".join([self.template_path, self._CREATE_SQL]), data=data,
+                conn=self.conn)
 
             sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 

@@ -2,23 +2,23 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import CompoundTriggerSchema from './compound_trigger.ui';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.compound_trigger', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'underscore',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
-  'pgadmin.backform', 'pgadmin.alertifyjs',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, _, pgAdmin, pgBrowser, Backform, alertify,
-  SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-compound_trigger']) {
@@ -56,45 +56,45 @@ define('pgadmin.node.compound_trigger', [
           name: 'create_compound_trigger_on_coll', node: 'coll-compound_trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },{
           name: 'create_compound_trigger', node: 'compound_trigger', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },{
           name: 'create_compound_trigger_onTable', node: 'table', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },{
           name: 'create_compound_trigger_onPartition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },{
           name: 'enable_compound_trigger', node: 'compound_trigger', module: this,
           applies: ['object', 'context'], callback: 'enable_compound_trigger',
           category: 'connect', priority: 3, label: gettext('Enable compound trigger'),
-          icon: 'fa fa-check', enable : 'canCreate_with_compound_trigger_enable',
+          enable : 'canCreate_with_compound_trigger_enable',
         },{
           name: 'disable_compound_trigger', node: 'compound_trigger', module: this,
           applies: ['object', 'context'], callback: 'disable_compound_trigger',
           category: 'drop', priority: 3, label: gettext('Disable compound trigger'),
-          icon: 'fa fa-times', enable : 'canCreate_with_compound_trigger_disable',
+          enable : 'canCreate_with_compound_trigger_disable',
         },{
           name: 'create_compound_trigger_onView', node: 'view', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Compound Trigger...'),
-          icon: 'wcTabIcon icon-compound_trigger', data: {action: 'create', check: true,
+          data: {action: 'create', check: true,
             data_disabled: gettext('This option is only available on EPAS servers.')},
           enable: 'canCreate',
         },
@@ -103,7 +103,7 @@ define('pgadmin.node.compound_trigger', [
       callbacks: {
         /* Enable compound trigger */
         enable_compound_trigger: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -112,36 +112,32 @@ define('pgadmin.node.compound_trigger', [
           if (!d)
             return false;
 
-          var data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'enable' , d, true),
-            type:'PUT',
-            data: {'is_enable_trigger' : 'O'},
-            dataType: 'json',
-          })
-            .done(function(res) {
-              if (res.success == 1) {
-                alertify.success(res.info);
-                t.removeIcon(i);
-                data.icon = 'icon-compound_trigger';
-                t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            })
-            .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error);
+          let data = d;
+          getApiInstance().put(
+            obj.generate_url(i, 'enable' , d, true),
+            {'is_enable_trigger' : 'O'}
+          ).then(({data: res})=> {
+            if(res.success == 1) {
+              Notify.success(res.info);
+              t.removeIcon(i);
+              data.icon = 'icon-compound_trigger';
+              t.addIcon(i, {icon: data.icon});
               t.unload(i);
-            });
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         },
         /* Disable compound trigger */
         disable_compound_trigger: function(args) {
-          var input = args || {},
+          let input = args || {},
             obj = this,
             t = pgBrowser.tree,
             i = input.item || t.selected(),
@@ -150,32 +146,28 @@ define('pgadmin.node.compound_trigger', [
           if (!d)
             return false;
 
-          var data = d;
-          $.ajax({
-            url: obj.generate_url(i, 'enable' , d, true),
-            type:'PUT',
-            data: {'is_enable_trigger' : 'D'},
-            dataType: 'json',
-          })
-            .done(function(res) {
-              if (res.success == 1) {
-                alertify.success(res.info);
-                t.removeIcon(i);
-                data.icon = 'icon-compound_trigger-bad';
-                t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
-              }
-            })
-            .fail(function(xhr, status, error) {
-              alertify.pgRespErrorNotify(xhr, error, gettext('Disable compound trigger failed'));
+          let data = d;
+          getApiInstance().put(
+            obj.generate_url(i, 'enable' , d, true),
+            {'is_enable_trigger' : 'D'}
+          ).then(({data: res})=> {
+            if(res.success == 1) {
+              Notify.success(res.info);
+              t.removeIcon(i);
+              data.icon = 'icon-compound_trigger-bad';
+              t.addIcon(i, {icon: data.icon});
               t.unload(i);
-            });
+              t.setInode(false);
+              t.deselect(i);
+              // Fetch updated data from server
+              setTimeout(function() {
+                t.select(i);
+              }, 10);
+            }
+          }).catch(function(error) {
+            Notify.pgRespErrorNotify(error);
+            t.unload(i);
+          });
         },
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -190,37 +182,23 @@ define('pgadmin.node.compound_trigger', [
         );
       },
 
-      model: pgAdmin.Browser.Node.Model.extend({
-        idAttribute: 'oid',
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text',
-        }, {
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline', mode: ['properties', 'create', 'edit'],
-        }],
-      }),
       canCreate: function(itemData, item, data) {
         //If check is false then , we will allow create menu
-        if (data && data.check == false)
+        if (data && !data.check)
           return true;
 
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
           server = treeData['server'];
 
         if (server && (server.server_type === 'pg' || server.version < 120000))
           return false;
 
         // If it is catalog then don't allow user to create package
-        if (treeData['catalog'] != undefined)
-          return false;
-
-        // by default we want to allow create menu
-        return true;
+        return treeData['catalog'] == undefined;
       },
       // Check to whether trigger is disable ?
       canCreate_with_compound_trigger_enable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }
@@ -230,7 +208,7 @@ define('pgadmin.node.compound_trigger', [
       },
       // Check to whether trigger is enable ?
       canCreate_with_compound_trigger_disable: function(itemData, item, data) {
-        var treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item);
         if ('view' in treeData) {
           return false;
         }

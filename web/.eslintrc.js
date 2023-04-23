@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -17,6 +17,11 @@ module.exports = {
   'extends': [
     'eslint:recommended',
     'plugin:react/recommended',
+    /* Uncomment the below line to use linter error for React Hooks.
+       By Default commented so that builds are generated successfully.
+       Once all the errors will be resolved will uncomment it and commit it.
+    */
+    // "plugin:react-hooks/recommended",
   ],
   'parser': '@babel/eslint-parser',
   'parserOptions': {
@@ -36,6 +41,20 @@ module.exports = {
   'plugins': [
     'react',
     '@babel',
+  ],
+  'overrides': [
+    {
+      'files': ['**/*.ts', '**/*.tsx'],
+      'plugins': [
+        '@typescript-eslint',
+      ],
+      'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended'],
+      'parser': '@typescript-eslint/parser',
+      'rules': {
+        '@typescript-eslint/no-explicit-any': ['off'],
+        '@typescript-eslint/no-this-alias': ['off'],
+      }
+    },
   ],
   'globals': {
     '_': true,

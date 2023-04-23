@@ -1,10 +1,18 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { emptyValidator, isEmptyString } from '../../../../../../../../static/js/validators';
 
 export class PartitionKeysSchema extends BaseUISchema {
-  constructor(columns=[], getCollations, getOperatorClass) {
+  constructor(columns=[], getCollations=[], getOperatorClass=[]) {
     super({
       key_type: 'column',
     });
@@ -16,6 +24,10 @@ export class PartitionKeysSchema extends BaseUISchema {
 
   changeColumnOptions(columns) {
     this.columns = columns;
+  }
+
+  isEditable(state) {
+    return state.key_type != 'expression';
   }
 
   get baseFields() {
@@ -47,10 +59,7 @@ export class PartitionKeysSchema extends BaseUISchema {
         }
       }),
       editable: function(state) {
-        if(state.key_type == 'expression') {
-          return false;
-        }
-        return true;
+        return obj.isEditable(state);
       },
     },{
       id: 'expression', label: gettext('Expression'), type:'text',
@@ -63,20 +72,14 @@ export class PartitionKeysSchema extends BaseUISchema {
         }
       },
       editable: function(state) {
-        if(state.key_type == 'expression') {
-          return true;
-        }
-        return false;
+        return state.key_type == 'expression';
       },
     },{
       id: 'collationame', label: gettext('Collation'), cell: 'select',
       type: 'select', group: gettext('partition'), deps:['key_type'],
       options: obj.getCollations, mode: ['create', 'properties', 'edit'],
       editable: function(state) {
-        if(state.key_type == 'expression') {
-          return false;
-        }
-        return true;
+        return obj.isEditable(state);
       },
       disabled: ()=>{return !(obj.isNew()); },
     },
@@ -84,10 +87,7 @@ export class PartitionKeysSchema extends BaseUISchema {
       id: 'op_class', label: gettext('Operator class'), cell: 'select',
       type: 'select', group: gettext('partition'),  deps:['key_type'],
       editable: function(state) {
-        if(state.key_type == 'expression') {
-          return false;
-        }
-        return true;
+        return obj.isEditable(state);
       },
       disabled: ()=>{return !(obj.isNew()); },
       options: obj.getOperatorClass, mode: ['create', 'properties', 'edit'],
@@ -137,6 +137,16 @@ export class PartitionsSchema extends BaseUISchema {
     this.subPartitionsObj.changeColumnOptions(columns);
   }
 
+  isEditable(state, type) {
+    return (this.top && this.top.sessData.partition_type == type && this.isNew(state)
+        && state.is_default !== true);
+  }
+
+  isDisable(state, type) {
+    return !(this.top && this.top.sessData.partition_type == type && this.isNew(state)
+        && state.is_default !== true);
+  }
+
   get baseFields() {
     let obj = this;
     return [{
@@ -149,16 +159,10 @@ export class PartitionsSchema extends BaseUISchema {
         {label: gettext('Create'), value: false},
       ], controlProps: {allowClear: false},
       editable: function(state) {
-        if(obj.isNew(state) && !obj.top.isNew()) {
-          return true;
-        }
-        return false;
+        return obj.isNew(state) && !obj.top.isNew();
       },
       readonly: function(state) {
-        if(obj.isNew(state) && !obj.top.isNew()) {
-          return false;
-        }
-        return true;
+        return !(obj.isNew(state) && !obj.top.isNew());
       },
     },{
       id: 'partition_name', label: gettext('Name'), deps: ['is_attach'],
@@ -189,117 +193,68 @@ export class PartitionsSchema extends BaseUISchema {
         }
       },
       editable: function(state) {
-        if(obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.isNew(state);
       },
       readonly: function(state) {
-        if(obj.isNew(state)) {
-          return false;
-        }
-        return true;
+        return !obj.isNew(state);
       }, noEmpty: true,
     },{
       id: 'is_default', label: gettext('Default'), type: 'switch', cell:'switch',
       width: 55, disableResizing: true, min_version: 110000,
       editable: function(state) {
-        if(obj.top && (obj.top.sessData.partition_type == 'range' ||
+        return (obj.top && (obj.top.sessData.partition_type == 'range' ||
             obj.top.sessData.partition_type == 'list') && obj.isNew(state)
-            && obj.getServerVersion() >= 110000) {
-          return true;
-        }
-        return false;
+            && obj.getServerVersion() >= 110000);
       },
       readonly: function(state) {
-        if(obj.top && (obj.top.sessData.partition_type == 'range' ||
+        return !(obj.top && (obj.top.sessData.partition_type == 'range' ||
             obj.top.sessData.partition_type == 'list') && obj.isNew(state)
-            && obj.getServerVersion() >= 110000) {
-          return false;
-        }
-        return true;
+            && obj.getServerVersion() >= 110000);
       },
     },{
       id: 'values_from', label: gettext('From'), type:'text', cell: 'text',
       deps: ['is_default'],
       editable: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'range' && obj.isNew(state)
-            && state.is_default !== true) {
-          return true;
-        }
-        return false;
+        return obj.isEditable(state, 'range');
       },
       disabled: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'range' && obj.isNew(state)
-            && state.is_default !== true) {
-          return false;
-        }
-        return true;
-      },
+        return obj.isDisable(state, 'range');
+      }
     },
     {
       id: 'values_to', label: gettext('To'), type:'text', cell: 'text',
       deps: ['is_default'],
       editable: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'range' && obj.isNew(state)
-            && state.is_default !== true) {
-          return true;
-        }
-        return false;
+        return obj.isEditable(state, 'range');
       },
       disabled: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'range' && obj.isNew(state)
-            && state.is_default !== true) {
-          return false;
-        }
-        return true;
+        return obj.isDisable(state, 'range');
       },
     },{
       id: 'values_in', label: gettext('In'), type:'text', cell: 'text',
       deps: ['is_default'],
       editable: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'list' && obj.isNew(state)
-            && state.is_default !== true) {
-          return true;
-        }
-        return false;
+        return obj.isEditable(state, 'list');
       },
       readonly: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'list' && obj.isNew(state)
-            && state.is_default !== true) {
-          return false;
-        }
-        return true;
+        return obj.isDisable(state, 'list');
       },
     },{
       id: 'values_modulus', label: gettext('Modulus'), type:'int', cell: 'int',
       editable: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.isEditable(state, 'hash');
       },
       disabled: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)
-            && state.is_default !== true) {
-          return false;
-        }
-        return true;
+        return obj.isDisable(state, 'hash');
       },
     },{
       id: 'values_remainder', label: gettext('Remainder'), type:'int', cell: 'int',
       editable: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state);
       },
       disabled: function(state) {
-        if(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)
-            && state.is_default !== true) {
-          return false;
-        }
-        return true;
+        return !(obj.top && obj.top.sessData.partition_type == 'hash' && obj.isNew(state)
+            && state.is_default !== true);
       },
     },{
       id: 'is_sub_partitioned', label:gettext('Partitioned table?'), cell: 'switch',
@@ -308,10 +263,7 @@ export class PartitionsSchema extends BaseUISchema {
         if(!obj.isNew(state)) {
           return true;
         }
-        if(state.is_attach) {
-          return true;
-        }
-        return false;
+        return state.is_attach;
       },
       depChange: (state)=>{
         if(state.is_attach) {
@@ -323,7 +275,7 @@ export class PartitionsSchema extends BaseUISchema {
       editable: false, type: 'select', controlProps: {allowClear: false},
       group: 'Partition', deps: ['is_sub_partitioned'],
       options: function() {
-        var options = [{
+        let options = [{
           label: gettext('Range'), value: 'range',
         },{
           label: gettext('List'), value: 'list',
@@ -347,15 +299,13 @@ export class PartitionsSchema extends BaseUISchema {
       deps: ['is_sub_partitioned', 'sub_partition_type', ['typname']],
       canEdit: false, canDelete: true,
       canAdd: function(state) {
-        if (obj.isNew(state) && state.is_sub_partitioned)
-          return true;
-        return false;
+        return obj.isNew(state) && state.is_sub_partitioned;
       },
       canAddRow: function(state) {
         let columnsExist = false;
         let columns = obj.top.sessData.columns;
 
-        var maxRowCount = 1000;
+        let maxRowCount = 1000;
         if (state.sub_partition_type && state.sub_partition_type == 'list')
           maxRowCount = 1;
 
@@ -385,10 +335,7 @@ export class PartitionsSchema extends BaseUISchema {
         text: state.sub_partition_scheme,
       }),
       visible: function(state) {
-        if(obj.isNew(state) && !isEmptyString(state.sub_partition_scheme)) {
-          return true;
-        }
-        return false;
+        return obj.isNew(state) && !isEmptyString(state.sub_partition_scheme);
       },
     }];
   }
@@ -424,7 +371,9 @@ export class PartitionsSchema extends BaseUISchema {
         msg = gettext('For hash partition Modulus field cannot be empty.');
         setError('values_modulus', msg);
         return true;
-      } if(isEmptyString(state.values_remainder)) {
+      }
+
+      if(isEmptyString(state.values_remainder)) {
         msg = gettext('For hash partition Remainder field cannot be empty.');
         setError('values_remainder', msg);
         return true;

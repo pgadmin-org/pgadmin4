@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 export default class CastSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,            // Name of the cast
       encoding: 'UTF8',
@@ -27,6 +27,16 @@ export default class CastSchema extends BaseUISchema {
   }
   get idAttribute() {
     return 'oid';
+  }
+
+  getCastName(state) {
+    let srctype = state.srctyp;
+    let trgtype = state.trgtyp;
+    if(srctype != undefined && srctype != '' &&
+          trgtype != undefined && trgtype != '')
+      return state.name = srctype+'->'+trgtype;
+    else
+      return state.name = '';
   }
 
   get baseFields() {
@@ -53,13 +63,7 @@ export default class CastSchema extends BaseUISchema {
             * target type are set, if yes then fetch values from both
             * controls and generate cast name
             */
-        var srctype = state.srctyp;
-        var trgtype = state.trgtyp;
-        if(srctype != undefined && srctype != '' &&
-              trgtype != undefined && trgtype != '')
-          return state.name = srctype+'->'+trgtype;
-        else
-          return state.name = '';
+        return obj.getCastName(state);
       },
     },
 
@@ -83,13 +87,7 @@ export default class CastSchema extends BaseUISchema {
             * target type are set, if yes then fetch values from both
             * controls and generate cast name
             */
-        var srctype = state.srctyp;
-        var trgtype = state.trgtyp;
-        if(srctype != undefined && srctype != '' &&
-              trgtype != undefined && trgtype != '')
-          return state.name = srctype+'->'+trgtype;
-        else
-          return state.name = '';
+        return obj.getCastName(state);
       },
     },
     /*
@@ -145,11 +143,11 @@ export default class CastSchema extends BaseUISchema {
     {
       id: 'castcontext', label: gettext('Context'), readonly: true,
       options:[{
-        label: 'IMPLICIT', value: 'IMPLICIT',
+        label: gettext('IMPLICIT'), value: 'IMPLICIT',
       },{
-        label: 'EXPLICIT', value: 'EXPLICIT',
+        label: gettext('EXPLICIT'), value: 'EXPLICIT',
       },{
-        label: 'ASSIGNMENT', value: 'ASSIGNMENT',
+        label: gettext('ASSIGNMENT'), value: 'ASSIGNMENT',
       }], type: 'select', group: gettext('Definition'),
       mode:['properties', 'edit'],
       controlProps: {
@@ -172,8 +170,7 @@ export default class CastSchema extends BaseUISchema {
       setError('srctyp', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('srctyp', errmsg);
+      setError('srctyp', null);
     }
 
     if (isEmptyString(state.trgtyp)) {
@@ -181,8 +178,7 @@ export default class CastSchema extends BaseUISchema {
       setError('trgtyp', errmsg);
       return true;
     } else {
-      errmsg = null;
-      setError('trgtyp', errmsg);
+      setError('trgtyp', null);
     }
     return false;
   }

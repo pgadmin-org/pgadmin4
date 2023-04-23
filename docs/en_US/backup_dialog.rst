@@ -67,8 +67,8 @@ Use the fields in the *General* tab to specify parameters for the backup:
 * Use the dropdown listbox next to *Rolename* to specify the role that owns the
   backup.
 
-Click the *Dump options* tab to continue. Use the box fields in the *Dump
-options* tab to provide options for *pg_dump*.
+Click the *Data/Objects* tab to continue. Use the fields in the *Data/Objects*
+tab to provide options related to data or pgAdmin objects that correspond to *pg_dump*.
 
 .. image:: images/backup_sections.png
     :alt: Sections option on backup dialog
@@ -77,13 +77,13 @@ options* tab to provide options for *pg_dump*.
 * Move switches in the **Sections** field box to select a portion of the object
   that will be backed up.
 
-   * Move the switch next to *Pre-data* to the *Yes* position to include all
+   * Move the switch next to *Pre-data* towards right position to include all
      data definition items not included in the data or post-data item lists.
 
-   * Move the switch next to *Data* to the *Yes* position to backup actual table
+   * Move the switch next to *Data* towards right position to backup actual table
      data, large-object contents, and sequence values.
 
-   * Move the switch next to *Post-data* to the *Yes* position to include
+   * Move the switch next to *Post-data* towards right position to include
      definitions of indexes, triggers, rules, and constraints other than
      validated check constraints.
 
@@ -94,13 +94,13 @@ options* tab to provide options for *pg_dump*.
 * Move switches in the **Type of objects** field box to specify details about
   the type of objects that will be backed up.
 
-   * Move the switch next to *Only data* to the *Yes* position to limit the back
+   * Move the switch next to *Only data* towards right position to limit the back
      up to data.
 
    * Move the switch next to *Only schema* to limit the back up to schema-level
      database objects.
 
-   * Move the switch next to *Blobs* to the *No* position to exclude large
+   * Move the switch next to *Blobs* towards left position to exclude large
      objects in the backup.
 
 .. image:: images/backup_do_not_save.png
@@ -110,21 +110,25 @@ options* tab to provide options for *pg_dump*.
 * Move switches in the **Do not save** field box to select the objects that will
   not be included in the backup.
 
-   * Move the switch next to *Owner* to the *Yes* position to exclude commands
+   * Move the switch next to *Owner* towards right position to exclude commands
      that set object ownership.
 
-   * Move the switch next to *Privilege* to the *Yes* position to exclude
+   * Move the switch next to *Privilege* towards right position to exclude
      commands that create access privileges.
 
-   * Move the switch next to *Tablespace* to the *Yes* position to exclude
+   * Move the switch next to *Tablespace* towards right position to exclude
      tablespaces.
 
-   * Move the switch next to *Unlogged table data* to the *Yes* position to
+   * Move the switch next to *Unlogged table data* towards right position to
      exclude the contents of unlogged tables.
 
-   * Move the switch next to *Comments* to the *Yes* position to exclude
+   * Move the switch next to *Comments* towards right position to exclude
      commands that set the comments. **Note:** This option is visible only for
      database server greater than or equal to 11.
+
+Click the *Options* tab to continue. Use these additional fields to specify
+options like including ddl statements, verbose message or using set session
+authorization corresponding to *pg_dump* options.
 
 .. image:: images/backup_queries.png
     :alt: Queries option on backup dialog
@@ -133,24 +137,24 @@ options* tab to provide options for *pg_dump*.
 * Move switches in the **Queries** field box to specify the type of statements
   that should be included in the backup.
 
-   * Move the switch next to *Use Column Inserts* to the *Yes* position to dump
+   * Move the switch next to *Use Column Inserts* towards right position to dump
      the data in the form of INSERT statements and include explicit column
      names.  Please note: this may make restoration from backup slow.
 
-   * Move the switch next to *Use Insert commands* to the *Yes* position to
+   * Move the switch next to *Use Insert commands* towards right position to
      dump the data in the form of INSERT statements rather than using a COPY
      command.  Please note: this may make restoration from backup slow.
 
-   * Move the switch next to *Include CREATE DATABASE statement* to the *Yes*
+   * Move the switch next to *Include CREATE DATABASE statement* towards right
      position to include a command in the backup that creates a new database
      when restoring the backup.
 
-   * Move the switch next to *Include DROP DATABASE statement* to the *Yes*
+   * Move the switch next to *Include DROP DATABASE statement* towards right
      position to include a command in the backup that will drop any existing
      database object with the same name before recreating the object during a
      backup.
 
-   * Move the switch next to *Load Via Partition Root* to the *Yes* position,
+   * Move the switch next to *Load Via Partition Root* towards right position,
      so when dumping a COPY or INSERT statement for a partitioned table, target
      the root of the partitioning hierarchy which contains it rather than the
      partition itself. **Note:** This option is visible only for database server
@@ -164,10 +168,10 @@ options* tab to provide options for *pg_dump*.
   that should be excluded from the backup.
 
    * Move the switch next to *Trigger* (active when creating a data-only backup)
-     to the *Yes* position to include commands that will disable triggers on the
+     towards right position to include commands that will disable triggers on the
      target table while the data is being loaded.
 
-   * Move the switch next to *$ quoting* to the *Yes* position to enable dollar
+   * Move the switch next to *$ quoting* towards right position to enable dollar
      quoting within function bodies; if disabled, the function body will be
      quoted using SQL standard string syntax.
 
@@ -178,16 +182,16 @@ options* tab to provide options for *pg_dump*.
 * Move switches in the **Miscellaneous** field box to specify miscellaneous
   backup options.
 
-   * Move the switch next to *With OIDs* to the *Yes* position to include object
+   * Move the switch next to *With OIDs* towards right position to include object
      identifiers as part of the table data for each table.
 
-   * Move the switch next to *Verbose messages* to the *No* position to instruct
+   * Move the switch next to *Verbose messages* towards left position to instruct
      *pg_dump* to exclude verbose messages.
 
-   * Move the switch next to *Force double quotes on identifiers* to the *Yes*
+   * Move the switch next to *Force double quotes on identifiers* towards right
      position to force the quoting of all identifiers.
 
-   * Move the switch next to *Use SET SESSION AUTHORIZATION* to the *Yes*
+   * Move the switch next to *Use SET SESSION AUTHORIZATION* towards right
      position to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
 
@@ -199,21 +203,6 @@ command:
 
 * Click the *Cancel* button to exit without saving work.
 
-.. image:: images/backup_messages.png
-    :alt: Backup success notification popup
-    :align: center
-
-Use the **Stop Process** button to stop the Backup process.
-
-If the backup is successful, a popup window will confirm success. Click *More details* on the popup window to launch the *Process Watcher*. The *Process Watcher* logs all the activity associated with the backup and provides additional information for troubleshooting.
-
-.. image:: images/backup_process_watcher.png
-    :alt:  Backup process watcher
-    :align: center
-
-If the backup is unsuccessful, you can review the error messages returned by the
-backup command on the *Process Watcher*.
-
-.. note:: If you are running *pgAdmin* in *Server Mode* you can click on the |sm_icon| icon in the process watcher window to open the file location in the Storage Manager. You can use the :ref:`Storage Manager <storage_manager>` to download the backup file on the client machine .
-
-.. |sm_icon| image:: images/sm_icon.png
+pgAdmin will run the backup process in background. You can view all the background
+process with there running status and logs on the :ref:`Processes <processes>`
+tab

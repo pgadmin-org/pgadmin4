@@ -8,15 +8,17 @@ DROP COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }};
 
 CREATE COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% if data.lc_collate and data.lc_type %}
-    (LC_COLLATE = {{ data.lc_collate|qtLiteral }}, LC_CTYPE = {{ data.lc_type|qtLiteral }});
+    (LC_COLLATE = {{ data.lc_collate|qtLiteral(conn) }}, LC_CTYPE = {{ data.lc_type|qtLiteral(conn) }});
 {% endif %}
 {% if data.locale %}
-    (LOCALE = {{ data.locale|qtLiteral }});
+    (LOCALE = {{ data.locale|qtLiteral(conn) }});
 {% endif %}
 {% if data.copy_collation %}
     FROM {{ data.copy_collation }};
 {% endif %}
 
+ALTER COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
+    OWNER TO {{ conn|qtIdent(o_data.owner) }};
 {% endif %}
 {% if data.owner and data.owner != o_data.owner %}
 ALTER COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
@@ -26,7 +28,7 @@ ALTER COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {# Change object's comment  #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON COLLATION {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {# Change object name #}

@@ -1,10 +1,11 @@
-SELECT 
-    last_value, 
-    min_value, 
-    max_value,
-    start_value,
-    cache_value,
-    is_cycled, 
-    increment_by,
+SELECT
+    last_value,
+    seqmin AS min_value,
+    seqmax AS max_value,
+    seqstart AS start_value,
+    seqcache AS cache_value,
+    seqcycle AS is_cycled,
+    seqincrement AS increment_by,
     is_called
-FROM {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.name) }}
+FROM pg_catalog.pg_sequence, {{ conn|qtIdent(data.schema) }}.{{ conn|qtIdent(data.name) }}
+WHERE seqrelid = {{data.oid}}

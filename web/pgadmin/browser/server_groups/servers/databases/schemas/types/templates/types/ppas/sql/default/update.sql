@@ -12,7 +12,7 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {# Below will change objects comment  #}
 {% if data.description is defined and data.description != o_data.description %}
 COMMENT ON TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 
 {% endif %}
 {#======================================#}
@@ -87,12 +87,12 @@ ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
 {% if c_idx == 1 %}
 {# if first new element then add it after old data enum list#}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    ADD VALUE {{r.label|qtLiteral}} {% if o_enum_len > 0 %}AFTER {{o_data.enum[o_enum_len].label|qtLiteral }}{% endif %};
+    ADD VALUE {{r.label|qtLiteral(conn)}} {% if o_enum_len > 0 %}AFTER {{o_data.enum[o_enum_len].label|qtLiteral(conn) }}{% endif %};
 {% else %}
 {# if first new element then add it after new data enum list#}
 {% set p_idx = loop.index - 2 %}
 ALTER TYPE {{ conn|qtIdent(o_data.schema, o_data.name) }}
-    ADD VALUE {{r.label|qtLiteral}} AFTER {{enum.added[p_idx].label|qtLiteral}};
+    ADD VALUE {{r.label|qtLiteral(conn)}} AFTER {{enum.added[p_idx].label|qtLiteral(conn)}};
 {% endif %}
 {% endfor %}
 {% endif %}

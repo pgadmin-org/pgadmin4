@@ -8,6 +8,31 @@ pgAdmin can be deployed in a container using the image at:
 
     https://hub.docker.com/r/dpage/pgadmin4/
 
+There are various tags that you can select from to get the version of pgAdmin
+that you want, using a command such as this if you're using Docker:
+
+.. code-block:: bash
+
+   docker pull dpage/pgadmin4:<tag name>
+
+where *<tag name>* is one of the following:
+
+.. table::
+   :class: longtable
+   :widths: 1 4
+
+   +----------+-------------------------------------------------------------------------------+
+   | Tag name | Description                                                                   |
+   +==========+===============================================================================+
+   | latest   | The most recent release.                                                      |
+   +----------+-------------------------------------------------------------------------------+
+   | 6.14     | A specific version (6.14 in this case).                                       |
+   +----------+-------------------------------------------------------------------------------+
+   | 6        | the latest release of a specific major version (major version 6 in this case).|
+   +----------+-------------------------------------------------------------------------------+
+   | snapshot | The latest nightly test build.                                                |
+   +----------+-------------------------------------------------------------------------------+
+
 PostgreSQL Utilities
 ********************
 
@@ -17,7 +42,6 @@ maintenance functions to be executed. Multiple versions are included in the
 following directories to allow use with different versions of the database
 server:
 
-* PostgreSQL 9.6: */usr/local/pgsql-9.6*
 * PostgreSQL 10: */usr/local/pgsql-10*
 * PostgreSQL 11: */usr/local/pgsql-11*
 * PostgreSQL 12: */usr/local/pgsql-12*
@@ -29,12 +53,12 @@ The default binary paths set in the container are as follows:
 .. code-block:: bash
 
     DEFAULT_BINARY_PATHS = {
+        'pg-15': '/usr/local/pgsql-15',
         'pg-14': '/usr/local/pgsql-14',
         'pg-13': '/usr/local/pgsql-13',
         'pg-12': '/usr/local/pgsql-12',
         'pg-11': '/usr/local/pgsql-11',
-        'pg-10': '/usr/local/pgsql-10',
-        'pg-9.6': '/usr/local/pgsql-9.6'
+        'pg-10': '/usr/local/pgsql-10'
     }
 
 this may be changed in the :ref:`preferences`.
@@ -53,6 +77,14 @@ to login to pgAdmin. This variable is required and must be set at launch time.
 
 This is the password used when setting up the initial administrator account to
 login to pgAdmin. This variable is required and must be set at launch time.
+
+**PGADMIN_DEFAULT_PASSWORD_FILE**
+
+This is the password used when setting up the initial administrator account to
+login to pgAdmin. This value should be set to *docker secret* in order to set
+the password. This variable is supported in docker swarm environment or while creating
+container with docker compose. PGADMIN_DEFAULT_PASSWORD or PGADMIN_DEFAULT_PASSWORD_FILE
+variable is required and must be set at launch time.
 
 **PGADMIN_DISABLE_POSTFIX**
 
@@ -100,7 +132,8 @@ than using the default.
 *Default: /pgadmin4/servers.json*
 
 Override the default file path for the server definition list. See the
-/pgadmin4/servers.json mapped file below for more information.
+/pgadmin4/servers.json mapped file below for more information. See the format
+of the `JSON file <https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html#json-format>`_.
 
 **GUNICORN_ACCESS_LOGFILE**
 
@@ -108,6 +141,15 @@ Override the default file path for the server definition list. See the
 
 Specify an output file in which to store the Gunicorn access logs, instead of
 sending them to stdout.
+
+**GUNICORN_LIMIT_REQUEST_LINE**
+
+*Default: 8190*
+
+Set the maximum size of HTTP request line in bytes. By default the pgAdmin
+container uses the maximum limited size offered by Gunicorn as some requests
+can be quite large. In exceptional cases this value can be set to 0 (zero) to
+specify "unlimited", however this poses a potential denial of service hazard.
 
 **GUNICORN_THREADS**
 
@@ -416,7 +458,7 @@ If you wish to host pgAdmin under a subdirectory using Traefik, the
 configuration changes are typically made to the way the container is launched
 and not to Traefik itself. For example, to host pgAdmin under */pgadmin4/*
 instead of at the root directory, the Traefik configuration above may be used if
-the container is launched like this:
+the container is launched like this while using the version v1 of Traefik:
 
 .. code-block:: bash
 
@@ -432,3 +474,16 @@ The *SCRIPT_NAME* environment variable has been set to tell the container it is
 being hosted under a subdirectory (in the same way as the *X-Script-Name* header
 is used with Nginx), and a label has been added to tell Traefik to route
 requests under the subdirectory to this container.
+
+While using the Traefik configuration for version v2 for hosting pgAdmin under subdirectory
+the container is typically launched per the example below:
+
+.. code-block:: bash
+
+    docker pull dpage/pgadmin4
+    docker run --name "pgadmin4" \
+        -e "PGADMIN_DEFAULT_EMAIL=user@domain.com" \
+        -e "PGADMIN_DEFAULT_PASSWORD=SuperSecret" \
+        -e "SCRIPT_NAME=/pgadmin4" \
+        -l "traefik.frontend.pgadmin4.rule=Host(`host.example.com`) && PathPrefix(`/pgadmin4`)" \
+        -d dpage/pgadmin4

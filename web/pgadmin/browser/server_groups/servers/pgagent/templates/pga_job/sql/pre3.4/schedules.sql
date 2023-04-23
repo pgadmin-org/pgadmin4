@@ -1,2 +1,2 @@
 {% import 'macros/pga_schedule.macros' as SCHEDULE %}
-{{ SCHEDULE.PROPERTIES(jid, jscid) }}
+{{ SCHEDULE.PROPERTIES(jid, jscid, conn) }}

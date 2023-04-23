@@ -15,10 +15,10 @@ allows connections from the host of the client.
 Use the fields in the *General* tab to identify the server:
 
 * Use the *Name* field to add a descriptive name for the server; the name
-  specified will be displayed in the *Browser* tree control.
+  specified will be displayed in the *Object Explorer*.
 
 * Use the drop-down list box in the *Server group* field to select the parent
-  node for the server; the server will be displayed in the *Browser* tree
+  node for the server; the server will be displayed in the *Object Explorer*
   control within the specified group.
 
 * Use the color-picker in the *Background* field to specify the background
@@ -42,7 +42,7 @@ Use the fields in the *General* tab to identify the server:
     * Change of host, port, and maintenance database
 
   Please note that once the server is shared, it's icon is changed in the
-  browser tree.
+  object explorer.
 
 * Provide a comment about the server in the *Comments* field.
 
@@ -82,17 +82,30 @@ Use the fields in the *Connection* tab to configure a connection:
   see
   `Section 33.16 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgservice.html>`_.
 
-Click the *SSL* tab to continue.
+Click the *Parameters* tab to continue.
 
-.. image:: images/server_ssl.png
+.. image:: images/server_parameters.png
     :alt: Server dialog ssl tab
     :align: center
 
-Use the fields in the *SSL* tab to configure SSL:
+Use the fields in the *Parameters* tab to configure a connection:
 
-* Use the drop-down list box in the *SSL* field to select the type of SSL
-  connection the server should use. For more information about using SSL
-  encryption, see
+Click on the *+* button to add a new parameter. Some of the parameters are:
+
+* *Host address* using this field to specify the host IP address may save time
+  by avoiding a DNS lookup on connection, but it may be useful to specify both
+  a host name and address when using Kerberos, GSSAPI, or SSPI authentication
+  methods, as well as for verify-full SSL certificate verification.
+* *Password File* field to specify the location of a password file
+  (.pgpass). A .pgpass file allows a user to login without providing a password
+  when they connect.  For more information, see
+  `Section 33.15 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
+* *Connection timeout* field to specify the maximum wait for connection,
+  in seconds. Zero or not specified means wait indefinitely. It is not
+  recommended to use a timeout of less than 2 seconds. By default it is set to
+  10 seconds.
+* *SSL mode* field to select the type of SSL connection the server should use.
+  For more information about using SSL encryption, see
   `Section 33.18 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-ssl.html>`_.
 
 If pgAdmin is installed in Server mode (the default mode), you can use the
@@ -100,27 +113,27 @@ platform-specific File manager dialog to upload files that support SSL
 encryption to the server.  To access the File manager dialog, click the
 icon that is located to the right of each of the following fields.
 
-* Use the *Client certificate* field to specify the file containing the client
+* *Client certificate* field to specify the file containing the client
   SSL certificate.  This file will replace the default
   *~/.postgresql/postgresql.crt* if pgAdmin is installed in Desktop mode, and
   *<STORAGE_DIR>/<USERNAME>/.postgresql/postgresql.crt* if pgAdmin is installed
   in Web mode. This parameter is ignored if an SSL connection is not made.
-* Use the *Client certificate key* field to specify the file containing the
+* *Client certificate key* field to specify the file containing the
   secret key used for the client certificate.  This file will replace the
   default *~/.postgresql/postgresql.key* if pgAdmin is installed in Desktop
   mode, and *<STORAGE_DIR>/<USERNAME>/.postgresql/postgresql.key* if pgAdmin
   is installed in Web mode. This parameter is ignored if an SSL connection is
   not made.
-* Use the *Root certificate* field to specify the file containing the SSL
+* *Root certificate* field to specify the file containing the SSL
   certificate authority.  This file will replace the default
   *~/.postgresql/root.crt*. This parameter is ignored if an SSL connection is
   not made.
-* Use the *Certificate revocation list* field to specify the file containing
+* *Certificate revocation list* field to specify the file containing
   the SSL certificate revocation list.  This list will replace the default list,
   found in *~/.postgresql/root.crl*. This parameter is ignored if an SSL
   connection is not made.
-* When *SSL compression?* is set to *True*, data sent over SSL connections will
-  be compressed.  The default value is *False* (compression is disabled).  This
+* *SSL compression?* is set to *True*, data sent over SSL connections will
+  be compressed.  The default value is *False* (compression is disabled). This
   parameter is ignored if an SSL connection is not made.
 
 .. warning:: In Server mode, certificates, private keys, and the revocation list
@@ -175,27 +188,26 @@ Click the *Advanced* tab to continue.
 
 Use the fields in the *Advanced* tab to configure a connection:
 
-* Specify the IP address of the server host in the *Host address* field. Using
-  this field to specify the host IP address may save time by avoiding a DNS
-  lookup on connection, but it may be useful to specify both a host name and
-  address when using Kerberos, GSSAPI, or SSPI authentication methods, as well
-  as for verify-full SSL certificate verification.
 * Use the *DB restriction* field to provide a SQL restriction that will be used
   against the pg_database table to limit the databases that you see. For
   example, you might enter: *live_db test_db* so that only live_db and test_db
   are shown in the pgAdmin browser. Separate entries with a comma or tab as you
   type.
-* Use the *Password File* field to specify the location of a password file
-  (.pgpass). A .pgpass file allows a user to login without providing a password
-  when they connect.  For more information, see
-  `Section 33.15 of the Postgres documentation <https://www.postgresql.org/docs/current/libpq-pgpass.html>`_.
-* Use the *Connection timeout* field to specify the maximum wait for connection,
-  in seconds. Zero or not specified means wait indefinitely. It is not
-  recommended to use a timeout of less than 2 seconds. By default it is set to
-  10 seconds.
+* Use the *Password exec command* field to specify a shell command to be executed
+  to retrieve a password to be used for SQL authentication. The ``stdout`` of the
+  command will be used as the SQL password. This may be useful when the password
+  should be generated as a transient authorization token instead of providing a
+  password when connecting in `PAM authentication <https://www.postgresql.org/docs/current/auth-pam.html>`_ scenarios.
+* Use the *Password exec expiration* field to specify a maximum age, in seconds,
+  of the password generated with a *Password exec command*. If not specified,
+  the password will not expire until your pgAdmin session does.
+  Zero means the command will be executed for each new connection or reconnection that is made.
+  If the generated password is not valid indefinitely, set this value to slightly before it will expire.
 
 .. note:: The password file option is only supported when pgAdmin is using libpq
     v10.0 or later to connect to the server.
+
+.. note:: The Password exec option is only supported when pgAdmin is run in desktop mode.
 
 * Click the *Save* button to save your work.
 * Click the *Close* button to exit without saving your work.

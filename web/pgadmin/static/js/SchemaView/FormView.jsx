@@ -2,12 +2,12 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Box, makeStyles, Tab, Tabs } from '@material-ui/core';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme)=>({
   },
   nestedControl: {
     height: 'unset',
+  },
+  errorMargin: {
+    /* Error footer space */
+    paddingBottom: '36px',
   },
   sqlTabInput: {
     border: 0,
@@ -101,14 +105,18 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
   }
 
   let {visible, disabled, readonly, editable} = field;
+  let verInLimit;
 
-  let verInLimit = (_.isUndefined(viewHelperProps.serverInfo) ? true :
-    ((_.isUndefined(field.server_type) ? true :
+  if (_.isUndefined(viewHelperProps.serverInfo)) {
+    verInLimit= true;
+  } else {
+    verInLimit = ((_.isUndefined(field.server_type) ? true :
       (viewHelperProps.serverInfo.type in field.server_type)) &&
       (_.isUndefined(field.min_version) ? true :
         (viewHelperProps.serverInfo.version >= field.min_version)) &&
       (_.isUndefined(field.max_version) ? true :
-        (viewHelperProps.serverInfo.version <= field.max_version))));
+        (viewHelperProps.serverInfo.version <= field.max_version)));
+  }
 
   retData.readonly = viewHelperProps.inCatalog || (viewHelperProps.mode == 'properties');
   if(!retData.readonly) {
@@ -126,13 +134,14 @@ export function getFieldMetaData(field, schema, value, viewHelperProps, onlyMode
     retData.editable = evalFunc(schema, _.isUndefined(editable) ? true : editable, value);
   }
 
-  let {canAdd, canEdit, canDelete, canAddRow } = field;
+  let {canAdd, canEdit, canDelete, canReorder, canAddRow } = field;
   retData.canAdd = _.isUndefined(canAdd) ? retData.canAdd : evalFunc(schema, canAdd, value);
   retData.canAdd = !retData.disabled && retData.canAdd;
   retData.canEdit = _.isUndefined(canEdit) ? retData.canEdit : evalFunc(schema, canEdit, value);
   retData.canEdit = !retData.disabled && retData.canEdit;
   retData.canDelete = _.isUndefined(canDelete) ? retData.canDelete : evalFunc(schema, canDelete, value);
   retData.canDelete = !retData.disabled && retData.canDelete;
+  retData.canReorder =_.isUndefined(canReorder) ? retData.canReorder : evalFunc(schema, canReorder, value);
   retData.canAddRow = _.isUndefined(canAddRow) ? retData.canAddRow : evalFunc(schema, canAddRow, value);
   return retData;
 }
@@ -146,7 +155,7 @@ export default function FormView({
   let tabsClassname = {};
   const [tabValue, setTabValue] = useState(0);
   const classes = useStyles();
-  const firstElement = useRef();
+  const firstEleID = useRef();
   const formRef = useRef();
   const onScreenTracker = useRef(false);
   const depListener = useContext(DepListenerContext);
@@ -155,16 +164,19 @@ export default function FormView({
   const stateUtils = useContext(StateUtilsContext);
 
   let isOnScreen = useOnScreen(formRef);
-  if(isOnScreen) {
-    /* Don't do it when the form is alredy visible */
-    if(onScreenTracker.current == false) {
-      /* Re-select the tab. If form is hidden then sometimes it is not selected */
-      setTabValue(tabValue);
-      onScreenTracker.current = true;
+
+  useEffect(()=>{
+    if(isOnScreen) {
+      /* Don't do it when the form is alredy visible */
+      if(!onScreenTracker.current) {
+        /* Re-select the tab. If form is hidden then sometimes it is not selected */
+        setTabValue((prev)=>prev);
+        onScreenTracker.current = true;
+      }
+    } else {
+      onScreenTracker.current = false;
     }
-  } else {
-    onScreenTracker.current = false;
-  }
+  }, [isOnScreen]);
 
   useEffect(()=>{
     /* Calculate the fields which depends on the current field */
@@ -179,8 +191,11 @@ export default function FormView({
           if(_.isArray(dep)) {
             source = dep;
           }
-          if(field.depChange) {
-            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange);
+          if(field.depChange || field.deferredDepChange) {
+            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
+          }
+          if(field.depChange || field.deferredDepChange) {
+            depListener.addDepListener(source, accessPath.concat(field.id), field.depChange, field.deferredDepChange);
           }
         });
       });
@@ -199,8 +214,8 @@ export default function FormView({
   let fullTabs = [];
 
   /* Prepare the array of components based on the types */
-  schemaRef.current.fields.forEach((field)=>{
-    let {visible, disabled, readonly, canAdd, canEdit, canDelete, canAddRow, modeSupported} =
+  for(const field of schemaRef.current.fields) {
+    let {visible, disabled, readonly, canAdd, canEdit, canDelete, canReorder, canAddRow, modeSupported} =
       getFieldMetaData(field, schema, value, viewHelperProps);
 
     if(modeSupported) {
@@ -210,7 +225,7 @@ export default function FormView({
         if(!visible) {
           schemaRef.current.filterGroups.push(field.label);
         }
-        return;
+        continue;
       }
       group = groupLabels[group] || group || defaultTab;
 
@@ -257,10 +272,13 @@ export default function FormView({
         }
 
         const props = {
-          key: field.id, value: value[field.id], viewHelperProps: viewHelperProps,
+          key: field.id, value: value[field.id] || [], viewHelperProps: viewHelperProps,
           schema: field.schema, accessPath: accessPath.concat(field.id), dataDispatch: dataDispatch,
-          containerClassName: classes.controlRow, ...field, canAdd: canAdd, canEdit: canEdit, canDelete: canDelete,
-          visible: visible, canAddRow: canAddRow,
+          containerClassName: classes.controlRow, ...field, canAdd: canAdd, canReorder: canReorder,
+          canEdit: canEdit, canDelete: canDelete,
+          visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch,
+          expandEditOnAdd: field.expandEditOnAdd,
+          fixedRows: (viewHelperProps.mode == 'create' ? field.fixedRows : undefined)
         };
 
         if(CustomControl) {
@@ -281,11 +299,14 @@ export default function FormView({
         }
 
         const id = field.id || `control${tabs[group].length}`;
+        if(visible && !disabled && !firstEleID.current) {
+          firstEleID.current = field.id;
+        }
 
         tabs[group].push(
-          useMemo(()=><MappedFormControl
+          <MappedFormControl
             inputRef={(ele)=>{
-              if(firstEleRef && !firstEleRef.current) {
+              if(firstEleRef && firstEleID.current === field.id) {
                 firstEleRef.current = ele;
               }
             }}
@@ -299,30 +320,31 @@ export default function FormView({
             readonly={readonly}
             disabled={disabled}
             visible={visible}
-            onChange={(value)=>{
+            onChange={(changeValue)=>{
               /* Get the changes on dependent fields as well */
               dataDispatch({
                 type: SCHEMA_STATE_ACTIONS.SET_VALUE,
                 path: accessPath.concat(id),
-                value: value,
+                value: changeValue,
               });
             }}
             hasError={hasError}
             className={classes.controlRow}
             noLabel={field.isFullTab}
-          />, [
-            value[id],
-            readonly,
-            disabled,
-            visible,
-            hasError,
-            classes.controlRow,
-            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-          ])
+            memoDeps={[
+              value[id],
+              readonly,
+              disabled,
+              visible,
+              hasError,
+              classes.controlRow,
+              ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
+            ]}
+          />
         );
       }
     }
-  });
+  }
 
   let finalTabs = _.pickBy(tabs, (v, tabName)=>schemaRef.current.filterGroups.indexOf(tabName) <= -1);
 
@@ -333,15 +355,11 @@ export default function FormView({
     sqlTabActive = (Object.keys(finalTabs).length === tabValue);
     /* Re-render and fetch the SQL tab when it is active */
     finalTabs[sqlTabName] = [
-      useMemo(()=><SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />, [sqlTabActive, value]),
+      <SQLTab key="sqltab" active={sqlTabActive} getSQLValue={getSQLValue} />,
     ];
     tabsClassname[sqlTabName] = classes.fullSpace;
     fullTabs.push(sqlTabName);
   }
-
-  useEffect(()=>{
-    firstElement.current && firstElement.current.focus();
-  }, []);
 
   useEffect(()=>{
     onTabChange && onTabChange(tabValue, Object.keys(tabs)[tabValue], sqlTabActive);
@@ -362,7 +380,6 @@ export default function FormView({
               onChange={(event, selTabValue) => {
                 setTabValue(selTabValue);
               }}
-              // indicatorColor="primary"
               variant="scrollable"
               scrollButtons="auto"
               action={(ref)=>ref && ref.updateIndicator()}
@@ -373,9 +390,13 @@ export default function FormView({
             </Tabs>
           </Box>
           {Object.keys(finalTabs).map((tabName, i)=>{
+            let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
+            if(fullTabs.indexOf(tabName) == -1) {
+              contentClassName.push(classes.nestedControl);
+            }
             return (
               <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-                className={fullTabs.indexOf(tabName) == -1 ? classes.nestedControl : null}>
+                className={clsx(contentClassName)}>
                 {finalTabs[tabName]}
               </TabPanel>
             );

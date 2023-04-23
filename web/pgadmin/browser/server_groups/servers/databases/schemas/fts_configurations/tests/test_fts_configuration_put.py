@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -97,7 +97,7 @@ class FTSConfPutTestCase(BaseTestGenerator):
             str(0),
             data=json.dumps(data),
             follow_redirects=True)
-        self.assertEqual(negative_put_response.status_code, 500)
+        self.assertEqual(negative_put_response.status_code, 410)
 
     def tearDown(self):
         """This function delete the fts_config and disconnect the test

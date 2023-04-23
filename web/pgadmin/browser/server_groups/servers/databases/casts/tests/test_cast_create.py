@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -24,7 +24,8 @@ class CastsCreateTestCase(BaseTestGenerator):
 
     def setUp(self):
         """ This function will get data required to create cast."""
-        super(CastsCreateTestCase, self).runTest()
+        super().setUp()
+        super().runTest()
         self.data = self.test_data
 
     def runTest(self):

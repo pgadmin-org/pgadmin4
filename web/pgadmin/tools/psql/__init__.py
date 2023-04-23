@@ -2,23 +2,22 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-
+import json
 import os
-import re
 import select
 import struct
 import config
 from sys import platform as _platform
-import eventlet.green.subprocess as subprocess
+from eventlet.green import subprocess
 from config import PG_DEFAULT_DRIVER
-from flask import Response, url_for, request
+from flask import Response, request
 from flask import render_template, copy_current_request_context, \
     current_app as app
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required, current_user
 from pgadmin.browser.utils import underscore_unescape, underscore_escape
 from pgadmin.utils import PgAdminModule
@@ -26,6 +25,8 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.utils.driver import get_driver
 from ... import socketio as sio
 from pgadmin.utils import get_complete_file_path
+from pgadmin.authenticate import socket_login_required
+
 
 if _platform == 'win32':
     # Check Windows platform support for WinPty api, Disable psql
@@ -54,13 +55,6 @@ class PSQLModule(PgAdminModule):
 
     def get_own_menuitems(self):
         return {}
-
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.psql',
-            'path': url_for('psql.index') + "psql",
-            'when': None
-        }]
 
     def get_panels(self):
         return []
@@ -106,18 +100,10 @@ def panel(trans_id):
         app.config['sid_soid_mapping'] = dict()
     if request.args:
         params.update({k: v for k, v in request.args.items()})
-    # Set TERM env for xterm.
-    os.environ['TERM'] = 'xterm'
-
-    # If psql is enabled in server mode, set psqlrc and hist paths
-    # to individual user storage.
-    if config.ENABLE_PSQL and config.SERVER_MODE:
-        os.environ['PSQLRC'] = get_complete_file_path('.psqlrc', False)
-        os.environ['PSQL_HISTORY'] = \
-            get_complete_file_path('.psql_history', False)
 
     o_db_name = _get_database(params['sid'], params['did'])
 
+    set_env_variables(is_win=_platform == 'win32')
     return render_template('editor_template.html',
                            sid=params['sid'],
                            db=underscore_unescape(
@@ -127,8 +113,25 @@ def panel(trans_id):
                            title=underscore_unescape(params['title']),
                            theme=params['theme'],
                            o_db_name=o_db_name,
+                           requirejs=True,
+                           basejs=True,
                            platform=_platform
                            )
+
+
+def set_env_variables(is_win=False):
+    # Set TERM env for xterm.
+    os.environ['TERM'] = 'xterm'
+    if is_win:
+        os.environ['PYWINPTY_BACKEND'] = '1'
+    # If psql is enabled in server mode, set psqlrc and hist paths
+    # to individual user storage.
+    if config.ENABLE_PSQL and config.SERVER_MODE:
+        psql_data = {
+            'PSQLRC': get_complete_file_path('.psqlrc', False),
+            'PSQL_HISTORY': get_complete_file_path('.psql_history', False)
+        }
+        os.environ[current_user.username] = json.dumps(psql_data)
 
 
 def set_term_size(fd, row, col, xpix=0, ypix=0):
@@ -148,6 +151,7 @@ def set_term_size(fd, row, col, xpix=0, ypix=0):
 
 
 @sio.on('connect', namespace='/pty')
+@socket_login_required
 def connect():
     """
     Connect to the server through socket.
@@ -162,6 +166,15 @@ def connect():
                  to=request.sid)
 
 
+def get_user_env():
+    env = os.environ
+    if config.ENABLE_PSQL and config.SERVER_MODE:
+        user_env = json.loads(os.environ[current_user.username])
+        env['PSQLRC'] = user_env['PSQLRC']
+        env['PSQL_HISTORY'] = user_env['PSQL_HISTORY']
+    return env
+
+
 def create_pty_terminal(connection_data):
     # Create the pty terminal process, parent and fd are file descriptors
     # for parent and child.
@@ -174,7 +187,8 @@ def create_pty_terminal(connection_data):
                              stdin=fd,
                              stdout=fd,
                              stderr=fd,
-                             universal_newlines=True
+                             universal_newlines=True,
+                             env=get_user_env()
                              )
 
         app.config['sessions'][request.sid] = parent
@@ -220,7 +234,52 @@ def read_stdout(process, sid, max_read_bytes, win_emit_output=True):
     sio.sleep(0)
 
 
+def windows_platform(connection_data, sid, max_read_bytes):
+    process = PtyProcess.spawn('cmd.exe', env=get_user_env())
+
+    process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
+                                              connection_data[1]))
+    process.write("\r\n")
+    app.config['sessions'][request.sid] = process
+    pdata[request.sid] = process
+    set_term_size(process, 50, 50)
+
+    while True:
+        read_stdout(process, sid, max_read_bytes,
+                    win_emit_output=True)
+
+
+def non_windows_platform(parent, p, fd, data, max_read_bytes, sid):
+    while p and p.poll() is None:
+        if request.sid in app.config['sessions']:
+            # This code is added to make this unit testable.
+            if "is_test" not in data:
+                sio.sleep(0.01)
+            else:
+                data['count'] += 1
+                if data['count'] == 5:
+                    break
+
+            timeout = 0
+            # module provides access to platform-specific I/O
+            # monitoring functions
+            (data_ready, _, _) = select.select([parent, fd], [], [],
+                                               timeout)
+
+            read_terminal_data(parent, data_ready, max_read_bytes, sid)
+
+
+def pty_handel_io(connection_data, data, sid):
+    max_read_bytes = 1024 * 20
+    if _platform == 'win32':
+        windows_platform(connection_data, sid, max_read_bytes)
+    else:
+        p, parent, fd = create_pty_terminal(connection_data)
+        non_windows_platform(parent, p, fd, data, max_read_bytes, sid)
+
+
 @sio.on('start_process', namespace='/pty')
+@socket_login_required
 def start_process(data):
     """
     Start the pty terminal and execute psql command and emit results to user.
@@ -229,45 +288,7 @@ def start_process(data):
     """
     @copy_current_request_context
     def read_and_forward_pty_output(sid, data):
-
-        max_read_bytes = 1024 * 20
-        import time
-        if _platform == 'win32':
-
-            os.environ['PYWINPTY_BACKEND'] = '1'
-            process = PtyProcess.spawn('cmd.exe')
-
-            process.write(r'"{0}" "{1}" 2>>&1'.format(connection_data[0],
-                                                      connection_data[1]))
-            process.write("\r\n")
-            app.config['sessions'][request.sid] = process
-            pdata[request.sid] = process
-            set_term_size(process, 50, 50)
-
-            while True:
-                read_stdout(process, sid, max_read_bytes,
-                            win_emit_output=True)
-        else:
-
-            p, parent, fd = create_pty_terminal(connection_data)
-
-            while p and p.poll() is None:
-                if request.sid in app.config['sessions']:
-                    # This code is added to make this unit testable.
-                    if "is_test" not in data:
-                        sio.sleep(0.01)
-                    else:
-                        data['count'] += 1
-                        if data['count'] == 5:
-                            break
-
-                    timeout = 0
-                    # module provides access to platform-specific I/O
-                    # monitoring functions
-                    (data_ready, _, _) = select.select([parent, fd], [], [],
-                                                       timeout)
-
-                    read_terminal_data(parent, data_ready, max_read_bytes, sid)
+        pty_handel_io(connection_data, data, sid)
 
     # Check user is authenticated and PSQL is enabled in config.
     if current_user.is_authenticated and config.ENABLE_PSQL:
@@ -356,66 +377,17 @@ def get_connection_str(psql_utility, db, manager):
     :param db: database name to connect specific db.
     :return: connection attribute list for PSQL connection.
     """
-    conn_attr = get_conn_str_win(manager, db)
+    manager.export_password_env('PGPASSWORD')
+    db = db.replace('"', '\\"')
+    db = db.replace("'", "\\'")
+    database = db if db != '' else 'postgres'
+    user = underscore_unescape(manager.user) if manager.user else 'postgres'
+    conn_attr = manager.create_connection_string(database, user)
+
     conn_attr_list = list()
     conn_attr_list.append(psql_utility)
     conn_attr_list.append(conn_attr)
     return conn_attr_list
-
-
-def get_conn_str_win(manager, db):
-    """
-    Get connection attributes for psql connection.
-    :param manager:
-    :param db:
-    :return:
-    """
-    manager.export_password_env('PGPASSWORD')
-    db = db.replace('"', '\\"')
-    db = db.replace("'", "\\'")
-    conn_attr =\
-        'host=\'{0}\' port=\'{1}\' dbname=\'{2}\' user=\'{3}\' ' \
-        'sslmode=\'{4}\' sslcompression=\'{5}\' ' \
-        ''.format(
-            manager.local_bind_host if manager.use_ssh_tunnel else
-            manager.host,
-            manager.local_bind_port if manager.use_ssh_tunnel else
-            manager.port,
-            db if db != '' else 'postgres',
-            underscore_unescape(manager.user) if manager.user else 'postgres',
-            manager.ssl_mode,
-            True if manager.sslcompression else False,
-        )
-
-    if manager.hostaddr:
-        conn_attr = " {0} hostaddr='{1}'".format(conn_attr, manager.hostaddr)
-
-    if manager.passfile:
-        conn_attr = " {0} passfile='{1}'".format(conn_attr,
-                                                 get_complete_file_path(
-                                                     manager.passfile))
-
-    if get_complete_file_path(manager.sslcert):
-        conn_attr = " {0} sslcert='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslcert))
-
-    if get_complete_file_path(manager.sslkey):
-        conn_attr = " {0} sslkey='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslkey))
-
-    if get_complete_file_path(manager.sslrootcert):
-        conn_attr = " {0} sslrootcert='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslrootcert))
-
-    if get_complete_file_path(manager.sslcrl):
-        conn_attr = " {0} sslcrl='{1}'".format(
-            conn_attr, get_complete_file_path(manager.sslcrl))
-
-    if manager.service:
-        conn_attr = " {0} service='{1}'".format(
-            conn_attr, get_complete_file_path(manager.service))
-
-    return conn_attr
 
 
 def enter_key_press(data):
@@ -490,7 +462,7 @@ def socket_input(data):
                 enter_key_press(data)
             else:
                 other_key_press(data)
-    except Exception as e:
+    except Exception:
         # Delete socket id from sessions.
         # request.sid: refer request.sid as socket id.
         sio.emit('pty-output',
@@ -560,6 +532,13 @@ def disconnect_socket():
         del app.config['sessions'][request.sid]
 
 
+def get_connection_status(conn):
+    if conn.connected():
+        return True
+
+    return False
+
+
 def _get_database(sid, did):
     """
     This method is used to get database based on sid, did.
@@ -569,10 +548,9 @@ def _get_database(sid, did):
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(int(sid))
         conn = manager.connection()
         db_name = None
-        if conn.connected():
-            is_connected = True
-        else:
-            is_connected = False
+
+        is_connected = get_connection_status(conn)
+
         if is_connected:
 
             if conn.manager and conn.manager.db_info \

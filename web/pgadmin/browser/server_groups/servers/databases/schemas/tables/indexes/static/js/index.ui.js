@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -11,8 +11,8 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import _ from 'lodash';
-import { pgAlertify } from  'sources/helpers/legacyConnector';
 import { isEmptyString } from 'sources/validators';
+import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
 export function getColumnSchema(nodeObj, treeNodeInfo, itemNodeData) {
   return new ColumnSchema(
@@ -27,7 +27,7 @@ export function getColumnSchema(nodeObj, treeNodeInfo, itemNodeData) {
 }
 
 export class ColumnSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, nodeData, initValues) {
+  constructor(fieldOptions = {}, nodeData = [], initValues={}) {
     super({
       name: null,
       oid: undefined,
@@ -75,6 +75,19 @@ export class ColumnSchema extends BaseUISchema {
       this.op_class_types = options;
   }
 
+  isEditable(state) {
+    let topObj = this._top;
+    if(this.inSchemaWithModelCheck(state)) {
+      return false;
+    } else if (topObj._sessData && topObj._sessData.amname === 'btree') {
+      state.is_sort_nulls_applicable = true;
+      return true;
+    } else {
+      state.is_sort_nulls_applicable = false;
+    }
+    return false;
+  }
+
   get baseFields() {
     let columnSchemaObj = this;
     return [
@@ -113,7 +126,7 @@ export class ColumnSchema extends BaseUISchema {
                   * to access method selected by user if not selected
                   * send btree related op_class options
                   */
-                var amname = columnSchemaObj._top?._sessData ? columnSchemaObj._top?._sessData.amname : columnSchemaObj._top?._origData.amname;
+                let amname = columnSchemaObj._top?._sessData ? columnSchemaObj._top?._sessData.amname : columnSchemaObj._top?._origData.amname;
 
                 if(_.isUndefined(amname))
                   return options;
@@ -121,7 +134,6 @@ export class ColumnSchema extends BaseUISchema {
                 _.each(this.op_class_types, function(v, k) {
                   if(amname === k) {
                     options = v;
-                    return;
                   }
                 });
                 return options;
@@ -151,7 +163,7 @@ export class ColumnSchema extends BaseUISchema {
           if(isEmptyString(topState.amname) || topState.amname === 'btree') {
             // We need to set nulls to true if sort_order is set to desc
             // nulls first is default for desc
-            if(state.sort_order == true && actionObj.oldState.sort_order ==  false) {
+            if(state.sort_order && !actionObj.oldState.sort_order) {
               setTimeout(function() {
                 state.nulls = true;
               }, 10);
@@ -162,31 +174,13 @@ export class ColumnSchema extends BaseUISchema {
           }
         },
         editable: function(state) {
-          let topObj = columnSchemaObj._top;
-          if(columnSchemaObj.inSchemaWithModelCheck(state)) {
-            return false;
-          } else if (topObj._sessData && topObj._sessData.amname === 'btree') {
-            state.is_sort_nulls_applicable = true;
-            return true;
-          } else {
-            state.is_sort_nulls_applicable = false;
-            return false;
-          }
+          return columnSchemaObj.isEditable(state);
         },
         deps: ['amname'],
       },{
         id: 'nulls', label: gettext('NULLs'),
         editable: function(state) {
-          let topObj = columnSchemaObj._top;
-          if(columnSchemaObj.inSchemaWithModelCheck(state)) {
-            return false;
-          } else if (topObj._sessData && topObj._sessData.amname === 'btree') {
-            state.is_sort_nulls_applicable = true;
-            return true;
-          } else {
-            state.is_sort_nulls_applicable = false;
-            return false;
-          }
+          return columnSchemaObj.isEditable(state);
         },
         deps: ['amname', 'sort_order'],
         type:'select', cell: 'select',
@@ -201,15 +195,11 @@ export class ColumnSchema extends BaseUISchema {
 }
 
 function inSchema(node_info) {
-  if(node_info &&  'catalog' in node_info)
-  {
-    return true;
-  }
-  return false;
+  return node_info && 'catalog' in node_info;
 }
 
 export default class IndexSchema extends BaseUISchema {
-  constructor(getColumnSchema, fieldOptions = {}, nodeData, initValues) {
+  constructor(columnSchema, fieldOptions = {}, nodeData = [], initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -231,11 +221,41 @@ export default class IndexSchema extends BaseUISchema {
     this.node_info = {
       ...nodeData.node_info
     };
-    this.getColumnSchema = getColumnSchema;
+    this.getColumnSchema = columnSchema;
   }
 
   get idAttribute() {
     return 'oid';
+  }
+
+  getColumns() {
+    return {
+      type: 'select',
+      options: this.fieldOptions.columnList,
+      optionsLoaded: (options) => { this.fieldOptions.columnList = options; },
+      controlProps: {
+        allowClear: false,
+        multiple: true,
+        placeholder: gettext('Select the column(s)'),
+        width: 'style',
+        filter: (options) => {
+          let res = [];
+          if (options && _.isArray(options)) {
+            _.each(options, function(d) {
+              if(d.label != '')
+                res.push({label: d.label, value: d.value, image:'icon-column'});
+            });
+          }
+          return res;
+        }
+      }
+    };
+  }
+
+  isVisible() {
+    return (!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
+      && !_.isUndefined(this.node_info.server.version) &&
+      this.node_info.server.version >= 110000);
   }
 
   get baseFields() {
@@ -243,7 +263,7 @@ export default class IndexSchema extends BaseUISchema {
     return [
       {
         id: 'name', label: gettext('Name'), cell: 'string',
-        type: 'text', noEmpty: true,
+        type: 'text',
         disabled: () => inSchema(indexSchemaObj.node_info),
       },{
         id: 'oid', label: gettext('OID'), cell: 'string',
@@ -294,10 +314,11 @@ export default class IndexSchema extends BaseUISchema {
               };
             });
           };
-          if(state.amname != actionObj.oldState.amname) {
+          if((state.amname != actionObj.oldState.amname) && state.columns.length > 0) {
             return new Promise((resolve)=>{
-              pgAlertify().confirm(
-                gettext('Changing access method will clear columns collection'),
+              Notify.confirm(
+                gettext('Warning'),
+                gettext('Changing access method will clear columns collection. Do you want to continue?'),
                 function () {
                   setColumns(resolve);
                 },
@@ -312,7 +333,7 @@ export default class IndexSchema extends BaseUISchema {
               );
             });
           } else {
-            return Promise.resolve(()=>{});
+            return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
           }
         },
       },
@@ -325,35 +346,10 @@ export default class IndexSchema extends BaseUISchema {
           return !indexSchemaObj.isNew(state);
         },
         type: () => {
-          return {
-            type: 'select',
-            options: indexSchemaObj.fieldOptions.columnList,
-            optionsLoaded: (options) => { indexSchemaObj.fieldOptions.columnList = options; },
-            controlProps: {
-              allowClear: false,
-              multiple: true,
-              placeholder: gettext('Select the column(s)'),
-              width: 'style',
-              filter: (options) => {
-                let res = [];
-                if (options && _.isArray(options)) {
-                  _.each(options, function(d) {
-                    if(d.label != '')
-                      res.push({label: d.label, value: d.value, image:'icon-column'});
-                  });
-                }
-                return res;
-              }
-            }
-          };
+          return indexSchemaObj.getColumns();
         },
         visible: function() {
-          if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-            && !_.isUndefined(this.node_info.server.version) &&
-            this.node_info.server.version >= 110000)
-            return true;
-
-          return false;
+          return indexSchemaObj.isVisible();
         },
         node:'column',
       },{
@@ -370,8 +366,15 @@ export default class IndexSchema extends BaseUISchema {
         group: gettext('Definition'),
       },{
         id: 'indisclustered', label: gettext('Clustered?'), cell: 'string',
-        type: 'switch', disabled: () => inSchema(indexSchemaObj.node_info),
-        group: gettext('Definition'),
+        type: 'switch', group: gettext('Definition'), deps: ['name'],
+        disabled: function (state) {
+          return isEmptyString(state.name) || inSchema(indexSchemaObj.node_info);
+        },
+        depChange: (state)=>{
+          if(isEmptyString(state.name)) {
+            return {indisclustered: false};
+          }
+        }
       },{
         id: 'indisvalid', label: gettext('Valid?'), cell: 'string',
         type: 'switch', mode: ['properties'],
@@ -417,27 +420,7 @@ export default class IndexSchema extends BaseUISchema {
       }, {
         id: 'include', label: gettext('Include columns'),
         type: () => {
-          return {
-            type: 'select',
-            options: indexSchemaObj.fieldOptions.columnList,
-            optionsLoaded: (options) => { indexSchemaObj.fieldOptions.columnList = options; },
-            controlProps: {
-              allowClear: false,
-              multiple: true,
-              placeholder: gettext('Select the column(s)'),
-              width: 'style',
-              filter: (options) => {
-                let res = [];
-                if (options && _.isArray(options)) {
-                  _.each(options, function(d) {
-                    if(d.label != '')
-                      res.push({label: d.label, value: d.value, image:'icon-column'});
-                  });
-                }
-                return res;
-              }
-            }
-          };
+          return indexSchemaObj.getColumns();
         },
         group: gettext('Definition'),
         editable: false,
@@ -447,27 +430,30 @@ export default class IndexSchema extends BaseUISchema {
           return !indexSchemaObj.isNew(state);
         },
         visible: function() {
-          if(!_.isUndefined(this.node_info) && !_.isUndefined(this.node_info.server)
-            && !_.isUndefined(this.node_info.server.version) &&
-            this.node_info.server.version >= 110000)
-            return true;
-
-          return false;
+          return indexSchemaObj.isVisible();
         },
         node:'column',
       },{
         id: 'description', label: gettext('Comment'), cell: 'string',
         type: 'multiline', mode: ['properties', 'create', 'edit'],
-        disabled: () => inSchema(indexSchemaObj.node_info),
+        deps: ['name'],
+        disabled: function (state) {
+          return isEmptyString(state.name) || inSchema(indexSchemaObj.node_info);
+        },
+        depChange: (state)=>{
+          if(isEmptyString(state.name)) {
+            return {comment: ''};
+          }
+        }
       },
     ];
   }
 
   validate(state, setError) {
-    var msg;
+    let msg;
 
     // Checks if columns is empty
-    var cols = state.columns;
+    let cols = state.columns;
     if(_.isArray(cols) && cols.length == 0){
       msg = gettext('You must specify at least one column.');
       setError('columns', msg);

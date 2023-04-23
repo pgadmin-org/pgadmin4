@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -18,13 +18,13 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
 from socket import error as SOCKETErrorException
 from urllib.request import urlopen
 
-import six
 import time
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
+from flask_login.utils import login_url
 from flask_security.changeable import change_user_password
 from flask_security.decorators import anonymous_user_required
 from flask_security.recoverable import reset_password_token_status, \
@@ -38,6 +38,8 @@ from werkzeug.datastructures import MultiDict
 
 import config
 from pgadmin import current_blueprint
+from pgadmin.authenticate import get_logout_url
+from pgadmin.authenticate.mfa.utils import mfa_required, is_mfa_enabled
 from pgadmin.settings import get_setting, store_setting
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response
@@ -51,7 +53,8 @@ from pgadmin.utils.master_password import validate_master_password, \
     set_crypt_key, process_masterpass_disabled
 from pgadmin.model import User
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
-    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER
+    INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER,\
+    VW_EDT_DEFAULT_PLACEHOLDER
 from pgadmin.authenticate import AuthSourceManager
 
 try:
@@ -63,7 +66,6 @@ except ImportError as e:
 
 MODULE_NAME = 'browser'
 BROWSER_STATIC = 'browser.static'
-JQUERY_ACIPLUGIN = 'jquery.aciplugin'
 BROWSER_INDEX = 'browser.index'
 PGADMIN_BROWSER = 'pgAdmin.Browser'
 PASS_ERROR_MSG = gettext('Your password has not been changed.')
@@ -93,151 +95,10 @@ class BrowserModule(PgAdminModule):
             ('static', 'vendor/codemirror/codemirror.css'),
             ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
             ('static', context_menu_file),
-            ('static', wcdocker_file),
-            (BROWSER_STATIC, 'vendor/aciTree/css/aciTree.css')
+            ('static', wcdocker_file)
         ]:
             stylesheets.append(url_for(endpoint, filename=filename))
         return stylesheets
-
-    def get_own_javascripts(self):
-        scripts = list()
-        scripts.append({
-            'name': 'alertify',
-            'path': url_for(
-                'static',
-                filename='vendor/alertifyjs/alertify' if current_app.debug
-                else 'vendor/alertifyjs/alertify.min'
-            ),
-            'exports': 'alertify',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jqueryui.position',
-            'path': url_for(
-                'static',
-                filename='vendor/jQuery-contextMenu/jquery.ui.position' if
-                current_app.debug else
-                'vendor/jQuery-contextMenu/jquery.ui.position.min'
-            ),
-            'deps': ['jquery'],
-            'exports': 'jQuery.ui.position',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.contextmenu',
-            'path': url_for(
-                'static',
-                filename='vendor/jQuery-contextMenu/jquery.contextMenu' if
-                current_app.debug else
-                'vendor/jQuery-contextMenu/jquery.contextMenu.min'
-            ),
-            'deps': ['jquery', 'jqueryui.position'],
-            'exports': 'jQuery.contextMenu',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': JQUERY_ACIPLUGIN,
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciPlugin.min'
-            ),
-            'deps': ['jquery'],
-            'exports': 'aciPluginClass',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acitree',
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciTree' if
-                current_app.debug else 'vendor/aciTree/jquery.aciTree.min'
-            ),
-            'deps': ['jquery', JQUERY_ACIPLUGIN],
-            'exports': 'aciPluginClass.plugins.aciTree',
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acisortable',
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciSortable.min'
-            ),
-            'deps': ['jquery', JQUERY_ACIPLUGIN],
-            'exports': 'aciPluginClass.plugins.aciSortable',
-            'when': None,
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'jquery.acifragment',
-            'path': url_for(
-                BROWSER_STATIC,
-                filename='vendor/aciTree/jquery.aciFragment.min'
-            ),
-            'deps': ['jquery', JQUERY_ACIPLUGIN],
-            'exports': 'aciPluginClass.plugins.aciFragment',
-            'when': None,
-            'preloaded': True
-        })
-        scripts.append({
-            'name': 'wcdocker',
-            'path': url_for(
-                'static',
-                filename='vendor/wcDocker/wcDocker' if current_app.debug
-                else 'vendor/wcDocker/wcDocker.min'
-            ),
-            'deps': ['jquery.contextmenu'],
-            'exports': '',
-            'preloaded': True
-        })
-
-        scripts.append({
-            'name': 'pgadmin.browser.datamodel',
-            'path': url_for(BROWSER_STATIC, filename='js/datamodel'),
-            'preloaded': True
-        })
-
-        for name, script in [
-            [PGADMIN_BROWSER, 'js/browser'],
-            ['pgadmin.browser.endpoints', 'js/endpoints'],
-            ['pgadmin.browser.error', 'js/error'],
-            ['pgadmin.browser.constants', 'js/constants']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for(BROWSER_INDEX) + script,
-                'preloaded': True
-            })
-
-        for name, script in [
-            ['pgadmin.browser.node', 'js/node'],
-            ['pgadmin.browser.messages', 'js/messages'],
-            ['pgadmin.browser.collection', 'js/collection']
-        ]:
-            scripts.append({
-                'name': name,
-                'path': url_for(BROWSER_INDEX) + script,
-                'preloaded': True,
-                'deps': ['pgadmin.browser.datamodel']
-            })
-
-        for name, end in [
-            ['pgadmin.browser.menu', 'js/menu'],
-            ['pgadmin.browser.panel', 'js/panel'],
-            ['pgadmin.browser.frame', 'js/frame']
-        ]:
-            scripts.append({
-                'name': name, 'path': url_for(BROWSER_STATIC, filename=end),
-                'preloaded': True})
-
-        scripts.append({
-            'name': 'pgadmin.browser.node.ui',
-            'path': url_for(BROWSER_STATIC, filename='js/node.ui'),
-            'when': 'server_group'
-        })
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-        return scripts
 
     def get_own_menuitems(self):
         menus = {
@@ -273,66 +134,6 @@ class BrowserModule(PgAdminModule):
             ]
         }
 
-        # We need 'Configure...' and 'View log...' Menu only in runtime.
-        if current_app.PGADMIN_RUNTIME:
-            full_screen_label = gettext('Enter Full Screen  (F10)')
-            actual_size_label = gettext('Actual Size (Ctrl 0)')
-            zoom_in_label = gettext('Zoom In (Ctrl +)')
-            zoom_out_label = gettext('Zoom Out (Ctrl -)')
-
-            if sys.platform == 'darwin':
-                full_screen_label = gettext('Enter Full Screen  (Cmd Ctrl F)')
-                actual_size_label = gettext('Actual Size (Cmd 0)')
-                zoom_in_label = gettext('Zoom In (Cmd +)')
-                zoom_out_label = gettext('Zoom Out (Cmd -)')
-
-            menus['file_items'].append(
-                MenuItem(
-                    name='mnu_runtime',
-                    module=PGADMIN_BROWSER,
-                    label=gettext('Runtime'),
-                    priority=999,
-                    menu_items=[MenuItem(
-                        name='mnu_configure_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_configure_runtime',
-                        priority=0,
-                        label=gettext('Configure...')
-                    ), MenuItem(
-                        name='mnu_viewlog_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_viewlog_runtime',
-                        priority=1,
-                        label=gettext('View log...'),
-                        below=True,
-                    ), MenuItem(
-                        name='mnu_toggle_fullscreen_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_toggle_fullscreen_runtime',
-                        priority=2,
-                        label=full_screen_label
-                    ), MenuItem(
-                        name='mnu_actual_size_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_actual_size_runtime',
-                        priority=3,
-                        label=actual_size_label
-                    ), MenuItem(
-                        name='mnu_zoomin_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_zoomin_runtime',
-                        priority=4,
-                        label=zoom_in_label
-                    ), MenuItem(
-                        name='mnu_zoomout_runtime',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_zoomout_runtime',
-                        priority=5,
-                        label=zoom_out_label
-                    )]
-                )
-            )
-
         return menus
 
     def register_preferences(self):
@@ -349,14 +150,22 @@ class BrowserModule(PgAdminModule):
                 'browser.set_master_password',
                 'browser.reset_master_password',
                 'browser.lock_layout',
-                'browser.signal_runtime']
+                ]
+
+    def register(self, app, options):
+        """
+        Override the default register function to automagically register
+        sub-modules at once.
+        """
+        from .server_groups import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = BrowserModule(MODULE_NAME, __name__)
 
 
-@six.add_metaclass(ABCMeta)
-class BrowserPluginModule(PgAdminModule):
+class BrowserPluginModule(PgAdminModule, metaclass=ABCMeta):
     """
     Abstract base class for browser submodules.
 
@@ -396,7 +205,7 @@ class BrowserPluginModule(PgAdminModule):
         self.pref_show_system_objects = None
         self.pref_show_node = None
 
-        super(BrowserPluginModule, self).__init__(
+        super().__init__(
             "NODE-%s" % self.node_type,
             import_name,
             **kwargs
@@ -416,51 +225,6 @@ class BrowserPluginModule(PgAdminModule):
         module.
         """
         return False
-
-    def get_own_javascripts(self):
-        """
-        Returns the list of javascripts information used by the module.
-
-        Each javascripts information must contain name, path of the script.
-
-        The name must be unique for each module, hence - in order to refer them
-        properly, we do use 'pgadmin.node.<type>' as norm.
-
-        That can also refer to when to load the script.
-
-        i.e.
-        We may not need to load the javascript of table node, when we're
-        not yet connected to a server, and no database is loaded. Hence - it
-        make sense to load them when a database is loaded.
-
-        We may also add 'deps', which also refers to the list of javascripts,
-        it may depends on.
-        """
-        scripts = []
-
-        if self.module_use_template_javascript:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for(BROWSER_INDEX
-                                ) + '%s/module' % self.node_type,
-                'when': self.script_load,
-                'is_template': True
-            }])
-        else:
-            scripts.extend([{
-                'name': PGADMIN_NODE % self.node_type,
-                'path': url_for(
-                    '%s.static' % self.name,
-                    filename=('js/%s' % self.node_type)
-                ),
-                'when': self.script_load,
-                'is_template': False
-            }])
-
-        for module in self.submodules:
-            scripts.extend(module.get_own_javascripts())
-
-        return scripts
 
     def generate_browser_node(
         self, node_id, parent_id, label, icon, inode, node_type, **kwargs
@@ -524,11 +288,13 @@ class BrowserPluginModule(PgAdminModule):
         """
         return []
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def node_type(self):
         pass
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def script_load(self):
         """
         This property defines, when to load this script.
@@ -547,14 +313,6 @@ class BrowserPluginModule(PgAdminModule):
         Defines the url path prefix for this submodule.
         """
         return self.browser_url_prefix + self.node_type
-
-    @property
-    def javascripts(self):
-        """
-        Override the javascript of PgAdminModule, so that - we don't return
-        javascripts from the get_own_javascripts itself.
-        """
-        return []
 
     @property
     def label(self):
@@ -695,6 +453,7 @@ def check_browser_upgrade():
 @blueprint.route("/")
 @pgCSRFProtect.exempt
 @login_required
+@mfa_required
 def index():
     """Render and process the main browser window."""
     # Register Gravatar module with the app only if required
@@ -734,29 +493,18 @@ def index():
             check_browser_upgrade()
             store_setting('LastUpdateCheck', today)
 
-    auth_only_internal = False
-    auth_source = []
-
     session['allow_save_password'] = True
 
-    if config.SERVER_MODE:
-        if len(config.AUTHENTICATION_SOURCES) == 1\
-                and INTERNAL in config.AUTHENTICATION_SOURCES:
-            auth_only_internal = True
-        auth_source = session['auth_source_manager'][
-            'source_friendly_name']
-
-        if not config.MASTER_PASSWORD_REQUIRED and 'pass_enc_key' in session:
-            session['allow_save_password'] = False
+    if config.SERVER_MODE and not config.MASTER_PASSWORD_REQUIRED and \
+            'pass_enc_key' in session:
+        session['allow_save_password'] = False
 
     response = Response(render_template(
         MODULE_NAME + "/index.html",
         username=current_user.username,
-        auth_source=auth_source,
-        is_admin=current_user.has_role("Administrator"),
-        logout_url=_get_logout_url(),
-        _=gettext,
-        auth_only_internal=auth_only_internal
+        requirejs=True,
+        basejs=True,
+        _=gettext
     ))
 
     # Set the language cookie after login, so next time the user will have that
@@ -782,6 +530,40 @@ def index():
                         **domain)
 
     return response
+
+
+def validate_shared_storage_config(data, shared_storage_keys):
+    """
+    Validate the config values are correct or not
+    """
+    if shared_storage_keys.issubset(data.keys()):
+        if isinstance(data['name'], str) and isinstance(
+                data['path'], str) and \
+                isinstance(data['restricted_access'], bool):
+            return True
+    return False
+
+
+def get_shared_storage_list():
+    """
+    Return the shared storage list after checking all required keys are present
+    or not in config. This is for server mode only.
+    """
+    shared_storage_list = []
+    restricted_shared_storage_list = []
+    if config.SERVER_MODE:
+        shared_storage_keys = set(['name', 'path', 'restricted_access'])
+        shared_storage_config = [
+            sdir for sdir in config.SHARED_STORAGE if
+            validate_shared_storage_config(sdir, shared_storage_keys)]
+
+        config.SHARED_STORAGE = shared_storage_config
+        shared_storage_list = [sdir['name'] for sdir in shared_storage_config]
+        restricted_shared_storage_list = [sdir['name'] for sdir in
+                                          shared_storage_config if
+                                          sdir['restricted_access']]
+
+    return shared_storage_list, restricted_shared_storage_list
 
 
 @blueprint.route("/js/utils.js")
@@ -817,6 +599,8 @@ def utils():
     # This will be opposite of use_space option
     editor_indent_with_tabs = False if editor_use_spaces else True
 
+    prefs = Preferences.module('browser')
+    current_ui_lock = prefs.preference('lock_layout').get()
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -826,8 +610,32 @@ def utils():
     except Exception:
         pg_libpq_version = 0
 
+    # Get the pgadmin server's locale
+    default_locale = ''
+    if current_app.PGADMIN_RUNTIME:
+        import locale
+        try:
+            locale_info = locale.getdefaultlocale()
+            if len(locale_info) > 0:
+                default_locale = locale_info[0].replace('_', '-')
+        except Exception:
+            current_app.logger.debug('Failed to get the default locale.')
+
     for submodule in current_blueprint.submodules:
         snippets.extend(submodule.jssnippets)
+
+    auth_only_internal = False
+    auth_source = []
+
+    if config.SERVER_MODE:
+        if session['auth_source_manager']['current_source'] == INTERNAL:
+            auth_only_internal = True
+        auth_source = session['auth_source_manager'][
+            'source_friendly_name']
+
+    shared_storage_list, \
+        restricted_shared_storage_list = get_shared_storage_list()
+
     return make_response(
         render_template(
             'browser/js/utils.js',
@@ -844,10 +652,25 @@ def utils():
             app_version_int=config.APP_VERSION_INT,
             pg_libpq_version=pg_libpq_version,
             support_ssh_tunnel=config.SUPPORT_SSH_TUNNEL,
-            logout_url=_get_logout_url(),
+            logout_url=get_logout_url(),
             platform=sys.platform,
             qt_default_placeholder=QT_DEFAULT_PLACEHOLDER,
-            enable_psql=config.ENABLE_PSQL
+            vw_edt_default_placeholder=VW_EDT_DEFAULT_PLACEHOLDER,
+            enable_psql=config.ENABLE_PSQL,
+            pgadmin_server_locale=default_locale,
+            _=gettext,
+            auth_only_internal=auth_only_internal,
+            mfa_enabled=is_mfa_enabled(),
+            is_admin=current_user.has_role("Administrator"),
+            login_url=login_url,
+            username=current_user.username,
+            auth_source=auth_source,
+            heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
+            password_length_min=config.PASSWORD_LENGTH_MIN,
+            current_ui_lock=current_ui_lock,
+            shared_storage_list=shared_storage_list,
+            restricted_shared_storage_list=[] if current_user.has_role(
+                "Administrator") else restricted_shared_storage_list,
         ),
         200, {'Content-Type': MIMETYPE_APP_JS})
 
@@ -919,30 +742,11 @@ def get_nodes():
 
 
 def form_master_password_response(existing=True, present=False, errmsg=None):
-    content_new = (
-        gettext("Set Master Password"),
-        "<br/>".join([
-            gettext("Please set a master password for pgAdmin."),
-            gettext("This will be used to secure and later unlock saved "
-                    "passwords and other credentials.")])
-    )
-    content_existing = (
-        gettext("Unlock Saved Passwords"),
-        "<br/>".join([
-            gettext("Please enter your master password."),
-            gettext("This is required to unlock saved passwords and "
-                    "reconnect to the database server(s).")])
-    )
-
     return make_json_response(data={
         'present': present,
-        'title': content_existing[0] if existing else content_new[0],
-        'content': render_template(
-            'browser/master_password.html',
-            content_text=content_existing[1] if existing else content_new[1],
-            errmsg=errmsg
-        ),
-        'reset': existing
+        'reset': existing,
+        'errmsg': errmsg,
+        'is_error': True if errmsg else False
     })
 
 
@@ -990,11 +794,15 @@ def set_master_password():
 
     data = None
 
-    if hasattr(request.data, 'decode'):
-        data = request.data.decode('utf-8')
+    if request.form:
+        data = request.form
+    elif request.data:
+        data = request.data
+        if hasattr(request.data, 'decode'):
+            data = request.data.decode('utf-8')
 
-    if data != '':
-        data = json.loads(data)
+        if data != '':
+            data = json.loads(data)
 
     # Master password is not applicable for server mode
     # Enable master password if oauth is used
@@ -1004,7 +812,7 @@ def set_master_password():
             and config.MASTER_PASSWORD_REQUIRED:
         # if master pass is set previously
         if current_user.masterpass_check is not None and \
-            data.get('button_click') and \
+            data.get('submit_password', False) and \
                 not validate_master_password(data.get('password')):
             return form_master_password_response(
                 existing=True,
@@ -1040,7 +848,7 @@ def set_master_password():
             )
         elif not get_crypt_key()[1]:
             error_message = None
-            if data.get('button_click') and data.get('password') == '':
+            if data.get('submit_password') and data.get('password') == '':
                 # If user attempted to enter a blank password, then throw error
                 error_message = gettext("Master password cannot be empty")
             return form_master_password_response(
@@ -1083,30 +891,6 @@ def lock_layout():
     return make_json_response()
 
 
-@blueprint.route("/signal_runtime", endpoint="signal_runtime",
-                 methods=["POST"])
-def signal_runtime():
-    # If not runtime then no need to send signal
-    if current_app.PGADMIN_RUNTIME:
-        data = None
-
-        if hasattr(request.data, 'decode'):
-            data = request.data.decode('utf-8')
-
-        if data != '':
-            data = json.loads(data)
-
-        # Add Info Handler to current app just to send signal to runtime
-        tmp_handler = logging.StreamHandler()
-        tmp_handler.setLevel(logging.INFO)
-        current_app.logger.addHandler(tmp_handler)
-        # Send signal to runtime
-        current_app.logger.info(data['command'])
-        # Remove the temporary handler
-        current_app.logger.removeHandler(tmp_handler)
-
-    return make_json_response()
-
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot
 # use app.config['SECURITY_CHANGEABLE']
@@ -1121,10 +905,11 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
         """View function which handles a change password request."""
 
         has_error = False
-        form_class = _security.change_password_form
+        form_class = _security.forms.get('change_password_form').cls
+        req_json = request.get_json(silent=True)
 
-        if request.json:
-            form = form_class(MultiDict(request.json))
+        if req_json:
+            form = form_class(MultiDict(req_json))
         else:
             form = form_class()
 
@@ -1156,7 +941,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 )
                 has_error = True
 
-            if request.json is None and not has_error:
+            if request.get_json(silent=True) is None and not has_error:
                 after_this_request(view_commit)
                 do_flash(*get_message('PASSWORD_CHANGE'))
 
@@ -1171,7 +956,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                 return redirect(get_url(_security.post_change_view) or
                                 get_url(_security.post_login_view))
 
-        if request.json and not has_error:
+        if request.get_json(silent=True) and not has_error:
             form.user = current_user
             return default_render_json(form)
 
@@ -1207,10 +992,11 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
     def forgot_password():
         """View function that handles a forgotten password request."""
         has_error = False
-        form_class = _security.forgot_password_form
+        form_class = _security.forms.get('forgot_password_form').cls
+        req_json = request.get_json(silent=True)
 
-        if request.json:
-            form = form_class(MultiDict(request.json))
+        if req_json:
+            form = form_class(MultiDict(req_json))
         else:
             form = form_class()
 
@@ -1257,11 +1043,11 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
                           'danger')
                     has_error = True
 
-            if request.json is None and not has_error:
+            if request.get_json(silent=True) is None and not has_error:
                 do_flash(*get_message('PASSWORD_RESET_REQUEST',
                                       email=form.user.email))
 
-        if request.json and not has_error:
+        if request.get_json(silent=True) and not has_error:
             return default_render_json(form, include_user=False)
 
         return _security.render_template(

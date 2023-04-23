@@ -2,16 +2,17 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
-import {Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
+import { Box, makeStyles, Accordion, AccordionSummary, AccordionDetails} from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
+import PublishIcon from '@material-ui/icons/Publish';
+import DoneIcon from '@material-ui/icons/Done';
 import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/InfoRounded';
@@ -19,9 +20,9 @@ import HelpIcon from '@material-ui/icons/HelpRounded';
 import EditIcon from '@material-ui/icons/Edit';
 import diffArray from 'diff-arrays-of-objects';
 import _ from 'lodash';
+import clsx from 'clsx';
 
 import {FormFooterMessage, MESSAGE_TYPE } from 'sources/components/FormComponents';
-import Theme from 'sources/Theme';
 import { PrimaryButton, DefaultButton, PgIconButton } from 'sources/components/Buttons';
 import Loader from 'sources/components/Loader';
 import { minMaxValidator, numberValidator, integerValidator, emptyValidator, checkUniqueCol, isEmptyString} from '../validators';
@@ -29,7 +30,6 @@ import { MappedFormControl } from './MappedControl';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import FormView, { getFieldMetaData } from './FormView';
-import { pgAlertify } from '../helpers/legacyConnector';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 import { parseApiError } from '../api_instance';
@@ -37,6 +37,8 @@ import DepListener, {DepListenerContext} from './DepListener';
 import FieldSetView from './FieldSetView';
 import DataGridView from './DataGridView';
 import { useIsMounted } from '../custom_hooks';
+import Notify from '../helpers/Notifier';
+import ErrorBoundary from '../helpers/ErrorBoundary';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -50,6 +52,9 @@ const useDialogStyles = makeStyles((theme)=>({
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
+  },
+  formProperties: {
+    backgroundColor: theme.palette.grey[400],
   },
   footer: {
     padding: theme.spacing(1),
@@ -72,7 +77,7 @@ function getForQueryParams(data) {
   let retData = {...data};
   Object.keys(retData).forEach((key)=>{
     let value = retData[key];
-    if(_.isObject(value)) {
+    if(_.isObject(value) || _.isNull(value)) {
       retData[key] = JSON.stringify(value);
     }
   });
@@ -88,15 +93,22 @@ function isValueEqual(val1, val2) {
   /* If the orig value was null and new one is empty string, then its a "no change" */
   /* If the orig value and new value are of different datatype but of same value(numeric) "no change" */
   /* If the orig value is undefined or null and new value is boolean false "no change" */
-  if ((_.isEqual(val1, val2)
-    || ((val1 === null || _.isUndefined(val1)) && val2 === '')
-    || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
-    || (attrDefined ? _.isEqual(val1.toString(), val2.toString()) : false
-    ))) {
+  if (_.isEqual(val1, val2)
+  || ((val1 === null || _.isUndefined(val1)) && val2 === '')
+  || ((val1 === null || _.isUndefined(val1)) && typeof(val2) === 'boolean' && !val2)
+  || (attrDefined ? (!_.isObject(val1) && _.isEqual(val1.toString(), val2.toString())) : false)
+  ) {
     return true;
-  } else {
-    return false;
   }
+  return false;
+}
+
+/* Compare two objects */
+function isObjectEqual(val1, val2) {
+  const allKeys = Array.from(new Set([...Object.keys(val1), ...Object.keys(val2)]));
+  return !allKeys.some((k)=>{
+    return !isValueEqual(val1[k], val2[k]);
+  });
 }
 
 function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, includeSkipChange=true) {
@@ -154,7 +166,10 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
             const changeDiff = diffArray(
               _.get(origVal, field.id) || [],
               _.get(sessVal, field.id) || [],
-              'cid'
+              'cid',
+              {
+                compareFunction: isObjectEqual,
+              }
             );
             change = {};
             if(changeDiff.added.length > 0) {
@@ -168,28 +183,33 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
             }
             if(changeDiff.updated.length > 0) {
               /* There is change in collection. Parse further to go deep */
-              change['changed'] = [];
+              let changed = [];
               for(const changedRow of changeDiff.updated) {
                 let finalChangedRow = {};
                 let rowIndx = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
                 finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndx]), _.get(sessVal, [field.id, rowIndx]));
 
+                if(_.isEmpty(finalChangedRow)) {
+                  continue;
+                }
                 /* If the id attr value is present, then only changed keys can be passed.
                 Otherwise, passing all the keys is useful */
                 let idAttrValue = _.get(sessVal, [field.id, rowIndx, field.schema.idAttribute]);
                 if(_.isUndefined(idAttrValue)) {
-                  change['changed'].push({
+                  changed.push({
                     ...changedRow,
                     ...finalChangedRow,
                   });
                 } else {
-                  change['changed'].push({
+                  changed.push({
                     [field.schema.idAttribute]: idAttrValue,
                     ...finalChangedRow,
                   });
                 }
               }
-              change['changed'] = cleanCid(change['changed'], viewHelperProps.keepCid);
+              if(changed.length > 0) {
+                change['changed'] = cleanCid(changed, viewHelperProps.keepCid);
+              }
             }
             if(Object.keys(change).length > 0) {
               attrChanged(field.id, change, true);
@@ -199,18 +219,31 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
           }
         } else if(!isEdit) {
           if(field.type === 'collection') {
-            const changeDiff = diffArray(
-              _.get(origVal, field.id) || [],
-              _.get(sessVal, field.id) || [],
-              'cid',
-            );
+            const origColl = _.get(origVal, field.id) || [];
+            const sessColl = _.get(sessVal, field.id) || [];
+            let changeDiff = diffArray(origColl,sessColl,'cid',{
+              compareFunction: isObjectEqual,
+            });
+
             /* For fixed rows, check only the updated changes */
+            /* If canReorder, check the updated changes */
             if((!_.isUndefined(field.fixedRows) && changeDiff.updated.length > 0)
               || (_.isUndefined(field.fixedRows) && (
                 changeDiff.added.length > 0 || changeDiff.removed.length > 0 || changeDiff.updated.length > 0
-              ))) {
+              ))
+              || (field.canReorder && _.differenceBy(origColl, sessColl, 'cid'))
+            ) {
               let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
               attrChanged(field.id, change, true);
+              return;
+            }
+
+            if(field.canReorder) {
+              changeDiff = diffArray(origColl,sessColl);
+              if(changeDiff.updated.length > 0) {
+                let change = cleanCid(_.get(sessVal, field.id), viewHelperProps.keepCid);
+                attrChanged(field.id, change, true);
+              }
             }
           } else {
             attrChanged(field.id);
@@ -301,9 +334,11 @@ export const SCHEMA_STATE_ACTIONS = {
   SET_VALUE: 'set_value',
   ADD_ROW: 'add_row',
   DELETE_ROW: 'delete_row',
+  MOVE_ROW: 'move_row',
   RERENDER: 'rerender',
   CLEAR_DEFERRED_QUEUE: 'clear_deferred_queue',
   DEFERRED_DEPCHANGE: 'deferred_depchange',
+  BULK_UPDATE: 'bulk_update',
 };
 
 const getDepChange = (currPath, newState, oldState, action)=>{
@@ -321,14 +356,13 @@ const getDepChange = (currPath, newState, oldState, action)=>{
 
 const getDeferredDepChange = (currPath, newState, oldState, action)=>{
   if(action.deferredDepChange) {
-    let deferredPromiseList = action.deferredDepChange(currPath, newState, {
+    return action.deferredDepChange(currPath, newState, {
       type: action.type,
       path: action.path,
       value: action.value,
       depChange: action.depChange,
       oldState: _.cloneDeep(oldState),
     });
-    return deferredPromiseList;
   }
 };
 
@@ -357,6 +391,13 @@ const sessDataReducer = (state, action)=>{
   case SCHEMA_STATE_ACTIONS.INIT:
     data = action.payload;
     break;
+  case SCHEMA_STATE_ACTIONS.BULK_UPDATE:
+    rows = (_.get(data, action.path)||[]);
+    rows.forEach((row)=> {
+      row[action.id] = false;
+    });
+    _.set(data, action.path, rows);
+    break;
   case SCHEMA_STATE_ACTIONS.SET_VALUE:
     _.set(data, action.path, action.value);
     /* If there is any dep listeners get the changes */
@@ -379,6 +420,13 @@ const sessDataReducer = (state, action)=>{
     _.set(data, action.path, rows);
     /* If there is any dep listeners get the changes */
     data = getDepChange(action.path, data, state, action);
+    break;
+  case SCHEMA_STATE_ACTIONS.MOVE_ROW:
+    rows = _.get(data, action.path)||[];
+    var row = rows[action.oldIndex];
+    rows.splice(action.oldIndex, 1);
+    rows.splice(action.newIndex, 0, row);
+    _.set(data, action.path, rows);
     break;
   case SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE:
     data.__deferred__ = [];
@@ -424,7 +472,7 @@ function prepareData(val, createMode=false) {
 
 /* If its the dialog */
 function SchemaDialogView({
-  getInitData, viewHelperProps, schema={}, showFooter=true, isTabView=true, ...props}) {
+  getInitData, viewHelperProps, loadingText, schema={}, showFooter=true, isTabView=true, checkDirtyOnEnableSave=false, ...props}) {
   const classes = useDialogStyles();
   /* Some useful states */
   const [dirty, setDirty] = useState(false);
@@ -439,10 +487,25 @@ function SchemaDialogView({
   const firstEleRef = useRef();
   const isNew = schema.isNew(schema.origData);
   const checkIsMounted = useIsMounted();
+  const preFormReadyQueue = useRef([]);
+  const Notifier = props.Notifier || Notify;
 
   const depListenerObj = useRef(new DepListener());
   /* The session data */
   const [sessData, sessDispatch] = useReducer(sessDataReducer, {});
+
+  useEffect(()=>{
+    /* Dispatch all the actions recorded before form ready */
+    if(formReady) {
+      if(preFormReadyQueue.current.length > 0) {
+        for (const dispatchPayload  of preFormReadyQueue.current) {
+          sessDispatch(dispatchPayload);
+        }
+      }
+      /* destroy the queue so that no one uses it */
+      preFormReadyQueue.current = undefined;
+    }
+  }, [formReady]);
 
   useEffect(()=>{
     /* if sessData changes, validate the schema */
@@ -453,7 +516,7 @@ function SchemaDialogView({
       if(message) {
         setFormErr({
           name: path,
-          message: message,
+          message: _.escape(message),
         });
       }
     });
@@ -465,59 +528,66 @@ function SchemaDialogView({
     setDirty(isDataChanged);
 
     /* tell the callbacks the data has changed */
+    if(viewHelperProps.mode !== 'edit') {
+      /* If new then merge the changed data with origData */
+      changedData = _.assign({}, schema.origData, changedData);
+    }
+
     props.onDataChange && props.onDataChange(isDataChanged, changedData);
   }, [sessData, formReady]);
 
   useEffect(()=>{
     if(sessData.__deferred__?.length > 0) {
+      let items = sessData.__deferred__;
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.CLEAR_DEFERRED_QUEUE,
       });
 
-      let item = sessData.__deferred__[0];
-      item.promise.then((resFunc)=>{
-        sessDispatch({
-          type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
-          path: item.action.path,
-          depChange: item.action.depChange,
-          listener: {
-            ...item.listener,
-            callback: resFunc,
-          },
+      items.forEach((item)=>{
+        item.promise.then((resFunc)=>{
+          sessDispatch({
+            type: SCHEMA_STATE_ACTIONS.DEFERRED_DEPCHANGE,
+            path: item.action.path,
+            depChange: item.action.depChange,
+            listener: {
+              ...item.listener,
+              callback: resFunc,
+            },
+          });
         });
       });
     }
   }, [sessData.__deferred__?.length]);
 
   useEffect(()=>{
+    let unmounted = false;
     /* Docker on load focusses itself, so our focus should execute later */
     let focusTimeout = setTimeout(()=>{
       firstEleRef.current && firstEleRef.current.focus();
     }, 250);
 
-    /* Re-triggering focus on already focussed loses the focus */
-    if(viewHelperProps.mode === 'edit') {
-      setLoaderText('Loading...');
-      /* If its an edit mode, get the initial data using getInitData
-      getInitData should be a promise */
-      if(!getInitData) {
-        throw new Error('getInitData must be passed for edit');
+    setLoaderText('Loading...');
+    /* Get the initial data using getInitData */
+    /* If its an edit mode, getInitData should be present and a promise */
+    if(!getInitData && viewHelperProps.mode === 'edit') {
+      throw new Error('getInitData must be passed for edit');
+    }
+    let initDataPromise = (getInitData && getInitData()) || Promise.resolve({});
+    initDataPromise.then((data)=>{
+      if(unmounted) {
+        return;
       }
-      getInitData && getInitData().then((data)=>{firstEleRef.current;
-        data = data || {};
+      data = data || {};
+      if(viewHelperProps.mode === 'edit') {
         /* Set the origData to incoming data, useful for comparing and reset */
         schema.origData = prepareData(data || {});
-        schema.initialise(schema.origData);
-        sessDispatch({
-          type: SCHEMA_STATE_ACTIONS.INIT,
-          payload: schema.origData,
-        });
-        setFormReady(true);
-        setLoaderText('');
-      });
-    } else {
-      /* Use the defaults as the initital data */
-      schema.origData = prepareData(schema.defaults, true);
+      } else {
+        /* In create mode, merge with defaults */
+        schema.origData = prepareData({
+          ...schema.defaults,
+          ...data,
+        }, true);
+      }
       schema.initialise(schema.origData);
       sessDispatch({
         type: SCHEMA_STATE_ACTIONS.INIT,
@@ -525,10 +595,21 @@ function SchemaDialogView({
       });
       setFormReady(true);
       setLoaderText('');
-    }
-
+    }).catch((err)=>{
+      if(unmounted) {
+        return;
+      }
+      setLoaderText('');
+      setFormErr({
+        name: 'apierror',
+        message: _.escape(parseApiError(err)),
+      });
+    });
     /* Clear the focus timeout if unmounted */
-    return ()=>clearTimeout(focusTimeout);
+    return ()=>{
+      unmounted = true;
+      clearTimeout(focusTimeout);
+    };
   }, []);
 
   useEffect(()=>{
@@ -552,17 +633,14 @@ function SchemaDialogView({
     };
     /* Confirm before reset */
     if(props.confirmOnCloseReset) {
-      pgAlertify().confirm(
+      Notifier.confirm(
         gettext('Warning'),
         gettext('Changes will be lost. Are you sure you want to reset?'),
         resetIt,
         function() {
           return true;
-        }
-      ).set('labels', {
-        ok: gettext('Yes'),
-        cancel: gettext('No'),
-      }).show();
+        },
+      );
     } else {
       resetIt();
     }
@@ -582,7 +660,7 @@ function SchemaDialogView({
       changeData[schema.idAttribute] = schema.origData[schema.idAttribute];
     }
     if (schema.warningText) {
-      pgAlertify().confirm(
+      Notifier.confirm(
         gettext('Warning'),
         schema.warningText,
         ()=> {
@@ -592,7 +670,7 @@ function SchemaDialogView({
           setSaving(false);
           setLoaderText('');
           return true;
-        }
+        },
       );
     } else {
       save(changeData);
@@ -603,7 +681,7 @@ function SchemaDialogView({
     props.onSave(isNew, changeData)
       .then(()=>{
         if(schema.informText) {
-          pgAlertify().alert(
+          Notifier.alert(
             gettext('Warning'),
             schema.informText,
           );
@@ -612,7 +690,7 @@ function SchemaDialogView({
         console.error(err);
         setFormErr({
           name: 'apierror',
-          message: parseApiError(err),
+          message: _.escape(parseApiError(err)),
         });
       }).finally(()=>{
         if(checkIsMounted()) {
@@ -654,11 +732,19 @@ function SchemaDialogView({
   };
 
   const sessDispatchWithListener = (action)=>{
-    sessDispatch({
+    let dispatchPayload = {
       ...action,
       depChange: (...args)=>depListenerObj.current.getDepChange(...args),
       deferredDepChange: (...args)=>depListenerObj.current.getDeferredDepChange(...args),
-    });
+    };
+    /* All the session changes coming before init should be queued up
+    They will be processed later when form is ready.
+    */
+    if(preFormReadyQueue.current) {
+      preFormReadyQueue.current.push(dispatchPayload);
+      return;
+    }
+    sessDispatch(dispatchPayload);
   };
 
   const stateUtils = useMemo(()=>({
@@ -678,26 +764,37 @@ function SchemaDialogView({
     formErr: formErr,
   }), [formResetKey, formErr]);
 
+  const getButtonIcon = () => {
+    if(props.customSaveBtnIconType == 'upload') {
+      return <PublishIcon />;
+    } else if(props.customSaveBtnIconType == 'done') {
+      return <DoneIcon />;
+    }
+    return <SaveIcon />;
+  };
+
+  let ButtonIcon = getButtonIcon();
+
   /* I am Groot */
   return (
     <StateUtilsContext.Provider value={stateUtils}>
       <DepListenerContext.Provider value={depListenerObj.current}>
         <Box className={classes.root}>
           <Box className={classes.form}>
-            <Loader message={loaderText}/>
+            <Loader message={loaderText || loadingText}/>
             <FormView value={sessData} viewHelperProps={viewHelperProps}
               schema={schema} accessPath={[]} dataDispatch={sessDispatchWithListener}
-              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} />
+              hasSQLTab={props.hasSQL} getSQLValue={getSQLValue} firstEleRef={firstEleRef} isTabView={isTabView} className={props.formClassName} />
             <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={formErr.message}
               onClose={onErrClose} />
           </Box>
           {showFooter && <Box className={classes.footer}>
-            {useMemo(()=><Box>
+            {(!props.disableSqlHelp || !props.disableDialogHelp) && <Box>
               <PgIconButton data-test="sql-help" onClick={()=>props.onHelp(true, isNew)} icon={<InfoIcon />}
                 disabled={props.disableSqlHelp} className={classes.buttonMargin} title="SQL help for this object type."/>
               <PgIconButton data-test="dialog-help" onClick={()=>props.onHelp(false, isNew)} icon={<HelpIcon />} title="Help for this dialog."
                 disabled={props.disableDialogHelp}/>
-            </Box>, [])}
+            </Box>}
             <Box marginLeft="auto">
               <DefaultButton data-test="Close" onClick={props.onClose} startIcon={<CloseIcon />} className={classes.buttonMargin}>
                 {gettext('Close')}
@@ -705,8 +802,8 @@ function SchemaDialogView({
               <DefaultButton data-test="Reset" onClick={onResetClick} startIcon={<SettingsBackupRestoreIcon />} disabled={!dirty || saving} className={classes.buttonMargin}>
                 {gettext('Reset')}
               </DefaultButton>
-              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={<SaveIcon />} disabled={!dirty || saving || Boolean(formErr.name) || !formReady}>
-                {gettext('Save')}
+              <PrimaryButton data-test="Save" onClick={onSaveClick} startIcon={ButtonIcon} disabled={ !(viewHelperProps.mode === 'edit' || checkDirtyOnEnableSave ? dirty : true) || saving || Boolean(formErr.name && formErr.name !== 'apierror') || !formReady}>
+                {props.customSaveBtnName ? gettext(props.customSaveBtnName) : gettext('Save')}
               </PrimaryButton>
             </Box>
           </Box>}
@@ -726,6 +823,7 @@ SchemaDialogView.propTypes = {
     }),
     inCatalog: PropTypes.bool,
   }).isRequired,
+  loadingText: PropTypes.string,
   schema: CustomPropTypes.schemaUI,
   onSave: PropTypes.func,
   onClose: PropTypes.func,
@@ -739,6 +837,11 @@ SchemaDialogView.propTypes = {
   disableDialogHelp: PropTypes.bool,
   showFooter: PropTypes.bool,
   resetKey: PropTypes.any,
+  customSaveBtnName: PropTypes.string,
+  customSaveBtnIconType: PropTypes.string,
+  formClassName: CustomPropTypes.className,
+  Notifier: PropTypes.object,
+  checkDirtyOnEnableSave: PropTypes.bool,
 };
 
 const usePropsStyles = makeStyles((theme)=>({
@@ -771,7 +874,7 @@ const usePropsStyles = makeStyles((theme)=>({
 
 /* If its the properties tab */
 function SchemaPropertiesView({
-  getInitData, viewHelperProps, schema={}, ...props}) {
+  getInitData, viewHelperProps, schema={}, updatedData, ...props}) {
   const classes = usePropsStyles();
   let defaultTab = 'General';
   let tabs = {};
@@ -787,13 +890,26 @@ function SchemaPropertiesView({
       data = data || {};
       schema.initialise(data);
       if(checkIsMounted()) {
-        setOrigData(data || {});
+        setOrigData({
+          ...data,
+          ...updatedData
+        });
         setLoaderText('');
       }
+    }).catch((err)=>{
+      setLoaderText('');
+      Notify.pgRespErrorNotify(err);
     });
-  }, [getInitData]);
+  }, []);
 
-  let fullTabs = [];
+  useEffect(()=>{
+    if(updatedData) {
+      setOrigData(prevData => ({
+        ...prevData,
+        ...updatedData
+      }));
+    }
+  },[updatedData]);
 
   /* A simple loop to get all the controls for the fields */
   schema.fields.forEach((field)=>{
@@ -803,10 +919,8 @@ function SchemaPropertiesView({
 
     if(field.isFullTab) {
       tabsClassname[group] = classes.noPadding;
-      fullTabs.push(group);
     }
 
-    readonly = true;
     if(modeSupported) {
       group = groupLabels[group] || group || defaultTab;
       if(field.helpMessageMode && field.helpMessageMode.indexOf(viewHelperProps.mode) == -1) {
@@ -833,7 +947,7 @@ function SchemaPropertiesView({
             key={field.id}
             viewHelperProps={viewHelperProps}
             name={field.id}
-            value={origData[field.id]}
+            value={origData[field.id] || []}
             schema={field.schema}
             accessPath={[field.id]}
             formErr={{}}
@@ -863,6 +977,11 @@ function SchemaPropertiesView({
             visible={visible}
             className={field.isFullTab ? null : classes.controlRow}
             noLabel={field.isFullTab}
+            memoDeps={[
+              origData[field.id],
+              classes.controlRow,
+              field.isFullTab
+            ]}
           />
         );
       }
@@ -878,9 +997,9 @@ function SchemaPropertiesView({
           data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
           title="SQL help for this object type." className={classes.buttonMargin} />
         <PgIconButton data-test="edit"
-          onClick={props.onEdit} icon={<EditIcon />} title="Edit the object" />
+          onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
       </Box>
-      <Box className={classes.form}>
+      <Box className={clsx(classes.form, classes.formProperties)}>
         <Box>
           {Object.keys(finalTabs).map((tabName)=>{
             let id = tabName.replace(' ', '');
@@ -909,6 +1028,7 @@ function SchemaPropertiesView({
 
 SchemaPropertiesView.propTypes = {
   getInitData: PropTypes.func.isRequired,
+  updatedData: PropTypes.object,
   viewHelperProps: PropTypes.shape({
     mode: PropTypes.string.isRequired,
     serverInfo: PropTypes.shape({
@@ -921,21 +1041,22 @@ SchemaPropertiesView.propTypes = {
   onHelp: PropTypes.func,
   disableSqlHelp: PropTypes.bool,
   onEdit: PropTypes.func,
+  itemNodeData: PropTypes.object
 };
 
 export default function SchemaView({formType, ...props}) {
   /* Switch the view based on formType */
   if(formType === 'tab') {
     return (
-      <Theme>
+      <ErrorBoundary>
         <SchemaPropertiesView {...props}/>
-      </Theme>
+      </ErrorBoundary>
     );
   }
   return (
-    <Theme>
+    <ErrorBoundary>
       <SchemaDialogView {...props}/>
-    </Theme>
+    </ErrorBoundary>
   );
 }
 

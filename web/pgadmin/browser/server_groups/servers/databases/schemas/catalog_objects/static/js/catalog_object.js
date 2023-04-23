@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,9 +10,9 @@
 import CatalogObjectSchema from './catalog_object.ui';
 
 define('pgadmin.node.catalog_object', [
-  'sources/gettext', 'jquery', 'underscore', 'sources/pgadmin',
+  'sources/gettext', 'sources/pgadmin',
   'pgadmin.browser', 'pgadmin.browser.collection',
-], function(gettext, $, _, pgAdmin, pgBrowser) {
+], function(gettext, pgAdmin, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-catalog_object']) {
     pgAdmin.Browser.Nodes['coll-catalog_object'] =
@@ -43,31 +43,6 @@ define('pgadmin.node.catalog_object', [
 
       },
       getSchema: ()=>new CatalogObjectSchema(),
-      /* Few fields are kept since the properties tab for collection is not
-      yet migrated to new react schema. Once the properties for collection
-      is removed, remove this model */
-      model: pgAdmin.Browser.Node.Model.extend({
-        defaults: {
-          name: undefined,
-          namespaceowner: undefined,
-          nspacl: undefined,
-          description: undefined,
-        },
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text', readonly: true,
-        },{
-          id: 'oid', label: gettext('OID'), cell: 'string',
-          type: 'text',
-        },{
-          id: 'owner', label: gettext('Owner'), cell: 'string',
-          type: 'text', readonly: true,
-        },{
-          id: 'description', label: gettext('Comment'), cell: 'string',
-          type: 'multiline' ,  readonly: true,
-        },
-        ],
-      }),
 
     });
 

@@ -6,6 +6,6 @@ FROM pg_catalog.pg_type t
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=t.oid AND des.classoid='pg_type'::regclass)
 WHERE t.typtype != 'd' AND t.typname NOT LIKE E'\\_%' AND t.typnamespace = {{scid}}::oid
 {% if data %}
-    AND t.typname = {{data.name|qtLiteral}}
+    AND t.typname = {{data.name|qtLiteral(conn)}}
 {% endif %}
 ORDER BY t.typname;

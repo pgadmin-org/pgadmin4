@@ -2,18 +2,18 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
-import simplejson as json
+import json
 import re
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
@@ -57,7 +57,7 @@ class EventTriggerModule(CollectionNodeModule):
             *args:
             **kwargs:
         """
-        super(EventTriggerModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = 90300
         self.max_ver = None
 
@@ -174,7 +174,8 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         'fopts': [{'get': 'get_event_funcs'}, {'get': 'get_event_funcs'}]
     })
 
-    keys_to_ignore = ['oid', 'xmin', 'oid-2', 'eventfuncoid']
+    keys_to_ignore = ['oid', 'xmin', 'oid-2', 'eventfuncoid', 'schemaoid',
+                      'source']
 
     def check_precondition(f):
         """
@@ -193,12 +194,8 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 PG_DEFAULT_DRIVER
             ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'event_triggers/sql/9.3_plus'
-
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
+            self.template_path = 'event_triggers/sql/#{0}#'.format(
+                self.manager.version)
 
             self.datistemplate = False
             if (
@@ -369,7 +366,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         result = res['rows'][0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
             self.datistemplate)
         result = self._formatter(result)
 
@@ -390,7 +387,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         required_args = {
@@ -431,7 +428,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
-                data=data
+                data=data, conn=self.conn
             )
             status, etid = self.conn.execute_scalar(sql)
             if not status:
@@ -464,7 +461,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -480,7 +477,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
-                    data=data
+                    data=data, conn=self.conn
                 )
                 status, etid = self.conn.execute_scalar(sql)
 
@@ -524,7 +521,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if etid is None:
             data = request_object.form if request_object.form else \
-                json.loads(request_object.data, encoding='utf-8')
+                json.loads(request_object.data)
         else:
             data = {'ids': [etid]}
 
@@ -609,7 +606,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         data = {}
         for k, v in request.args.items():
             try:
-                data[k] = json.loads(v, encoding='utf-8')
+                data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
         try:
@@ -852,14 +849,9 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
 
-        last_system_oid = 0
-        if self.manager.db_info is not None and did in self.manager.db_info:
-            last_system_oid = (self.manager.db_info[did])['datlastsysoid']
-
         sql = render_template(
-            "/".join([self.template_path, 'nodes.sql']),
-            datlastsysoid=last_system_oid,
-            showsysobj=self.blueprint.show_system_objects
+            "/".join([self.template_path, self._NODES_SQL]),
+            schema_diff=True
         )
         status, rset = self.conn.execute_2darray(sql)
         if not status:

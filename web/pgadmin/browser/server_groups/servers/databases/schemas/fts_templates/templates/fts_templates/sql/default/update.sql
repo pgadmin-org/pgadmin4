@@ -32,6 +32,6 @@ CREATE TEXT SEARCH TEMPLATE {{ conn|qtIdent(o_data.schema, name) }} (
 {% endif %}
 {% if 'description' in data and data.description != o_data.description %}
 COMMENT ON TEXT SEARCH TEMPLATE {{conn|qtIdent(o_data.schema)}}.{{conn|qtIdent(name)}}
-    IS {{ data.description|qtLiteral }};
+    IS {{ data.description|qtLiteral(conn) }};
 {% endif %}
 {% endif %}

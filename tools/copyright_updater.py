@@ -4,7 +4,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -20,7 +20,7 @@ import codecs
 ALLOWED_FILE_EXTENSIONS = (
     ".py", ".js", ".sql", ".cpp", ".h", ".rc", ".am", ".wsgi", ".pro",
     ".plist", ".rst", ".sh", ".in", ".mako", ".ini", ".jsx", ".rtf", ".rst",
-    "LICENSE"
+    "LICENSE", "Dockerfile", "Makefile", ".ts", ".tsx"
 )
 
 EXCLUDE_DIR = ("node_modules")
@@ -82,7 +82,7 @@ def help():
     print("\nInvalid command line options. Usage:")
     print("\t{0} <year to find> <year to replace>".format(sys.argv[0]))
     print("\tExample: {0} 2018 2019\n".format(sys.argv[0]))
-    exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':

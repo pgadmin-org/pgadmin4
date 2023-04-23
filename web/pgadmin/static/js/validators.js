@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -27,8 +27,7 @@ export function minMaxValidator(label, value, minValue, maxValue) {
 export function numberValidator(label, value) {
   if((_.isUndefined(value) || _.isNull(value) || String(value) === ''))
     return null;
-  var pattern = new RegExp('^-?[0-9]+(\.?[0-9]*)?$');
-  if (!pattern.test(value)) {
+  if (!/^-?\d+(\.?\d*)$/.test(value)) {
     return sprintf(pgAdmin.Browser.messages.MUST_BE_NUM, label);
   }
   return null;
@@ -38,8 +37,7 @@ export function numberValidator(label, value) {
 export function integerValidator(label, value) {
   if((_.isUndefined(value) || _.isNull(value) || String(value) === ''))
     return null;
-  var pattern = new RegExp('^-?[0-9]*$');
-  if (!pattern.test(value)) {
+  if (!/^-?\d*$/.test(value)) {
     return sprintf(pgAdmin.Browser.messages.MUST_BE_INT, label);
   }
   return null;
@@ -54,7 +52,7 @@ export function emptyValidator(label, value) {
 }
 
 export function isEmptyString(value) {
-  return _.isUndefined(value) || _.isNull(value) || String(value).trim() === '' || String(value).replace(/^\s+|\s+$/g, '') == '';
+  return _.isUndefined(value) || _.isNull(value) || String(value).trim() === '' || String(value).replace(/(^\s+)|(\s+$)/g, '') == '';
 }
 
 /* Validate rows to check for any duplicate rows based on uniqueCols-columns array */

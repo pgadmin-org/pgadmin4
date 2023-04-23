@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """ Implements Column Node """
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import DataTypeReader
@@ -65,7 +65,7 @@ class ColumnsModule(CollectionNodeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(ColumnsModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, **kwargs):
         """
@@ -273,7 +273,8 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             "/".join([self.template_path, self._NODES_SQL]),
             tid=tid,
             clid=clid,
-            show_sys_objects=self.blueprint.show_system_objects
+            show_sys_objects=self.blueprint.show_system_objects,
+            conn=self.conn
         )
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
@@ -364,7 +365,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            tid: Table ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -373,8 +374,10 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             if k in ('description',):
                 data[k] = v
             else:
-                data[k] = json.loads(v, encoding='utf-8',
-                                     cls=ColParamsJSONDecoder)
+                try:
+                    data[k] = json.loads(v, cls=ColParamsJSONDecoder)
+                except TypeError:
+                    data[k] = v
 
         required_args = {
             'name': 'Name',
@@ -416,7 +419,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         # we need oid to add object in tree at browser
         SQL = render_template(
             "/".join([self.template_path, 'get_position.sql']),
-            tid=tid, data=data
+            tid=tid, data=data, conn=self.conn
         )
         status, clid = self.conn.execute_scalar(SQL)
         if not status:
@@ -446,7 +449,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         if clid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [clid]}
@@ -512,7 +515,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
            clid: Column ID
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         # Adding parent into data dict, will be using it while creating sql
@@ -556,7 +559,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
         """
         data = dict()
         for k, v in request.args.items():
-            data[k] = json.loads(v, encoding='utf-8', cls=ColParamsJSONDecoder)
+            data[k] = json.loads(v, cls=ColParamsJSONDecoder)
 
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,7 +13,8 @@ import sys
 import traceback
 import json
 
-from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection,\
+    set_isolation_level
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 with open(CURRENT_PATH + "/user_mapping_test_data.json") as data_file:
@@ -58,7 +59,7 @@ def create_user_mapping(server, db_name, fsrv_name):
                                        server['port'],
                                        server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         query = "CREATE USER MAPPING FOR %s SERVER %s OPTIONS" \
                 " (user '%s', password '%s')" % (server['username'],
@@ -67,7 +68,7 @@ def create_user_mapping(server, db_name, fsrv_name):
                                                  server['db_password']
                                                  )
         pg_cursor.execute(query)
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created user mapping
         pg_cursor.execute(

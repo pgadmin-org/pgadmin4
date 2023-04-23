@@ -2,11 +2,12 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
+import _ from 'lodash';
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SecLabelSchema from '../../../static/js/sec_label.ui';
@@ -47,11 +48,11 @@ export class DefaultPrivSchema extends BaseUISchema {
 }
 
 export default class DatabaseSchema extends BaseUISchema {
-  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues) {
+  constructor(getVariableSchema, getPrivilegeRoleSchema, fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       owner: undefined,
-      is_sys_obj: undefined,
+      is_sys_obj: false,
       comment: undefined,
       encoding: 'UTF8',
       template: undefined,
@@ -94,20 +95,20 @@ export default class DatabaseSchema extends BaseUISchema {
     return [
       {
         id: 'name', label: gettext('Database'), cell: 'text',
-        editable: false, type: 'text', noEmpty: true,
+        editable: false, type: 'text', noEmpty: true, isCollectionProperty: true,
       },{
         id: 'did', label: gettext('OID'), cell: 'text', mode: ['properties'],
         editable: false, type: 'text',
       },{
         id: 'datowner', label: gettext('Owner'),
         editable: false, type: 'select', options: this.fieldOptions.role,
-        controlProps: { allowClear: false },
+        controlProps: { allowClear: false }, isCollectionProperty: true,
       },{
         id: 'is_sys_obj', label: gettext('System database?'),
         cell: 'switch', type: 'switch', mode: ['properties'],
       },{
         id: 'comments', label: gettext('Comment'),
-        editable: false, type: 'multiline',
+        editable: false, type: 'multiline', isCollectionProperty: true,
       },{
         id: 'encoding', label: gettext('Encoding'),
         editable: false, type: 'select', group: gettext('Definition'),
@@ -140,8 +141,10 @@ export default class DatabaseSchema extends BaseUISchema {
         min: -1,
       },{
         id: 'is_template', label: gettext('Template?'),
-        editable: false, type: 'switch', group: gettext('Definition'),
-        readonly: true,  mode: ['properties', 'edit'],
+        type: 'switch', group: gettext('Definition'),
+        mode: ['properties', 'edit', 'create'], readonly: function(state) {return (state.is_sys_obj); },
+        helpMessage: gettext('Note: When the preferences setting \'show template databases\' is set to false, then template databases won\'t be displayed in the object explorer.'),
+        helpMessageMode: ['edit', 'create'],
       },{
         id: 'datallowconn', label: gettext('Allow connections?'),
         editable: false, type: 'switch', group: gettext('Definition'),
@@ -197,13 +200,13 @@ export default class DatabaseSchema extends BaseUISchema {
         helpMessage: gettext('Note: Changes to the schema restriction will require the Schemas node in the browser to be refreshed before they will be shown.'),
         helpMessageMode: ['edit', 'create'],
         controlProps: {
-          multiple: true, allowClear: false, creatable: true,
+          multiple: true, allowClear: false, creatable: true, noDropdown: true, placeholder: 'Specify the schemas to be restrict...'
         }, depChange: (state)=>{
           if(!_.isUndefined(state.oid)) {
             obj.informText = undefined;
           }
 
-          if(obj.origData.schema_res != state.schema_res) {
+          if(!_.isEqual(obj.origData.schema_res, state.schema_res)) {
             obj.informText = gettext(
               'Please refresh the Schemas node to make changes to the schema restriction take effect.'
             );

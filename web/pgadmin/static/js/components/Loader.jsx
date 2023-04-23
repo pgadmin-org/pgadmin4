@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -34,19 +34,23 @@ const useStyles = makeStyles((theme)=>({
   },
   loader: {
     color: theme.otherVars.loader.color,
+  },
+  message: {
+    marginLeft: '0.5rem',
+    fontSize: '16px',
   }
 }));
 
-export default function Loader({message}) {
+export default function Loader({message, style, autoEllipsis=false, ...props}) {
   const classes = useStyles();
   if(!message) {
     return <></>;
   }
   return (
-    <Box className={classes.root}>
+    <Box className={classes.root} style={style} data-label="loader" {...props}>
       <Box className={classes.loaderRoot}>
         <CircularProgress className={classes.loader} />
-        <Typography>{message}</Typography>
+        <Typography className={classes.message}>{message}{autoEllipsis ? '...':''}</Typography>
       </Box>
     </Box>
   );
@@ -54,4 +58,6 @@ export default function Loader({message}) {
 
 Loader.propTypes = {
   message: PropTypes.string,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  autoEllipsis: PropTypes.bool,
 };

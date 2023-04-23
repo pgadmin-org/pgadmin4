@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -35,6 +35,7 @@ function saveConfiguration() {
   misc.ConfigureStore.set('fixedPort', document.getElementById('fixedPortCheck').checked);
   misc.ConfigureStore.set('portNo', parseInt(document.getElementById('portNo').value));
   misc.ConfigureStore.set('connectionTimeout', parseInt(document.getElementById('timeOut').value));
+  misc.ConfigureStore.set('openDocsInBrowser', document.getElementById('openDocsInBrowser').checked);
 
   misc.ConfigureStore.saveConfig();
 
@@ -61,8 +62,9 @@ function enableDisableSaveButton() {
   let configData = misc.ConfigureStore.getConfigData();
 
   if (configData['fixedPort'] !== document.getElementById('fixedPortCheck').checked ||
-      configData['portNo'] !== document.getElementById('portNo').value ||
-      configData['connectionTimeout'] !== document.getElementById('timeOut').value) {
+      configData['portNo'] != document.getElementById('portNo').value ||
+      configData['connectionTimeout'] != document.getElementById('timeOut').value ||
+      configData['openDocsInBrowser'] !== document.getElementById('openDocsInBrowser').checked) {
     document.getElementById('btnSave').removeAttribute('disabled');
   } else {
     document.getElementById('btnSave').setAttribute('disabled', 'disabled');
@@ -85,9 +87,15 @@ configWindow.on('loaded', function() {
   document.getElementById('portNo').value = configData['portNo'];
   document.getElementById('timeOut').value = configData['connectionTimeout'];
 
+  if (configData['openDocsInBrowser']) {
+    document.getElementById('openDocsInBrowser').checked = true;
+  } else {
+    document.getElementById('openDocsInBrowser').checked = false;
+  }
   // Add event listeners
   document.getElementById('btnSave').addEventListener('click', checkConfiguration);
   document.getElementById('fixedPortCheck').addEventListener('change', onCheckChange);
   document.getElementById('portNo').addEventListener('change', enableDisableSaveButton);
   document.getElementById('timeOut').addEventListener('change', enableDisableSaveButton);
+  document.getElementById('openDocsInBrowser').addEventListener('change', enableDisableSaveButton);
 });

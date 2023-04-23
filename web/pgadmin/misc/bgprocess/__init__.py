@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -14,7 +14,8 @@ the long running background-processes.
 from flask import url_for
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_response, gone, success_return
+from pgadmin.utils.ajax import make_response, gone, success_return,\
+    make_json_response
 
 from .processes import BatchProcess
 
@@ -22,13 +23,6 @@ MODULE_NAME = 'bgprocess'
 
 
 class BGProcessModule(PgAdminModule):
-    def get_own_javascripts(self):
-        return [{
-            'name': 'pgadmin.browser.bgprocess',
-            'path': url_for('bgprocess.static', filename='js/bgprocess'),
-            'when': None
-        }]
-
     def get_own_stylesheets(self):
         """
         Returns:
@@ -45,7 +39,7 @@ class BGProcessModule(PgAdminModule):
         return [
             'bgprocess.status', 'bgprocess.detailed_status',
             'bgprocess.acknowledge', 'bgprocess.list',
-            'bgprocess.stop_process'
+            'bgprocess.stop_process', 'bgprocess.update_cloud_details',
         ]
 
 
@@ -103,6 +97,44 @@ def acknowledge(pid):
     try:
         BatchProcess.acknowledge(pid)
         return success_return()
+    except LookupError as lerr:
+        return gone(errormsg=str(lerr))
+
+
+@blueprint.route('/update_cloud_details/<pid>', methods=['PUT'],
+                 endpoint='update_cloud_details')
+@login_required
+def update_cloud_details(pid):
+    """
+    Update the cloud details and get instance details
+
+    Args:
+        pid:  Process ID
+
+    Returns:
+        Positive status
+    """
+    try:
+        process = BatchProcess(id=pid)
+        status, server = process.update_cloud_details()
+        if status and len(server) > 0:
+            return make_json_response(
+                success=1,
+                data={'node': {
+                    'sid': server['id'],
+                    'gid': server['servergroup_id'],
+                    '_type': 'server',
+                    'icon': 'icon-server-not-connected',
+                    'id': 'server_{}'.format(server['id']),
+                    'label': server['name'],
+                    'status': server['status'],
+                    'cloud_status': server['cloud_status']
+                }}
+            )
+        elif status and len(server) == 0:
+            return success_return()
+        else:
+            return gone(errormsg=str(server))
     except LookupError as lerr:
         return gone(errormsg=str(lerr))
 

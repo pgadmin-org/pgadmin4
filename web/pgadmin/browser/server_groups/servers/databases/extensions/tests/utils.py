@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,7 +11,8 @@
 import sys
 import traceback
 
-from regression.python_test_utils.test_utils import get_db_connection
+from regression.python_test_utils.test_utils import get_db_connection,\
+    set_isolation_level
 
 
 def get_extension_data(schema_name):
@@ -45,12 +46,12 @@ def create_extension(server, db_name, extension_name, schema_name):
                                        server['port'],
                                        server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         pg_cursor.execute(
             '''CREATE EXTENSION "%s" SCHEMA "%s"''' % (extension_name,
                                                        schema_name))
-        connection.set_isolation_level(old_isolation_level)
+        set_isolation_level(connection, old_isolation_level)
         connection.commit()
         # Get 'oid' from newly created extension
         pg_cursor.execute("SELECT oid FROM pg_catalog.pg_extension "

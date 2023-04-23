@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -13,6 +13,7 @@ import traceback
 from urllib.parse import urlencode
 from flask import url_for
 import regression
+import config
 from regression import parent_node_dict
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
@@ -20,6 +21,7 @@ from pgadmin.browser.server_groups.servers.databases.tests import \
     utils as database_utils
 from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
+from config import PG_DEFAULT_DRIVER
 
 
 def create_resql_module_list(all_modules, exclude_pkgs, for_modules):
@@ -99,12 +101,15 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
 
         # Schema ID placeholder in JSON file which needs to be replaced
         # while running the test cases
+
         self.JSON_PLACEHOLDERS = {'schema_id': '<SCHEMA_ID>',
                                   'owner': '<OWNER>',
                                   'timestamptz_1': '<TIMESTAMPTZ_1>',
                                   'password': '<PASSWORD>',
                                   'pga_job_id': '<PGA_JOB_ID>',
-                                  'timestamptz_2': '<TIMESTAMPTZ_2>'}
+                                  'timestamptz_2': '<TIMESTAMPTZ_2>',
+                                  'db_name': '<TEST_DB_NAME>',
+                                  'db_driver': '<DB_DRIVER>'}
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
@@ -261,82 +266,99 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 else:
                     print(scenario['name'] + " (MSQL) ... ok")
 
-            if 'type' in scenario and scenario['type'] == 'create':
-                # Get the url and create the specific node.
+            try:
+                if 'type' in scenario and scenario['type'] == 'create':
+                    # Get the url and create the specific node.
 
-                create_url = self.get_url(scenario['endpoint'])
-                response = self.tester.post(create_url,
-                                            data=json.dumps(scenario['data']),
-                                            content_type='html/json')
-                try:
-                    self.assertEqual(response.status_code, 200)
-                except Exception as e:
-                    self.final_test_status = False
-                    print(scenario['name'] + "... FAIL")
-                    traceback.print_exc()
-                    continue
+                    create_url = self.get_url(scenario['endpoint'])
+                    response = self.tester.post(
+                        create_url, data=json.dumps(scenario['data']),
+                        content_type='html/json')
+                    try:
+                        self.assertEqual(response.status_code, 200)
+                    except Exception as e:
+                        response = self.tester.post(create_url,
+                                                    data=json.dumps(
+                                                        scenario['data']),
+                                                    content_type='html/json')
+                        self.final_test_status = False
+                        print(scenario['name'] + "... FAIL")
+                        traceback.print_exc()
+                        continue
 
-                resp_data = json.loads(response.data.decode('utf8'))
-                object_id = resp_data['node']['_id']
+                    resp_data = json.loads(response.data.decode('utf8'))
+                    print('object_id set', object_id)
+                    object_id = resp_data['node']['_id']
 
-                # Store the object id based on endpoints
-                if 'store_object_id' in scenario:
-                    self.store_object_ids(object_id,
-                                          scenario['data'],
-                                          scenario['endpoint'])
+                    # Store the object id based on endpoints
+                    if 'store_object_id' in scenario:
+                        self.store_object_ids(object_id,
+                                              scenario['data'],
+                                              scenario['endpoint'])
 
-                # Compare the reverse engineering SQL
-                if not self.check_re_sql(scenario, object_id):
-                    print(scenario['name'] + "... FAIL")
+                    # Compare the reverse engineering SQL
+                    if not self.check_re_sql(scenario, object_id):
+                        print(scenario['name'] + "... FAIL")
 
-                    if 'expected_sql_file' in scenario:
-                        print_msg = " - Expected SQL File: " + \
-                                    os.path.join(self.test_folder,
-                                                 scenario['expected_sql_file'])
+                        if 'expected_sql_file' in scenario:
+                            print_msg = " - Expected SQL File: " + \
+                                        os.path.join(
+                                            self.test_folder,
+                                            scenario['expected_sql_file'])
+                            print(print_msg)
+                        continue
+                elif 'type' in scenario and scenario['type'] == 'alter':
+                    # Get the url and create the specific node.
+
+                    alter_url = self.get_url(scenario['endpoint'], object_id)
+                    response = self.tester.put(
+                        alter_url, data=json.dumps(scenario['data']),
+                        follow_redirects=True)
+                    try:
+                        self.assertEqual(response.status_code, 200)
+                    except Exception as e:
+                        self.final_test_status = False
+                        alter_url = self.get_url(
+                            scenario['endpoint'], object_id)
+                        response = self.tester.put(alter_url,
+                                                   data=json.dumps(
+                                                       scenario['data']),
+                                                   follow_redirects=True)
+                        print(scenario['name'] + "... FAIL")
+                        traceback.print_exc()
+                        continue
+
+                    resp_data = json.loads(response.data.decode('utf8'))
+                    object_id = resp_data['node']['_id']
+
+                    # Compare the reverse engineering SQL
+                    if not self.check_re_sql(scenario, object_id):
+                        print_msg = scenario['name']
+                        if 'expected_sql_file' in scenario:
+                            print_msg = \
+                                print_msg + "  Expected SQL File:" + \
+                                scenario['expected_sql_file']
+                        print_msg = print_msg + "... FAIL"
                         print(print_msg)
-                    continue
-            elif 'type' in scenario and scenario['type'] == 'alter':
-                # Get the url and create the specific node.
+                        continue
+                elif 'type' in scenario and scenario['type'] == 'delete':
+                    # Get the delete url and delete the object created above.
+                    delete_url = self.get_url(scenario['endpoint'], object_id)
+                    delete_response = self.tester.delete(
+                        delete_url, data=json.dumps(scenario.get('data', {})),
+                        follow_redirects=True)
+                    try:
+                        self.assertEqual(delete_response.status_code, 200)
+                    except Exception as e:
+                        self.final_test_status = False
+                        print(scenario['name'] + "... FAIL")
+                        traceback.print_exc()
+                        continue
 
-                alter_url = self.get_url(scenario['endpoint'], object_id)
-                response = self.tester.put(alter_url,
-                                           data=json.dumps(scenario['data']),
-                                           follow_redirects=True)
-                try:
-                    self.assertEqual(response.status_code, 200)
-                except Exception as e:
-                    self.final_test_status = False
-                    print(scenario['name'] + "... FAIL")
-                    traceback.print_exc()
-                    continue
-
-                resp_data = json.loads(response.data.decode('utf8'))
-                object_id = resp_data['node']['_id']
-
-                # Compare the reverse engineering SQL
-                if not self.check_re_sql(scenario, object_id):
-                    print_msg = scenario['name']
-                    if 'expected_sql_file' in scenario:
-                        print_msg = print_msg + "  Expected SQL File:" + \
-                                                scenario['expected_sql_file']
-                    print_msg = print_msg + "... FAIL"
-                    print(print_msg)
-                    continue
-            elif 'type' in scenario and scenario['type'] == 'delete':
-                # Get the delete url and delete the object created above.
-                delete_url = self.get_url(scenario['endpoint'], object_id)
-                delete_response = self.tester.delete(
-                    delete_url, data=json.dumps(scenario.get('data', {})),
-                    follow_redirects=True)
-                try:
-                    self.assertEqual(delete_response.status_code, 200)
-                except Exception as e:
-                    self.final_test_status = False
-                    print(scenario['name'] + "... FAIL")
-                    traceback.print_exc()
-                    continue
-
-            print(scenario['name'] + "... ok")
+                print(scenario['name'] + "... ok")
+            except Exception as _:
+                print(scenario['name'] + "... FAIL")
+                raise
 
     def get_test_folder(self, module_path):
         """
@@ -357,8 +379,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             absolute_path = tests_folder_path
 
         # Iterate the version mapping directories.
-        for version_mapping in get_version_mapping_directories(
-                self.server['type']):
+        for version_mapping in get_version_mapping_directories():
             if version_mapping['number'] > \
                     self.server_information['server_version']:
                 continue
@@ -391,8 +412,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             absolute_path = tests_folder_path
 
         # Iterate the version mapping directories.
-        for version_mapping in get_version_mapping_directories(
-                self.server['type']):
+        for version_mapping in get_version_mapping_directories():
             if version_mapping['number'] > \
                     self.server_information['server_version']:
                 continue
@@ -494,7 +514,6 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         try:
             self.assertEqual(response.status_code, 200)
         except Exception as e:
-
             self.final_test_status = False
             traceback.print_exc()
             return False
@@ -523,6 +542,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 try:
                     self.assertEqual(sql, resp_sql)
                 except Exception as e:
+                    print(sql)
+                    print(resp_sql)
                     self.final_test_status = False
                     traceback.print_exc()
                     return False
@@ -637,6 +658,8 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                      scenario['data'][key_attr]['added'][0]):
                     self.get_db_connection()
                     pg_cursor = self.connection.cursor()
+                    pg_cursor.execute("SET DateStyle=ISO;")
+
                     try:
                         if is_tz_columns_list:
                             query = "SELECT timestamp with time zone '" \
@@ -751,6 +774,10 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         if 'pga_job_id' in scenario:
             sql = sql.replace(self.JSON_PLACEHOLDERS['pga_job_id'],
                               str(object_id))
+
+        if 'TEST_DB_NAME' in scenario:
+            sql = sql.replace(self.JSON_PLACEHOLDERS['db_name'],
+                              self.server_information['test_db_name'])
 
         return sql
 

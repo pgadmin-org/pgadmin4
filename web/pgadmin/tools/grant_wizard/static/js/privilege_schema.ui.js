@@ -2,7 +2,7 @@ import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 
 export default class PrivilegeSchema extends BaseUISchema {
-  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues) {
+  constructor(getPrivilegeRoleSchema, fieldOptions = {}, initValues={}) {
     super({
       oid: null,
       privilege: [],

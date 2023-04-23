@@ -208,21 +208,6 @@
       }
     },
     {
-      "name": "Add server with advanced properties",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "owner_server": true,
-      "test_data": {
-        "passfile": "test.pgpass",
-        "hostaddr": "127.0.0.1"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
       "name": "Add server with background/foreground color",
       "url": "/browser/server/obj/",
       "is_positive_test": true,
@@ -515,7 +500,7 @@
       "mocking_required": false,
       "recovery_state": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error while get recovery_state for server.')"
       },
       "expected_data": {
@@ -605,7 +590,7 @@
           "server_type": "pg",
           "password": "my_postgres",
           "sversion": 100000,
-          "connection_connect_return_value": "psycopg2.OperationalError()"
+          "connection_connect_return_value": "psycopg.OperationalError()"
         }
       },
       "expected_data": {
@@ -662,7 +647,7 @@
       "mocking_required": true,
       "pause": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, {'rows': []})"
       },
       "expected_data": {
@@ -676,7 +661,7 @@
       "mocking_required": true,
       "pause": false,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_scalar",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_scalar",
         "return_value": "(True, {'rows': []})"
       },
       "expected_data": {
@@ -743,7 +728,7 @@
       "is_positive_test": false,
       "mocking_required": true,
       "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg2.connection.Connection.execute_dict",
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(True, 'Mocked Internal Server Error')"
       },
       "expected_data": {
@@ -803,22 +788,6 @@
       "mock_data": {},
       "expected_data": {
         "status_code": 410
-      }
-    },
-    {
-      "name": "Update server with incorrect hostaddr",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "test_data": {
-        "comment": "PLACE_HOLDER",
-        "hostaddr": "PLACE_HOLDER",
-        "db_res": "PLACE_HOLDER",
-        "id": "PLACE_HOLDER"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 400
       }
     },
     {
@@ -939,21 +908,6 @@
       }
     },
     {
-      "name": "update advanced properties of server",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "owner_server": true,
-      "test_data": {
-        "passfile": "test_01.pgpass",
-        "hostaddr": "127.0.0.1"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
       "name": "remove ssl properties from server",
       "url": "/browser/server/obj/",
       "is_positive_test": true,
@@ -965,21 +919,6 @@
         "sslmode": "prefer",
         "sslcompression": false,
         "sslcrl": ""
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
-      "name": "remove advanced properties from server",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "owner_server": true,
-      "test_data": {
-        "passfile": "",
-        "hostaddr": ""
       },
       "mocking_required": false,
       "mock_data": {},
@@ -1044,22 +983,6 @@
       "mock_data": {},
       "expected_data": {
         "status_code": 410
-      }
-    },
-    {
-      "name": "Update server with incorrect hostaddr",
-      "url": "/browser/server/obj/",
-      "is_positive_test": true,
-      "test_data": {
-        "comment": "PLACE_HOLDER",
-        "hostaddr": "PLACE_HOLDER",
-        "db_res": "PLACE_HOLDER",
-        "id": "PLACE_HOLDER"
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 400
       }
     },
     {

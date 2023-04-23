@@ -2,14 +2,14 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import json
 import uuid
-import random
+import secrets
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils as utils
 from regression import parent_node_dict
@@ -36,7 +36,7 @@ class ERDSql(BaseTestGenerator):
 
         # Iterate the version mapping directories.
         for version_mapping in \
-                get_version_mapping_directories(self.server['type']):
+                get_version_mapping_directories():
             if version_mapping['number'] > \
                     self.server_information['server_version']:
                 continue
@@ -63,7 +63,7 @@ class ERDSql(BaseTestGenerator):
         if not db_con["info"] == "Database connected.":
             raise Exception("Could not connect to database to add the schema.")
 
-        trans_id = random.randint(1, 9999999)
+        trans_id = secrets.choice(range(1, 9999999))
         url = '/erd/sql/{trans_id}/{sgid}/{sid}/{did}'.format(
             trans_id=trans_id, sgid=self.sgid, sid=self.sid, did=self.did)
 

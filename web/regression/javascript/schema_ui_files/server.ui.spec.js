@@ -2,19 +2,16 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import ServerSchema from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('ServerSchema', ()=>{
   let mount;
@@ -36,64 +33,20 @@ describe('ServerSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
     pgAdmin.Browser.utils.support_ssh_tunnel = true;
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-      disableDialogHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
 
   it('validate', ()=>{
@@ -101,14 +54,9 @@ describe('ServerSchema', ()=>{
     let setError = jasmine.createSpy('setError');
 
     schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('host', 'Either Host name, Address or Service must be specified.');
-
-    state.hostaddr = 'incorrectip';
-    schemaObj.validate(state, setError);
-    expect(setError).toHaveBeenCalledWith('hostaddr', 'Host address must be valid IPv4 or IPv6 address.');
+    expect(setError).toHaveBeenCalledWith('host', 'Either Host name or Service must be specified.');
 
     state.host = '127.0.0.1';
-    state.hostaddr = null;
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('username', 'Username must be specified.');
 

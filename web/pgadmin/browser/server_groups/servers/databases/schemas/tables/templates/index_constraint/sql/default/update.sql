@@ -20,6 +20,6 @@ ALTER INDEX {{ conn|qtIdent(data.schema, data.name) }}
 {# ==== To update constraint comments ==== #}
 {% if data.comment is defined and data.comment != o_data.comment %}
 COMMENT ON CONSTRAINT {{ conn|qtIdent(data.name) }} ON {{ conn|qtIdent(data.schema, data.table) }}
-    IS {{ data.comment|qtLiteral }};
+    IS {{ data.comment|qtLiteral(conn) }};
 {% endif %}
 {% endif %}

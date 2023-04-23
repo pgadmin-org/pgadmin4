@@ -1,4 +1,11 @@
-
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
 """Encrypt the existing user password.
 
 Revision ID: f195f9a4923d
@@ -10,6 +17,8 @@ import config
 from flask import current_app
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_security.utils import verify_and_update_password
+from alembic import op
+from sqlalchemy.orm.session import Session
 from pgadmin.model import Keys, db, User, Role
 
 # revision identifiers, used by Alembic.
@@ -21,8 +30,9 @@ depends_on = None
 
 def upgrade():
     app = current_app
-    db.session.flush()
-    current_salt = Keys.query.filter_by(name = 'SECURITY_PASSWORD_SALT').first().value
+    session = Session(bind=op.get_bind())
+    current_salt = session.query(Keys).filter_by(
+        name='SECURITY_PASSWORD_SALT').first().value
     app.config.update(dict(SECURITY_PASSWORD_SALT=current_salt))
     app.config['SECURITY_PASSWORD_HASH'] = config.SECURITY_PASSWORD_HASH
 
@@ -32,7 +42,7 @@ def upgrade():
     else:
         app.config['SECURITY_PASSWORD_SALT'] = current_salt
 
-    users = User.query.with_entities(
+    users = session.query(User).with_entities(
         User.id, User.email, User.password, User.active, User.confirmed_at)\
         .all()
     # This will upgrade the plaintext password of all the user as per the
@@ -40,8 +50,6 @@ def upgrade():
     for user in users:
         if user.password is not None:
             verify_and_update_password(user.password, user)
-
-    db.session.commit()
 
 
 def downgrade():

@@ -45,11 +45,12 @@ The configuration files are as follows:
      macOS,/Library/Preferences/pgadmin/config_system.py
      Windows,%CommonProgramFiles%\\pgadmin\\config_system.py
 
-.. note:: If the SERVER_MODE setting is changed in ``config_distro.py``,
-     ``config_local.py``, or ``config_system.py`` you will most likely need to
-     re-set the LOG_FILE, SQLITE_PATH, SESSION_DB_PATH and STORAGE_DIR values
-     as well as they will have been set based on the default configuration or
-     overridden by the runtime.
+.. note:: If the SERVER_MODE or DATA_DIR settings are changed in
+     ``config_distro.py``, ``config_local.py``, or ``config_system.py``
+     LOG_FILE, SQLITE_PATH, SESSION_DB_PATH, STORAGE_DIR, KERBEROS_CCACHE_DIR,
+     and AZURE_CREDENTIAL_CACHE_DIR values will be set based on DATA_DIR unless
+     values are explicitly overridden for any of the variable in any of the
+     above file.
 
 The default ``config.py`` file is shown below for reference:
 

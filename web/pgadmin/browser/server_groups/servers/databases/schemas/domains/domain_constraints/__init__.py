@@ -3,7 +3,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -12,12 +12,11 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 
-import pgadmin.browser.server_groups.servers.databases.schemas.domains \
-    as domains
+from pgadmin.browser.server_groups.servers.databases.schemas import domains
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -52,7 +51,7 @@ class DomainConstraintModule(CollectionNodeModule):
     _COLLECTION_LABEL = gettext("Domain Constraints")
 
     def __init__(self, *args, **kwargs):
-        super(DomainConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -189,7 +188,7 @@ class DomainConstraintView(PGChildNodeView):
         :return: if any error return error with error msg else return req data
         """
         if request.data:
-            req = json.loads(request.data, encoding='utf-8')
+            req = json.loads(request.data)
         else:
             req = request.args or request.form
 
@@ -260,11 +259,6 @@ class DomainConstraintView(PGChildNodeView):
             self.manager = driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -413,7 +407,8 @@ class DomainConstraintView(PGChildNodeView):
 
         data = res['rows'][0]
         data['is_sys_obj'] = (
-            data['oid'] <= self.datlastsysoid or self.datistemplate)
+            data['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         return ajax_response(
             response=data,
             status=200
@@ -449,7 +444,8 @@ class DomainConstraintView(PGChildNodeView):
             # Get the recently added constraints oid
             SQL = render_template("/".join([self.template_path,
                                             self._OID_SQL]),
-                                  doid=doid, name=data['name'])
+                                  doid=doid, name=data['name'],
+                                  conn=self.conn)
             status, coid = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=coid)
@@ -489,7 +485,7 @@ class DomainConstraintView(PGChildNodeView):
         """
         if coid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [coid]}

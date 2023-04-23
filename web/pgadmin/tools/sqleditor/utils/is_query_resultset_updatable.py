@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -22,7 +22,7 @@
           read-only.
 """
 from flask import render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 from collections import OrderedDict
 from werkzeug.exceptions import InternalServerError
 
@@ -93,7 +93,7 @@ def _check_single_table(columns_info):
     table_oid = None
     for column in columns_info:
         # Skip columns that are not directly from tables
-        if column['table_oid'] is None:
+        if column['table_oid'] is None or column['table_oid'] == 0:
             continue
         # If we don't have a table_oid yet, store this one
         if table_oid is None:
@@ -139,7 +139,10 @@ def _check_oids(conn, sql_path, table_oid, columns_info):
     # Check that the oid column is selected in results columns
     oid_column_selected = False
     for col in columns_info:
-        if col['table_column'] is None and col['display_name'] == 'oid':
+        # psycopg3 returns -2 for table attno for oid column.
+        # Ref: https://github.com/psycopg/psycopg/discussions/429
+        if (col['table_column'] is None or col['table_column'] == -2) and\
+                col['display_name'] == 'oid':
             oid_column_selected = True
             break
     return has_oids and oid_column_selected

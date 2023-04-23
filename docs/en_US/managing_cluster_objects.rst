@@ -15,7 +15,6 @@ database, right-click on the *Databases* node, and select *Create Database...*
    :maxdepth: 1
 
    database_dialog
-   move_objects
    resource_group_dialog
    role_dialog
    tablespace_dialog

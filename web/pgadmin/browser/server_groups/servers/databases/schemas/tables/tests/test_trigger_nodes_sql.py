@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -20,7 +20,7 @@ class TestTriggerNodesSql(SQLTemplateTestBase):
     ]
 
     def __init__(self):
-        super(TestTriggerNodesSql, self).__init__()
+        super().__init__()
         self.table_id = -1
 
     def test_setup(self, connection, cursor):
@@ -29,17 +29,19 @@ class TestTriggerNodesSql(SQLTemplateTestBase):
                        "WHERE pg_class.relname='test_table'")
         self.table_id = cursor.fetchone()[0]
 
-    def generate_sql(self, version):
+    def generate_sql(self, connection):
         file_path = os.path.join(os.path.dirname(__file__), "..", "templates",
                                  "triggers", "sql")
         if 'type' in self.server:
             file_path = os.path.join(os.path.dirname(__file__), "..",
                                      "templates",
                                      "triggers", "sql", self.server['type'])
-        template_file = self.get_template_file(version, file_path,
-                                               "nodes.sql")
+        template_file = self.get_template_file(
+            self.get_server_version(connection),
+            file_path,
+            "nodes.sql")
         template = file_as_template(template_file)
-        sql = template.render(tid=self.table_id)
+        sql = template.render(tid=self.table_id, conn=connection)
 
         return sql
 

@@ -2,38 +2,23 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Register preferences for query tool"""
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.utils.constants import PREF_LABEL_DISPLAY,\
     PREF_LABEL_KEYBOARD_SHORTCUTS, PREF_LABEL_EXPLAIN, PREF_LABEL_OPTIONS,\
     PREF_LABEL_EDITOR, PREF_LABEL_CSV_TXT, PREF_LABEL_RESULTS_GRID,\
-    PREF_LABEL_SQL_FORMATTING
+    PREF_LABEL_SQL_FORMATTING, PREF_LABEL_GRAPH_VISUALISER
 from pgadmin.utils import SHORTCUT_FIELDS as shortcut_fields, \
     ACCESSKEY_FIELDS as accesskey_fields
+from config import ON_DEMAND_RECORD_COUNT
 
 
 def register_query_tool_preferences(self):
-
-    self.info_notifier_timeout = self.preference.register(
-        'display', 'info_notifier_timeout',
-        gettext("Query info notifier timeout"), 'integer', 5,
-        category_label=PREF_LABEL_DISPLAY,
-        min_val=-1,
-        max_val=999999,
-        help_str=gettext(
-            'The length of time to display the query info notifier after '
-            'execution has completed. A value of -1 disables the notifier'
-            ' and a value of 0 displays it until clicked. Values greater'
-            ' than 0 display the notifier for the number of seconds'
-            ' specified.'
-        )
-    )
-
     self.explain_verbose = self.preference.register(
         'Explain', 'explain_verbose',
         gettext("Verbose output?"), 'boolean', False,
@@ -128,7 +113,7 @@ def register_query_tool_preferences(self):
         )
     )
 
-    self.show_prompt_commit_transaction = self.preference.register(
+    self.copy_sql_to_query_tool = self.preference.register(
         'Options', 'copy_sql_to_query_tool',
         gettext("Copy SQL from main window to query tool?"), 'boolean',
         False,
@@ -197,7 +182,7 @@ def register_query_tool_preferences(self):
         options=[{'label': gettext('None'), 'value': 'none'},
                  {'label': gettext('All'), 'value': 'all'},
                  {'label': gettext('Strings'), 'value': 'strings'}],
-        select2={
+        control_props={
             'allowClear': False,
             'tags': False
         }
@@ -209,9 +194,11 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_CSV_TXT,
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False,
+            'creatable': True,
+            'maxLength': 1
         }
     )
 
@@ -223,9 +210,11 @@ def register_query_tool_preferences(self):
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
                  {'label': gettext('Tab'), 'value': '\t'}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False,
+            'creatable': True,
+            'maxLength': 1
         }
     )
 
@@ -247,7 +236,7 @@ def register_query_tool_preferences(self):
         options=[{'label': gettext('None'), 'value': 'none'},
                  {'label': gettext('All'), 'value': 'all'},
                  {'label': gettext('Strings'), 'value': 'strings'}],
-        select2={
+        control_props={
             'allowClear': False,
             'tags': False
         }
@@ -259,9 +248,9 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_RESULTS_GRID,
         options=[{'label': '"', 'value': '"'},
                  {'label': '\'', 'value': '\''}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False
         }
     )
 
@@ -273,9 +262,9 @@ def register_query_tool_preferences(self):
                  {'label': ',', 'value': ','},
                  {'label': '|', 'value': '|'},
                  {'label': gettext('Tab'), 'value': '\t'}],
-        select2={
+        control_props={
             'allowClear': False,
-            'tags': True
+            'tags': False
         }
     )
 
@@ -302,6 +291,17 @@ def register_query_tool_preferences(self):
             'Specify the maximum width of the column in pixels when '
             '\'Columns sized by \' is set to \'Column data\'.'
         ),
+    )
+
+    self.on_demand_record_count = self.preference.register(
+        'Results_grid', 'on_demand_record_count',
+        gettext("On demand record count"), 'integer', ON_DEMAND_RECORD_COUNT,
+        min_val=100,
+        category_label=PREF_LABEL_RESULTS_GRID,
+        help_str=gettext('Specify the number of records to fetch in one batch '
+                         'in query tool when query result set is large. '
+                         'Changing this value will override '
+                         'ON_DEMAND_RECORD_COUNT setting from config file.')
     )
 
     self.sql_font_size = self.preference.register(
@@ -337,6 +337,15 @@ def register_query_tool_preferences(self):
             'The number of seconds between connection/transaction '
             'status polls.'
         )
+    )
+
+    self.query_success_notification = self.preference.register(
+        'display', 'query_success_notification',
+        gettext("Show query success notification?"), 'boolean', True,
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext('If set to True, the Query Tool '
+                         'will show notifications on successful query '
+                         'execution.')
     )
 
     self.preference.register(
@@ -405,6 +414,24 @@ def register_query_tool_preferences(self):
             'key': {
                 'key_code': 118,
                 'char': 'F7'
+            }
+        },
+        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
+        fields=shortcut_fields
+    )
+
+    self.preference.register(
+        'keyboard_shortcuts',
+        'clear_query',
+        gettext('Clear query'),
+        'keyboardshortcut',
+        {
+            'alt': True,
+            'shift': False,
+            'control': True,
+            'key': {
+                'key_code': 76,
+                'char': 'L'
             }
         },
         category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
@@ -511,19 +538,6 @@ def register_query_tool_preferences(self):
     )
 
     self.preference.register(
-        'keyboard_shortcuts', 'btn_copy_row',
-        gettext('Accesskey (Copy rows)'), 'keyboardshortcut',
-        {
-            'key': {
-                'key_code': 67,
-                'char': 'c'
-            }
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=accesskey_fields
-    )
-
-    self.preference.register(
         'keyboard_shortcuts', 'btn_paste_row',
         gettext('Accesskey (Paste rows)'), 'keyboardshortcut',
         {
@@ -615,19 +629,6 @@ def register_query_tool_preferences(self):
     )
 
     self.preference.register(
-        'keyboard_shortcuts', 'btn_clear_options',
-        gettext('Accesskey (Clear editor options)'), 'keyboardshortcut',
-        {
-            'key': {
-                'key_code': 76,
-                'char': 'l'
-            }
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=accesskey_fields
-    )
-
-    self.preference.register(
         'keyboard_shortcuts', 'btn_conn_status',
         gettext('Accesskey (Connection status)'), 'keyboardshortcut',
         {
@@ -677,6 +678,16 @@ def register_query_tool_preferences(self):
         category_label=gettext('Auto completion'),
         help_str=gettext('If set to True, Keywords will be displayed '
                          'in upper case for auto completion.')
+    )
+
+    self.preference.register(
+        'auto_completion', 'autocomplete_on_key_press',
+        gettext("Autocomplete on key press"), 'boolean', False,
+        category_label=gettext('Auto completion'),
+        help_str=gettext('If set to True, autocomplete will be available on '
+                         'key press along with CTRL/CMD + Space. If set to '
+                         'False, autocomplete is only activated when CTRL/CMD '
+                         '+ Space is pressed.')
     )
 
     self.preference.register(
@@ -807,4 +818,14 @@ def register_query_tool_preferences(self):
             'Specifies whether or not to insert spaces instead of tabs '
             'when the tab key or auto-indent are used.'
         )
+    )
+
+    self.row_limit = self.preference.register(
+        'graph_visualiser', 'row_limit',
+        gettext("Row Limit"), 'integer',
+        10000, min_val=1, category_label=PREF_LABEL_GRAPH_VISUALISER,
+        help_str=gettext('This setting specifies the maximum number of rows '
+                         'that will be plotted on a chart. Increasing this '
+                         'limit may impact performance if charts are plotted '
+                         'with very high numbers of rows.')
     )

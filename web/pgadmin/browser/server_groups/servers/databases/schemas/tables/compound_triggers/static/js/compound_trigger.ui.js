@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ import { isEmptyString } from 'sources/validators';
 
 
 export class ForEventsSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       ...initValues,
     });
@@ -31,7 +31,7 @@ export class ForEventsSchema extends BaseUISchema {
         id: 'evnt_insert', label: gettext('INSERT'),
         type: 'switch',
         readonly: function(state) {
-          var evn_insert = state.evnt_insert;
+          let evn_insert = state.evnt_insert;
           if (!_.isUndefined(evn_insert) && obj.nodeInfo.server.server_type == 'ppas')
             return false;
           return obj.inCatalog();
@@ -40,7 +40,7 @@ export class ForEventsSchema extends BaseUISchema {
         id: 'evnt_update', label: gettext('UPDATE'),
         type: 'switch',
         readonly: function(state) {
-          var evn_update = state.evnt_update;
+          let evn_update = state.evnt_update;
           if (!_.isUndefined(evn_update) && obj.nodeInfo.server.server_type == 'ppas')
             return false;
           return obj.inCatalog();
@@ -49,7 +49,7 @@ export class ForEventsSchema extends BaseUISchema {
         id: 'evnt_delete', label: gettext('DELETE'),
         type: 'switch',
         readonly: function(state) {
-          var evn_delete = state.evnt_delete;
+          let evn_delete = state.evnt_delete;
           if (!_.isUndefined(evn_delete) && obj.nodeInfo.server.server_type == 'ppas')
             return false;
           return obj.inCatalog();
@@ -58,7 +58,7 @@ export class ForEventsSchema extends BaseUISchema {
         id: 'evnt_truncate', label: gettext('TRUNCATE'),
         type: 'switch',
         readonly: function(state) {
-          var evn_truncate = state.evnt_truncate;
+          let evn_truncate = state.evnt_truncate;
           // Views cannot have TRUNCATE triggers.
           if ('view' in obj.nodeInfo)
             return true;
@@ -73,7 +73,7 @@ export class ForEventsSchema extends BaseUISchema {
 }
 
 export default class CompoundTriggerSchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo, initValues) {
+  constructor(fieldOptions={}, nodeInfo={}, initValues={}) {
     super({
       name: undefined,
       ...initValues,
@@ -127,7 +127,7 @@ export default class CompoundTriggerSchema extends BaseUISchema {
             return true;
           }
           // Enable column only if update event is set true
-          var isUpdate = state.evnt_update;
+          let isUpdate = state.evnt_update;
           if(!_.isUndefined(isUpdate) && isUpdate) {
             return false;
           }

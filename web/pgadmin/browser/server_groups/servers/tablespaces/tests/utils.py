@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -52,13 +52,13 @@ def create_tablespace(server, test_tablespace_name, test_tablespace_dir=None):
                                              server['port'],
                                              server['sslmode'])
         old_isolation_level = connection.isolation_level
-        connection.set_isolation_level(0)
+        utils.set_isolation_level(connection, 0)
         pg_cursor = connection.cursor()
         if test_tablespace_dir is None:
             test_tablespace_dir = server['tablespace_path']
         pg_cursor.execute("CREATE TABLESPACE %s LOCATION '%s'" %
                           (test_tablespace_name, test_tablespace_dir))
-        connection.set_isolation_level(old_isolation_level)
+        utils.set_isolation_level(connection, old_isolation_level)
         connection.commit()
 
         # Get 'oid' from newly created tablespace
@@ -112,9 +112,9 @@ def delete_tablespace(connection, test_tablespace_name):
         tablespace_count = len(pg_cursor.fetchall())
         if tablespace_count:
             old_isolation_level = connection.isolation_level
-            connection.set_isolation_level(0)
+            utils.set_isolation_level(connection, 0)
             pg_cursor.execute("DROP TABLESPACE %s" % test_tablespace_name)
-            connection.set_isolation_level(old_isolation_level)
+            utils.set_isolation_level(connection, old_isolation_level)
             connection.commit()
         connection.close()
     except Exception as exception:

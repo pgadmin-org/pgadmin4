@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2018, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 #########################################################################
@@ -12,7 +12,7 @@
 # and clean up the web/ source code
 #########################################################################
 
-FROM alpine:3.14 AS app-builder
+FROM alpine:latest AS app-builder
 
 RUN apk add --no-cache \
     autoconf \
@@ -27,6 +27,7 @@ RUN apk add --no-cache \
     make \
     nasm \
     nodejs \
+    npm \
     yarn \
     zlib-dev
 
@@ -45,6 +46,7 @@ WORKDIR /pgadmin4/web
 
 # Build the JS vendor code in the app-builder, and then remove the vendor source.
 RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
+    yarn set version berry && \
     yarn install && \
     yarn run bundle && \
     rm -rf node_modules \
@@ -60,7 +62,7 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
 # Next, create the base environment for Python
 #########################################################################
 
-FROM alpine:3.14 as env-builder
+FROM alpine:latest as env-builder
 
 # Install dependencies
 COPY requirements.txt /
@@ -76,6 +78,9 @@ RUN     apk add --no-cache \
         krb5-dev \
         rust \
         cargo \
+        zlib-dev \
+        libjpeg-turbo-dev \
+        libpng-dev \
         python3-dev && \
     python3 -m venv --system-site-packages --without-pip /venv && \
     /venv/bin/python3 -m pip install --no-cache-dir -r requirements.txt && \
@@ -89,6 +94,7 @@ FROM env-builder as docs-builder
 
 # Install Sphinx
 RUN /venv/bin/python3 -m pip install --no-cache-dir sphinx
+RUN /venv/bin/python3 -m pip install --no-cache-dir sphinxcontrib-youtube
 
 # Copy the docs from the local tree. Explicitly remove any existing builds that
 # may be present
@@ -108,21 +114,16 @@ RUN rm -rf /pgadmin4/docs/en_US/_build/html/_static/*.png
 # Create additional builders to get all of the PostgreSQL utilities
 #########################################################################
 
-FROM postgres:9.6-alpine as pg96-builder
 FROM postgres:10-alpine as pg10-builder
 FROM postgres:11-alpine as pg11-builder
 FROM postgres:12-alpine as pg12-builder
 FROM postgres:13-alpine as pg13-builder
 FROM postgres:14-alpine as pg14-builder
+FROM postgres:15-alpine as pg15-builder
 
-FROM alpine:3.14 as tool-builder
+FROM alpine:latest as tool-builder
 
 # Copy the PG binaries
-COPY --from=pg96-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-9.6/
-COPY --from=pg96-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-9.6/
-COPY --from=pg96-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-9.6/
-COPY --from=pg96-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-9.6/
-
 COPY --from=pg10-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-10/
 COPY --from=pg10-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-10/
 COPY --from=pg10-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-10/
@@ -148,20 +149,25 @@ COPY --from=pg14-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-14/
 COPY --from=pg14-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-14/
 COPY --from=pg14-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-14/
 
+COPY --from=pg15-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-15/
+COPY --from=pg15-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-15/
+COPY --from=pg15-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-15/
+COPY --from=pg15-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-15/
+
 #########################################################################
 # Assemble everything into the final container.
 #########################################################################
 
-FROM alpine:3.14
+FROM alpine:latest
 
 # Copy in the Python packages
 COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
-COPY --from=pg14-builder /usr/local/lib/libpq.so.5.14 /usr/lib/
-RUN ln -s libpq.so.5.14 /usr/lib/libpq.so.5 && \
-    ln -s libpq.so.5.14 /usr/lib/libpq.so
+COPY --from=pg15-builder /usr/local/lib/libpq.so.5.15 /usr/lib/
+RUN ln -s libpq.so.5.15 /usr/lib/libpq.so.5 && \
+    ln -s libpq.so.5.15 /usr/lib/libpq.so
 
 WORKDIR /pgadmin4
 ENV PYTHONPATH=/pgadmin4
@@ -183,20 +189,25 @@ RUN apk add \
         py3-pip \
         postfix \
         krb5-libs \
+        libjpeg-turbo \
         shadow \
         sudo \
         libedit \
+        libldap \
         libcap && \
     /venv/bin/python3 -m pip install --no-cache-dir gunicorn && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
-    groupadd -g 5050 pgadmin && \
-    useradd -r -u 5050 -g pgadmin pgadmin && \
+    useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /var/lib/pgadmin && \
-    chown pgadmin:pgadmin /var/lib/pgadmin && \
+    chown pgadmin:root /var/lib/pgadmin && \
+    chmod g=u /var/lib/pgadmin && \
     touch /pgadmin4/config_distro.py && \
-    chown pgadmin:pgadmin /pgadmin4/config_distro.py && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.9 && \
-    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix
+    chown pgadmin:root /pgadmin4/config_distro.py && \
+    chmod g=u /pgadmin4/config_distro.py && \
+    chmod g=u /etc/passwd && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.10 && \
+    echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
+    echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
 USER pgadmin
 

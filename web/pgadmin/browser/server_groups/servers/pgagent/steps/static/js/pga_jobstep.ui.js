@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ export function getNodePgaJobStepSchema(treeNodeInfo, itemNodeData) {
   );
 }
 export default class PgaJobStepSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       jstid: null,
       jstjobid: null,
@@ -204,8 +204,7 @@ export default class PgaJobStepSchema extends BaseUISchema {
           setError('jstconnstr', errMsg);
           return true;
         } else {
-          errMsg = null;
-          setError('jstconnstr', errMsg);
+          setError('jstconnstr', null);
         }
       }
     } else {

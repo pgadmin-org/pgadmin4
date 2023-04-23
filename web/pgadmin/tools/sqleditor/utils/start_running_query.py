@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,10 +10,10 @@
 """Start executing the query in async mode."""
 
 import pickle
-import random
+import secrets
 
 from flask import Response
-from flask_babelex import gettext
+from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.sqleditor.utils.apply_explain_plan_wrapper import \
@@ -35,7 +35,7 @@ class StartRunningQuery:
     def __init__(self, blueprint_object, logger):
         self.http_session = None
         self.blueprint_object = blueprint_object
-        self.connection_id = str(random.randint(1, 9999999))
+        self.connection_id = str(secrets.choice(range(1, 9999999)))
         self.logger = logger
 
     def execute(self, sql, trans_id, http_session, connect=False):
@@ -107,8 +107,6 @@ class StartRunningQuery:
             data={
                 'status': status, 'result': result,
                 'can_edit': can_edit, 'can_filter': can_filter,
-                'info_notifier_timeout':
-                    self.blueprint_object.info_notifier_timeout.get(),
                 'notifies': notifies,
                 'transaction_status': trans_status,
             }

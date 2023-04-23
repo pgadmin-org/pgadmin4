@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,9 +10,9 @@
 import uuid
 import json
 import os
-import random
+import secrets
 
-from pgadmin.utils.route import BaseTestGenerator
+from pgadmin.utils.route import BaseTestGenerator, BaseSocketTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from .utils import restore_schema
@@ -20,15 +20,17 @@ from pgadmin.utils.versioned_template_loader import \
     get_version_mapping_directories
 
 
-class SchemaDiffTestCase(BaseTestGenerator):
+class SchemaDiffTestCase(BaseSocketTestGenerator):
     """ This class will test the schema diff. """
     scenarios = [
         # Fetching default URL for database node.
         ('Schema diff comparison', dict(
-            url='schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}'))
+            url='schema_diff/compare_database/{0}/{1}/{2}/{3}/{4}/0/0'))
     ]
+    SOCKET_NAMESPACE = '/schema_diff'
 
     def setUp(self):
+        super().setUp()
         self.src_database = "db_schema_diff_src_%s" % str(uuid.uuid4())[1:8]
         self.tar_database = "db_schema_diff_tar_%s" % str(uuid.uuid4())[1:8]
 
@@ -94,8 +96,7 @@ class SchemaDiffTestCase(BaseTestGenerator):
             absolute_path = tests_folder_path
 
         # Iterate the version mapping directories.
-        for version_mapping in get_version_mapping_directories(
-                self.server['type']):
+        for version_mapping in get_version_mapping_directories():
             if version_mapping['number'] > \
                     self.server_information['server_version']:
                 continue
@@ -109,16 +110,22 @@ class SchemaDiffTestCase(BaseTestGenerator):
         return None
 
     def compare(self):
-        comp_url = self.url.format(self.trans_id, self.server_id,
-                                   self.src_db_id,
-                                   self.server_id,
-                                   self.tar_db_id
-                                   )
-
-        response = self.tester.get(comp_url)
-
-        self.assertEqual(response.status_code, 200)
-        return json.loads(response.data.decode('utf-8'))
+        data = {
+            'trans_id': self.trans_id,
+            'source_sid': self.server_id,
+            'source_did': self.src_db_id,
+            'target_sid': self.server_id,
+            'target_did': self.tar_db_id,
+            'ignore_owner': 0,
+            'ignore_whitespaces': 0
+        }
+        self.socket_client.emit('compare_database', data,
+                                namespace=self.SOCKET_NAMESPACE)
+        received = self.socket_client.get_received(self.SOCKET_NAMESPACE)
+        response_data = received[-1]['args'][0]
+        self.assertEqual(received[-1]['name'], "compare_database_success",
+                         response_data)
+        return response_data
 
     def runTest(self):
         """ This function will test the schema diff."""
@@ -127,6 +134,9 @@ class SchemaDiffTestCase(BaseTestGenerator):
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
         self.trans_id = response_data['data']['schemaDiffTransId']
+
+        received = self.socket_client.get_received(self.SOCKET_NAMESPACE)
+        assert received[0]['name'] == 'connected'
 
         url = 'schema_diff/server/connect/{}'.format(self.server_id)
         data = {'password': self.server['db_password']}
@@ -146,10 +156,10 @@ class SchemaDiffTestCase(BaseTestGenerator):
         response_data = self.compare()
 
         diff_file = os.path.join(self.sql_folder, 'diff_{0}.sql'.format(
-            str(random.randint(1, 99999))))
+            str(secrets.choice(range(1, 99999)))))
         file_obj = open(diff_file, 'a')
 
-        for diff in response_data['data']:
+        for diff in response_data:
             if diff['status'] == 'Identical':
                 src_obj_oid = diff['source_oid']
                 tar_obj_oid = diff['target_oid']
@@ -187,7 +197,7 @@ class SchemaDiffTestCase(BaseTestGenerator):
             os.remove(diff_file)
 
             response_data = self.compare()
-            for diff in response_data['data']:
+            for diff in response_data:
                 self.assertEqual(diff['status'], 'Identical')
         except Exception as e:
             if os.path.exists(diff_file):
@@ -195,6 +205,7 @@ class SchemaDiffTestCase(BaseTestGenerator):
 
     def tearDown(self):
         """This function drop the added database"""
+        super().tearDown()
         connection = utils.get_db_connection(self.server['db'],
                                              self.server['username'],
                                              self.server['db_password'],

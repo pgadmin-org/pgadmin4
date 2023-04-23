@@ -19,10 +19,14 @@ LEFT OUTER JOIN
 WHERE
     pr.prokind = 'p'::char
 {% if fnid %}
-    AND pr.oid = {{ fnid|qtLiteral }}
+    AND pr.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
 {% if scid %}
     AND pronamespace = {{scid}}::oid
+{% endif %}
+{% if schema_diff %}
+    AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
+        WHERE objid = pr.oid AND deptype = 'e') > 0 THEN FALSE ELSE TRUE END
 {% endif %}
     AND typname NOT IN ('trigger', 'event_trigger')
 ORDER BY

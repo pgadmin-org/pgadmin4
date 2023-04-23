@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements Foreign key constraint Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry, ConstraintTypeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -69,7 +69,7 @@ class ForeignKeyConstraintModule(ConstraintTypeModule):
         """
         self.min_ver = None
         self.max_ver = None
-        super(ForeignKeyConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid, tid):
         """
@@ -229,11 +229,6 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 kwargs['sid']
             )
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -288,7 +283,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
         if fkid:
             result = res[0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or self.datistemplate)
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=result,
@@ -496,7 +492,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         return: Data.
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         for k, v in data.items():
@@ -506,7 +502,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -597,7 +593,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
             else:
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
-                    name=data['name']
+                    name=data['name'], conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -674,7 +670,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
 
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -692,7 +688,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
             sql = render_template(
                 "/".join([self.template_path, self._OID_SQL]),
                 tid=tid,
-                name=data['name']
+                name=data['name'],
+                conn=self.conn
             )
             status, res = self.conn.execute_dict(sql)
             if not status:
@@ -735,7 +732,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         """
         if fkid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [fkid]}
@@ -806,7 +803,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -884,7 +881,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
         data['remote_table'] = table
 
         SQL = render_template(
-            "/".join([self.template_path, self._CREATE_SQL]), data=data)
+            "/".join([self.template_path, self._CREATE_SQL]), data=data,
+            conn=self.conn)
 
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
@@ -997,7 +995,7 @@ class ForeignKeyConstraintView(PGChildNodeView):
         index = None
         try:
             if data and 'cols' in data:
-                cols = set(json.loads(data['cols'], encoding='utf-8'))
+                cols = set(json.loads(data['cols']))
                 index = fkey_utils.search_coveringindex(self.conn, tid, cols)
 
             return make_json_response(

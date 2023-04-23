@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { isEmptyString } from 'sources/validators';
 
 export class EventSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       evnt_update: false,
       evnt_insert: false,
@@ -52,7 +52,7 @@ export class EventSchema extends BaseUISchema {
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('Events'),
       readonly: (state) => {
-        var evn_insert = state.evnt_insert;
+        let evn_insert = state.evnt_insert;
         if (!_.isUndefined(evn_insert) && obj.nodeInfo && obj.nodeInfo.server.server_type == 'ppas' && obj.isNew(state))
           return false;
         return obj.inSchemaWithModelCheck(state);
@@ -62,7 +62,7 @@ export class EventSchema extends BaseUISchema {
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('Events'),
       readonly: (state) => {
-        var evn_update = state.evnt_update;
+        let evn_update = state.evnt_update;
         if (!_.isUndefined(evn_update) && obj.nodeInfo && obj.nodeInfo.server.server_type == 'ppas' && obj.isNew(state))
           return false;
         return obj.inSchemaWithModelCheck(state);
@@ -72,7 +72,7 @@ export class EventSchema extends BaseUISchema {
       type: 'switch', mode: ['create','edit', 'properties'],
       group: gettext('Events'),
       readonly: (state) => {
-        var evn_delete = state.evnt_delete;
+        let evn_delete = state.evnt_delete;
         if (!_.isUndefined(evn_delete) && obj.nodeInfo && obj.nodeInfo.server.server_type == 'ppas' && obj.isNew(state))
           return false;
         return obj.inSchemaWithModelCheck(state);
@@ -81,10 +81,10 @@ export class EventSchema extends BaseUISchema {
       id: 'evnt_truncate', label: gettext('TRUNCATE'),
       type: 'switch', group: gettext('Events'), deps: ['is_row_trigger', 'is_constraint_trigger'],
       readonly: (state) => {
-        var is_constraint_trigger = state.is_constraint_trigger,
+        let is_constraint_trigger = state.is_constraint_trigger,
           is_row_trigger = state.is_row_trigger,
           server_type = obj.nodeInfo ? obj.nodeInfo.server.server_type: null;
-        if (is_row_trigger == true){
+        if (is_row_trigger){
           state.evnt_truncate = false;
           return true;
         }
@@ -109,8 +109,7 @@ export class EventSchema extends BaseUISchema {
         setError('evnt_insert', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('evnt_insert', errmsg);
+        setError('evnt_insert', null);
       }
     }
   }
@@ -119,7 +118,7 @@ export class EventSchema extends BaseUISchema {
 
 
 export default class TriggerSchema extends BaseUISchema {
-  constructor(fieldOptions={}, initValues) {
+  constructor(fieldOptions={}, initValues={}) {
     super({
       name: undefined,
       is_row_trigger: true,
@@ -152,7 +151,7 @@ export default class TriggerSchema extends BaseUISchema {
   disableTransition(state) {
     if (!this.isNew())
       return true;
-    var flag = false,
+    let flag = false,
       evnt = null,
       name = state.name,
       evnt_count = 0;
@@ -182,11 +181,11 @@ export default class TriggerSchema extends BaseUISchema {
       flag = (state.evnt_update && (_.size(state.columns) >= 1 && state.columns[0] != ''));
     }
 
-    if(flag && state.name) {
-      state.name = null;
-    }
-
     return flag;
+  }
+
+  isDisable(state) {
+    return !state.is_constraint_trigger;
   }
 
   get baseFields() {
@@ -202,10 +201,7 @@ export default class TriggerSchema extends BaseUISchema {
       mode: ['edit', 'properties'], group: gettext('Definition'),
       type: 'select',
       disabled: () => {
-        if('catalog' in obj.nodeInfo || 'view' in obj.nodeInfo) {
-          return true;
-        }
-        return false;
+        return 'catalog' in obj.nodeInfo || 'view' in obj.nodeInfo;
       },
       options: [
         {label: gettext('Enable'), value: 'O'},
@@ -233,7 +229,7 @@ export default class TriggerSchema extends BaseUISchema {
 
         // If constraint trigger is set to True then row trigger will
         // automatically set to True and becomes disable
-        var is_constraint_trigger = state.is_constraint_trigger;
+        let is_constraint_trigger = state.is_constraint_trigger;
         if(!obj.inSchemaWithModelCheck(state)) {
           if(!_.isUndefined(is_constraint_trigger) &&
             is_constraint_trigger === true) {
@@ -245,12 +241,8 @@ export default class TriggerSchema extends BaseUISchema {
           }
         } else {
           // Check if it is row trigger then enabled it.
-          var is_row_trigger = state.is_row_trigger;
-          if (!_.isUndefined(is_row_trigger) && obj.nodeInfo.server.server_type == 'ppas') {
-            return false;
-          }
-          // Disable it
-          return true;
+          let is_row_trigger = state.is_row_trigger;
+          return !(!_.isUndefined(is_row_trigger) && obj.nodeInfo.server.server_type == 'ppas');
         }
       },
     },{
@@ -261,7 +253,7 @@ export default class TriggerSchema extends BaseUISchema {
       deps: ['tfunction'],
       readonly: (state) => {
         // Disabled if table is a partitioned table.
-        var tfunction = state.tfunction;
+        let tfunction = state.tfunction;
         if (( _.has(obj.nodeInfo, 'table') && _.has(obj.nodeInfo.table, 'is_partitioned') &&
          obj.nodeInfo.table.is_partitioned) || ( _.has(obj.nodeInfo, 'view')) ||
          (obj.nodeInfo.server.server_type === 'ppas' && !_.isUndefined(tfunction) &&
@@ -272,10 +264,7 @@ export default class TriggerSchema extends BaseUISchema {
         return obj.inSchemaWithModelCheck(state);
       },
       disabled: () => {
-        if('view' in obj.nodeInfo) {
-          return true;
-        }
-        return false;
+        return 'view' in obj.nodeInfo;
       }
     },{
       id: 'tgdeferrable', label: gettext('Deferrable?'),
@@ -284,7 +273,7 @@ export default class TriggerSchema extends BaseUISchema {
       deps: ['is_constraint_trigger'],
       readonly: (state) => {
         // If constraint trigger is set to True then only enable it
-        var is_constraint_trigger = state.is_constraint_trigger;
+        let is_constraint_trigger = state.is_constraint_trigger;
         if(!obj.inSchemaWithModelCheck(state)) {
           if(!_.isUndefined(is_constraint_trigger) &&
             is_constraint_trigger === true) {
@@ -302,10 +291,7 @@ export default class TriggerSchema extends BaseUISchema {
         }
       },
       disabled: (state) => {
-        if(!state.is_constraint_trigger) {
-          return true;
-        }
-        return false;
+        return obj.isDisable(state);
       }
     },{
       id: 'tginitdeferred', label: gettext('Deferred?'),
@@ -314,7 +300,7 @@ export default class TriggerSchema extends BaseUISchema {
       deps: ['tgdeferrable', 'is_constraint_trigger'],
       readonly: (state) => {
         // If Deferrable is set to True then only enable it
-        var tgdeferrable = state.tgdeferrable;
+        let tgdeferrable = state.tgdeferrable;
         if(!obj.inSchemaWithModelCheck(state)) {
           if(!_.isUndefined(tgdeferrable) && tgdeferrable) {
             return false;
@@ -332,10 +318,7 @@ export default class TriggerSchema extends BaseUISchema {
         }
       },
       disabled: (state) => {
-        if(!state.is_constraint_trigger) {
-          return true;
-        }
-        return false;
+        return obj.isDisable(state);
       }
     },{
       id: 'tfunction', label: gettext('Trigger function'),
@@ -351,7 +334,7 @@ export default class TriggerSchema extends BaseUISchema {
       readonly: (state) => {
         // We will disable it when EDB PPAS and trigger function is
         // set to Inline EDB-SPL
-        var tfunction = state.tfunction,
+        let tfunction = state.tfunction,
           server_type = obj.nodeInfo.server.server_type;
         if(!obj.inSchemaWithModelCheck(state)) {
           if(server_type === 'ppas' &&
@@ -372,7 +355,7 @@ export default class TriggerSchema extends BaseUISchema {
       id: 'fires', label: gettext('Fires'), deps: ['is_constraint_trigger'],
       mode: ['create','edit', 'properties'], group: gettext('Events'),
       options: () => {
-        var table_options = [
+        let table_options = [
             {label: 'BEFORE', value: 'BEFORE'},
             {label: 'AFTER', value: 'AFTER'}],
           view_options = [
@@ -391,7 +374,7 @@ export default class TriggerSchema extends BaseUISchema {
         if (!obj.isNew())
           return true;
         // If contraint trigger is set to True then only enable it
-        var is_constraint_trigger = state.is_constraint_trigger;
+        let is_constraint_trigger = state.is_constraint_trigger;
         if(!obj.inSchemaWithModelCheck(state)) {
           if(!_.isUndefined(is_constraint_trigger) &&
             is_constraint_trigger === true) {
@@ -402,12 +385,8 @@ export default class TriggerSchema extends BaseUISchema {
           }
         } else {
           // Check if it is row trigger then enabled it.
-          var fires_ = state.fires;
-          if (!_.isUndefined(fires_) && obj.nodeInfo.server.server_type == 'ppas') {
-            return false;
-          }
-          // Disable it
-          return true;
+          let fires_ = state.fires;
+          return !(!_.isUndefined(fires_) && obj.nodeInfo.server.server_type == 'ppas');
         }
       },
     },{
@@ -434,11 +413,8 @@ export default class TriggerSchema extends BaseUISchema {
           return true;
         }
         // Enable column only if update event is set true
-        var isUpdate = state.evnt_update;
-        if(!_.isUndefined(isUpdate) && isUpdate) {
-          return false;
-        }
-        return true;
+        let isUpdate = state.evnt_update;
+        return !(!_.isUndefined(isUpdate) && isUpdate);
       },
     },{
       id: 'tgoldtable', label: gettext('Old table'),
@@ -460,13 +436,18 @@ export default class TriggerSchema extends BaseUISchema {
       disabled: (state) => {
         // We will enable it only when EDB PPAS and trigger function is
         // set to Inline EDB-SPL
-        var tfunction = state.tfunction,
+        let tfunction = state.tfunction,
           server_type = obj.nodeInfo.server.server_type;
 
         return (server_type !== 'ppas' ||
         _.isUndefined(tfunction) ||
           tfunction !== 'Inline EDB-SPL');
       },
+      depChange: (state) => {
+        if (state.tfunction == null) {
+          return { prosrc: '' };
+        }
+      }
     },{
       id: 'is_sys_trigger', label: gettext('System trigger?'), cell: 'text',
       type: 'switch', disabled: obj.inSchemaWithModelCheck, mode: ['properties'],
@@ -488,8 +469,7 @@ export default class TriggerSchema extends BaseUISchema {
         setError('tfunction', errmsg);
         return true;
       } else {
-        errmsg = null;
-        setError('tfunction', errmsg);
+        setError('tfunction', null);
       }
     }
   }

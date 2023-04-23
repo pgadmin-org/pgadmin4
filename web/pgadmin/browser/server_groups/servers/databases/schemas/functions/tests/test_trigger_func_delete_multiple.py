@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -27,7 +27,7 @@ class TriggerFuncDeleteMultipleTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will delete trigger function under database node. """
-        super(TriggerFuncDeleteMultipleTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]

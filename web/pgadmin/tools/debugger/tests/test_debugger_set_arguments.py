@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -27,7 +27,7 @@ class DebuggerSetArguments(BaseTestGenerator):
                                          debugger_utils.test_cases)
 
     def setUp(self):
-        super(DebuggerSetArguments, self).setUp()
+        super().setUp()
         self.schema_data = parent_node_dict['schema'][-1]
         self.server_id = self.schema_data['server_id']
         self.db_id = self.schema_data['db_id']
@@ -52,11 +52,10 @@ class DebuggerSetArguments(BaseTestGenerator):
             debugger_utils.initialize_target(self, utils)
 
     def set_arguments(self):
-        args = {"data": json.dumps([
+        args = json.dumps([
             {"server_id": self.server_id, "database_id": self.db_id,
              "schema_id": self.schema_id, "function_id": self.func_id,
              "arg_id": 0, "is_null": 0, "is_expression": 0, "use_default": 1}])
-        }
 
         return self.tester.post(
             self.url + str(self.server_id) + '/' + str(self.db_id) + '/' +

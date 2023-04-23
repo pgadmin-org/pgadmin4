@@ -11,17 +11,12 @@ FROM
             LEFT OUTER JOIN pg_catalog.pg_shdescription descr ON (
             fsrv.oid=descr.objoid AND descr.classoid='pg_foreign_server'::regclass)
 {% if fsid %}
-        WHERE fsrv.oid = {{ fsid|qtLiteral }}::OID
+  WHERE fsrv.oid = {{ fsid|qtLiteral(conn) }}::OID
 {% endif %}
         ) acl,
-        (SELECT (d).grantee AS grantee, (d).grantor AS grantor, (d).is_grantable AS is_grantable,
-                (d).privilege_type AS privilege_type
-        FROM (SELECT pg_catalog.aclexplode(srvacl) as d FROM pg_catalog.pg_foreign_server fsrv1
-        {% if fsid %}
-                WHERE fsrv1.oid = {{ fsid|qtLiteral }}::OID ) a
-        {% endif %}
+        pg_catalog.aclexplode(srvacl) d
         ) d
-    ) d
     LEFT JOIN pg_catalog.pg_roles g ON (d.grantor = g.oid)
     LEFT JOIN pg_catalog.pg_roles gt ON (d.grantee = gt.oid)
 GROUP BY g.rolname, gt.rolname
+ORDER BY grantee

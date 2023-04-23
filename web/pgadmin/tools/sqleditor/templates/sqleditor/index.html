@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+
+{% block css_link %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('browser.browser_css')}}"/>
+{% endblock %}
+{% block body %}
+<style>
+    body {padding: 0px;}
+    #sqleditor-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    #sqleditor-container:not(:empty) + .pg-sp-container {
+        display: none;
+    }
+</style>
+<div id="sqleditor-container">
+<div class="pg-sp-container">
+    <div class="pg-sp-content">
+        <div class="row">
+            <div class="col-12 pg-sp-icon"></div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block init_script %}
+    try {
+        require(
+            ['sources/generated/browser_nodes', 'sources/generated/codemirror'],
+            function() {
+                require(['sources/generated/sqleditor'], function(module) {
+                window.pgAdmin.Tools.SQLEditor.loadComponent(
+                    document.getElementById('sqleditor-container'), {{ params|safe }});
+
+            }, function() {
+                console.log(arguments);
+            });
+        },
+        function() {
+            console.log(arguments);
+        });
+    } catch (err) {
+        console.log(err);
+    }
+{% endblock %}

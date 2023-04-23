@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
@@ -5,7 +13,7 @@ import { isEmptyString } from 'sources/validators';
 import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/SchemaView';
 import TableSchema from '../../../../static/js/table.ui';
 export default class PrimaryKeySchema extends BaseUISchema {
-  constructor(fieldOptions={}, nodeInfo) {
+  constructor(fieldOptions={}, nodeInfo={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -29,10 +37,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
   }
 
   get inTable() {
-    if(this.top && this.top instanceof TableSchema) {
-      return true;
-    }
-    return false;
+    return this.top && this.top instanceof TableSchema;
   }
 
   changeColumnOptions(columns) {
@@ -56,10 +61,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
       id: 'comment', label: gettext('Comment'), cell: 'multiline',
       type: 'multiline', mode: ['properties', 'create', 'edit'],
       deps:['name'], disabled: (state)=>{
-        if(isEmptyString(state.name)){
-          return true;
-        }
-        return false;
+        return isEmptyString(state.name);
       }, depChange: (state)=>{
         if(isEmptyString(state.name)){
           return {comment: ''};
@@ -149,18 +151,10 @@ export default class PrimaryKeySchema extends BaseUISchema {
       editable: false,
       canDelete: true, canAdd: true,
       mode: ['properties', 'create', 'edit'],
-      visible: function() {
-        /* In table properties, nodeInfo is not available */
-        if(this.getServerVersion() >= 110000)
-          return true;
-
-        return false;
-      },
+      min_version: 110000,
       deps: ['index'],
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.
@@ -225,10 +219,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
       id: 'condeferrable', label: gettext('Deferrable?'),
       type: 'switch', group: gettext('Definition'), deps: ['index'],
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.
@@ -246,10 +237,7 @@ export default class PrimaryKeySchema extends BaseUISchema {
       type: 'switch', group: gettext('Definition'),
       deps: ['condeferrable'],
       readonly: function(state) {
-        if(!obj.isNew(state)) {
-          return true;
-        }
-        return false;
+        return obj.isReadOnly(state);
       },
       disabled: function(state) {
         // Disable if index is selected.

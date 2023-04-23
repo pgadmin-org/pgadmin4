@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """ Implements Utility class for Compound Triggers. """
 
 from flask import render_template
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.utils.ajax import internal_server_error
 from pgadmin.utils.exception import ExecuteError
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
@@ -184,7 +184,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
         edit_types_list = [row['typname'] for row in rset['rows']]
 
     # We will need present type in edit mode
-    edit_types_list.append(data['cltype'])
+    edit_types_list.append(data['typname'])
     data['edit_types'] = sorted(edit_types_list)
 
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])

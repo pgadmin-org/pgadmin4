@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -128,4 +128,4 @@ class MaintenanceMessageTest(BaseTestGenerator):
 
         # Check the command
         obj_details = maintenance_obj.details(self.class_params['cmd'], None)
-        self.assertIn(self.expected_details_cmd, obj_details)
+        self.assertIn(self.expected_details_cmd, obj_details['query'])

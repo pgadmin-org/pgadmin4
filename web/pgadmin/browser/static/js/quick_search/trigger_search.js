@@ -2,19 +2,55 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 import React, {useRef,useState, useEffect} from 'react';
+import { makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
 import {useDelayDebounce} from 'sources/custom_hooks';
 import {onlineHelpSearch} from './online_help';
 import {menuSearch} from './menuitems_help';
 import $ from 'jquery';
 import gettext from 'sources/gettext';
+import PropTypes from 'prop-types';
 
-export function Search() {
+function HelpArticleContents({isHelpLoading, isMenuLoading, helpSearchResult}) {
+  return (isHelpLoading && !(isMenuLoading??true)) ? (
+    <div>
+      <div className='help-groups'>
+        <span className='fa fa-question-circle'></span>
+          &nbsp;HELP ARTICLES
+        {Object.keys(helpSearchResult.data).length > 10
+          ? '(10 of ' + Object.keys(helpSearchResult.data).length + ')'
+          : '(' + Object.keys(helpSearchResult.data).length + ')'
+        }
+        { Object.keys(helpSearchResult.data).length > 10
+          ? <a href={helpSearchResult.url} className='pull-right no-padding' target='_blank' rel='noreferrer'>
+          Show all &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''
+        }
+      </div>
+      <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>
+    </div>) : '';
+}
+
+HelpArticleContents.propTypes = {
+  helpSearchResult: PropTypes.object,
+  isHelpLoading: PropTypes.bool,
+  isMenuLoading: PropTypes.bool
+};
+
+const useModalStyles = makeStyles(() => ({
+  setTop: {
+    marginTop: '-20px',
+  }
+}));
+
+export function Search({closeModal}) {
+  const classes = useModalStyles();
   const wrapperRef = useRef(null);
+  const firstEleRef = useRef();
   const [searchTerm, setSearchTerm] = useState('');
   const [isShowMinLengthMsg, setIsShowMinLengthMsg] = useState(false);
   const [isMenuLoading, setIsMenuLoading] = useState(false);
@@ -38,6 +74,7 @@ export function Search() {
       fetched: false,
       data: [],
     }));
+
     setHelpSearchResult(state => ({
       ...state,
       fetched: false,
@@ -49,11 +86,11 @@ export function Search() {
 
   // Below will be called when any changes has been made to state
   useEffect(() => {
-    if(menuSearchResult.fetched == true){
+    if(menuSearchResult.fetched){
       setIsMenuLoading(false);
     }
 
-    if(helpSearchResult.fetched == true){
+    if(helpSearchResult.fetched){
       setIsHelpLoading(false);
     }
   }, [menuSearchResult, helpSearchResult]);
@@ -94,37 +131,24 @@ export function Search() {
   const refactorMenuItems = (items) => {
     if(items.length > 0){
       let menuItemsHtmlElement = [];
-      for(let i=0; i < items.length; i++){
-        Object.keys(items[i]).forEach( (value) => {
-          if(value != 'element' && value != 'No object selected'){
-            menuItemsHtmlElement.push( <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i } href={'#'} className={ (items[i]['element'].classList.contains('disabled') == true ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i } onClick={() => {items[i]['element'].click(); toggleDropdownMenu();}}>
-              {value}
-              <span key={ 'menu-span-' + i }>{refactorPathToMenu(items[i][value])}</span>
-            </a>
-            { ((items[i]['element'].classList.contains('disabled') == true && items[i]['element'].getAttribute('data-disabled') != undefined) ? <i className='fa fa-info-circle quick-search-tooltip' data-toggle='tooltip' title={items[i]['element'].getAttribute('data-disabled')} aria-label='Test data tooltip' aria-hidden='true'></i> : '' )}
-            </li>);
-          }
-        });
-      }
+      items.forEach((i) => {
+        menuItemsHtmlElement.push(
+          <li key={ 'li-menu-' + i }><a tabIndex='0' id={ 'li-menu-' + i.label } href={'#'} className={ (i.isDisabled ? 'dropdown-item menu-groups-a disabled':'dropdown-item menu-groups-a')} key={ 'menu-' + i.label } onClick={
+            () => {
+              closeModal();
+              i.callback();
+            }
+          }>
+            {i.label}
+            <span key={ 'menu-span-' + i.label }>{i.path}</span>
+          </a>
+          </li>);
+      });
       $('[data-toggle="tooltip"]').tooltip();
       return menuItemsHtmlElement;
     }
   };
 
-  const refactorPathToMenu = (path) => {
-    if(path){
-      let pathArray = path.split('/');
-      let spanElement = [];
-      for(let i = 0; i < pathArray.length; i++ ){
-        if(i == (pathArray.length -1)){
-          spanElement.push(pathArray[i]);
-        }else{
-          spanElement.push(<span key={ 'menu-span-sub' + i }> {pathArray[i]} <i className='fa fa-angle-right' aria-hidden='true'></i> </span>);
-        }
-      }
-      return spanElement;
-    }
-  };
 
   const onInputValueChange = (value) => {
     let pooling = window.pooling;
@@ -167,7 +191,6 @@ export function Search() {
           if(input_value && input_value.length > 0){
             toggleDropdownMenu();
           }
-          return;
         }
       }
       // Bind the event listener
@@ -181,13 +204,23 @@ export function Search() {
 
   useOutsideAlerter(wrapperRef);
 
+  const showLoader = (loading) => {
+    return loading ? <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div> : '';
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      firstEleRef.current && firstEleRef.current.focus();
+    }, 350);
+  }, [firstEleRef.current]);
+
   return (
     <div id='quick-search-container' onClick={setSearchTerm}></div>,
-    <ul id='quick-search-container' ref={wrapperRef} className='test' role="menu">
+    <ul id='quick-search-container' ref={wrapperRef} className={clsx('test', classes.setTop)} role="menu">
       <li>
         <ul id='myDropdown'>
           <li className='dropdown-item-input'>
-            <input tabIndex='0' autoFocus type='text' autoComplete='off' className='form-control live-search-field'
+            <input ref={firstEleRef} tabIndex='0' autoFocus type='text' autoComplete='off' className='form-control live-search-field'
               aria-label='live-search-field' id='live-search-field' placeholder={gettext('Quick Search')} onChange={(e) => {onInputValueChange(e.target.value);} } />
           </li>
           <div style={{marginBottom:0}}>
@@ -200,8 +233,7 @@ export function Search() {
                 </div>)
                 :''}
               <div >
-
-                { (menuSearchResult.fetched == true && isMenuLoading == false ) ?
+                { (menuSearchResult.fetched && !(isMenuLoading??true) ) ?
                   <div>
                     <div className='menu-groups'>
                       <span className='fa fa-window-maximize'></span> &nbsp;{gettext('MENU ITEMS')} ({menuSearchResult.data.length})
@@ -209,11 +241,11 @@ export function Search() {
 
 
                     {refactorMenuItems(menuSearchResult.data)}
-                  </div> : ( (isMenuLoading) ? (<div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>) : '')}
+                  </div> :  showLoader(isMenuLoading)}
 
-                {(menuSearchResult.data.length == 0 && menuSearchResult.fetched == true && isMenuLoading == false) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
+                {(menuSearchResult.data.length == 0 && menuSearchResult.fetched && !(isMenuLoading??true)) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
 
-                { (helpSearchResult.fetched == true && isHelpLoading == false) ?
+                { (helpSearchResult.fetched && !(isHelpLoading??true)) ?
                   <div>
                     <div className='help-groups'>
                       <span className='fa fa-question-circle'></span> &nbsp;{gettext('HELP ARTICLES')} {Object.keys(helpSearchResult.data).length > 10 ?
@@ -229,22 +261,8 @@ export function Search() {
                     })}
 
                     {(Object.keys(helpSearchResult.data).length == 0) ? (<div className='pad-12 no-results'><span className='fa fa-info-circle'></span> {gettext('No search results')}</div>):''}
-                  </div> : ( (isHelpLoading && isMenuLoading == false) ? (
-                    <div>
-                      <div className='help-groups'>
-                        <span className='fa fa-question-circle'></span>
-                          &nbsp;HELP ARTICLES
-                        {Object.keys(helpSearchResult.data).length > 10
-                          ? '(10 of ' + Object.keys(helpSearchResult.data).length + ')'
-                          : '(' + Object.keys(helpSearchResult.data).length + ')'
-                        }
-                        { Object.keys(helpSearchResult.data).length > 10
-                          ? <a href={helpSearchResult.url} className='pull-right no-padding' target='_blank' rel='noreferrer'>
-                          Show all &nbsp;<span className='fas fa-external-link-alt' ></span></a> : ''
-                        }
-                      </div>
-                      <div className='pad-12'><div className="search-icon">{gettext('Searching...')}</div></div>
-                    </div>) : '')}
+
+                  </div> : <HelpArticleContents isHelpLoading={isHelpLoading} isMenuLoading={isMenuLoading} helpSearchResult={helpSearchResult} /> }
               </div>
             </div>
           </div>
@@ -254,3 +272,8 @@ export function Search() {
     </ul>
   );
 }
+
+
+Search.propTypes = {
+  closeModal: PropTypes.func
+};

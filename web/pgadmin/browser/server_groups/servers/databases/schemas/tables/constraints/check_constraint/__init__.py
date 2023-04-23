@@ -2,19 +2,19 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements the Check Constraint Module."""
 
-import simplejson as json
+import json
 from functools import wraps
 
 import pgadmin.browser.server_groups.servers.databases as database
 from flask import render_template, make_response, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
     constraints.type import ConstraintRegistry
@@ -52,7 +52,7 @@ class CheckConstraintModule(CollectionNodeModule):
     _COLLECTION_LABEL = _("Check Constraints")
 
     def __init__(self, *args, **kwargs):
-        super(CheckConstraintModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.min_ver = None
         self.max_ver = None
 
@@ -196,11 +196,6 @@ class CheckConstraintView(PGChildNodeView):
             self.manager = driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -449,7 +444,8 @@ class CheckConstraintView(PGChildNodeView):
         if cid:
             result = res[0]
         result['is_sys_obj'] = (
-            result['oid'] <= self.datlastsysoid or self.datistemplate)
+            result['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         return ajax_response(
             response=result,
@@ -464,7 +460,7 @@ class CheckConstraintView(PGChildNodeView):
         """
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for k, v in data.items():
             try:
@@ -473,7 +469,7 @@ class CheckConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except (ValueError, TypeError, KeyError):
                 data[k] = v
 
@@ -544,7 +540,7 @@ class CheckConstraintView(PGChildNodeView):
             # The below SQL will execute CREATE DDL only
             sql = render_template(
                 "/".join([self.template_path, self._CREATE_SQL]),
-                data=data
+                data=data, conn=self.conn
             )
 
             status, msg = self.conn.execute_scalar(sql)
@@ -572,7 +568,8 @@ class CheckConstraintView(PGChildNodeView):
                 sql = render_template(
                     "/".join([self.template_path, self._OID_SQL]),
                     tid=tid,
-                    name=data['name']
+                    name=data['name'],
+                    conn=self.conn
                 )
                 status, res = self.conn.execute_dict(sql)
                 if not status:
@@ -614,7 +611,7 @@ class CheckConstraintView(PGChildNodeView):
         """
         if cid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [cid]}
@@ -672,7 +669,7 @@ class CheckConstraintView(PGChildNodeView):
             cid: Check Constraint Id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         try:
@@ -745,7 +742,7 @@ class CheckConstraintView(PGChildNodeView):
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
-                              data=data)
+                              data=data, conn=self.conn)
 
         sql_header = "-- Constraint: {0}\n\n-- ".format(data['name'])
 
@@ -782,7 +779,7 @@ class CheckConstraintView(PGChildNodeView):
                 if k in ('comment',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 

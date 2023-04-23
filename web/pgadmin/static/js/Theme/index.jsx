@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,12 +13,15 @@
  */
 
 import React, { useMemo } from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import CustomPropTypes from '../custom_prop_types';
 
 import getStandardTheme from './standard';
 import getDarkTheme from './dark';
 import getHightContrastTheme from './high_contrast';
+import { CssBaseline } from '@material-ui/core';
+import pickrOverride from './overrides/pickr.override';
+import uplotOverride from './overrides/uplot.override';
 
 /* Common settings across all themes */
 let basicSettings = createMuiTheme();
@@ -26,6 +29,18 @@ basicSettings = createMuiTheme(basicSettings, {
   typography: {
     fontSize: 14,
     htmlFontSize: 14,
+    fontFamily: [
+      'Roboto',
+      '"Helvetica Neue"',
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
   },
   shape: {
     borderRadius: 4,
@@ -51,7 +66,7 @@ basicSettings = createMuiTheme(basicSettings, {
       root: {
         textTransform: 'none',
         minHeight: 0,
-        padding: '5px 10px',
+        padding: '3px 10px',
         [basicSettings.breakpoints.up('xs')]: {
           minWidth: 0,
         },
@@ -72,11 +87,19 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiButton: {
       root: {
-        textTransform: 'none,',
+        textTransform: 'none',
         padding: basicSettings.spacing(0.5, 1.5),
+        fontSize: 'inherit',
         '&.Mui-disabled': {
-          opacity: 0.65,
-        }
+          opacity: 0.60,
+        },
+        '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
+          height: '28px',
+          fontSize: '0.875rem',
+          '& .MuiSvgIcon-root': {
+            height: '1.2rem',
+          }
+        },
       },
       contained: {
         boxShadow: 'none',
@@ -89,7 +112,7 @@ basicSettings = createMuiTheme(basicSettings, {
       },
       startIcon: {
         marginRight: basicSettings.spacing(0.5),
-      }
+      },
     },
     MuiOutlinedInput: {
       multiline: {
@@ -101,10 +124,15 @@ basicSettings = createMuiTheme(basicSettings, {
       },
       inputMultiline: {
         padding: basicSettings.spacing(0.75, 1.5),
-        resize: 'auto',
+        resize: 'vertical',
+        height: '100%',
+        boxSizing: 'border-box',
       },
       adornedEnd: {
-        paddingRight: basicSettings.spacing(1.5),
+        paddingRight: basicSettings.spacing(0.75),
+      },
+      marginDense: {
+        height: '28px',
       }
     },
     MuiAccordion: {
@@ -160,25 +188,44 @@ basicSettings = createMuiTheme(basicSettings, {
     MuiDialog: {
       paper: {
         margin: 0,
+      },
+      scrollPaper: {
+        alignItems: 'flex-start',
+        margin: '5% auto',
       }
     },
     MuiTooltip: {
       popper: {
         top: 0,
         zIndex: 9999,
+      },
+    },
+    MuiMenu: {
+      list: {
+        padding: '0',
+      }
+    },
+    MuiMenuItem: {
+      root: {
+        fontSize: 14,
+      }
+    },
+    MuiSelect: {
+      selectMenu: {
+        minHeight: 'unset',
+      },
+      select:{
+        '&:focus':{
+          backgroundColor: 'unset',
+        }
       }
     }
   },
   transitions: {
-    duration: {
-      shortest: 50,
-      shorter: 100,
-      short: 150,
-      standard: 200,
-      complex: 175,
-      enteringScreen: 125,
-      leavingScreen: 95,
-    }
+    create: () => 'none',
+  },
+  zIndex: {
+    modal: 3001,
   },
   props: {
     MuiTextField: {
@@ -199,6 +246,18 @@ basicSettings = createMuiTheme(basicSettings, {
     },
     MuiCheckbox: {
       disableTouchRipple: true,
+    },
+    MuiDialogTitle: {
+      disableTypography: true,
+    },
+    MuiCardHeader: {
+      disableTypography: true,
+    },
+    MuiListItem: {
+      disableGutters: true,
+    },
+    MuiTooltip: {
+      arrow: true,
     }
   },
 });
@@ -208,6 +267,9 @@ function getFinalTheme(baseTheme) {
   let mixins = {
     panelBorder: {
       border: '1px solid '+baseTheme.otherVars.borderColor,
+      all: {
+        border: '1px solid '+baseTheme.otherVars.borderColor,
+      },
       top: {
         borderTop: '1px solid '+baseTheme.otherVars.borderColor,
       },
@@ -221,12 +283,40 @@ function getFinalTheme(baseTheme) {
     nodeIcon: {
       backgroundPosition: 'center',
       padding: baseTheme.spacing(0, 1.5),
+    },
+    tabPanel: {
+      height: '100%',
+      padding: baseTheme.spacing(1),
+      overflow: 'auto',
+      backgroundColor: baseTheme.palette.grey[400],
+      position: 'relative',
+    },
+    fontSourceCode: {
+      fontFamily: '"Source Code Pro", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     }
   };
 
   return createMuiTheme({
     mixins: mixins,
     overrides: {
+      MuiCssBaseline: {
+        '@global': {
+          body: {
+            fontFamily: baseTheme.typography.fontFamily,
+          },
+          ul: {
+            margin: 0,
+            padding: 0,
+          },
+          li: {
+            listStyle: 'none',
+            margin: 0,
+            padding: 0,
+          },
+          ...pickrOverride(baseTheme),
+          ...uplotOverride(baseTheme),
+        },
+      },
       MuiOutlinedInput:  {
         root: {
           '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
@@ -287,7 +377,18 @@ function getFinalTheme(baseTheme) {
             color: baseTheme.palette.text.muted,
             backgroundColor: baseTheme.otherVars.inputDisabledBg,
           },
-        }
+          '&:focus': {
+            outline: '0 !important',
+          }
+        },
+      },
+      MuiSelect: {
+        icon: {
+          color: baseTheme.palette.text.primary,
+          '&.Mui-disabled': {
+            color: baseTheme.palette.text.muted,
+          }
+        },
       },
       MuiIconButton: {
         root: {
@@ -383,6 +484,10 @@ function getFinalTheme(baseTheme) {
               backgroundColor: 'abc',
             }
           }
+        },
+
+        label: {
+          textTransform: 'initial',
         }
       },
       MuiFormHelperText: {
@@ -390,6 +495,71 @@ function getFinalTheme(baseTheme) {
           color: baseTheme.palette.text.muted,
         },
       },
+      MuiDialogContent: {
+        root: {
+          padding: 0,
+          userSelect: 'text',
+        }
+      },
+      MuiDialogTitle: {
+        root: {
+          fontWeight: 'bold',
+          padding: '5px 10px',
+          cursor: 'move',
+          display: 'flex',
+          alignItems: 'center',
+          ...mixins.panelBorder.bottom,
+        }
+      },
+      MuiCardHeader: {
+        root: {
+          padding: '4px 8px',
+          backgroundColor: baseTheme.otherVars.cardHeaderBg,
+          fontWeight: 'bold',
+          ...mixins.panelBorder.bottom,
+        }
+      },
+      MuiCardContent: {
+        root: {
+          padding: 0,
+          '&:last-child': {
+            paddingBottom: 0,
+          }
+        }
+      },
+      MuiListItem: {
+        root: {
+          color: baseTheme.palette.text.primary,
+          backgroundColor: baseTheme.palette.background.default,
+          flexDirection: 'column',
+          alignItems: 'initial',
+          padding: '0px 4px',
+          paddingTop: '0px',
+          paddingBottom: '0px',
+          ...mixins.panelBorder.top,
+          ...mixins.panelBorder.bottom,
+          borderTopColor: 'transparent',
+          cursor: 'pointer',
+          '&$selected': {
+            backgroundColor: baseTheme.palette.primary.light,
+            borderColor: baseTheme.palette.primary.main,
+            color: basicSettings.palette.getContrastText(baseTheme.palette.primary.light),
+            '&:hover': {
+              backgroundColor: baseTheme.palette.primary.light,
+            }
+          },
+        }
+      },
+      MuiTooltip: {
+        tooltip: {
+          fontSize: '0.7rem',
+          color: baseTheme.palette.background.default,
+          backgroundColor: baseTheme.palette.text.primary,
+        },
+        arrow: {
+          color: baseTheme.palette.text.primary,
+        }
+      }
     }
   }, baseTheme);
 }
@@ -413,6 +583,7 @@ export default function Theme(props) {
   }, []);
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       {props.children}
     </ThemeProvider>
   );
@@ -421,3 +592,83 @@ export default function Theme(props) {
 Theme.propTypes = {
   children: CustomPropTypes.children,
 };
+
+export const commonTableStyles = makeStyles((theme)=>({
+  table: {
+    borderSpacing: 0,
+    width: '100%',
+    overflow: 'auto',
+    backgroundColor: theme.otherVars.tableBg,
+    border: '1px solid '+theme.otherVars.borderColor,
+    '& tbody td, & thead th': {
+      margin: 0,
+      padding: theme.spacing(0.5),
+      border: '1px solid '+theme.otherVars.borderColor,
+      borderBottom: 'none',
+      position: 'relative',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      userSelect: 'text',
+      maxWidth: '250px',
+      '&:first-of-type':{
+        borderLeft: 'none',
+      },
+    },
+    '& thead tr:first-of-type th': {
+      borderTop: 'none',
+    },
+    '& tbody tr:last-of-type': {
+      '&:hover td': {
+        borderBottomColor: theme.palette.primary.main,
+      },
+      '& td': {
+        borderBottomColor: theme.otherVars.borderColor,
+      }
+    },
+    '& th': {
+      fontWeight: theme.typography.fontWeightBold,
+      padding: theme.spacing(1, 0.5),
+      textAlign: 'left',
+    },
+    '& tbody > tr': {
+      '&:hover': {
+        backgroundColor: theme.palette.primary.light,
+        '& td': {
+          borderBottom: '1px solid '+theme.palette.primary.main,
+          borderTop: '1px solid '+theme.palette.primary.main,
+        },
+        '&:last-of-type td': {
+          borderBottomColor: theme.palette.primary.main,
+        },
+      },
+    },
+  },
+  noBorder: {
+    border: 0,
+  },
+  borderBottom: {
+    '& tbody tr:last-of-type td': {
+      borderBottom: '1px solid '+theme.otherVars.borderColor,
+    },
+  },
+  wrapTd: {
+    '& tbody td': {
+      whiteSpace: 'pre-wrap',
+    }
+  },
+  noHover: {
+    '& tbody > tr': {
+      '&:hover': {
+        backgroundColor: theme.otherVars.tableBg,
+        '& td': {
+          borderBottomColor: theme.otherVars.borderColor,
+          borderTopColor: theme.otherVars.borderColor,
+        },
+        '&:last-of-type td': {
+          borderBottomColor: theme.otherVars.borderColor,
+        },
+      },
+    },
+  }
+}));

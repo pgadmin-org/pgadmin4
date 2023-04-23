@@ -5,5 +5,5 @@ SELECT
 FROM
     pg_catalog.pg_rewrite rw
 WHERE
-    rw.rulename={{ rule_name|qtLiteral }}
+    rw.rulename={{ rule_name|qtLiteral(conn) }}
 {% endif %}

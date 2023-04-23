@@ -181,9 +181,7 @@ describe('tree tests', () => {
             'setActiveFile', 'closeDirectory', 'getActiveFile',
             'deSelectActiveFile']);
         tree.tree.unload.and.callFake(function() {
-          return new Promise((resolve)=>{
-            resolve('Success!');
-          });
+          return Promise.resolve('Success!');
         });
       });
 
@@ -260,9 +258,7 @@ describe('tree tests', () => {
         tree.addNewNode('level3', {data: 'more data'}, ['<li>level3</li>'], ['level1','level2']);
         tree.tree = jasmine.createSpyObj('tree', ['unload']);
         tree.tree.unload.and.callFake(() => {
-          return new Promise((resolve)=>{
-            resolve('Success!');
-          });
+          return Promise.resolve('Success!');
         });
       });
 

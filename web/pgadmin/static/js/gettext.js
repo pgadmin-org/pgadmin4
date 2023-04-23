@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ define(['translations'], function (translations) {
    */
   return function gettext(text) {
 
-    var rawTranslation = translations[text] ? translations[text] : text;
+    let rawTranslation = translations[text] ? translations[text] : text;
 
     if(arguments.length == 1) {
       return rawTranslation;

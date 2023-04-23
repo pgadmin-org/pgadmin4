@@ -18,11 +18,18 @@ control, and select *Server Group* from the *Create* menu.
 Use the fields on the *Server* dialog to define the connection properties for
 each new server that you wish to manage with pgAdmin.  To open the *Server*
 dialog, right-click on the *Servers* node of the tree control, and select
-*Server* from the *Create* menu.
+*Server* from the *Register* menu.
 
 .. toctree::
 
    server_dialog
+
+Alternatively you can use the *Cloud Deployment* wizard to deploy a new
+PostgreSQL instance in the cloud, and connect to it.
+
+.. toctree::
+
+   cloud_deployment
 
 A master password is required to secure and later unlock saved server passwords.
 It is set by the user and can be disabled using config.

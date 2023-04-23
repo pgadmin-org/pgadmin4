@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -27,7 +27,7 @@ class TriggerFuncPutTestCase(BaseTestGenerator):
 
     def runTest(self):
         """ This function will update trigger function under database node. """
-        super(TriggerFuncPutTestCase, self).setUp()
+        super().setUp()
         self = funcs_utils.set_up(self)
 
         func_name = "test_event_delete_%s" % str(uuid.uuid4())[1:8]

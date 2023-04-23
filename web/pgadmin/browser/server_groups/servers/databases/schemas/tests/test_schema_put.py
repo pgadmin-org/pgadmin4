@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -26,7 +26,7 @@ class SchemaPutTestCase(BaseTestGenerator):
                                          schema_utils.test_cases)
 
     def setUp(self):
-        super(SchemaPutTestCase, self).setUp()
+        super().setUp()
         self.database_info = parent_node_dict["database"][-1]
         self.db_name = self.database_info["db_name"]
         # Change the db name, so that schema will create in newly created db

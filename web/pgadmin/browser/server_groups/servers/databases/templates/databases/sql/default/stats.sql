@@ -14,8 +14,8 @@ SELECT
 FROM
     pg_catalog.pg_stat_database db
 WHERE {% if did %}
-db.datid = {{ did|qtLiteral }}::OID{% else %}
-db.datid > {{ last_system_oid|qtLiteral }}::OID
+db.datid = {{ did|qtLiteral(conn) }}::OID{% else %}
+db.datid > {{ last_system_oid|qtLiteral(conn) }}::OID
 {% endif %}
 {% if db_restrictions %}
 

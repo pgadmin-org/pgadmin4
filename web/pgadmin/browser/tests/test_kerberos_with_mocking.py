@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -49,6 +49,18 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
         cls.tester.logout()
 
     def setUp(self):
+        try:
+            import gssapi
+        except ModuleNotFoundError as e:
+            self.skipTest("Import Error: GSSAPI module couldn't be loaded. " +
+                          str(e))
+        except ImportError as e:
+            self.skipTest("Import Error: GSSAPI module couldn't be loaded. " +
+                          str(e))
+        except OSError:
+            self.skipTest("OS Error: GSSAPI module couldn't be loaded. " +
+                          str(e))
+
         app_config.AUTHENTICATION_SOURCES = self.auth_source
         self.app.PGADMIN_EXTERNAL_AUTH_SOURCE = KERBEROS
 

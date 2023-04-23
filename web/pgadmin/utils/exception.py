@@ -2,14 +2,14 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 from werkzeug.exceptions import HTTPException
 from werkzeug.http import HTTP_STATUS_CODES
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 from flask import request
 
 from pgadmin.utils.ajax import service_unavailable, gone, internal_server_error

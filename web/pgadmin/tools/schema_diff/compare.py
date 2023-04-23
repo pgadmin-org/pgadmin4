@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -57,6 +57,8 @@ class SchemaDiffObjectCompare:
                          'did': kwargs.get('source_did')}
         target_params = {'sid': kwargs.get('target_sid'),
                          'did': kwargs.get('target_did')}
+        ignore_owner = kwargs.get('ignore_owner', False)
+        ignore_whitespaces = kwargs.get('ignore_whitespaces', False)
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -83,8 +85,9 @@ class SchemaDiffObjectCompare:
                 target = self.fetch_objects_to_compare(**target_params)
 
         # If both the dict have no items then return None.
-        if not (source or target) or (
-                len(source) <= 0 and len(target) <= 0):
+        if not (source or target) or not \
+            (isinstance(source, dict) and isinstance(target, dict)) or \
+                (len(source) <= 0 and len(target) <= 0):
             return None
 
         return compare_dictionaries(view_object=self,
@@ -97,7 +100,9 @@ class SchemaDiffObjectCompare:
                                     node_label=self.blueprint.collection_label,
                                     group_name=group_name,
                                     ignore_keys=self.keys_to_ignore,
-                                    source_schema_name=source_schema_name)
+                                    source_schema_name=source_schema_name,
+                                    ignore_owner=ignore_owner,
+                                    ignore_whitespaces=ignore_whitespaces)
 
     def ddl_compare(self, **kwargs):
         """

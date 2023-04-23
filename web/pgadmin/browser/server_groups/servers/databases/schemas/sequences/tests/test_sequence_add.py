@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -60,7 +60,7 @@ class SequenceAddTestCase(BaseTestGenerator):
     ]
 
     def setUp(self):
-        super(SequenceAddTestCase, self).setUp()
+        super().setUp()
 
     def runTest(self):
         """This function will add sequence(s) under schema node."""

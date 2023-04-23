@@ -1,6 +1,6 @@
 SELECT
     'DOMAIN' AS objectkind, c.oid as conoid, conname, typname as relname, nspname, description,
-    pg_catalog.regexp_replace(pg_catalog.pg_get_constraintdef(c.oid, true), E'CHECK \\((.*)\\).*', E'\\1') as cons
+    pg_catalog.regexp_replace(pg_catalog.pg_get_constraintdef(c.oid, true), E'CHECK \\((.*)\\).*', E'\\1') as consrc, connoinherit, convalidated
 FROM
     pg_catalog.pg_constraint c
 JOIN
@@ -10,6 +10,6 @@ JOIN
 LEFT OUTER JOIN
     pg_catalog.pg_description des ON (des.objoid=c.oid AND des.classoid='pg_constraint'::regclass)
 WHERE
-    contype = 'c'
-    AND contypid =  {{doid}}::oid
-ORDER BY conname;
+    contype = 'c' AND contypid =  {{doid}}::oid
+ORDER BY
+    conname;

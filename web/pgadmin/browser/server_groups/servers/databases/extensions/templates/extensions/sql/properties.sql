@@ -11,7 +11,7 @@ FROM
 {%- if eid %}
  WHERE x.oid = {{eid}}::oid
 {% elif ename %}
- WHERE x.extname = {{ename|qtLiteral}}::text
+ WHERE x.extname = {{ename|qtLiteral(conn)}}::text
 {% else %}
  ORDER BY x.extname
 {% endif %}

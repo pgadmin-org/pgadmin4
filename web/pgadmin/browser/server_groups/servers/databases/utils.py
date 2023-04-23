@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -118,13 +118,11 @@ def get_attributes_from_db_info(manager, kwargs):
 
     if 'did' in kwargs and kwargs['did'] in manager.db_info:
 
-        datlastsysoid = manager.db_info[kwargs['did']]['datlastsysoid'] \
-            if 'datlastsysoid' in manager.db_info[kwargs['did']] else 0
         datistemplate = manager.db_info[kwargs['did']]['datistemplate'] \
             if 'datistemplate' in manager.db_info[kwargs['did']] else False
         datallowconn = manager.db_info[kwargs['did']]['datallowconn'] \
             if 'datallowconn' in manager.db_info[kwargs['did']] else False
 
-        return datlastsysoid, datistemplate, datallowconn
+        return datistemplate, datallowconn
     else:
-        return 0, False, True
+        return False, True

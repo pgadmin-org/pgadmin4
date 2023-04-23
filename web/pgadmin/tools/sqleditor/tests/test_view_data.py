@@ -2,14 +2,14 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import uuid
 import json
-import random
+import secrets
 from pgadmin.utils.route import BaseTestGenerator
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -96,8 +96,8 @@ class TestViewData(BaseTestGenerator):
         table_id = result[0][0]
 
         # Initialize query tool
-        self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/datagrid/{0}/3/table/{1}/{2}/{3}/{4}' \
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
+        url = '/sqleditor/initialize/viewdata/{0}/3/table/{1}/{2}/{3}/{4}' \
             .format(self.trans_id, test_utils.SERVER_GROUP, self.server_id,
                     self.db_id, table_id)
 

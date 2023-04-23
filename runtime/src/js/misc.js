@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -147,7 +147,7 @@ const getAvailablePort = (fixedPort) => {
 const currentTime = (new Date()).getTime();
 const serverLogFile = path.join(getLocalAppDataPath(), 'pgadmin4.' + currentTime.toString() + '.log');
 const configFileName = path.join(getAppDataPath(), 'runtime_config.json');
-const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'zoomLevel': 0};
+const DEFAULT_CONFIG_DATA = {'fixedPort': false, 'portNo': 5050, 'connectionTimeout': 90, 'zoomLevel': 0, 'openDocsInBrowser': true};
 
 // This function is used to read the file and return the content
 const readServerLog = () => {
@@ -293,10 +293,10 @@ const setZoomEvents = () => {
 // This function is used to iterate all open windows and set the zoom level.
 const setZoomLevelForAllWindows = () => {
   nw.Window.getAll(function(winArray) {
-    for (var i = 0; i < winArray.length; i++) {
-      winArray[i].zoomLevel = pgAdminWindowObject.zoomLevel;
+    for (let arr_val of winArray) {
+      arr_val.zoomLevel = pgAdminWindowObject.zoomLevel;
     }
-  })
+  });
 };
 
 // This function used to zoom in the pgAdmin window.
@@ -335,10 +335,10 @@ const toggleFullScreen = () => {
     pgAdminWindowObject.toggleFullscreen();
 
     // Change the menu label.
-    var menu_label = pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
-    if (menu_label.indexOf('Enter Full Screen') > 0) {
+    let menu_label = pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML;
+    if (menu_label.indexOf('Enter Full Screen') >= 0) {
       pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Enter', 'Exit');
-    } else if (menu_label.indexOf('Exit Full Screen') > 0) {
+    } else if (menu_label.indexOf('Exit Full Screen') >= 0) {
       pgAdminWindowObject.window.document.querySelector('#mnu_toggle_fullscreen_runtime span').innerHTML = menu_label.replace('Exit', 'Enter');
     }
   }
@@ -424,6 +424,18 @@ let ConfigureStore = {
   },
 };
 
+function parseConsoleArgs(_method, args) {
+  const retData = Array.from(args).map(arg => {
+    try {
+      if(arg.stack) return arg.stack;
+      return JSON.stringify(arg);
+    } catch (e) {
+      return arg
+    }
+  });
+  return retData?.join(' ');
+}
+
 
 module.exports = {
   readServerLog: readServerLog,
@@ -444,4 +456,5 @@ module.exports = {
   unregisterZoomEvents: unregisterZoomEvents,
   setZoomLevelForAllWindows: setZoomLevelForAllWindows,
   ConfigureStore: ConfigureStore,
+  parseConsoleArgs: parseConsoleArgs,
 };

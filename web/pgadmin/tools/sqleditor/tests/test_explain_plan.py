@@ -2,13 +2,13 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 import json
-import random
+import secrets
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -33,8 +33,8 @@ class TestExplainPlan(BaseTestGenerator):
             raise Exception("Could not connect to the database.")
 
         # Initialize query tool
-        self.trans_id = str(random.randint(1, 9999999))
-        url = '/datagrid/initialize/query_tool/{0}/{1}/{2}/{3}'.format(
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
+        url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
         self.assertEqual(response.status_code, 200)
@@ -68,7 +68,7 @@ class TestExplainPlan(BaseTestGenerator):
         self.assertEqual(len(response_data['data']['result'][0]), 1)
 
         # Close query tool
-        url = '/datagrid/close/{0}'.format(self.trans_id)
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
         response = self.tester.delete(url)
         self.assertEqual(response.status_code, 200)
 

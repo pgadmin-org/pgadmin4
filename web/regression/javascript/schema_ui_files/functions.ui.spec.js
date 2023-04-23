@@ -2,20 +2,16 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import {messages} from '../fake_messages';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import FunctionSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui';
+import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -41,7 +37,7 @@ describe('FunctionSchema', ()=>{
         connected: true,
         user: {id: 10, name: 'postgres', is_superuser: true, can_create_role: true, can_create_db: true},
         user_id: 1,
-        user_name: 'postgres',
+        username: 'postgres',
         version: 130005,
         server: {
           host: '127.0.0.1',
@@ -87,7 +83,7 @@ describe('FunctionSchema', ()=>{
           can_create_db: true,
         },
         user_id: 1,
-        user_name: 'postgres',
+        username: 'postgres',
         version: 130005,
         server: {
           host: '127.0.0.1',
@@ -124,84 +120,28 @@ describe('FunctionSchema', ()=>{
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
+    genericBeforeEach();
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(schemaObj));
   });
 
   it('create', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={procedureSchemaObj}
-      viewHelperProps={{
-        mode: 'create',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getCreateView(procedureSchemaObj));
   });
 
   it('edit', ()=>{
-    mount(<SchemaView
-      formType='dialog'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(schemaObj, getInitData));
   });
 
   it('properties', ()=>{
-    mount(<SchemaView
-      formType='tab'
-      schema={schemaObj}
-      getInitData={getInitData}
-      viewHelperProps={{
-        mode: 'properties',
-      }}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-    />);
+    mount(getPropertiesView(schemaObj, getInitData));
   });
-  
+
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -217,7 +157,7 @@ describe('FunctionSchema', ()=>{
           catalog: {},
           connected: true,
           user_id: 1,
-          user_name: 'postgres',
+          username: 'postgres',
           version: 130005,
           server: {
             host: '127.0.0.1',
@@ -247,28 +187,13 @@ describe('FunctionSchema', ()=>{
       type: 'function',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
 
   });
 
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -284,7 +209,7 @@ describe('FunctionSchema', ()=>{
           catalog: {},
           connected: true,
           user_id: 1,
-          user_name: 'postgres',
+          username: 'postgres',
           version: 130005,
           server: {
             host: '127.0.0.1',
@@ -314,28 +239,18 @@ describe('FunctionSchema', ()=>{
       type: 'function',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
 
   });
-  
+
+  let initDataProc = ()=>Promise.resolve({
+    sysfunc: true,
+    type: 'procedure',
+  });
+
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -350,7 +265,7 @@ describe('FunctionSchema', ()=>{
         node_info: {
           connected: true,
           user_id: 1,
-          user_name: 'postgres',
+          username: 'postgres',
           version: 130005,
           server: {
             host: '127.0.0.1',
@@ -375,32 +290,12 @@ describe('FunctionSchema', ()=>{
       }
     );
 
-    let initData = ()=>Promise.resolve({
-      sysfunc: true,
-      type: 'procedure',
-    });
-
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initDataProc));
   });
 
   it('proiswindow visible', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -415,7 +310,7 @@ describe('FunctionSchema', ()=>{
         node_info: {
           connected: true,
           user_id: 1,
-          user_name: 'postgres',
+          username: 'postgres',
           version: 130005,
           server: {
             host: '127.0.0.1',
@@ -445,28 +340,13 @@ describe('FunctionSchema', ()=>{
       type: 'procedure',
     });
 
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
+    mount(getEditView(editSchemaObj, initData));
   });
 
 
   it('proparallel disabled', ()=>{
 
-    
+
     let editSchemaObj = new FunctionSchema(
       () => new MockSchema(),
       () => new MockSchema(),
@@ -482,7 +362,7 @@ describe('FunctionSchema', ()=>{
           catalog: {},
           connected: true,
           user_id: 1,
-          user_name: 'postgres',
+          username: 'postgres',
           version: 130005,
           server: {
             host: '127.0.0.1',
@@ -509,28 +389,7 @@ describe('FunctionSchema', ()=>{
       }
     );
 
-    let initData = ()=>Promise.resolve({
-      sysfunc: true,
-      type: 'procedure',
-    });
-
-    mount(<SchemaView
-      formType='dialog'
-      schema={editSchemaObj}
-      getInitData={initData}
-      viewHelperProps={{
-        mode: 'edit',
-      }}
-      onSave={()=>{}}
-      onClose={()=>{}}
-      onHelp={()=>{}}
-      onEdit={()=>{}}
-      onDataChange={()=>{}}
-      confirmOnCloseReset={false}
-      hasSQL={false}
-      disableSqlHelp={false}
-    />);
-
+    mount(getEditView(editSchemaObj, initDataProc));
   });
 
   it('probin visible', ()=>{
@@ -566,7 +425,7 @@ describe('FunctionSchema', ()=>{
   });
 
   it('probin validate', () => {
-    let state = { lanname: 'c', prorettypename: 'char' }; 
+    let state = { lanname: 'c', prorettypename: 'char' };
     let setError = jasmine.createSpy('setError');
 
     schemaObj.validate(state, setError);
@@ -574,7 +433,7 @@ describe('FunctionSchema', ()=>{
   });
 
   it('probin validate', () => {
-    let state = { lanname: 'c', probin: 'test1', prorettypename: 'char'}; 
+    let state = { lanname: 'c', probin: 'test1', prorettypename: 'char'};
     let setError = jasmine.createSpy('setError');
 
     schemaObj.validate(state, setError);

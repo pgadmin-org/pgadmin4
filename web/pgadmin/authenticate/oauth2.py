@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -14,16 +14,15 @@ import config
 from authlib.integrations.flask_client import OAuth
 from flask import current_app, url_for, session, request,\
     redirect, Flask, flash
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_user, current_user
-from flask_security.utils import get_post_logout_redirect, \
-    get_post_login_redirect, logout_user
+from flask_security.utils import get_post_logout_redirect, logout_user
 
 from pgadmin.authenticate.internal import BaseAuthentication
 from pgadmin.model import User
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import OAUTH2
-from pgadmin.utils import PgAdminModule
+from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.model import db
 
@@ -32,10 +31,10 @@ OAUTH2_AUTHORIZE = 'oauth2.authorize'
 
 
 class Oauth2Module(PgAdminModule):
-    def register(self, app, options, first_registration=False):
+    def register(self, app, options):
         # Do not look for the sub_modules,
         # instead call blueprint.register(...) directly
-        super(PgAdminModule, self).register(app, options, first_registration)
+        super().register(app, options)
 
     def get_exposed_url_endpoints(self):
         return [OAUTH2_AUTHORIZE,
@@ -58,12 +57,12 @@ def init_app(app):
             session['auth_source_manager'] = auth_obj.as_dict()
             if 'auth_obj' in session:
                 session.pop('auth_obj')
-            return redirect(get_post_login_redirect())
+            return redirect(get_safe_post_login_redirect())
         if 'auth_obj' in session:
             session.pop('auth_obj')
         logout_user()
         flash(msg, 'danger')
-        return redirect(get_post_login_redirect())
+        return redirect(get_safe_post_login_redirect())
 
     @blueprint.route('/logout', endpoint="logout",
                      methods=['GET', 'POST'])
@@ -88,6 +87,7 @@ class OAuth2Authentication(BaseAuthentication):
     oauth_obj = OAuth(Flask(__name__))
     oauth2_clients = {}
     oauth2_config = {}
+    email_keys = ['mail', 'email']
 
     def __init__(self):
         for oauth2_config in config.OAUTH2_CONFIG:
@@ -106,6 +106,8 @@ class OAuth2Authentication(BaseAuthentication):
                 api_base_url=oauth2_config['OAUTH2_API_BASE_URL'],
                 client_kwargs={'scope': oauth2_config.get(
                     'OAUTH2_SCOPE', 'email profile')},
+                server_metadata_url=oauth2_config.get(
+                    'OAUTH2_SERVER_METADATA_URL', None)
             )
 
     def get_source_name(self):
@@ -115,11 +117,32 @@ class OAuth2Authentication(BaseAuthentication):
         return self.oauth2_config[self.oauth2_current_client]['OAUTH2_NAME']
 
     def validate(self, form):
-        return True
+        return True, None
 
     def login(self, form):
         profile = self.get_user_profile()
-        if 'email' not in profile or not profile['email']:
+        email_key = \
+            [value for value in self.email_keys if value in profile.keys()]
+        email = profile[email_key[0]] if (len(email_key) > 0) else None
+
+        username = email
+        username_claim = None
+        if 'OAUTH2_USERNAME_CLAIM' in self.oauth2_config[
+                self.oauth2_current_client]:
+            username_claim = self.oauth2_config[
+                self.oauth2_current_client
+            ]['OAUTH2_USERNAME_CLAIM']
+        if username_claim is not None:
+            if username_claim in profile:
+                username = profile[username_claim]
+            else:
+                error_msg = "The claim '%s' is required to login into " \
+                    "pgAdmin. Please update your Oauth2 profile." % (
+                        username_claim)
+                current_app.logger.exception(error_msg)
+                return False, gettext(error_msg)
+
+        if not email or email == '':
             current_app.logger.exception(
                 "An email id is required to login into pgAdmin. "
                 "Please update your Oauth2 profile."
@@ -128,12 +151,14 @@ class OAuth2Authentication(BaseAuthentication):
                 "An email id is required to login into pgAdmin. "
                 "Please update your Oauth2 profile.")
 
-        user, msg = self.__auto_create_user(profile)
+        user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
-                username=profile['email'], auth_source=OAUTH2).first()
+                username=username, auth_source=OAUTH2).first()
             current_app.login_manager.logout_view = \
                 OAuth2Authentication.LOGOUT_VIEW
+            current_app.logger.info(
+                "OAUTH2 user {0} logged in.".format(username))
             return login_user(user), None
         return False, msg
 
@@ -161,17 +186,21 @@ class OAuth2Authentication(BaseAuthentication):
         return False, self.oauth2_clients[
             self.oauth2_current_client].authorize_redirect(redirect_url)
 
-    def __auto_create_user(self, resp):
+    def __auto_create_user(self, username, email):
         if config.OAUTH2_AUTO_CREATE_USER:
-            user = User.query.filter_by(username=resp['email'],
+            user = User.query.filter_by(username=username,
                                         auth_source=OAUTH2).first()
             if not user:
+                create_msg = ("Creating user {0} with email {1} "
+                              "from auth source OAUTH2.")
+                current_app.logger.info(create_msg.format(username,
+                                                          email))
                 return create_user({
-                    'username': resp['email'],
-                    'email': resp['email'],
+                    'username': username,
+                    'email': email,
                     'role': 2,
                     'active': True,
                     'auth_source': OAUTH2
                 })
 
-        return True, {'username': resp['email']}
+        return True, {'username': username}

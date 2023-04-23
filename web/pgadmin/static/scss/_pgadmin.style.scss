@@ -130,33 +130,17 @@
 .opacity-5 {
   opacity: 0.5;  }
 
-.alertify .ajs-header,
-.alertify .ajs-body {
-  font-family: $font-family-primary;
-}
-
-.alertify .ajs-body {
-  min-height: $footer-height-calc*1.5;
-}
-
-.pg-navbar {
-  font-size: $navbar-font-size;
-  background-color: $navbar-bg;
-  padding-left: 0rem;
-  padding-right: 0.5rem;
-  & .nav-item .nav-link{
-    line-height: 1;
-  }
-}
-
-
-
 .pg-docker {
   position:absolute;
   left:0px;
   right:0px;
   bottom:0px;
   top: $navbar-height !important;
+}
+
+.pg-docker-native {
+  top: 0px !important;
+  border-top: 1px solid $border-color;
 }
 
 .pg-panel-content {
@@ -193,15 +177,6 @@
 
 .pg-prop-btn-group .dropdown-menu {
   min-width: initial;
-}
-
-.pg-prop-btn-group .backgrid-filter.form-search {
-  position: relative;
-  width: 248px;
-  height: 30px;
-  float: right;
-  margin-top: 2px;
-  margin-right: 10px;
 }
 
 .pg-prop-content {
@@ -246,45 +221,18 @@
     height: auto !important;
 }
 
-.obj_properties .backform-tab {
-    position: absolute;
-    margin: 0px 0px;
-    padding: 0px;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-}
-
-.obj_properties .backform-tab > .tab-content {
-    padding: 0px;
-    overflow-y: auto;
-    background-color: $color-gray-light;
-}
-
 .obj_properties {
     padding: 0px;
-}
-
-.obj_properties .pgadmin-control .uneditable-input {
-    border: 0px !important;
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    -webkit-transition: none !important;
-    -o-transition: none !important;
-    transition: none !important;
-    background-color: transparent !important;
-    height: 20px;
-    padding: 0px;
-    margin-top: 2px;
-    vertical-align: middle;
+    height: 100%;
+    width: 100%;
+    background-color: $color-gray-light;
 }
 
 /* Message panel shown on browser tabs */
 .pg-panel-message {
     width: 80%;
     margin: 0 auto;
-    margin-top: 25px !important;
+    padding-top: 25px !important;
     position: relative;
     text-align: center;
     font-size: $font-size-base;
@@ -353,78 +301,6 @@
 
 .pgadmin-controls > span.select2 {
     width: 100%;
-}
-
-.obj_properties fieldset > div > .pgadmin-control-group > label {
-    min-height: 28px;
-}
-
-.obj_properties fieldset > .fieldset-content {
-  padding: 5px 10px;
-}
-
-.obj_properties .accordian-group > .accordian-content {
-  padding: 5px 10px;
-}
-
-.obj_properties .badge {
-  display: block;
-  text-align: left;
-  cursor: pointer;
-  background-color: $badge-header-bg;
-  padding: 7px;
-  font-size: inherit;
-  border-bottom: $panel-border;
-  border-radius: 0rem;
-  border-top-left-radius: $card-border-radius;
-  border-top-right-radius: $card-border-radius;
-
-  &.collapsed {
-    border-bottom: none !important;
-    border-radius: $card-border-radius;
-  }
-}
-.obj_properties .badge .caret {
-  display: inline-block;
-  margin-left: 2px;
-  margin-right: 4px;
-  width: 0.7rem;
-}
-
-.obj_properties .badge .caret::before {
-  font-family: $font-family-icon;
-	content: "\f078";
-	font-size: 0.7rem;
-	margin-left: 0rem;
-	font-weight: 900;
-}
-
-.obj_properties .collapsed .caret::before {
-  font-family: $font-family-icon;
-	content: "\f054";
-	font-size: 0.7rem;
-	border: none;
-	font-weight: 900;
-}
-
-.obj_properties table td {
-    vertical-align: top;
-}
-
-.obj_properties .set-group {
-  margin: 0.5rem 0rem;
-  padding: 0rem;
-}
-
-.obj_properties .accordian-group {
-  margin: 0.5rem 0rem;
-  padding: 0rem;
-  border: $panel-border;
-  border-radius: $card-border-radius;
-  background-color: $color-bg;
-  fieldset.inline-fieldset {
-    background: $color-bg;
-  }
 }
 
 fieldset.inline-fieldset {
@@ -561,7 +437,7 @@ fieldset.inline-fieldset > div {
 .pg-panel-statistics-container,
 .pg-panel-dependencies-container,
 .pg-panel-dependents-container,
-.pg-prop-coll-container, {
+.pg-prop-coll-container {
     width: 100%;
     overflow: auto;
     border-radius: $card-border-radius;
@@ -736,10 +612,6 @@ div.rolmembership {
       border-bottom: $panel-border;
     }
   }
-
-  .backgrid.pgadmin-control-group {
-    margin-bottom: 0rem !important;
-  }
 }
 
 table tr th {
@@ -826,23 +698,12 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-size: 0.875rem;
 }
 
 /* Security label's label column font size */
 .override_label_class_font_size {
   font-size: inherit !important;
-}
-
-/* CSS for custom checkbox editor in SlickGrid */
-.multi-checkbox .check {
-  display: inline-block;
-  vertical-align: top;
-  width: 16px;
-  height: 16px;
-  border: 1px solid  $color-gray-dark;
-  margin: 3px;
-  text-align: center;
-  line-height: 16px;
 }
 
 .multi-checkbox .check.checked,
@@ -862,10 +723,6 @@ body {
 .multi-checkbox .check.partial:after {
   content: "\003F";
   font-weight: 900;
-}
-
-.pg-el-container {
-  background-color: $negative-bg;
 }
 
 .nav-tabs {
@@ -931,11 +788,20 @@ table.table-empty-rows{
 }
 
 .login_page {
-  background-color: $color-primary;
+  background-color: $login-page-background;
   height: 100%;
   position:relative;
   z-index:1;
   color: $security-text-color;
+
+  & a {
+    color: $security-text-color;
+  }
+
+  & .panel-container {
+    background-color: rgba($security-btn-color, 0.25);
+    padding: 0px;
+  }
 
   & .panel-header {
     padding-bottom: 1.0rem;
@@ -943,7 +809,10 @@ table.table-empty-rows{
   & .panel-body {
     padding-bottom: 0.8rem;
   }
-  & .btn-login {
+  & .btn-login  {
+    background-color: $security-btn-color;
+  }
+  & .btn-validate {
     background-color: $security-btn-color;
   }
   & .btn-oauth {
@@ -977,8 +846,16 @@ table.table-empty-rows{
     z-index: 100;
 }
 
-.change_pass {
+.auth_page {
   background-color: $color-gray-light;
+
+  & .panel-container {
+    background-color: rgba($color-gray-dark, 0.75);
+    border-radius: $border-radius * 2;
+  }
+}
+
+.change_pass {
   height: 100%;
   position:relative;
   z-index:1;
@@ -1079,22 +956,22 @@ textarea {
 /* Webkit customizations */
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-corner {
-    width: $scrollbar-width;
-    height: $scrollbar-width;
+    width: $scrollbar-width !important;
+    height: $scrollbar-width !important;
     background-color: rgba($scrollbar-base-color, 0.2);
 }
 
 ::-webkit-scrollbar-thumb {
     border: 0.25rem solid transparent;
     border-radius: $border-radius*2;
-    background-clip: content-box;
-    background-color: rgba($scrollbar-base-color, 0.7);
     background: rgba($scrollbar-base-color, 0.7) !important;
+    background-clip: content-box !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: $scrollbar-base-color;
-    background: $scrollbar-base-color !important;
+    border: 0.25rem solid transparent;
+    background-color: $scrollbar-base-color !important;
+    background-clip: content-box !important;
 }
 
 
@@ -1139,4 +1016,24 @@ select:-webkit-autofill:focus {
 
 .text-wrap {
   word-break: break-word;
+}
+
+.sql_textarea {
+  height: 100%;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
+ul {
+  margin-left: 0;
+  padding: 0;
+  cursor: default;
+}
+
+li {
+  padding: 0 0 0 0px;
+  list-style: none;
+  margin: 0;
 }

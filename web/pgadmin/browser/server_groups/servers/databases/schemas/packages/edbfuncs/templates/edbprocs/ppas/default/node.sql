@@ -4,7 +4,7 @@ SELECT  pg_proc.oid,
 FROM pg_catalog.pg_proc, pg_catalog.pg_namespace
 WHERE protype = '1'::char
 {% if fnid %}
-AND pg_proc.oid = {{ fnid|qtLiteral }}
+AND pg_proc.oid = {{ fnid|qtLiteral(conn) }}
 {% endif %}
-AND pronamespace = {{pkgid|qtLiteral}}::oid
+AND pronamespace = {{pkgid|qtLiteral(conn)}}::oid
 AND pg_proc.pronamespace = pg_namespace.oid

@@ -46,6 +46,7 @@ Use the *Definition* tab to set properties for the database:
 * Specify a connection limit in the *Connection Limit* field to configure the
   maximum number of connection requests. The default value (*-1*) allows
   unlimited connections to the database.
+* If the *templates?* is set to true, then database will be a template database.
 
 Click the *Security* tab to continue.
 

@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -39,7 +39,7 @@ class IEMessageTest(BaseTestGenerator):
                  ]
              ),
              expected_msg="Copying table data '{0}.{1}' on "
-                          "database '{2}' and server ({3}:{4})",
+                          "database '{2}' and server '{3} ({4}:{5})'",
              expected_storage_dir='/'
 
          )),
@@ -66,7 +66,7 @@ class IEMessageTest(BaseTestGenerator):
                  ]
              ),
              expected_msg="Copying table data '{0}.{1}' on "
-                          "database '{2}' and server ({3}:{4})",
+                          "database '{2}' and server '{3} ({4}:{5})'",
              expected_storage_dir='/test_path'
 
          )),
@@ -75,17 +75,17 @@ class IEMessageTest(BaseTestGenerator):
     @patch('os.path.realpath')
     @patch('pgadmin.misc.bgprocess.processes.get_storage_directory')
     @patch('pgadmin.misc.bgprocess.processes.get_complete_file_path')
-    @patch('pgadmin.tools.import_export.IEMessage.get_server_details')
-    def runTest(self, get_server_details_mock,
+    @patch('pgadmin.tools.import_export.IEMessage.get_server_name')
+    def runTest(self, get_server_name_mock,
                 get_complete_file_path_mock,
                 get_storage_directory_mock,
                 realpath_mock):
 
-        name = self.class_params['name']
-        host = self.class_params['host']
-        port = self.class_params['port']
-
-        get_server_details_mock.return_value = name, host, port
+        get_server_name_mock.return_value = "{0} ({1}:{2})" \
+            .format(
+                self.class_params['name'],
+                self.class_params['host'],
+                self.class_params['port'])
 
         get_complete_file_path_mock.return_value \
             = self.class_params['filename']
@@ -109,6 +109,7 @@ class IEMessageTest(BaseTestGenerator):
             self.class_params['schema'],
             self.class_params['table'],
             self.class_params['database'],
+            self.class_params['name'],
             self.class_params['host'],
             self.class_params['port']
         )
@@ -120,11 +121,11 @@ class IEMessageTest(BaseTestGenerator):
         obj_details = import_export_obj.details(self.class_params['cmd'],
                                                 self.class_params['args'])
 
-        self.assertIn(self.class_params['schema'], obj_details)
-        self.assertIn(self.class_params['table'], obj_details)
-        self.assertIn(self.class_params['database'], obj_details)
-        self.assertIn(self.class_params['host'], obj_details)
-        self.assertIn(str(self.class_params['port']), obj_details)
+        self.assertIn(self.class_params['schema'], obj_details['message'])
+        self.assertIn(self.class_params['table'], obj_details['message'])
+        self.assertIn(self.class_params['database'], obj_details['message'])
+        self.assertIn(self.class_params['host'], obj_details['message'])
+        self.assertIn(str(self.class_params['port']), obj_details['message'])
 
         if config.SERVER_MODE is False:
             self.skipTest(

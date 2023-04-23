@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,9 +10,9 @@
 import ResourceGroupSchema from './resource_group.ui';
 
 define('pgadmin.node.resource_group', [
-  'sources/gettext', 'sources/url_for', 'underscore', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.browser.collection',
-], function(gettext, url_for, _, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   // Extend the browser's collection class for resource group collection
   if (!pgBrowser.Nodes['coll-resource_group']) {
@@ -51,13 +51,13 @@ define('pgadmin.node.resource_group', [
           name: 'create_resourcegroup_on_server', node: 'server', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create',
+          data: {action: 'create',
             data_disabled: gettext('This option is only available on EPAS servers.')},
           /* Function is used to check the server type and version.
            * Resource Group only supported in PPAS 9.4 and above.
            */
           enable: function(node, item) {
-            var treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+            let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
               server = treeData['server'];
             return server.connected && node.server_type === 'ppas' &&
               node.version >= 90400;
@@ -66,13 +66,13 @@ define('pgadmin.node.resource_group', [
           name: 'create_resource_group_on_coll', node: 'coll-resource_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create',
+          data: {action: 'create',
             data_disabled: gettext('This option is only available on EPAS servers.')},
         },{
           name: 'create_resource_group', node: 'resource_group', module: this,
           applies: ['object', 'context'], callback: 'show_obj_properties',
           category: 'create', priority: 4, label: gettext('Resource Group...'),
-          icon: 'wcTabIcon icon-resource_group', data: {action: 'create',
+          data: {action: 'create',
             data_disabled: gettext('This option is only available on EPAS servers.')},
         },
         ]);
@@ -81,22 +81,6 @@ define('pgadmin.node.resource_group', [
       getSchema: ()=>{
         return new ResourceGroupSchema();
       },
-
-      // Defining model for resource group node
-      model: pgBrowser.Node.Model.extend({
-        idAttribute: 'oid',
-        // Defining schema for the resource group node
-        schema: [{
-          id: 'name', label: gettext('Name'), cell: 'string',
-          type: 'text',
-        }, {
-          id: 'cpu_rate_limit', label: gettext('CPU rate limit (percentage)'), cell: 'string',
-          type: 'numeric', min:0, max:16777216,
-        }, {
-          id: 'dirty_rate_limit', label: gettext('Dirty rate limit (KB)'), cell: 'string',
-          type: 'numeric', min:0, max:16777216,
-        }],
-      }),
     });
   }
 

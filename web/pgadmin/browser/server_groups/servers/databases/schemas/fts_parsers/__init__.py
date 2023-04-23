@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,9 +11,9 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, request, jsonify, current_app
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases import DatabaseModule
@@ -49,7 +49,7 @@ class FtsParserModule(SchemaChildModule):
     _COLLECTION_LABEL = _('FTS Parsers')
 
     def __init__(self, *args, **kwargs):
-        super(FtsParserModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -213,7 +213,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(FtsParserView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -229,11 +229,6 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(
                 kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -254,7 +249,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
     def list(self, gid, sid, did, scid):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid
+            scid=scid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -346,7 +342,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            pid=pid
+            pid=pid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -358,7 +355,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 _("Could not find the FTS Parser node in the database node."))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
         return True, res['rows'][0]
 
     @check_precondition
@@ -382,7 +380,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -422,7 +420,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
-            scid=data['schema'] if 'schema' in data else scid
+            scid=data['schema'] if 'schema' in data else scid,
+            conn=self.conn
         )
         status, pid = self.conn.execute_scalar(sql)
         if not status:
@@ -448,7 +447,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         :param pid: fts parser id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         # Fetch sql query to update fts parser
         sql, name = self.get_sql(gid, sid, did, scid, data, pid)
@@ -465,7 +464,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 pid=pid,
-                scid=data['schema'] if 'schema' in data else scid
+                scid=data['schema'] if 'schema' in data else scid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -499,7 +499,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if pid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [pid]}
@@ -519,6 +519,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                     return internal_server_error(errormsg=res)
                 elif not res['rows']:
                     return make_json_response(
+                        status=410,
                         success=0,
                         errormsg=_(
                             'Error: Object not found.'
@@ -572,7 +573,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -642,7 +643,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 pid=pid,
-                scid=scid
+                scid=scid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -685,7 +687,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
                 data=new_data,
-                o_data=old_data
+                o_data=old_data,
+                conn=self.conn
             )
             # Fetch sql query for modified data
             if 'name' in data:
@@ -888,7 +891,7 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
                 data = {'schema': scid}
                 # Fetch schema name from schema oid
                 sql = render_template("/".join([self.template_path,
-                                                'schema.sql']),
+                                                self._SCHEMA_SQL]),
                                       data=data,
                                       conn=self.conn,
                                       )
@@ -959,7 +962,8 @@ class FtsParserView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODES_SQL]), scid=scid)
+                                        self._NODES_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

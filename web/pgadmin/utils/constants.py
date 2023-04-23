@@ -2,18 +2,18 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Application wide constants."""
-from flask_babelex import gettext
+from flask_babel import gettext
 
 # Mimetypes
 MIMETYPE_APP_HTML = 'text/html'
 MIMETYPE_APP_JS = 'application/javascript'
-
+MIMETYPE_APP_JSON = 'application/json'
 
 # Preference labels
 PREF_LABEL_KEYBOARD_SHORTCUTS = gettext('Keyboard shortcuts')
@@ -25,7 +25,10 @@ PREF_LABEL_CSV_TXT = gettext('CSV/TXT Output')
 PREF_LABEL_RESULTS_GRID = gettext('Results grid')
 PREF_LABEL_SQL_FORMATTING = gettext('SQL formatting')
 PREF_LABEL_TABS_SETTINGS = gettext('Tab settings')
+PREF_LABEL_REFRESH_RATES = gettext('Refresh rates')
+PREF_LABEL_GRAPH_VISUALISER = gettext('Graph Visualiser')
 
+PGADMIN_STRING_SEPARATOR = '_$PGADMIN$_'
 PGADMIN_NODE = 'pgadmin.node.%s'
 UNAUTH_REQ = "Unauthorized request."
 SERVER_CONNECTION_CLOSED = gettext(
@@ -33,6 +36,7 @@ SERVER_CONNECTION_CLOSED = gettext(
 
 # Query tool placeholder
 QT_DEFAULT_PLACEHOLDER = '%DATABASE%/%USERNAME%@%SERVER%'
+VW_EDT_DEFAULT_PLACEHOLDER = '%SCHEMA%.%TABLE%/%DATABASE%/%USERNAME%@%SERVER%'
 
 # Data Types
 DATATYPE_TIME_WITH_TIMEZONE = 'time with time zone'
@@ -66,9 +70,6 @@ SUPPORTED_AUTH_SOURCES = [INTERNAL,
 
 BINARY_PATHS = {
     "as_bin_paths": [
-        {"version": "90600", "next_major_version": "100000",
-         "serverType": gettext("EDB Advanced Server 9.6"), "binaryPath": None,
-         "isDefault": False},
         {"version": "100000", "next_major_version": "110000",
          "serverType": gettext("EDB Advanced Server 10"), "binaryPath": None,
          "isDefault": False},
@@ -83,12 +84,12 @@ BINARY_PATHS = {
          "isDefault": False},
         {"version": "140000", "next_major_version": "150000",
          "serverType": gettext("EDB Advanced Server 14"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "150000", "next_major_version": "160000",
+         "serverType": gettext("EDB Advanced Server 15"), "binaryPath": None,
          "isDefault": False}
     ],
     "pg_bin_paths": [
-        {"version": "90600", "next_major_version": "100000",
-         "serverType": gettext("PostgreSQL 9.6"), "binaryPath": None,
-         "isDefault": False},
         {"version": "100000", "next_major_version": "110000",
          "serverType": gettext("PostgreSQL 10"), "binaryPath": None,
          "isDefault": False},
@@ -103,6 +104,9 @@ BINARY_PATHS = {
          "isDefault": False},
         {"version": "140000", "next_major_version": "150000",
          "serverType": gettext("PostgreSQL 14"), "binaryPath": None,
+         "isDefault": False},
+        {"version": "150000", "next_major_version": "160000",
+         "serverType": gettext("PostgreSQL 15"), "binaryPath": None,
          "isDefault": False}
     ]
 }
@@ -110,3 +114,14 @@ BINARY_PATHS = {
 UTILITIES_ARRAY = ['pg_dump', 'pg_dumpall', 'pg_restore', 'psql']
 
 ENTER_EMAIL_ADDRESS = "Email address: "
+USER_NOT_FOUND = gettext("The specified user ID (%s) could not be found.")
+DATABASE_LAST_SYSTEM_OID = 16383
+
+# Drivers
+PSYCOPG3 = 'psycopg3'
+
+# Shared storage
+MY_STORAGE = 'my_storage'
+ACCESS_DENIED_MESSAGE = gettext(
+    "Access denied: You’re having limited access. You’re not allowed to "
+    "Rename, Delete or Create any files/folders")

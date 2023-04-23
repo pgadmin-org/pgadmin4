@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -10,13 +10,12 @@
 /*
  * The ERDCore is the middleware between the canvas engine and the UI DOM.
  */
-import createEngine from '@projectstorm/react-diagrams';
-import {DagreEngine, PathFindingLinkFactory, PortModelAlignment} from '@projectstorm/react-diagrams';
+import createEngine, {DagreEngine, PortModelAlignment} from '@projectstorm/react-diagrams';
 import { ZoomCanvasAction } from '@projectstorm/react-canvas-core';
 import _ from 'lodash';
 
 import {TableNodeFactory, TableNodeModel } from './nodes/TableNode';
-import {OneToManyLinkFactory, OneToManyLinkModel } from './links/OneToManyLink';
+import {OneToManyLinkFactory, OneToManyLinkModel, POINTER_SIZE } from './links/OneToManyLink';
 import { OneToManyPortFactory } from './ports/OneToManyPort';
 import ERDModel from './ERDModel';
 import ForeignKeySchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui';
@@ -54,7 +53,7 @@ export default class ERDCore {
     this.registerKeyAction(new ZoomCanvasAction({inverseZoom: true}));
   }
 
-  initializeModel(data, callback=()=>{}) {
+  initializeModel(data, callback=()=>{/*This is intentional (SonarQube)*/}) {
     let model = new ERDModel();
     if(data) {
       model.deserializeModel(data, this.engine);
@@ -82,6 +81,7 @@ export default class ERDCore {
             if(!this.node_position_updating) {
               this.node_position_updating = true;
               this.fireEvent({}, 'nodesUpdated', true);
+              this.optimizePortsPosition(node);
               setTimeout(()=>{
                 this.node_position_updating = false;
               }, 500);
@@ -194,21 +194,103 @@ export default class ERDCore {
     });
   }
 
-  getNewPort(type, initData, initOptions) {
-    return this.getEngine().getPortFactories().getFactory(type).generateModel({
+  getNewPort(portName, alignment) {
+    return this.getEngine().getPortFactories().getFactory('onetomany').generateModel({
       initialConfig: {
-        data:initData,
-        options:initOptions,
+        data: null,
+        options: {
+          name: portName,
+          alignment: alignment
+        },
       },
     });
   }
 
-  addNode(data, position=[50, 50]) {
+  getLeftRightPorts(node, attnum) {
+    const leftPort = node.getPort(node.getPortName(attnum, PortModelAlignment.LEFT))
+      ?? node.addPort(this.getNewPort(node.getPortName(attnum, PortModelAlignment.LEFT), PortModelAlignment.LEFT));
+    const rightPort = node.getPort(node.getPortName(attnum, PortModelAlignment.RIGHT))
+      ?? node.addPort(this.getNewPort(node.getPortName(attnum, PortModelAlignment.RIGHT), PortModelAlignment.RIGHT));
+
+    return [leftPort, rightPort];
+  }
+
+  optimizePortsPosition(node) {
+    Object.values(node.getLinks()).forEach((link)=>{
+      const sourcePort = link.getSourcePort();
+      const targetPort = link.getTargetPort();
+
+      const [newSourcePort, newTargetPort] = this.getOptimumPorts(
+        sourcePort.getNode(),
+        sourcePort.getNode().getPortAttnum(sourcePort.getName()),
+        targetPort.getNode(),
+        targetPort.getNode().getPortAttnum(targetPort.getName())
+      );
+
+      sourcePort != newSourcePort && link.setSourcePort(newSourcePort);
+      targetPort != newTargetPort && link.setTargetPort(newTargetPort);
+    });
+  }
+
+  addNode(data, position=[50, 50], metadata={}) {
     let newNode = this.getNewNode(data);
     this.clearSelection();
     newNode.setPosition(position[0], position[1]);
+    newNode.setMetadata(metadata);
     this.getModel().addNode(newNode);
     return newNode;
+  }
+
+  removeNode(node) {
+    let self = this;
+    node.setSelected(false);
+    Object.values(node.getPorts()).forEach((port)=>{
+      Object.values(port.getLinks()).forEach((link)=>{
+        self.removeOneToManyLink(link);
+      });
+    });
+    node.remove();
+  }
+
+  anyDuplicateNodeName(newNodeData, oldNodeData) {
+    if(newNodeData.name == oldNodeData?.name && newNodeData.schema == oldNodeData?.schema) {
+      return false;
+    }
+    return _.filter(this.getNodesData(), (n)=>{
+      return n.name==newNodeData.name && n.schema==newNodeData.schema;
+    }).length > 0;
+  }
+
+  getOptimumPorts(sourceNode, sourceAttnum, targetNode, targetAttnum) {
+    const [sourceLeftPort, sourceRightPort] = this.getLeftRightPorts(sourceNode, sourceAttnum);
+    const [targetLeftPort, targetRightPort] = this.getLeftRightPorts(targetNode, targetAttnum);
+
+    /* Lets use right as default */
+    let sourcePort = sourceRightPort;
+    let targetPort = targetRightPort;
+    const sourceNodePos = sourceNode.getBoundingBox();
+    const targetNodePos = targetNode.getBoundingBox();
+    const sourceLeftX = sourceNodePos.getBottomLeft().x;
+    const sourceRightX = sourceNodePos.getBottomRight().x;
+    const targetLeftX = targetNodePos.getBottomLeft().x;
+    const targetRightX = targetNodePos.getBottomRight().x;
+
+    const OFFSET = POINTER_SIZE*2+10;
+
+    if(targetLeftX - sourceRightX >= OFFSET) {
+      sourcePort = sourceRightPort;
+      targetPort = targetLeftPort;
+    } else if(sourceLeftX - targetRightX >= OFFSET) {
+      sourcePort = sourceLeftPort;
+      targetPort = targetRightPort;
+    } else if(targetLeftX - sourceRightX < OFFSET || sourceLeftX - targetRightX < OFFSET) {
+      if(sourcePort.getAlignment() == PortModelAlignment.RIGHT) {
+        targetPort = targetRightPort;
+      } else {
+        targetPort = targetLeftPort;
+      }
+    }
+    return [sourcePort, targetPort];
   }
 
   addLink(data, type) {
@@ -216,19 +298,8 @@ export default class ERDCore {
     let sourceNode = tableNodesDict[data.referenced_table_uid];
     let targetNode = tableNodesDict[data.local_table_uid];
 
-    let portName = sourceNode.getPortName(data.referenced_column_attnum);
-    let sourcePort = sourceNode.getPort(portName);
-    /* Create the port if not there */
-    if(!sourcePort) {
-      sourcePort = sourceNode.addPort(this.getNewPort(type, null, {name:portName, subtype: 'one', alignment:PortModelAlignment.RIGHT}));
-    }
-
-    portName = targetNode.getPortName(data.local_column_attnum);
-    let targetPort = targetNode.getPort(portName);
-    /* Create the port if not there */
-    if(!targetPort) {
-      targetPort = targetNode.addPort(this.getNewPort(type, null, {name:portName, subtype: 'many', alignment:PortModelAlignment.RIGHT}));
-    }
+    const [sourcePort, targetPort] = this.getOptimumPorts(
+      sourceNode, data.referenced_column_attnum, targetNode, data.local_column_attnum);
 
     /* Link the ports */
     let newLink = this.getNewLink(type, data);
@@ -248,11 +319,74 @@ export default class ERDCore {
     });
   }
 
+  syncColDrop(tableNode, oldTableData) {
+    let self = this;
+    if(!oldTableData) {
+      return;
+    }
+    let tableData = tableNode.getData();
+    /* Remove the links if column dropped or primary key removed */
+    _.differenceWith(oldTableData.columns, tableData.columns, function(existing, incoming) {
+      if(existing.attnum == incoming.attnum && existing.is_primary_key && !incoming.is_primary_key) {
+        return false;
+      }
+      return existing.attnum == incoming.attnum;
+    }).forEach((col)=>{
+      let existPort = tableNode.getPort(tableNode.getPortName(col.attnum));
+      if(existPort) {
+        Object.values(existPort.getLinks()).forEach((link)=>{
+          self.removeOneToManyLink(link);
+        });
+        tableNode.removePort(existPort);
+      }
+    });
+  }
+
+  syncFkRefNames(tableNode, oldTableData) {
+    if(!oldTableData) {
+      return;
+    }
+    let tableData = tableNode.getData();
+    /* Sync the name changes in references FK */
+    Object.values(tableNode.getLinks()).forEach((link)=>{
+      if(link.getSourcePort().getNode() != tableNode) {
+        /* SourcePort is the referred table */
+        /* If the link doesn't refer this table, skip it */
+        return;
+      }
+      let linkData = link.getData();
+      let fkTableNode = this.getModel().getNodesDict()[linkData.local_table_uid];
+
+      let newForeingKeys = [];
+      /* Update the FK table with new references */
+      fkTableNode.getData().foreign_key?.forEach((theFkRow)=>{
+        for(let fkColumn of theFkRow.columns) {
+          if(fkColumn.references == tableNode.getID()) {
+            let attnum = _.find(oldTableData.columns, (c)=>c.name==fkColumn.referenced).attnum;
+            fkColumn.referenced = _.find(tableData.columns, (colm)=>colm.attnum==attnum).name;
+            fkColumn.references_table_name = tableData.name;
+          }
+        }
+        newForeingKeys.push(theFkRow);
+      });
+      fkTableNode.setData({
+        ...fkTableNode.getData(),
+        foreign_key: newForeingKeys,
+      });
+    });
+  }
+
   syncTableLinks(tableNode, oldTableData) {
+    if(oldTableData) {
+      this.syncColDrop(tableNode, oldTableData);
+      this.syncFkRefNames(tableNode, oldTableData);
+    }
+    /* Sync the changed/removed/added foreign keys */
     let tableData = tableNode.getData();
     let tableNodesDict = this.getModel().getNodesDict();
 
     const addLink = (theFk)=>{
+      if(!theFk) return;
       let newData = {
         local_table_uid: tableNode.getID(),
         local_column_attnum: undefined,
@@ -268,12 +402,21 @@ export default class ERDCore {
     };
 
     const removeLink = (theFk)=>{
-      let attnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
-      let existPort = tableNode.getPort(tableNode.getPortName(attnum));
-      if(existPort && existPort.getSubtype() == 'many') {
-        existPort.removeAllLinks();
-        tableNode.removePort(existPort);
-      }
+      if(!theFk) return;
+
+      let tableNodesDict = this.getModel().getNodesDict();
+      let sourceNode = tableNodesDict[theFk.references];
+
+      let localAttnum = _.find(tableNode.getColumns(), (col)=>col.name==theFk.local_column).attnum;
+      let refAttnum = _.find(sourceNode.getColumns(), (col)=>col.name==theFk.referenced).attnum;
+      const fkLink = Object.values(tableNode.getLinks()).find((link)=>{
+        const ldata = link.getData();
+        return ldata.local_column_attnum == localAttnum
+          && ldata.local_table_uid == tableNode.getID()
+          && ldata.referenced_column_attnum == refAttnum
+          && ldata.referenced_table_uid == theFk.references;
+      });
+      fkLink?.remove();
     };
 
     const changeDiff = diffArray(
@@ -297,23 +440,26 @@ export default class ERDCore {
           tableData.foreign_key[rowIndx].columns,
           'cid'
         );
-        if(changeDiffCols.removed.length > 0 || changeDiffCols.added.length > 0) {
-          removeLink(changeDiffCols.removed[0]);
-          addLink(changeDiffCols.added[0]);
+        if(changeDiffCols.removed.length > 0) {
+          /* any change in columns length remove all and create new link */
+          oldTableData.foreign_key[rowIndx].columns.forEach((col)=>{
+            removeLink(col);
+          });
+          addLink(tableData.foreign_key[rowIndx].columns[0]);
         }
       }
     }
   }
 
   addOneToManyLink(onetomanyData) {
-    let newFk = new ForeignKeySchema({}, {}, ()=>{}, {autoindex: false});
+    let newFk = new ForeignKeySchema({}, {}, ()=>{/*This is intentional (SonarQube)*/}, {autoindex: false});
     let tableNodesDict = this.getModel().getNodesDict();
     let fkColumn = {};
     let sourceNode = tableNodesDict[onetomanyData.referenced_table_uid];
     let targetNode = tableNodesDict[onetomanyData.local_table_uid];
 
-    fkColumn.local_column = _.find(targetNode.getColumns(), (col)=>col.attnum==onetomanyData.local_column_attnum).name;
-    fkColumn.referenced = _.find(sourceNode.getColumns(), (col)=>col.attnum==onetomanyData.referenced_column_attnum).name;
+    fkColumn.local_column = _.find(targetNode.getColumns(), (colm)=>colm.attnum==onetomanyData.local_column_attnum).name;
+    fkColumn.referenced = _.find(sourceNode.getColumns(), (colm)=>colm.attnum==onetomanyData.referenced_column_attnum).name;
     fkColumn.references = onetomanyData.referenced_table_uid;
     fkColumn.references_table_name = sourceNode.getData().name;
 
@@ -361,10 +507,10 @@ export default class ERDCore {
     let rightNode = nodes[manytomanyData.right_table_uid];
 
     let tableObj = new TableSchema({}, {}, {
-      constraints:()=>{},
-      columns:()=>new ColumnSchema(()=>{}, {}, {}, {}),
-      vacuum_settings:()=>{},
-    }, ()=>{}, ()=>{}, ()=>{}, ()=>{});
+      constraints:()=>{/*This is intentional (SonarQube)*/},
+      columns:()=>new ColumnSchema(()=>{/*This is intentional (SonarQube)*/}, {}, {}, {}),
+      vacuum_settings:()=>{/*This is intentional (SonarQube)*/},
+    }, ()=>{/*This is intentional (SonarQube)*/}, ()=>{/*This is intentional (SonarQube)*/}, ()=>{/*This is intentional (SonarQube)*/}, ()=>{/*This is intentional (SonarQube)*/});
 
     let tableData = tableObj.getNewData({
       name: `${leftNode.getData().name}_${rightNode.getData().name}`,
@@ -519,10 +665,6 @@ export default class ERDCore {
 
   dagreDistributeNodes() {
     this.dagre_engine.redistribute(this.getModel());
-    this.getEngine()
-      .getLinkFactories()
-      .getFactory(PathFindingLinkFactory.NAME)
-      .calculateRoutingMatrix();
     this.repaint();
   }
 
@@ -558,8 +700,8 @@ export default class ERDCore {
       event: {
         ...event,
         key: '',
-        preventDefault: () => {},
-        stopPropagation: () => {},
+        preventDefault: () => {/*This is intentional (SonarQube)*/},
+        stopPropagation: () => {/*This is intentional (SonarQube)*/},
       },
     });
   }

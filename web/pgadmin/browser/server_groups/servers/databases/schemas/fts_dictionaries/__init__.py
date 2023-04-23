@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,11 +11,11 @@
 
 from functools import wraps
 
-import simplejson as json
+import json
 from flask import render_template, make_response, current_app, request, jsonify
-from flask_babelex import gettext as _
+from flask_babel import gettext as _
 
-import pgadmin.browser.server_groups.servers.databases as databases
+from pgadmin.browser.server_groups.servers import databases
 from config import PG_DEFAULT_DRIVER
 from pgadmin.browser.server_groups.servers.databases.schemas.utils \
     import SchemaChildModule
@@ -56,7 +56,7 @@ class FtsDictionaryModule(SchemaChildModule):
         self.min_ver = None
         self.max_ver = None
         self.manager = None
-        super(FtsDictionaryModule, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_nodes(self, gid, sid, did, scid):
         """
@@ -197,7 +197,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         self.conn = None
         self.template_path = None
         self.manager = None
-        super(FtsDictionaryView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -215,11 +215,6 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             driver = get_driver(PG_DEFAULT_DRIVER)
             self.qtIdent = driver.qtIdent
-            self.datlastsysoid = \
-                self.manager.db_info[kwargs['did']]['datlastsysoid'] \
-                if self.manager.db_info is not None and \
-                kwargs['did'] in self.manager.db_info else 0
-
             self.datistemplate = False
             if (
                 self.manager.db_info is not None and
@@ -270,7 +265,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
 
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            scid=scid
+            scid=scid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -388,7 +383,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            dcid=dcid
+            dcid=dcid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -401,7 +397,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             ))
 
         res['rows'][0]['is_sys_obj'] = (
-            res['rows'][0]['oid'] <= self.datlastsysoid or self.datistemplate)
+            res['rows'][0]['oid'] <= self._DATABASE_LAST_SYSTEM_OID or
+            self.datistemplate)
 
         # Handle templates and its schema name properly
         if res['rows'][0]['template_schema'] is not None and \
@@ -436,7 +433,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         ]
 
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
         for arg in required_args:
             if arg not in data:
@@ -476,7 +473,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             name=data['name'],
-            scid=data['schema']
+            scid=data['schema'],
+            conn=self.conn
         )
         status, dcid = self.conn.execute_scalar(sql)
         if not status:
@@ -502,7 +500,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         :param dcid: fts dictionary id
         """
         data = request.form if request.form else json.loads(
-            request.data, encoding='utf-8'
+            request.data
         )
 
         # Fetch sql query to update fts dictionary
@@ -519,7 +517,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         if dcid is not None:
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
-                dcid=dcid
+                dcid=dcid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -553,7 +552,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         if dcid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [dcid]}
@@ -573,6 +572,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                     return internal_server_error(errormsg=res)
                 elif not res['rows']:
                     return make_json_response(
+                        status=410,
                         success=0,
                         errormsg=_(
                             'Error: Object not found.'
@@ -627,7 +627,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                 if k in ('description',):
                     data[k] = v
                 else:
-                    data[k] = json.loads(v, encoding='utf-8')
+                    data[k] = json.loads(v)
             except ValueError:
                 data[k] = v
 
@@ -703,7 +703,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
             sql = render_template(
                 "/".join([self.template_path, self._PROPERTIES_SQL]),
                 dcid=dcid,
-                scid=scid
+                scid=scid,
+                conn=self.conn
             )
 
             status, res = self.conn.execute_dict(sql)
@@ -744,7 +745,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
 
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
-                data=new_data, o_data=old_data
+                data=new_data, o_data=old_data, conn=self.conn
             )
             # Fetch sql query for modified data
             if 'name' in data:
@@ -811,7 +812,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             scid=scid,
-            dcid=dcid
+            dcid=dcid,
+            conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -922,7 +924,8 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = dict()
         SQL = render_template("/".join([self.template_path,
-                                        self._NODES_SQL]), scid=scid)
+                                        self._NODES_SQL]), scid=scid,
+                              schema_diff=True)
         status, rset = self.conn.execute_2darray(SQL)
         if not status:
             return internal_server_error(errormsg=res)

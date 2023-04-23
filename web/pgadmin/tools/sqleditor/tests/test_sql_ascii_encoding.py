@@ -2,17 +2,20 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2022, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
-import sys
-import random
+import secrets
+import json
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression.python_test_utils import test_utils
 from pgadmin.utils import server_utils
+from pgadmin.browser.server_groups.servers.databases.tests import utils as \
+    database_utils
+import config
 
 
 class TestSQLASCIIEncoding(BaseTestGenerator):
@@ -66,7 +69,7 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
 
     def setUp(self):
         self.encode_db_name = 'test_encoding_' + self.db_encoding + \
-                              str(random.randint(1000, 65535))
+                              str(secrets.choice(range(1000, 65535)))
         self.encode_sid = self.server_information['server_id']
 
         server_con = server_utils.connect_server(self, self.encode_sid)
@@ -80,38 +83,43 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
             self.server, self.encode_db_name,
             (self.db_encoding, self.lc_collate))
 
-        test_utils.create_table_with_query(
-            self.server,
-            self.encode_db_name,
-            """CREATE TABLE {0}(
-                name character varying(200) COLLATE pg_catalog."default")
-            """.format(self.table_name))
-
     def runTest(self):
-        db_con = test_utils.get_db_connection(
-            self.encode_db_name,
-            self.server['username'],
-            self.server['db_password'],
-            self.server['host'],
-            self.server['port'],
-            self.server['sslmode']
-        )
+        db_con = database_utils.connect_database(self,
+                                                 test_utils.SERVER_GROUP,
+                                                 self.encode_sid,
+                                                 self.encode_did)
+        if not db_con["info"] == "Database connected.":
+            raise Exception("Could not connect to the database.")
 
-        old_isolation_level = db_con.isolation_level
-        db_con.set_isolation_level(0)
-        db_con.set_client_encoding(self.db_encoding)
-        pg_cursor = db_con.cursor()
-        query = """INSERT INTO {0} VALUES('{1}')""".format(
-            self.table_name, self.test_str)
-        pg_cursor.execute(query)
-        db_con.set_isolation_level(old_isolation_level)
-        db_con.commit()
+        # Initialize query tool
+        self.trans_id = str(secrets.choice(range(1, 9999999)))
+        url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'\
+            .format(self.trans_id, test_utils.SERVER_GROUP, self.encode_sid,
+                    self.encode_did)
+        response = self.tester.post(url)
+        self.assertEqual(response.status_code, 200)
 
-        query = """SELECT * FROM {0}""".format(self.table_name)
-        pg_cursor.execute(query)
-        resp = pg_cursor.fetchone()
+        # Check character
+        url = "/sqleditor/query_tool/start/{0}".format(self.trans_id)
+        sql = "select '{0}';".format(self.test_str)
+        response = self.tester.post(url, data=json.dumps({"sql": sql}),
+                                    content_type='html/json')
+        self.assertEqual(response.status_code, 200)
+        url = '/sqleditor/poll/{0}'.format(self.trans_id)
+        response = self.tester.get(url)
+        self.assertEqual(response.status_code, 200)
+        response_data = json.loads(response.data)
+        self.assertEqual(response_data['data']['rows_fetched_to'], 1)
+        result = response_data['data']['result'][0][0]
+        self.assertEqual(result, self.test_str)
 
-        self.assertEqual(resp[0], self.test_str)
+        # Close query tool
+        url = '/sqleditor/close/{0}'.format(self.trans_id)
+        response = self.tester.delete(url)
+        self.assertEqual(response.status_code, 200)
+
+        database_utils.disconnect_database(self, self.encode_sid,
+                                           self.encode_did)
 
     def tearDown(self):
         main_conn = test_utils.get_db_connection(

@@ -54,7 +54,7 @@ The Schema Diff Object Comparison Panel
 
 In the object comparison panel, you can select the source and target servers
 of the same major version, and databases to be compared. You can
-select any server listed under the browser tree whether it is connected or
+select any server listed under the object explorer whether it is connected or
 disconnected. If you select a server that is not connected then it will
 prompt you for the password before using the server.
 
@@ -64,6 +64,12 @@ same or different (and within the same server or from different servers).
 .. image:: images/schema_diff_compare_button.png
     :alt: Schema diff compare button
     :align: center
+
+Use the drop-down near to *Compare* button to ignore owner and ignore whitespace.
+
+ * Ignore owner – Select to ignores the owner while comparing the objects.
+
+ * Ignore whitespace – Select to ignores the whitespace while comparing the string objects. Whitespace includes space, tabs, and CRLF.
 
 After you select servers, and databases, click on the
 *Compare* button to obtain the *Comparison Result*.
@@ -92,6 +98,8 @@ following comparison criteria:
 
 Click on any of the database objects in the object comparison panel to
 display the DDL Statements of that object in the DDL Comparison panel.
+
+Click the *Help* icon to open Schema Diff documentation.
 
 
 Schema Diff DDL Comparison Panel

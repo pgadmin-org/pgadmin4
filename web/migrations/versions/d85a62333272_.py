@@ -1,13 +1,20 @@
-
-"""empty message
+##########################################################################
+#
+# pgAdmin 4 - PostgreSQL Tools
+#
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
+# This software is released under the PostgreSQL Licence
+#
+##########################################################################
+"""
 
 Revision ID: d85a62333272
 Revises: 3c1e4b6eda55
 Create Date: 2017-07-07 16:03:23.842734
 
 """
-from pgadmin.model import db
-
+import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'd85a62333272'
@@ -17,9 +24,7 @@ depends_on = None
 
 
 def upgrade():
-    db.engine.execute(
-        'ALTER TABLE server ADD COLUMN db_res TEXT'
-    )
+    op.add_column('server', sa.Column('db_res', sa.String()))
 
 
 def downgrade():

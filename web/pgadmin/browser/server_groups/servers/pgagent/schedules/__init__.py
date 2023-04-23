@@ -2,18 +2,18 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
 
 """Implements pgAgent Job Schedule Node"""
 
-import simplejson as json
+import json
 from functools import wraps
 
 from flask import render_template, request, jsonify
-from flask_babelex import gettext
+from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, gone, \
@@ -179,7 +179,7 @@ class JobScheduleView(PGChildNodeView):
         self.template_path = None
         self.manager = None
 
-        super(JobScheduleView, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def check_precondition(f):
         """
@@ -215,7 +215,7 @@ class JobScheduleView(PGChildNodeView):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            jid=jid
+            jid=jid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -242,7 +242,8 @@ class JobScheduleView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, self._NODES_SQL]),
             jscid=jscid,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
 
         status, result = self.conn.execute_2darray(sql)
@@ -298,7 +299,7 @@ class JobScheduleView(PGChildNodeView):
         """
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
-            jscid=jscid, jid=jid
+            jscid=jscid, jid=jid, conn=self.conn
         )
         status, res = self.conn.execute_dict(sql)
 
@@ -341,7 +342,7 @@ class JobScheduleView(PGChildNodeView):
             sid: Server ID
             jid: Job ID
         """
-        data = json.loads(request.data, encoding='utf-8')
+        data = json.loads(request.data)
         # convert python list literal to postgres array literal.
         format_schedule_data(data)
 
@@ -349,7 +350,8 @@ class JobScheduleView(PGChildNodeView):
             "/".join([self.template_path, self._CREATE_SQL]),
             jid=jid,
             data=data,
-            fetch_id=True
+            fetch_id=True,
+            conn=self.conn
         )
 
         status, res = self.conn.execute_void('BEGIN')
@@ -366,7 +368,8 @@ class JobScheduleView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             jscid=res,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -419,7 +422,8 @@ class JobScheduleView(PGChildNodeView):
             "/".join([self.template_path, self._UPDATE_SQL]),
             jid=jid,
             jscid=jscid,
-            data=data
+            data=data,
+            conn=self.conn
         )
 
         status, res = self.conn.execute_void(sql)
@@ -430,7 +434,8 @@ class JobScheduleView(PGChildNodeView):
         sql = render_template(
             "/".join([self.template_path, self._PROPERTIES_SQL]),
             jscid=jscid,
-            jid=jid
+            jid=jid,
+            conn=self.conn
         )
         status, res = self.conn.execute_2darray(sql)
 
@@ -460,7 +465,7 @@ class JobScheduleView(PGChildNodeView):
 
         if jscid is None:
             data = request.form if request.form else json.loads(
-                request.data, encoding='utf-8'
+                request.data
             )
         else:
             data = {'ids': [jscid]}
@@ -504,14 +509,16 @@ class JobScheduleView(PGChildNodeView):
                 "/".join([self.template_path, self._CREATE_SQL]),
                 jid=jid,
                 data=data,
-                fetch_id=False
+                fetch_id=False,
+                conn=self.conn
             )
         else:
             sql = render_template(
                 "/".join([self.template_path, self._UPDATE_SQL]),
                 jid=jid,
                 jscid=jscid,
-                data=data
+                data=data,
+                conn=self.conn
             )
 
         return make_json_response(

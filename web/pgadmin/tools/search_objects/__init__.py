@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -10,7 +10,7 @@
 """Implements Search Object feature"""
 
 from flask import request
-from flask_babelex import gettext
+from flask_babel import gettext
 from flask_security import login_required
 
 from pgadmin.utils import PgAdminModule

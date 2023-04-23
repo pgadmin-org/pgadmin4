@@ -2,11 +2,11 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
-import random
+import secrets
 
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
@@ -31,7 +31,11 @@ class AllServersGetTestCase(BaseTestGenerator):
         server_details['password'] = self.server['db_password']
         server_details['save_password'] = 1
         server_details['connect_now'] = 1
-
+        server_details['connection_params'] = [
+            {'name': 'sslmode', 'value': 'prefer', 'keyword': 'sslmode'},
+            {'name': 'connect_timeout', 'value': 10,
+             'keyword': 'connect_timeout'}
+        ]
         url = "/browser/server/obj/{0}/".format(utils.SERVER_GROUP)
 
         response = self.tester.post(
@@ -64,7 +68,7 @@ class AllServersGetTestCase(BaseTestGenerator):
         if self.is_positive_test:
             if hasattr(self, 'invalid_server_group'):
                 self.url = self.url + '{0}/{1}?_={1}'.format(
-                    utils.SERVER_GROUP, random.randint(1, 9999999))
+                    utils.SERVER_GROUP, secrets.choice(range(1, 9999999)))
             elif hasattr(self, 'children'):
 
                 self.url = self.url + '{0}/{1}'.format(
@@ -83,10 +87,11 @@ class AllServersGetTestCase(BaseTestGenerator):
 
                     self.connect_to_server(url)
                 self.url = self.url + '{0}/{1}?_={2}'.format(
-                    utils.SERVER_GROUP, server_id, random.randint(1, 9999999))
+                    utils.SERVER_GROUP, server_id,
+                    secrets.choice(range(1, 9999999)))
             response = self.get_server()
-        self.assertEquals(response.status_code,
-                          self.expected_data["status_code"])
+        self.assertEqual(response.status_code,
+                         self.expected_data["status_code"])
 
     def tearDown(self):
         """This function delete the server from SQLite """

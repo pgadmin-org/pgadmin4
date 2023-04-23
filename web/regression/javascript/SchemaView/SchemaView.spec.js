@@ -2,12 +2,13 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
 
 import jasmineEnzyme from 'jasmine-enzyme';
+import _ from 'lodash';
 import React from 'react';
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
@@ -15,7 +16,8 @@ import {TestSchema, TestSchemaAllTypes} from './TestSchema.ui';
 import pgAdmin from 'sources/pgadmin';
 import {messages} from '../fake_messages';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import * as legacyConnector from 'sources/helpers/legacyConnector';
+import Notify from '../../../pgadmin/static/js/helpers/Notifier';
+import Theme from '../../../pgadmin/static/js/Theme';
 
 const initData = {
   id: 1,
@@ -58,6 +60,7 @@ describe('SchemaView', ()=>{
   /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
     mount = createMount();
+    spyOn(Notify, 'alert');
   });
 
   afterAll(() => {
@@ -81,23 +84,25 @@ describe('SchemaView', ()=>{
       getSQLValue=jasmine.createSpy('onEdit').and.returnValue(Promise.resolve('select 1;')),
       ctrlMount = (props)=>{
         ctrl?.unmount();
-        ctrl = mount(<SchemaView
-          formType='dialog'
-          schema={getSchema()}
-          viewHelperProps={{
-            mode: 'create',
-          }}
-          onSave={onSave}
-          onClose={onClose}
-          onHelp={onHelp}
-          onEdit={onEdit}
-          onDataChange={onDataChange}
-          confirmOnCloseReset={true}
-          hasSQL={true}
-          getSQLValue={getSQLValue}
-          disableSqlHelp={false}
-          {...props}
-        />);
+        ctrl = mount(<Theme>
+          <SchemaView
+            formType='dialog'
+            schema={getSchema()}
+            viewHelperProps={{
+              mode: 'create',
+            }}
+            onSave={onSave}
+            onClose={onClose}
+            onHelp={onHelp}
+            onEdit={onEdit}
+            onDataChange={onDataChange}
+            confirmOnCloseReset={true}
+            hasSQL={true}
+            getSQLValue={getSQLValue}
+            disableSqlHelp={false}
+            {...props}
+          />
+        </Theme>);
       },
       simulateValidData = ()=>{
         ctrl.find('MappedFormControl[id="field1"]').find('input').simulate('change', {target: {value: 'val1'}});
@@ -110,7 +115,9 @@ describe('SchemaView', ()=>{
         ctrl.find('MappedCellControl[id="field5"]').at(1).find('input').simulate('change', {target: {value: 'rval52'}});
       };
     beforeEach(()=>{
-      ctrlMount();
+      ctrlMount({
+        getInitData: ()=>Promise.resolve({}),
+      });
     });
 
     it('init', (done)=>{
@@ -131,80 +138,99 @@ describe('SchemaView', ()=>{
       setTimeout(()=>{
         ctrl.update();
         /* Error should come for field1 as it is empty and noEmpty true */
-        expect(ctrl.find('FormFooterMessage').prop('message')).toBe('\'Field1\' cannot be empty.');
+        expect(ctrl.find('FormFooterMessage').prop('message')).toBe(_.escape('\'Field1\' cannot be empty.'));
         expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
         done();
       }, 0);
     });
 
     it('close error on click', (done)=>{
-      ctrl.find('FormFooterMessage').find('button').simulate('click');
       setTimeout(()=>{
         ctrl.update();
-        expect(ctrl.find('FormFooterMessage').prop('message')).toBe('');
-        done();
+        ctrl.find('FormFooterMessage').find('button').simulate('click');
+        setTimeout(()=>{
+          ctrl.update();
+          expect(ctrl.find('FormFooterMessage').prop('message')).toBe('');
+          done();
+        }, 0);
       }, 0);
     });
 
     it('valid form data', (done)=>{
-      simulateValidData();
       setTimeout(()=>{
         ctrl.update();
-        expect(ctrl.find('FormFooterMessage').prop('message')).toBeFalsy();
-        done();
+        simulateValidData();
+        setTimeout(()=>{
+          ctrl.update();
+          expect(ctrl.find('FormFooterMessage').prop('message')).toBeFalsy();
+          done();
+        }, 0);
       }, 0);
     });
 
     describe('DataGridView', ()=>{
+      let ctrlUpdate = (done)=> {
+        ctrl.update();
+        expect(ctrl.find('DataGridView').find('DataTableRow').length).toBe(1);
+        done();
+      };
+
       it('add row', (done)=>{
-        ctrl.find('DataGridView').find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DataGridView').find('DataTableRow').length).toBe(1);
-          done();
+          ctrl.find('DataGridView').find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+          setTimeout(()=>{
+            ctrlUpdate(done);
+          }, 0);
         }, 0);
       });
 
       it('remove row', (done)=>{
-        simulateValidData();
-
-        /* Press OK */
-        let confirmSpy = spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn)=>{
-          yesFn();
-        });
-        ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
-        expect(confirmSpy.calls.argsFor(0)[2]).toBe('Custom delete title');
-        expect(confirmSpy.calls.argsFor(0)[3]).toBe('Custom delete message');
-
-        /* Press Cancel */
-        spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn, cancelFn)=>{
-          cancelFn();
-        });
-        ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DataGridView').find('DataTableRow').length).toBe(1);
-          done();
+          simulateValidData();
+
+          /* Press OK */
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+          confirmSpy.calls.argsFor(0)[2]();
+
+          expect(confirmSpy.calls.argsFor(0)[0]).toBe('Custom delete title');
+          expect(confirmSpy.calls.argsFor(0)[1]).toBe('Custom delete message');
+          /* Press Cancel */
+          confirmSpy.calls.reset();
+          ctrl.find('DataGridView').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+          confirmSpy.calls.argsFor(0)[3]();
+
+          setTimeout(()=>{
+            ctrlUpdate(done);
+          }, 0);
         }, 0);
       });
 
       it('expand row', (done)=>{
-        simulateValidData();
-        ctrl.find('DataGridView').find('PgIconButton[data-test="expand-row"]').at(0).find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DataGridView').find('FormView').length).toBe(1);
-          done();
+          simulateValidData();
+          ctrl.find('DataGridView').find('PgIconButton[data-test="expand-row"]').at(0).find('button').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('DataGridView').find('FormView').length).toBe(1);
+            done();
+          }, 0);
         }, 0);
       });
 
       it('unique col test', (done)=>{
-        simulateValidData();
-        ctrl.find('MappedCellControl[id="field5"]').at(1).find('input').simulate('change', {target: {value: 'rval51'}});
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('FormFooterMessage').prop('message')).toBe('Field5 in FieldColl must be unique.');
-          done();
+          simulateValidData();
+          ctrl.find('MappedCellControl[id="field5"]').at(1).find('input').simulate('change', {target: {value: 'rval51'}});
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('FormFooterMessage').prop('message')).toBe('Field5 in FieldColl must be unique.');
+            done();
+          }, 0);
         }, 0);
       });
     });
@@ -220,76 +246,94 @@ describe('SchemaView', ()=>{
       });
 
       it('data invalid', (done)=>{
-        ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
-        ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('CodeMirror').prop('value')).toBe('-- Definition incomplete.');
-          done();
+          ctrl.find('MappedFormControl[id="field2"]').find('input').simulate('change', numberChangeEvent('2'));
+          ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('CodeMirror').prop('value')).toBe('-- Definition incomplete.');
+            done();
+          }, 0);
         }, 0);
       });
 
       it('valid data', (done)=>{
-        simulateValidData();
-        ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('CodeMirror').prop('value')).toBe('select 1;');
-          done();
+          simulateValidData();
+          ctrl.find('ForwardRef(Tab)[label="SQL"]').find('button').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('CodeMirror').prop('value')).toBe('select 1;');
+            done();
+          }, 0);
         }, 0);
       });
     });
 
     it('onSave click', (done)=>{
-      simulateValidData();
-      let alertSpy = spyOn(legacyConnector.pgAlertify(), 'alert');
-      onSave.calls.reset();
-      ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
       setTimeout(()=>{
-        expect(onSave.calls.argsFor(0)[0]).toBe(true);
-        expect(onSave.calls.argsFor(0)[1]).toEqual({
-          id: undefined,
-          field1: 'val1',
-          field2: '2',
-          field5: 'val5',
-          fieldcoll: [
-            {field3: null, field4: null, field5:  'rval51'},
-            {field3: null, field4: null, field5:  'rval52'},
-          ]
-        });
-        expect(alertSpy).toHaveBeenCalledWith('Warning', 'some inform text');
-        done();
+        ctrl.update();
+        simulateValidData();
+        onSave.calls.reset();
+        ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
+        setTimeout(()=>{
+          expect(onSave.calls.argsFor(0)[0]).toBe(true);
+          expect(onSave.calls.argsFor(0)[1]).toEqual({
+            id: undefined,
+            field1: 'val1',
+            field2: '2',
+            field5: 'val5',
+            fieldcoll: [
+              {field3: null, field4: null, field5:  'rval51'},
+              {field3: null, field4: null, field5:  'rval52'},
+            ]
+          });
+          expect(Notify.alert).toHaveBeenCalledWith('Warning', 'some inform text');
+          done();
+        }, 0);
       }, 0);
     });
 
+    let onResetAction = (done, data)=> {
+      ctrl.update();
+      expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
+      expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
+      expect(onDataChange).toHaveBeenCalledWith(false, data);
+      done();
+    };
+
     describe('onReset', ()=>{
       it('with confirm check and yes click', (done)=>{
-        simulateValidData();
-        onDataChange.calls.reset();
-        let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
-        ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
-        /* Press OK */
-        confirmSpy.calls.argsFor(0)[2]();
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
-          expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-          expect(onDataChange).toHaveBeenCalledWith(false, {});
-          done();
+          simulateValidData();
+          onDataChange.calls.reset();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
+          /* Press OK */
+          confirmSpy.calls.argsFor(0)[2]();
+          setTimeout(()=>{
+            onResetAction(done, { id: undefined, field1: null, field2: null, fieldcoll: null });
+          }, 0);
         }, 0);
       });
 
       it('with confirm check and cancel click', (done)=>{
-        simulateValidData();
-        let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
-        ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
-        /* Press cancel */
-        confirmSpy.calls.argsFor(0)[3]();
         setTimeout(()=>{
           ctrl.update();
-          expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeFalse();
-          expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeFalse();
-          done();
+          simulateValidData();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
+          /* Press cancel */
+          confirmSpy.calls.argsFor(0)[3]();
+          setTimeout(()=>{
+            ctrl.update();
+            expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeFalse();
+            expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeFalse();
+            done();
+          }, 0);
         }, 0);
       });
 
@@ -298,18 +342,21 @@ describe('SchemaView', ()=>{
         ctrlMount({
           confirmOnCloseReset: false,
         });
-        ctrl.update();
-        simulateValidData();
-        onDataChange.calls.reset();
-        let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
-        ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
         setTimeout(()=>{
           ctrl.update();
-          expect(confirmSpy).not.toHaveBeenCalled();
-          expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
-          expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-          expect(onDataChange).toHaveBeenCalledWith(false, {});
-          done();
+          simulateValidData();
+          onDataChange.calls.reset();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
+          ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
+          setTimeout(()=>{
+            ctrl.update();
+            expect(confirmSpy).not.toHaveBeenCalled();
+            expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
+            expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
+            // on reset, orig data will be considered
+            expect(onDataChange).toHaveBeenCalledWith(false, { id: undefined, field1: null, field2: null, fieldcoll: null });
+            done();
+          }, 0);
         }, 0);
       });
     });
@@ -342,7 +389,9 @@ describe('SchemaView', ()=>{
         ctrl.find('MappedCellControl[id="field5"]').at(2).find('input').simulate('change', {target: {value: 'rval53'}});
 
         /* Remove the 1st row */
+        let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
         ctrl.find('DataTableRow').find('PgIconButton[data-test="delete-row"]').at(0).find('button').simulate('click');
+        confirmSpy.calls.argsFor(0)[2]();
 
         /* Edit the 2nd row which is first now*/
         ctrl.find('MappedCellControl[id="field5"]').at(0).find('input').simulate('change', {target: {value: 'rvalnew'}});
@@ -354,11 +403,6 @@ describe('SchemaView', ()=>{
           viewHelperProps: {
             mode: 'edit',
           }
-        });
-
-        /* Press OK */
-        spyOn(legacyConnector, 'confirmDeleteRow').and.callFake((yesFn)=>{
-          yesFn();
         });
       });
       it('init', (done)=>{
@@ -380,7 +424,6 @@ describe('SchemaView', ()=>{
           ctrl.update();
           simulateChanges();
 
-          let alertSpy = spyOn(legacyConnector.pgAlertify(), 'alert');
           onSave.calls.reset();
           ctrl.find('PrimaryButton[data-test="Save"]').simulate('click');
           setTimeout(()=>{
@@ -402,7 +445,7 @@ describe('SchemaView', ()=>{
                 ]
               }
             });
-            expect(alertSpy).toHaveBeenCalledWith('Warning', 'some inform text');
+            expect(Notify.alert).toHaveBeenCalledWith('Warning', 'some inform text');
             done();
           }, 0);
         }, 0);
@@ -413,16 +456,12 @@ describe('SchemaView', ()=>{
           ctrl.update();
           simulateChanges();
           onDataChange.calls.reset();
-          let confirmSpy = spyOn(legacyConnector.pgAlertify(), 'confirm').and.callThrough();
+          let confirmSpy = spyOn(Notify, 'confirm').and.callThrough();
           ctrl.find('DefaultButton[data-test="Reset"]').simulate('click');
           /* Press OK */
-          confirmSpy.calls.argsFor(0)[2]();
+          confirmSpy.calls.mostRecent().args[2]();
           setTimeout(()=>{
-            ctrl.update();
-            expect(ctrl.find('DefaultButton[data-test="Reset"]').prop('disabled')).toBeTrue();
-            expect(ctrl.find('PrimaryButton[data-test="Save"]').prop('disabled')).toBeTrue();
-            expect(onDataChange).toHaveBeenCalledWith(false, {});
-            done();
+            onResetAction(done, {});
           }, 0);
         }, 0);
       });
@@ -433,22 +472,24 @@ describe('SchemaView', ()=>{
     let ctrl;
     beforeEach(()=>{
       ctrl?.unmount();
-      ctrl = mount(<SchemaView
-        formType='dialog'
-        schema={getSchemaAllTypes()}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{}}
-        onClose={()=>{}}
-        onHelp={()=>{}}
-        onEdit={()=>{}}
-        onDataChange={()=>{}}
-        confirmOnCloseReset={false}
-        hasSQL={true}
-        getSQLValue={()=>'select 1;'}
-        disableSqlHelp={false}
-      />);
+      ctrl = mount(<Theme>
+        <SchemaView
+          formType='dialog'
+          schema={getSchemaAllTypes()}
+          viewHelperProps={{
+            mode: 'create',
+          }}
+          onSave={()=>{/*This is intentional (SonarQube)*/}}
+          onClose={()=>{/*This is intentional (SonarQube)*/}}
+          onHelp={()=>{/*This is intentional (SonarQube)*/}}
+          onEdit={()=>{/*This is intentional (SonarQube)*/}}
+          onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+          confirmOnCloseReset={false}
+          hasSQL={true}
+          getSQLValue={()=>'select 1;'}
+          disableSqlHelp={false}
+        />
+      </Theme>);
     });
 
     it('init', ()=>{
@@ -466,17 +507,19 @@ describe('SchemaView', ()=>{
       ctrl = null;
 
     beforeEach(()=>{
-      ctrl = mount(<SchemaView
-        formType='tab'
-        schema={getSchema()}
-        getInitData={getInitData}
-        viewHelperProps={{
-          mode: 'properties',
-        }}
-        onHelp={onHelp}
-        disableSqlHelp={false}
-        onEdit={onEdit}
-      />);
+      ctrl = mount(<Theme>
+        <SchemaView
+          formType='tab'
+          schema={getSchema()}
+          getInitData={getInitData}
+          viewHelperProps={{
+            mode: 'properties',
+          }}
+          onHelp={onHelp}
+          disableSqlHelp={false}
+          onEdit={onEdit}
+        />
+      </Theme>);
     });
 
     it('init', (done)=>{

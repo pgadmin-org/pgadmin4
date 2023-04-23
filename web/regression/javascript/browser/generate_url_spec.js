@@ -2,7 +2,7 @@
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
-// Copyright (C) 2013 - 2021, The pgAdmin Development Team
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ describe('generate_url', () => {
   describe('in collection', () => {
     let baseUrl, treeInfo, actionType, nodeType, pickFunction;
     beforeEach(() => {
-      baseUrl = 'http://base/and-extension/';
+      baseUrl = 'https://base/and-extension/';
       treeInfo = {
         treeNode1: {
           _id: 'an_id',
@@ -29,7 +29,7 @@ describe('generate_url', () => {
     it('returns a correctly formatted URL', () => {
       let formattedUrl = generate_url(baseUrl, treeInfo, actionType, nodeType, pickFunction);
 
-      expect(formattedUrl).toEqual('http://base/and-extension/nodeType/actionType/an_id/');
+      expect(formattedUrl).toEqual('https://base/and-extension/nodeType/actionType/an_id/');
     });
 
     describe('given there are multiple treeInfoItems', () => {
@@ -51,14 +51,14 @@ describe('generate_url', () => {
       it('chooses the correct treeInfo', () => {
         let formattedUrl = generate_url(baseUrl, treeInfo, actionType, nodeType, pickFunction);
 
-        expect(formattedUrl).toEqual('http://base/and-extension/nodeType/actionType/a_third_id/an_id/');
+        expect(formattedUrl).toEqual('https://base/and-extension/nodeType/actionType/a_third_id/an_id/');
       });
     });
   });
   describe('in node', () => {
     let baseUrl, treeInfo, actionType, nodeType, pickFunction, itemDataID;
     beforeEach(() => {
-      baseUrl = 'http://base/and-extension/';
+      baseUrl = 'https://base/and-extension/';
       treeInfo = {
         treeNode1: {
           _id: 'an_id',
@@ -75,7 +75,7 @@ describe('generate_url', () => {
     it('returns a correctly formatted URL', () => {
       let formattedUrl = generate_url(baseUrl, treeInfo, actionType, nodeType, pickFunction, itemDataID);
 
-      expect(formattedUrl).toEqual('http://base/and-extension/nodeType/actionType/an_id/item1');
+      expect(formattedUrl).toEqual('https://base/and-extension/nodeType/actionType/an_id/item1');
     });
 
     describe('given there are multiple treeInfoItems', () => {
@@ -97,7 +97,7 @@ describe('generate_url', () => {
       it('chooses the correct treeInfo', () => {
         let formattedUrl = generate_url(baseUrl, treeInfo, actionType, nodeType, pickFunction, itemDataID);
 
-        expect(formattedUrl).toEqual('http://base/and-extension/nodeType/actionType/another_id/an_id/item1');
+        expect(formattedUrl).toEqual('https://base/and-extension/nodeType/actionType/another_id/an_id/item1');
       });
     });
   });

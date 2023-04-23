@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -18,10 +18,14 @@ import signal
 import sys
 import traceback
 import json
-import random
+import secrets
 import threading
 import time
 import unittest
+import asyncio
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 if sys.version_info < (3, 4):
     raise RuntimeError('The test suite must be run under Python 3.4 or later.')
@@ -298,7 +302,7 @@ def setup_webdriver_specification(arguments):
         options.add_argument("--window-size=1790,1080")
         options.add_argument("--disable-infobars")
         # options.add_experimental_option('w3c', False)
-        driver_local = webdriver.Chrome(chrome_options=options)
+        driver_local = webdriver.Chrome(options=options)
 
     # maximize browser window
     driver_local.maximize_window()
@@ -315,22 +319,28 @@ def load_modules(arguments, exclude_pkgs):
     """
     from pgadmin.utils.route import TestsGeneratorRegistry
     # Load the test modules which are in given package(i.e. in arguments.pkg)
+    for_modules = []
+    if arguments['modules'] is not None:
+        for_modules = arguments['modules'].split(',')
+
     if arguments['pkg'] is None or arguments['pkg'] == "all":
-        TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs)
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'pgadmin', exclude_pkgs)
     elif arguments['pkg'] is not None and arguments['pkg'] == "resql":
-        for_modules = []
-        if arguments['modules'] is not None:
-            for_modules = arguments['modules'].split(',')
-
         # Load the reverse engineering sql test module
-        TestsGeneratorRegistry.load_generators('pgadmin', exclude_pkgs,
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'pgadmin', exclude_pkgs,
                                                for_modules, is_resql_only=True)
+    elif arguments['pkg'] is not None and arguments['pkg'] == "feature_tests":
+        # Load the feature test module
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'regression.%s' %
+                                               arguments['pkg'],
+                                               exclude_pkgs,
+                                               for_modules)
     else:
-        for_modules = []
-        if arguments['modules'] is not None:
-            for_modules = arguments['modules'].split(',')
-
-        TestsGeneratorRegistry.load_generators('pgadmin.%s' %
+        TestsGeneratorRegistry.load_generators(arguments['pkg'],
+                                               'pgadmin.%s' %
                                                arguments['pkg'],
                                                exclude_pkgs,
                                                for_modules)
@@ -432,7 +442,7 @@ def get_tests_result(test_suite):
         traceback.print_exc(file=sys.stderr)
 
 
-class StreamToLogger(object):
+class StreamToLogger():
     def __init__(self, logger, log_level=logging.INFO):
         self.terminal = sys.stderr
         self.logger = logger
@@ -467,6 +477,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
     :param parallel_ui_test: parallel ui tests
     :return:
     """
+    server_information = None
     try:
         print("\n=============Running the test cases for '%s' ============="
               % server_passed['name'], file=sys.stderr)
@@ -478,7 +489,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         # parallel execution on different platforms. This database will be
         # used across all feature tests.
         test_db_name = "acceptance_test_db" + \
-                       str(random.randint(10000, 65535))
+                       str(secrets.choice(range(10000, 65535)))
         connection = test_utils.get_db_connection(
             server_passed['db'],
             server_passed['username'],
@@ -489,7 +500,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         )
 
         # Add the server version in server information
-        server_information['server_version'] = connection.server_version
+        server_information['server_version'] = connection.info.server_version
         server_information['type'] = server_passed['type']
 
         # Drop the database if already exists.
@@ -525,7 +536,7 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
 
         # This is required when some tests are running parallel
         # & some sequential in case of parallel ui tests
-        if threading.current_thread().getName() == "sequential_tests":
+        if threading.current_thread().name == "sequential_tests":
             try:
                 if test_result[server_passed['name']][0] is not None:
                     ran_tests = test_result[server_passed['name']][0] + \
@@ -551,22 +562,23 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         if connection:
             test_utils.drop_database(connection, test_db_name)
             connection.close()
-        # Delete test server
-        # test_utils.delete_test_server(test_client)
-        test_utils.delete_server(test_client, server_information)
     except Exception as exc:
         traceback.print_exc(file=sys.stderr)
         print(str(exc))
         print("Exception in {0} {1}".format(
             threading.current_thread().ident,
-            threading.currentThread().getName()))
+            threading.current_thread().name))
         # Mark failure as true
-        global failure
-        failure = True
+        if 'other sessions using the database.' not in str(exc):
+            global failure
+            failure = True
     finally:
+        # Delete test server
+        if server_information:
+            test_utils.delete_server(test_client, server_information)
         # Delete web-driver instance
         thread_name = "parallel_tests" + server_passed['name']
-        if threading.currentThread().getName() == thread_name:
+        if threading.current_thread().name == thread_name:
             test_utils.quit_webdriver(driver_passed)
             time.sleep(20)
 
@@ -595,15 +607,17 @@ def run_parallel_tests(url_client, servers_details, parallel_tests_lists,
         for ser in servers_details:
             while True:
                 # If active thread count <= max_thread_count, add new thread
-                if threading.activeCount() <= max_thread_count:
+                if threading.active_count() <= max_thread_count:
                     # Get remote web-driver instance at server level
                     driver_object = \
                         test_utils.get_remote_webdriver(hub_url,
                                                         name_of_browser,
                                                         version_of_browser,
-                                                        ser['name'])
+                                                        ser['name'],
+                                                        url_client)
                     # Launch client url in browser
-                    test_utils.launch_url_in_browser(driver_object, url_client)
+                    test_utils.launch_url_in_browser(
+                        driver_object, url_client, timeout=60)
 
                     # Add name for thread
                     thread_name = "parallel_tests" + ser['name']
@@ -658,7 +672,8 @@ def run_sequential_tests(url_client, servers_details, sequential_tests_lists,
         driver_object = test_utils.get_remote_webdriver(hub_url,
                                                         name_of_browser,
                                                         version_of_browser,
-                                                        "Sequential_Tests")
+                                                        "Sequential_Tests",
+                                                        url_client)
 
         # Launch client url in browser
         test_utils.launch_url_in_browser(driver_object, url_client)
@@ -846,10 +861,14 @@ if __name__ == '__main__':
                             client_url = app_starter_local.start_app()
 
                             if config.DEBUG:
+                                pgAdmin_wait_time = \
+                                    selenoid_config['pgAdmin_max_up_time']
                                 print('pgAdmin is launched with DEBUG=True, '
-                                      'hence sleeping for 50 seconds.',
+                                      'hence sleeping for %s seconds.',
+                                      pgAdmin_wait_time,
                                       file=sys.stderr)
-                                time.sleep(50)
+
+                                time.sleep(int(pgAdmin_wait_time))
 
                             # Running Parallel tests
                             if len(parallel_tests) > 0:

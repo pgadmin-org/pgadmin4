@@ -2,7 +2,7 @@
 #
 # pgAdmin 4 - PostgreSQL Tools
 #
-# Copyright (C) 2013 - 2021, The pgAdmin Development Team
+# Copyright (C) 2013 - 2023, The pgAdmin Development Team
 # This software is released under the PostgreSQL Licence
 #
 ##########################################################################
@@ -11,9 +11,8 @@
 
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
-import six
 from flask import render_template
-from flask_babelex import gettext
+from flask_babel import gettext
 from werkzeug.exceptions import InternalServerError
 from pgadmin.utils.ajax import forbidden
 from pgadmin.utils.driver import get_driver
@@ -76,8 +75,7 @@ class ObjectRegistry(ABCMeta):
         )
 
 
-@six.add_metaclass(ObjectRegistry)
-class BaseCommand(object):
+class BaseCommand(metaclass=ObjectRegistry):
     """
     class BaseCommand
 
@@ -127,7 +125,7 @@ class BaseCommand(object):
         pass
 
 
-class SQLFilter(object):
+class SQLFilter():
     """
     class SQLFilter
 
@@ -161,9 +159,9 @@ class SQLFilter(object):
             **kwargs : N number of parameters
         """
         # Save the server id and database id, namespace id, object id
-        assert ('sid' in kwargs)
-        assert ('did' in kwargs)
-        assert ('obj_id' in kwargs)
+        assert 'sid' in kwargs
+        assert 'did' in kwargs
+        assert 'obj_id' in kwargs
 
         self.sid = kwargs['sid']
         self.did = kwargs['did']
@@ -307,7 +305,7 @@ class SQLFilter(object):
         return status, result
 
 
-class FetchedRowTracker(object):
+class FetchedRowTracker():
     """
     Keeps track of fetched row count.
     """
@@ -324,7 +322,7 @@ class FetchedRowTracker(object):
 
 class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
     """
-    class GridCommand(object)
+    class GridCommand()
 
         It is a base class for different object type used by data grid.
         A different object type must implement this to expose abstract methods.
@@ -460,7 +458,7 @@ class TableCommand(GridCommand):
         """
 
         # call base class init to fetch the table name
-        super(TableCommand, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # Set the default sorting on table data by primary key if user
         # preference value is set
@@ -705,7 +703,7 @@ class ViewCommand(GridCommand):
         """
 
         # call base class init to fetch the table name
-        super(ViewCommand, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_sql(self, default_conn=None):
         """
@@ -766,7 +764,7 @@ class ForeignTableCommand(GridCommand):
         """
 
         # call base class init to fetch the table name
-        super(ForeignTableCommand, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_sql(self, default_conn=None):
         """
@@ -817,7 +815,7 @@ class CatalogCommand(GridCommand):
         """
 
         # call base class init to fetch the table name
-        super(CatalogCommand, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_sql(self, default_conn=None):
         """
