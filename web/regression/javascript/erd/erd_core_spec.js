@@ -15,7 +15,7 @@ import { PortModelAlignment } from '@projectstorm/react-diagrams';
 describe('ERDCore', ()=>{
   let eleFactory = jasmine.createSpyObj('nodeFactories', {
     'registerFactory': null,
-    'getFactory': jasmine.createSpyObj('getFactory', ['generateModel', 'calculateRoutingMatrix']),
+    'getFactory': jasmine.createSpyObj('getFactory', ['generateModel']),
   });
   let erdEngine = jasmine.createSpyObj('engine', {
     'getNodeFactories': eleFactory,

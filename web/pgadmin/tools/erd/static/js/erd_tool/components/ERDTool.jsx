@@ -973,7 +973,7 @@ class ERDTool extends React.Component {
           <ERDCanvasSettings.Provider value={{
             cardinality_notation: this.state.cardinality_notation
           }}>
-            {!this.props.inTest && <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />}
+            {!this.props.isTest && <CanvasWidget className={this.props.classes.diagramCanvas} ref={(ele)=>{this.canvasEle = ele?.ref?.current;}} engine={this.diagram.getEngine()} />}
           </ERDCanvasSettings.Provider>
         </div>
       </Box>
@@ -1001,7 +1001,7 @@ ERDTool.propTypes = {
   pgAdmin: PropTypes.object.isRequired,
   panel: PropTypes.object,
   classes: PropTypes.object,
-  inTest: PropTypes.bool,
+  isTest: PropTypes.bool,
 };
 
 export const ERDCanvasSettings = React.createContext({});
