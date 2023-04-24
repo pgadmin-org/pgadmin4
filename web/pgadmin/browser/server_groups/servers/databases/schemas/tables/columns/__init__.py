@@ -72,9 +72,13 @@ class ColumnsModule(CollectionNodeModule):
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(sid, did, scid=scid,
+                          tid=kwargs.get('tid', None),
+                          vid=kwargs.get('vid', None),
+                          base_template_path=ColumnsView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def script_load(self):
@@ -159,6 +163,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
     node_type = blueprint.node_type
     node_label = "Column"
+    BASE_TEMPLATE_PATH = 'columns/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -207,7 +212,7 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
             self.qtTypeIdent = driver.qtTypeIdent
 
             # Set the template path for the SQL scripts
-            self.template_path = 'columns/sql/#{0}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version)
 
             # Allowed ACL for column 'Select/Update/Insert/References'

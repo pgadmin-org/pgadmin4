@@ -103,9 +103,13 @@ class IndexesModule(CollectionNodeModule):
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(sid, did, scid=scid,
+                          tid=kwargs.get('tid', None),
+                          vid=kwargs.get('vid', None),
+                          base_template_path=IndexesView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def script_load(self):
@@ -194,6 +198,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
     node_type = blueprint.node_type
     node_label = "Index"
+    BASE_TEMPLATE_PATH = 'indexes/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -252,8 +257,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
             # we will set template path for sql scripts
-            self.template_path = compile_template_path(
-                'indexes/sql/',
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version
             )
 

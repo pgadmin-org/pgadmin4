@@ -73,7 +73,10 @@ class PublicationModule(CollectionNodeModule):
             sid: Server ID
             did: Database Id
         """
-        yield self.generate_browser_collection_node(did)
+        if self.has_nodes(
+            sid, did,
+                base_template_path=PublicationView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(did)
 
     @property
     def node_inode(self):
@@ -167,6 +170,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
     _NOT_FOUND_PUB_INFORMATION = \
         gettext("Could not find the publication information.")
     node_type = blueprint.node_type
+    BASE_TEMPLATE_PATH = "publications/sql/#{0}#"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -223,7 +227,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
             self.template_path = (
-                "publications/sql/#{0}#".format(self.manager.version)
+                self.BASE_TEMPLATE_PATH.format(self.manager.version)
             )
 
             return f(*args, **kwargs)

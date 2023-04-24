@@ -151,10 +151,10 @@ export class ManageTreeNodes {
       await fill(treeData);
       if (node.children.length > 0) res(node.children);
       else {
-        res(null);
+        res([]);
         if (node.data && node.data._type == 'server' && node.data.connected) {
           Notify.info(gettext('Server children are not available.'
-          +' Please check these nodes are not hidden through the preferences setting `Browser > Nodes`.'));
+          +' Please check these nodes are not hidden through the preferences setting `Browser > Nodes`.'), null);
         }
       }
 
