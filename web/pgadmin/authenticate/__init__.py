@@ -289,6 +289,10 @@ class AuthSourceManager:
                 if msg is not None and 'username' in msg:
                     self.form._fields['email'].data = msg['username']
                 return status, msg
+            else:
+                current_app.logger.debug(
+                    "Authentication initiated via source: %s is failed." %
+                    source.get_source_name())
 
         return status, msg
 
