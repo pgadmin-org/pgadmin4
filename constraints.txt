@@ -11,6 +11,3 @@
 # markupsafe removed soft_unicode in 2.1.0 which resulted in import error
 # https://markupsafe.palletsprojects.com/en/2.1.x/changes/#version-2-1-0
 markupsafe==2.0.1
-# Speeds up pip resolver as 3.3.2 is the latest version on alpine 3.13
-# https://pkgs.alpinelinux.org/packages?name=py3-cryptography&branch=v3.13&repo=&arch=&maintainer=
-cryptography==38.0.3
