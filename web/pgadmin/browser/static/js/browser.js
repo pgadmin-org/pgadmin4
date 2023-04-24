@@ -18,6 +18,7 @@ import { Search } from './quick_search/trigger_search';
 import { send_heartbeat, stop_heartbeat } from './heartbeat';
 import getApiInstance from '../../../static/js/api_instance';
 import { copyToClipboard } from '../../../static/js/clipboard';
+import { TAB_CHANGE } from './constants';
 
 define('pgadmin.browser', [
   'sources/gettext', 'sources/url_for', 'jquery',
@@ -64,7 +65,7 @@ define('pgadmin.browser', [
       if (d && obj.Nodes[d._type].callbacks['selected'] &&
         _.isFunction(obj.Nodes[d._type].callbacks['selected'])) {
         return obj.Nodes[d._type].callbacks['selected'].apply(
-          obj.Nodes[d._type], [i, d, obj]);
+          obj.Nodes[d._type], [i, d, obj, [], '', TAB_CHANGE]);
       }
     }
   };

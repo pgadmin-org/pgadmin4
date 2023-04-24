@@ -11,6 +11,8 @@ import {getNodeView, removeNodeView} from './node_view';
 import Notify from '../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../static/js/api_instance';
+import { removePanelView } from './panel_view';
+import { TAB_CHANGE } from './constants';
 
 define('pgadmin.browser.node', [
   'sources/gettext', 'sources/pgadmin',
@@ -857,7 +859,7 @@ define('pgadmin.browser.node', [
         pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
-      selected: function(item, data, browser) {
+      selected: function(item, data, browser, _argsList, _event, actionSource) {
         // Show the information about the selected node in the below panels,
         // which are visible at this time:
         // + Properties
@@ -873,12 +875,24 @@ define('pgadmin.browser.node', [
         pgAdmin.Browser.enable_disable_menus.apply(b, [item]);
 
         if (d && b) {
+
           if ('properties' in b.panels &&
             b.panels['properties'] &&
-            b.panels['properties'].panel &&
-            b.panels['properties'].panel.isVisible()) {
-            this.showProperties(item, d, b.panels['properties'].panel);
+            b.panels['properties'].panel) {
+
+            if (actionSource != TAB_CHANGE) {
+              const propertiesPanel = b.panels['properties'].panel.$container.find('.obj_properties').first();
+              if (propertiesPanel) {
+                removePanelView(propertiesPanel[0]);
+              }
+            }
+
+            if (b.panels['properties'].panel.isVisible()) {
+              this.showProperties(item, d, b.panels['properties'].panel);
+            }
+
           }
+
         }
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
