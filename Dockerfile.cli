@@ -10,7 +10,7 @@
 # Create the /pgadmin4 directory and copy the source into it. Explicitly
 # remove the node_modules directory as we'll recreate a clean version, as well
 # as various other files we don't want
-FROM alpine:3.13
+FROM alpine:3.17
 
 COPY web /pgadmin4/web
 
