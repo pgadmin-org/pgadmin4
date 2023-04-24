@@ -129,7 +129,7 @@ class ERDTool extends React.Component {
     this.fileInputRef = React.createRef();
     this.containerRef = React.createRef();
     this.diagramContainerRef = React.createRef();
-    this.canvasEle = null;
+    this.canvasEle = props.isTest ? document.createElement('div') : null;
     this.noteRefEle = null;
     this.noteNode = null;
     this.keyboardActionObj = null;
