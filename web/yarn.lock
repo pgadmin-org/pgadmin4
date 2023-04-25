@@ -1423,21 +1423,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-io/core@npm:1.x, @date-io/core@npm:^1.3.13, @date-io/core@npm:^1.3.6":
+"@date-io/core@npm:1.x, @date-io/core@npm:^1.3.6":
   version: 1.3.13
   resolution: "@date-io/core@npm:1.3.13"
   checksum: 5a9e9d1de20f0346a3c7d2d5946190caef4bfb0b64d82ba1f4c566657a9192667c94ebe7f438d11d4286d9c190974daad4fb2159294225cd8af4d9a140239879
   languageName: node
   linkType: hard
 
-"@date-io/date-fns@npm:1.x":
-  version: 1.3.13
-  resolution: "@date-io/date-fns@npm:1.3.13"
+"@date-io/core@npm:^2.16.0":
+  version: 2.16.0
+  resolution: "@date-io/core@npm:2.16.0"
+  checksum: 336d0dd90fd0848116472cfb0e694e85860b2916952304201bb4d3a23d453d44589d346494584faba0fc05751cc38f1880889ce48cd982377aac2bfb20469b8a
+  languageName: node
+  linkType: hard
+
+"@date-io/date-fns@npm:2.x":
+  version: 2.16.0
+  resolution: "@date-io/date-fns@npm:2.16.0"
   dependencies:
-    "@date-io/core": ^1.3.13
+    "@date-io/core": ^2.16.0
   peerDependencies:
     date-fns: ^2.0.0
-  checksum: 0026c0e538ea4add57a11936ff6bdb07e99f25275f8bb28c4702bbb7e82c3a41b3e8124132aa719180d462c01a26a3b4801e41b7349cdb73813749d4bf5e8fbd
+  peerDependenciesMeta:
+    date-fns:
+      optional: true
+  checksum: aedb23c07da6f1e38a81ffe77ca1cb95167e1a175a3d65561cf244fbd1a5a0b961e84df88fe00b9cfa4bd32eda6d430e6d14567e2b040257198cd12748d5fcc5
   languageName: node
   linkType: hard
 
@@ -12377,7 +12387,7 @@ __metadata:
     "@babel/preset-react": ^7.12.13
     "@babel/preset-typescript": ^7.8.3
     "@date-io/core": ^1.3.6
-    "@date-io/date-fns": 1.x
+    "@date-io/date-fns": 2.x
     "@emotion/core": ^10.0.14
     "@emotion/memoize": ^0.7.5
     "@emotion/react": ^11.1.5
