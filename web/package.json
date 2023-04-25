@@ -79,7 +79,7 @@
     "webpack": "^5.76.3",
     "webpack-bundle-analyzer": "^4.8.0",
     "webpack-cli": "^4.5.0",
-    "yarn-audit-html": "^4.0.0"
+    "yarn-audit-html": "4.0.0"
   },
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
@@ -191,5 +191,6 @@
     "auditjs": "yarn audit --groups dependencies",
     "auditpy": "safety check --full-report -i 51668 -i 52495",
     "audit": "yarn run auditjs && yarn run auditpy"
-  }
+  },
+  "packageManager": "yarn@3.5.0"
 }
