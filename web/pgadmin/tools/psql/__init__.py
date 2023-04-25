@@ -381,7 +381,7 @@ def get_connection_str(psql_utility, db, manager):
     db = db.replace('"', '\\"')
     db = db.replace("'", "\\'")
     database = db if db != '' else 'postgres'
-    user = underscore_unescape(manager.user) if manager.user else 'postgres'
+    user = underscore_unescape(manager.user) if manager.user else None
     conn_attr = manager.create_connection_string(database, user)
 
     conn_attr_list = list()
