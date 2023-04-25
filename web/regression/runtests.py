@@ -569,7 +569,8 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
             threading.current_thread().ident,
             threading.current_thread().name))
         # Mark failure as true
-        if 'other sessions using the database.' not in str(exc):
+        if 'other session using the database.' not in str(exc) and \
+           'other sessions using the database.' not in str(exc):
             global failure
             failure = True
     finally:
