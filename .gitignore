@@ -10,7 +10,6 @@
 .idea
 .vscode
 .yarn
-.yarnrc.yml
 /*.diff
 /*.patch
 /dist
