@@ -435,7 +435,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     row['name'],
                     icon="icon-" + self.node_type,
                     funcowner=row['funcowner'],
-                    language=row['lanname']
+                    language=row['lanname'],
+                    description=row['description']
                 )
             )
 
@@ -447,7 +448,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     row['name'],
                     icon="icon-" + self.node_type,
                     funcowner=row['funcowner'],
-                    language=row['lanname']
+                    language=row['lanname'],
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -977,7 +979,8 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     obj_name,
                     icon="icon-" + self.node_type,
                     language=resp_data['lanname'],
-                    funcowner=resp_data['funcowner']
+                    funcowner=resp_data['funcowner'],
+                    description=resp_data['description']
                 )
             )
         else:

@@ -296,7 +296,8 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-fts_configuration"
+                    icon="icon-fts_configuration",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -539,12 +540,17 @@ class FtsConfigurationView(PGChildNodeView, SchemaDiffObjectCompare):
                     _("Could not find the FTS Configuration node to update.")
                 )
 
+        other_node_info = {}
+        if 'description' in data:
+            other_node_info['description'] = data['description']
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 cfgid,
                 data['schema'] if 'schema' in data else scid,
                 name,
-                icon="icon-%s" % self.node_type
+                icon="icon-%s" % self.node_type,
+                **other_node_info
             )
         )
 

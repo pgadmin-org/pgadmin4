@@ -18,6 +18,7 @@ MIMETYPE_APP_JSON = 'application/json'
 # Preference labels
 PREF_LABEL_KEYBOARD_SHORTCUTS = gettext('Keyboard shortcuts')
 PREF_LABEL_DISPLAY = gettext('Display')
+PREF_LABEL_BREADCRUMBS = gettext('Object Breadcrumbs')
 PREF_LABEL_OPTIONS = gettext('Options')
 PREF_LABEL_EXPLAIN = gettext('Explain')
 PREF_LABEL_EDITOR = gettext('Editor')

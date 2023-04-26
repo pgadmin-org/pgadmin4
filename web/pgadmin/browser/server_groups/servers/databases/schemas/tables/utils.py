@@ -1628,6 +1628,10 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             else:
                 icon = self.get_icon_css_class(res['rows'][0])
 
+            other_node_info = {}
+            if 'description' in data:
+                other_node_info['description'] = data['description']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     tid,
@@ -1638,7 +1642,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                     parent_schema_id=scid,
                     schema_id=rest['rows'][0]['scid'],
                     schema_name=rest['rows'][0]['nspname'],
-                    affected_partitions=partitions_oid
+                    affected_partitions=partitions_oid,
+                    **other_node_info
                 )
             )
         except Exception as e:

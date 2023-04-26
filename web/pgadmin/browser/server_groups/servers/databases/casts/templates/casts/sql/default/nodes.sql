@@ -1,6 +1,7 @@
     SELECT
         ca.oid,
-        pg_catalog.concat(pg_catalog.format_type(st.oid,NULL),'->',pg_catalog.format_type(tt.oid,tt.typtypmod)) as name
+        pg_catalog.concat(pg_catalog.format_type(st.oid,NULL),'->',pg_catalog.format_type(tt.oid,tt.typtypmod)) as name,
+        des.description
     FROM pg_catalog.pg_cast ca
     JOIN pg_catalog.pg_type st ON st.oid=castsource
     JOIN pg_catalog.pg_namespace ns ON ns.oid=st.typnamespace

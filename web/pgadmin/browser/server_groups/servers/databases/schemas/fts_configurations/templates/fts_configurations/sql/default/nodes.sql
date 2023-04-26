@@ -1,8 +1,10 @@
 {# FETCH FTS CONFIGURATION NAME statement #}
 SELECT
-    oid, cfgname as name
+    cfg.oid, cfgname as name, des.description
 FROM
     pg_catalog.pg_ts_config cfg
+    LEFT OUTER JOIN pg_catalog.pg_description des
+    ON (des.objoid=cfg.oid AND des.classoid='pg_ts_config'::regclass)
 WHERE
 {% if scid %}
     cfg.cfgnamespace = {{scid}}::OID

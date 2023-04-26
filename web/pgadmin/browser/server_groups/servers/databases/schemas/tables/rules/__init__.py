@@ -274,7 +274,8 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['name'],
                     icon="icon-rule-bad"
                     if 'is_enable_rule' in row and
-                       row['is_enable_rule'] == 'D' else "icon-rule"
+                       row['is_enable_rule'] == 'D' else "icon-rule",
+                    description=row['comment']
                 ))
 
         return make_json_response(
@@ -381,6 +382,11 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             status, res = self.conn.execute_scalar(SQL)
             if not status:
                 return internal_server_error(errormsg=res)
+
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     rid,
@@ -389,7 +395,8 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
                     icon="icon-%s-bad" % self.node_type
                     if 'is_enable_rule' in data and
                        data['is_enable_rule'] == 'D'
-                    else "icon-%s" % self.node_type
+                    else "icon-%s" % self.node_type,
+                    **other_node_info
                 )
             )
         except Exception as e:

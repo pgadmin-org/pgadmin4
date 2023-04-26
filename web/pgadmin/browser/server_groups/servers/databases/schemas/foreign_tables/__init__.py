@@ -447,7 +447,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-foreign_table"
+                    icon="icon-foreign_table",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -835,12 +836,17 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
             scid = res['rows'][0]['scid']
 
+            other_node_info = {}
+            if 'description' in self.request:
+                other_node_info['description'] = self.request['description']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     foid,
                     scid,
                     name,
-                    icon="icon-%s" % self.node_type
+                    icon="icon-%s" % self.node_type,
+                    **other_node_info
                 )
             )
         except Exception as e:

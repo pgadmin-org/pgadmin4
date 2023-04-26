@@ -29,6 +29,16 @@ function manageTreeEvents(event, eventName, item) {
       console.warn(e.stack || e);
       return false;
     }
+  } else if(eventName == 'hovered') {
+    /* Raise tree events for the nodes */
+    try {
+      obj.Events.trigger(
+        'pgadmin-browser:tree:' + eventName, item, d, node
+      );
+    } catch (e) {
+      console.warn(e.stack || e);
+      return false;
+    }
   } else {
     // Events for browser tree.
     if (d && obj.Nodes[d._type]) {
@@ -382,6 +392,23 @@ export class Tree {
         }
       });
     })(tree.tree.getModel().root);
+  }
+
+  getNodeDisplayPath(item, separator='/', skip_coll=false) {
+    let retStack = [];
+    let currItem = item;
+    while(currItem?.fileName) {
+      const data = currItem._metadata?.data;
+      if(data._type.startsWith('coll-') && skip_coll) {
+        /* Skip collection */
+      } else {
+        retStack.push(data._label);
+      }
+      currItem = currItem.parent;
+    }
+    retStack = retStack.reverse();
+    if(separator == false) return retStack;
+    return retStack.join(separator);
   }
 
   findNodeByDomElement(domElement) {

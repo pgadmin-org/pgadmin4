@@ -386,7 +386,8 @@ class DatabaseView(PGChildNodeView):
                     canDisconn=can_dis_conn,
                     canDrop=can_drop,
                     isTemplate=row['is_template'],
-                    inode=True if row['datallowconn'] else False
+                    inode=True if row['datallowconn'] else False,
+                    description=row['description']
                 )
             )
 

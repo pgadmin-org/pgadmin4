@@ -1384,12 +1384,8 @@ define('pgadmin.browser', [
             }
             if (this.new._id == _id) {
               // Found the current
-              _.extend(this.d, {
-                '_id': this.new._id,
-                '_label': this.new._label,
-                'label': this.new.label,
-              });
-              this.t.update(ctx.i, this.new);
+              _.extend(this.d, this.new);
+              this.t.update(ctx.i, this.d);
               this.t.setLabel(ctx.i, {label: this.new.label});
               this.t.addIcon(ctx.i, {icon: this.new.icon});
               this.t.setId(ctx.i, {id: this.new.id});
@@ -1632,11 +1628,8 @@ define('pgadmin.browser', [
       // If server icon/background changes then also we need to re-create it
       if ((
         _old._type == 'server' && _new._type == 'server' && (
-          _old._pid != _new._pid ||
-          _old._label != _new._label ||
-          _old.icon != _new.icon
-        )) || _old._pid != _new._pid || _old._label != _new._label ||
-        _old._id != _new._id
+          _old._pid != _new._pid || _old.icon != _new.icon
+        )) || _old._pid != _new._pid || _old._id != _new._id
       ) {
         ctx.op = 'RECREATE';
         traversePath();

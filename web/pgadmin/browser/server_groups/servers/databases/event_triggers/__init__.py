@@ -264,7 +264,8 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     did,
                     row['name'],
-                    self.node_icon
+                    self.node_icon,
+                    description=row['comment']
                 ))
 
         return make_json_response(
@@ -481,12 +482,17 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 )
                 status, etid = self.conn.execute_scalar(sql)
 
+                other_node_info = {}
+                if 'comment' in data:
+                    other_node_info['description'] = data['comment']
+
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
                         etid,
                         did,
                         data['name'],
-                        self.node_icon
+                        self.node_icon,
+                        **other_node_info
                     )
                 )
             else:

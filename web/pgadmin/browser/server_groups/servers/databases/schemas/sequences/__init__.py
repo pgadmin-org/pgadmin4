@@ -229,7 +229,9 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    description=row['comment']
+
                 ),
                 status=200
             )
@@ -240,7 +242,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -563,7 +566,8 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                 seid,
                 row['schema'],
                 row['name'],
-                icon=self.node_icon
+                icon=self.node_icon,
+                description=row['comment']
             )
         )
 

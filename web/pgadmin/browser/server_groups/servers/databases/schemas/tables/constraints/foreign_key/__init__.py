@@ -442,7 +442,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     tid,
                     row['name'],
                     icon=icon,
-                    valid=valid
+                    valid=valid,
+                    description=row['comment']
                 ))
         return make_json_response(
             data=res,
@@ -701,6 +702,10 @@ class ForeignKeyConstraintView(PGChildNodeView):
             else:
                 icon = "icon-foreign_key"
                 valid = True
+
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(

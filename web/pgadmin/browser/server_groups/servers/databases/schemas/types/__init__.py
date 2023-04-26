@@ -358,7 +358,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon=self.icon_str % self.node_type
+                    icon=self.icon_str % self.node_type,
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -1101,12 +1102,17 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=res)
 
+            other_node_info = {}
+            if 'description' in data:
+                other_node_info['description'] = data['description']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     tid,
                     scid,
                     name,
-                    icon=self.icon_str % self.node_type
+                    icon=self.icon_str % self.node_type,
+                    **other_node_info
                 )
             )
         except Exception as e:

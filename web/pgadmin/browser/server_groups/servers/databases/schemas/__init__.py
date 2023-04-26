@@ -540,7 +540,8 @@ class SchemaView(PGChildNodeView):
                     row['name'],
                     icon=self.node_icon,
                     can_create=row['can_create'],
-                    has_usage=row['has_usage']
+                    has_usage=row['has_usage'],
+                    description=row['description']
                 ),
                 status=200
             )
@@ -553,7 +554,8 @@ class SchemaView(PGChildNodeView):
                     row['name'],
                     icon=self.node_icon,
                     can_create=row['can_create'],
-                    has_usage=row['has_usage']
+                    has_usage=row['has_usage'],
+                    description=row['description']
                 )
             )
 
@@ -750,12 +752,17 @@ It may have been removed by another user.
             if not status:
                 return internal_server_error(errormsg=res)
 
+            other_node_info = {}
+            if 'description' in data:
+                other_node_info['description'] = data['description']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     scid,
                     did,
                     name,
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    **other_node_info
                 )
             )
         except Exception as e:

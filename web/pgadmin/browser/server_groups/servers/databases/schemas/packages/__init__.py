@@ -239,7 +239,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    description=row['description']
                 )
             )
 
@@ -249,7 +250,8 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -527,12 +529,17 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
         if not status:
             return internal_server_error(errormsg=res)
 
+        other_node_info = {}
+        if 'description' in data:
+            other_node_info['description'] = data['description']
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 pkgid,
                 scid,
                 name,
-                icon=self.node_icon
+                icon=self.node_icon,
+                **other_node_info
             )
         )
 

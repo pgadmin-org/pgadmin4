@@ -11,6 +11,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MainMenuFactory from '../../browser/static/js/MainMenuFactory';
 import AppMenuBar from '../js/AppMenuBar';
+import ObjectBreadcrumbs from '../js/components/ObjectBreadcrumbs';
 import Theme from '../js/Theme';
 
 define('app', [
@@ -52,6 +53,16 @@ define('app', [
 
   const menuContainerEle = document.querySelector('#main-menu-container');
   if(menuContainerEle) {
-    ReactDOM.render(<Theme><AppMenuBar /></Theme>, document.querySelector('#main-menu-container'));
+    ReactDOM.render(
+      <Theme>
+        <AppMenuBar />
+      </Theme>, menuContainerEle
+    );
   }
+
+  ReactDOM.render(
+    <Theme>
+      <ObjectBreadcrumbs pgAdmin={pgAdmin} />
+    </Theme>, document.querySelector('#object-breadcrumbs')
+  );
 });

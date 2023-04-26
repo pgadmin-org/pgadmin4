@@ -1,5 +1,7 @@
-SELECT cl.oid as oid, relname as name, relnamespace as schema
+SELECT cl.oid as oid, relname as name, relnamespace as schema, description as comment
 FROM pg_catalog.pg_class cl
+LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=cl.oid
+    AND des.classoid='pg_class'::regclass)
 {% if show_internal %}
 LEFT JOIN pg_catalog.pg_depend d1 ON d1.refobjid = cl.oid AND d1.deptype = 'i'
 {% endif %}

@@ -18,6 +18,9 @@ interface IItemRendererXProps {
     decorations: ClasslistComposite
     onClick: (ev: React.MouseEvent, item: FileEntry | Directory, type: ItemType) => void
     onContextMenu: (ev: React.MouseEvent, item: FileEntry | Directory) => void
+    onMouseEnter: (ev: React.MouseEvent, item: FileEntry | Directory) => void
+    onMouseLeave: (ev: React.MouseEvent, item: FileEntry | Directory) => void
+    onItemHovered: (ev: React.MouseEvent, item: FileEntry | Directory, type: ItemType) => void
     events: Notificar<FileTreeXEvent>
 }
 
@@ -81,6 +84,8 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
         onClick={this.handleClick}
         onDoubleClick={this.handleDoubleClick}
         onDragStart={this.handleDragStartItem}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
         // required for rendering context menus when opened through context menu button on keyboard
         ref={this.handleDivRef}
         draggable={true}>
@@ -163,6 +168,20 @@ export class FileTreeItem extends React.Component<IItemRendererXProps & IItemRen
     const { item, itemType, onDoubleClick } = this.props;
     if (itemType === ItemType.File || itemType === ItemType.Directory) {
       onDoubleClick(ev, item as FileEntry, itemType);
+    }
+  };
+
+  private handleMouseEnter = (ev: React.MouseEvent) => {
+    const { item, itemType, onMouseEnter } = this.props;
+    if (itemType === ItemType.File || itemType === ItemType.Directory) {
+      onMouseEnter?.(ev, item as FileEntry);
+    }
+  };
+
+  private handleMouseLeave = (ev: React.MouseEvent) => {
+    const { item, itemType, onMouseLeave } = this.props;
+    if (itemType === ItemType.File || itemType === ItemType.Directory) {
+      onMouseLeave?.(ev, item as FileEntry);
     }
   };
 

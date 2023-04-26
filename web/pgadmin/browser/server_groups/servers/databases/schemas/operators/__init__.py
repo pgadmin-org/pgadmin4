@@ -230,7 +230,8 @@ class OperatorView(PGChildNodeView):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-operator"
+                    icon="icon-operator",
+                    description=row['description']
                 ))
 
         return make_json_response(

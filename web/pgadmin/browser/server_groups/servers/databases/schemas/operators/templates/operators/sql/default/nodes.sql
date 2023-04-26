@@ -7,7 +7,7 @@ SELECT op.oid, pg_catalog.pg_get_userbyid(op.oprowner) as owner,
 	    op.oprname || ' (' || pg_catalog.format_type(lt.oid, NULL) || ')'
 	 ELSE op.oprname || '()'
 END as name,
-lt.typname as lefttype, rt.typname as righttype
+lt.typname as lefttype, rt.typname as righttype, description
 FROM pg_catalog.pg_operator op
   LEFT OUTER JOIN pg_catalog.pg_type lt ON lt.oid=op.oprleft
   LEFT OUTER JOIN pg_catalog.pg_type rt ON rt.oid=op.oprright

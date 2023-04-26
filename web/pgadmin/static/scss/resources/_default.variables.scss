@@ -305,6 +305,9 @@ $card-header-fg: $color-fg !default;
 $card-header-border-color: $border-color !default;
 $no-border-radius: 0px !important;
 
+$tooltip-color: $color-bg;
+$tooltip-bg: $color-fg;
+
 $btn-checkbox-padding: $input-btn-padding-y $input-btn-padding-x;
 
 $scrollbar-base-color: #bac1cd !default;

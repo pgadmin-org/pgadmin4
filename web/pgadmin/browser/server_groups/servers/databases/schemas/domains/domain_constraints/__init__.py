@@ -333,7 +333,8 @@ class DomainConstraintView(PGChildNodeView):
                     row['oid'],
                     doid,
                     row['name'],
-                    icon=icon
+                    icon=icon,
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -559,12 +560,17 @@ class DomainConstraintView(PGChildNodeView):
                 else:
                     icon = ''
 
+                other_node_info = {}
+                if 'description' in data:
+                    other_node_info['description'] = data['description']
+
                 return jsonify(
                     node=self.blueprint.generate_browser_node(
                         coid,
                         doid,
                         name,
-                        icon=icon
+                        icon=icon,
+                        **other_node_info
                     )
                 )
             else:

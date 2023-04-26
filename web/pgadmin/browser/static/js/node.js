@@ -833,7 +833,7 @@ define('pgadmin.browser.node', [
                 background: ${bgcolor} !important;
               }
               ${fgcolor ? `
-              .${dynamic_class} span.file-name {
+              .${dynamic_class} span.file-name, .${dynamic_class} span.file-name:hover, .${dynamic_class} span.file-name.pseudo-active {
                 color: ${fgcolor} !important;
               }
               `:''}

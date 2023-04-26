@@ -1,5 +1,5 @@
 SELECT
-    jobid, jobname, jobenabled
+    jobid, jobname, jobenabled, jobdesc
 FROM
     pgagent.pga_job
 {% if jid %}

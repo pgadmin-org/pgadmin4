@@ -306,7 +306,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 is_partitioned=row['is_partitioned'],
                 parent_schema_id=scid,
                 schema_id=row['schema_id'],
-                schema_name=row['schema_name']
+                schema_name=row['schema_name'],
+                description=row['description']
             )
 
         if ptid is not None:

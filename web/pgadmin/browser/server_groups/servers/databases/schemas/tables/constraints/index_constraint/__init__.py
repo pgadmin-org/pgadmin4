@@ -442,7 +442,8 @@ class IndexConstraintView(PGChildNodeView):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    description=row['comment']
                 )
             )
         return make_json_response(
@@ -685,6 +686,10 @@ class IndexConstraintView(PGChildNodeView):
             status, res = self.conn.execute_dict(sql)
             if not status:
                 return internal_server_error(errormsg=res)
+
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
 
             return jsonify(
                 node=self.blueprint.generate_browser_node(

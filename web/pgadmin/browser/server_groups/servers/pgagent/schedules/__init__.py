@@ -265,7 +265,8 @@ class JobScheduleView(PGChildNodeView):
                     row['jscname'],
                     icon="icon-pga_schedule" if row['jscenabled'] else
                     "icon-pga_schedule-disabled",
-                    enabled=row['jscenabled']
+                    enabled=row['jscenabled'],
+                    description=row['jscdesc']
                 )
             )
 
@@ -277,7 +278,8 @@ class JobScheduleView(PGChildNodeView):
                     row['jscname'],
                     icon="icon-pga_schedule" if row['jscenabled'] else
                     "icon-pga_schedule-disabled",
-                    enabled=row['jscenabled']
+                    enabled=row['jscenabled'],
+                    description=row['jscdesc']
                 )
             )
 
@@ -455,7 +457,8 @@ class JobScheduleView(PGChildNodeView):
                 row['jscname'],
                 icon="icon-pga_schedule" if row['jscenabled'] else
                 "icon-pga_schedule-disabled",
-                enabled=row['jscenabled']
+                enabled=row['jscenabled'],
+                description=row['jscdesc']
             )
         )
 

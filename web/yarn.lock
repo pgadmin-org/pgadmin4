@@ -8368,17 +8368,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jasmine-core@npm:3.10.1":
+"jasmine-core@npm:3.10.1, jasmine-core@npm:^3.6.0":
   version: 3.10.1
   resolution: "jasmine-core@npm:3.10.1"
   checksum: 77ee26aaf29576e982a2ebe6586218ff4d7cc4305ad18c400954bbdeb3c7987e9a4a8ac6d6548b65838852f325395fc901d69bf8c24bdccfbd67b263fbf5d4fd
-  languageName: node
-  linkType: hard
-
-"jasmine-core@npm:^3.6.0":
-  version: 3.99.1
-  resolution: "jasmine-core@npm:3.99.1"
-  checksum: 4e4a89739d99e471b86c7ccc4c5c244a77cc6d1e17b2b0d87d81266b8415697354d8873f7e764790a10661744f73a753a6e9bcd9b3e48c66a0c9b8a092b071b7
   languageName: node
   linkType: hard
 

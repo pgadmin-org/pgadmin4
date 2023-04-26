@@ -29,6 +29,8 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
   private disposables: DisposablesComposite;
   private keyboardHotkeys: KeyboardHotkeys;
   private fileTreeEvent: IFileTreeXTriggerEvents;
+  private hoverTimeoutId: React.RefObject<number|null> = React.createRef<number|null>();
+  private hoverDispatchId: React.RefObject<number|null> = React.createRef<number|null>();
   constructor(props: IFileTreeXProps) {
     super(props);
     this.events = new Notificar();
@@ -73,6 +75,8 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
               onClick={this.handleItemClicked}
               onDoubleClick={this.handleItemDoubleClicked}
               onContextMenu={this.handleItemCtxMenu}
+              onMouseEnter={this.onItemMouseEnter}
+              onMouseLeave={this.onItemMouseLeave}
               changeDirectoryCount={this.changeDirectoryCount}
               events={this.events}/>}
           </FileTree>
@@ -164,6 +168,22 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
     if (typeof onReady === 'function') {
       onReady(this.fileTreeHandle);
     }
+  };
+
+  private onItemMouseEnter = (ev: React.MouseEvent, item: FileEntry | Directory) => {
+    clearTimeout(this.hoverDispatchId.current??undefined);
+    (this.hoverDispatchId as any).current = setTimeout(()=>{
+      clearTimeout(this.hoverTimeoutId.current??undefined);
+      this.events.dispatch(FileTreeXEvent.onTreeEvents, ev, 'hovered', item);
+    }, 500);
+  };
+
+  private onItemMouseLeave = (ev: React.MouseEvent) => {
+    clearTimeout(this.hoverTimeoutId.current??undefined);
+    clearTimeout(this.hoverDispatchId.current??undefined);
+    (this.hoverTimeoutId as any).current = setTimeout(()=>{
+      this.events.dispatch(FileTreeXEvent.onTreeEvents, ev, 'hovered', null);
+    }, 100);
   };
 
   private setActiveFile = async (fileOrDirOrPath: FileOrDir | string, ensureVisible, align): Promise<void> => {

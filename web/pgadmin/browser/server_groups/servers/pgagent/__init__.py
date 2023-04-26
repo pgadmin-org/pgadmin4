@@ -209,7 +209,8 @@ SELECT EXISTS(
                     sid,
                     rset['rows'][0]['jobname'],
                     "icon-pga_job" if rset['rows'][0]['jobenabled'] else
-                    "icon-pga_job-disabled"
+                    "icon-pga_job-disabled",
+                    description=rset['rows'][0]['jobdesc']
                 ),
                 status=200
             )
@@ -222,7 +223,8 @@ SELECT EXISTS(
                     sid,
                     row['jobname'],
                     "icon-pga_job" if row['jobenabled'] else
-                    "icon-pga_job-disabled"
+                    "icon-pga_job-disabled",
+                    description=row['jobdesc']
                 )
             )
 
@@ -397,7 +399,8 @@ SELECT EXISTS(
                 sid,
                 row['jobname'],
                 icon="icon-pga_job" if row['jobenabled']
-                else "icon-pga_job-disabled"
+                else "icon-pga_job-disabled",
+                description=row['jobdesc']
             )
         )
 

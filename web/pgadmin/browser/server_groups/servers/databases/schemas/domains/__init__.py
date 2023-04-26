@@ -358,7 +358,8 @@ class DomainView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
                     row['oid'],
                     scid,
                     row['name'],
-                    icon="icon-domain"
+                    icon="icon-domain",
+                    description=row['description']
                 ))
 
         return make_json_response(
@@ -713,12 +714,17 @@ AND relkind != 'c'))"""
         if not status:
             return internal_server_error(errormsg=scid)
 
+        other_node_info = {}
+        if 'description' in self.request:
+            other_node_info['description'] = self.request['description']
+
         return jsonify(
             node=self.blueprint.generate_browser_node(
                 doid,
                 scid,
                 name,
-                icon="icon-%s" % self.node_type
+                icon="icon-%s" % self.node_type,
+                **other_node_info
             )
         )
 
