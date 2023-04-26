@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #2078 <https://github.com/pgadmin-org/pgadmin4/issues/2078>`_ -  Show object breadcrumbs path along with its comment on object hover.
   | `Issue #3275 <https://github.com/pgadmin-org/pgadmin4/issues/3275>`_ -  Allow on demand record count setting to be changed per user using preferences.
   | `Issue #3316 <https://github.com/pgadmin-org/pgadmin4/issues/3316>`_ -  Added support to show statistics for materialized views.
   | `Issue #3318 <https://github.com/pgadmin-org/pgadmin4/issues/3318>`_ -  Added support to create an unnamed index.
@@ -44,3 +45,4 @@ Bug fixes
   | `Issue #6151 <https://github.com/pgadmin-org/pgadmin4/issues/6151>`_ -  Ensure that internal users are able to login when auth sources are [ldap, internal].
   | `Issue #6158 <https://github.com/pgadmin-org/pgadmin4/issues/6158>`_ -  Fixed an issue with the properties tab not getting updated if the user updates the selected node.
   | `Issue #6159 <https://github.com/pgadmin-org/pgadmin4/issues/6159>`_ -  Ensure that the ERD tool should work with the external database after moving to psycopg3.
+  | `Issue #6180 <https://github.com/pgadmin-org/pgadmin4/issues/6180>`_ -  Fixed an issue where PSQL is not working if the PGUSER env variable is set and service file is used for server connection details.
