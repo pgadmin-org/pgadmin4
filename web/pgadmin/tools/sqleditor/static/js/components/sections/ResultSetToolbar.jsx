@@ -53,6 +53,7 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
   const [checkedMenuItems, setCheckedMenuItems] = React.useState({});
   /* Menu button refs */
   const copyMenuRef = React.useRef(null);
+  const pasetMenuRef = React.useRef(null);
 
   const queryToolPref = queryToolCtx.preferences.sqleditor;
 
@@ -72,8 +73,8 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
       field_separator: queryToolPref.results_grid_field_separator,
     });
     let copiedRows = copyUtils.getCopiedRows();
-    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, copiedRows, true);
-  }, [queryToolPref]);
+    eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_ADD_ROWS, copiedRows, true, checkedMenuItems['paste_with_serials']);
+  }, [queryToolPref, checkedMenuItems['paste_with_serials']]);
   const copyData = ()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.COPY_DATA, checkedMenuItems['copy_with_headers']);
   };
@@ -163,6 +164,8 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
             name="menu-copyheader" ref={copyMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Paste')} icon={<PasteIcon />}
             accesskey={shortcut_key(queryToolPref.btn_paste_row)} disabled={!canEdit} onClick={pasteRows} />
+          <PgIconButton title={gettext('Paste options')} icon={<KeyboardArrowDownIcon />} splitButton
+            name="menu-pasteoptions" ref={pasetMenuRef} onClick={openMenu} />
           <PgIconButton title={gettext('Delete')} icon={<DeleteRoundedIcon />}
             accesskey={shortcut_key(queryToolPref.btn_delete_row)} disabled={buttonsDisabled['delete-rows'] || !canEdit} onClick={deleteRows} />
         </PgButtonGroup>
@@ -187,6 +190,14 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
         label={gettext('Copy Options Menu')}
       >
         <PgMenuItem hasCheck value="copy_with_headers" checked={checkedMenuItems['copy_with_headers']} onClick={checkMenuClick}>{gettext('Copy with headers')}</PgMenuItem>
+      </PgMenu>
+      <PgMenu
+        anchorRef={pasetMenuRef}
+        open={menuOpenId=='menu-pasteoptions'}
+        onClose={handleMenuClose}
+        label={gettext('Paste Options Menu')}
+      >
+        <PgMenuItem hasCheck value="paste_with_serials" checked={checkedMenuItems['paste_with_serials']} onClick={checkMenuClick}>{gettext('Paste with SERIAL/IDENTITY values?')}</PgMenuItem>
       </PgMenu>
     </>
   );

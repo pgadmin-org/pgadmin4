@@ -178,7 +178,12 @@ Data Editing Options
    |                      |                                                                                                   |                |
    |                      |  *  Click *Copy with headers* to copy the highlighted content along with the header.              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
-   | *Paste*              | Click the *Paste* icon to paste a previously copied row into a new row.                           | Accesskey + P  |
+   | *Paste*              | Click the *Paste* icon to paste a previously copied row with or without serial/identity values:   | Accesskey + P  |
+   |                      |                                                                                                   |                |
+   |                      |  * Click the *Paste* icon to paste a previously copied row into a new row.                        |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Click the *Paste with SERIAL/IDENTITY values?* if you want to paste the copied column values   |                |
+   |                      |    in the serial/identity columns.                                                                |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Delete*             | Click the *Delete* icon to mark the selected rows for deletion. These marked rows get deleted     | Accesskey + D  |
    |                      | when you click the *Save Data Changes* icon.                                                      |                |

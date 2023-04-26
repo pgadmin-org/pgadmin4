@@ -530,6 +530,8 @@ export class ResultSetUtils {
       'not_null': c.not_null,
       'has_default_val': c.has_default_val,
       'is_array': arrayBracketIdx > -1 && arrayBracketIdx + 2 == columnTypeInternal.length,
+      'seqtypid': c.seqtypid,
+      'isPK': isPK
     };
   }
 
@@ -559,14 +561,19 @@ export class ResultSetUtils {
     return columns;
   }
 
-  processClipboardVal(columnVal, col, rawCopiedVal) {
-    if(columnVal === '') {
+  processClipboardVal(columnVal, col, rawCopiedVal, pasteSerials) {
+    if(columnVal === '' ) {
       if(col.has_default_val) {
+        // if column has default value
         columnVal = undefined;
       } else if(rawCopiedVal === null) {
         columnVal = null;
       }
+    } else if (col.has_default_val && col.seqtypid && !pasteSerials) {
+      // if column has default value and is serial type
+      columnVal = undefined;
     }
+
     if(col.cell === 'boolean') {
       if(columnVal == 'true') {
         columnVal = true;
@@ -581,7 +588,7 @@ export class ResultSetUtils {
     return columnVal;
   }
 
-  processRows(result, columns, fromClipboard=false) {
+  processRows(result, columns, fromClipboard=false, pasteSerials=false) {
     let retVal = [];
     if(!_.isArray(result) || !_.size(result)) {
       return retVal;
@@ -598,7 +605,7 @@ export class ResultSetUtils {
         let columnVal = rec[col.pos];
         /* If the source is clipboard, then it needs some extra handling */
         if(fromClipboard) {
-          columnVal = this.processClipboardVal(columnVal, col, copiedRowsObjects[recIdx]?.[col.key]);
+          columnVal = this.processClipboardVal(columnVal, col, copiedRowsObjects[recIdx]?.[col.key], pasteSerials);
         }
         rowObj[col.key] = columnVal;
       }
@@ -1207,14 +1214,14 @@ export function ResultSet() {
   }, [selectedRows, queryData, dataChangeStore, rows]);
 
   useEffect(()=>{
-    const triggerAddRows = (_rows, fromClipboard)=>{
+    const triggerAddRows = (_rows, fromClipboard, pasteSerials)=>{
       let insPosn = 0;
       if(selectedRows.size > 0) {
         let selectedRowsSorted = Array.from(selectedRows);
         selectedRowsSorted.sort();
         insPosn = _.findIndex(rows, (r)=>rowKeyGetter(r)==selectedRowsSorted[selectedRowsSorted.length-1])+1;
       }
-      let newRows = rsu.current.processRows(_rows, columns, fromClipboard);
+      let newRows = rsu.current.processRows(_rows, columns, fromClipboard, pasteSerials);
       setRows((prev)=>[
         ...prev.slice(0, insPosn),
         ...newRows,
