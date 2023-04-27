@@ -4,6 +4,7 @@
     background-color: $color-bg !important;
     display: inline-block;
     color: $tree-text-fg !important;
+    position: relative;
 
     &,
     & * {

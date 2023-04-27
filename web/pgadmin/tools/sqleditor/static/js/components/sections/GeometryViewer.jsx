@@ -208,10 +208,10 @@ function PopupTable({data}) {
 }
 
 PopupTable.propTypes = {
-  data: PropTypes.arrayOf({
+  data: PropTypes.arrayOf(PropTypes.shape({
     column: PropTypes.string,
-    value: PropTypes.string,
-  }),
+    value: PropTypes.any,
+  })),
 };
 
 function GeoJsonLayer({data}) {
@@ -250,13 +250,14 @@ function GeoJsonLayer({data}) {
       style={{weight: 2}}
       onEachFeature={(feature, layer)=>{
         if(_.isFunction(data.getPopupContent)) {
-          const popupContentNode = (
-            <Theme>
-              <PopupTable data={data.getPopupContent(layer.feature.geometry)}/>
-            </Theme>
-          );
-          const popupContentHtml = ReactDOMServer.renderToString(popupContentNode);
-          layer.bindPopup(popupContentHtml, {
+          layer.bindPopup((l)=>{
+            const popupContentNode = (
+              <Theme>
+                <PopupTable data={data.getPopupContent(l.feature.geometry)}/>
+              </Theme>
+            );
+            return ReactDOMServer.renderToString(popupContentNode);
+          }, {
             closeButton: false,
             minWidth: 260,
             maxWidth: 300,
