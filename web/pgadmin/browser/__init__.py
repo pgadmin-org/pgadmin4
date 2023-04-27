@@ -1080,7 +1080,8 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
         if invalid or expired:
             return redirect(url_for('browser.forgot_password'))
         has_error = False
-        form = _security.reset_password_form()
+        form_class = _security.forms.get('reset_password_form').cls
+        form = form_class(request.form) if request.form else form_class()
 
         if form.validate_on_submit():
             try:
