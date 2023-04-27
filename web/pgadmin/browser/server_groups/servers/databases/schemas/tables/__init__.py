@@ -984,6 +984,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
             sql = render_template(
                 "/".join([self.table_template_path, self._GET_SCHEMA_OID_SQL]),
                 tname=data['name'],
+                sname=data['schema'],
                 conn=self.conn
             )
 
