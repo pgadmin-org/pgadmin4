@@ -43,6 +43,11 @@ if (fs.existsSync('dev_config.json')) {
 // This functions is used to start the pgAdmin4 server by spawning a
 // separate process.
 function startDesktopMode() {
+  // Disable dev tools shortcut
+  if (platform() == 'darwin') {
+    nw.App.registerGlobalHotKey(new nw.Shortcut({key: 'Command+Shift+C'}), ()=>{});
+  }
+
   // Return if pgAdmin server process is already spawned
   // Added check for debugging purpose.
   if (pgadminServerProcess != null)
