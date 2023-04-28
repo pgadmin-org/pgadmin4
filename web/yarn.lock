@@ -1467,6 +1467,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/babel-plugin@npm:^11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/babel-plugin@npm:11.10.8"
+  dependencies:
+    "@babel/helper-module-imports": ^7.16.7
+    "@babel/runtime": ^7.18.3
+    "@emotion/hash": ^0.9.0
+    "@emotion/memoize": ^0.8.0
+    "@emotion/serialize": ^1.1.1
+    babel-plugin-macros: ^3.1.0
+    convert-source-map: ^1.5.0
+    escape-string-regexp: ^4.0.0
+    find-root: ^1.1.0
+    source-map: ^0.5.7
+    stylis: 4.1.4
+  checksum: b8e2ed0c68a2ea423c5c2efdcf37e0b482dcb74caba042d2987a058f151819f0574fb2298fba4f76fa23265e1975dcf337f1f59ad6f35a33db2f9bf1afe03ee0
+  languageName: node
+  linkType: hard
+
 "@emotion/cache@npm:^10.0.27":
   version: 10.0.29
   resolution: "@emotion/cache@npm:10.0.29"
@@ -1533,16 +1552,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/is-prop-valid@npm:0.8.8":
-  version: 0.8.8
-  resolution: "@emotion/is-prop-valid@npm:0.8.8"
-  dependencies:
-    "@emotion/memoize": 0.7.4
-  checksum: bb7ec6d48c572c540e24e47cc94fc2f8dec2d6a342ae97bc9c8b6388d9b8d283862672172a1bb62d335c02662afe6291e10c71e9b8642664a8b43416cdceffac
-  languageName: node
-  linkType: hard
-
-"@emotion/is-prop-valid@npm:^1.1.0":
+"@emotion/is-prop-valid@npm:^1.1.0, @emotion/is-prop-valid@npm:^1.2.0":
   version: 1.2.0
   resolution: "@emotion/is-prop-valid@npm:1.2.0"
   dependencies:
@@ -1633,31 +1643,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/styled-base@npm:^10.3.0":
-  version: 10.3.0
-  resolution: "@emotion/styled-base@npm:10.3.0"
+"@emotion/styled@npm:^11.10.8":
+  version: 11.10.8
+  resolution: "@emotion/styled@npm:11.10.8"
   dependencies:
-    "@babel/runtime": ^7.5.5
-    "@emotion/is-prop-valid": 0.8.8
-    "@emotion/serialize": ^0.11.15
-    "@emotion/utils": 0.11.3
+    "@babel/runtime": ^7.18.3
+    "@emotion/babel-plugin": ^11.10.8
+    "@emotion/is-prop-valid": ^1.2.0
+    "@emotion/serialize": ^1.1.1
+    "@emotion/use-insertion-effect-with-fallbacks": ^1.0.0
+    "@emotion/utils": ^1.2.0
   peerDependencies:
-    "@emotion/core": ^10.0.28
-    react: ">=16.3.0"
-  checksum: ac0bb8f39e92fda12686afe5d398f7215cc7276d66195d5937f58ee7dae516e58017594cc74deed72859043623db824fdaf8213d29276316749ebff2ef7a5e4d
-  languageName: node
-  linkType: hard
-
-"@emotion/styled@npm:^10.0.14":
-  version: 10.3.0
-  resolution: "@emotion/styled@npm:10.3.0"
-  dependencies:
-    "@emotion/styled-base": ^10.3.0
-    babel-plugin-emotion: ^10.0.27
-  peerDependencies:
-    "@emotion/core": ^10.0.27
-    react: ">=16.3.0"
-  checksum: 9d9609c008c009d8b9249fdbb2017a404b1fc6c9118c84ec9a916e86670d4c61f03fee24297ad10b460dab628ff8260066338617ee99ede3ae7969ce5995e9bc
+    "@emotion/react": ^11.0.0-rc.0
+    react: ">=16.8.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: ceff0ac12f92289ea8febb1c3b4b70c1f3e110354452b9f6ee6461a7c01a24a0e2f071eb4303a7a289aad5cc8b62096561a150b0b6ed096bb1fd3e8503633226
   languageName: node
   linkType: hard
 
@@ -12399,7 +12401,7 @@ __metadata:
     "@emotion/memoize": ^0.7.5
     "@emotion/react": ^11.1.5
     "@emotion/sheet": ^1.0.1
-    "@emotion/styled": ^10.0.14
+    "@emotion/styled": ^11.10.8
     "@emotion/utils": ^1.0.0
     "@material-ui/core": 4.11.0
     "@material-ui/icons": ^4.11.2
@@ -13475,6 +13477,13 @@ __metadata:
   version: 4.1.3
   resolution: "stylis@npm:4.1.3"
   checksum: d04dbffcb9bf2c5ca8d8dc09534203c75df3bf711d33973ea22038a99cc475412a350b661ebd99cbc01daa50d7eedcf0d130d121800eb7318759a197023442a6
+  languageName: node
+  linkType: hard
+
+"stylis@npm:4.1.4":
+  version: 4.1.4
+  resolution: "stylis@npm:4.1.4"
+  checksum: cd929bd89709def13b47e6c16b11317bf996a09b4e987fc45a235549c3adf49d41531e017d7df511daa095bc9468c923ae9094a934fe9c62440b7351874dafb7
   languageName: node
   linkType: hard
 
