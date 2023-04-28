@@ -66,7 +66,7 @@ class CloudProcessDesc(IProcessDesc):
         self.instance_name = _instance_name
         self.provider = 'Amazon RDS'
 
-        if _provider == 'rds':
+        if _provider == 'aws':
             self.provider = 'Amazon RDS'
         elif _provider == 'azure':
             self.provider = 'Azure Database'

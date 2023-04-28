@@ -133,7 +133,7 @@ def deploy_on_cloud():
     """Deploy on Cloud."""
 
     data = json.loads(request.data)
-    if data['cloud'] == 'rds':
+    if data['cloud'] == 'aws':
         status, p, resp = deploy_on_rds(data)
     elif data['cloud'] == 'biganimal':
         status, p, resp = deploy_on_biganimal(data)
