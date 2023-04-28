@@ -99,7 +99,13 @@ class IEMessage(IProcessDesc):
 
         if s is None:
             return _("Not available")
-        return "{0} ({1}:{2})".format(s.name, s.host, s.port)
+        server_str = '{0}'.format(s.name)
+        host_port_str = ''
+        if s.host:
+            host_port_str = '({0}:{1})'.format(
+                            s.host, s.port)if s.port else '{0}'.format(s.host)
+
+        return "{0} {1}".format(s.name, host_port_str)
 
     @property
     def message(self):
@@ -328,6 +334,9 @@ def create_import_export_job(sid):
 
         env = dict()
 
+        if manager.service:
+            env['PGSERVICE'] = manager.service
+
         env['PGHOST'] = \
             manager.local_bind_host if manager.use_ssh_tunnel else server.host
         env['PGPORT'] = \
@@ -335,6 +344,12 @@ def create_import_export_job(sid):
                 server.port)
         env['PGUSER'] = server.username
         env['PGDATABASE'] = data['database']
+
+        # Delete the empty keys
+        for key, value in dict(env).items():
+            if value is None:
+                del env[key]
+
         p.set_env_variables(server, env=env)
         p.start()
         jid = p.id
