@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-04-27 21:31+0530\n"
+"POT-Creation-Date: 2023-05-01 11:53+0530\n"
 "PO-Revision-Date: 2018-07-12 01:04+0900\n"
 "Last-Translator: Ioseph Kim <ioseph@uri.sarang.net>\n"
 "Language: ko\n"
@@ -6047,7 +6047,7 @@ msgid ""
 msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2201
-#: pgadmin/tools/import_export/__init__.py:245
+#: pgadmin/tools/import_export/__init__.py:251
 #: pgadmin/tools/maintenance/__init__.py:206
 msgid "Could not find the given server"
 msgstr "지정한 서버를 찾을 수 없음"
@@ -6065,7 +6065,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2328
 #: pgadmin/tools/backup/__init__.py:348 pgadmin/tools/backup/__init__.py:451
-#: pgadmin/tools/import_export/__init__.py:382
+#: pgadmin/tools/import_export/__init__.py:397
 #: pgadmin/tools/maintenance/__init__.py:298
 #: pgadmin/tools/restore/__init__.py:170 pgadmin/tools/restore/__init__.py:427
 msgid "Could not find the specified server."
@@ -9950,7 +9950,7 @@ msgstr ""
 #: pgadmin/misc/file_manager/__init__.py:190 pgadmin/settings/__init__.py:85
 #: pgadmin/tools/backup/__init__.py:177 pgadmin/tools/debugger/__init__.py:243
 #: pgadmin/tools/grant_wizard/__init__.py:129
-#: pgadmin/tools/import_export/__init__.py:135
+#: pgadmin/tools/import_export/__init__.py:141
 #: pgadmin/tools/import_export_servers/__init__.py:59
 #: pgadmin/tools/maintenance/__init__.py:145
 #: pgadmin/tools/restore/__init__.py:118
@@ -12699,36 +12699,36 @@ msgstr ""
 msgid "Import/Export"
 msgstr "가져오기/내보내기"
 
-#: pgadmin/tools/import_export/__init__.py:107
+#: pgadmin/tools/import_export/__init__.py:113
 msgid "Copying table data '{0}.{1}' on database '{2}' and server '{3}'"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:117
+#: pgadmin/tools/import_export/__init__.py:123
 msgid "Import - "
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:117
+#: pgadmin/tools/import_export/__init__.py:123
 msgid "Export - "
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:118
+#: pgadmin/tools/import_export/__init__.py:124
 msgid "Copying table data"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:128
+#: pgadmin/tools/import_export/__init__.py:134
 msgid "Import Data"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:128
+#: pgadmin/tools/import_export/__init__.py:134
 msgid "Export Data"
 msgstr ""
 
-#: pgadmin/tools/import_export/__init__.py:255
+#: pgadmin/tools/import_export/__init__.py:261
 msgid "Please connect to the server first..."
 msgstr "먼저 해당 서버로 접속하세요..."
 
-#: pgadmin/tools/import_export/__init__.py:281
 #: pgadmin/tools/import_export/__init__.py:287
+#: pgadmin/tools/import_export/__init__.py:293
 msgid "Please specify a valid file"
 msgstr "바른 파일을 지정하세요"
 

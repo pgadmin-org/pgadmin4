@@ -5,19 +5,18 @@
 # oon arfiandwi <oon@oo.or.id>, 2023.
 msgid ""
 msgstr ""
-"Project-Id-Version: pgAdmin4\n"
+"Project-Id-Version:  pgAdmin4\n"
 "Report-Msgid-Bugs-To: oon@oo.or.id\n"
-"POT-Creation-Date: 2023-04-27 21:31+0530\n"
+"POT-Creation-Date: 2023-05-01 11:53+0530\n"
 "PO-Revision-Date: 2023-04-30 23:29+0700\n"
 "Last-Translator: oon arfiandwi <oon@oo.or.id>\n"
-"Language-Team: Indonesian <pgadmin-hackers@postgresql.org>\n"
 "Language: id\n"
+"Language-Team: Indonesian <pgadmin-hackers@postgresql.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 21.12.3\n"
 
 #: pgadmin/__init__.py:351 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -25,8 +24,7 @@ msgstr "Nama pengguna atau sandi salah."
 
 #: pgadmin/__init__.py:660 pgadmin/__init__.py:710
 msgid "Auto-detected {0} installation with the data directory at {1}"
-msgstr ""
-"Instalasi {0} yang terdeteksi secara otomatis dengan direktori data di {1}"
+msgstr "Instalasi {0} yang terdeteksi secara otomatis dengan direktori data di {1}"
 
 #: pgadmin/__init__.py:794
 msgid "403 FORBIDDEN"
@@ -150,11 +148,10 @@ msgid "kerberos"
 msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:171
-msgid ""
-"Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
+msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
 msgstr ""
-"Otentikasi Kerberos tidak dapat digunakan karena modul GSSAPI tidak dapat "
-"dimuat."
+"Otentikasi Kerberos tidak dapat digunakan karena modul GSSAPI tidak dapat"
+" dimuat."
 
 #: pgadmin/authenticate/kerberos.py:212
 msgid "Kerberos authentication failed. Couldn't find kerberos ticket."
@@ -256,8 +253,8 @@ msgstr "Pengguna tidak memiliki HASH yang valid untuk menghasilkan OTP."
 
 #: pgadmin/authenticate/mfa/authenticator.py:130
 msgid ""
-"Enter the code shown in your authenticator application for TOTP (Time-based "
-"One-Time Password)"
+"Enter the code shown in your authenticator application for TOTP (Time-"
+"based One-Time Password)"
 msgstr ""
 "Masukkan kode yang ditampilkan di aplikasi Authenticator Anda untuk TOTP "
 "(sandi satu kali berbasis waktu)"
@@ -303,8 +300,7 @@ msgid "Failed to send the code to email."
 msgstr "Gagal mengirim kode ke email."
 
 #: pgadmin/authenticate/mfa/email.py:93
-msgid ""
-"A verification code was sent to {}. Check your email and enter the code."
+msgid "A verification code was sent to {}. Check your email and enter the code."
 msgstr "Kode verifikasi dikirim ke {}. Periksa email Anda dan masukkan kode."
 
 #: pgadmin/authenticate/mfa/email.py:148
@@ -333,11 +329,11 @@ msgstr "Catatan"
 
 #: pgadmin/authenticate/mfa/email.py:235
 msgid ""
-"This email address will only be used for two factor authentication purposes."
-" The email address for the user account will not be changed."
+"This email address will only be used for two factor authentication "
+"purposes. The email address for the user account will not be changed."
 msgstr ""
-"Alamat email ini hanya akan digunakan untuk tujuan otentikasi dua faktor. "
-"Alamat email untuk akun pengguna tidak akan diubah."
+"Alamat email ini hanya akan digunakan untuk tujuan otentikasi dua faktor."
+" Alamat email untuk akun pengguna tidak akan diubah."
 
 #: pgadmin/authenticate/mfa/email.py:267
 msgid "Enter code here"
@@ -526,8 +522,8 @@ msgstr "Sandi utama tidak boleh kosong"
 
 #: pgadmin/browser/__init__.py:1012
 msgid ""
-"Your account is authenticated using an external {} source. Please contact "
-"the administrators of this service if you need to reset your password."
+"Your account is authenticated using an external {} source. Please contact"
+" the administrators of this service if you need to reset your password."
 msgstr ""
 "Akun Anda diotentikasi menggunakan sumber {} eksternal. Silakan hubungi "
 "administrator layanan ini jika Anda perlu mengatur ulang sandi Anda."
@@ -537,8 +533,8 @@ msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
 msgstr ""
-"Anda berhasil mengatur ulang sandi Anda tetapi akun Anda terkunci. Silakan "
-"hubungi Administrator."
+"Anda berhasil mengatur ulang sandi Anda tetapi akun Anda terkunci. "
+"Silakan hubungi Administrator."
 
 #: pgadmin/browser/register_browser_preferences.py:28
 msgid "Show system objects?"
@@ -558,11 +554,10 @@ msgid "Display"
 msgstr "Tampilkan"
 
 #: pgadmin/browser/register_browser_preferences.py:43
-msgid ""
-"If set to True, then all shared servers will be hidden from browser tree"
+msgid "If set to True, then all shared servers will be hidden from browser tree"
 msgstr ""
-"Jika diatur ke True, maka semua server bersama akan disembunyikan dari pohon"
-" browser"
+"Jika diatur ke True, maka semua server bersama akan disembunyikan dari "
+"pohon browser"
 
 #: pgadmin/browser/register_browser_preferences.py:51
 msgid "Object explorer tree state saving interval"
@@ -570,11 +565,11 @@ msgstr "Interval penyimpanan pohon status penjelajah objek"
 
 #: pgadmin/browser/register_browser_preferences.py:53
 msgid ""
-"Object explorer state saving interval in seconds. Use -1 to disable the tree"
-" saving mechanism."
+"Object explorer state saving interval in seconds. Use -1 to disable the "
+"tree saving mechanism."
 msgstr ""
-"Interval penyimpanan status penjelajah objek dalam hitungan detik. Gunakan "
-"-1 untuk menonaktifkan mekanisme pohon penyimpanan."
+"Interval penyimpanan status penjelajah objek dalam hitungan detik. "
+"Gunakan -1 untuk menonaktifkan mekanisme pohon penyimpanan."
 
 #: pgadmin/browser/register_browser_preferences.py:61
 msgid "Confirm on close or refresh?"
@@ -582,11 +577,11 @@ msgstr "Konfirmasi pada penutupan atau penyegaran?"
 
 #: pgadmin/browser/register_browser_preferences.py:63
 msgid ""
-"Confirm closure or refresh of the browser or browser tab is intended before "
-"proceeding."
+"Confirm closure or refresh of the browser or browser tab is intended "
+"before proceeding."
 msgstr ""
-"Konfirmasi penutupan atau penyegaran tab browser atau browser dimaksudkan "
-"sebelum melanjutkan."
+"Konfirmasi penutupan atau penyegaran tab browser atau browser dimaksudkan"
+" sebelum melanjutkan."
 
 #: pgadmin/browser/register_browser_preferences.py:71
 msgid "Confirm before Close/Reset in object properties dialog?"
@@ -594,8 +589,8 @@ msgstr "Konfirmasi sebelum ditutup/diatur ulang dalam dialog properti objek?"
 
 #: pgadmin/browser/register_browser_preferences.py:74
 msgid ""
-"Confirm before closing or resetting the changes in the properties dialog for"
-" an object if the changes are not saved."
+"Confirm before closing or resetting the changes in the properties dialog "
+"for an object if the changes are not saved."
 msgstr ""
 "Konfirmasikan sebelum menutup atau mengatur ulang perubahan dalam dialog "
 "properti untuk suatu objek jika perubahan tidak disimpan."
@@ -606,11 +601,11 @@ msgstr "Perluasan-otomatis anak satu-satunya"
 
 #: pgadmin/browser/register_browser_preferences.py:84
 msgid ""
-"If a treeview node is expanded and has only a single child, automatically "
-"expand the child node as well."
+"If a treeview node is expanded and has only a single child, automatically"
+" expand the child node as well."
 msgstr ""
-"Jika node treeview diperluas dan hanya memiliki satu anak, secara otomatis "
-"memperluas node anak juga."
+"Jika node treeview diperluas dan hanya memiliki satu anak, secara "
+"otomatis memperluas node anak juga."
 
 #: pgadmin/browser/register_browser_preferences.py:100
 msgid "Lock the UI layout at different levels"
@@ -632,8 +627,8 @@ msgstr "Baris riwayat pekerjaan maksimum"
 
 #: pgadmin/browser/register_browser_preferences.py:116
 msgid ""
-"The maximum number of history rows to show on the Statistics tab for pgAgent"
-" jobs"
+"The maximum number of history rows to show on the Statistics tab for "
+"pgAgent jobs"
 msgstr ""
 "Jumlah maksimum baris riwayat untuk ditampilkan pada tab Statistik untuk "
 "pekerjaan pgAgent"
@@ -652,7 +647,8 @@ msgid ""
 "After this many days, the process info and logs will be automatically "
 "cleared."
 msgstr ""
-"Setelah beberapa hari ini, info proses dan log akan secara otomatis dihapus."
+"Setelah beberapa hari ini, info proses dan log akan secara otomatis "
+"dihapus."
 
 #: pgadmin/browser/register_browser_preferences.py:134
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:41
@@ -781,11 +777,11 @@ msgstr "Ukuran tab dinamis"
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid ""
-"If set to True, the tabs will take full size as per the title, it will also "
-"applicable for already opened tabs"
+"If set to True, the tabs will take full size as per the title, it will "
+"also applicable for already opened tabs"
 msgstr ""
-"Jika diatur ke True, tab akan mengambil ukuran penuh sesuai judul, itu juga "
-"akan berlaku untuk tab yang sudah dibuka"
+"Jika diatur ke True, tab akan mengambil ukuran penuh sesuai judul, itu "
+"juga akan berlaku untuk tab yang sudah dibuka"
 
 #: pgadmin/browser/register_browser_preferences.py:480
 msgid "Query tool tab title"
@@ -794,9 +790,9 @@ msgstr "Judul tab alat kueri"
 #: pgadmin/browser/register_browser_preferences.py:483
 #: pgadmin/browser/register_browser_preferences.py:554
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users can "
-"provide any string with or without placeholders of their choice. The blank "
-"title will be revert back to the default title with placeholders."
+"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
+"can provide any string with or without placeholders of their choice. The "
+"blank title will be revert back to the default title with placeholders."
 msgstr ""
 "Placeholder yang didukung adalah %DATABASE%, %USERNAME%, dan %SERVER%. "
 "Pengguna dapat memberikan string apa pun dengan atau tanpa placeholder "
@@ -809,15 +805,15 @@ msgstr "Lihat/Edit judul tab data"
 
 #: pgadmin/browser/register_browser_preferences.py:496
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and "
-"%SERVER%. Users can provide any string with or without placeholders of their"
-" choice. The blank title will be revert back to the default title with "
-"placeholders."
+"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
+" %SERVER%. Users can provide any string with or without placeholders of "
+"their choice. The blank title will be revert back to the default title "
+"with placeholders."
 msgstr ""
-"Placeholder yang didukung adalah %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, "
-"dan %SERVER%. Pengguna dapat memberikan string apa pun dengan atau tanpa "
-"placeholder pilihan mereka. Judul kosong akan dikembalikan ke judul bawaan "
-"dengan placeholder."
+"Placeholder yang didukung adalah %SCHEMA%, %TABLE%, %DATABASE%, "
+"%USERNAME%, dan %SERVER%. Pengguna dapat memberikan string apa pun dengan"
+" atau tanpa placeholder pilihan mereka. Judul kosong akan dikembalikan ke"
+" judul bawaan dengan placeholder."
 
 #: pgadmin/browser/register_browser_preferences.py:506
 msgid "Debugger tab title"
@@ -827,13 +823,14 @@ msgstr "Judul tab debugger"
 #, python-format
 msgid ""
 "Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
-"Users can provide any string with or without placeholders of their choice. "
-"The blank title will be revert back to the default title with placeholders."
+"Users can provide any string with or without placeholders of their "
+"choice. The blank title will be revert back to the default title with "
+"placeholders."
 msgstr ""
-"Placeholder yang didukung adalah %FUNCTION%, %ARGS%, %SCHEMA% dan "
+"Placeholder yang didukung adalah %FUNCTION%, %ARGS%, %SCHEMA%, dan "
 "%DATABASE%. Pengguna dapat memberikan string apa pun dengan atau tanpa "
-"placeholder pilihan mereka. Judul kosong akan dikembalikan ke judul default "
-"dengan placeholder."
+"placeholder pilihan mereka. Judul kosong akan dikembalikan ke judul "
+"default dengan placeholder."
 
 #: pgadmin/browser/register_browser_preferences.py:518
 #: pgadmin/browser/static/js/collection.js:76
@@ -893,8 +890,8 @@ msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
 msgstr ""
-"Pilih Alat Kueri, Debugger, Schema Diff, Alat ERD atau alat PSQL dari drop-"
-"down untuk disetel di tab browser baru untuk modul tertentu."
+"Pilih Alat Kueri, Debugger, Schema Diff, Alat ERD atau alat PSQL dari "
+"drop-down untuk disetel di tab browser baru untuk modul tertentu."
 
 #: pgadmin/browser/register_browser_preferences.py:543
 msgid "Select open new tab..."
@@ -1195,8 +1192,8 @@ msgstr "Path Biner EDB Advanced Server"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:16
 msgid ""
-"Path to the directory containing the EDB Advanced Server utility programs "
-"(pg_dump, pg_restore etc)."
+"Path to the directory containing the EDB Advanced Server utility programs"
+" (pg_dump, pg_restore etc)."
 msgstr ""
 "Path ke direktori yang berisi program utilitas EDB Advanced Server "
 "(pg_dump, pg_restore dll)."
@@ -1212,8 +1209,8 @@ msgstr "Path Biner PostgreSQL"
 
 #: pgadmin/browser/server_groups/servers/types.py:34
 msgid ""
-"Path to the directory containing the PostgreSQL utility programs (pg_dump, "
-"pg_restore etc)."
+"Path to the directory containing the PostgreSQL utility programs "
+"(pg_dump, pg_restore etc)."
 msgstr ""
 "Path ke direktori yang berisi program utilitas PostgreSQL (pg_dump, "
 "pg_restore dll)."
@@ -2507,13 +2504,13 @@ msgstr "Only tabel?"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:141
 msgid ""
-"If ONLY is specified before the table name, only that table is added to the "
-"publication. If ONLY is not specified, the table and all its descendant "
-"tables (if any) are added."
+"If ONLY is specified before the table name, only that table is added to "
+"the publication. If ONLY is not specified, the table and all its "
+"descendant tables (if any) are added."
 msgstr ""
 "Jika ONLY ditentukan sebelum nama tabel, hanya tabel yang ditambahkan ke "
-"publikasi. Jika ONLY tidak ditentukan, tabel dan semua tabel keturunannya "
-"(jika ada) ditambahkan."
+"publikasi. Jika ONLY tidak ditentukan, tabel dan semua tabel keturunannya"
+" (jika ada) ditambahkan."
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:143
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:57
@@ -3053,10 +3050,10 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:948
-msgid ""
-"Could not generate reversed engineered query for FTS Configuration node."
+msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk node konfigurasi FTS."
+"Tidak dapat menghasilkan kueri rekayasa terbalik untuk node konfigurasi "
+"FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:51
 msgid "FTS Configuration"
@@ -3179,8 +3176,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:889
 msgid "Could not generate reversed engineered query for FTS Parser node."
-msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk node Parser FTS."
+msgstr "Tidak dapat menghasilkan kueri rekayasa terbalik untuk node Parser FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:49
 msgid "FTS Parser"
@@ -3235,8 +3231,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:760
 msgid "Could not generate reversed engineered query for FTS Template node."
-msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk node templat FTS."
+msgstr "Tidak dapat menghasilkan kueri rekayasa terbalik untuk node templat FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:49
 msgid "FTS Template"
@@ -3800,14 +3795,14 @@ msgstr "Owned By"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:173
 msgid ""
 "The OWNED BY option causes the sequence to be associated with a specific "
-"table column, such that if that column (or its whole table) is dropped, the "
-"sequence will be automatically dropped as well. The specified table must "
-"have the same owner and be in the same schema as the sequence."
+"table column, such that if that column (or its whole table) is dropped, "
+"the sequence will be automatically dropped as well. The specified table "
+"must have the same owner and be in the same schema as the sequence."
 msgstr ""
 "Opsi OWNED BY menyebabkan urutan dikaitkan dengan kolom tabel tertentu, "
-"sehingga jika kolom itu (atau seluruh tabelnya) dihapus, sequence-nya akan "
-"secara otomatis dihapus juga. Tabel yang ditentukan harus memiliki pemilik "
-"yang sama dan berada dalam skema yang sama dengan sequence-nya."
+"sehingga jika kolom itu (atau seluruh tabelnya) dihapus, sequence-nya "
+"akan secara otomatis dihapus juga. Tabel yang ditentukan harus memiliki "
+"pemilik yang sama dan berada dalam skema yang sama dengan sequence-nya."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:261
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:651
@@ -3962,12 +3957,12 @@ msgstr "Tabel dikosongkan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2057
 msgid ""
-"The table is currently locked and the operation cannot be completed. Please"
-" try again later. \r\n"
+"The table is currently locked and the operation cannot be completed. "
+"Please try again later. \r\n"
 "Blocking Process ID : {0} Application Name : {1}"
 msgstr ""
-"Tabel saat ini terkunci dan operasi tidak dapat diselesaikan. Silakan coba"
-" lagi nanti.\r\n"
+"Tabel saat ini terkunci dan operasi tidak dapat diselesaikan. Silakan "
+"coba lagi nanti.\r\n"
 "ID Proses Pemblokir : {0} Nama Aplikasi : {1}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:496
@@ -5052,13 +5047,14 @@ msgstr "Contoh:"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:365
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:904
 msgid ""
-"Let's say, we want to create a partition table based per year for the column"
-" 'saledate', having datatype 'date/timestamp', then we need to specify the "
-"expression as 'extract(YEAR from saledate)' as partition key."
+"Let's say, we want to create a partition table based per year for the "
+"column 'saledate', having datatype 'date/timestamp', then we need to "
+"specify the expression as 'extract(YEAR from saledate)' as partition key."
 msgstr ""
-"Katakanlah, kita ingin membuat tabel partisi berbasis per tahun untuk kolom "
-"'saledate', memiliki tipe data 'date/timestamp', maka kita perlu menentukan "
-"ekspresi sebagai 'extract(YEAR dari saledate)' sebagai kunci partisi."
+"Katakanlah, kita ingin membuat tabel partisi berbasis per tahun untuk "
+"kolom 'saledate', memiliki tipe data 'date/timestamp', maka kita perlu "
+"menentukan ekspresi sebagai 'extract(YEAR dari saledate)' sebagai kunci "
+"partisi."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:383
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:922
@@ -5073,11 +5069,11 @@ msgstr "Buat tabel:"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:396
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:935
 msgid ""
-"User can create multiple partitions while creating new partitioned table. "
-"Operation switch is disabled in this scenario."
+"User can create multiple partitions while creating new partitioned table."
+" Operation switch is disabled in this scenario."
 msgstr ""
-"Pengguna dapat membuat beberapa partisi saat membuat tabel partisi "
-"baru. Operasi switch dinonaktifkan dalam skenario ini."
+"Pengguna dapat membuat beberapa partisi saat membuat tabel partisi baru. "
+"Operasi switch dinonaktifkan dalam skenario ini."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:398
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:937
@@ -5087,12 +5083,12 @@ msgstr "Edit tabel yang ada:"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:399
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:938
 msgid ""
-"User can create/attach/detach multiple partitions. In attach operation user "
-"can select table from the list of suitable tables to be attached."
+"User can create/attach/detach multiple partitions. In attach operation "
+"user can select table from the list of suitable tables to be attached."
 msgstr ""
-"Pengguna dapat membuat/melampirkan/melepaskan beberapa partisi. Di Lampirkan "
-"operasi pengguna dapat memilih tabel dari daftar tabel yang sesuai untuk "
-"dilampirkan."
+"Pengguna dapat membuat/melampirkan/melepaskan beberapa partisi. Di "
+"Lampirkan operasi pengguna dapat memilih tabel dari daftar tabel yang "
+"sesuai untuk dilampirkan."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:401
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:940
@@ -5105,8 +5101,8 @@ msgid ""
 "The default partition can store rows that do not fall into any existing "
 "partition’s range or list."
 msgstr ""
-"Partisi default dapat menyimpan baris yang tidak termasuk dalam jangkauan "
-"atau daftar partisi yang ada."
+"Partisi default dapat menyimpan baris yang tidak termasuk dalam jangkauan"
+" atau daftar partisi yang ada."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:404
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:943
@@ -5116,11 +5112,12 @@ msgstr "Input From/To/In:"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:405
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:944
 msgid ""
-"From/To/In input: Values for these fields must be quoted with single quote. "
-"For more than one partition key values must be comma(,) separated."
+"From/To/In input: Values for these fields must be quoted with single "
+"quote. For more than one partition key values must be comma(,) separated."
 msgstr ""
 "Input From/To/In: Nilai untuk bidang ini harus dikutip dengan kutip "
-"tunggal. Untuk lebih dari satu nilai kunci partisi harus dipisahkan koma (,)."
+"tunggal. Untuk lebih dari satu nilai kunci partisi harus dipisahkan koma "
+"(,)."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:407
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:946
@@ -5130,11 +5127,12 @@ msgstr "Contoh: From/To:"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:408
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:947
 msgid ""
-"Enabled for range partition. Consider partitioned table with multiple keys "
-"of type Integer, then values should be specified like '100','200'."
+"Enabled for range partition. Consider partitioned table with multiple "
+"keys of type Integer, then values should be specified like '100','200'."
 msgstr ""
-"Diaktifkan untuk partisi jangkauan. Pertimbangkan tabel yang dipartisi dengan "
-"beberapa tombol tipe integer, maka nilai harus ditentukan seperti '100','200'."
+"Diaktifkan untuk partisi jangkauan. Pertimbangkan tabel yang dipartisi "
+"dengan beberapa tombol tipe integer, maka nilai harus ditentukan seperti "
+"'100','200'."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:410
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:949
@@ -5147,8 +5145,8 @@ msgid ""
 "Enabled for list partition. Values must be comma(,) separated and quoted "
 "with single quote."
 msgstr ""
-"Diaktifkan untuk daftar partisi. Nilai harus dipisahkan koma (,) dan dikutip "
-"dengan kutip tunggal."
+"Diaktifkan untuk daftar partisi. Nilai harus dipisahkan koma (,) dan "
+"dikutip dengan kutip tunggal."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:413
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:952
@@ -5224,18 +5222,18 @@ msgstr "Menggunakan:"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:106
 msgid ""
 "This expression will be added to queries that refer to the table if row "
-"level security is enabled. Rows for which the expression returns true will "
-"be visible. Any rows for which the expression returns false or null will not"
-" be visible to the user (in a SELECT), and will not be available for "
-"modification (in an UPDATE or DELETE). Such rows are silently suppressed; no"
-" error is reported."
+"level security is enabled. Rows for which the expression returns true "
+"will be visible. Any rows for which the expression returns false or null "
+"will not be visible to the user (in a SELECT), and will not be available "
+"for modification (in an UPDATE or DELETE). Such rows are silently "
+"suppressed; no error is reported."
 msgstr ""
-"Ekspresi ini akan ditambahkan ke kueri yang merujuk pada tabel jika keamanan "
-"tingkat baris diaktifkan. Baris yang ekspresi kembali benar akan "
-"terlihat. Setiap baris yang ekspresi mengembalikan False atau Null tidak akan "
-"terlihat oleh pengguna (dalam SELECT), dan tidak akan tersedia untuk "
-"modifikasi (dalam UPDATE atau DELETE). Baris-baris seperti itu secara "
-"diam-diam dipaksakan; Tidak ada kesalahan yang dilaporkan."
+"Ekspresi ini akan ditambahkan ke kueri yang merujuk pada tabel jika "
+"keamanan tingkat baris diaktifkan. Baris yang ekspresi kembali benar akan"
+" terlihat. Setiap baris yang ekspresi mengembalikan False atau Null tidak"
+" akan terlihat oleh pengguna (dalam SELECT), dan tidak akan tersedia "
+"untuk modifikasi (dalam UPDATE atau DELETE). Baris-baris seperti itu "
+"secara diam-diam dipaksakan; Tidak ada kesalahan yang dilaporkan."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:108
 msgid "With check: "
@@ -5243,14 +5241,14 @@ msgstr "With check:"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:109
 msgid ""
-"This expression will be used in INSERT and UPDATE queries against the table "
-"if row level security is enabled. Only rows for which the expression "
-"evaluates to true will be allowed. An error will be thrown if the expression"
-" evaluates to false or null for any of the records inserted or any of the "
-"records that result from the update."
+"This expression will be used in INSERT and UPDATE queries against the "
+"table if row level security is enabled. Only rows for which the "
+"expression evaluates to true will be allowed. An error will be thrown if "
+"the expression evaluates to false or null for any of the records inserted"
+" or any of the records that result from the update."
 msgstr ""
-"Ekspresi ini akan digunakan dalam kueri INSERT dan UPDATE terhadap "
-"tabel jika keamanan tingkat baris diaktifkan. Hanya baris yang dievaluasi "
+"Ekspresi ini akan digunakan dalam kueri INSERT dan UPDATE terhadap tabel "
+"jika keamanan tingkat baris diaktifkan. Hanya baris yang dievaluasi "
 "ekspresi ke true akan diizinkan. Kesalahan akan dihasilkan jika ekspresi "
 "mengevaluasi ke false atau null untuk salah satu catatan yang dimasukkan "
 "atau salah satu catatan yang dihasilkan dari pembaruan."
@@ -5425,9 +5423,9 @@ msgid ""
 "default-deny policy is used, meaning that no rows are visible or can be "
 "modified by other users"
 msgstr ""
-"Silakan periksa apakah ada kebijakan. Jika tidak ada kebijakan untuk tabel, "
-"kebijakan bawaan-ditolak digunakan, artinya tidak ada baris yang dapat "
-"dilihat atau dapat dimodifikasi oleh pengguna lain"
+"Silakan periksa apakah ada kebijakan. Jika tidak ada kebijakan untuk "
+"tabel, kebijakan bawaan-ditolak digunakan, artinya tidak ada baris yang "
+"dapat dilihat atau dapat dimodifikasi oleh pengguna lain"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:612
 msgid "Force RLS Policy?"
@@ -6182,21 +6180,22 @@ msgstr "View dihapus"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1729
 msgid ""
 "\n"
-"-- Changing the columns in a view requires dropping and re-creating the"
-" view.\n"
+"-- Changing the columns in a view requires dropping and re-creating the "
+"view.\n"
 "-- This may fail if other objects are dependent upon this view,\n"
 "-- or may cause procedural functions to fail if they are not modified to\n"
 "-- take account of the changes.\n"
 msgstr ""
 "\n"
-"-- Mengubah kolom dalam tampilan membutuhkan penurunan dan membuat ulang"
-" view.\n"
+"-- Mengubah kolom dalam tampilan membutuhkan penurunan dan membuat ulang "
+"view.\n"
 "-- Ini mungkin gagal jika objek lain bergantung pada view ini,\n"
-"-- atau dapat menyebabkan fungsi prosedural gagal jika tidak dimodifikasi\n"
+"-- atau dapat menyebabkan fungsi prosedural gagal jika tidak dimodifikasi"
+"\n"
 "-- memperhitungkan perubahan.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2201
-#: pgadmin/tools/import_export/__init__.py:245
+#: pgadmin/tools/import_export/__init__.py:251
 #: pgadmin/tools/maintenance/__init__.py:206
 msgid "Could not find the given server"
 msgstr "Tidak dapat menemukan server yang diberikan"
@@ -6214,7 +6213,7 @@ msgstr "Pekerjaan penyegaran Materialized View berhasil dibuat."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2328
 #: pgadmin/tools/backup/__init__.py:348 pgadmin/tools/backup/__init__.py:451
-#: pgadmin/tools/import_export/__init__.py:382
+#: pgadmin/tools/import_export/__init__.py:397
 #: pgadmin/tools/maintenance/__init__.py:298
 #: pgadmin/tools/restore/__init__.py:170 pgadmin/tools/restore/__init__.py:427
 msgid "Could not find the specified server."
@@ -6298,11 +6297,12 @@ msgstr "Harap masukkan definisi view."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:150
 msgid ""
-"Updating the definition will drop and re-create the materialized view. It "
-"may result in loss of information about its dependent objects."
+"Updating the definition will drop and re-create the materialized view. It"
+" may result in loss of information about its dependent objects."
 msgstr ""
-"Memperbarui definisi akan menghapus dan membuat kembali materialized view. "
-"Ini dapat mengakibatkan hilangnya informasi tentang objek dependennya."
+"Memperbarui definisi akan menghapus dan membuat kembali materialized "
+"view. Ini dapat mengakibatkan hilangnya informasi tentang objek "
+"dependennya."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:87
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:93
@@ -6341,15 +6341,15 @@ msgstr "Harap masukkan kode view."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:172
 msgid ""
-"Changing the columns in a view requires dropping and re-creating the view. "
-"This may fail if other objects are dependent upon this view, or may cause "
-"procedural functions to fail if they are not modified to take account of the"
-" changes."
+"Changing the columns in a view requires dropping and re-creating the "
+"view. This may fail if other objects are dependent upon this view, or may"
+" cause procedural functions to fail if they are not modified to take "
+"account of the changes."
 msgstr ""
 "Mengubah kolom dalam view membutuhkan penghapusan dan penciptaan kembali "
-"view. Ini mungkin gagal jika objek lain bergantung pada view ini, "
-"atau dapat menyebabkan fungsi prosedural gagal jika mereka tidak "
-"dimodifikasi untuk memperhitungkan perubahan."
+"view. Ini mungkin gagal jika objek lain bergantung pada view ini, atau "
+"dapat menyebabkan fungsi prosedural gagal jika mereka tidak dimodifikasi "
+"untuk memperhitungkan perubahan."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:174
 msgid "Do you wish to continue?"
@@ -6464,8 +6464,8 @@ msgid ""
 "Note: When the preferences setting 'show template databases' is set to "
 "false, then template databases won't be displayed in the object explorer."
 msgstr ""
-"CATATAN: Ketika pengaturan preferensi 'show template databases' diatur ke "
-"false, maka templat database tidak akan ditampilkan di pejelajah objek."
+"CATATAN: Ketika pengaturan preferensi 'show template databases' diatur ke"
+" false, maka templat database tidak akan ditampilkan di pejelajah objek."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:157
 msgid "Allow connections?"
@@ -6481,16 +6481,16 @@ msgstr "Pembatasan Skema"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:208
 msgid ""
-"Note: Changes to the schema restriction will require the Schemas node in the"
-" browser to be refreshed before they will be shown."
+"Note: Changes to the schema restriction will require the Schemas node in "
+"the browser to be refreshed before they will be shown."
 msgstr ""
 "Catatan: Perubahan pada pembatasan skema akan membutuhkan node Skema di "
 "browser untuk disegarkan sebelum akan ditampilkan."
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:218
 msgid ""
-"Please refresh the Schemas node to make changes to the schema restriction "
-"take effect."
+"Please refresh the Schemas node to make changes to the schema restriction"
+" take effect."
 msgstr ""
 "Harap segarkan node Skema untuk membuat perubahan pada pembatasan skema "
 "berlaku."
@@ -6568,11 +6568,11 @@ msgstr "Koneksi"
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:165
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:181
 msgid ""
-"To apply changes to the connection configuration, please disconnect from the"
-" server and then reconnect."
+"To apply changes to the connection configuration, please disconnect from "
+"the server and then reconnect."
 msgstr ""
-"Untuk menerapkan perubahan pada konfigurasi koneksi, silakan putuskan dari "
-"server dan kemudian sambungkan kembali."
+"Untuk menerapkan perubahan pada konfigurasi koneksi, silakan putuskan "
+"dari server dan kemudian sambungkan kembali."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:159
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:92
@@ -6693,12 +6693,13 @@ msgstr "Buat slot?"
 msgid ""
 "Specifies whether the command should create the replication slot on the "
 "publisher.This field will be disabled and set to false if subscription "
-"connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang."
+"connects to same database.Otherwise, the CREATE SUBSCRIPTION call will "
+"hang."
 msgstr ""
 "Menentukan apakah perintah harus membuat slot replikasi pada penerbit. "
 "Bidang ini akan dinonaktifkan dan disetel ke false jika subscription "
-"terhubung ke database yang sama. Jika tidak, pemanggilan "
-"CREATE SUBSCRIPTION akan menggantung."
+"terhubung ke database yang sama. Jika tidak, pemanggilan CREATE "
+"SUBSCRIPTION akan menggantung."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:317
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:297
@@ -6712,8 +6713,8 @@ msgid ""
 "Specifies whether the subscription should be actively replicating, or "
 "whether it should be just setup but not started yet."
 msgstr ""
-"Menentukan apakah langganan harus direplikasi secara aktif, atau "
-"apakah itu harus hanya pengaturan tetapi belum dimulai."
+"Menentukan apakah langganan harus direplikasi secara aktif, atau apakah "
+"itu harus hanya pengaturan tetapi belum dimulai."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:325
 msgid "Refresh publication?"
@@ -6729,8 +6730,8 @@ msgstr "Hubungkan?"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:341
 msgid ""
-"Specifies whether the CREATE SUBSCRIPTION should connect to the publisher at"
-" all. Setting this to false will change default values of enabled, "
+"Specifies whether the CREATE SUBSCRIPTION should connect to the publisher"
+" at all. Setting this to false will change default values of enabled, "
 "create_slot and copy_data to false."
 msgstr ""
 "Menentukan apakah CREATE SUBSCRIPTION harus terhubung ke penerbit sama "
@@ -6743,11 +6744,11 @@ msgstr "Nama slot"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:348
 msgid ""
-"Name of the replication slot to use. The default behavior is to use the name"
-" of the subscription for the slot name."
+"Name of the replication slot to use. The default behavior is to use the "
+"name of the subscription for the slot name."
 msgstr ""
-"Nama slot replikasi untuk digunakan. Perilaku bawaan adalah menggunakan nama"
-" subscription untuk nama slot."
+"Nama slot replikasi untuk digunakan. Perilaku bawaan adalah menggunakan "
+"nama subscription untuk nama slot."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:352
 msgid "Synchronous commit"
@@ -6755,8 +6756,8 @@ msgstr "Commit sinkron"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:354
 msgid ""
-"The value of this parameter overrides the synchronous_commit setting. The "
-"default value is off."
+"The value of this parameter overrides the synchronous_commit setting. The"
+" default value is off."
 msgstr ""
 "Nilai parameter ini menimpa pengaturan synchronous_commit. Nilai "
 "bawaannya adalah nonaktif."
@@ -7463,42 +7464,43 @@ msgstr "gaya cron"
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:318
 msgid "For each selected time or date element, the schedule will execute."
 msgstr ""
-"Untuk setiap elemen waktu atau tanggal yang dipilih, jadwal akan dijalankan."
+"Untuk setiap elemen waktu atau tanggal yang dipilih, jadwal akan "
+"dijalankan."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:320
 msgid ""
 "e.g. To execute at 5 minutes past every hour, simply select ‘05’ in the "
 "Minutes list box."
 msgstr ""
-"misalnya, Untuk mengeksekusi pada setiap jam lewat 5 menit, cukup pilih ‘05’ "
-"di kotak daftar menit."
+"misalnya, Untuk mengeksekusi pada setiap jam lewat 5 menit, cukup pilih "
+"‘05’ di kotak daftar menit."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:322
 msgid ""
-"Values from more than one field may be specified in order to further control"
-" the schedule."
+"Values from more than one field may be specified in order to further "
+"control the schedule."
 msgstr ""
-"Nilai dari lebih dari satu bidang dapat ditentukan untuk mengontrol jadwal "
-"lebih lanjut."
+"Nilai dari lebih dari satu bidang dapat ditentukan untuk mengontrol "
+"jadwal lebih lanjut."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:324
 msgid ""
 "e.g. To execute at 12:05 and 14:05 every Monday and Thursday, you would "
 "click minute 05, hours 12 and 14, and weekdays Monday and Thursday."
 msgstr ""
-"misalnya, Untuk mengeksekusi pada pukul 12:05 dan 14:05 setiap hari Senin dan "
-"Kamis, Anda akan mengklik menit 05, jam 12 dan 14, dan hari kerja Senin dan "
-"Kamis."
+"misalnya, Untuk mengeksekusi pada pukul 12:05 dan 14:05 setiap hari Senin"
+" dan Kamis, Anda akan mengklik menit 05, jam 12 dan 14, dan hari kerja "
+"Senin dan Kamis."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:326
 msgid ""
-"For additional flexibility, the Month Days check list includes an extra Last"
-" Day option. This matches the last day of the month, whether it happens to "
-"be the 28th, 29th, 30th or 31st."
+"For additional flexibility, the Month Days check list includes an extra "
+"Last Day option. This matches the last day of the month, whether it "
+"happens to be the 28th, 29th, 30th or 31st."
 msgstr ""
-"Untuk fleksibilitas tambahan, daftar periksa hari bulan termasuk opsi hari "
-"terakhir tambahan. Ini cocok dengan hari terakhir bulan itu, apakah itu yang "
-"terjadi pada tanggal 28, 29, 30 atau 31."
+"Untuk fleksibilitas tambahan, daftar periksa hari bulan termasuk opsi "
+"hari terakhir tambahan. Ini cocok dengan hari terakhir bulan itu, apakah "
+"itu yang terjadi pada tanggal 28, 29, 30 atau 31."
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:330
 msgid "Week days"
@@ -7545,11 +7547,11 @@ msgstr "Kelas pekerjaan"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:72
 msgid ""
-"Please select a class to categorize the job. This option will not affect the"
-" way the job runs."
+"Please select a class to categorize the job. This option will not affect "
+"the way the job runs."
 msgstr ""
-"Pilih kelas untuk mengkategorikan pekerjaan. Opsi ini tidak akan mempengaruhi"
-" cara kerja."
+"Pilih kelas untuk mengkategorikan pekerjaan. Opsi ini tidak akan "
+"mempengaruhi cara kerja."
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:75
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:78
@@ -7558,12 +7560,13 @@ msgstr "Agen Host"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:80
 msgid ""
-"Enter the hostname of a machine running pgAgent if you wish to ensure only "
-"that machine will run this job. Leave blank if any host may run the job."
+"Enter the hostname of a machine running pgAgent if you wish to ensure "
+"only that machine will run this job. Leave blank if any host may run the "
+"job."
 msgstr ""
-"Masukkan nama host mesin yang menjalankan pgAgent jika Anda ingin memastikan "
-"hanya mesin itu yang akan menjalankan pekerjaan ini. Biarkan kosong jika "
-"host manapun yang dapat menjalankan pekerjaan."
+"Masukkan nama host mesin yang menjalankan pgAgent jika Anda ingin "
+"memastikan hanya mesin itu yang akan menjalankan pekerjaan ini. Biarkan "
+"kosong jika host manapun yang dapat menjalankan pekerjaan."
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:84
 msgid "Created"
@@ -7665,26 +7668,25 @@ msgstr "String koneksi"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:144
 msgid ""
-"Please specify the connection string for the remote database server. Each "
-"parameter setting is in the form keyword = value. Spaces around the equal "
-"sign are optional. To write an empty value, or a value containing spaces, "
-"surround it with single quotes, e.g., keyword = 'a value'. Single quotes and"
-" backslashes within the value must be escaped with a backslash, i.e., ' and "
-"\\.<br>For more information, please see the documentation on <a "
-"href=\"https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-"
-"CONNSTRING\" target=\"_blank\">libpq connection strings</a>."
+"Please specify the connection string for the remote database server. Each"
+" parameter setting is in the form keyword = value. Spaces around the "
+"equal sign are optional. To write an empty value, or a value containing "
+"spaces, surround it with single quotes, e.g., keyword = 'a value'. Single"
+" quotes and backslashes within the value must be escaped with a "
+"backslash, i.e., ' and \\.<br>For more information, please see the "
+"documentation on <a href=\"https://www.postgresql.org/docs/current/libpq-"
+"connect.html#LIBPQ-CONNSTRING\" target=\"_blank\">libpq connection "
+"strings</a>."
 msgstr ""
 "Harap tentukan string koneksi untuk server database jarak jauh. Setiap "
-"pengaturan parameter ada dalam bentuk kata kunci = nilai. Spasi di sekitar "
-"tanda sama dengan adalah opsional. Untuk menulis nilai kosong, atau nilai"
-" yang "
-"berisi spasi, awali dan akhiri dengan kutipan tunggal, mis., Kata kunci = "
-"'suatu nilai'. Kutipan tunggal dan backslash dalam nilai harus diloloskan"
-" dengan "
-"backslash, mis., ' dan \\. <br>Untuk informasi lebih lanjut, silakan lihat "
-"dokumentasi di <a href = \"https://www.postgresql.org/docs/current/libpq-"
-"connect.html#libpq-connstring \"target =\" _ blank \">string koneksi libpq</a"
-">."
+"pengaturan parameter ada dalam bentuk kata kunci = nilai. Spasi di "
+"sekitar tanda sama dengan adalah opsional. Untuk menulis nilai kosong, "
+"atau nilai yang berisi spasi, awali dan akhiri dengan kutipan tunggal, "
+"mis., Kata kunci = 'suatu nilai'. Kutipan tunggal dan backslash dalam "
+"nilai harus diloloskan dengan backslash, mis., ' dan \\. <br>Untuk "
+"informasi lebih lanjut, silakan lihat dokumentasi di <a href = "
+"\"https://www.postgresql.org/docs/current/libpq-connect.html#libpq-"
+"connstring \"target =\" _ blank \">string koneksi libpq</a>."
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:147
 msgid "On error"
@@ -7830,7 +7832,8 @@ msgstr "Batas koneksi harus merupakan nilai integer atau sama dengan -1."
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:295
 msgid ""
 "\n"
-"Role members information must be passed as an array of JSON objects in the\n"
+"Role members information must be passed as an array of JSON objects in "
+"the\n"
 "following format:\n"
 "\n"
 "rolmembers:[{\n"
@@ -7854,8 +7857,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:313
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an array"
-" of\n"
+"Role membership information must be passed as a string representing an "
+"array of\n"
 "JSON objects in the following format:\n"
 "rolmembers:{\n"
 "    'added': [{\n"
@@ -7878,8 +7881,8 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"Informasi aturan keanggotaan harus disahkan sebagai string yang mewakili"
-" array\n"
+"Informasi aturan keanggotaan harus disahkan sebagai string yang mewakili "
+"array\n"
 "objek JSON dalam format berikut:\n"
 "rolmembers: {\n"
 "    'added': [{\n"
@@ -7929,8 +7932,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:372
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an array"
-" of\n"
+"Role membership information must be passed as a string representing an "
+"array of\n"
 "JSON objects in the following format:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -7953,8 +7956,8 @@ msgid ""
 "        ]\n"
 msgstr ""
 "\n"
-"Informasi aturan keanggotaan harus disahkan sebagai string yang mewakili"
-" array\n"
+"Informasi aturan keanggotaan harus disahkan sebagai string yang mewakili "
+"array\n"
 "objek JSON dalam format berikut:\n"
 "rolmembership: {\n"
 "    'added': [{\n"
@@ -7979,7 +7982,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:412
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the following\n"
+"Security Label must be passed as an array of JSON objects in the "
+"following\n"
 "format:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -8001,7 +8005,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:427
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the following\n"
+"Security Label must be passed as an array of JSON objects in the "
+"following\n"
 "format:\n"
 "seclabels:{\n"
 "    'added': [{\n"
@@ -8049,8 +8054,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:466
 msgid ""
 "\n"
-"Configuration parameters/variables must be passed as an array of JSON"
-" objects\n"
+"Configuration parameters/variables must be passed as an array of JSON "
+"objects\n"
 "in the following format in create mode:\n"
 "variables:[{\n"
 "database: <database> or null,\n"
@@ -8074,8 +8079,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:482
 msgid ""
 "\n"
-"Configuration parameters/variables must be passed as an array of JSON"
-" objects\n"
+"Configuration parameters/variables must be passed as an array of JSON "
+"objects\n"
 "in the following format in update mode:\n"
 "rolmembership:{\n"
 "'added': [{\n"
@@ -8188,8 +8193,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:915
 msgid "Could not generate reversed engineered query for the role."
-msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk aturan tersebut."
+msgstr "Tidak dapat menghasilkan kueri rekayasa terbalik untuk aturan tersebut."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:935
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:989
@@ -8259,8 +8263,8 @@ msgid ""
 "Please note that if you leave this field blank, then password will never "
 "expire."
 msgstr ""
-"Harap dicatat bahwa jika Anda membiarkan bagian ini kosong, maka sandi tidak"
-" akan pernah kedaluwarsa."
+"Harap dicatat bahwa jika Anda membiarkan bagian ini kosong, maka sandi "
+"tidak akan pernah kedaluwarsa."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:106
 msgid "No Expiry"
@@ -8315,7 +8319,8 @@ msgstr "Pilih kotak centang untuk aturan disertakan WITH ADMIN OPTION."
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:201
 msgid "Roles shown with a check mark have the WITH ADMIN OPTION set."
 msgstr ""
-"Aturan yang ditunjukkan dengan tanda centang memiliki set WITH ADMIN OPTION."
+"Aturan yang ditunjukkan dengan tanda centang memiliki set WITH ADMIN "
+"OPTION."
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:61
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:72
@@ -8359,12 +8364,12 @@ msgstr "Kaskade?"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:142
 msgid ""
-"Note: CASCADE will automatically drop objects that depend on the affected "
-"objects, and in turn all objects that depend on those objects"
+"Note: CASCADE will automatically drop objects that depend on the affected"
+" objects, and in turn all objects that depend on those objects"
 msgstr ""
-"Catatan: CASCADE akan secara otomatis menghapus objek yang bergantung pada "
-"objek yang terpengaruh, dan pada gilirannya semua objek yang bergantung pada"
-" objek tersebut"
+"Catatan: CASCADE akan secara otomatis menghapus objek yang bergantung "
+"pada objek yang terpengaruh, dan pada gilirannya semua objek yang "
+"bergantung pada objek tersebut"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:146
 msgid "From database"
@@ -8391,8 +8396,7 @@ msgstr ""
 "aturan yang dipilih?"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:195
-#: pgadmin/browser/static/js/node.js:1105
-#: pgadmin/misc/sql/static/js/SQL.jsx:80
+#: pgadmin/browser/static/js/node.js:1105 pgadmin/misc/sql/static/js/SQL.jsx:80
 #: pgadmin/tools/backup/static/js/backup.js:191
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:297
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:835
@@ -8520,10 +8524,9 @@ msgstr "Muat Ulang Konfigurasi"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:90
 msgid ""
-"Please select a server from the object explorer to reload the configuration "
-"files."
-msgstr ""
-"Pilih server dari penjelajah objek untuk memuat ulang file konfigurasi."
+"Please select a server from the object explorer to reload the "
+"configuration files."
+msgstr "Pilih server dari penjelajah objek untuk memuat ulang file konfigurasi."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:95
 msgid "Add Named Restore Point..."
@@ -8534,8 +8537,8 @@ msgid ""
 "Please select any server from the object explorer to Add Named Restore "
 "Point."
 msgstr ""
-"Pilih server mana pun dari penjelajah objek untuk menambahkan titik pemulihan "
-"bernama."
+"Pilih server mana pun dari penjelajah objek untuk menambahkan titik "
+"pemulihan bernama."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:102
 msgid "Change Password..."
@@ -8551,11 +8554,11 @@ msgstr "Hentikan Wal Replay"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:111
 msgid ""
-"Please select a connected database as a Super user and run in Recovery mode "
-"to Pause Replay of WAL."
+"Please select a connected database as a Super user and run in Recovery "
+"mode to Pause Replay of WAL."
 msgstr ""
-"Pilih database yang terhubung sebagai Pengguna super dan jalankan dalam mode"
-" Pemulihan untuk menjeda Replay WAL."
+"Pilih database yang terhubung sebagai Pengguna super dan jalankan dalam "
+"mode Pemulihan untuk menjeda Replay WAL."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:116
 msgid "Resume Replay of WAL"
@@ -8563,11 +8566,11 @@ msgstr "Lanjutkan Replay WAL"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:118
 msgid ""
-"Please select a connected database as a Super user and run in Recovery mode "
-"to Resume Replay of WAL."
+"Please select a connected database as a Super user and run in Recovery "
+"mode to Resume Replay of WAL."
 msgstr ""
-"Pilih database yang terhubung sebagai Pengguna super dan jalankan dalam mode"
-" Pemulihan untuk melanjutkan Replay WAL."
+"Pilih database yang terhubung sebagai Pengguna super dan jalankan dalam "
+"mode Pemulihan untuk melanjutkan Replay WAL."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:123
 msgid "Clear Saved Password"
@@ -8623,21 +8626,21 @@ msgstr "Hapus Sandi Terowongan SSH"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:476
 #, python-format
 msgid ""
-"Are you sure you want to clear the saved password of SSH Tunnel for server "
-"%s?"
+"Are you sure you want to clear the saved password of SSH Tunnel for "
+"server %s?"
 msgstr ""
-"Anda yakin ingin menghapus sandi terowongan SSH yang disimpan untuk server "
-"%s?"
+"Anda yakin ingin menghapus sandi terowongan SSH yang disimpan untuk "
+"server %s?"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:585
 msgid ""
-"You have connected to a server version that is older than is supported by "
-"pgAdmin. This may cause pgAdmin to break in strange and unpredictable ways. "
-"Or a plague of frogs. Either way, you have been warned!"
+"You have connected to a server version that is older than is supported by"
+" pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
+"ways. Or a plague of frogs. Either way, you have been warned!"
 msgstr ""
-"Anda telah terhubung ke versi server yang lebih lama dari yang didukung oleh "
-"pgAdmin. Hal ini dapat menyebabkan pgAdmin tidak berfungsi dengan cara "
-"yang aneh dan tidak terduga. Atau plague of frogs. Bagaimanapun, "
+"Anda telah terhubung ke versi server yang lebih lama dari yang didukung "
+"oleh pgAdmin. Hal ini dapat menyebabkan pgAdmin tidak berfungsi dengan "
+"cara yang aneh dan tidak terduga. Atau plague of frogs. Bagaimanapun, "
 "Anda telah diperingatkan!"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:588
@@ -9051,15 +9054,15 @@ msgstr "'Lokasi' tidak boleh kosong."
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:5
 msgid ""
-"Please enter the password for the user '{0}' to connect the server - \"{1}\""
+"Please enter the password for the user '{0}' to connect the server - "
+"\"{1}\""
 msgstr ""
 "Harap masukkan sandi untuk pengguna '{0}' untuk menghubungkan server - "
 "\"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:8
 msgid "Please enter the password for the user to connect the server - \"{0}\""
-msgstr ""
-"Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"{0}\""
+msgstr "Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"{0}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:24
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:20
@@ -9073,8 +9076,7 @@ msgstr "Simpan sandi"
 msgid ""
 "SSH Tunnel password for the identity file '{0}' to connect the server "
 "\"{1}\""
-msgstr ""
-"Sandi terowongan SSH untuk file identitas '{0}' menghubungi server \"{1}\""
+msgstr "Sandi terowongan SSH untuk file identitas '{0}' menghubungi server \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:7
 msgid "SSH Tunnel password for the user '{0}' to connect the server \"{1}\""
@@ -9085,8 +9087,7 @@ msgid "Database server password for the user to connect the server \"{0}\""
 msgstr "Sandi server database untuk pengguna menghubungi server \"{0}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:30
-msgid ""
-"Database server password for the user '{0}' to connect the server \"{1}\""
+msgid "Database server password for the user '{0}' to connect the server \"{1}\""
 msgstr "Sandi server database untuk pengguna '{0}' menghubungi server \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
@@ -9298,10 +9299,11 @@ msgstr ""
 
 #: pgadmin/browser/static/js/layout.js:81
 msgid ""
-"pgAdmin has reset the layout because the previously saved layout is invalid."
+"pgAdmin has reset the layout because the previously saved layout is "
+"invalid."
 msgstr ""
-"pgAdmin telah mengatur ulang tata letak karena tata letak yang sebelumnya "
-"disimpan tidak valid."
+"pgAdmin telah mengatur ulang tata letak karena tata letak yang sebelumnya"
+" disimpan tidak valid."
 
 #: pgadmin/browser/static/js/layout.js:163
 msgid "Failed to save the lock layout setting."
@@ -9355,8 +9357,8 @@ msgstr "Apakah Anda yakin ingin berhenti mengedit properti %s \"%s\"?"
 #: pgadmin/browser/static/js/node.js:682
 #, python-format
 msgid ""
-"Are you sure want to reset the current changes and re-open the panel for %s "
-"\"%s\"?"
+"Are you sure want to reset the current changes and re-open the panel for "
+"%s \"%s\"?"
 msgstr ""
 "Apakah Anda yakin ingin mengatur ulang perubahan saat ini dan membuka "
 "kembali panel untuk %s \"%s\"?"
@@ -9368,11 +9370,11 @@ msgstr "Edit sedang berlangsung?"
 #: pgadmin/browser/static/js/node.js:741
 #, python-format
 msgid ""
-"Are you sure you want to drop %s \"%s\" and all the objects that depend on "
-"it?"
+"Are you sure you want to drop %s \"%s\" and all the objects that depend "
+"on it?"
 msgstr ""
-"Apakah Anda yakin ingin menghapus %s \"%s\" dan semua objek yang bergantung "
-"padanya?"
+"Apakah Anda yakin ingin menghapus %s \"%s\" dan semua objek yang "
+"bergantung padanya?"
 
 #: pgadmin/browser/static/js/node.js:742
 #, python-format
@@ -9476,15 +9478,15 @@ msgid ""
 msgstr ""
 "Browser Anda terdeteksi sebagai <strong>{0}</strong> versi\n"
 "    <strong>{1}</strong>, yang belum diuji oleh pgAdmin. pgAdmin mungkin\n"
-"    tidak berfungsi seperti yang diharapkan, dan masalah apa pun yang"
-" dilaporkan saat menggunakan browser ini mungkin\n"
+"    tidak berfungsi seperti yang diharapkan, dan masalah apa pun yang "
+"dilaporkan saat menggunakan browser ini mungkin\n"
 "    tidak diperbaiki."
 
 #: pgadmin/browser/templates/browser/browser.html:11
 msgid ""
 "Please visit the <a class=\"alert-link\"\n"
-"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a> to see"
-" the\n"
+"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a> to "
+"see the\n"
 "    supported browsers."
 msgstr ""
 "Silakan kunjungi <a class = \"alert-link\"\n"
@@ -9527,17 +9529,17 @@ msgstr "Menutup"
 
 #: pgadmin/browser/templates/browser/upgrade.html:1
 msgid ""
-"You are currently running version {0} of {1}, however the current version is"
-" {2}."
+"You are currently running version {0} of {1}, however the current version"
+" is {2}."
 msgstr "Anda sedang menjalankan versi {0} dari {1}, namun versi saat ini {2}."
 
 #: pgadmin/browser/templates/browser/upgrade.html:3
 msgid ""
-"Please click <a class=\"alert-link\" href=\"{0}\" target=\"_new\">here</a> "
-"for more information."
+"Please click <a class=\"alert-link\" href=\"{0}\" "
+"target=\"_new\">here</a> for more information."
 msgstr ""
-"Silakan klik <a class=\"Alert-link\" href=\"{0}\" target=\"_new\">di sini</a> "
-"untuk informasi lebih lanjut."
+"Silakan klik <a class=\"Alert-link\" href=\"{0}\" target=\"_new\">di "
+"sini</a> untuk informasi lebih lanjut."
 
 #: pgadmin/browser/templates/browser/js/messages.js:30
 msgid "Click here for details."
@@ -9707,8 +9709,8 @@ msgid ""
 "If set to True, data points will be visible in a different style on each "
 "graph lines."
 msgstr ""
-"Jika diatur ke True, titik data akan terlihat dalam gaya yang berbeda pada "
-"setiap baris grafik."
+"Jika diatur ke True, titik data akan terlihat dalam gaya yang berbeda "
+"pada setiap baris grafik."
 
 #: pgadmin/dashboard/__init__.py:163
 msgid "Show mouse hover tooltip?"
@@ -9716,11 +9718,11 @@ msgstr "Tampilkan tooltip mouse hover?"
 
 #: pgadmin/dashboard/__init__.py:165
 msgid ""
-"If set to True, tooltip will appear on mouse hover on the graph lines giving"
-" the data point details"
+"If set to True, tooltip will appear on mouse hover on the graph lines "
+"giving the data point details"
 msgstr ""
-"Jika diatur ke True, tooltip akan muncul di mouse hover pada garis grafik "
-"yang memberikan detail titik data"
+"Jika diatur ke True, tooltip akan muncul di mouse hover pada garis grafik"
+" yang memberikan detail titik data"
 
 #: pgadmin/dashboard/__init__.py:172
 msgid "Chart line width"
@@ -9962,7 +9964,8 @@ msgstr "Terjadi kesalahan saat membuat grafik."
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:209
 msgid ""
-"Not connected to the server or the connection to the server has been closed."
+"Not connected to the server or the connection to the server has been "
+"closed."
 msgstr "Tidak terhubung ke server atau koneksi ke server telah ditutup."
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:266
@@ -10008,15 +10011,15 @@ msgstr "Open Source"
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:144
 msgid ""
 "pgAdmin is an Open Source administration and management tool for the "
-"PostgreSQL database. It includes a graphical administration interface, an "
-"SQL query tool, a procedural code debugger and much more. The tool is "
-"designed to answer the needs of developers, DBAs and system administrators "
-"alike."
+"PostgreSQL database. It includes a graphical administration interface, an"
+" SQL query tool, a procedural code debugger and much more. The tool is "
+"designed to answer the needs of developers, DBAs and system "
+"administrators alike."
 msgstr ""
-"pgAdmin adalah alat administrasi dan manajemen open source untuk database "
-"PostgreSQL. Ini termasuk antarmuka administrasi grafis, alat kueri SQL, "
-"debugger kode prosedural dan banyak lagi. Alat ini dirancang untuk menjawab "
-"kebutuhan pengembang, DBA, dan administrator sistem."
+"pgAdmin adalah alat administrasi dan manajemen open source untuk database"
+" PostgreSQL. Ini termasuk antarmuka administrasi grafis, alat kueri SQL, "
+"debugger kode prosedural dan banyak lagi. Alat ini dirancang untuk "
+"menjawab kebutuhan pengembang, DBA, dan administrator sistem."
 
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:155
 msgid "Quick Links"
@@ -10118,11 +10121,11 @@ msgstr "Path Bantuan PostgreSQL"
 
 #: pgadmin/help/__init__.py:66
 msgid ""
-"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the "
-"major.minor version number."
+"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the"
+" major.minor version number."
 msgstr ""
-"Path ke dokumentasi PostgreSQL. $VERSION$ akan diganti dengan nomor versi "
-"major.minor."
+"Path ke dokumentasi PostgreSQL. $VERSION$ akan diganti dengan nomor versi"
+" major.minor."
 
 #: pgadmin/misc/__init__.py:33 pgadmin/tools/backup/static/js/backup.ui.js:340
 #: pgadmin/tools/backup/static/js/backup.ui.js:358
@@ -10149,9 +10152,9 @@ msgstr "Tema"
 
 #: pgadmin/misc/__init__.py:86
 msgid ""
-"A refresh is required to apply the theme. Above is the preview of the theme"
-msgstr ""
-"Diperlukan penyegaran untuk menerapkan tema. Di atas adalah pratinjau tema"
+"A refresh is required to apply the theme. Above is the preview of the "
+"theme"
+msgstr "Diperlukan penyegaran untuk menerapkan tema. Di atas adalah pratinjau tema"
 
 #: pgadmin/misc/__init__.py:287
 msgid "Invalid binary path."
@@ -10319,7 +10322,7 @@ msgstr "Pengamat Proses - %s"
 #: pgadmin/misc/file_manager/__init__.py:190 pgadmin/settings/__init__.py:85
 #: pgadmin/tools/backup/__init__.py:177 pgadmin/tools/debugger/__init__.py:243
 #: pgadmin/tools/grant_wizard/__init__.py:129
-#: pgadmin/tools/import_export/__init__.py:135
+#: pgadmin/tools/import_export/__init__.py:141
 #: pgadmin/tools/import_export_servers/__init__.py:59
 #: pgadmin/tools/maintenance/__init__.py:145
 #: pgadmin/tools/restore/__init__.py:118
@@ -10389,7 +10392,8 @@ msgstr "Kesalahan saat mendapatkan IP host: ${error.response.data.errormsg}"
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:184
 msgid "Error while saving cloud wizard data: ${error.response.data.errormsg}"
 msgstr ""
-"Kesalahan saat menyimpan data cloud wizard: ${error.response.data.errormsg}"
+"Kesalahan saat menyimpan data cloud wizard: "
+"${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:292
 msgid "Validating credentials..."
@@ -10418,10 +10422,10 @@ msgstr "Proses otentikasi BigAnimal EDB sedang berlangsung..."
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:383
 #: pgadmin/misc/cloud/static/js/azure.js:61
 #: pgadmin/misc/cloud/static/js/google.js:87
-msgid ""
-"Authentication completed successfully. Click the Next button to proceed."
+msgid "Authentication completed successfully. Click the Next button to proceed."
 msgstr ""
-"Otentikasi berhasil diselesaikan. Klik tombol Berikutnya untuk melanjutkan."
+"Otentikasi berhasil diselesaikan. Klik tombol Berikutnya untuk "
+"melanjutkan."
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:387
 msgid "Verification failed. Access Denied..."
@@ -10442,7 +10446,8 @@ msgstr "Otentikasi dibatalkan."
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:401
 msgid "Error while verifying EDB BigAnimal: ${error.response.data.errormsg}"
 msgstr ""
-"Kesalahan saat memverifikasi BigAnimal EDB: ${error.response.data.errormsg}"
+"Kesalahan saat memverifikasi BigAnimal EDB: "
+"${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:431
 #: pgadmin/misc/cloud/static/js/cloud.js:95
@@ -10459,8 +10464,8 @@ msgstr "Kode verifikasi untuk mengotentikasi pgAdmin ke BigAnimal EDB adalah:"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:454
 msgid ""
-"By clicking the below button, you will be redirected to the EDB BigAnimal "
-"authentication page in a new tab."
+"By clicking the below button, you will be redirected to the EDB BigAnimal"
+" authentication page in a new tab."
 msgstr ""
 "Dengan mengklik tombol di bawah ini, Anda akan diarahkan ke halaman "
 "otentikasi BigAnimal EDB di tab baru."
@@ -10544,12 +10549,12 @@ msgstr "Rentang IP Publik"
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:51
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:290
 msgid ""
-"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add"
-" multiple IP addresses/ranges separated with commas."
+"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
+"Add multiple IP addresses/ranges separated with commas."
 msgstr ""
 "Rentang Alamat IP untuk lalu lintas masuk yang diizinkan, misalnya: "
-"127.0.0.1/32. Tambahkan beberapa alamat/rentang IP yang dipisahkan dengan "
-"koma."
+"127.0.0.1/32. Tambahkan beberapa alamat/rentang IP yang dipisahkan dengan"
+" koma."
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:53
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:660
@@ -10608,12 +10613,12 @@ msgstr "grup server pgAdmin"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:177
 msgid ""
-"At least 8 printable ASCII characters. Cannot contain any of the following: "
-"/ (slash), '(single quote), \"(double quote) and @ (at sign)."
+"At least 8 printable ASCII characters. Cannot contain any of the "
+"following: / (slash), '(single quote), \"(double quote) and @ (at sign)."
 msgstr ""
-"Setidaknya 8 karakter ASCII yang dapat dicetak. Tidak dapat berisi salah satu"
-" dari yang berikut: / (slash), '(kutipan tunggal), \"(kutipan ganda) dan @ "
-"(tanda at)."
+"Setidaknya 8 karakter ASCII yang dapat dicetak. Tidak dapat berisi salah "
+"satu dari yang berikut: / (slash), '(kutipan tunggal), \"(kutipan ganda) "
+"dan @ (tanda at)."
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:179
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:508
@@ -10668,8 +10673,8 @@ msgstr "Ukuran dalam GiB."
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:330
 msgid ""
 "Creates a standby in a different Availability Zone (AZ) to provide data "
-"redundancy, eliminate I/O freezes, and minimize latency spikes during system"
-" backups."
+"redundancy, eliminate I/O freezes, and minimize latency spikes during "
+"system backups."
 msgstr ""
 "Membuat siaga di zona ketersediaan yang berbeda (AZ) untuk menyediakan "
 "redundansi data, menghilangkan pembekuan I/O, dan meminimalkan lonjakan "
@@ -10684,8 +10689,8 @@ msgid ""
 "Error while checking server name availability with Microsoft Azure: "
 "${error.response.data.errormsg}"
 msgstr ""
-"Kesalahan saat memeriksa ketersediaan nama server dengan Microsoft Azure: "
-"${error.response.data.errormsg}"
+"Kesalahan saat memeriksa ketersediaan nama server dengan Microsoft Azure:"
+" ${error.response.data.errormsg}"
 
 #: pgadmin/misc/cloud/static/js/azure.js:325
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:244
@@ -10717,13 +10722,13 @@ msgstr "Azure CLI"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:79
 msgid ""
-"Azure CLI will use the currently logged in identity through the Azure CLI on"
-" the local machine. Interactive Browser will open a browser window to "
+"Azure CLI will use the currently logged in identity through the Azure CLI"
+" on the local machine. Interactive Browser will open a browser window to "
 "authenticate a user interactively."
 msgstr ""
-"Azure CLI akan menggunakan identitas yang saat ini dicatat melalui Azure CLI "
-"pada mesin lokal. Browser interaktif akan membuka jendela browser untuk "
-"mengotentikasi pengguna secara interaktif."
+"Azure CLI akan menggunakan identitas yang saat ini dicatat melalui Azure "
+"CLI pada mesin lokal. Browser interaktif akan membuka jendela browser "
+"untuk mengotentikasi pengguna secara interaktif."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:85
 msgid "Azure tenant id"
@@ -10740,11 +10745,12 @@ msgstr "Klik di sini untuk mengotentikasi diri Anda ke Microsoft Azure"
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:111
 msgid ""
 "After clicking the button above you will be redirected to the Microsoft "
-"Azure authentication page in a new browser tab if the Interactive Browser "
-"option is selected."
+"Azure authentication page in a new browser tab if the Interactive Browser"
+" option is selected."
 msgstr ""
-"Setelah mengklik tombol di atas, Anda akan diarahkan ke halaman Otentikasi "
-"Microsoft Azure di tab Browser baru jika opsi browser interaktif dipilih."
+"Setelah mengklik tombol di atas, Anda akan diarahkan ke halaman "
+"Otentikasi Microsoft Azure di tab Browser baru jika opsi browser "
+"interaktif dipilih."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:337
 msgid "Burstable (1-2 vCores) "
@@ -10776,10 +10782,10 @@ msgstr "Nama pengguna admin tertentu tidak diizinkan."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:462
 msgid ""
-"The password must be 8-128 characters long and must contain characters from "
-"three of the following categories - English uppercase letters, English "
-"lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, "
-"%, etc.)"
+"The password must be 8-128 characters long and must contain characters "
+"from three of the following categories - English uppercase letters, "
+"English lowercase letters, numbers (0-9), and non-alphanumeric characters"
+" (!, $, #, %, etc.)"
 msgstr ""
 "Sandi harus panjang 8-128 karakter dan harus berisi karakter dari tiga "
 "kategori berikut-huruf huruf besar bahasa Inggris, huruf kecil bahasa "
@@ -10798,21 +10804,22 @@ msgid ""
 "\"root\", \"guest\", \"public\", or start with \"pg_\"."
 msgstr ""
 "Nama pengguna admin harus panjang 1-63 karakter dan hanya dapat berisi "
-"karakter, angka dan karakter garis bawah.Nama pengguna tidak dapat menjadi "
-"\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", "
-"\"root\", \"guest\", \"publik\", atau mulai dengan \"pg_\"."
+"karakter, angka dan karakter garis bawah.Nama pengguna tidak dapat "
+"menjadi \"azure_superuser\", \"azure_pg_admin\", \"admin\", "
+"\"administrator\", \"root\", \"guest\", \"publik\", atau mulai dengan "
+"\"pg_\"."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:502
 msgid ""
-"The password must be 8-128 characters long and must contain characters from "
-"three of the following categories - English uppercase letters, English "
-"lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, "
-"%, etc.), and cannot contain all or part of the login name"
+"The password must be 8-128 characters long and must contain characters "
+"from three of the following categories - English uppercase letters, "
+"English lowercase letters, numbers (0-9), and non-alphanumeric characters"
+" (!, $, #, %, etc.), and cannot contain all or part of the login name"
 msgstr ""
 "Sandi harus panjang 8-128 karakter dan harus berisi karakter dari tiga "
 "kategori berikut-huruf huruf besar bahasa Inggris, huruf kecil bahasa "
-"Inggris, angka (0-9), dan karakter non-alfanumerik (!, $, #, %, dls.), dan "
-"tidak dapat berisi semua atau sebagian dari nama login"
+"Inggris, angka (0-9), dan karakter non-alfanumerik (!, $, #, %, dls.), "
+"dan tidak dapat berisi semua atau sebagian dari nama login"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:529
 msgid ""
@@ -10821,10 +10828,10 @@ msgid ""
 "addresses/ranges separated with commas, for example: \"192.168.0.50, "
 "192.168.0.100 -  192.168.0.200\""
 msgstr ""
-"Daftar alamat IP atau rentang alamat IP (mulai Alamat IP - akhir "
-"alamat IP) dari mana lalu lintas masuk harus diterima. Tambahkan "
-"beberapa alamat IP/rentang yang dipisahkan dengan koma, "
-"misalnya: \"192.168.0.50, 192.168.0.100 - 192.168.0.200\""
+"Daftar alamat IP atau rentang alamat IP (mulai Alamat IP - akhir alamat "
+"IP) dari mana lalu lintas masuk harus diterima. Tambahkan beberapa alamat"
+" IP/rentang yang dipisahkan dengan koma, misalnya: \"192.168.0.50, "
+"192.168.0.100 - 192.168.0.200\""
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:559
 msgid "Zone redundant high availability"
@@ -10832,11 +10839,12 @@ msgstr "Zona ketersediaan tinggi yang redundant"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:585
 msgid ""
-"Zone redundant high availability deploys a standby replica in a different "
-"zone. The Burstable instance type does not support high availability."
+"Zone redundant high availability deploys a standby replica in a different"
+" zone. The Burstable instance type does not support high availability."
 msgstr ""
 "Zona ketersediaan tinggi yang redundant menggelar replika siaga di zona "
-"yang berbeda. Jenis instance burstable tidak mendukung ketersediaan tinggi."
+"yang berbeda. Jenis instance burstable tidak mendukung ketersediaan "
+"tinggi."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:647
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:461
@@ -10892,11 +10900,11 @@ msgstr "Rentang IP publik tidak boleh kosong."
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:732
 msgid ""
-"Name must be more than 2 characters and must only contain lowercase letters,"
-" numbers, and hyphens"
+"Name must be more than 2 characters and must only contain lowercase "
+"letters, numbers, and hyphens"
 msgstr ""
-"Nama harus lebih dari 2 karakter dan hanya harus berisi huruf kecil, angka, "
-"dan tanda hubung"
+"Nama harus lebih dari 2 karakter dan hanya harus berisi huruf kecil, "
+"angka, dan tanda hubung"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:236
 #: pgadmin/misc/cloud/static/js/biganimal.js:243
@@ -10972,8 +10980,8 @@ msgstr "Jumlah replika siaga"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:83
 msgid ""
-"Adding standby replicas will increase your number of CPUs, as well as your "
-"cost."
+"Adding standby replicas will increase your number of CPUs, as well as "
+"your cost."
 msgstr ""
 "Menambahkan replika siaga akan meningkatkan jumlah CPU Anda, serta biaya "
 "Anda."
@@ -11052,13 +11060,13 @@ msgstr "Sandi database"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:478
 msgid ""
-"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add"
-" multiple IP addresses/ranges separated with commas. Leave blank for "
+"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
+"Add multiple IP addresses/ranges separated with commas. Leave blank for "
 "0.0.0.0/0"
 msgstr ""
 "Rentang Alamat IP untuk lalu lintas masuk yang diizinkan, misalnya: "
-"127.0.0.1/32. Tambahkan beberapa alamat/rentang IP yang dipisahkan dengan "
-"koma. Biarkan kosong untuk 0.0.0.0/0"
+"127.0.0.1/32. Tambahkan beberapa alamat/rentang IP yang dipisahkan dengan"
+" koma. Biarkan kosong untuk 0.0.0.0/0"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:480
 msgid "Instance Type"
@@ -11090,20 +11098,17 @@ msgstr "File rahasia klien"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:49
 msgid ""
-"Select a client secrets file containing the client ID, client secret, and "
-"other OAuth 2.0 parameters for google authentication. Refer <a "
+"Select a client secrets file containing the client ID, client secret, and"
+" other OAuth 2.0 parameters for google authentication. Refer <a "
 "href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
-"=%2Cuser-"
-"consent%2Cpublic-and-internal-applications\" target=\"_blank\">link</a> for "
-"creating client secret."
+"=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"target=\"_blank\">link</a> for creating client secret."
 msgstr ""
-"Pilih file rahasia klien yang berisi ID klien, rahasia klien, dan parameter "
-"OAuth 2.0 lainnya untuk otentikasi Google. Merujuk <a "
+"Pilih file rahasia klien yang berisi ID klien, rahasia klien, dan "
+"parameter OAuth 2.0 lainnya untuk otentikasi Google. Merujuk <a "
 "href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
-"=%2Cuser-"
-"consent%2cpublic-andon-internal-applications\" target=\"_blank\">link</a>"
-" untuk "
-"membuat rahasia klien."
+"=%2Cuser-consent%2cpublic-andon-internal-applications\" "
+"target=\"_blank\">link</a> untuk membuat rahasia klien."
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:61
 msgid "Click here to authenticate yourself to Google"
@@ -11167,11 +11172,11 @@ msgstr "Tetapkan sandi untuk pengguna admin default \"postgres\"."
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:521
 msgid ""
-"Name must only contain lowercase letters, numbers, and hyphens.Should start "
-"with a letter and must be 97 characters or less"
+"Name must only contain lowercase letters, numbers, and hyphens.Should "
+"start with a letter and must be 97 characters or less"
 msgstr ""
-"Nama hanya boleh berisi huruf kecil, angka, dan tanda hubung. Harus mulai "
-"dengan huruf dan harus 97 karakter atau kurang"
+"Nama hanya boleh berisi huruf kecil, angka, dan tanda hubung. Harus mulai"
+" dengan huruf dan harus 97 karakter atau kurang"
 
 #: pgadmin/misc/cloud/utils/__init__.py:80
 msgid "Deployment on {0} is started for instance {1}."
@@ -11183,8 +11188,7 @@ msgstr "Penggelaran Cloud"
 
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:125
 msgid "No dependency information is available for the selected object."
-msgstr ""
-"Tidak ada informasi ketergantungan yang tersedia untuk objek yang dipilih."
+msgstr "Tidak ada informasi ketergantungan yang tersedia untuk objek yang dipilih."
 
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:173
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:174
@@ -11377,10 +11381,10 @@ msgstr "Preferensi"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:253
 msgid ""
-"Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore "
-"utilities can be found for the corresponding database server version.  The "
-"default path will be used for server versions that do not have a  path "
-"specified."
+"Enter the directory in which the psql, pg_dump, pg_dumpall, and "
+"pg_restore utilities can be found for the corresponding database server "
+"version.  The default path will be used for server versions that do not "
+"have a  path specified."
 msgstr ""
 "Masukkan direktori di mana utilitas psql, pg_dump, pg_dumpall, dan "
 "pg_restore dapat ditemukan untuk versi server database yang sesuai. Path "
@@ -11395,8 +11399,8 @@ msgstr "Hasil grid"
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:352
 msgid "This settings is to Show/Hide nodes in the object explorer."
 msgstr ""
-"Pengaturan ini adalah untuk menampilkan/menyembunyikan node di "
-"penjelajah objek."
+"Pengaturan ini adalah untuk menampilkan/menyembunyikan node di penjelajah"
+" objek."
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:354
 #, python-format
@@ -11413,8 +11417,8 @@ msgid ""
 "The object explorer tree refresh is required. Do you wish to refresh the "
 "tree?"
 msgstr ""
-"Diperlukan penyegaran pohon penjelajah objek. Apakah Anda ingin menyegarkan "
-"pohon tersebut?"
+"Diperlukan penyegaran pohon penjelajah objek. Apakah Anda ingin "
+"menyegarkan pohon tersebut?"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:596
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:626
@@ -11428,11 +11432,11 @@ msgstr "Diperlukan penyegaran"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:618
 msgid ""
-"A page refresh is required to apply the theme. Do you wish to refresh the "
-"page now?"
+"A page refresh is required to apply the theme. Do you wish to refresh the"
+" page now?"
 msgstr ""
-"Segera segarkan halaman yang diperlukan untuk menerapkan tema. Apakah Anda "
-"ingin menyegarkan halaman sekarang?"
+"Segera segarkan halaman yang diperlukan untuk menerapkan tema. Apakah "
+"Anda ingin menyegarkan halaman sekarang?"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:666
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:445
@@ -11461,11 +11465,10 @@ msgid ""
 "application to reload and any un-saved data will be lost."
 msgstr ""
 "Apakah Anda yakin ingin mengatur ulang tata letak saat ini? Ini akan "
-"menyebabkan aplikasi memuat ulang dan data apa pun yang tidak disimpan akan "
-"hilang."
+"menyebabkan aplikasi memuat ulang dan data apa pun yang tidak disimpan "
+"akan hilang."
 
-#: pgadmin/static/js/api_instance.js:52
-#: pgadmin/static/js/socket_instance.js:56
+#: pgadmin/static/js/api_instance.js:52 pgadmin/static/js/socket_instance.js:56
 msgid "Connection to pgAdmin server has been lost"
 msgstr "Koneksi ke server pgAdmin telah hilang"
 
@@ -11486,7 +11489,8 @@ msgid ""
 "Please configure the EDB Advanced Server Binary Path in the Preferences "
 "dialog."
 msgstr ""
-"Harap konfigurasikan path biner EDB Advanced Server dalam dialog Preferensi."
+"Harap konfigurasikan path biner EDB Advanced Server dalam dialog "
+"Preferensi."
 
 #: pgadmin/static/js/utils.js:365
 msgid "Configuration required"
@@ -11504,26 +11508,26 @@ msgstr "Gagal memuat preferensi %s dari modul %s"
 #: pgadmin/static/js/utils.js:461
 msgid ""
 "The file opened contains bidirectional Unicode characters which could be "
-"interpreted differently than what is displayed. If this is unexpected it is "
-"recommended that you review the text in an application that can display "
-"hidden Unicode characters before proceeding."
+"interpreted differently than what is displayed. If this is unexpected it "
+"is recommended that you review the text in an application that can "
+"display hidden Unicode characters before proceeding."
 msgstr ""
 "File yang dibuka berisi karakter unicode dua arah yang dapat diartikan "
-"secara berbeda dari yang ditampilkan. Jika ini tidak terduga disarankan agar "
-"Anda meninjau teks dalam aplikasi yang dapat menampilkan karakter unicode "
-"tersembunyi sebelum melanjutkan."
+"secara berbeda dari yang ditampilkan. Jika ini tidak terduga disarankan "
+"agar Anda meninjau teks dalam aplikasi yang dapat menampilkan karakter "
+"unicode tersembunyi sebelum melanjutkan."
 
 #: pgadmin/static/js/utils.js:463
 msgid ""
 "The pasted text contains bidirectional Unicode characters which could be "
-"interpreted differently than what is displayed. If this is unexpected it is "
-"recommended that you review the text in an application that can display "
-"hidden Unicode characters before proceeding."
+"interpreted differently than what is displayed. If this is unexpected it "
+"is recommended that you review the text in an application that can "
+"display hidden Unicode characters before proceeding."
 msgstr ""
-"Teks yang disisipkan berisi karakter unicode dua arah yang dapat diartikan "
-"secara berbeda dari apa yang ditampilkan. Jika ini tidak terduga disarankan "
-"agar Anda meninjau teks dalam aplikasi yang dapat menampilkan karakter "
-"unicode tersembunyi sebelum melanjutkan."
+"Teks yang disisipkan berisi karakter unicode dua arah yang dapat "
+"diartikan secara berbeda dari apa yang ditampilkan. Jika ini tidak "
+"terduga disarankan agar Anda meninjau teks dalam aplikasi yang dapat "
+"menampilkan karakter unicode tersembunyi sebelum melanjutkan."
 
 #: pgadmin/static/js/utils.js:465
 msgid "Trojan Source Warning"
@@ -11535,25 +11539,25 @@ msgstr "Kesalahan dalam alat inisiasi ${error.response.data}"
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:41
 msgid ""
-"Select the user that will take ownership of the shared servers created by "
-"<b></b>. <b></b> shared servers are currently owned by this user. </br></br>"
-" Clicking on the “Change” button will either change ownership if a user is "
-"selected or delete any shared servers if no user is selected. There is no "
-"way to reverse this action."
+"Select the user that will take ownership of the shared servers created by"
+" <b></b>. <b></b> shared servers are currently owned by this user. "
+"</br></br> Clicking on the “Change” button will either change ownership "
+"if a user is selected or delete any shared servers if no user is "
+"selected. There is no way to reverse this action."
 msgstr ""
-"Pilih pengguna yang akan mengambil kepemilikan server bersama yang dibuat "
-"oleh <b></b>. <b></b> server bersama saat ini dimiliki oleh pengguna "
+"Pilih pengguna yang akan mengambil kepemilikan server bersama yang dibuat"
+" oleh <b></b>. <b></b> server bersama saat ini dimiliki oleh pengguna "
 "ini. </br></br> Mengklik tombol \"Ubah\" akan mengubah kepemilikan jika "
-"pengguna dipilih atau menghapus server bersama jika tidak ada pengguna yang "
-"dipilih. Tidak ada cara untuk membalikkan tindakan ini."
+"pengguna dipilih atau menghapus server bersama jika tidak ada pengguna "
+"yang dipilih. Tidak ada cara untuk membalikkan tindakan ini."
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:54
 msgid ""
 "The shared servers owned by <b></b> will be deleted. Do you wish to "
 "continue?"
 msgstr ""
-"Server bersama yang dimiliki oleh <b></b> akan dihapus. Apakah Anda ingin "
-"melanjutkan?"
+"Server bersama yang dimiliki oleh <b></b> akan dihapus. Apakah Anda ingin"
+" melanjutkan?"
 
 #: pgadmin/static/js/Dialogs/ChangePasswordContent.jsx:42
 msgid "Current Password"
@@ -11574,8 +11578,8 @@ msgstr "Jangan simpan"
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:77
 #, python-format
 msgid ""
-"Please enter the SSH Tunnel password for the identity file '%s' to connect "
-"the server \"%s\""
+"Please enter the SSH Tunnel password for the identity file '%s' to "
+"connect the server \"%s\""
 msgstr ""
 "Harap masukkan sandi Terowongan SSH untuk file identitas '%s' untuk "
 "menghubungkan server \"%s\""
@@ -11583,24 +11587,23 @@ msgstr ""
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:78
 #, python-format
 msgid ""
-"Please enter the SSH Tunnel password for the user '%s' to connect the server"
-" \"%s\""
-msgstr ""
-"Harap masukkan sandi Terowongan SSH untuk pengguna '%s' untuk menghubungkan "
+"Please enter the SSH Tunnel password for the user '%s' to connect the "
 "server \"%s\""
+msgstr ""
+"Harap masukkan sandi Terowongan SSH untuk pengguna '%s' untuk "
+"menghubungkan server \"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:95
 #, python-format
-msgid ""
-"Please enter the password for the user '%s' to connect the server - \"%s\""
+msgid "Please enter the password for the user '%s' to connect the server - \"%s\""
 msgstr ""
-"Harap masukkan sandi untuk pengguna '%s' untuk menghubungkan server - \"%s\""
+"Harap masukkan sandi untuk pengguna '%s' untuk menghubungkan server - "
+"\"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:96
 #, python-format
 msgid "Please enter the password for the user to connect the server - \"%s\""
-msgstr ""
-"Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"%s\""
+msgstr "Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:136
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:119
@@ -11629,16 +11632,16 @@ msgid ""
 "This is required to unlock saved passwords and reconnect to the database "
 "server(s)."
 msgstr ""
-"Ini diperlukan untuk membuka kunci sandi yang disimpan dan terhubung kembali"
-" ke server database."
+"Ini diperlukan untuk membuka kunci sandi yang disimpan dan terhubung "
+"kembali ke server database."
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:78
 msgid ""
 "This will be used to secure and later unlock saved passwords and other "
 "credentials."
 msgstr ""
-"Ini akan digunakan untuk mengamankan dan kemudian membuka kunci sandi yang "
-"disimpan dan kredensial lainnya."
+"Ini akan digunakan untuk mengamankan dan kemudian membuka kunci sandi "
+"yang disimpan dan kredensial lainnya."
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:101
 #: pgadmin/static/js/Dialogs/index.jsx:204
@@ -11663,21 +11666,21 @@ msgstr "Atur sandi utama"
 
 #: pgadmin/static/js/Dialogs/index.jsx:205
 msgid ""
-"This will remove all the saved passwords. This will also remove established "
-"connections to the server and you may need to reconnect again. Do you wish "
-"to continue?"
+"This will remove all the saved passwords. This will also remove "
+"established connections to the server and you may need to reconnect "
+"again. Do you wish to continue?"
 msgstr ""
 "Ini akan menghapus semua sandi yang disimpan. Ini juga akan menghapus "
-"koneksi yang ditetapkan ke server dan Anda mungkin perlu terhubung kembali. "
-"Apakah Anda ingin melanjutkan?"
+"koneksi yang ditetapkan ke server dan Anda mungkin perlu terhubung "
+"kembali. Apakah Anda ingin melanjutkan?"
 
 #: pgadmin/static/js/Dialogs/index.jsx:261
 msgid ""
-"Please make sure to disconnect the server and update the new password in the"
-" pgpass file before performing any other operation"
+"Please make sure to disconnect the server and update the new password in "
+"the pgpass file before performing any other operation"
 msgstr ""
-"Harap pastikan untuk memutuskan server dan memperbarui sandi baru di file "
-"pgpass sebelum melakukan operasi lainnya"
+"Harap pastikan untuk memutuskan server dan memperbarui sandi baru di file"
+" pgpass sebelum melakukan operasi lainnya"
 
 #: pgadmin/static/js/Dialogs/index.jsx:381
 msgid "Rename Panel ${_.escape(title)}"
@@ -11820,9 +11823,8 @@ msgid ""
 "Use Explain/Explain analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 msgstr ""
-"Gunakan tombol Explain/Explain analyze untuk menghasilkan rencana "
-"kueri. Atau, Anda juga dapat mengeksekusi \"EXPLAIN (FORMAT JSON) "
-"[QUERY]\"."
+"Gunakan tombol Explain/Explain analyze untuk menghasilkan rencana kueri. "
+"Atau, Anda juga dapat mengeksekusi \"EXPLAIN (FORMAT JSON) [QUERY]\"."
 
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:341
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:167
@@ -11983,11 +11985,11 @@ msgstr "Kesalahan mengatur ulang status pohon yang disimpan. \""
 
 #: pgadmin/static/js/tree/tree_utils.js:44
 msgid ""
-"Databases with = symbols in the name cannot be backed up or restored using "
-"this utility."
+"Databases with = symbols in the name cannot be backed up or restored "
+"using this utility."
 msgstr ""
-"Database dengan = simbol dalam nama tidak dapat dicadangkan atau dipulihkan "
-"menggunakan utilitas ini."
+"Database dengan = simbol dalam nama tidak dapat dicadangkan atau "
+"dipulihkan menggunakan utilitas ini."
 
 #: pgadmin/static/js/tree/tree_utils.js:61
 msgid "Please select server or child node from the object explorer."
@@ -12118,11 +12120,11 @@ msgstr "Cadangan Global..."
 
 #: pgadmin/tools/backup/static/js/backup.js:80
 msgid ""
-"Please select any server from the object explorer to take Backup of global "
-"objects."
+"Please select any server from the object explorer to take Backup of "
+"global objects."
 msgstr ""
-"Pilih server mana pun dari penjelajah objek untuk mengambil cadangan objek "
-"global."
+"Pilih server mana pun dari penjelajah objek untuk mengambil cadangan "
+"objek global."
 
 #: pgadmin/tools/backup/static/js/backup.js:88
 #: pgadmin/tools/backup/static/js/backup.js:114
@@ -12131,16 +12133,16 @@ msgstr "Server cadangan..."
 
 #: pgadmin/tools/backup/static/js/backup.js:92
 #: pgadmin/tools/backup/static/js/backup.js:118
-msgid ""
-"Please select any server from the object explorer to take Server Backup."
+msgid "Please select any server from the object explorer to take Server Backup."
 msgstr ""
-"Pilih server mana pun dari penjelajah objek untuk mengambil cadangan server."
+"Pilih server mana pun dari penjelajah objek untuk mengambil cadangan "
+"server."
 
 #: pgadmin/tools/backup/static/js/backup.js:105
 #: pgadmin/tools/backup/static/js/backup.js:132
 msgid ""
-"Please select any database or schema or table from the object explorer to "
-"take Backup."
+"Please select any database or schema or table from the object explorer to"
+" take Backup."
 msgstr ""
 "Pilih database atau skema atau tabel apa pun dari penjelajah objek untuk "
 "mengambil cadangan."
@@ -12362,8 +12364,8 @@ msgid ""
 "Only objects global to the entire database will be backed up, in PLAIN "
 "format"
 msgstr ""
-"Hanya objek global ke seluruh database yang akan dicadangkan, dalam format "
-"PLAIN"
+"Hanya objek global ke seluruh database yang akan dicadangkan, dalam "
+"format PLAIN"
 
 #: pgadmin/tools/debugger/__init__.py:61
 msgid "Accesskey (Continue/Start)"
@@ -12427,8 +12429,8 @@ msgstr "Fungsi yang dibungkus EDB Advanced Server tidak dapat didebug."
 
 #: pgadmin/tools/debugger/__init__.py:428
 msgid ""
-"An 'edbspl' target with a variadic argument is not supported and cannot be "
-"debugged."
+"An 'edbspl' target with a variadic argument is not supported and cannot "
+"be debugged."
 msgstr ""
 "Target 'edbspl' dengan argumen variadik tidak didukung dan tidak dapat "
 "didebug."
@@ -12440,11 +12442,11 @@ msgstr "Gagal menemukan ekstensi pldbgapi dalam database ini."
 
 #: pgadmin/tools/debugger/__init__.py:525
 msgid ""
-"The debugger plugin is not enabled. Please create the pldbgapi extension in "
-"this database."
+"The debugger plugin is not enabled. Please create the pldbgapi extension "
+"in this database."
 msgstr ""
-"Plugin debugger tidak diaktifkan. Harap buat ekstensi pldbgapi di database "
-"ini."
+"Plugin debugger tidak diaktifkan. Harap buat ekstensi pldbgapi di "
+"database ini."
 
 #: pgadmin/tools/debugger/__init__.py:706
 msgid ""
@@ -12461,8 +12463,8 @@ msgstr "Tidak dapat mengambil informasi plugin debugger."
 #: pgadmin/tools/debugger/__init__.py:722
 msgid ""
 "The debugger plugin is not enabled. Please add the plugin to the "
-"shared_preload_libraries setting in the postgresql.conf file and restart the"
-" database server for indirect debugging."
+"shared_preload_libraries setting in the postgresql.conf file and restart "
+"the database server for indirect debugging."
 msgstr ""
 "Plugin debugger tidak diaktifkan. Harap tambahkan plugin ke pengaturan "
 "shared_preload_library di file postgresql.conf dan mulai ulang server  "
@@ -12470,8 +12472,7 @@ msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:742
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
-msgstr ""
-"Harap tingkatkan ekstensi pldbgapi ke 1.1 atau lebih tinggi dan coba lagi."
+msgstr "Harap tingkatkan ekstensi pldbgapi ke 1.1 atau lebih tinggi dan coba lagi."
 
 #: pgadmin/tools/debugger/__init__.py:1283
 msgid "Debugging aborted successfully."
@@ -12568,11 +12569,11 @@ msgstr "Kesalahan Debugger"
 
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:557
 msgid ""
-"Current database has been moved or renamed to ${db_label}. Click on the OK "
-"button to refresh the database name."
+"Current database has been moved or renamed to ${db_label}. Click on the "
+"OK button to refresh the database name."
 msgstr ""
-"Database saat ini telah dipindahkan atau diganti namanya menjadi ${db_label}. "
-"Klik tombol OK untuk menyegarkan nama database."
+"Database saat ini telah dipindahkan atau diganti namanya menjadi "
+"${db_label}. Klik tombol OK untuk menyegarkan nama database."
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:55
 msgid "Null?"
@@ -12621,8 +12622,8 @@ msgstr "Debugger Dibatalkan"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:170
 msgid ""
-"Debugger has been aborted. On clicking the ok button, debugger panel will be"
-" closed."
+"Debugger has been aborted. On clicking the ok button, debugger panel will"
+" be closed."
 msgstr ""
 "Debugger telah dibatalkan. Saat mengklik tombol ok, panel debugger akan "
 "muncul tertutup."
@@ -12848,8 +12849,8 @@ msgstr "SQL dengan DROP Tabel"
 
 #: pgadmin/tools/erd/__init__.py:383 pgadmin/tools/erd/__init__.py:422
 msgid ""
-"If enabled, the SQL generated by the ERD Tool will add DROP table DDL before"
-" each CREATE table DDL."
+"If enabled, the SQL generated by the ERD Tool will add DROP table DDL "
+"before each CREATE table DDL."
 msgstr ""
 "Jika diaktifkan, SQL yang dihasilkan oleh alat ERD akan menambahkan DROP "
 "tabel DDL sebelum masing-masing CREATE tabel DDL."
@@ -12978,8 +12979,8 @@ msgstr "-- Skrip ini dihasilkan oleh alat ERD di pgAdmin 4.\n"
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:689
 msgid ""
 "-- Please log an issue at "
-"https://redmine.postgresql.org/projects/pgadmin4/issues/new if you find any "
-"bugs, including reproduction steps.\n"
+"https://redmine.postgresql.org/projects/pgadmin4/issues/new if you find "
+"any bugs, including reproduction steps.\n"
 msgstr ""
 "-- Silakan mencatat masalah di "
 "https://redmine.postgresql.org/projects/pgadmin4/issues/new jika Anda "
@@ -13003,8 +13004,8 @@ msgstr "Batas maksimum ukuran gambar"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:847
 msgid ""
-"The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, "
-"and has been cropped to that size."
+"The downloaded image has exceeded the maximum size of 32767 x 32767 "
+"pixels, and has been cropped to that size."
 msgstr ""
 "Gambar yang diunduh telah melebihi ukuran maksimum 32767 x 32767 piksel, "
 "dan telah dipotong sesuai ukuran itu."
@@ -13188,8 +13189,8 @@ msgstr "Grant Wizard"
 
 #: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:355
 msgid ""
-"The SQL below will be executed on the database server to grant the selected "
-"privileges. Please click on Finish to complete the process."
+"The SQL below will be executed on the database server to grant the "
+"selected privileges. Please click on Finish to complete the process."
 msgstr ""
 "SQL di bawah ini akan dieksekusi di server database untuk memberikan hak "
 "yang dipilih. Silakan klik selesai untuk menyelesaikan proses."
@@ -13204,8 +13205,8 @@ msgid ""
 "Please select any database, schema or schema objects from the object "
 "explorer to access Grant Wizard Tool."
 msgstr ""
-"Pilih objek database, skema, atau skema apa pun dari penjelajah objek untuk "
-"mengakses alat grant wizard."
+"Pilih objek database, skema, atau skema apa pun dari penjelajah objek "
+"untuk mengakses alat grant wizard."
 
 #: pgadmin/tools/import_export/__init__.py:39
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:59
@@ -13214,36 +13215,36 @@ msgstr ""
 msgid "Import/Export"
 msgstr "Impor/Ekspor"
 
-#: pgadmin/tools/import_export/__init__.py:107
+#: pgadmin/tools/import_export/__init__.py:113
 msgid "Copying table data '{0}.{1}' on database '{2}' and server '{3}'"
 msgstr "Menyalin data tabel '{0}.{1}' di database '{2}' dan server '{3}'"
 
-#: pgadmin/tools/import_export/__init__.py:117
+#: pgadmin/tools/import_export/__init__.py:123
 msgid "Import - "
 msgstr "Impor -"
 
-#: pgadmin/tools/import_export/__init__.py:117
+#: pgadmin/tools/import_export/__init__.py:123
 msgid "Export - "
 msgstr "Ekspor -"
 
-#: pgadmin/tools/import_export/__init__.py:118
+#: pgadmin/tools/import_export/__init__.py:124
 msgid "Copying table data"
 msgstr "Menyalin data tabel"
 
-#: pgadmin/tools/import_export/__init__.py:128
+#: pgadmin/tools/import_export/__init__.py:134
 msgid "Import Data"
 msgstr "Impor data"
 
-#: pgadmin/tools/import_export/__init__.py:128
+#: pgadmin/tools/import_export/__init__.py:134
 msgid "Export Data"
 msgstr "Ekspor Data"
 
-#: pgadmin/tools/import_export/__init__.py:255
+#: pgadmin/tools/import_export/__init__.py:261
 msgid "Please connect to the server first..."
 msgstr "Harap terhubung ke server terlebih dahulu..."
 
-#: pgadmin/tools/import_export/__init__.py:281
 #: pgadmin/tools/import_export/__init__.py:287
+#: pgadmin/tools/import_export/__init__.py:293
 msgid "Please specify a valid file"
 msgstr "Harap tentukan file yang valid"
 
@@ -13253,8 +13254,7 @@ msgstr "Impor/Ekspor Data..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:65
 msgid "Please select any table from the object explorer to Import/Export data."
-msgstr ""
-"Pilih tabel apa pun dari penjelajah objek untuk mengimpor/mengekspor data."
+msgstr "Pilih tabel apa pun dari penjelajah objek untuk mengimpor/mengekspor data."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:170
 #, python-format
@@ -13285,16 +13285,15 @@ msgstr "teks"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:158
 msgid ""
-"Specifies the character that separates columns within each row (line) of the"
-" file. The default is a tab character in text format, a comma in CSV format."
-" This must be a single one-byte character. This option is not allowed when "
-"using binary format."
+"Specifies the character that separates columns within each row (line) of "
+"the file. The default is a tab character in text format, a comma in CSV "
+"format. This must be a single one-byte character. This option is not "
+"allowed when using binary format."
 msgstr ""
-"Menentukan karakter yang memisahkan kolom dalam setiap baris dari "
-"file. Bawaannya adalah karakter tab dalam format teks, koma dalam format "
-"CSV. Ini harus berupa karakter tunggal satu-byte. Opsi ini tidak"
-" diperbolehkan "
-"saat menggunakan format biner."
+"Menentukan karakter yang memisahkan kolom dalam setiap baris dari file. "
+"Bawaannya adalah karakter tab dalam format teks, koma dalam format CSV. "
+"Ini harus berupa karakter tunggal satu-byte. Opsi ini tidak diperbolehkan"
+" saat menggunakan format biner."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:162
 msgid "Quote"
@@ -13302,13 +13301,13 @@ msgstr "Mengutip"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:176
 msgid ""
-"Specifies the quoting character to be used when a data value is quoted. The "
-"default is double-quote. This must be a single one-byte character. This "
-"option is allowed only when using CSV format."
+"Specifies the quoting character to be used when a data value is quoted. "
+"The default is double-quote. This must be a single one-byte character. "
+"This option is allowed only when using CSV format."
 msgstr ""
 "Menentukan karakter kutipan yang akan digunakan ketika nilai data "
-"dikutip. Standarnya adalah kutipan ganda. Ini harus berupa karakter tunggal "
-"satu-byte. Opsi ini hanya diizinkan saat menggunakan format CSV."
+"dikutip. Standarnya adalah kutipan ganda. Ini harus berupa karakter "
+"tunggal satu-byte. Opsi ini hanya diizinkan saat menggunakan format CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:180
 msgid "Escape"
@@ -13317,15 +13316,16 @@ msgstr "Escape"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:194
 msgid ""
 "Specifies the character that should appear before a data character that "
-"matches the QUOTE value. The default is the same as the QUOTE value (so that"
-" the quoting character is doubled if it appears in the data). This must be a"
-" single one-byte character. This option is allowed only when using CSV "
-"format."
+"matches the QUOTE value. The default is the same as the QUOTE value (so "
+"that the quoting character is doubled if it appears in the data). This "
+"must be a single one-byte character. This option is allowed only when "
+"using CSV format."
 msgstr ""
 "Menentukan karakter yang harus muncul sebelum karakter data yang cocok "
-"dengan nilai kutipan. Standarnya sama dengan nilai kutipan (sehingga karakter "
-"kutipan digandakan jika muncul dalam data). Ini harus berupa karakter tunggal "
-"satu-byte. Opsi ini hanya diizinkan saat menggunakan format CSV."
+"dengan nilai kutipan. Standarnya sama dengan nilai kutipan (sehingga "
+"karakter kutipan digandakan jika muncul dalam data). Ini harus berupa "
+"karakter tunggal satu-byte. Opsi ini hanya diizinkan saat menggunakan "
+"format CSV."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:198
 msgid "NULL Strings"
@@ -13334,16 +13334,17 @@ msgstr "String NULL"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:205
 msgid ""
 "Specifies the string that represents a null value. The default is \\N "
-"(backslash-N) in text format, and an unquoted empty string in CSV format. "
-"You might prefer an empty string even in text format for cases where you "
-"don't want to distinguish nulls from empty strings. This option is not "
+"(backslash-N) in text format, and an unquoted empty string in CSV format."
+" You might prefer an empty string even in text format for cases where you"
+" don't want to distinguish nulls from empty strings. This option is not "
 "allowed when using binary format."
 msgstr ""
 "Menentukan string yang mewakili nilai null. Standarnya adalah \\N "
-"(backslash-N) dalam format teks, dan string kosong yang tidak dikutip dalam "
-"format CSV. Anda mungkin lebih suka string kosong bahkan dalam format teks "
-"untuk kasus di mana Anda tidak ingin membedakan null dari string kosong. "
-"Opsi ini tidak diperbolehkan saat menggunakan format biner."
+"(backslash-N) dalam format teks, dan string kosong yang tidak dikutip "
+"dalam format CSV. Anda mungkin lebih suka string kosong bahkan dalam "
+"format teks untuk kasus di mana Anda tidak ingin membedakan null dari "
+"string kosong. Opsi ini tidak diperbolehkan saat menggunakan format "
+"biner."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:219
 msgid "Columns for importing..."
@@ -13355,11 +13356,11 @@ msgstr "Kolom untuk mengekspor..."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:225
 msgid ""
-"An optional list of columns to be copied. If no column list is specified, "
-"all columns of the table will be copied."
+"An optional list of columns to be copied. If no column list is specified,"
+" all columns of the table will be copied."
 msgstr ""
-"Daftar kolom opsional yang akan disalin. Jika tidak ada daftar kolom yang "
-"ditentukan, semua kolom tabel akan disalin."
+"Daftar kolom opsional yang akan disalin. Jika tidak ada daftar kolom yang"
+" ditentukan, semua kolom tabel akan disalin."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:229
 msgid "NOT NULL columns"
@@ -13372,17 +13373,16 @@ msgstr "Kolom tidak null..."
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:241
 msgid ""
 "Do not match the specified column values against the null string. In the "
-"default case where the null string is empty, this means that empty values "
-"will be read as zero-length strings rather than nulls, even when they are "
-"not quoted. This option is allowed only in import, and only when using CSV "
-"format."
+"default case where the null string is empty, this means that empty values"
+" will be read as zero-length strings rather than nulls, even when they "
+"are not quoted. This option is allowed only in import, and only when "
+"using CSV format."
 msgstr ""
 "Jangan dicocokkan nilai kolom yang ditentukan dengan string null. Dalam "
-"kasus default di mana string null adalah kosong, ini berarti bahwa"
-" nilai-nilai "
-"kosong akan dibaca sebagai string panjang nol daripada null, bahkan ketika "
-"mereka tidak dikutip. Opsi ini hanya diizinkan dalam impor, dan hanya saat "
-"menggunakan format CSV."
+"kasus default di mana string null adalah kosong, ini berarti bahwa nilai-"
+"nilai kosong akan dibaca sebagai string panjang nol daripada null, bahkan"
+" ketika mereka tidak dikutip. Opsi ini hanya diizinkan dalam impor, dan "
+"hanya saat menggunakan format CSV."
 
 #: pgadmin/tools/import_export_servers/__init__.py:41
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:218
@@ -13432,8 +13432,8 @@ msgid ""
 "The existing server groups and servers were removed, and the selected "
 "servers were imported successfully."
 msgstr ""
-"Grup dan server server yang ada dihapus, dan server yang dipilih berhasil "
-"diimpor."
+"Grup dan server server yang ada dihapus, dan server yang dipilih berhasil"
+" diimpor."
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:114
 msgid "Import Servers"
@@ -13445,20 +13445,21 @@ msgstr "Kesalahan impor"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:162
 msgid ""
-"The following servers will be imported. Click the Finish button to complete "
-"the import process."
+"The following servers will be imported. Click the Finish button to "
+"complete the import process."
 msgstr ""
-"Server berikut akan diimpor. Klik tombol selesai untuk menyelesaikan proses "
-"impor."
+"Server berikut akan diimpor. Klik tombol selesai untuk menyelesaikan "
+"proses impor."
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:164
 msgid ""
-"All existing server groups and servers will be removed before the servers "
-"above are imported. On a successful import process, the object explorer will"
-" be refreshed."
+"All existing server groups and servers will be removed before the servers"
+" above are imported. On a successful import process, the object explorer "
+"will be refreshed."
 msgstr ""
-"Semua grup dan server server yang ada akan dihapus sebelum server di atas "
-"diimpor. Pada proses impor yang berhasil, penjelajah objek akan disegarkan."
+"Semua grup dan server server yang ada akan dihapus sebelum server di atas"
+" diimpor. Pada proses impor yang berhasil, penjelajah objek akan "
+"disegarkan."
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:166
 msgid "On a successful import process, the object explorer will be refreshed."
@@ -13486,9 +13487,9 @@ msgid ""
 "database servers and then import the selected servers. This setting is "
 "applicable only while importing the servers."
 msgstr ""
-"Jika opsi ini dihidupkan maka pgAdmin akan menghapus semua server database "
-"yang ada dan kemudian mengimpor server yang dipilih. Pengaturan ini hanya "
-"berlaku saat mengimpor server."
+"Jika opsi ini dihidupkan maka pgAdmin akan menghapus semua server "
+"database yang ada dan kemudian mengimpor server yang dipilih. Pengaturan "
+"ini hanya berlaku saat mengimpor server."
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_servers.js:49
 msgid "Import/Export Servers..."
@@ -13559,8 +13560,7 @@ msgstr "Pemeliharaan..."
 #: pgadmin/tools/maintenance/static/js/maintenance.js:63
 #: pgadmin/tools/maintenance/static/js/maintenance.js:82
 msgid "Please select any database from the object explorer to do Maintenance."
-msgstr ""
-"Pilih database apa pun dari penjelajah objek untuk melakukan pemeliharaan."
+msgstr "Pilih database apa pun dari penjelajah objek untuk melakukan pemeliharaan."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:162
 msgid "Maintenance error"
@@ -13568,11 +13568,11 @@ msgstr "Kesalahan Pemeliharaan"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:163
 msgid ""
-"Maintenance job creation failed. Databases with = symbols in the name cannot"
-" be maintained using this utility."
+"Maintenance job creation failed. Databases with = symbols in the name "
+"cannot be maintained using this utility."
 msgstr ""
-"Pembuatan pekerjaan pemeliharaan gagal. Database dengan simbol = dalam nama "
-"tidak dapat dipelihara menggunakan utilitas ini."
+"Pembuatan pekerjaan pemeliharaan gagal. Database dengan simbol = dalam "
+"nama tidak dapat dipelihara menggunakan utilitas ini."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:47
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:62
@@ -13622,8 +13622,7 @@ msgstr "Izin tulis clipboard diperlukan"
 
 #: pgadmin/tools/psql/static/js/psql_module.js:358
 msgid "To copy data from PSQL terminal, Clipboard write permission required."
-msgstr ""
-"Untuk menyalin data dari terminal PSQL, diperlukan izin tulis clipboard."
+msgstr "Untuk menyalin data dari terminal PSQL, diperlukan izin tulis clipboard."
 
 #: pgadmin/tools/psql/static/js/psql_module.js:376
 msgid "Clipboard read permission required"
@@ -13631,8 +13630,7 @@ msgstr "Izin baca clipboard diperlukan"
 
 #: pgadmin/tools/psql/static/js/psql_module.js:376
 msgid "To paste data on the PSQL terminal, Clipboard read permission required."
-msgstr ""
-"Untuk menempelkan data di terminal PSQL, diperlukan izin baca clipboard."
+msgstr "Untuk menempelkan data di terminal PSQL, diperlukan izin baca clipboard."
 
 #: pgadmin/tools/restore/__init__.py:98
 msgid "Restoring backup on the server '{0}'"
@@ -13653,7 +13651,8 @@ msgstr "Memulihkan..."
 
 #: pgadmin/tools/restore/static/js/restore.js:62
 msgid ""
-"Please select any schema or table from the object explorer to Restore data."
+"Please select any schema or table from the object explorer to Restore "
+"data."
 msgstr ""
 "Pilih skema atau tabel apa pun dari penjelajah objek untuk mengembalikan "
 "data."
@@ -13704,12 +13703,11 @@ msgstr "Abaikan whitespace"
 
 #: pgadmin/tools/schema_diff/__init__.py:78
 msgid ""
-"Set ignore whitespace on or off by default in the drop-down menu near the "
-"Compare button in the Schema Diff tab."
+"Set ignore whitespace on or off by default in the drop-down menu near the"
+" Compare button in the Schema Diff tab."
 msgstr ""
-"Atur abaikan whitespace aktif atau nonaktif secara bawaan di menu drop-down"
-" di "
-"dekat tombol Bandingkan di tab Schema Diff."
+"Atur abaikan whitespace aktif atau nonaktif secara bawaan di menu drop-"
+"down di dekat tombol Bandingkan di tab Schema Diff."
 
 #: pgadmin/tools/schema_diff/__init__.py:85
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:195
@@ -13718,11 +13716,11 @@ msgstr "Abaikan pemilik"
 
 #: pgadmin/tools/schema_diff/__init__.py:87
 msgid ""
-"Set ignore owner on or off by default in the drop-down menu near the Compare"
-" button in the Schema Diff tab."
+"Set ignore owner on or off by default in the drop-down menu near the "
+"Compare button in the Schema Diff tab."
 msgstr ""
-"Atur abaikan pemilik aktif atau nonaktif secara bawaan di menu drop-down di "
-"dekat tombol Bandingkan di tab Schema Diff."
+"Atur abaikan pemilik aktif atau nonaktif secara bawaan di menu drop-down "
+"di dekat tombol Bandingkan di tab Schema Diff."
 
 #: pgadmin/tools/schema_diff/__init__.py:565
 msgid "Successfully compare the specified databases."
@@ -13746,8 +13744,8 @@ msgstr "Server terputus."
 
 #: pgadmin/tools/schema_diff/__init__.py:704
 msgid ""
-"Schema diff does not support the comparison between Postgres Server and EDB "
-"Postgres Advanced Server."
+"Schema diff does not support the comparison between Postgres Server and "
+"EDB Postgres Advanced Server."
 msgstr ""
 "Schema Diff tidak mendukung perbandingan antara Server Postgres dan EDB "
 "Postgres Advanced Server."
@@ -13847,17 +13845,16 @@ msgid "Generating script..."
 msgstr "Membuat skrip..."
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:336
-msgid ""
-"-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
+msgid "-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
 msgstr "-- Skrip ini dihasilkan oleh utilitas Schema Diff di pgAdmin 4. \n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:337
 msgid ""
-"-- For the circular dependencies, the order in which Schema Diff writes the "
-"objects is not very sophisticated \n"
+"-- For the circular dependencies, the order in which Schema Diff writes "
+"the objects is not very sophisticated \n"
 msgstr ""
-"-- Untuk ketergantungan melingkar, urutan di mana Schema Diff menulis objek "
-"tidak terlalu canggih\n"
+"-- Untuk ketergantungan melingkar, urutan di mana Schema Diff menulis "
+"objek tidak terlalu canggih\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:338
 msgid ""
@@ -13868,8 +13865,7 @@ msgstr ""
 "perubahan diterapkan dalam urutan yang benar.\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:339
-msgid ""
-"-- Please report an issue for any failure with the reproduction steps. \n"
+msgid "-- Please report an issue for any failure with the reproduction steps. \n"
 msgstr ""
 "-- Harap laporkan masalah untuk setiap kegagalan dengan langkah-langkah "
 "reproduksi.\n"
@@ -13923,7 +13919,8 @@ msgstr "Bandingkan Skema:"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:796
 msgid ""
-" Select the server, database and schema for the source and target and Click"
+" Select the server, database and schema for the source and target and "
+"Click"
 msgstr "Pilih server, database, dan skema untuk sumber dan target dan klik"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:798
@@ -14071,9 +14068,9 @@ msgid ""
 "main window of pgAdmin is closed then close this window and open a new "
 "pgAdmin session."
 msgstr ""
-"Mohon tunggu pop-up situs ini untuk melakukan tindakan yang "
-"diperlukan. Jika jendela utama pgAdmin tertutup maka tutup jendela ini dan "
-"buka sesi pgAdmin baru."
+"Mohon tunggu pop-up situs ini untuk melakukan tindakan yang diperlukan. "
+"Jika jendela utama pgAdmin tertutup maka tutup jendela ini dan buka sesi "
+"pgAdmin baru."
 
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:40
 msgid "Data Filter"
@@ -14109,8 +14106,7 @@ msgid "Database moved/renamed"
 msgstr "Database dipindah/diganti nama"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:157
-msgid ""
-"An unexpected error occurred - ensure you are logged into the application."
+msgid "An unexpected error occurred - ensure you are logged into the application."
 msgstr ""
 "Terjadi kesalahan yang tidak terduga - pastikan Anda masuk ke dalam "
 "aplikasi."
@@ -14255,8 +14251,8 @@ msgid ""
 "By changing the connection you will lose all your unsaved data for the "
 "current connection. <br> Do you want to continue?"
 msgstr ""
-"Dengan mengubah koneksi, Anda akan kehilangan semua data yang belum disimpan"
-" untuk koneksi saat ini. <br> Apakah Anda ingin melanjutkan?"
+"Dengan mengubah koneksi, Anda akan kehilangan semua data yang belum "
+"disimpan untuk koneksi saat ini. <br> Apakah Anda ingin melanjutkan?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:128
 msgid "(Obtaining connection)"
@@ -14286,7 +14282,7 @@ msgstr "Baris kosong."
 #: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:196
 #, python-format
 msgid "Geometries with non-SRID %s not rendered."
-msgstr "Geometri dengan %non-SRID tidak dibentuk (rendered)."
+msgstr "Geometri dengan %s non-SRID tidak dibentuk (rendered)."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:319
 msgid "Empty"
@@ -14377,8 +14373,8 @@ msgid ""
 "The current transaction is not commited to the database. Do you want to "
 "commit or rollback the transaction?"
 msgstr ""
-"Transaksi saat ini tidak commit ke database. Apakah Anda ingin "
-"commit atau mengembalikan transaksi?"
+"Transaksi saat ini tidak commit ke database. Apakah Anda ingin commit "
+"atau mengembalikan transaksi?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:500
 msgid "Open File"
@@ -14611,11 +14607,11 @@ msgstr "Apakah Anda yakin ingin membersihkan riwayat?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:460
 msgid ""
-"This will remove all of your query history from this and other sessions for "
-"this database."
+"This will remove all of your query history from this and other sessions "
+"for this database."
 msgstr ""
-"Ini akan menghapus semua riwayat kueri Anda dari ini dan sesi lainnya untuk "
-"database ini."
+"Ini akan menghapus semua riwayat kueri Anda dari ini dan sesi lainnya "
+"untuk database ini."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:462
 msgid "Removing history..."
@@ -14693,8 +14689,8 @@ msgstr "%s baris terpengaruh."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:858
 msgid ""
-"The data has been modified, but not saved. Are you sure you wish to discard "
-"the changes?"
+"The data has been modified, but not saved. Are you sure you wish to "
+"discard the changes?"
 msgstr ""
 "Data telah dimodifikasi, tetapi tidak disimpan. Apakah Anda yakin ingin "
 "mengabaikan perubahan?"
@@ -14728,8 +14724,7 @@ msgid "Saving data..."
 msgstr "Menyimpan data..."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1058
-msgid ""
-"This query was generated by pgAdmin as part of a \"Save Data\" operation"
+msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 "Kueri ini dihasilkan oleh pgAdmin sebagai bagian dari operasi \"Simpan "
 "Data\""
@@ -14749,7 +14744,8 @@ msgstr "Data disimpan dengan sukses."
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1119
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
-"Auto-Commit tidak aktif. Anda masih perlu melakukan perubahan pada database."
+"Auto-Commit tidak aktif. Anda masih perlu melakukan perubahan pada "
+"database."
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1285
 msgid "Geometry Viewer"
@@ -14890,13 +14886,13 @@ msgstr "Tampilkan pengaturan?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:62
 msgid "Set auto commit on or off by default in new Query Tool tabs."
-msgstr ""
-"Atur Auto Commit aktif atau tidak secara bawaan di tab Alat Kueri baru."
+msgstr "Atur Auto Commit aktif atau tidak secara bawaan di tab Alat Kueri baru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:70
 msgid "Set auto rollback on or off by default in new Query Tool tabs."
 msgstr ""
-"Atur Auto Rollback aktif atau nonaktif secara bawaan di tab Alat Kueri baru."
+"Atur Auto Rollback aktif atau nonaktif secara bawaan di tab Alat Kueri "
+"baru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:76
 msgid "Prompt to save unsaved query changes?"
@@ -14904,8 +14900,8 @@ msgstr "Meminta untuk menyimpan perubahan kueri yang belum disimpan?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:78
 msgid ""
-"Specifies whether or not to prompt user to save unsaved query on query tool "
-"exit."
+"Specifies whether or not to prompt user to save unsaved query on query "
+"tool exit."
 msgstr ""
 "Menentukan apakah akan meminta pengguna atau tidak untuk menyimpan kueri "
 "yang belum disimpan pada saat keluar alat kueri."
@@ -14917,13 +14913,13 @@ msgstr "Urutkan Tampilan Data hasil berdasarkan kolom primary key?"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:89
 msgid ""
 "If set to True, data returned when using the View/Edit Data - All Rows "
-"option will be sorted by the Primary Key columns by default. When using the "
-"First/Last 100 Rows options, data is always sorted."
+"option will be sorted by the Primary Key columns by default. When using "
+"the First/Last 100 Rows options, data is always sorted."
 msgstr ""
-"Jika diatur ke True, data yang dikembalikan saat menggunakan data View/Edit "
-"- Opsi semua baris akan diurutkan berdasarkan kolom Primary Key secara "
-"bawaan. Saat menggunakan opsi 100 Baris Pertama/Terakhir, data selalu "
-"diurutkan."
+"Jika diatur ke True, data yang dikembalikan saat menggunakan data "
+"View/Edit - Opsi semua baris akan diurutkan berdasarkan kolom Primary Key"
+" secara bawaan. Saat menggunakan opsi 100 Baris Pertama/Terakhir, data "
+"selalu diurutkan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:97
 msgid "Prompt to save unsaved data changes?"
@@ -14931,11 +14927,11 @@ msgstr "Meminta untuk menyimpan perubahan data yang belum disimpan?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:99
 msgid ""
-"Specifies whether or not to prompt user to save unsaved data on data grid "
-"exit."
+"Specifies whether or not to prompt user to save unsaved data on data grid"
+" exit."
 msgstr ""
-"Menentukan apakah akan meminta pengguna atau tidak untuk menyimpan data yang"
-" belum disimpan saat keluar data grid."
+"Menentukan apakah akan meminta pengguna atau tidak untuk menyimpan data "
+"yang belum disimpan saat keluar data grid."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:107
 msgid "Prompt to commit/rollback active transactions?"
@@ -14956,8 +14952,8 @@ msgstr "Salin SQL dari jendela utama ke alat kueri?"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:121
 msgid "Specifies whether or not to copy SQL to query tool from main window."
 msgstr ""
-"Menentukan apakah akan menyalin SQL ke alat kueri dari jendela utama atau "
-"tidak."
+"Menentukan apakah akan menyalin SQL ke alat kueri dari jendela utama atau"
+" tidak."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:129
 msgid "Plain text mode?"
@@ -14966,11 +14962,12 @@ msgstr "Mode teks biasa?"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:131
 msgid ""
 "When set to True, keywords won't be highlighted and code folding will be "
-"disabled. Plain text mode will improve editor performance with large files."
+"disabled. Plain text mode will improve editor performance with large "
+"files."
 msgstr ""
 "Saat diatur ke True, kata kunci tidak akan disorot dan lipat kode akan "
-"dinonaktifkan. Mode teks biasa akan meningkatkan kinerja editor "
-"dengan file besar."
+"dinonaktifkan. Mode teks biasa akan meningkatkan kinerja editor dengan "
+"file besar."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
 msgid "Code folding?"
@@ -14978,13 +14975,13 @@ msgstr "Lipat Kode?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:142
 msgid ""
-"Enable or disable code folding. In plain text mode, this will have no effect"
-" as code folding is always disabled in that mode. Disabling will improve "
-"editor performance with large files."
+"Enable or disable code folding. In plain text mode, this will have no "
+"effect as code folding is always disabled in that mode. Disabling will "
+"improve editor performance with large files."
 msgstr ""
-"Mengaktifkan atau menonaktifkan lipat kode. Dalam mode teks biasa, ini tidak"
-" akan berpengaruh karena lipat kode selalu dinonaktifkan dalam mode itu. "
-"Menonaktifkan akan meningkatkan kinerja editor dengan file besar."
+"Mengaktifkan atau menonaktifkan lipat kode. Dalam mode teks biasa, ini "
+"tidak akan berpengaruh karena lipat kode selalu dinonaktifkan dalam mode "
+"itu. Menonaktifkan akan meningkatkan kinerja editor dengan file besar."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:151
 msgid "Line wrapping?"
@@ -15043,13 +15040,13 @@ msgstr "Ganti nilai null dengan"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:225
 msgid ""
-"Specifies the string that represents a null value while downloading query "
-"results as CSV. You can specify any arbitrary string to represent a null "
-"value, with quotes if desired."
+"Specifies the string that represents a null value while downloading query"
+" results as CSV. You can specify any arbitrary string to represent a null"
+" value, with quotes if desired."
 msgstr ""
 "Menentukan string yang mewakili nilai null saat mengunduh hasil kueri "
-"sebagai CSV. Anda dapat menentukan string apapun untuk mewakili "
-"nilai null, dengan kutipan jika diinginkan."
+"sebagai CSV. Anda dapat menentukan string apapun untuk mewakili nilai "
+"null, dengan kutipan jika diinginkan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:234
 msgid "Result copy quoting"
@@ -15077,13 +15074,15 @@ msgstr "Nama kolom"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:277
 msgid ""
-"If set to 'Column data' columns will auto-size to the maximum width of the "
-"data in the column as loaded in the first batch. If set to 'Column name', "
-"the column will be sized to the widest of the data type or column name."
+"If set to 'Column data' columns will auto-size to the maximum width of "
+"the data in the column as loaded in the first batch. If set to 'Column "
+"name', the column will be sized to the widest of the data type or column "
+"name."
 msgstr ""
 "Jika diatur ke kolom 'Data Kolom' akan ukur otomatis ke lebar maksimum "
-"data di kolom seperti yang dimuat dalam batch pertama. Jika diatur ke 'Nama "
-"Kolom', kolom akan diukur dengan jenis data atau nama kolom terluas."
+"data di kolom seperti yang dimuat dalam batch pertama. Jika diatur ke "
+"'Nama Kolom', kolom akan diukur dengan jenis data atau nama kolom "
+"terluas."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
 msgid "Maximum column width"
@@ -15091,11 +15090,11 @@ msgstr "Lebar kolom maksimum"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:290
 msgid ""
-"Specify the maximum width of the column in pixels when 'Columns sized by ' "
-"is set to 'Column data'."
+"Specify the maximum width of the column in pixels when 'Columns sized by "
+"' is set to 'Column data'."
 msgstr ""
-"Tentukan lebar maksimum kolom dalam piksel ketika "
-"'Kolom diukur berdasarkan' diatur ke 'Data Kolom'."
+"Tentukan lebar maksimum kolom dalam piksel ketika 'Kolom diukur "
+"berdasarkan' diatur ke 'Data Kolom'."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:298
 msgid "On demand record count"
@@ -15103,13 +15102,13 @@ msgstr "Hitung data sesuai permintaan"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:301
 msgid ""
-"Specify the number of records to fetch in one batch in query tool when query"
-" result set is large. Changing this value will override "
+"Specify the number of records to fetch in one batch in query tool when "
+"query result set is large. Changing this value will override "
 "ON_DEMAND_RECORD_COUNT setting from config file."
 msgstr ""
-"Tentukan jumlah record yang akan diambil dalam satu batch di alat kueri saat"
-" melakukan kueri set hasil besar. Mengubah nilai ini akan menimpa"
-"pengaturan ON_DEMAND_RECORD_COUNT dari file konfigurasi."
+"Tentukan jumlah record yang akan diambil dalam satu batch di alat kueri "
+"saat melakukan kueri set hasil besar. Mengubah nilai ini akan "
+"menimpapengaturan ON_DEMAND_RECORD_COUNT dari file konfigurasi."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:309
 msgid "Font size"
@@ -15117,14 +15116,15 @@ msgstr "Ukuran font"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:313
 msgid ""
-"The font size to use for the SQL text boxes and editors. The value specified"
-" is in \"em\" units, in which 1 is the default relative font size. For "
-"example, to increase the font size by 20 percent use a value of 1.2, or to "
-"reduce by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10."
+"The font size to use for the SQL text boxes and editors. The value "
+"specified is in \"em\" units, in which 1 is the default relative font "
+"size. For example, to increase the font size by 20 percent use a value of"
+" 1.2, or to reduce by 20 percent, use a value of 0.8. Minimum 0.1, "
+"maximum 10."
 msgstr ""
-"Ukuran font yang akan digunakan untuk kotak teks SQL dan editor. Nilai yang "
-"ditentukan adalah dalam unit \"EM\", di mana 1 adalah ukuran bawaan font "
-"relatif. Misalnya, untuk meningkatkan ukuran font sebesar 20 persen "
+"Ukuran font yang akan digunakan untuk kotak teks SQL dan editor. Nilai "
+"yang ditentukan adalah dalam unit \"EM\", di mana 1 adalah ukuran bawaan "
+"font relatif. Misalnya, untuk meningkatkan ukuran font sebesar 20 persen "
 "menggunakan nilai 1,2 atau untuk mengurangi 20 persen, menggunakan nilai "
 "0,8. Minimum 0,1, maksimum 10."
 
@@ -15134,11 +15134,11 @@ msgstr "Status koneksi"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:326
 msgid ""
-"If set to True, the Query Tool will monitor and display the connection and "
-"transaction status."
+"If set to True, the Query Tool will monitor and display the connection "
+"and transaction status."
 msgstr ""
-"Jika diatur ke True, alat kueri akan memantau dan menampilkan status koneksi"
-" dan transaksi."
+"Jika diatur ke True, alat kueri akan memantau dan menampilkan status "
+"koneksi dan transaksi."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:333
 msgid "Connection status refresh rate"
@@ -15154,8 +15154,8 @@ msgstr "Tampilkan notifikasi keberhasilan kueri?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:346
 msgid ""
-"If set to True, the Query Tool will show notifications on successful query "
-"execution."
+"If set to True, the Query Tool will show notifications on successful "
+"query execution."
 msgstr ""
 "Jika diatur ke True, alat kueri akan menunjukkan notifikasi tentang "
 "eksekusi kueri yang berhasil."
@@ -15246,8 +15246,8 @@ msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
 msgstr ""
-"Jika diatur ke True, kata kunci akan ditampilkan dalam "
-"huruf besar untuk pelengkapan otomatis."
+"Jika diatur ke True, kata kunci akan ditampilkan dalam huruf besar untuk "
+"pelengkapan otomatis."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:685
 msgid "Autocomplete on key press"
@@ -15259,9 +15259,9 @@ msgid ""
 "CTRL/CMD + Space. If set to False, autocomplete is only activated when "
 "CTRL/CMD + Space is pressed."
 msgstr ""
-"Jika diatur ke True, autocomplete akan tersedia saat tombol ditekan bersama "
-"dengan CTRL/CMD + Spasi. Jika diatur ke False, autocomplete hanya diaktifkan "
-"ketika CTRL/CMD + Spasi ditekan."
+"Jika diatur ke True, autocomplete akan tersedia saat tombol ditekan "
+"bersama dengan CTRL/CMD + Spasi. Jika diatur ke False, autocomplete hanya"
+" diaktifkan ketika CTRL/CMD + Spasi ditekan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:731
 msgid "Keyword case"
@@ -15292,8 +15292,7 @@ msgstr "Kasus Identifier"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:748
 msgid "Convert identifiers to upper, lower, or capitalized casing."
-msgstr ""
-"Konversi pengidentifikasi menjadi huruf besar, kecil, atau kapitalisasi."
+msgstr "Konversi pengidentifikasi menjadi huruf besar, kecil, atau kapitalisasi."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:755
 msgid "Strip comments?"
@@ -15320,8 +15319,8 @@ msgid ""
 "If set to True, the indentations of the statements are changed, and "
 "statements are aligned by keywords."
 msgstr ""
-"Jika diatur ke True, indentasi pernyataan diubah, dan pernyataan diselaraskan "
-"dengan kata kunci."
+"Jika diatur ke True, indentasi pernyataan diubah, dan pernyataan "
+"diselaraskan dengan kata kunci."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:779
 msgid "Spaces around operators?"
@@ -15348,8 +15347,9 @@ msgid ""
 "The column limit (in characters) for wrapping comma-separated lists. If "
 "zero, it puts every item in the list on its own line."
 msgstr ""
-"Batas kolom (dalam karakter) untuk membungkus daftar yang dipisahkan koma. "
-"Jika nol, itu menempatkan setiap item dalam daftar pada baris sendiri."
+"Batas kolom (dalam karakter) untuk membungkus daftar yang dipisahkan "
+"koma. Jika nol, itu menempatkan setiap item dalam daftar pada baris "
+"sendiri."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:804
 msgid "Tab size"
@@ -15365,11 +15365,11 @@ msgstr "Gunakan spasi?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:817
 msgid ""
-"Specifies whether or not to insert spaces instead of tabs when the tab key "
-"or auto-indent are used."
+"Specifies whether or not to insert spaces instead of tabs when the tab "
+"key or auto-indent are used."
 msgstr ""
-"Menentukan apakah akan memasukkan spasi atau tidak, bukan tab ketika kunci "
-"tab atau indentasi-otomatis digunakan."
+"Menentukan apakah akan memasukkan spasi atau tidak, bukan tab ketika "
+"kunci tab atau indentasi-otomatis digunakan."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:825
 msgid "Row Limit"
@@ -15377,13 +15377,13 @@ msgstr "Batas baris"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:827
 msgid ""
-"This setting specifies the maximum number of rows that will be plotted on a "
-"chart. Increasing this limit may impact performance if charts are plotted "
-"with very high numbers of rows."
+"This setting specifies the maximum number of rows that will be plotted on"
+" a chart. Increasing this limit may impact performance if charts are "
+"plotted with very high numbers of rows."
 msgstr ""
 "Pengaturan ini menentukan jumlah maksimum baris yang akan diplot pada "
-"grafik. Meningkatkan batas ini dapat memengaruhi kinerja jika grafik diplot "
-"dengan jumlah baris yang sangat tinggi."
+"grafik. Meningkatkan batas ini dapat memengaruhi kinerja jika grafik "
+"diplot dengan jumlah baris yang sangat tinggi."
 
 #: pgadmin/tools/user_management/__init__.py:46
 msgid "Users"
@@ -15506,8 +15506,8 @@ msgstr "Manajemen Pengguna"
 
 #: pgadmin/utils/__init__.py:333
 msgid ""
-"Utility file not found. Please correct the Binary Path in the Preferences "
-"dialog"
+"Utility file not found. Please correct the Binary Path in the Preferences"
+" dialog"
 msgstr ""
 "File utilitas tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
 "Preferensi"
@@ -15518,7 +15518,8 @@ msgid ""
 "'%s' file not found. Please correct the Binary Path in the Preferences "
 "dialog"
 msgstr ""
-"File '%s' tidak ditemukan. Harap perbaiki Path Biner dalam dialog Preferensi"
+"File '%s' tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
+"Preferensi"
 
 #: pgadmin/utils/__init__.py:517
 #, python-format
@@ -15672,16 +15673,16 @@ msgstr "ID pengguna yang ditentukan (%s) tidak dapat ditemukan."
 
 #: pgadmin/utils/constants.py:126
 msgid ""
-"Access denied: You’re having limited access. You’re not allowed to Rename, "
-"Delete or Create any files/folders"
+"Access denied: You’re having limited access. You’re not allowed to "
+"Rename, Delete or Create any files/folders"
 msgstr ""
 "Akses ditolak: Anda memiliki akses terbatas. Anda tidak diizinkan untuk "
 "mengganti nama, menghapus atau membuat file/folder apa pun"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
-"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to the "
-"database server."
+"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
+"the database server."
 msgstr ""
 "Koneksi ke Terowongan SSH untuk host '{0}' telah terputus. Hubungkan "
 "kembali ke server database."
@@ -15745,12 +15746,12 @@ msgstr ""
 
 #: pgadmin/utils/driver/psycopg3/connection.py:704
 msgid ""
-"Failed to create cursor for psycopg3 connection with error message for the"
-" server#{1}:{2}:\n"
+"Failed to create cursor for psycopg3 connection with error message for "
+"the server#{1}:{2}:\n"
 "{0}"
 msgstr ""
-"Gagal membuat kursor untuk koneksi psycopg3 dengan pesan kesalahan untuk"
-" server#{1}: {2}:\n"
+"Gagal membuat kursor untuk koneksi psycopg3 dengan pesan kesalahan untuk "
+"server#{1}: {2}:\n"
 "{0}"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:716
@@ -15787,19 +15788,17 @@ msgstr "Tidak terhubung ke server database."
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1599
 msgid ""
-"Asynchronous notification \"{0}\" with payload \"{1}\" received from server "
-"process with PID {2}\n"
+"Asynchronous notification \"{0}\" with payload \"{1}\" received from "
+"server process with PID {2}\n"
 msgstr ""
-"Notifikasi asinkron \"{0}\" dengan muatan \"{1}\" diterima dari "
-"proses server dengan PID {2}\n"
+"Notifikasi asinkron \"{0}\" dengan muatan \"{1}\" diterima dari proses "
+"server dengan PID {2}\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1605
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
-msgstr ""
-"Notifikasi asinkron \"{0}\" diterima dari proses server dengan PID "
-"{1}\n"
+msgstr "Notifikasi asinkron \"{0}\" diterima dari proses server dengan PID {1}\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1643
 msgid "ERROR:  "
@@ -15848,3 +15847,4 @@ msgid ""
 msgstr ""
 "Gagal membuat terowongan SSH.\n"
 "Kesalahan: {0}"
+

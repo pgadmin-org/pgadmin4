@@ -78,6 +78,7 @@ LANGUAGES = {
     'cs': 'Czech',
     'fr': 'French',
     'de': 'German',
+    'id': 'Indonesian',
     'it': 'Italian',
     'ja': 'Japanese',
     'ko': 'Korean',
