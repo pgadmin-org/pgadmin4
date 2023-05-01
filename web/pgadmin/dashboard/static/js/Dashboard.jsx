@@ -7,11 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 // eslint-disable-next-line react/display-name
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import getApiInstance from 'sources/api_instance';
 import PgTable from 'sources/components/PgTable';
+import { InputCheckbox } from '../../../static/js/components/FormComponents';
 import { makeStyles } from '@material-ui/core/styles';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
@@ -151,6 +152,7 @@ export default function Dashboard({
   const [msg, setMsg] = useState('');
   const [tabVal, setTabVal] = useState(0);
   const [refresh, setRefresh] = useState(false);
+  const [activeOnly, setActiveOnly] = useState(false);
   const [schemaDict, setSchemaDict] = React.useState({});
 
   if (!did) {
@@ -794,6 +796,14 @@ export default function Dashboard({
     }
   }, [nodeData, tabVal, did, preferences, refresh, props.dbConnected]);
 
+  const filteredDashData = useMemo(()=>{
+    if (tabVal == 0 && activeOnly) {
+      // we want to show 'idle in transaction', 'active', 'active in transaction', and future non-blank, non-"idle" status values
+      return dashData.filter((r)=>(r.state && r.state != '' && r.state != 'idle'));
+    }
+    return dashData;
+  }, [dashData, activeOnly, tabVal]);
+
   const RefreshButton = () =>{
     return(
       <PgIconButton
@@ -833,6 +843,25 @@ export default function Dashboard({
     );
   };
 
+  const CustomActiveOnlyHeaderLabel =
+    {
+      label: gettext('Active sessions only'),
+    };
+  const CustomActiveOnlyHeader = () => {
+    return (
+      <InputCheckbox
+        label={gettext('Active sessions only')}
+        labelPlacement="end"
+        className={classes.searchInput}
+        onChange={(e) => {
+          e.preventDefault();
+          setActiveOnly(e.target.checked);
+        }}
+        value={activeOnly}
+        controlProps={CustomActiveOnlyHeaderLabel}
+      ></InputCheckbox>);
+  };
+    
   return (
     <>
       {sid && props.serverConnected ? (
@@ -870,8 +899,9 @@ export default function Dashboard({
                   <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
                     <PgTable
                       caveTable={false}
+                      CustomHeader={CustomActiveOnlyHeader}
                       columns={activityColumns}
-                      data={dashData}
+                      data={filteredDashData}
                       schema={schemaDict}
                     ></PgTable>
                   </TabPanel>
