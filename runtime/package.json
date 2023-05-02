@@ -5,7 +5,7 @@
   "repository": "https://github.com/postgres/pgadmin4.git",
   "author": "pgAdmin Development Team (https://www.pgadmin.org/)",
   "license": "PostgreSQL",
-  "chromium-args": "--disable-popup-blocking --disable-gpu",
+  "chromium-args": "--disable-popup-blocking --disable-gpu --disable-devtools",
   "user-agent": "Nwjs:%nwver-%osinfo-%chromium_ver",
   "nodejs": true,
   "window": {
