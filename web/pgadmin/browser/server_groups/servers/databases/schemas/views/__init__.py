@@ -1382,10 +1382,14 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                         'acl' in self.allowed_acls['datacl']:
                     allowed_acls = self.allowed_acls['datacl']['acl']
 
+                deftypes = set()
                 for row in acl['rows']:
                     priv = parse_priv_from_db(row)
                     res.setdefault(row['deftype'], []).append(priv)
-                    res[row['deftype']] = \
+                    deftypes.add(row['deftype'])
+
+                for deftype in deftypes:
+                    res[deftype] = \
                         parse_priv_to_db(res[row['deftype']], allowed_acls)
 
                 grant_sql = render_template("/".join(
