@@ -296,7 +296,7 @@ def register_query_tool_preferences(self):
     self.on_demand_record_count = self.preference.register(
         'Results_grid', 'on_demand_record_count',
         gettext("On demand record count"), 'integer', ON_DEMAND_RECORD_COUNT,
-        min_val=100,
+        min_val=1,
         category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext('Specify the number of records to fetch in one batch '
                          'in query tool when query result set is large. '
