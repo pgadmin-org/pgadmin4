@@ -1390,7 +1390,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 
                 for deftype in deftypes:
                     res[deftype] = \
-                        parse_priv_to_db(res[row['deftype']], allowed_acls)
+                        parse_priv_to_db(res[deftype], allowed_acls)
 
                 grant_sql = render_template("/".join(
                     [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
