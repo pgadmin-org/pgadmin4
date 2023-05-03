@@ -51,3 +51,4 @@ Bug fixes
   | `Issue #6183 <https://github.com/pgadmin-org/pgadmin4/issues/6183>`_ -  Mac crash when you press Command-Shift-C.
   | `Issue #6189 <https://github.com/pgadmin-org/pgadmin4/issues/6189>`_ -  Fix an issue in View SQL when column level privileges are set with multiple roles.
   | `Issue #6191 <https://github.com/pgadmin-org/pgadmin4/issues/6191>`_ -  Fixed an issue where Reset Password is not working after upgrading to latest flask-security-too.
+  | `Issue #6234 <https://github.com/pgadmin-org/pgadmin4/issues/6234>`_ -  Usernames/roles with special character are not double quoted when assigning privileges.
