@@ -488,7 +488,8 @@ class IndexConstraintView(PGChildNodeView):
                     row['oid'],
                     tid,
                     row['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    description=row['comment']
                 ))
         return res
 
@@ -625,12 +626,17 @@ class IndexConstraintView(PGChildNodeView):
                     self.end_transaction()
                     return internal_server_error(errormsg=res)
 
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     res['rows'][0]['oid'],
                     tid,
                     data['name'],
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    **other_node_info
                 )
             )
 
@@ -696,7 +702,8 @@ class IndexConstraintView(PGChildNodeView):
                     cid,
                     tid,
                     name,
-                    icon=self.node_icon
+                    icon=self.node_icon,
+                    **other_node_info
                 )
             )
         except Exception as e:

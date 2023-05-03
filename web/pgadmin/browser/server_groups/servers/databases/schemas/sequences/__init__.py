@@ -243,7 +243,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     scid,
                     row['name'],
                     icon=self.node_icon,
-                    description=row['description']
+                    description=row['comment']
                 ))
 
         return make_json_response(

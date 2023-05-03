@@ -431,7 +431,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             scid,
             rset['rows'][0]['name'],
             icon="icon-view" if self.node_type == 'view'
-            else "icon-mview"
+            else "icon-mview",
+            description=rset['rows'][0]['comment']
         )
 
         return make_json_response(
@@ -459,7 +460,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     scid,
                     row['name'],
                     icon="icon-view" if self.node_type == 'view'
-                    else "icon-mview"
+                    else "icon-mview",
+                    description=row['comment']
                 ))
 
         return make_json_response(
@@ -583,13 +585,18 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=new_scid)
 
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
                     new_scid,
                     data['name'],
                     icon="icon-view" if self.node_type == 'view'
-                    else "icon-mview"
+                    else "icon-mview",
+                    **other_node_info
                 )
             )
         except Exception as e:
@@ -631,13 +638,18 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=new_scid)
 
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
                     new_scid,
                     new_view_name,
                     icon="icon-view" if self.node_type == 'view'
-                    else "icon-mview"
+                    else "icon-mview",
+                    **other_node_info
                 )
             )
         except Exception as e:
