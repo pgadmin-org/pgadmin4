@@ -2,7 +2,7 @@
 Version 7.2
 ***********
 
-Release date:
+Release date: 2023-06-01
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v7.1.
 
@@ -29,3 +29,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #6253 <https://github.com/pgadmin-org/pgadmin4/issues/6253>`_ -  Fix an issue in the register server when setting the role, an arbitrary SQL query can be fired.
