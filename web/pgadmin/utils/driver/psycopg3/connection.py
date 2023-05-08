@@ -420,6 +420,7 @@ class Connection(BaseConnection):
         """
         is_set_role = False
         role = None
+        status = None
 
         if 'role' in kwargs and kwargs['role']:
             is_set_role = True
@@ -429,7 +430,16 @@ class Connection(BaseConnection):
             role = manager.role
 
         if is_set_role:
-            status = self._execute(cur, "SET ROLE TO {0}".format(role))
+            _query = "SELECT usename from pg_user WHERE usename = '{0}'" \
+                     "".format(role)
+            _status, res = self.execute_scalar(_query)
+
+            if res:
+                status = self._execute(cur, "SET ROLE TO {0}".format(role))
+            else:
+                # If role is not found then set the status to role
+                # for showing the proper error message
+                status = role
 
             if status is not None:
                 self.conn.close()
@@ -437,7 +447,7 @@ class Connection(BaseConnection):
                 current_app.logger.error(
                     "Connect to the database server (#{server_id}) for "
                     "connection ({conn_id}), but - failed to setup the role "
-                    "with error message as below:{msg}".format(
+                    " {msg}".format(
                         server_id=self.manager.sid,
                         conn_id=conn_id,
                         msg=status
@@ -445,7 +455,7 @@ class Connection(BaseConnection):
                 )
                 return True, \
                     _(
-                        "Failed to setup the role with error message:\n{0}"
+                        "Failed to setup the role \n{0}"
                     ).format(status)
         return False, ''
 
