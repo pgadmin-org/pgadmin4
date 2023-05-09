@@ -225,7 +225,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
                     cnt += 1
                     continue
 
-                if datatype in ('tstzrange', 'tstzrange[]'):
+                if datatype in ('tstzrange', 'tstzrange[]', 'tstzmultirange',
+                                'tstzmultirange[]'):
                     expected_output = expected_output.format(
                         **dict([('tz', self.timezone_hh_mm)]))
                 try:
@@ -256,7 +257,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             else:
                 dataformatter = '{}'
 
-            if datatype in ('tstzrange', 'tstzrange[]'):
+            if datatype in ('tstzrange', 'tstzrange[]', 'tstzmultirange',
+                            'tstzmultirange[]'):
                 inputdata = inputdata.format(
                     **dict([('tz', self.timezone_hh_mm)]))
             if first:
