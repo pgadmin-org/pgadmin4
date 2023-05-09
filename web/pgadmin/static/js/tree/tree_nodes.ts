@@ -13,6 +13,8 @@ import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
 import { FileType } from 'react-aspen';
 import { findInTree } from './tree';
+import Notify from '../../../static/js/helpers/Notifier';
+import gettext from 'sources/gettext';
 
 import { unix } from 'path-fx';
 
@@ -148,7 +150,13 @@ export class ManageTreeNodes {
 
       await fill(treeData);
       if (node.children.length > 0) res(node.children);
-      else res(null);
+      else {
+        res(null);
+        if (node.data && node.data._type == 'server' && node.data.connected) {
+          Notify.info(gettext('Server children are not available.'
+          +' Please check these nodes are not hidden through the preferences setting `Browser > Nodes`.'));
+        }
+      }
 
     }
     loadData();
