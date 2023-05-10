@@ -127,7 +127,7 @@ _.extend(pgBrowser.browserTreeState, {
       tmpIndex = -1;
 
     // If no parent or the server not in tree hierarchy then return
-    if (!pgBrowser.tree.hasParent(item) || !(this.parent in treeHierarchy))
+    if (!pgBrowser.tree.hasParent(item) || !(this.parent in treeHierarchy) || (data._type === 'server' && !data.connected))
       return;
 
     topParent = treeHierarchy[this.parent]['_id'];
