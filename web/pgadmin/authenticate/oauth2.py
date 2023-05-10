@@ -137,19 +137,18 @@ class OAuth2Authentication(BaseAuthentication):
                 username = profile[username_claim]
             else:
                 error_msg = "The claim '%s' is required to login into " \
-                    "pgAdmin. Please update your Oauth2 profile." % (
+                    "pgAdmin. Please update your OAuth2 profile." % (
                         username_claim)
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
-
-        if not email or email == '':
-            current_app.logger.exception(
-                "An email id is required to login into pgAdmin. "
-                "Please update your Oauth2 profile."
-            )
-            return False, gettext(
-                "An email id is required to login into pgAdmin. "
-                "Please update your Oauth2 profile.")
+        else:
+            if not email or email == '':
+                error_msg = "An email id or OAUTH2_USERNAME_CLAIM is" \
+                    " required to login into pgAdmin. Please update your" \
+                    " OAuth2 profile for email id or set" \
+                    " OAUTH2_USERNAME_CLAIM config parameter."
+                current_app.logger.exception(error_msg)
+                return False, gettext(error_msg)
 
         user, msg = self.__auto_create_user(username, email)
         if user:
