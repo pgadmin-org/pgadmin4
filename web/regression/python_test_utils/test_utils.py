@@ -1186,11 +1186,9 @@ def get_server_type(server):
     if isinstance(version_string, tuple):
         version_string = version_string[0]
 
-    # Handle https://github.com/psycopg/psycopg/issues/561
-    try:
+    # Handle SQL_ASCII (https://github.com/psycopg/psycopg/issues/561)
+    if connection.info.encoding == 'ascii'
         version_string = version_string.decode()
-    except (UnicodeDecodeError, AttributeError):
-        pass
 
     if "EnterpriseDB" in version_string:
         return 'ppas'
