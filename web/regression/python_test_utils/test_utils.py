@@ -1187,7 +1187,7 @@ def get_server_type(server):
         version_string = version_string[0]
 
     # Handle SQL_ASCII (https://github.com/psycopg/psycopg/issues/561)
-    if connection.info.encoding == 'ascii'
+    if connection.info.encoding == 'ascii':
         version_string = version_string.decode()
 
     if "EnterpriseDB" in version_string:
