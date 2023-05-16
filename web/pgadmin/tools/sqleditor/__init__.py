@@ -961,6 +961,7 @@ def poll(trans_id):
                             col_type['type_code'] = col['type_code']
                             col_type['type_name'] = None
                             col_type['internal_size'] = col['internal_size']
+                            col_type['display_size'] = col['display_size']
                             columns[col['name']] = col_type
 
                 if columns:
