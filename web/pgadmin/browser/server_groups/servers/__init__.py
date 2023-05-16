@@ -1793,7 +1793,7 @@ class ServerNode(PGChildNodeView):
         try:
             manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
             conn = manager.connection()
-
+            msg = None
             # Execute SQL to pause or resume WAL replay
             if conn.connected():
                 if pause:
@@ -1806,6 +1806,7 @@ class ServerNode(PGChildNodeView):
                         return internal_server_error(
                             errormsg=str(res)
                         )
+                    msg = gettext('WAL replay paused')
                 else:
                     sql = "SELECT pg_xlog_replay_resume();"
                     if manager.version >= 100000:
@@ -1816,9 +1817,10 @@ class ServerNode(PGChildNodeView):
                         return internal_server_error(
                             errormsg=str(res)
                         )
+                    msg = gettext('WAL replay resumed')
                 return make_json_response(
                     success=1,
-                    info=gettext('WAL replay paused'),
+                    info=msg,
                     data={'in_recovery': True, 'wal_pause': pause}
                 )
             return gone(errormsg=gettext('Please connect the server.'))

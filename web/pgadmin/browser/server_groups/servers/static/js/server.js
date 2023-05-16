@@ -380,7 +380,7 @@ define('pgadmin.node.server', [
           getApiInstance().delete(
             obj.generate_url(i, 'wal_replay' , d, true)
           ).then(({data: res})=> {
-            obj.on_done(res, t, i);
+            obj.callbacks.on_done(res, t, i);
           }).catch(function(error) {
             Notify.pgRespErrorNotify(error);
             t.unload(i);
@@ -401,7 +401,7 @@ define('pgadmin.node.server', [
           getApiInstance().put(
             obj.generate_url(i, 'wal_replay' , d, true)
           ).then(({data: res})=> {
-            obj.on_done(res, t, i);
+            obj.callbacks.on_done(res, t, i);
           }).catch(function(error) {
             Notify.pgRespErrorNotify(error);
             t.unload(i);
