@@ -1186,6 +1186,10 @@ def get_server_type(server):
     if isinstance(version_string, tuple):
         version_string = version_string[0]
 
+    # Handle SQL_ASCII (https://github.com/psycopg/psycopg/issues/561)
+    version_string = version_string.decode() if \
+        hasattr(version_string, 'decode') else version_string
+
     if "EnterpriseDB" in version_string:
         return 'ppas'
 
