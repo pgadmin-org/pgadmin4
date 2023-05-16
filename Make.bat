@@ -279,8 +279,6 @@ REM Main build sequence Ends
         wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
         IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
 
-    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
-
     tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
     REM WGET END
 
