@@ -205,6 +205,12 @@ define('pgadmin.node.server', [
                   d = t.itemData(i);
                   t.removeIcon(i);
                   d.connected = false;
+
+                  // Generate the event that server is disconnected
+                  pgBrowser.Events.trigger(
+                    'pgadmin:server:disconnect',
+                    {item: i, data: d}, false
+                  );
                   if (d.shared && pgAdmin.server_mode == 'True'){
                     d.icon = 'icon-shared-server-not-connected';
                   }else{
