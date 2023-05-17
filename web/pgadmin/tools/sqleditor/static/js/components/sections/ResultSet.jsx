@@ -492,9 +492,9 @@ export class ResultSetUtils {
     case '"char"[]':
     case 'character varying':
     case 'character varying[]':
-      if (c.internal_size && c.internal_size >= 0 && c.internal_size != 65535) {
+      if (c.display_size && c.display_size >= 0 && c.display_size != 65535) {
         // Update column type to display length on column header
-        columnType += ' (' + c.internal_size + ')';
+        columnType += ' (' + c.display_size + ')';
       }
       cellType = 'string';
       break;

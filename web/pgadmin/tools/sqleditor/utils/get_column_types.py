@@ -39,6 +39,7 @@ def get_columns_types(is_query_tool, columns_info, table_oid, conn, has_oids):
         col_type['type_code'] = col['type_code']
         col_type['type_name'] = None
         col_type['internal_size'] = col['internal_size']
+        col_type['display_size'] = col['display_size']
         column_types[col['name']] = col_type
 
         if not is_query_tool:
