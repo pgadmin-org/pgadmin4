@@ -150,6 +150,41 @@ class OAuth2Authentication(BaseAuthentication):
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
 
+        if self.oauth2_config[
+                self.oauth2_current_client
+            ]['OAUTH_GITLAB_AUTHZ_ENABLED']:
+
+            allowed = False
+
+            if 'https://gitlab.org/claims/groups/owner' in profile:
+                for role in self.oauth2_config[
+                        self.oauth2_current_client
+                    ]['OAUTH_GITLAB_GROUPS_OWNER_ROLE'].split(' '):
+                    if role in profile['https://gitlab.org/claims/groups/owner']:
+                        allowed = True
+                        break
+
+            if 'https://gitlab.org/claims/groups/maintainer' in profile:
+                for role in self.oauth2_config[
+                        self.oauth2_current_client
+                    ]['OAUTH_GITLAB_GROUPS_MAINTAINER_ROLE'].split(' '):
+                    if role in profile['https://gitlab.org/claims/groups/maintainer']:
+                        allowed = True
+                        break
+
+            if 'https://gitlab.org/claims/groups/developer' in profile:
+                for role in self.oauth2_config[
+                        self.oauth2_current_client
+                    ]['OAUTH_GITLAB_GROUPS_DEVELOPER_ROLE'].split(' '):
+                    if role in profile['https://gitlab.org/claims/groups/developer']:
+                        allowed = True
+                        break
+
+            if not allowed:
+                error_msg = "Your user it's not authorized to access PgAdmin based on your access on GitLab."
+                current_app.logger.exception(error_msg)
+                return False, gettext(error_msg)
+
         user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
