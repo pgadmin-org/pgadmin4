@@ -205,7 +205,7 @@ RUN apk add \
     chown pgadmin:root /pgadmin4/config_distro.py && \
     chmod g=u /pgadmin4/config_distro.py && \
     chmod g=u /etc/passwd && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3 && \
+    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/python3.11 && \
     echo "pgadmin ALL = NOPASSWD: /usr/sbin/postfix start" > /etc/sudoers.d/postfix && \
     echo "pgadminr ALL = NOPASSWD: /usr/sbin/postfix start" >> /etc/sudoers.d/postfix
 
