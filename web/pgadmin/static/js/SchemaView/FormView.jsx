@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme)=>({
   },
   errorMargin: {
     /* Error footer space */
-    paddingBottom: '36px',
+    paddingBottom: '36px !important',
   },
   sqlTabInput: {
     border: 0,
@@ -278,7 +278,8 @@ export default function FormView({
           canEdit: canEdit, canDelete: canDelete,
           visible: visible, canAddRow: canAddRow, onDelete: field.onDelete, canSearch: field.canSearch,
           expandEditOnAdd: field.expandEditOnAdd,
-          fixedRows: (viewHelperProps.mode == 'create' ? field.fixedRows : undefined)
+          fixedRows: (viewHelperProps.mode == 'create' ? field.fixedRows : undefined),
+          addOnTop: Boolean(field.addOnTop)
         };
 
         if(CustomControl) {
@@ -404,9 +405,10 @@ export default function FormView({
         </Box>
       </>);
   } else {
+    let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
     return (
       <>
-        <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
+        <Box height="100%" display="flex" flexDirection="column" className={clsx(className, contentClassName)} ref={formRef}>
           {Object.keys(finalTabs).map((tabName)=>{
             return (
               <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>

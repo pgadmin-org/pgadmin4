@@ -186,15 +186,16 @@ function getChangedData(topSchema, viewHelperProps, sessData, stringify=false, i
               let changed = [];
               for(const changedRow of changeDiff.updated) {
                 let finalChangedRow = {};
-                let rowIndx = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
-                finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndx]), _.get(sessVal, [field.id, rowIndx]));
+                let rowIndxSess = _.findIndex(_.get(sessVal, field.id), (r)=>r.cid==changedRow.cid);
+                let rowIndxOrig = _.findIndex(_.get(origVal, field.id), (r)=>r.cid==changedRow.cid);
+                finalChangedRow = parseChanges(field.schema, _.get(origVal, [field.id, rowIndxOrig]), _.get(sessVal, [field.id, rowIndxSess]));
 
                 if(_.isEmpty(finalChangedRow)) {
                   continue;
                 }
                 /* If the id attr value is present, then only changed keys can be passed.
                 Otherwise, passing all the keys is useful */
-                let idAttrValue = _.get(sessVal, [field.id, rowIndx, field.schema.idAttribute]);
+                let idAttrValue = _.get(sessVal, [field.id, rowIndxSess, field.schema.idAttribute]);
                 if(_.isUndefined(idAttrValue)) {
                   changed.push({
                     ...changedRow,
@@ -409,7 +410,11 @@ const sessDataReducer = (state, action)=>{
     /* Create id to identify a row uniquely, usefull when getting diff */
     cid = _.uniqueId('c');
     action.value['cid'] = cid;
-    rows = (_.get(data, action.path)||[]).concat(action.value);
+    if (action.addOnTop) {
+      rows = [].concat(action.value).concat(_.get(data, action.path)||[]);
+    } else {
+      rows = (_.get(data, action.path)||[]).concat(action.value);
+    }
     _.set(data, action.path, rows);
     /* If there is any dep listeners get the changes */
     data = getDepChange(action.path, data, state, action);
