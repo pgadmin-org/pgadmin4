@@ -91,7 +91,7 @@ define('pgadmin.node.fts_parser', [
             })
           },
           {
-            schema: treeNodeInfo.schema._id,
+            schema: itemNodeData._id,
           }
         );
       }

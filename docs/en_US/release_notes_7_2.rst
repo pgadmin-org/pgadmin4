@@ -34,6 +34,7 @@ Bug fixes
   | `Issue #6003 <https://github.com/pgadmin-org/pgadmin4/issues/6003>`_ -  Indicate the user if all the server's children nodes are hidden from the preferences setting.
   | `Issue #6026 <https://github.com/pgadmin-org/pgadmin4/issues/6026>`_ -  Tools menu should be toggled for "pause replay of wal" and "resume replay of wal".
   | `Issue #6080 <https://github.com/pgadmin-org/pgadmin4/issues/6080>`_ -  pgAdmin icon not showing on taskbar on Windows 10.
+  | `Issue #6127 <https://github.com/pgadmin-org/pgadmin4/issues/6127>`_ -  Fixed an issue where properties were not visible for FTS Parsers, FTS Templates, MViews, and Rules in Catalog objects.
   | `Issue #6147 <https://github.com/pgadmin-org/pgadmin4/issues/6147>`_ -  Heartbeat is getting logged, though no server is connected in pgAdmin.
   | `Issue #6204 <https://github.com/pgadmin-org/pgadmin4/issues/6204>`_ -  Ensure that name can't be empty in edit mode for Primary Key and Index.
   | `Issue #6221 <https://github.com/pgadmin-org/pgadmin4/issues/6221>`_ -  Fix circular reference error for the multirange data types in the query tool.
