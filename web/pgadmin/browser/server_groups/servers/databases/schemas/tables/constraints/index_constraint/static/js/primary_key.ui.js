@@ -256,6 +256,13 @@ export default class PrimaryKeySchema extends BaseUISchema {
   }
 
   validate(state, setError) {
+    if (!this.isNew(state) && isEmptyString(state.name)) {
+      setError('name', gettext('Name cannot be empty in edit mode.'));
+      return true;
+    } else {
+      setError('name', null);
+    }
+
     if(isEmptyString(state.index)
       && (_.isUndefined(state.columns) || _.isNull(state.columns) || state.columns.length < 1)) {
       setError('columns', gettext('Please specify columns for %s.', gettext('Primary key')));

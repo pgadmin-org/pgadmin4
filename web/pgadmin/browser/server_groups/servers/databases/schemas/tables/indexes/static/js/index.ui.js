@@ -452,6 +452,14 @@ export default class IndexSchema extends BaseUISchema {
   validate(state, setError) {
     let msg;
 
+    if (!this.isNew(state) && isEmptyString(state.name)) {
+      msg = gettext('Name cannot be empty in edit mode.');
+      setError('name', msg);
+      return true;
+    } else {
+      setError('name', null);
+    }
+
     // Checks if columns is empty
     let cols = state.columns;
     if(_.isArray(cols) && cols.length == 0){
