@@ -53,7 +53,7 @@ export default class RuleSchema extends BaseUISchema {
         id: 'schema', label:'',
         type: 'text', visible: false, disabled: (state) => {
           // It is used while generating sql
-          state.schema = obj.fieldOptions.nodeInfo.schema.label;
+          state.schema = ('schema' in obj.fieldOptions.nodeInfo) ? obj.fieldOptions.nodeInfo.schema.label : '';
         },
       },
       {

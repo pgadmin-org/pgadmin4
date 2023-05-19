@@ -144,7 +144,7 @@ define('pgadmin.node.mview', [
           },
           {
             owner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
-            schema: treeNodeInfo.schema.label
+            schema: ('schema' in treeNodeInfo)? treeNodeInfo.schema.label : ''
           }
         );
       },
