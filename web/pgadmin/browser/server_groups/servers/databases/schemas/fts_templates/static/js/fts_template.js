@@ -80,7 +80,7 @@ define('pgadmin.node.fts_template', [
             schemaList:()=>getNodeListById(pgBrowser.Nodes['schema'], treeNodeInfo, itemNodeData),
           },
           {
-            schema: treeNodeInfo.schema._id,
+            schema: itemNodeData._id,
           }
         );
       }

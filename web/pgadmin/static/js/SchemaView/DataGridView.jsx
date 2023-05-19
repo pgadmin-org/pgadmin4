@@ -546,6 +546,7 @@ export default function DataGridView({
       type: SCHEMA_STATE_ACTIONS.ADD_ROW,
       path: accessPath,
       value: newRow,
+      addOnTop: props.addOnTop
     });
   }, [props.canAddRow, rows?.length]);
 
@@ -682,4 +683,5 @@ DataGridView.propTypes = {
   customDeleteMsg: PropTypes.string,
   canSearch: PropTypes.bool,
   onDelete: PropTypes.func,
+  addOnTop: PropTypes.bool
 };
