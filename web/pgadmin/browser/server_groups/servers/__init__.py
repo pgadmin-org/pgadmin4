@@ -358,9 +358,9 @@ class ServerModule(sg.ServerGroupPluginModule):
                 host=data.host,
                 port=data.port,
                 maintenance_db=data.maintenance_db,
-                username=None,
+                username=data.username,
                 save_password=0,
-                comment=None,
+                comment=data.comment,
                 role=data.role,
                 bgcolor=data.bgcolor if data.bgcolor else None,
                 fgcolor=data.fgcolor if data.fgcolor else None,
@@ -1437,6 +1437,9 @@ class ServerNode(PGChildNodeView):
             except Exception as e:
                 current_app.logger.exception(e)
                 return internal_server_error(errormsg=str(e))
+
+        if server.comment and "database-generic" in server.comment:
+            prompt_password = False
 
         # Check do we need to prompt for the database server or ssh tunnel
         # password or both. Return the password template in case password is

@@ -29,6 +29,7 @@ from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
 from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import PasswordExec
+from pgadmin.utils.vault import VaultDynamicDBCredentials
 from psycopg.conninfo import make_conninfo
 
 if config.SUPPORT_SSH_TUNNEL:
@@ -81,6 +82,8 @@ class ServerManager(object):
         self.passexec = \
             PasswordExec(server.passexec_cmd, server.passexec_expiration) \
             if server.passexec_cmd else None
+        if server.comment and "database-generic" in server.comment:
+            self.passexec = VaultDynamicDBCredentials(server.comment)
         self.service = server.service
 
         if config.SUPPORT_SSH_TUNNEL:
