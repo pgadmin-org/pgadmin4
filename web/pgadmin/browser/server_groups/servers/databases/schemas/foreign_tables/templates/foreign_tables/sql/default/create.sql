@@ -47,6 +47,15 @@ ALTER FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
 COMMENT ON FOREIGN TABLE {{ conn|qtIdent(data.basensp, data.name) }}
     IS '{{ data.description }}';
 {% endif -%}
+{% if data.columns and data.columns|length > 0 %}
+{% for c in data.columns %}
+{% if c.description %}
+
+COMMENT ON COLUMN {{conn|qtIdent(data.basensp, data.name, c.attname)}}
+    IS {{c.description|qtLiteral(conn)}};
+{% endif %}
+{% endfor %}
+{% endif %}
 {% if data.acl %}
 
 {% for priv in data.acl %}

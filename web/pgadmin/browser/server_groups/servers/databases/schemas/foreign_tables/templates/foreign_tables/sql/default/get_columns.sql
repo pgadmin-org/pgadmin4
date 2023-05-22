@@ -20,7 +20,8 @@ SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, attfdwoptions,
     pg_catalog.concat(cn.nspname, '."', cl.collname,'"')
     ELSE '' END AS collname,
     pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS typdefault,
-    (SELECT COUNT(1) from pg_catalog.pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup
+    (SELECT COUNT(1) from pg_catalog.pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup,
+    des.description
 FROM
     pg_catalog.pg_attribute att
 LEFT JOIN
@@ -37,6 +38,8 @@ LEFT OUTER JOIN
     pg_catalog.pg_collation cl ON att.attcollation=cl.oid
 LEFT OUTER JOIN
     pg_catalog.pg_namespace cn ON cl.collnamespace=cn.oid
+LEFT OUTER JOIN
+	pg_catalog.pg_description des ON (des.objoid=att.attrelid AND des.classoid='pg_class'::regclass AND des.objsubid = att.attnum)
 WHERE
     att.attrelid={{foid}}::oid
     AND att.attnum>0
