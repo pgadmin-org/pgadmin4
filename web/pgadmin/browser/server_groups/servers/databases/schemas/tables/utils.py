@@ -705,8 +705,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
             data['relacl'] = parse_priv_to_db(data['relacl'], self.acl)
 
         if 'acl' in data:
+            data.update({'revoke_all': []})
             for acl in data['acl']:
-                data.update({'revoke_all': []})
                 if len(acl['privileges']) > 0 and len(acl['privileges']) < 7:
                     data['revoke_all'].append(acl['grantee'])
 
