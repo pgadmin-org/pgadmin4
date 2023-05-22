@@ -67,7 +67,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             </span>
             <br />
             <span style={{ fontWeight: 'bold' }}>
-              {gettext('This is required to migrate the existing saved Server password and SSH tunnel password to OS password manager, as pgAdmin 4 will now use the OS password manager in Desktop mode from version 7.2')}
+              {gettext('This is required to migrate the existing saved Server password and SSH tunnel password to OS password manager, as pgAdmin 4 will now use the OS password manager in Desktop mode.')}
             </span>
           </Box>
           <Box marginTop='12px'>
@@ -106,9 +106,9 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             window.open(_url, 'pgadmin_help');
           }} >
           </PgIconButton>
-          {isPWDPresent && !isKeyring &&
+          {isPWDPresent &&
             <DefaultButton data-test="reset-masterpassword" style={{ marginLeft: '0.5rem' }} startIcon={<DeleteForeverIcon />}
-              onClick={() => {onResetPassowrd?.();}} >
+              onClick={() => {onResetPassowrd?.(isKeyring);}} >
               {gettext('Reset Master Password')}
             </DefaultButton>
           }
