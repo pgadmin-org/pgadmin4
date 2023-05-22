@@ -41,4 +41,5 @@ Bug fixes
   | `Issue #6221 <https://github.com/pgadmin-org/pgadmin4/issues/6221>`_ -  Fix circular reference error for the multirange data types in the query tool.
   | `Issue #6253 <https://github.com/pgadmin-org/pgadmin4/issues/6253>`_ -  Fix an issue in the register server when setting the role, an arbitrary SQL query can be fired.
   | `Issue #6267 <https://github.com/pgadmin-org/pgadmin4/issues/6267>`_ -  Ensure the user is able to log in if the specified OAUTH2_USERNAME_CLAIM is present in the OAuth2 profile.
+  | `Issue #6278 <https://github.com/pgadmin-org/pgadmin4/issues/6278>`_ -  Use dependent instead of dependant in the message.
   | `Issue #6281 <https://github.com/pgadmin-org/pgadmin4/issues/6281>`_ -  VarChar Field Sizes are missing from Query's Grid header.
