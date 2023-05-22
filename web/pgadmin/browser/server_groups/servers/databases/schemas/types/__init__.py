@@ -71,7 +71,9 @@ class TypeModule(SchemaChildModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(sid, did, scid=scid,
+                          base_template_path=TypeView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def script_load(self):
@@ -179,6 +181,7 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
 
     node_type = blueprint.node_type
     icon_str = "icon-%s"
+    BASE_TEMPLATE_PATH = 'types/{0}/sql/#{1}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -238,12 +241,8 @@ class TypeView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             # Declare allows acl on type
             self.acl = ['U']
 
-            self.template_path = "/".join([
-                'types',
-                self.manager.server_type,
-                'sql',
-                '#{0}#'
-            ]).format(self.manager.version)
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
+                self.manager.server_type, self.manager.version)
 
             return f(*args, **kwargs)
 

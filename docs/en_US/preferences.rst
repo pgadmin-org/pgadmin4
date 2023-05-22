@@ -59,6 +59,8 @@ Use the fields on the *Display* panel to specify general display preferences:
 | *Full*              | This will disable resizing, docking/undocking of the panels       |
 +---------------------+-------------------------------------------------------------------+
 
+* When the *Show empty object collections?* switch is turned off, then all object
+  collections which are empty will be hidden from browser tree.
 * When the *Show system objects?* switch is set to *True*, the client will
   display system objects such as system schemas (for example, *pg_temp*) or
   system columns (for example,  *xmin* or *ctid*) in the tree control.

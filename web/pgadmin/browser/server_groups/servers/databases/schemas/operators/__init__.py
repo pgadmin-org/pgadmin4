@@ -67,7 +67,9 @@ class OperatorModule(SchemaChildModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(sid, did, scid=scid,
+                          base_template_path=OperatorView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def script_load(self):
@@ -117,6 +119,7 @@ class OperatorView(PGChildNodeView):
 
     node_type = blueprint.node_type
     node_label = "Operator"
+    BASE_TEMPLATE_PATH = 'operators/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -164,8 +167,10 @@ class OperatorView(PGChildNodeView):
                     kwargs['did']]['datistemplate']
 
             # Set the template path for the SQL scripts
+            self.template_path = \
+                self.BASE_TEMPLATE_PATH.format(self.manager.version)
             self.template_path = compile_template_path(
-                'operators/sql/',
+                self.BASE_TEMPLATE_PATH,
                 self.manager.version
             )
 

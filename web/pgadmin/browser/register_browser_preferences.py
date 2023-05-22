@@ -29,6 +29,16 @@ def register_browser_preferences(self):
         category_label=PREF_LABEL_DISPLAY
     )
 
+    self.show_empty_coll_nodes = self.preference.register(
+        'display', 'show_empty_coll_nodes',
+        gettext("Show empty object collections?"), 'boolean', True,
+        category_label=PREF_LABEL_DISPLAY,
+        help_str=gettext(
+            'If turned off, then all object collections which are empty '
+            'will be hidden from browser tree'
+        )
+    )
+
     self.show_user_defined_templates = self.preference.register(
         'display', 'show_user_defined_templates',
         gettext("Show template databases?"), 'boolean', False,

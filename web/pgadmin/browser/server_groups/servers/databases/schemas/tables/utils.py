@@ -90,6 +90,7 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
     node_label = "Table"
     pattern = '\n{2,}'
     double_newline = '\n\n'
+    BASE_TEMPLATE_PATH = 'tables/sql/#{0}#'
 
     @staticmethod
     def check_precondition(f):

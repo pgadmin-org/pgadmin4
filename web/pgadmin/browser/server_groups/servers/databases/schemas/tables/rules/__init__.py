@@ -80,9 +80,13 @@ class RuleModule(CollectionNodeModule):
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(sid, did, scid=scid,
+                          tid=kwargs.get('tid', None),
+                          vid=kwargs.get('vid', None),
+                          base_template_path=RuleView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def node_inode(self):
@@ -150,6 +154,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
     """
     node_type = blueprint.node_type
     node_label = "Rule"
+    BASE_TEMPLATE_PATH = 'rules/sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -197,7 +202,7 @@ class RuleView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = get_driver(
                 PG_DEFAULT_DRIVER).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'rules/sql'
+            self.template_path = self.BASE_TEMPLATE_PATH
             self.table_template_path = compile_template_path(
                 'tables/sql',
                 self.manager.version

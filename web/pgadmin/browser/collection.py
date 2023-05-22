@@ -16,6 +16,9 @@ from pgadmin.browser.utils import PGChildModule
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import PGADMIN_NODE
+from pgadmin.utils.driver import get_driver
+from config import PG_DEFAULT_DRIVER
+from pgadmin.browser.utils import PGChildNodeView
 
 
 class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
@@ -93,6 +96,42 @@ class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
             obj.setdefault(key, kwargs[key])
 
         return obj
+
+    def has_nodes(self, sid, did, scid=None, tid=None, vid=None,
+                  base_template_path=''):
+        if self.pref_show_empty_coll_nodes.get():
+            return True
+
+        try:
+            driver = get_driver(PG_DEFAULT_DRIVER)
+            manager = driver.connection_manager(sid)
+            conn = manager.connection(did=did)
+            if '{1}' in base_template_path:
+                template_base_path = base_template_path.format(
+                    manager.server_type, manager.version)
+            else:
+                template_base_path = base_template_path.format(manager.version)
+
+            last_system_oid = 0 if self.show_system_objects else \
+                PGChildNodeView._DATABASE_LAST_SYSTEM_OID
+
+            sql = render_template(
+                "/".join([template_base_path, PGChildNodeView._COUNT_SQL]),
+                did=did,
+                scid=scid,
+                tid=tid,
+                vid=vid,
+                datlastsysoid=last_system_oid,
+                showsysobj=self.show_system_objects,
+                conn=conn
+            )
+
+            status, res = conn.execute_dict(sql)
+
+            return int(res['rows'][0]['count']) > 0 if status \
+                else True
+        except Exception as _:
+            return True
 
     @property
     def node_type(self):
@@ -238,4 +277,7 @@ class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
             'node', 'show_node_' + self.node_type,
             self.collection_label, 'node', self.SHOW_ON_BROWSER,
             category_label=gettext('Nodes')
+        )
+        self.pref_show_empty_coll_nodes = self.browser_preference.preference(
+            'show_empty_coll_nodes'
         )

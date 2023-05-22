@@ -105,9 +105,13 @@ class CompoundTriggerModule(CollectionNodeModule):
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(
+            sid, did, scid=scid, tid=kwargs.get('tid', None),
+            vid=kwargs.get('vid', None),
+                base_template_path=CompoundTriggerView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def script_load(self):
@@ -216,6 +220,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
     node_type = blueprint.node_type
     node_label = "Compound Trigger"
+    BASE_TEMPLATE_PATH = 'compound_triggers/sql/{0}/#{1}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -278,7 +283,7 @@ class CompoundTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
             # we will set template path for sql scripts
-            self.template_path = 'compound_triggers/sql/{0}/#{1}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.server_type, self.manager.version)
             # Store server type
             self.server_type = self.manager.server_type

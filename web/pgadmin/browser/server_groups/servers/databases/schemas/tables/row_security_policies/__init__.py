@@ -60,14 +60,18 @@ class RowSecurityModule(CollectionNodeModule):
         self.min_ver = 90500
         self.max_ver = None
 
-    def get_nodes(self, **kwargs):
+    def get_nodes(self, gid, sid, did, scid, **kwargs):
         """
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(
+            sid, did, scid=scid, tid=kwargs.get('tid', None),
+            vid=kwargs.get('vid', None),
+                base_template_path=RowSecurityView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def node_inode(self):
@@ -148,6 +152,7 @@ class RowSecurityView(PGChildNodeView):
 
     node_type = blueprint.node_type
     node_label = "RLS Policy"
+    BASE_TEMPLATE_PATH = 'row_security_policies/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -205,7 +210,7 @@ class RowSecurityView(PGChildNodeView):
                 'tables/sql',
                 self.manager.version
             )
-            self.template_path = 'row_security_policies/sql/#{0}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version)
 
             return f(*args, **kwargs)
