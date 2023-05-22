@@ -55,7 +55,7 @@ from pgadmin.browser.register_browser_preferences import \
 from pgadmin.utils.master_password import validate_master_password, \
     set_masterpass_check_text, cleanup_master_password, get_crypt_key, \
     set_crypt_key, process_masterpass_disabled
-from pgadmin.model import User
+from pgadmin.model import User, db
 from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
     INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER,\
     VW_EDT_DEFAULT_PLACEHOLDER
@@ -786,6 +786,12 @@ def reset_master_password():
     Removes the master password and remove all saved passwords
     This password will be used to encrypt/decrypt saved server passwords
     """
+    if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+        # This is to set the Desktop user password so it will not ask for
+        # migrate exiting passwords as those are getting cleared
+        keyring.set_password(KEY_RING_SERVICE_NAME,
+                             KEY_RING_DESKTOP_USER.format(
+                                 current_user.username), 'test')
     cleanup_master_password()
     return make_json_response(data=get_crypt_key()[0])
 
@@ -811,6 +817,13 @@ def set_master_password():
             data = json.loads(data)
 
     if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+        if data.get('password') and \
+                not validate_master_password(data.get('password')):
+            return form_master_password_response(
+                present=False,
+                is_keyring=True,
+                errmsg=gettext("Incorrect master password")
+            )
         from pgadmin.model import Server
         from pgadmin.utils.crypto import decrypt
         desktop_user = current_user
@@ -832,7 +845,9 @@ def set_master_password():
                         # Store the password using OS password manager
                         keyring.set_password(KEY_RING_SERVICE_NAME, name,
                                              password)
-                        setattr(server, 'password', password)
+                        setattr(server, 'password', None)
+
+                db.session.commit()
 
                 # Store the password using OS password manager
                 keyring.set_password(KEY_RING_SERVICE_NAME,

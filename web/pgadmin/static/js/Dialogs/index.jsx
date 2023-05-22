@@ -186,7 +186,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
         closeModal={() => {
           onClose();
         }}
-        onResetPassowrd={()=>{
+        onResetPassowrd={(isKeyRing=false)=>{
           Notify.confirm(gettext('Reset Master Password'),
             gettext('This will remove all the saved passwords. This will also remove established connections to '
             + 'the server and you may need to reconnect again. Do you wish to continue?'),
@@ -196,7 +196,9 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
               api.delete(_url)
                 .then(() => {
                   onClose();
-                  showMasterPassword(false, null, masterpass_callback_queue, cancel_callback);
+                  if(!isKeyRing) {
+                    showMasterPassword(false, null, masterpass_callback_queue, cancel_callback);
+                  }
                 })
                 .catch((err) => {
                   Notify.error(err.message);
