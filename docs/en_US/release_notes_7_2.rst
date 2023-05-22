@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #3831 <https://github.com/pgadmin-org/pgadmin4/issues/3831>`_ -  Add Option to only show active connections on Dashboard.
+  | `Issue #5123 <https://github.com/pgadmin-org/pgadmin4/issues/5123>`_ -  Added support to use standard OS secret store to save server/ssh tunnel passwords instead of master password in pgAdmin desktop mode.
 
 
 Housekeeping
