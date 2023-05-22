@@ -32,6 +32,7 @@ Bug fixes
 *********
 
   | `Issue #5817 <https://github.com/pgadmin-org/pgadmin4/issues/5817>`_ -  Ensure that a new row should be added on top in the User Management dialog.
+  | `Issue #5926 <https://github.com/pgadmin-org/pgadmin4/issues/5926>`_ -  Fixed an issue where REVOKE ALL DDL in table SQL was added only for one role.
   | `Issue #6003 <https://github.com/pgadmin-org/pgadmin4/issues/6003>`_ -  Indicate the user if all the server's children nodes are hidden from the preferences setting.
   | `Issue #6026 <https://github.com/pgadmin-org/pgadmin4/issues/6026>`_ -  Tools menu should be toggled for "pause replay of wal" and "resume replay of wal".
   | `Issue #6080 <https://github.com/pgadmin-org/pgadmin4/issues/6080>`_ -  pgAdmin icon not showing on taskbar on Windows 10.
