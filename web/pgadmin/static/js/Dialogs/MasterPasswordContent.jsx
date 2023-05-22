@@ -22,7 +22,7 @@ import { DefaultButton, PrimaryButton, PgIconButton } from '../components/Button
 import { useModalStyles } from '../helpers/ModalProvider';
 import { FormFooterMessage, InputText, MESSAGE_TYPE } from '../components/FormComponents';
 
-export default function MasterPasswordContent({ closeModal, onResetPassowrd, onOK, onCancel, setHeight, isPWDPresent, data}) {
+export default function MasterPasswordContent({ closeModal, onResetPassowrd, onOK, onCancel, setHeight, isPWDPresent, data, isKeyring}) {
   const classes = useModalStyles();
   const containerRef = useRef();
   const firstEleRef = useRef();
@@ -59,24 +59,44 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
 
   return (
     <Box display="flex" flexDirection="column" className={classes.container} ref={containerRef}>
-      <Box flexGrow="1" p={2}>
-        <Box>
-          <span style={{ fontWeight: 'bold' }}>
-            {isPWDPresent ? gettext('Please enter your master password.') : gettext('Please set a master password for pgAdmin.')}
-          </span>
-          <br />
-          <span style={{ fontWeight: 'bold' }}>
-            {isPWDPresent ? gettext('This is required to unlock saved passwords and reconnect to the database server(s).') : gettext('This will be used to secure and later unlock saved passwords and other credentials.')}
-          </span>
+      {isKeyring ?
+        <Box flexGrow="1" p={2}>
+          <Box>
+            <span style={{ fontWeight: 'bold' }}>
+              {gettext('Please enter your master password.')}
+            </span>
+            <br />
+            <span style={{ fontWeight: 'bold' }}>
+              {gettext('This is required to migrate the existing saved Server password and SSH tunnel password to OS password manager, as pgAdmin 4 will now use the OS password manager in Desktop mode from version 7.2')}
+            </span>
+          </Box>
+          <Box marginTop='12px'>
+            <InputText inputRef={firstEleRef} type="password" value={formData['password']} maxLength={null}
+              onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)}/>
+          </Box>
+          <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={data.errmsg} closable={false} style={{
+            position: 'unset', padding: '12px 0px 0px'
+          }} />
+        </Box> :
+        <Box flexGrow="1" p={2}>
+          <Box>
+            <span style={{ fontWeight: 'bold' }}>
+              {isPWDPresent ? gettext('Please enter your master password.') : gettext('Please set a master password for pgAdmin.')}
+            </span>
+            <br />
+            <span style={{ fontWeight: 'bold' }}>
+              {isPWDPresent ? gettext('This is required to unlock saved passwords and reconnect to the database server(s).') : gettext('This will be used to secure and later unlock saved passwords and other credentials.')}
+            </span>
+          </Box>
+          <Box marginTop='12px'>
+            <InputText inputRef={firstEleRef} type="password" value={formData['password']} maxLength={null}
+              onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)}/>
+          </Box>
+          <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={data.errmsg} closable={false} style={{
+            position: 'unset', padding: '12px 0px 0px'
+          }} />
         </Box>
-        <Box marginTop='12px'>
-          <InputText inputRef={firstEleRef} type="password" value={formData['password']} maxLength={null}
-            onChange={(e) => onTextChange(e, 'password')} onKeyDown={(e) => onKeyDown(e)}/>
-        </Box>
-        <FormFooterMessage type={MESSAGE_TYPE.ERROR} message={data.errmsg} closable={false} style={{
-          position: 'unset', padding: '12px 0px 0px'
-        }} />
-      </Box>
+      }
       <Box className={classes.footer}>
         <Box style={{ marginRight: 'auto' }}>
           <PgIconButton data-test="help-masterpassword" title={gettext('Help')} style={{ padding: '0.3rem', paddingLeft: '0.7rem' }} startIcon={<HelpIcon />} onClick={() => {
@@ -86,17 +106,19 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             window.open(_url, 'pgadmin_help');
           }} >
           </PgIconButton>
-          {isPWDPresent &&
+          {isPWDPresent && !isKeyring &&
             <DefaultButton data-test="reset-masterpassword" style={{ marginLeft: '0.5rem' }} startIcon={<DeleteForeverIcon />}
               onClick={() => {onResetPassowrd?.();}} >
               {gettext('Reset Master Password')}
             </DefaultButton>
           }
         </Box>
-        <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={() => {
-          onCancel?.();
-          closeModal();
-        }} >{gettext('Cancel')}</DefaultButton>
+        {
+          !isKeyring && <DefaultButton data-test="close" startIcon={<CloseIcon />} onClick={() => {
+            onCancel?.();
+            closeModal();
+          }} >{gettext('Cancel')}</DefaultButton>
+        }
         <PrimaryButton ref={okBtnRef} data-test="save" className={classes.margin} startIcon={<CheckRoundedIcon />}
           disabled={formData.password.length == 0}
           onClick={() => {
@@ -121,4 +143,5 @@ MasterPasswordContent.propTypes = {
   setHeight: PropTypes.func,
   isPWDPresent: PropTypes.bool,
   data: PropTypes.object,
+  isKeyring: PropTypes.bool,
 };

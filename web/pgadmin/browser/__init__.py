@@ -17,8 +17,12 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
     SMTPAuthenticationError, SMTPSenderRefused, SMTPRecipientsRefused
 from socket import error as SOCKETErrorException
 from urllib.request import urlopen
+from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
+    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER
 
 import time
+
+import keyring
 from flask import current_app, render_template, url_for, make_response, \
     flash, Response, request, after_this_request, redirect, session
 from flask_babel import gettext
@@ -741,11 +745,13 @@ def get_nodes():
     return make_json_response(data=nodes)
 
 
-def form_master_password_response(existing=True, present=False, errmsg=None):
+def form_master_password_response(existing=True, present=False, errmsg=None,
+                                  is_keyring=False):
     return make_json_response(data={
         'present': present,
         'reset': existing,
         'errmsg': errmsg,
+        'is_keyring': is_keyring,
         'is_error': True if errmsg else False
     })
 
@@ -803,6 +809,51 @@ def set_master_password():
 
         if data != '':
             data = json.loads(data)
+
+    if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+        from pgadmin.model import Server
+        from pgadmin.utils.crypto import decrypt
+        desktop_user = current_user
+        try:
+            # pgAdmin will use the OS password manager to store the server
+            # password, here migrating the existing saved server password to
+            # OS password manager
+            if keyring.get_password(
+                    KEY_RING_SERVICE_NAME, KEY_RING_DESKTOP_USER.format(
+                        desktop_user.username)) or data['password']:
+                all_server = Server.query.all()
+                for server in all_server:
+                    if server.password and data['password'] \
+                            and server.save_password:
+                        name = KEY_RING_USERNAME_FORMAT.format(server.name,
+                                                               server.id)
+                        password = decrypt(server.password,
+                                           data['password']).decode()
+                        # Store the password using OS password manager
+                        keyring.set_password(KEY_RING_SERVICE_NAME, name,
+                                             password)
+                        setattr(server, 'password', password)
+
+                # Store the password using OS password manager
+                keyring.set_password(KEY_RING_SERVICE_NAME,
+                                     KEY_RING_DESKTOP_USER.format(
+                                         desktop_user.username), 'test')
+                return form_master_password_response(
+                    existing=True,
+                    present=True,
+                    is_keyring=True
+                )
+            else:
+                return form_master_password_response(
+                    present=False,
+                    is_keyring=True
+                )
+        except Exception as e:
+            current_app.logger.warning(
+                'Fail set password using OS password manager'
+                ', fallback to master password. Error: {0}'.format(e)
+            )
+            config.DISABLED_LOCAL_PASSWORD_STORAGE = True
 
     # Master password is not applicable for server mode
     # Enable master password if oauth is used
