@@ -1361,7 +1361,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             SQL = render_template("/".join(
                 [self.column_template_path,
                     self._UPDATE_SQL.format(self.manager.version)]),
-                o_data=o_data, data=res, is_view_only=True)
+                o_data=o_data, data=res, is_view_only=True,
+                conn=self.conn)
             sql_data += SQL
 
         # Get Column Grant SQL
