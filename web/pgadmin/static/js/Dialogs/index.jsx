@@ -71,12 +71,9 @@ export function showServerPassword() {
     onSuccess = arguments[7],
     onFailure = arguments[8];
 
-  mountDialog(title, (onClose, setNewSize)=> {
+  Notify.showModal(title, (onClose) => {
     return <Theme>
       <ConnectServerContent
-        setHeight={(containerHeight)=>{
-          setNewSize(pgAdmin.Browser.stdW.md, containerHeight);
-        }}
         closeModal={()=>{
           onClose();
         }}

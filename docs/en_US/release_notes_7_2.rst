@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #3831 <https://github.com/pgadmin-org/pgadmin4/issues/3831>`_ -  Add Option to only show active connections on Dashboard.
+  | `Issue #5048 <https://github.com/pgadmin-org/pgadmin4/issues/5048>`_ -  Add an option to hide/show empty object collection nodes.
   | `Issue #5123 <https://github.com/pgadmin-org/pgadmin4/issues/5123>`_ -  Added support to use standard OS secret store to save server/ssh tunnel passwords instead of master password in pgAdmin desktop mode.
 
 
@@ -35,6 +36,7 @@ Bug fixes
   | `Issue #5926 <https://github.com/pgadmin-org/pgadmin4/issues/5926>`_ -  Fixed an issue where REVOKE ALL DDL in table SQL was added only for one role.
   | `Issue #6003 <https://github.com/pgadmin-org/pgadmin4/issues/6003>`_ -  Indicate the user if all the server's children nodes are hidden from the preferences setting.
   | `Issue #6026 <https://github.com/pgadmin-org/pgadmin4/issues/6026>`_ -  Tools menu should be toggled for "pause replay of wal" and "resume replay of wal".
+  | `Issue #6043 <https://github.com/pgadmin-org/pgadmin4/issues/6043>`_ -  Make the 'Connect to server' dialog a modal dialog.
   | `Issue #6080 <https://github.com/pgadmin-org/pgadmin4/issues/6080>`_ -  pgAdmin icon not showing on taskbar on Windows 10.
   | `Issue #6127 <https://github.com/pgadmin-org/pgadmin4/issues/6127>`_ -  Fixed an issue where properties were not visible for FTS Parsers, FTS Templates, MViews, and Rules in Catalog objects.
   | `Issue #6147 <https://github.com/pgadmin-org/pgadmin4/issues/6147>`_ -  Heartbeat is getting logged, though no server is connected in pgAdmin.
