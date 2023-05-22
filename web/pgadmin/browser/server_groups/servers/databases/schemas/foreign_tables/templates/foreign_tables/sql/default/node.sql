@@ -8,12 +8,12 @@ JOIN
 LEFT OUTER JOIN
     pg_catalog.pg_namespace nsp ON (nsp.oid=c.relnamespace)
 LEFT OUTER JOIN
-    pg_catalog.pg_description des ON (des.objoid=c.oid AND des.classoid='pg_class'::regclass)
-WHERE
+    pg_catalog.pg_description des ON (des.objoid=c.oid AND des.classoid='pg_class'::regclass AND des.objsubid = 0)
+WHERE c.relkind = 'f'
 {% if scid %}
-    c.relnamespace = {{scid}}::oid
+    AND c.relnamespace = {{scid}}::oid
 {% elif foid %}
-    c.oid = {{foid}}::oid
+    AND c.oid = {{foid}}::oid
 {% endif %}
 {% if schema_diff %}
     AND CASE WHEN (SELECT COUNT(*) FROM pg_catalog.pg_depend
