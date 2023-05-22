@@ -158,7 +158,33 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
   api.post(url_for('browser.set_master_password'), data).then((res)=> {
     let isKeyring = res.data.data.keyring_name.length > 0;
     if(!res.data.data.present) {
-      showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback, res.data.data.keyring_name);
+      if(res.data.data.is_error){
+        //show notifier with error
+        if(!res.data.data.reset){
+          Notify.error(res.data.data.errmsg);
+        }else if(res.data.data.errmsg == 'Password mismatch error'){
+          Notify.confirm(gettext('Reset Master Password'),
+            gettext('The master password retrieved from the master password hook utility is different from what was previously retrieved.') + '<br>'
+            + gettext('Do you want to reset your master password to match?') + '<br><br>'
+            + gettext('Note that this will close all open database connections and remove all saved passwords.'),
+            function() {
+              let _url = url_for('browser.reset_master_password');
+              api.delete(_url)
+                .then(() => {
+                  Notify.info('The master password has been reset.');
+                })
+                .catch((err) => {
+                  Notify.error(err.message);
+                });
+              return true;
+            },
+            function() {/* If user clicks No */ return true;}
+          );
+        }
+      }
+      else{
+        showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback, res.data.data.keyring_name);
+      }
     } else {
       masterPassCallbacks(masterpass_callback_queue);
 
@@ -222,6 +248,7 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
     </Theme>;
   });
 }
+
 
 export function showChangeServerPassword() {
   let title = arguments[0],
