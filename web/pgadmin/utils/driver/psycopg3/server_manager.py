@@ -543,6 +543,9 @@ WHERE db.oid = {0}""".format(did))
                 password = self.password
 
             os.environ[str(env)] = password
+        elif self.passexec:
+            password = self.passexec.get()
+            os.environ[str(env)] = password
 
     def create_ssh_tunnel(self, tunnel_password):
         """
