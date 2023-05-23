@@ -3,7 +3,8 @@
 UNION
 {% endif %}
 SELECT a1.attname as conattname,
-    a2.attname as confattname
+    a2.attname as confattname,
+    a1.attnum as attnum
 FROM pg_catalog.pg_attribute a1,
     pg_catalog.pg_attribute a2
 WHERE a1.attrelid={{tid}}::oid
@@ -11,3 +12,4 @@ WHERE a1.attrelid={{tid}}::oid
     AND a2.attrelid={{confrelid}}::oid
     AND a2.attnum={{keypair[0]}}
 {% endfor %}
+ORDER BY attnum;
