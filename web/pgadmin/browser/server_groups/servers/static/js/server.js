@@ -362,8 +362,6 @@ define('pgadmin.node.server', [
           if (res.success == 1) {
             Notify.success(res.info);
             t.itemData(i).wal_pause=res.data.wal_pause;
-            t.unload(i);
-            t.setInode(i);
             t.deselect(i);
             // Fetch updated data from server
             setTimeout(function() {
