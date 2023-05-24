@@ -156,10 +156,16 @@ function masterPassCallbacks(masterpass_callback_queue) {
 export function checkMasterPassword(data, masterpass_callback_queue, cancel_callback) {
   const api = getApiInstance();
   api.post(url_for('browser.set_master_password'), data).then((res)=> {
+    let isKeyring = res.data.data.keyring_name.length > 0;
     if(!res.data.data.present) {
-      showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback, res.data.data.is_keyring);
+      showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback, res.data.data.keyring_name);
     } else {
       masterPassCallbacks(masterpass_callback_queue);
+
+      if(isKeyring) {
+        Notify.alert(gettext('Migration successful'),
+          gettext(`Passwords previously saved by pgAdmin have been successfully migrated to ${res.data.data.keyring_name} and removed from the pgAdmin store.`));
+      }
     }
   }).catch(function(error) {
     Notify.pgRespErrorNotify(error);
@@ -167,16 +173,16 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
 }
 
 // This functions is used to show the master password dialog.
-export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback, is_keyring) {
+export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback, keyring_name) {
   const api = getApiInstance();
-  let title =  isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
+  let title =  keyring_name.length > 0 ? gettext('Migrate Saved Passwords') : isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
 
   mountDialog(title, (onClose, setNewSize)=> {
     return <Theme>
       <MasterPasswordContent
         isPWDPresent= {isPWDPresent}
         data={{'errmsg': errmsg}}
-        isKeyring={is_keyring}
+        keyringName={keyring_name}
         setHeight={(containerHeight) => {
           setNewSize(pgAdmin.Browser.stdW.md, containerHeight);
         }}

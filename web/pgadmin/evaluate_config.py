@@ -117,11 +117,14 @@ def evaluate_and_patch_config(config: dict) -> dict:
 
     if config.get('SERVER_MODE'):
         config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', True)
+        config.setdefault('KEYRING_NAME', '')
     else:
         k_name = keyring.get_keyring().name
         if k_name == 'fail Keyring':
             config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', True)
+            config.setdefault('KEYRING_NAME', '')
         else:
             config.setdefault('DISABLED_LOCAL_PASSWORD_STORAGE', False)
+            config.setdefault('KEYRING_NAME', k_name)
 
     return config

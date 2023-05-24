@@ -746,12 +746,12 @@ def get_nodes():
 
 
 def form_master_password_response(existing=True, present=False, errmsg=None,
-                                  is_keyring=False):
+                                  keyring_name=''):
     return make_json_response(data={
         'present': present,
         'reset': existing,
         'errmsg': errmsg,
-        'is_keyring': is_keyring,
+        'keyring_name': keyring_name,
         'is_error': True if errmsg else False
     })
 
@@ -821,7 +821,7 @@ def set_master_password():
                 not validate_master_password(data.get('password')):
             return form_master_password_response(
                 present=False,
-                is_keyring=True,
+                keyring_name=config.KEYRING_NAME,
                 errmsg=gettext("Incorrect master password")
             )
         from pgadmin.model import Server
@@ -835,6 +835,7 @@ def set_master_password():
                     KEY_RING_SERVICE_NAME, KEY_RING_DESKTOP_USER.format(
                         desktop_user.username)) or data['password']:
                 all_server = Server.query.all()
+                is_migrated = False
                 for server in all_server:
                     if server.password and data['password'] \
                             and server.save_password:
@@ -845,6 +846,7 @@ def set_master_password():
                         # Store the password using OS password manager
                         keyring.set_password(KEY_RING_SERVICE_NAME, name,
                                              password)
+                        is_migrated = True
                         setattr(server, 'password', None)
 
                 db.session.commit()
@@ -856,12 +858,12 @@ def set_master_password():
                 return form_master_password_response(
                     existing=True,
                     present=True,
-                    is_keyring=True
+                    keyring_name=config.KEYRING_NAME if is_migrated else ''
                 )
             else:
                 return form_master_password_response(
                     present=False,
-                    is_keyring=True
+                    keyring_name=config.KEYRING_NAME
                 )
         except Exception as e:
             current_app.logger.warning(
