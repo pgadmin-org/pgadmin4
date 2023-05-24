@@ -86,7 +86,7 @@ _create_python_env() {
         --os-version "${PYTHON_OS_VERSION}" \
         --destination "${BUNDLE_DIR}/Contents/Frameworks/"
 
-    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m ensurepip --upgrade || exit
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m ensurepip --upgrade || exit 1
     "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/pip3" install -r "${SOURCE_DIR}/requirements.txt" || exit 1
 
     # Make sure all the .so's in the Python env have the executable bit set
