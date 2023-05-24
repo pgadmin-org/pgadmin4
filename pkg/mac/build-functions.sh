@@ -11,7 +11,7 @@ _setup_env() {
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
     BUNDLE_DIR="${BUILD_ROOT}/${APP_NAME}.app"
-    DMG_NAME="${DIST_ROOT}"/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-"${APP_LONG_VERSION}.dmg"
+    DMG_NAME="${DIST_ROOT}"/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-"${APP_LONG_VERSION}-$(uname -m).dmg"
     PYTHON_OS_VERSION="11"
 }
 
