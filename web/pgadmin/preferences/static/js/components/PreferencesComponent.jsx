@@ -579,8 +579,8 @@ export default function PreferencesComponent({ ...props }) {
 
       if (requiresTreeRefresh) {
         Notify.confirm(
-          gettext('Object explorer tree refresh required'),
-          gettext('The object explorer tree refresh is required. Do you wish to refresh the tree?'),
+          gettext('Object explorer refresh required'),
+          gettext('An object explorer refresh is required. Do you wish to refresh it now?'),
           function () {
             pgAdmin.Browser.tree.destroy({
               success: function () {
