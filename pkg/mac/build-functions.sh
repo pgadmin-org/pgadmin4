@@ -80,7 +80,7 @@ _create_python_env() {
     fi
 
     git clone https://github.com/gregneagle/relocatable-python.git "${BUILD_ROOT}/relocatable_python"
-    PATH=$PATH:/usr/local/pgsql/bin "${SYSTEM_PYTHON_EXE}" \
+    "${SYSTEM_PYTHON_EXE}" \
         "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" \
         --upgrade-pip \
         --python-version "${PGADMIN_PYTHON_VERSION}" \
