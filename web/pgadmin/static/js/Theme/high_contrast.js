@@ -83,6 +83,7 @@ export default function(basicSettings) {
       borderColor: '#A6B7C8',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: '#1F2932',
+      errorColor: '#DA6758',
       headerBg: '#010B15',
       activeBorder: '#fff',
       activeColor: '#fff',

@@ -89,6 +89,7 @@ export default function(basicSettings) {
         backgroundColor: fade('#000', 0.65),
         color: '#fff',
       },
+      errorColor: '#E53935',
       inputBorderColor: '#dde0e6',
       inputDisabledBg: '#f3f5f9',
       headerBg: '#fff',

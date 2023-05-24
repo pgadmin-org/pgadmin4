@@ -260,7 +260,7 @@ export const useModalStyles = makeStyles((theme) => ({
   iconButtonStyle: {
     marginLeft: 'auto',
     marginRight: '4px'
-  }
+  },
 }));
 
 function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH, showTitle=true }) {

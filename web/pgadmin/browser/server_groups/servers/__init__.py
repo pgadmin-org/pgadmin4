@@ -802,6 +802,10 @@ class ServerNode(PGChildNodeView):
         data = request.form if request.form else json.loads(
             request.data
         )
+
+        old_server_name = ''
+        if 'name' in data:
+            old_server_name = server.name
         if 'db_res' in data:
             data['db_res'] = ','.join(data['db_res'])
 
@@ -834,6 +838,25 @@ class ServerNode(PGChildNodeView):
             )
 
         try:
+            if len(old_server_name) and old_server_name != server.name and \
+                    not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                # If server name is changed then update keyring with
+                # new server name
+                password = keyring.get_password(
+                    KEY_RING_SERVICE_NAME,
+                    KEY_RING_USERNAME_FORMAT.format(old_server_name,
+                                                    server.id))
+
+                keyring.set_password(
+                    KEY_RING_SERVICE_NAME,
+                    KEY_RING_USERNAME_FORMAT.format(server.name, server.id),
+                    password)
+
+                server_name = KEY_RING_USERNAME_FORMAT.format(
+                    old_server_name, server.id)
+                # Delete saved password from OS password manager
+                keyring.delete_password(KEY_RING_SERVICE_NAME,
+                                        server_name)
             db.session.commit()
         except Exception as e:
             current_app.logger.exception(e)

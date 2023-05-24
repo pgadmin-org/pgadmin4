@@ -20,13 +20,14 @@ import HelpIcon from '@material-ui/icons/Help';
 
 import { DefaultButton, PrimaryButton, PgIconButton } from '../components/Buttons';
 import { useModalStyles } from '../helpers/ModalProvider';
-import { FormFooterMessage, InputText, MESSAGE_TYPE } from '../components/FormComponents';
+import { FormFooterMessage, FormNote, InputText, MESSAGE_TYPE } from '../components/FormComponents';
 
-export default function MasterPasswordContent({ closeModal, onResetPassowrd, onOK, onCancel, setHeight, isPWDPresent, data, isKeyring}) {
+export default function MasterPasswordContent({ closeModal, onResetPassowrd, onOK, onCancel, setHeight, isPWDPresent, data, keyringName}) {
   const classes = useModalStyles();
   const containerRef = useRef();
   const firstEleRef = useRef();
   const okBtnRef = useRef();
+  const isKeyring = keyringName.length > 0;
   const [formData, setFormData] = useState({
     password: ''
   });
@@ -67,7 +68,7 @@ export default function MasterPasswordContent({ closeModal, onResetPassowrd, onO
             </span>
             <br />
             <span style={{ fontWeight: 'bold' }}>
-              {gettext('This is required to migrate the existing saved Server password and SSH tunnel password to OS password manager, as pgAdmin 4 will now use the OS password manager in Desktop mode.')}
+              <FormNote text={gettext(`pgAdmin now stores any saved passwords in ${keyringName}. Enter the master password for your existing pgAdmin saved passwords and they will be migrated to the operating system store when you click OK.`)}></FormNote>
             </span>
           </Box>
           <Box marginTop='12px'>
@@ -143,5 +144,5 @@ MasterPasswordContent.propTypes = {
   setHeight: PropTypes.func,
   isPWDPresent: PropTypes.bool,
   data: PropTypes.object,
-  isKeyring: PropTypes.bool,
+  keyringName: PropTypes.string,
 };
