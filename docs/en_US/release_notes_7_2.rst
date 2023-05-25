@@ -24,6 +24,7 @@ New features
   | `Issue #4769 <https://github.com/pgadmin-org/pgadmin4/issues/4769>`_ -  Allow pgAdmin to retrive master password from external script/program.
   | `Issue #5048 <https://github.com/pgadmin-org/pgadmin4/issues/5048>`_ -  Add an option to hide/show empty object collection nodes.
   | `Issue #5123 <https://github.com/pgadmin-org/pgadmin4/issues/5123>`_ -  Added support to use standard OS secret store to save server/ssh tunnel passwords instead of master password in pgAdmin desktop mode.
+  | `Issue #5868 <https://github.com/pgadmin-org/pgadmin4/issues/5868>`_ -  Implement new PostgreSQL 15 features in publication dialog and SQL.
 
 
 Housekeeping
