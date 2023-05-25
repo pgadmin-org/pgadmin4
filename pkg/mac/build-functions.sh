@@ -30,29 +30,40 @@ _build_runtime() {
     # NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget
     #       in a retry loop as Yarn/Npm don't seem to like that.
 
-    # YARN:
-    # yarn add --cwd "${BUILDROOT}" nw
-    # YARN END
+    # Temporarily handle arm64 builds (Apple Silicon) differently, until NWjs produces an actual release
 
-    # WGET:
-    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    if [ "$(uname -m)" == "arm64" ]; then
+      pushd "${BUILD_ROOT}" > /dev/null || exit
+          wget https://dl.nwjs.io/live-build/nw76/20230516-150708/a88c13a6c/v0.76.1/nwjs-sdk-v0.76.1-osx-arm64.zip
+          unzip "nwjs-sdk-v0.76.1-osx-arm64.zip"
+      popd > /dev/null || exit
 
-    pushd "${BUILD_ROOT}" > /dev/null || exit
-        while true;do
-            wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip" && break
-            rm "nwjs-v${NW_VERSION}-osx-x64.zip"
-        done
-        unzip "nwjs-v${NW_VERSION}-osx-x64.zip"
-    popd > /dev/null || exit
-    # WGET END
+      cp -R "${BUILD_ROOT}/nwjs-sdk-v0.76.1-osx-arm64"/nwjs.app "${BUILD_ROOT}/"
+    else
+      # YARN:
+      # yarn add --cwd "${BUILDROOT}" nw
+      # YARN END
 
-    # YARN:
-    # cp -R "${BUILD_ROOT}/node_modules/nw/nwjs/nwjs.app" "${BUILD_ROOT}/"
-    # YARN END
+      # WGET:
+      NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
 
-    # WGET:
-    cp -R "${BUILD_ROOT}/nwjs-v${NW_VERSION}-osx-x64"/nwjs.app "${BUILD_ROOT}/"
-    # WGET END
+      pushd "${BUILD_ROOT}" > /dev/null || exit
+          while true;do
+              wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip" && break
+              rm "nwjs-v${NW_VERSION}-osx-x64.zip"
+          done
+          unzip "nwjs-v${NW_VERSION}-osx-x64.zip"
+      popd > /dev/null || exit
+      # WGET END
+
+      # YARN:
+      # cp -R "${BUILD_ROOT}/node_modules/nw/nwjs/nwjs.app" "${BUILD_ROOT}/"
+      # YARN END
+
+      # WGET:
+      cp -R "${BUILD_ROOT}/nwjs-v${NW_VERSION}-osx-x64"/nwjs.app "${BUILD_ROOT}/"
+      # WGET END
+    fi
 
     mv "${BUILD_ROOT}/nwjs.app" "${BUNDLE_DIR}"
 
