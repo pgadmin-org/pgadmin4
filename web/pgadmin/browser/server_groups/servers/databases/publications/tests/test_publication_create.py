@@ -41,6 +41,10 @@ class PublicationsAddTestCase(BaseTestGenerator):
                 "for server version less than 10"
 
             )
+        if self.server_version < 150000 and \
+           hasattr(self, 'compatible_sversion'):
+            self.skipTest("The version is not compatible for"
+                          " the current test case")
 
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
@@ -48,13 +52,15 @@ class PublicationsAddTestCase(BaseTestGenerator):
             raise Exception(
                 "Could not connect to database to add a publication.")
 
-        if self.is_positive_test and hasattr(self, 'few_tables'):
+        if hasattr(self, 'few_tables'):
             self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
             self.table_id = tables_utils. \
                 create_table(self.server, self.db_name, self.schema_name,
                              self.table_name)
 
             self.test_data['pubtable'] = publication_utils.get_tables(self)
+        if self.server_version >= 150000 and hasattr(self, 'few_schemas'):
+            self.test_data['pubschema'] = publication_utils.get_schemas(self)
 
     def runTest(self):
         """This function will publication."""
@@ -67,6 +73,8 @@ class PublicationsAddTestCase(BaseTestGenerator):
         else:
             if hasattr(self, 'without_name'):
                 del data["name"]
+                response = self.create_publication()
+            elif hasattr(self, 'with_columns'):
                 response = self.create_publication()
             elif hasattr(self, 'error_creating_publication'):
                 with patch(self.mock_data["function_name"],

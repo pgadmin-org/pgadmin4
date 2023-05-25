@@ -41,35 +41,16 @@ class PublicationUpdateTestCase(BaseTestGenerator):
                 "for server version less than 10"
 
             )
+
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:
             raise Exception(
                 "Could not connect to database to delete publication.")
-        self.schema_id = schema_info["schema_id"]
-        self.schema_name = schema_info["schema_name"]
-        schema_response = schema_utils.verify_schemas(self.server,
-                                                      self.db_name,
-                                                      self.schema_name)
-        if not schema_response:
-            raise Exception("Could not find the schema to delete publication.")
-        self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
 
-        self.server_version = schema_info["server_version"]
-        if self.server_version < 99999:
-            self.skipTest(
-                "Logical replication is not supported "
-                "for server version less than 10"
-
-            )
-        self.table_id = tables_utils.create_table(self.server, self.db_name,
-                                                  self.schema_name,
-                                                  self.table_name)
-        self.publication_name = "test_publication_update_%s" % (
+        self.test_data['name'] = "test_publication_add_%s" % (
             str(uuid.uuid4())[1:8])
-        self.publication_id = \
-            publication_utils.create_publication(self.server, self.db_name,
-                                                 self.publication_name)
+        self.publication_id = publication_utils.create_publication(self)
 
     def update_publication(self, data):
         return self.tester.put(
@@ -86,22 +67,19 @@ class PublicationUpdateTestCase(BaseTestGenerator):
         publication_name = publication_utils. \
             verify_publication(self.server,
                                self.db_name,
-                               self.publication_name)
+                               self.test_data['name'])
+        if not publication_name:
+            raise Exception("Could not find the publication to update.")
+
         if hasattr(self, "update_name"):
             self.test_data['name'] = "test_publication_update_%s" % (
                 str(uuid.uuid4())[1:8])
-        else:
-            self.test_data['name'] = self.publication_name
-        self.test_data['id'] = self.publication_id
 
-        if not publication_name:
-            raise Exception("Could not find the publication to update.")
+        self.test_data['id'] = self.publication_id
 
         if self.is_positive_test:
             if hasattr(self, "wrong_publication_id"):
                 self.publication_id = 9999
-            if hasattr(self, "plid_none"):
-                self.publication_id = ''
             response = self.update_publication(self.test_data)
         else:
             with patch(self.mock_data["function_name"],
@@ -114,13 +92,6 @@ class PublicationUpdateTestCase(BaseTestGenerator):
                          self.expected_data["status_code"])
 
     def tearDown(self):
-        connection = utils.get_db_connection(self.server['db'],
-                                             self.server['username'],
-                                             self.server['db_password'],
-                                             self.server['host'],
-                                             self.server['port'],
-                                             self.server['sslmode'])
-
         publication_utils.delete_publication(self.server, self.db_name,
                                              self.test_data['name'])
 
