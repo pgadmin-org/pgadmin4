@@ -1,7 +1,7 @@
 {
   "add_publication": [
     {
-      "name": "Create publication with insert and update",
+      "name": "Create publication with insert and update and all tables",
       "url": "/browser/publication/obj/",
       "is_positive_test": true,
       "test_data": {
@@ -13,7 +13,8 @@
         "publish_via_partition_root": false,
         "pubowner": "postgres",
         "all_table": true,
-        "pubtable": ""
+        "pubtable": "",
+        "pubschema": ""
       },
       "mocking_required": false,
       "mock_data": {},
@@ -35,12 +36,167 @@
         "publish_via_partition_root": false,
         "pubowner": "postgres",
         "all_table": false,
-        "pubtable": "PLACE_HOLDER"
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": ""
       },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
         "status_code": 200
+      }
+    },
+    {
+      "name": "Create publication for few schemas",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "few_schemas": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create publication for few schemas and few tables",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "few_schemas": true,
+      "few_tables": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create publication for few tables and where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "few_tables": true,
+      "with_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create publication for few tables and columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "few_tables": true,
+      "with_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create publication for few tables and columns and where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "few_tables": true,
+      "with_columns": true,
+      "with_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": ""
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "Create publication for few schemas and few tables and columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": false,
+      "few_schemas": true,
+      "few_tables": true,
+      "with_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "PLACE_HOLDER"
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(False, 'Mocked Internal Server Error')"
+      },
+      "expected_data": {
+        "status_code": 500
       }
     },
     {
@@ -56,12 +212,37 @@
         "evnt_truncate": false,
         "pubowner": "postgres",
         "all_table": true,
-        "pubtable": ""
+        "pubtable": "",
+        "pubschema": ""
       },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
         "status_code": 410
+      }
+    },
+    {
+      "name": "Exception while adding a publication",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": false,
+      "test_data": {
+        "name": "PLACEHOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "pubowner": "postgres",
+        "all_table": true,
+        "pubtable": "",
+        "pubschema": ""
+      },
+      "mocking_required": true,
+      "mock_data": {
+        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
+        "return_value": "(True, True)(False, 'Mocked Internal Server Error ')"
+      },
+      "expected_data": {
+        "status_code": 500
       }
     },
     {
@@ -77,35 +258,13 @@
         "evnt_truncate": false,
         "pubowner": "postgres",
         "all_table": true,
-        "pubtable": ""
+        "pubtable": "",
+        "pubschema": ""
       },
       "mocking_required": true,
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
         "return_value": "(False, 'Mocked Internal Server Error ')"
-      },
-      "expected_data": {
-        "status_code": 500
-      }
-    },
-    {
-      "name": "Exception while adding a publication",
-      "url": "/browser/publication/obj/",
-      "is_positive_test": false,
-      "test_data": {
-        "name": "PLACEHOLDER",
-        "evnt_insert": true,
-        "evnt_update": true,
-        "evnt_delete": false,
-        "evnt_truncate": false,
-        "pubowner": "postgres",
-        "all_table": true,
-        "pubtable": ""
-      },
-      "mocking_required": true,
-      "mock_data": {
-        "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
-        "return_value": "(True, True)(False, 'Mocked Internal Server Error ')"
       },
       "expected_data": {
         "status_code": 500
@@ -275,6 +434,15 @@
       "update_name": true,
       "test_data": {
         "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": "",
         "id": "PLACE_HOLDER"
       },
       "mocking_required": false,
@@ -290,7 +458,16 @@
       "owner_publication": true,
       "test_data": {
         "id": "PLACE_HOLDER",
-        "evnt_insert": "PLACEHOLDER"
+        "name": "PLACE_HOLDER",
+        "evnt_insert": "PLACEHOLDER",
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": ""
       },
       "mocking_required": false,
       "mock_data": {},
@@ -305,7 +482,16 @@
       "owner_publication": true,
       "test_data": {
         "id": "PLACE_HOLDER",
-        "evnt_delete": "PLACEHOLDER"
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": "PLACE_HOLDER",
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": ""
       },
       "mocking_required": false,
       "mock_data": {},
@@ -320,7 +506,16 @@
       "mocking_required": true,
       "test_data": {
         "name": "PLACE_HOLDER",
-        "id": "PLACE_HOLDER"
+        "id": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": ""
       },
       "mock_data": {
         "function_name": "pgadmin.utils.driver.psycopg3.connection.Connection.execute_dict",
@@ -337,11 +532,453 @@
       "wrong_publication_id": true,
       "mocking_required": false,
       "test_data": {
-        "id": "PLACE_HOLDER"
+        "id": "PLACE_HOLDER",
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": ""
       },
       "mock_data": {},
       "expected_data": {
         "status_code": 500
+      }
+    }
+  ],
+  "update_publication_add_table": [
+    {
+      "name": "update a publication via adding a table",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "add_table": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via adding a table with where and columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "add_table_with_where_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via adding a table with columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "add_table_with_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via adding a table with where",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "add_table_with_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "update_publication_update_table": [
+    {
+      "name": "update a publication via updating a table columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_table_with_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via updating a table where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_table_with_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via updating a table columns and where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_table_with_where_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via updating old new tables with columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_old_new_tables_with_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via updating old new tables with where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_old_new_tables_with_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via updating old new tables with columns and where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_old_new_tables_with_columns_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via updating old new tables with where clause and schema",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "update_old_new_tables_with_where_schema": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "update_publication_drop_table": [
+    {
+      "name": "update a publication via dropping a table",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "drop_tables": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via dropping a table with columns",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "drop_tables_with_columns": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    },
+    {
+      "name": "update a publication via dropping a table with where clause",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "drop_tables_with_where": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "PLACE_HOLDER",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "update_publication_add_schema": [
+    {
+      "name": "update a publication via adding a schema",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": "",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "update_publication_update_schema": [
+    {
+      "name": "update a publication via updating old new schemas",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
+      }
+    }
+  ],
+  "update_publication_drop_schema": [
+    {
+      "name": "update a publication via dropping a schema",
+      "url": "/browser/publication/obj/",
+      "is_positive_test": true,
+      "compatible_sversion": true,
+      "test_data": {
+        "name": "PLACE_HOLDER",
+        "evnt_insert": true,
+        "evnt_update": true,
+        "evnt_delete": false,
+        "evnt_truncate": false,
+        "publish_via_partition_root": false,
+        "pubowner": "postgres",
+        "all_table": false,
+        "pubtable": "",
+        "pubschema": "PLACE_HOLDER",
+        "id": "PLACE_HOLDER"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200
       }
     }
   ],

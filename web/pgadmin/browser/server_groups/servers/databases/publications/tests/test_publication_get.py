@@ -60,9 +60,7 @@ class PublicationGetTestCase(BaseTestGenerator):
         self.publication_name = "test_publication_get_%s" % (
             str(uuid.uuid4())[1:8])
         self.publication_id = publication_utils. \
-            create_publication(self.server,
-                               self.db_name,
-                               self.publication_name)
+            create_publication(self)
 
     def get_publication(self):
         return self.tester.get(

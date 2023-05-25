@@ -12,7 +12,7 @@ import json
 from functools import wraps
 
 from pgadmin.browser.server_groups.servers import databases
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app as app
 from flask_babel import gettext
 from pgadmin.browser.collection import CollectionNodeModule
 from pgadmin.browser.utils import PGChildNodeView
@@ -21,8 +21,6 @@ from pgadmin.utils.ajax import make_json_response, internal_server_error, \
 from pgadmin.utils.driver import get_driver
 from config import PG_DEFAULT_DRIVER
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
-from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
-from urllib.parse import unquote
 
 
 class PublicationModule(CollectionNodeModule):
@@ -192,7 +190,9 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         'stats': [{'get': 'statistics'}],
         'dependency': [{'get': 'dependencies'}],
         'dependent': [{'get': 'dependents'}],
+        'get_schemas': [{}, {'get': 'get_schemas'}],
         'get_tables': [{}, {'get': 'get_tables'}],
+        'get_all_columns': [{}, {'get': 'get_all_columns'}],
         'delete': [{'delete': 'delete'}, {'delete': 'delete'}]
     })
 
@@ -253,22 +253,16 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             return internal_server_error(errormsg=res)
         for rows in res['rows']:
             if not rows['all_table']:
-                get_name_sql = render_template(
-                    "/".join([self.template_path, self._DELETE_SQL]),
-                    pbid=rows['oid'], conn=self.conn
-                )
-                status, pname = self.conn.execute_scalar(get_name_sql)
                 table_sql = render_template(
                     "/".join([self.template_path,
                               self._GET_TABLE_FOR_PUBLICATION]),
-                    pname=pname
+                    pbid=rows['oid']
                 )
 
-                pub_table = []
                 status, table_res = self.conn.execute_dict(table_sql)
 
-                for table in table_res['rows']:
-                    pub_table.append(table['pubtable'])
+                pub_table = \
+                    [table['table_name'] for table in table_res['rows']]
 
                 pub_table = ", ".join(str(elem) for elem in pub_table)
 
@@ -385,24 +379,42 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             return False, gone(self._NOT_FOUND_PUB_INFORMATION)
 
         if not res['rows'][0]['all_table']:
-            get_name_sql = render_template(
-                "/".join([self.template_path, self._DELETE_SQL]),
-                pbid=pbid, conn=self.conn
-            )
-            status, pname = self.conn.execute_scalar(get_name_sql)
+            if self.manager.version >= 150000:
+                schema_name_sql = render_template(
+                    "/".join([self.template_path, 'get_pub_schemas.sql']),
+                    pbid=pbid
+                )
+                status, snames_list_res = self.conn.execute_dict(
+                    schema_name_sql)
+
+                if len(snames_list_res['rows']) != 0:
+                    res['rows'][0]['pubschema'] = \
+                        [sname_dict['sname'] for sname_dict
+                         in snames_list_res['rows']]
+
             table_sql = render_template(
                 "/".join([self.template_path,
                           self._GET_TABLE_FOR_PUBLICATION]),
-                pname=pname
+                pbid=pbid
             )
 
             pub_table = []
+            pub_table_names_list = []
             status, table_res = self.conn.execute_dict(table_sql)
 
             for table in table_res['rows']:
-                pub_table.append(table['pubtable'])
+                pub_table_names_list.append(table['table_name'])
+                if 'columns' in table and 'where' in table:
+                    pub_table.append({
+                        'table_name': table['table_name'],
+                        'columns': table['columns'],
+                        'where': table['where'],
+                    })
+                else:
+                    pub_table.append(table['table_name'])
 
             res['rows'][0]['pubtable'] = pub_table
+            res['rows'][0]['pubtable_names'] = pub_table_names_list
 
         return True, res['rows'][0]
 
@@ -630,21 +642,74 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         drop_table_data = []
         add_table_data = []
+        update_table_data = []
         drop_table = False
         add_table = False
+        update_table = False
 
-        for table in old_data['pubtable']:
-            if 'pubtable' in data and table not in data['pubtable']:
-                drop_table_data.append(table)
-                drop_table = True
+        if self.manager.version < 150000:
+            for table in old_data['pubtable']:
+                if 'pubtable' in data and table not in data['pubtable']:
+                    drop_table_data.append(table)
+                    drop_table = True
 
-        if 'pubtable' in data:
-            for table in data['pubtable']:
-                if table not in old_data['pubtable']:
+            if 'pubtable' in data:
+                for table in data['pubtable']:
+                    if table not in old_data['pubtable']:
+                        add_table_data.append(table)
+                        add_table = True
+        elif self.manager.version >= 150000:
+            if 'pubtable' in data and 'deleted' in data['pubtable']:
+                for table in data['pubtable']['deleted']:
+                    drop_table_data.append(table)
+                    drop_table = True
+
+            if 'pubtable' in data and 'changed' in data['pubtable']:
+                update_table_data = [*old_data['pubtable']]
+                for index, table1 in enumerate(old_data['pubtable']):
+                    for table2 in data['pubtable']['changed']:
+                        if table1['table_name'] == table2['table_name']:
+                            update_table_data[index] = table2
+                            update_table = True
+                            break
+
+            if 'pubtable' in data and 'added' in data['pubtable']:
+                for table in data['pubtable']['added']:
                     add_table_data.append(table)
                     add_table = True
 
-        return drop_table, add_table, drop_table_data, add_table_data
+        return drop_table, add_table, update_table, drop_table_data, \
+            add_table_data, update_table_data
+
+    def _get_schema_details_to_add_and_delete(self, old_data, data):
+        """
+        This function returns the schemas which need to add and delete
+        :param old_data:
+        :param data:
+        :return:
+        """
+        drop_schema_data = []
+        add_schema_data = []
+        drop_schema = False
+        add_schema = False
+
+        if 'pubschema' in old_data:
+            for schema in old_data['pubschema']:
+                if 'pubschema' in data and schema not in data['pubschema']:
+                    drop_schema_data.append(schema)
+                    drop_schema = True
+
+        if 'pubschema' in data:
+            for schema in data['pubschema']:
+                if 'pubschema' in old_data and \
+                   schema not in old_data['pubschema']:
+                    add_schema_data.append(schema)
+                    add_schema = True
+                elif 'pubschema' not in old_data:
+                    add_schema_data.append(schema)
+                    add_schema = True
+
+        return drop_schema, add_schema, drop_schema_data, add_schema_data
 
     def get_sql(self, data, pbid=None):
         """
@@ -668,10 +733,32 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             if len(res['rows']) == 0:
                 return gone(self._NOT_FOUND_PUB_INFORMATION)
 
-            old_data = self._get_old_table_data(res['rows'][0]['name'], res)
+            snames_list = []
 
-            drop_table, add_table, drop_table_data, add_table_data = \
+            if self.manager.version >= 150000:
+                schema_name_sql = render_template(
+                    "/".join([self.template_path, 'get_pub_schemas.sql']),
+                    pbid=pbid
+                )
+                status, snames_list_res = self.conn.execute_dict(
+                    schema_name_sql)
+
+                if len(snames_list_res['rows']) != 0:
+                    snames_list = [sname_dict['sname'] for sname_dict
+                                   in snames_list_res['rows']]
+
+            old_data = self._get_old_table_data(res['rows'][0]['name'], res,
+                                                snames_list)
+
+            if len(snames_list) != 0:
+                old_data['pubschema'] = snames_list
+
+            drop_table, add_table, update_table, drop_table_data, \
+                add_table_data, update_table_data = \
                 self._get_table_details_to_add_and_delete(old_data, data)
+
+            drop_schema, add_schema, drop_schema_data, add_schema_data = \
+                self._get_schema_details_to_add_and_delete(old_data, data)
 
             for arg in required_args:
                 if arg not in data:
@@ -684,7 +771,10 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                 "/".join([self.template_path, self._UPDATE_SQL]),
                 data=data, o_data=old_data, conn=self.conn,
                 drop_table=drop_table, drop_table_data=drop_table_data,
-                add_table=add_table, add_table_data=add_table_data
+                add_table=add_table, add_table_data=add_table_data,
+                update_table=update_table, update_table_data=update_table_data,
+                drop_schema=drop_schema, drop_schema_data=drop_schema_data,
+                add_schema=add_schema, add_schema_data=add_schema_data,
             )
             return sql.strip('\n'), data['name'] if 'name' in data \
                 else old_data['name']
@@ -694,6 +784,41 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                                             self._CREATE_SQL]),
                                   data=data, conn=self.conn)
             return sql.strip('\n'), data['name']
+
+    @check_precondition
+    def get_schemas(self, gid, sid, did):
+        """
+        This function will return the list of schemas for the specified
+        server group id, server id and database id.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+        """
+        res = []
+
+        sql = render_template("/".join([self.template_path,
+                                        'get_all_schemas.sql']),
+                              show_sys_objects=self.blueprint.
+                              show_system_objects,
+                              server_type=self.manager.server_type
+                              )
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            res.append(
+                {
+                    'label': row['nspname'],
+                    'value': row['nspname'],
+                }
+            )
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
     @check_precondition
     def get_tables(self, gid, sid, did):
@@ -715,12 +840,14 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                               )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
-            return internal_server_error(errormsg=res)
+            return internal_server_error(errormsg=rset)
+
         for row in rset['rows']:
             res.append(
                 {
                     'label': row['table'],
-                    'value': row['table']
+                    'value': row['table'],
+                    'tid': row['tid']
                 }
             )
         return make_json_response(
@@ -728,24 +855,64 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             status=200
         )
 
-    def _get_old_table_data(self, pname, res):
+    @check_precondition
+    def get_all_columns(self, gid, sid, did):
+        """
+        This function returns the columns list.
+
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            tid: Table ID
+        """
+        data = request.args
+
+        res = []
+
+        sql = render_template("/".join([self.template_path,
+                                        'get_all_columns.sql']),
+                              tid=data['tid'], conn=self.conn)
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+        for row in rset['rows']:
+            res.append(
+                {
+                    'label': row['column'],
+                    'value': row['column'],
+                }
+            )
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    def _get_old_table_data(self, pname, res, exempt_schema_list=[]):
         """
         This function return table details before update
         :param pname:
         :param res:
         :return:old_data
         """
-
         table_sql = render_template(
-            "/".join([self.template_path, self._GET_TABLE_FOR_PUBLICATION]),
-            pname=pname
+            "/".join([self.template_path,
+                      self._GET_TABLE_FOR_PUBLICATION]),
+            pbid=res['rows'][0]['oid']
         )
 
         pub_table = []
         status, table_res = self.conn.execute_dict(table_sql)
 
         for table in table_res['rows']:
-            pub_table.append(table['pubtable'])
+            if 'columns' in table and 'where' in table:
+                pub_table.append({
+                    'table_name': table['table_name'],
+                    'columns': table['columns'],
+                    'where': table['where'],
+                })
+            else:
+                pub_table.append(table['table_name'])
 
         res['rows'][0]['pubtable'] = pub_table
 
@@ -781,6 +948,20 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         if len(res['rows']) == 0:
             return gone(self._NOT_FOUND_PUB_INFORMATION)
 
+        snames_list = []
+
+        if self.manager.version >= 150000:
+            schema_name_sql = render_template(
+                "/".join([self.template_path, 'get_pub_schemas.sql']),
+                pbid=pbid
+            )
+            status, snames_list_res = self.conn.execute_dict(
+                schema_name_sql)
+
+            if len(snames_list_res['rows']) != 0:
+                snames_list = [sname_dict['sname'] for sname_dict
+                               in snames_list_res['rows']]
+
         get_name_sql = render_template(
             "/".join([self.template_path, self._DELETE_SQL]),
             pbid=pbid, conn=self.conn
@@ -788,7 +969,10 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         status, pname = self.conn.execute_scalar(get_name_sql)
 
         # Get old table details
-        old_data = self._get_old_table_data(pname, res)
+        old_data = self._get_old_table_data(pname, res, snames_list)
+
+        if len(snames_list) != 0:
+            old_data['pubschema'] = snames_list
 
         sql = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -940,5 +1124,5 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         return sql
 
 
-SchemaDiffRegistry(blueprint.node_type, PublicationView, 'Database')
+# SchemaDiffRegistry(blueprint.node_type, PublicationView, 'Database')
 PublicationView.register_node_view(blueprint)

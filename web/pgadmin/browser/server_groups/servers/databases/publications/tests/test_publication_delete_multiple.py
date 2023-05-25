@@ -61,9 +61,8 @@ class PublicationDeleteTestCases(BaseTestGenerator):
         self.publication_name_1 = "test_publication_delete_%s" % (
             str(uuid.uuid4())[1:8])
         self.publication_ids = [
-            publication_utils.create_publication(self.server, self.db_name,
-                                                 self.publication_name),
-            publication_utils.create_publication(self.server, self.db_name,
+            publication_utils.create_publication(self),
+            publication_utils.create_publication(self,
                                                  self.publication_name_1),
         ]
 

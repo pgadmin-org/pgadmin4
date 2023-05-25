@@ -76,7 +76,7 @@ export default function QueryThresholds({ value, onChange }) {
           <InputText cid={alertCid} helpid={alerthelpid} type='numeric' value={value?.alert} onChange={onAlertChange} />
         </Grid>
         <Grid item lg={4} md={4} sm={4} xs={12} className={classes.contentStyle}>
-          <Typography>{gettext('(in minuts)')}</Typography>
+          <Typography>{gettext('(in minutes)')}</Typography>
         </Grid>
       </Grid>
     </FormGroup >
