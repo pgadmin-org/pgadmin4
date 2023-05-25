@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #3831 <https://github.com/pgadmin-org/pgadmin4/issues/3831>`_ -  Add Option to only show active connections on Dashboard.
+  | `Issue #4769 <https://github.com/pgadmin-org/pgadmin4/issues/4769>`_ -  Allow pgAdmin to retrive master password from external script/program.
   | `Issue #5048 <https://github.com/pgadmin-org/pgadmin4/issues/5048>`_ -  Add an option to hide/show empty object collection nodes.
   | `Issue #5123 <https://github.com/pgadmin-org/pgadmin4/issues/5123>`_ -  Added support to use standard OS secret store to save server/ssh tunnel passwords instead of master password in pgAdmin desktop mode.
 
@@ -50,4 +51,3 @@ Bug fixes
   | `Issue #6279 <https://github.com/pgadmin-org/pgadmin4/issues/6279>`_ -  Fix incorrect number of foreign tables displayed. Show column comments in RE-SQL.
   | `Issue #6280 <https://github.com/pgadmin-org/pgadmin4/issues/6280>`_ -  View SQL tab not quoting column comments.
   | `Issue #6281 <https://github.com/pgadmin-org/pgadmin4/issues/6281>`_ -  VarChar Field Sizes are missing from Query's Grid header.
-  | `Issue #6325 <https://github.com/pgadmin-org/pgadmin4/issues/6325>`_ -  Fixed an issue where Operators collection node throwing an error.

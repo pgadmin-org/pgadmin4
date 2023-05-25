@@ -577,6 +577,24 @@ ALLOW_SAVE_TUNNEL_PASSWORD = False
 MASTER_PASSWORD_REQUIRED = True
 
 ##########################################################################
+
+# pgAdmin encrypts the database connection and ssh tunnel password using a
+# master password or pgAdmin login password (for other authentication sources)
+# before storing it in the pgAdmin configuration database.
+#
+# Below setting is used to allow the user to specify the path to a script
+# or program that will return an encryption key which will be used to
+# encrypt the passwords. This setting is used only in server mode when
+# auth sources are oauth, Kerberos, and webserver.
+#
+# You can pass the current username as an argument to the external script
+# by specifying %u in config value.
+# E.g. - MASTER_PASSWORD_HOOK = '<PATH>/passwdgen_script.sh %u'
+##########################################################################
+MASTER_PASSWORD_HOOK = None
+
+##########################################################################
+
 # Allows pgAdmin4 to create session cookies based on IP address, so even
 # if a cookie is stolen, the attacker will not be able to connect to the
 # server using that stolen cookie.
