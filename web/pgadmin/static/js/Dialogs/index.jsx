@@ -157,12 +157,12 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
   const api = getApiInstance();
   api.post(url_for('browser.set_master_password'), data).then((res)=> {
     let isKeyring = res.data.data.keyring_name.length > 0;
+
     if(!res.data.data.present) {
-      if(res.data.data.is_error){
-        //show notifier with error
-        if(!res.data.data.reset){
+      if (res.data.data.invalid_master_password_hook){
+        if(res.data.data.is_error){
           Notify.error(res.data.data.errmsg);
-        }else if(res.data.data.errmsg == 'Password mismatch error'){
+        }else{
           Notify.confirm(gettext('Reset Master Password'),
             gettext('The master password retrieved from the master password hook utility is different from what was previously retrieved.') + '<br>'
             + gettext('Do you want to reset your master password to match?') + '<br><br>'
@@ -179,12 +179,11 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
               return true;
             },
             function() {/* If user clicks No */ return true;}
-          );
-        }
-      }
-      else{
+          );}
+      }else{
         showMasterPassword(res.data.data.reset, res.data.data.errmsg, masterpass_callback_queue, cancel_callback, res.data.data.keyring_name);
       }
+
     } else {
       masterPassCallbacks(masterpass_callback_queue);
 
@@ -199,7 +198,7 @@ export function checkMasterPassword(data, masterpass_callback_queue, cancel_call
 }
 
 // This functions is used to show the master password dialog.
-export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback, keyring_name) {
+export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_queue, cancel_callback, keyring_name='') {
   const api = getApiInstance();
   let title =  keyring_name.length > 0 ? gettext('Migrate Saved Passwords') : isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
 

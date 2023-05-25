@@ -746,12 +746,14 @@ def get_nodes():
 
 
 def form_master_password_response(existing=True, present=False, errmsg=None,
-                                  keyring_name=''):
+                                  keyring_name='',
+                                  invalid_master_password_hook=False):
     return make_json_response(data={
         'present': present,
         'reset': existing,
         'errmsg': errmsg,
         'keyring_name': keyring_name,
+        'invalid_master_password_hook': invalid_master_password_hook,
         'is_error': True if errmsg else False
     })
 
@@ -893,7 +895,8 @@ def set_master_password():
             return form_master_password_response(
                 existing=False,
                 present=False,
-                errmsg=error
+                errmsg=error,
+                invalid_master_password_hook=True
             )
 
     # Master password is applicable for Desktop mode and in server mode
@@ -906,13 +909,15 @@ def set_master_password():
         if current_user.masterpass_check is not None and \
             data.get('submit_password', False) and \
                 not validate_master_password(data.get('password')):
-            errmsg = gettext("Password mismatch error") if \
-                config.MASTER_PASSWORD_HOOK else \
-                gettext("Incorrect master password")
+            errmsg = '' if config.MASTER_PASSWORD_HOOK \
+                else gettext("Incorrect master password")
+            invalid_master_password_hook = \
+                True if config.MASTER_PASSWORD_HOOK else False
             return form_master_password_response(
                 existing=True,
                 present=False,
-                errmsg=errmsg
+                errmsg=errmsg,
+                invalid_master_password_hook=invalid_master_password_hook
             )
 
         # if master password received in request
