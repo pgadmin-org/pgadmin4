@@ -38,6 +38,7 @@ _build_runtime() {
           unzip "nwjs-sdk-v0.76.1-osx-arm64.zip"
       popd > /dev/null || exit
 
+      xattr -r -d com.apple.quarantine "${BUILD_ROOT}/nwjs-sdk-v0.76.1-osx-arm64"/nwjs.app
       cp -R "${BUILD_ROOT}/nwjs-sdk-v0.76.1-osx-arm64"/nwjs.app "${BUILD_ROOT}/"
     else
       # YARN:
