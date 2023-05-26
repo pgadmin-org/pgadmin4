@@ -66,8 +66,8 @@ class RowSecurityModule(CollectionNodeModule):
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
         if self.has_nodes(
-            sid, did, scid=scid, tid=kwargs.get('tid', None),
-            vid=kwargs.get('vid', None),
+            sid, did, scid=scid,
+            tid=kwargs.get('tid', kwargs.get('vid', None)),
                 base_template_path=RowSecurityView.BASE_TEMPLATE_PATH):
             yield self.generate_browser_collection_node(
                 kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
