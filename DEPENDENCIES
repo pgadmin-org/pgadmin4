@@ -75,11 +75,12 @@ azure-identity                                                   1.12.0         
 google-api-python-client                                         2.86.0           Apache 2.0                           https://github.com/googleapis/google-api-python-client/
 google-auth-oauthlib                                             1.0.0            Apache 2.0                           https://github.com/GoogleCloudPlatform/google-auth-library-python-oauthlib
 Werkzeug                                                         2.2.3            BSD-3-Clause                         https://palletsprojects.com/p/werkzeug/
+keyring                                                          23.13.1          Unknown                              https://github.com/jaraco/keyring
 
 NOTE: This report was generated using Python 3.11. Full information may not be
 shown for Python modules that are not required with this version.
 
-45 dependencies listed.
+46 dependencies listed.
 
 Javascript Dependencies
 =======================
@@ -90,7 +91,7 @@ Name                                                             Version        
 anti-trojan-source                                               1.4.1            Apache-2.0                           https://github.com/lirantal/anti-trojan-source.git
 eve                                                              0.5.4            Apache-2.0                           git@github.com:adobe-webplatform/eve.git
 jmespath                                                         0.16.0           Apache-2.0                           git://github.com/jmespath/jmespath.js
-jsoneditor                                                       9.10.0           Apache-2.0                           https://github.com/josdejong/jsoneditor.git
+jsoneditor                                                       9.10.2           Apache-2.0                           https://github.com/josdejong/jsoneditor.git
 paths-js                                                         0.4.11           Apache-2.0                           https://github.com/andreaferretti/paths-js.git
 rc-dock                                                          3.2.17           Apache-2.0                           https://github.com/ticlo/rc-dock.git
 rc-new-window                                                    0.1.13           Apache-2.0                           https://github.com/ticlo/rc-new-window.git
@@ -98,12 +99,12 @@ snapsvg                                                          0.5.1          
 spdx-correct                                                     3.2.0            Apache-2.0                           https://github.com/jslicense/spdx-correct.js.git
 validate-npm-package-license                                     3.0.4            Apache-2.0                           https://github.com/kemitchell/validate-npm-package-license.js.git
 @babel/code-frame                                                7.21.4           MIT                                  https://github.com/babel/babel.git
-@babel/compat-data                                               7.21.7           MIT                                  https://github.com/babel/babel.git
-@babel/core                                                      7.21.5           MIT                                  https://github.com/babel/babel.git
-@babel/generator                                                 7.21.5           MIT                                  https://github.com/babel/babel.git
+@babel/compat-data                                               7.21.9           MIT                                  https://github.com/babel/babel.git
+@babel/core                                                      7.21.8           MIT                                  https://github.com/babel/babel.git
+@babel/generator                                                 7.21.9           MIT                                  https://github.com/babel/babel.git
 @babel/helper-annotate-as-pure                                   7.18.6           MIT                                  https://github.com/babel/babel.git
 @babel/helper-compilation-targets                                7.21.5           MIT                                  https://github.com/babel/babel.git
-@babel/helper-create-class-features-plugin                       7.21.5           MIT                                  https://github.com/babel/babel.git
+@babel/helper-create-class-features-plugin                       7.21.8           MIT                                  https://github.com/babel/babel.git
 @babel/helper-environment-visitor                                7.21.5           MIT                                  https://github.com/babel/babel.git
 @babel/helper-function-name                                      7.21.0           MIT                                  https://github.com/babel/babel.git
 @babel/helper-hoist-variables                                    7.18.6           MIT                                  https://github.com/babel/babel.git
@@ -121,7 +122,7 @@ validate-npm-package-license                                     3.0.4          
 @babel/helper-validator-option                                   7.21.0           MIT                                  https://github.com/babel/babel.git
 @babel/helpers                                                   7.21.5           MIT                                  https://github.com/babel/babel.git
 @babel/highlight                                                 7.18.6           MIT                                  https://github.com/babel/babel.git
-@babel/parser                                                    7.21.5           MIT                                  https://github.com/babel/babel.git
+@babel/parser                                                    7.21.9           MIT                                  https://github.com/babel/babel.git
 @babel/plugin-proposal-class-properties                          7.18.6           MIT                                  https://github.com/babel/babel.git
 @babel/plugin-syntax-jsx                                         7.21.4           MIT                                  https://github.com/babel/babel.git
 @babel/plugin-transform-react-display-name                       7.18.6           MIT                                  https://github.com/babel/babel.git
@@ -130,28 +131,28 @@ validate-npm-package-license                                     3.0.4          
 @babel/plugin-transform-react-pure-annotations                   7.18.6           MIT                                  https://github.com/babel/babel.git
 @babel/preset-react                                              7.18.6           MIT                                  https://github.com/babel/babel.git
 @babel/runtime                                                   7.21.5           MIT                                  https://github.com/babel/babel.git
-@babel/template                                                  7.20.7           MIT                                  https://github.com/babel/babel.git
+@babel/template                                                  7.21.9           MIT                                  https://github.com/babel/babel.git
 @babel/traverse                                                  7.21.5           MIT                                  https://github.com/babel/babel.git
 @babel/types                                                     7.21.5           MIT                                  https://github.com/babel/babel.git
 @date-io/core                                                    1.3.13           MIT                                  https://github.com/dmtrKovalenko/date-io
 @date-io/date-fns                                                1.3.13           MIT                                  https://github.com/dmtrKovalenko/date-io
-@emotion/babel-plugin                                            11.10.8          MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/babel-plugin
-@emotion/cache                                                   11.10.8          MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/cache
+@emotion/babel-plugin                                            11.11.0          MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/babel-plugin
+@emotion/cache                                                   11.11.0          MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/cache
 @emotion/hash                                                    0.8.0            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/hash
-@emotion/hash                                                    0.9.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/hash
-@emotion/is-prop-valid                                           1.2.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/is-prop-valid
-@emotion/memoize                                                 0.8.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/memoize
-@emotion/react                                                   11.10.8          MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/react
-@emotion/serialize                                               1.1.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/serialize
-@emotion/sheet                                                   1.2.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/sheet
+@emotion/hash                                                    0.9.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/hash
+@emotion/is-prop-valid                                           1.2.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/is-prop-valid
+@emotion/memoize                                                 0.8.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/memoize
+@emotion/react                                                   11.11.0          MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/react
+@emotion/serialize                                               1.1.2            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/serialize
+@emotion/sheet                                                   1.2.2            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/sheet
 @emotion/stylis                                                  0.8.5            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/stylis
-@emotion/unitless                                                0.8.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/unitless
+@emotion/unitless                                                0.8.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/unitless
 @emotion/unitless                                                0.7.5            MIT                                  https://github.com/emotion-js/emotion/tree/master/packages/unitless
-@emotion/use-insertion-effect-with-fallbacks                     1.0.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/use-insertion-effect-with-fallbacks
-@emotion/utils                                                   1.2.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/utils
-@emotion/weak-memoize                                            0.3.0            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/weak-memoize
+@emotion/use-insertion-effect-with-fallbacks                     1.0.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/use-insertion-effect-with-fallbacks
+@emotion/utils                                                   1.2.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/utils
+@emotion/weak-memoize                                            0.3.1            MIT                                  https://github.com/emotion-js/emotion/tree/main/packages/weak-memoize
 @floating-ui/core                                                1.2.6            MIT                                  https://github.com/floating-ui/floating-ui.git
-@floating-ui/dom                                                 1.2.7            MIT                                  https://github.com/floating-ui/floating-ui.git
+@floating-ui/dom                                                 1.2.8            MIT                                  https://github.com/floating-ui/floating-ui.git
 @istanbuljs/schema                                               0.1.3            MIT                                  git+https://github.com/istanbuljs/schema.git
 @jridgewell/gen-mapping                                          0.3.3            MIT                                  https://github.com/jridgewell/gen-mapping
 @jridgewell/resolve-uri                                          3.1.0            MIT                                  https://github.com/jridgewell/resolve-uri
@@ -176,25 +177,27 @@ validate-npm-package-license                                     3.0.4          
 @projectstorm/react-diagrams-core                                6.7.4            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-diagrams-defaults                            6.7.4            MIT                                  https://github.com/projectstorm/react-diagrams.git
 @projectstorm/react-diagrams-routing                             6.7.4            MIT                                  https://github.com/projectstorm/react-diagrams.git
+@rc-component/portal                                             1.1.1            MIT                                  https://github.com/react-component/portal.git
+@rc-component/trigger                                            1.13.3           MIT                                  https://github.com/react-component/trigger.git
 @react-dnd/asap                                                  5.0.2            MIT                                  https://github.com/react-dnd/react-dnd
 @react-dnd/invariant                                             4.0.2            MIT                                  https://github.com/react-dnd/react-dnd
 @react-dnd/shallowequal                                          4.0.2            MIT                                  https://github.com/react-dnd/react-dnd
-@remix-run/router                                                1.6.0            MIT                                  https://github.com/remix-run/react-router
+@remix-run/router                                                1.6.2            MIT                                  https://github.com/remix-run/react-router
 @simonwep/pickr                                                  1.8.2            MIT                                  https://github.com/Simonwep/pickr.git
 @sindresorhus/is                                                 0.7.0            MIT                                  https://github.com/sindresorhus/is.git
 @socket.io/component-emitter                                     3.1.0            MIT                                  https://github.com/socketio/emitter.git
 @szhsin/react-menu                                               2.3.4            MIT                                  https://github.com/szhsin/react-menu.git
 @types/classnames                                                2.3.1            MIT                                  Unknown
 @types/minimist                                                  1.2.2            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/node                                                      18.16.3          MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
+@types/node                                                      20.2.4           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/normalize-package-data                                    2.4.1            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/parse-json                                                4.0.0            MIT                                  https://www.github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/prop-types                                                15.7.5           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/react                                                     18.2.0           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/react                                                     16.14.40         MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/react                                                     17.0.58          MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
+@types/react                                                     18.2.7           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
+@types/react                                                     16.14.42         MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
+@types/react                                                     17.0.60          MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/react-dom                                                 17.0.20          MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
-@types/react-transition-group                                    4.4.5            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
+@types/react-transition-group                                    4.4.6            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/scheduler                                                 0.16.3           MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 @types/styled-jsx                                                2.2.9            MIT                                  https://github.com/DefinitelyTyped/DefinitelyTyped.git
 ajv                                                              8.12.0           MIT                                  https://github.com/ajv-validator/ajv.git
@@ -209,7 +212,7 @@ async                                                            2.6.4          
 attr-accept                                                      2.2.2            MIT                                  https://github.com/react-dropzone/attr-accept.git
 axios                                                            0.21.4           MIT                                  https://github.com/axios/axios.git
 babel-plugin-macros                                              3.1.0            MIT                                  https://github.com/kentcdodds/babel-plugin-macros
-babel-plugin-styled-components                                   2.1.1            MIT                                  https://github.com/styled-components/babel-plugin-styled-components.git
+babel-plugin-styled-components                                   2.1.3            MIT                                  https://github.com/styled-components/babel-plugin-styled-components.git
 babel-plugin-syntax-jsx                                          6.18.0           MIT                                  https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-jsx
 babelify                                                         10.0.0           MIT                                  https://github.com/babel/babelify.git
 balanced-match                                                   1.0.2            MIT                                  git://github.com/juliangruber/balanced-match.git
@@ -241,7 +244,7 @@ commander                                                        7.2.0          
 concat-map                                                       0.0.1            MIT                                  git://github.com/substack/node-concat-map.git
 convert-source-map                                               1.9.0            MIT                                  git://github.com/thlorenz/convert-source-map.git
 convert-units                                                    2.3.4            MIT                                  git://github.com/ben-ng/convert-units.git
-core-js                                                          3.30.1           MIT                                  https://github.com/zloirock/core-js.git
+core-js                                                          3.30.2           MIT                                  https://github.com/zloirock/core-js.git
 cosmiconfig                                                      7.1.0            MIT                                  git+https://github.com/davidtheclark/cosmiconfig.git
 css-line-break                                                   2.1.0            MIT                                  git+ssh://git@github.com/niklasvh/css-line-break.git
 css-to-react-native                                              3.2.0            MIT                                  git+https://github.com/styled-components/css-to-react-native.git
@@ -268,7 +271,7 @@ dom-align                                                        1.12.4         
 dom-helpers                                                      5.2.1            MIT                                  git+https://github.com/react-bootstrap/dom-helpers.git
 dom-serializer                                                   1.4.1            MIT                                  git://github.com/cheeriojs/dom-renderer.git
 engine.io-client                                                 6.4.0            MIT                                  https://github.com/socketio/engine.io-client.git
-engine.io-parser                                                 5.0.6            MIT                                  git@github.com:socketio/engine.io-parser.git
+engine.io-parser                                                 5.0.7            MIT                                  git@github.com:socketio/engine.io-parser.git
 error-ex                                                         1.3.2            MIT                                  https://github.com/qix-/node-error-ex.git
 escalade                                                         3.1.1            MIT                                  https://github.com/lukeed/escalade.git
 escape-string-regexp                                             1.0.5            MIT                                  https://github.com/sindresorhus/escape-string-regexp.git
@@ -303,7 +306,7 @@ insert-if                                                        1.2.0          
 ip-address                                                       7.1.0            MIT                                  git://github.com/beaugunderson/ip-address.git
 is-any-array                                                     2.0.1            MIT                                  https://github.com/cheminfo-js/is-any-array.git
 is-arrayish                                                      0.2.1            MIT                                  https://github.com/qix-/node-is-arrayish.git
-is-core-module                                                   2.12.0           MIT                                  git+https://github.com/inspect-js/is-core-module.git
+is-core-module                                                   2.12.1           MIT                                  git+https://github.com/inspect-js/is-core-module.git
 is-extglob                                                       2.1.1            MIT                                  https://github.com/jonschlinkert/is-extglob.git
 is-glob                                                          4.0.3            MIT                                  https://github.com/micromatch/is-glob.git
 is-in-browser                                                    1.1.3            MIT                                  git+https://github.com/tuxsudo/is-in-browser.git
@@ -312,7 +315,7 @@ is-plain-obj                                                     1.1.0          
 is-relative                                                      1.0.0            MIT                                  https://github.com/jonschlinkert/is-relative.git
 is-unc-path                                                      1.0.0            MIT                                  https://github.com/jonschlinkert/is-unc-path.git
 javascript-natural-sort                                          0.7.1            MIT                                  https://github.com/Bill4Time/javascript-natural-sort.git
-jquery                                                           3.6.4            MIT                                  https://github.com/jquery/jquery.git
+jquery                                                           3.7.0            MIT                                  https://github.com/jquery/jquery.git
 jquery-contextmenu                                               2.9.2            MIT                                  git://github.com/swisnl/jQuery-contextMenu.git
 js-tokens                                                        4.0.0            MIT                                  https://github.com/lydell/js-tokens.git
 jsbn                                                             1.1.0            MIT                                  https://github.com/andyperlitch/jsbn.git
@@ -360,8 +363,8 @@ lodash.support                                                   2.3.0          
 lodash.uniq                                                      4.5.0            MIT                                  https://github.com/lodash/lodash.git
 loose-envify                                                     1.4.0            MIT                                  git://github.com/zertosh/loose-envify.git
 make-dir                                                         3.1.0            MIT                                  https://github.com/sindresorhus/make-dir.git
-map-obj                                                          1.0.1            MIT                                  https://github.com/sindresorhus/map-obj.git
 map-obj                                                          4.3.0            MIT                                  https://github.com/sindresorhus/map-obj.git
+map-obj                                                          1.0.1            MIT                                  https://github.com/sindresorhus/map-obj.git
 matches-selector                                                 0.0.1            MIT                                  https://github.com/ForbesLindesay/matches-selector.git
 memoize-one                                                      5.2.1            MIT                                  https://github.com/alexreardon/memoize-one.git
 memoize-one                                                      6.0.0            MIT                                  https://github.com/alexreardon/memoize-one.git
@@ -380,7 +383,7 @@ moment-timezone                                                  0.5.43         
 ms                                                               2.1.2            MIT                                  https://github.com/zeit/ms.git
 nanoid                                                           3.3.6            MIT                                  https://github.com/ai/nanoid.git
 nanopop                                                          2.3.0            MIT                                  https://github.com/Simonwep/nanopop.git
-node-releases                                                    2.0.10           MIT                                  https://github.com/chicoxyzzy/node-releases.git
+node-releases                                                    2.0.12           MIT                                  https://github.com/chicoxyzzy/node-releases.git
 normalize-url                                                    6.1.0            MIT                                  https://github.com/sindresorhus/normalize-url.git
 notificar                                                        1.0.1            MIT                                  git+https://github.com/neeksandhu/notificar.git
 notistack                                                        1.0.10           MIT                                  git+https://github.com/iamhosseindhv/notistack.git
@@ -427,7 +430,7 @@ postcss-normalize-whitespace                                     5.1.1          
 postcss-ordered-values                                           5.1.3            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-reduce-initial                                           5.1.2            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-reduce-transforms                                        5.1.0            MIT                                  https://github.com/cssnano/cssnano.git
-postcss-selector-parser                                          6.0.12           MIT                                  https://github.com/postcss/postcss-selector-parser.git
+postcss-selector-parser                                          6.0.13           MIT                                  https://github.com/postcss/postcss-selector-parser.git
 postcss-svgo                                                     5.1.0            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-unique-selectors                                         5.1.1            MIT                                  https://github.com/cssnano/cssnano.git
 postcss-value-parser                                             4.2.0            MIT                                  https://github.com/TrySound/postcss-value-parser.git
@@ -439,14 +442,14 @@ raf                                                              3.4.1          
 rc-align                                                         4.0.15           MIT                                  git@github.com:react-component/align.git
 rc-dropdown                                                      3.6.2            MIT                                  git@github.com:react-component/dropdown.git
 rc-dropdown                                                      4.0.1            MIT                                  git@github.com:react-component/dropdown.git
-rc-menu                                                          9.8.4            MIT                                  git@github.com:react-component/menu.git
+rc-menu                                                          9.9.1            MIT                                  git@github.com:react-component/menu.git
 rc-menu                                                          9.6.4            MIT                                  git@github.com:react-component/menu.git
 rc-motion                                                        2.7.3            MIT                                  git@github.com:react-component/motion.git
 rc-overflow                                                      1.3.0            MIT                                  git@github.com:react-component/overflow.git
 rc-resize-observer                                               1.3.1            MIT                                  git@github.com:react-component/resize-observer.git
 rc-tabs                                                          11.16.1          MIT                                  git@github.com:react-component/tabs.git
 rc-trigger                                                       5.3.4            MIT                                  https://github.com/react-component/trigger.git
-rc-util                                                          5.30.0           MIT                                  git@github.com:react-component/util.git
+rc-util                                                          5.32.2           MIT                                  git@github.com:react-component/util.git
 re-resizable                                                     6.9.6            MIT                                  https://github.com/bokuweb/react-resizable-box.git
 react                                                            17.0.2           MIT                                  https://github.com/facebook/react.git
 react-aspen                                                      1.2.0            MIT                                  https://github.com/neeksandhu/react-aspen.git
@@ -461,12 +464,12 @@ react-is                                                         16.13.1        
 react-is                                                         17.0.2           MIT                                  https://github.com/facebook/react.git
 react-resize-detector                                            9.1.0            MIT                                  git+https://github.com/maslianok/react-resize-detector.git
 react-rnd                                                        10.4.1           MIT                                  https://github.com/bokuweb/react-rnd.git
-react-router                                                     6.11.0           MIT                                  https://github.com/remix-run/react-router
-react-router-dom                                                 6.11.0           MIT                                  https://github.com/remix-run/react-router
-react-select                                                     5.7.2            MIT                                  https://github.com/JedWatson/react-select/tree/master/packages/react-select
+react-router                                                     6.11.2           MIT                                  https://github.com/remix-run/react-router
+react-router-dom                                                 6.11.2           MIT                                  https://github.com/remix-run/react-router
+react-select                                                     5.7.3            MIT                                  https://github.com/JedWatson/react-select/tree/master/packages/react-select
 react-table                                                      7.8.0            MIT                                  https://github.com/tannerlinsley/react-table
 react-transition-state                                           1.1.5            MIT                                  https://github.com/szhsin/react-transition-state.git
-react-virtualized-auto-sizer                                     1.0.15           MIT                                  https://github.com/bvaughn/react-virtualized-auto-sizer.git
+react-virtualized-auto-sizer                                     1.0.17           MIT                                  https://github.com/bvaughn/react-virtualized-auto-sizer.git
 react-window                                                     1.8.9            MIT                                  https://github.com/bvaughn/react-window.git
 read-pkg                                                         6.0.0            MIT                                  https://github.com/sindresorhus/read-pkg.git
 read-pkg-up                                                      8.0.0            MIT                                  https://github.com/sindresorhus/read-pkg-up.git
@@ -485,14 +488,14 @@ shallowequal                                                     1.1.0          
 slash                                                            4.0.0            MIT                                  https://github.com/sindresorhus/slash.git
 snapsvg-cjs                                                      0.0.6            MIT                                  git+https://github.com/geelen/Snap.svg-cjs.git
 socket.io-client                                                 4.6.1            MIT                                  https://github.com/socketio/socket.io-client.git
-socket.io-parser                                                 4.2.2            MIT                                  https://github.com/socketio/socket.io-parser.git
+socket.io-parser                                                 4.2.3            MIT                                  https://github.com/socketio/socket.io-parser.git
 spdx-expression-parse                                            3.0.1            MIT                                  https://github.com/jslicense/spdx-expression-parse.js.git
 split.js                                                         1.6.5            MIT                                  https://github.com/nathancahill/split
 stable                                                           0.1.8            MIT                                  https://github.com/Two-Screen/stable.git
 strip-indent                                                     4.0.0            MIT                                  https://github.com/sindresorhus/strip-indent.git
-styled-components                                                5.3.10           MIT                                  git+https://github.com/styled-components/styled-components.git
+styled-components                                                5.3.11           MIT                                  git+https://github.com/styled-components/styled-components.git
 stylehacks                                                       5.1.1            MIT                                  https://github.com/cssnano/cssnano.git
-stylis                                                           4.1.4            MIT                                  https://github.com/thysultan/stylis.js
+stylis                                                           4.2.0            MIT                                  https://github.com/thysultan/stylis.js
 supports-color                                                   5.5.0            MIT                                  https://github.com/chalk/supports-color.git
 supports-color                                                   7.2.0            MIT                                  https://github.com/chalk/supports-color.git
 supports-preserve-symlinks-flag                                  1.0.0            MIT                                  git+https://github.com/inspect-js/node-supports-preserve-symlinks-flag.git
@@ -527,24 +530,24 @@ react-leaflet                                                    3.2.5          
 boolbase                                                         1.0.0            ISC                                  https://github.com/fb55/boolbase
 css-color-keywords                                               1.0.0            ISC                                  https://github.com/sonicdoe/css-color-keywords.git
 css-declaration-sorter                                           6.4.0            ISC                                  https://github.com/Siilwyn/css-declaration-sorter.git
-electron-to-chromium                                             1.4.377          ISC                                  https://github.com/kilian/electron-to-chromium/
+electron-to-chromium                                             1.4.408          ISC                                  https://github.com/kilian/electron-to-chromium/
 fastq                                                            1.15.0           ISC                                  git+https://github.com/mcollina/fastq.git
 glob-parent                                                      5.1.2            ISC                                  https://github.com/gulpjs/glob-parent.git
 hosted-git-info                                                  4.1.0            ISC                                  git+https://github.com/npm/hosted-git-info.git
-jsonrepair                                                       3.0.3            ISC                                  https://github.com/josdejong/jsonrepair.git
+jsonrepair                                                       3.1.0            ISC                                  https://github.com/josdejong/jsonrepair.git
 lru-cache                                                        6.0.0            ISC                                  git://github.com/isaacs/node-lru-cache.git
 lru-cache                                                        5.1.1            ISC                                  git://github.com/isaacs/node-lru-cache.git
 minimatch                                                        3.1.2            ISC                                  git://github.com/isaacs/minimatch.git
 picocolors                                                       1.0.0            ISC                                  https://github.com/alexeyraspopov/picocolors.git
-react-timer-hook                                                 3.0.5            ISC                                  git+https://github.com/amrlabib/react-timer-hook.git
+react-timer-hook                                                 3.0.6            ISC                                  git+https://github.com/amrlabib/react-timer-hook.git
 semver                                                           6.3.0            ISC                                  https://github.com/npm/node-semver
-semver                                                           7.5.0            ISC                                  https://github.com/npm/node-semver.git
+semver                                                           7.5.1            ISC                                  https://github.com/npm/node-semver.git
 vanilla-picker                                                   2.12.1           ISC                                  https://github.com/Sphinxxxx/vanilla-picker.git
 yallist                                                          4.0.0            ISC                                  git+https://github.com/isaacs/yallist.git
 yallist                                                          3.1.1            ISC                                  git+https://github.com/isaacs/yallist.git
 yaml                                                             1.10.2           ISC                                  https://github.com/eemeli/yaml.git
 yargs-parser                                                     20.2.9           ISC                                  https://github.com/yargs/yargs-parser.git
-ace-builds                                                       1.18.0           BSD-3-Clause                         https://github.com/ajaxorg/ace-builds.git
+ace-builds                                                       1.22.0           BSD-3-Clause                         https://github.com/ajaxorg/ace-builds.git
 hoist-non-react-statics                                          3.3.2            BSD-3-Clause                         git://github.com/mridgway/hoist-non-react-statics.git
 hyphenate-style-name                                             1.0.4            BSD-3-Clause                         git+ssh://git@github.com/rexxars/hyphenate-style-name.git
 istanbul-lib-coverage                                            3.2.0            BSD-3-Clause                         git+ssh://git@github.com/istanbuljs/istanbuljs.git
@@ -557,14 +560,14 @@ source-map                                                       0.6.1          
 source-map                                                       0.5.7            BSD-3-Clause                         http://github.com/mozilla/source-map.git
 source-map-js                                                    1.0.2            BSD-3-Clause                         https://github.com/7rulnik/source-map-js.git
 sprintf-js                                                       1.1.2            BSD-3-Clause                         https://github.com/alexei/sprintf.js.git
-caniuse-lite                                                     1.0.30001481     CC-BY-4.0                            https://github.com/browserslist/caniuse-lite.git
+caniuse-lite                                                     1.0.30001489     CC-BY-4.0                            https://github.com/browserslist/caniuse-lite.git
 css-select                                                       4.3.0            BSD-2-Clause                         git://github.com/fb55/css-select.git
 css-what                                                         6.1.0            BSD-2-Clause                         https://github.com/fb55/css-what
 domelementtype                                                   2.3.0            BSD-2-Clause                         git://github.com/fb55/domelementtype.git
 domhandler                                                       4.3.1            BSD-2-Clause                         git://github.com/fb55/domhandler.git
 domutils                                                         2.8.0            BSD-2-Clause                         git://github.com/fb55/domutils.git
 entities                                                         2.2.0            BSD-2-Clause                         git://github.com/fb55/entities.git
-leaflet                                                          1.9.3            BSD-2-Clause                         git://github.com/Leaflet/Leaflet.git
+leaflet                                                          1.9.4            BSD-2-Clause                         git://github.com/Leaflet/Leaflet.git
 normalize-package-data                                           3.0.3            BSD-2-Clause                         git://github.com/npm/normalize-package-data.git
 nth-check                                                        2.1.1            BSD-2-Clause                         https://github.com/fb55/nth-check
 uri-js                                                           4.4.1            BSD-2-Clause                         http://github.com/garycourt/uri-js
@@ -575,10 +578,10 @@ spdx-license-ids                                                 3.0.13         
 mousetrap                                                        1.6.5            Apache-2.0 WITH LLVM-exception       git://github.com/ccampbell/mousetrap.git
 pako                                                             1.0.11           (MIT AND Zlib)                       https://github.com/nodeca/pako.git
 spdx-exceptions                                                  2.3.0            CC-BY-3.0                            https://github.com/kemitchell/spdx-exceptions.json.git
-tslib                                                            2.5.0            0BSD                                 https://github.com/Microsoft/tslib.git
+tslib                                                            2.5.2            0BSD                                 https://github.com/Microsoft/tslib.git
 tslib                                                            2.3.1            0BSD                                 https://github.com/Microsoft/tslib.git
 type-fest                                                        1.4.0            (MIT OR CC0-1.0)                     https://github.com/sindresorhus/type-fest.git
 webcabin-docker                                                  2.2.5            MIT*                                 Unknown
 
-493 dependencies listed.
+495 dependencies listed.
 
