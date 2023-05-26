@@ -835,13 +835,13 @@ def set_master_password():
         from pgadmin.utils.crypto import decrypt
         desktop_user = current_user
         try:
+            all_server = Server.query.all()
             # pgAdmin will use the OS password manager to store the server
             # password, here migrating the existing saved server password to
             # OS password manager
             if keyring.get_password(
                     KEY_RING_SERVICE_NAME, KEY_RING_DESKTOP_USER.format(
                         desktop_user.username)) or data['password']:
-                all_server = Server.query.all()
                 is_migrated = False
                 for server in all_server:
                     if server.password and data['password'] \
@@ -868,10 +868,15 @@ def set_master_password():
                     keyring_name=config.KEYRING_NAME if is_migrated else ''
                 )
             else:
-                return form_master_password_response(
-                    present=False,
-                    keyring_name=config.KEYRING_NAME
-                )
+                if len(all_server) == 0:
+                    return form_master_password_response(
+                        present=True,
+                    )
+                else:
+                    return form_master_password_response(
+                        present=False,
+                        keyring_name=config.KEYRING_NAME
+                    )
         except Exception as e:
             current_app.logger.warning(
                 'Fail set password using OS password manager'
