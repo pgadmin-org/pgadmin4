@@ -33,6 +33,7 @@ class PublicationsAddTestCase(BaseTestGenerator):
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
         self.schema_name = schema_info["schema_name"]
+        self.test_data['pubowner'] = self.server['username']
 
         self.server_version = schema_info["server_version"]
         if self.server_version < 99999:

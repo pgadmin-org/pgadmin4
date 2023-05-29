@@ -72,7 +72,7 @@ class PublicationModule(CollectionNodeModule):
             did: Database Id
         """
         if self.has_nodes(
-            sid, did,
+                sid, did,
                 base_template_path=PublicationView.BASE_TEMPLATE_PATH):
             yield self.generate_browser_collection_node(did)
 
@@ -168,7 +168,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
     _NOT_FOUND_PUB_INFORMATION = \
         gettext("Could not find the publication information.")
     node_type = blueprint.node_type
-    BASE_TEMPLATE_PATH = "publications/sql/#{0}#"
+    BASE_TEMPLATE_PATH = 'publications/{0}/#{1}#/sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -226,9 +226,8 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
             self.manager = self.driver.connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set the template path for the SQL scripts
-            self.template_path = (
-                self.BASE_TEMPLATE_PATH.format(self.manager.version)
-            )
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
+                self.manager.server_type, self.manager.version)
 
             return f(*args, **kwargs)
 
@@ -798,12 +797,10 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = []
 
-        sql = render_template("/".join([self.template_path,
-                                        'get_all_schemas.sql']),
-                              show_sys_objects=self.blueprint.
-                              show_system_objects,
-                              server_type=self.manager.server_type
-                              )
+        sql = render_template(
+            "/".join([self.template_path, 'get_all_schemas.sql']),
+            conn=self.conn
+        )
         status, rset = self.conn.execute_2darray(sql)
         if not status:
             return internal_server_error(errormsg=rset)
@@ -1124,5 +1121,4 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         return sql
 
 
-# SchemaDiffRegistry(blueprint.node_type, PublicationView, 'Database')
 PublicationView.register_node_view(blueprint)

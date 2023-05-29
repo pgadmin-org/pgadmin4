@@ -284,7 +284,7 @@ export default class PublicationSchema extends BaseUISchema {
     {
       id: 'pubtable_names', label: gettext('Tables'), cell: 'string',
       type: (state)=>{
-        let table= (!_.isUndefined(state?.pubtable_names) && state?.pubtable_names.length > 0) && state?.pubtable_names;
+        let table= (!_.isUndefined(state?.pubtable_names) && state?.pubtable_names.length > 0) ? state?.pubtable_names : [];
         return {
           type: 'select',
           options: table,
@@ -298,7 +298,7 @@ export default class PublicationSchema extends BaseUISchema {
       id: 'pubtable', label: this.version < 150000 ? gettext('Tables') : gettext(''), 
       type: this.version < 150000 ? 'select' : 'collection',
       controlProps: this.version < 150000 ? { allowClear: true, multiple: true, creatable: true } : null,
-      options: this.version < 150000 ? this.fieldOptions.allTables : null,
+      options: this.version < 150000 ? this.fieldOptions.allTables : [],
       group: this.version < 150000 ? gettext('Definition') : gettext('Tables'), mode: ['edit', 'create'],
       deps: ['all_table'], disabled: obj.isAllTable, schema: this.version < 150000 ? null : this.paramSchema,
       uniqueCol: this.version < 150000 ? null : ['table_name'], 
