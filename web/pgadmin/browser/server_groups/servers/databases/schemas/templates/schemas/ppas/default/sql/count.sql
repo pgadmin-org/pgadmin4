@@ -18,4 +18,3 @@ WHERE
         AND
         nsp.nspname in ({{schema_restrictions}})
     {% endif %}
-ORDER BY nspname;
