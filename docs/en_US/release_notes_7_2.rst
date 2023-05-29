@@ -52,3 +52,4 @@ Bug fixes
   | `Issue #6279 <https://github.com/pgadmin-org/pgadmin4/issues/6279>`_ -  Fix incorrect number of foreign tables displayed. Show column comments in RE-SQL.
   | `Issue #6280 <https://github.com/pgadmin-org/pgadmin4/issues/6280>`_ -  View SQL tab not quoting column comments.
   | `Issue #6281 <https://github.com/pgadmin-org/pgadmin4/issues/6281>`_ -  VarChar Field Sizes are missing from Query's Grid header.
+  | `Issue #6331 <https://github.com/pgadmin-org/pgadmin4/issues/6331>`_ -  Separate multiple Blocking PIDs with delimiter on Dashboard.
