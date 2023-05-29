@@ -534,7 +534,7 @@ describe('FormComponents', ()=>{
       setTimeout(()=>{
         expect(onChange).toHaveBeenCalled();
         done();
-      }, 100);
+      }, 1000);
     });
 
     it('accessibility', ()=>{

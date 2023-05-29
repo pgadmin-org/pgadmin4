@@ -35,6 +35,8 @@ class PublicationUpdateTestCase(BaseTestGenerator):
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
         self.server_version = schema_info["server_version"]
+        self.test_data['pubowner'] = self.server['username']
+
         if self.server_version < 99999:
             self.skipTest(
                 "Logical replication is not supported "

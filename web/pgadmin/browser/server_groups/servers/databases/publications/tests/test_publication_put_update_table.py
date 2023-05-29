@@ -35,6 +35,7 @@ class PublicationUpdateTableUpdateTestCase(BaseTestGenerator):
         self.db_id = schema_info["db_id"]
         self.server_version = schema_info["server_version"]
         self.schema_name = schema_info["schema_name"]
+        self.test_data['pubowner'] = self.server['username']
 
         if self.server_version < 99999:
             self.skipTest(
