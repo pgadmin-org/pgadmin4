@@ -260,11 +260,11 @@ export default class PublicationSchema extends BaseUISchema {
       mode: ['edit', 'properties', 'create'], controlProps: { allowClear: false},
     },{
       id: 'all_table', label: gettext('All tables?'), type: 'switch',
-      group: this.version < 150000 ? gettext('Definition') : gettext('Tables'), mode: ['edit', 'properties', 'create'], deps: ['name'],
+      group: gettext('Tables'), mode: ['edit', 'properties', 'create'], deps: ['name'],
       readonly: (state)  => {return !obj.isNew(state);},
     },{
       id: 'only_table', label: gettext('Only table?'), type: 'switch',
-      group: this.version < 150000 ? gettext('Definition') : gettext('Tables'), mode: ['edit', 'create'],
+      group: gettext('Tables'), mode: ['edit', 'create'],
       deps: ['name', 'pubtable', 'all_table'], readonly: (state)  => {
         if(obj.isNew(state))
           return obj.isTable(state);
@@ -291,7 +291,7 @@ export default class PublicationSchema extends BaseUISchema {
           controlProps: { allowClear: true, multiple: true, creatable: true },
         };
       },  
-      group:  this.version < 150000? gettext('Definition') : gettext('Tables'), mode: ['properties'],
+      group: gettext('Tables'), mode: ['properties'],
       deps: ['all_table'], disabled: obj.isAllTable,
     },
     {
@@ -299,7 +299,7 @@ export default class PublicationSchema extends BaseUISchema {
       type: this.version < 150000 ? 'select' : 'collection',
       controlProps: this.version < 150000 ? { allowClear: true, multiple: true, creatable: true } : null,
       options: this.version < 150000 ? this.fieldOptions.allTables : [],
-      group: this.version < 150000 ? gettext('Definition') : gettext('Tables'), mode: ['edit', 'create'],
+      group: gettext('Tables'), mode: ['edit', 'create'],
       deps: ['all_table'], disabled: obj.isAllTable, schema: this.version < 150000 ? null : this.paramSchema,
       uniqueCol: this.version < 150000 ? null : ['table_name'], 
       canAdd: this.version < 150000 ? null : (state)=> !obj.isConnected(state),
@@ -307,7 +307,7 @@ export default class PublicationSchema extends BaseUISchema {
     },
     {
       type: 'nested-fieldset', mode: ['create','edit', 'properties'],
-      label: gettext('With'), group: this.version < 150000 ? gettext('Definition') : gettext('Options'),
+      label: gettext('With'), group: gettext('Options'),
       schema : new DefaultWithSchema(this.node_info),
     },
     ];
