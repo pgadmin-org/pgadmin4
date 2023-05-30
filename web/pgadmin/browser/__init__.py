@@ -873,9 +873,17 @@ def set_master_password():
                         present=True,
                     )
                 else:
+                    is_master_password_present = True
+                    keyring_name = ''
+                    for server in all_server:
+                        if server.password and server.save_password:
+                            is_master_password_present = False
+                            keyring_name = config.KEYRING_NAME
+                            break
+
                     return form_master_password_response(
-                        present=False,
-                        keyring_name=config.KEYRING_NAME
+                        present=is_master_password_present,
+                        keyring_name=keyring_name
                     )
         except Exception as e:
             current_app.logger.warning(
