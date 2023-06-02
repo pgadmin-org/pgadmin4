@@ -29,3 +29,4 @@ Bug fixes
 *********
 
   | `Issue #6136 <https://github.com/pgadmin-org/pgadmin4/issues/6136>`_ -  Fix an issue where editing a database object de-selects it on the browser tree.
+  | `Issue #6345 <https://github.com/pgadmin-org/pgadmin4/issues/6345>`_ -  Fixed an issue where Foreign Key with 3 or more columns are shown in the wrong order in SQL and Properties.
