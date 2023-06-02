@@ -210,11 +210,6 @@ define('pgadmin.node.database', [
           }
           return false;
         },
-        updated: (_i, _opts)=>{
-          pgBrowser.tree.refresh(_i._parent).then(() =>{
-            if (_opts && _opts.success) _opts.success();
-          });
-        },
         /* Disconnect the database */
         disconnect_database: function(args) {
           let input = args || {},

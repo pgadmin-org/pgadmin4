@@ -544,7 +544,7 @@ export default function PreferencesComponent({ ...props }) {
       data: save_data,
     }).then(() => {
       let requiresTreeRefresh = save_data.some((s)=>{
-        return s.name=='show_system_objects'||s.name=='show_empty_coll_nodes'||s.name.startsWith('show_node_')||s.name=='hide_shared_server';
+        return s.name=='show_system_objects'||s.name=='show_empty_coll_nodes'||s.name.startsWith('show_node_')||s.name=='hide_shared_server'||s.name=='show_user_defined_templates';
       });
       let requires_refresh = false;
       /* Find the modules changed */
