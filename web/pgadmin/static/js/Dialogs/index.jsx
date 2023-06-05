@@ -202,15 +202,12 @@ export function showMasterPassword(isPWDPresent, errmsg, masterpass_callback_que
   const api = getApiInstance();
   let title =  keyring_name.length > 0 ? gettext('Migrate Saved Passwords') : isPWDPresent ? gettext('Unlock Saved Passwords') : gettext('Set Master Password');
 
-  mountDialog(title, (onClose, setNewSize)=> {
+  Notify.showModal(title, (onClose)=> {
     return <Theme>
       <MasterPasswordContent
         isPWDPresent= {isPWDPresent}
         data={{'errmsg': errmsg}}
         keyringName={keyring_name}
-        setHeight={(containerHeight) => {
-          setNewSize(pgAdmin.Browser.stdW.md, containerHeight);
-        }}
         closeModal={() => {
           onClose();
         }}

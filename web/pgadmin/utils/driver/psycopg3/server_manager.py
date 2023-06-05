@@ -571,12 +571,6 @@ WHERE db.oid = {0}""".format(did))
                     # password is in bytes, for python3 we need it in string
                     if isinstance(tunnel_password, bytes):
                         tunnel_password = tunnel_password.decode()
-                else:
-                    # Get password form OS password manager
-                    tunnel_password = keyring.get_password(
-                        KEY_RING_SERVICE_NAME,
-                        KEY_RING_TUNNEL_FORMAT.format(self.manager.name,
-                                                      self.manager.sid))
 
             except Exception as e:
                 current_app.logger.exception(e)
