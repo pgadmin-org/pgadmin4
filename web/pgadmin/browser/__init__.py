@@ -18,7 +18,7 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
 from socket import error as SOCKETErrorException
 from urllib.request import urlopen
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
-    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER
+    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER, KEY_RING_TUNNEL_FORMAT
 
 import time
 
@@ -60,6 +60,7 @@ from pgadmin.utils.constants import MIMETYPE_APP_JS, PGADMIN_NODE,\
     INTERNAL, KERBEROS, LDAP, QT_DEFAULT_PLACEHOLDER, OAUTH2, WEBSERVER,\
     VW_EDT_DEFAULT_PLACEHOLDER
 from pgadmin.authenticate import AuthSourceManager
+from pgadmin.utils.exception import CryptKeyMissing
 
 try:
     from flask_security.views import default_render_json
@@ -823,8 +824,9 @@ def set_master_password():
         if data != '':
             data = json.loads(data)
 
-    if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
-        if data.get('password') and \
+    if not config.DISABLED_LOCAL_PASSWORD_STORAGE and \
+            (config.ALLOW_SAVE_PASSWORD or config.ALLOW_SAVE_TUNNEL_PASSWORD):
+        if data.get('password') and config.MASTER_PASSWORD_REQUIRED and\
                 not validate_master_password(data.get('password')):
             return form_master_password_response(
                 present=False,
@@ -834,6 +836,13 @@ def set_master_password():
         from pgadmin.model import Server
         from pgadmin.utils.crypto import decrypt
         desktop_user = current_user
+
+        enc_key = data['password']
+        if not config.MASTER_PASSWORD_REQUIRED:
+            status, enc_key = get_crypt_key()
+            if not status:
+                raise CryptKeyMissing
+
         try:
             all_server = Server.query.all()
             # pgAdmin will use the OS password manager to store the server
@@ -841,20 +850,34 @@ def set_master_password():
             # OS password manager
             if keyring.get_password(
                     KEY_RING_SERVICE_NAME, KEY_RING_DESKTOP_USER.format(
-                        desktop_user.username)) or data['password']:
+                        desktop_user.username)) or enc_key:
                 is_migrated = False
+
                 for server in all_server:
-                    if server.password and data['password'] \
-                            and server.save_password:
-                        name = KEY_RING_USERNAME_FORMAT.format(server.name,
-                                                               server.id)
-                        password = decrypt(server.password,
-                                           data['password']).decode()
-                        # Store the password using OS password manager
-                        keyring.set_password(KEY_RING_SERVICE_NAME, name,
-                                             password)
-                        is_migrated = True
-                        setattr(server, 'password', None)
+                    if enc_key:
+                        if server.password and config.ALLOW_SAVE_PASSWORD \
+                                and server.save_password:
+                            name = KEY_RING_USERNAME_FORMAT.format(server.name,
+                                                                   server.id)
+                            password = decrypt(server.password,
+                                               enc_key).decode()
+                            # Store the password using OS password manager
+                            keyring.set_password(KEY_RING_SERVICE_NAME, name,
+                                                 password)
+                            is_migrated = True
+                            setattr(server, 'password', None)
+
+                        if server.tunnel_password and \
+                                config.ALLOW_SAVE_TUNNEL_PASSWORD:
+                            tname = KEY_RING_TUNNEL_FORMAT.format(server.name,
+                                                                  server.id)
+                            tpassword = decrypt(server.tunnel_password,
+                                                enc_key).decode()
+                            # Store the password using OS password manager
+                            keyring.set_password(KEY_RING_SERVICE_NAME, tname,
+                                                 tpassword)
+                            is_migrated = True
+                            setattr(server, 'tunnel_password', None)
 
                 db.session.commit()
 
@@ -869,6 +892,10 @@ def set_master_password():
                 )
             else:
                 if len(all_server) == 0:
+                    # Store the password using OS password manager
+                    keyring.set_password(KEY_RING_SERVICE_NAME,
+                                         KEY_RING_DESKTOP_USER.format(
+                                             desktop_user.username), 'test')
                     return form_master_password_response(
                         present=True,
                     )
@@ -876,10 +903,19 @@ def set_master_password():
                     is_master_password_present = True
                     keyring_name = ''
                     for server in all_server:
-                        if server.password and server.save_password:
+                        is_password_present = \
+                            server.save_password or server.tunnel_password
+                        if server.password and is_password_present:
                             is_master_password_present = False
                             keyring_name = config.KEYRING_NAME
                             break
+
+                    if is_master_password_present:
+                        # Store the password using OS password manager
+                        keyring.set_password(KEY_RING_SERVICE_NAME,
+                                             KEY_RING_DESKTOP_USER.format(
+                                                 desktop_user.username),
+                                             'test')
 
                     return form_master_password_response(
                         present=is_master_password_present,

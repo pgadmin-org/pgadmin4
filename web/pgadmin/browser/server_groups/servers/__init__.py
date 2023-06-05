@@ -34,7 +34,7 @@ from pgadmin.utils.constants import UNAUTH_REQ, MIMETYPE_APP_JS, \
 from sqlalchemy import or_
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
-    KEY_RING_USERNAME_FORMAT, KEY_RING_TUNNEL_FORMAT
+    KEY_RING_USERNAME_FORMAT, KEY_RING_TUNNEL_FORMAT, KEY_RING_DESKTOP_USER
 from .... import socketio as sio
 
 import keyring
@@ -249,6 +249,21 @@ class ServerModule(sg.ServerGroupPluginModule):
                 current_app.logger.exception(e)
                 errmsg = str(e)
 
+            is_password_saved = bool(server.save_password)
+            is_tunnel_password_saved = bool(server.tunnel_password)
+
+            if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                sname = KEY_RING_USERNAME_FORMAT.format(server.name, server.id)
+                spassword = keyring.get_password(
+                    KEY_RING_SERVICE_NAME, sname)
+
+                is_password_saved = bool(spassword)
+                tunnelname = KEY_RING_TUNNEL_FORMAT.format(server.name,
+                                                           server.id)
+                tunnel_password = keyring.get_password(KEY_RING_SERVICE_NAME,
+                                                       tunnelname)
+                is_tunnel_password_saved = bool(tunnel_password)
+
             yield self.generate_browser_node(
                 "%d" % (server.id),
                 gid,
@@ -265,9 +280,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 wal_pause=wal_paused,
                 host=server.host,
                 port=server.port,
-                is_password_saved=bool(server.save_password),
-                is_tunnel_password_saved=True
-                if server.tunnel_password is not None else False,
+                is_password_saved=is_password_saved,
+                is_tunnel_password_saved=is_tunnel_password_saved,
                 was_connected=was_connected,
                 errmsg=errmsg,
                 user_id=server.user_id,
@@ -577,6 +591,22 @@ class ServerNode(PGChildNodeView):
                     manager.release()
                     errmsg = "{0} : {1}".format(server.name, result)
 
+            is_password_saved = bool(server.save_password)
+            is_tunnel_password_saved = bool(server.tunnel_password)
+
+            if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                sname = KEY_RING_USERNAME_FORMAT.format(server.name, server.id)
+                spassword = keyring.get_password(
+                    KEY_RING_SERVICE_NAME, sname)
+
+                is_password_saved = bool(spassword)
+
+                tunnelname = KEY_RING_TUNNEL_FORMAT.format(server.name,
+                                                           server.id)
+                tunnel_password = keyring.get_password(KEY_RING_SERVICE_NAME,
+                                                       tunnelname)
+                is_tunnel_password_saved = bool(tunnel_password)
+
             res.append(
                 self.blueprint.generate_browser_node(
                     "%d" % (server.id),
@@ -593,9 +623,8 @@ class ServerNode(PGChildNodeView):
                     user=manager.user_info if connected else None,
                     in_recovery=in_recovery,
                     wal_pause=wal_paused,
-                    is_password_saved=bool(server.save_password),
-                    is_tunnel_password_saved=True
-                    if server.tunnel_password is not None else False,
+                    is_password_saved=is_password_saved,
+                    is_tunnel_password_saved=is_tunnel_password_saved,
                     errmsg=errmsg,
                     username=server.username,
                     shared=server.shared,
@@ -720,16 +749,16 @@ class ServerNode(PGChildNodeView):
                     db.session.delete(s)
                     if not config.DISABLED_LOCAL_PASSWORD_STORAGE:
                         try:
-                            server_name = KEY_RING_USERNAME_FORMAT.format(
+                            sname = KEY_RING_USERNAME_FORMAT.format(
                                 s.name,
                                 s.id)
                             # Get password form OS password manager
                             is_present = keyring.get_password(
-                                KEY_RING_SERVICE_NAME, server_name)
+                                KEY_RING_SERVICE_NAME, sname)
                             # Delete saved password from OS password manager
                             if is_present:
                                 keyring.delete_password(KEY_RING_SERVICE_NAME,
-                                                        server_name)
+                                                        sname)
                         except keyring.errors.KeyringError as e:
                             config.DISABLED_LOCAL_PASSWORD_STORAGE = True
                 db.session.commit()
@@ -1442,7 +1471,10 @@ class ServerNode(PGChildNodeView):
         conn = manager.connection()
 
         crypt_key = None
-        if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+        if config.DISABLED_LOCAL_PASSWORD_STORAGE or \
+                not keyring.get_password(KEY_RING_SERVICE_NAME,
+                                         KEY_RING_DESKTOP_USER.format(
+                                             current_user.username)):
             # Get enc key
             crypt_key_present, crypt_key = get_crypt_key()
             if not crypt_key_present:
@@ -1462,6 +1494,7 @@ class ServerNode(PGChildNodeView):
                             KEY_RING_SERVICE_NAME,
                             KEY_RING_TUNNEL_FORMAT.format(server.name,
                                                           server.id))
+                        prompt_tunnel_password = bool(tunnel_password)
                     else:
                         tunnel_password = server.tunnel_password
             else:
@@ -1477,12 +1510,7 @@ class ServerNode(PGChildNodeView):
                         tunnel_password = encrypt(tunnel_password, crypt_key) \
                             if tunnel_password is not None else \
                             server.tunnel_password
-                    else:
-                        # Get password form OS password manager
-                        tunnel_password = keyring.get_password(
-                            KEY_RING_SERVICE_NAME,
-                            KEY_RING_TUNNEL_FORMAT.format(server.name,
-                                                          server.id))
+
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
@@ -1525,7 +1553,7 @@ class ServerNode(PGChildNodeView):
                 except Exception as e:
                     current_app.logger.exception(e)
                     return internal_server_error(errormsg=str(e))
-            elif save_password:
+            elif save_password and config.ALLOW_SAVE_PASSWORD:
                 # Store the password using OS password manager
                 keyring.set_password(
                     KEY_RING_SERVICE_NAME,
@@ -1584,7 +1612,7 @@ class ServerNode(PGChildNodeView):
 
                     # Save the encrypted password using the user's login
                     # password key, if there is any password to save
-                    if password and config.SERVER_MODE:
+                    if password and config.DISABLED_LOCAL_PASSWORD_STORAGE:
                         if server.shared and server.user_id != current_user.id:
                             setattr(shared_server, 'password', password)
                         else:
@@ -1600,8 +1628,18 @@ class ServerNode(PGChildNodeView):
 
             if save_tunnel_password and config.ALLOW_SAVE_TUNNEL_PASSWORD:
                 try:
-                    # Save the encrypted tunnel password.
-                    setattr(server, 'tunnel_password', tunnel_password)
+                    if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                        # Save the encrypted tunnel password.
+                        setattr(server, 'tunnel_password', tunnel_password)
+                    else:
+                        # Store the password using OS password manager
+                        keyring.set_password(
+                            KEY_RING_SERVICE_NAME,
+                            KEY_RING_TUNNEL_FORMAT.format(server.name,
+                                                          server.id),
+                            tunnel_password)
+                        setattr(server, 'tunnel_password', None)
+
                     db.session.commit()
                 except Exception as e:
                     # Release Connection
