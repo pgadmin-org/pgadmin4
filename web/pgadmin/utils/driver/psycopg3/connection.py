@@ -441,7 +441,7 @@ class Connection(BaseConnection):
             role = manager.role
 
         if is_set_role:
-            _query = "SELECT usename from pg_user WHERE usename = '{0}'" \
+            _query = "SELECT rolname from pg_roles WHERE rolname = '{0}'" \
                      "".format(role)
             _status, res = self.execute_scalar(_query)
 
