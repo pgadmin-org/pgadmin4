@@ -1494,7 +1494,7 @@ class ServerNode(PGChildNodeView):
                             KEY_RING_SERVICE_NAME,
                             KEY_RING_TUNNEL_FORMAT.format(server.name,
                                                           server.id))
-                        prompt_tunnel_password = bool(tunnel_password)
+                        prompt_tunnel_password = not bool(tunnel_password)
                     else:
                         tunnel_password = server.tunnel_password
             else:
