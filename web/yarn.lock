@@ -4477,14 +4477,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chartjs-plugin-zoom@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "chartjs-plugin-zoom@npm:1.2.1"
+"chartjs-plugin-zoom@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "chartjs-plugin-zoom@npm:2.0.1"
   dependencies:
     hammerjs: ^2.0.8
   peerDependencies:
-    chart.js: ^3.2.0
-  checksum: ea053ff1037dc632ee9cf401246b28f9eb8391a313756e7764b6effcbdbe83a12c480dbacf83f96618486141ed48f3637b1d0d8660167020d331c65738806028
+    chart.js: ">=3.2.0"
+  checksum: c0ca5ae475bc3c7263e471258a7f16bd3d92c3642ded1395aeb841c9710d5af83e80410aa5e34869c4a1a5cc3899a166aec06a59bf9ecfda85f564618528b286
   languageName: node
   linkType: hard
 
@@ -12461,7 +12461,7 @@ __metadata:
     browserify: ^17.0.0
     buffer: ^6.0.3
     chart.js: ^3.0.0
-    chartjs-plugin-zoom: ^1.2.1
+    chartjs-plugin-zoom: ^2.0.1
     classnames: ^2.2.6
     closest: ^0.0.1
     codemirror: ^5.59.2
