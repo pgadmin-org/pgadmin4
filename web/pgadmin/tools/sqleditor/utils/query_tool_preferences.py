@@ -629,21 +629,8 @@ def register_query_tool_preferences(self):
     )
 
     self.preference.register(
-        'keyboard_shortcuts', 'btn_conn_status',
-        gettext('Accesskey (Connection status)'), 'keyboardshortcut',
-        {
-            'key': {
-                'key_code': 84,
-                'char': 't'
-            }
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=accesskey_fields
-    )
-
-    self.preference.register(
-        'keyboard_shortcuts', 'btn_find_options',
-        gettext('Accesskey (Find options)'), 'keyboardshortcut',
+        'keyboard_shortcuts', 'btn_edit_options',
+        gettext('Accesskey (Edit options)'), 'keyboardshortcut',
         {
             'key': {
                 'key_code': 78,

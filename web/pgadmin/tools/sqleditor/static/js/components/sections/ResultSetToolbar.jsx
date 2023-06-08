@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme)=>({
   },
 }));
 
-export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
+export function ResultSetToolbar({canEdit, totalRowCount}) {
   const classes = useStyles();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
@@ -150,7 +150,7 @@ export function ResultSetToolbar({containerRef, canEdit, totalRowCount}) {
         callback: (e)=>{e.preventDefault(); downloadResult();}
       }
     },
-  ], containerRef);
+  ], queryToolCtx.mainContainerRef);
 
   return (
     <>
