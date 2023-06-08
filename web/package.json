@@ -39,7 +39,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "exports-loader": "^4.0.0",
     "html-react-parser": "^1.2.7",
-    "image-minimizer-webpack-plugin": "^2.2.0",
+    "image-minimizer-webpack-plugin": "^3.8.2",
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-optipng": "^8.0.0",
     "imagemin-pngquant": "^9.0.2",
