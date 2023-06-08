@@ -7192,6 +7192,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"goober@npm:^2.0.33":
+  version: 2.1.13
+  resolution: "goober@npm:2.1.13"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: 0c00b90d26d1a2fad432e311fd4f47bc9fef1eee2a733158d9e2c72a89cf76d414090d063a8d20fe378f2b2b8087df0a83b0f00a3244d1466b97a0d3b14344a7
+  languageName: node
+  linkType: hard
+
 "gopd@npm:^1.0.1":
   version: 1.0.1
   resolution: "gopd@npm:1.0.1"
@@ -7452,7 +7461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.0.0, hoist-non-react-statics@npm:^3.3.1, hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -10189,17 +10198,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notistack@npm:^1.0.10":
-  version: 1.0.10
-  resolution: "notistack@npm:1.0.10"
+"notistack@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "notistack@npm:3.0.1"
   dependencies:
     clsx: ^1.1.0
-    hoist-non-react-statics: ^3.3.0
+    goober: ^2.0.33
   peerDependencies:
-    "@material-ui/core": ^4.0.0
-    react: ^16.8.0 || ^17.0.0
-    react-dom: ^16.8.0 || ^17.0.0
-  checksum: 50223dbb30a33318bedfc03adbd81d75e5c74c8b74ae39aa9795377c51f556f0a7daa1061a516804e2a7cabf6a2f5a124dc5ed8e96c80731eec1377d16a65b42
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 421c970308690b8c8cb2e275e7f66020db7c1955e104f638e7fa562396a6b9322ff95f0e62492b07f3d36b0ef72adb4de2c2ce9803089c1c8f028d1a3b088e01
   languageName: node
   linkType: hard
 
@@ -12579,7 +12587,7 @@ __metadata:
     moment-timezone: ^0.5.34
     mousetrap: ^1.6.3
     notificar: ^1.0.1
-    notistack: ^1.0.10
+    notistack: ^3.0.1
     path-fx: ^2.0.0
     pathfinding: ^0.4.18
     paths-js: ^0.4.9
