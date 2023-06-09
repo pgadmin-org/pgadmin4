@@ -10,6 +10,7 @@
 #  Get Postgres and Python encoding
 
 import psycopg
+from flask import current_app
 
 encode_dict = {
     'SQL_ASCII': ['SQL_ASCII', 'raw-unicode-escape'],
@@ -33,7 +34,12 @@ def get_encoding(key):
     #
     if key == 'ascii':
         key = 'raw_unicode_escape'
-    postgres_encoding = psycopg._encodings.py2pgenc(key).decode()
+    try:
+        postgres_encoding = psycopg._encodings.py2pgenc(key).decode()
+    except Exception as e:
+        # For unsupported encodings by psycopg like UNICODE
+        current_app.logger.error(e)
+        postgres_encoding = 'utf-8'
 
     python_encoding = psycopg._encodings._py_codecs.get(postgres_encoding,
                                                         'utf-8')
