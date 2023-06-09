@@ -578,10 +578,9 @@ module.exports = [{
           implementation: ImageMinimizerPlugin.imageminMinify,
           options: {
             plugins: [
-              'imagemin-gifsicle',
-              'imagemin-mozjpeg',
-              'imagemin-pngquant',
-              'imagemin-svgo',
+              ['mozjpeg', { progressive: true }],
+              ['optipng', { optimizationLevel: 7 }],
+              ['pngquant', {quality: [0.75, .9], speed: 3}],
             ],
           },
         },
