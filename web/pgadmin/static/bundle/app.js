@@ -17,9 +17,9 @@ import Theme from '../js/Theme';
 define('app', [
   'sources/pgadmin', 'bundled_browser',
 ], function(pgAdmin) {
-  let initializeModules = function(Object) {
-    for (let key in Object) {
-      let module = Object[key];
+  let initializeModules = function(obj) {
+    for (let key in obj) {
+      let module = obj[key];
 
       if (module && module.init && typeof module.init == 'function') {
         try {

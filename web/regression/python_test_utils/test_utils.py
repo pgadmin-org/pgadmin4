@@ -1446,7 +1446,8 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name, url_client):
         print("Specified browser does not exist.")
 
     # maximize browser window
-    driver_local.maximize_window()
+    if driver_local:
+        driver_local.maximize_window()
 
     # driver_local.implicitly_wait(2)
     return driver_local

@@ -276,7 +276,7 @@ export function validateBigAnimalStep3(cloudDetails) {
   }
 
   if (cloudDetails.provider == 'aws') {
-    if (isEmptyString(cloudDetails.volume_IOPS) || isEmptyString(cloudDetails.volume_IOPS) || (cloudDetails.volume_IOPS != 'io2' &&
+    if (isEmptyString(cloudDetails.volume_IOPS) || (cloudDetails.volume_IOPS != 'io2' &&
      (cloudDetails.volume_size < 1 ||  cloudDetails.volume_size > 16384)) ||
      (cloudDetails.volume_IOPS == 'io2' && (cloudDetails.volume_size < 4 ||  cloudDetails.volume_size > 16384)) ||
      (cloudDetails.volume_IOPS != 'io2' && cloudDetails.volume_IOPS != 3000) ||
