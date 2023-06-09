@@ -267,6 +267,9 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
   let useModalRef = useModal();
   const classes = useModalStyles();
   let closeModal = (_e, reason) => {
+    if(reason == 'backdropClick' && showTitle) {
+      return;
+    }
     useModalRef.closeModal(id);
     if(reason == 'escapeKeyDown') {
       onClose?.();
@@ -282,7 +285,6 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       PaperProps={{ 'isfullscreen': isfullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
       fullScreen={isfullScreen}
       fullWidth={isFullWidth}
-      disableBackdropClick={showTitle}
       disablePortal
     >
       { showTitle && <>

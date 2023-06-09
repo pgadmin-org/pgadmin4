@@ -13,7 +13,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
 import CustomPropTypes from '../custom_prop_types';
 
 import getStandardTheme from './standard';
@@ -24,8 +24,8 @@ import pickrOverride from './overrides/pickr.override';
 import uplotOverride from './overrides/uplot.override';
 
 /* Common settings across all themes */
-let basicSettings = createMuiTheme();
-basicSettings = createMuiTheme(basicSettings, {
+let basicSettings = createTheme();
+basicSettings = createTheme(basicSettings, {
   typography: {
     fontSize: 14,
     htmlFontSize: 14,
@@ -296,7 +296,7 @@ function getFinalTheme(baseTheme) {
     }
   };
 
-  return createMuiTheme({
+  return createTheme({
     mixins: mixins,
     overrides: {
       MuiCssBaseline: {

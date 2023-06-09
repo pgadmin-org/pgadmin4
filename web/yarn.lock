@@ -2298,28 +2298,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/lab@npm:4.0.0-alpha.58":
-  version: 4.0.0-alpha.58
-  resolution: "@material-ui/lab@npm:4.0.0-alpha.58"
+"@material-ui/lab@npm:4.0.0-alpha.61":
+  version: 4.0.0-alpha.61
+  resolution: "@material-ui/lab@npm:4.0.0-alpha.61"
   dependencies:
     "@babel/runtime": ^7.4.4
-    "@material-ui/utils": ^4.11.2
+    "@material-ui/utils": ^4.11.3
     clsx: ^1.0.4
     prop-types: ^15.7.2
     react-is: ^16.8.0 || ^17.0.0
   peerDependencies:
-    "@material-ui/core": ^4.9.10
+    "@material-ui/core": ^4.12.1
     "@types/react": ^16.8.6 || ^17.0.0
     react: ^16.8.0 || ^17.0.0
     react-dom: ^16.8.0 || ^17.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 39777028a72b8ef23a24926fbbc56cb4bef0f109e50c2711d546880b2918c8554fdf39b5eeaea8a0e4214302fd7d02788b91688ce4e26aac362e6cfe755030ac
+  checksum: 8774a07d72615301e0099415580f87ea8f3d1d106f79e0b014738e302dd3e21959abf01d6c0a629e2e9afb8cb91abd8e9686c2886cddff06c27e6a8a8e063ea0
   languageName: node
   linkType: hard
 
-"@material-ui/pickers@npm:^3.2.10":
+"@material-ui/pickers@npm:3.3.10":
   version: 3.3.10
   resolution: "@material-ui/pickers@npm:3.3.10"
   dependencies:
@@ -2401,7 +2401,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/utils@npm:^4.11.2, @material-ui/utils@npm:^4.11.3":
+"@material-ui/utils@npm:^4.11.3":
   version: 4.11.3
   resolution: "@material-ui/utils@npm:4.11.3"
   dependencies:
@@ -12736,8 +12736,8 @@ __metadata:
     "@emotion/utils": ^1.0.0
     "@material-ui/core": 4.12.4
     "@material-ui/icons": ^4.11.2
-    "@material-ui/lab": 4.0.0-alpha.58
-    "@material-ui/pickers": ^3.2.10
+    "@material-ui/lab": 4.0.0-alpha.61
+    "@material-ui/pickers": 3.3.10
     "@projectstorm/react-diagrams": ^6.6.1
     "@simonwep/pickr": ^1.5.1
     "@svgr/webpack": ^6.2.1
