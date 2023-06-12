@@ -632,7 +632,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       >
         <PgMenuItem onClick={onManageMacros}>{gettext('Manage macros')}</PgMenuItem>
         <PgMenuDivider />
-        {queryToolCtx.params?.macros?.map((m, i)=>{
+        {queryToolCtx.params?.macros?.map((m)=>{
           return (
             <PgMenuItem shortcut={{
               ...m,
@@ -640,7 +640,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
                 'key_code': m.key_code,
                 'char': m.key,
               },
-            }} onClick={()=>executeMacro(m)} key={i}>
+            }} onClick={()=>executeMacro(m)} key={m.name}>
               {m.name}
             </PgMenuItem>
           );

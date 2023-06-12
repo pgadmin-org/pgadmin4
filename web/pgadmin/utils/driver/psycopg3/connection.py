@@ -800,14 +800,12 @@ WHERE db.datname = current_database()""")
         query = query.encode(self.python_encoding)
         cur.execute(query, params)
 
-    def execute_on_server_as_csv(self, formatted_exception_msg=False,
-                                 records=2000):
+    def execute_on_server_as_csv(self, records=2000):
         """
         To fetch query result and generate CSV output
 
         Args:
             params: Additional parameters
-            formatted_exception_msg: For exception
             records: Number of initial records
         Returns:
             Generator response
@@ -1011,7 +1009,7 @@ WHERE db.datname = current_database()""")
         # If multiple queries are run, make sure to reach
         # the last query result
         while cur.nextset():
-            pass
+            pass  # This loop is empty
 
         self.row_count = cur.get_rowcount()
         if cur.get_rowcount() > 0:
@@ -1444,10 +1442,10 @@ Failed to reset the connection to the server due to following error:
         asyncio.run(_close_conn(self.conn))
 
     def _wait(self, conn):
-        pass
+        pass  # This function is empty
 
     def _wait_timeout(self, conn):
-        pass
+        pass  # This function is empty
 
     def poll(self, formatted_exception_msg=False, no_result=False):
         cur = self.__async_cursor
@@ -1474,9 +1472,8 @@ Failed to reset the connection to the server due to following error:
         while more_result:
             if not self.conn.pgconn.is_busy():
                 if cur.description is not None:
-                    for desc in cur.ordered_description():
-                        self.column_info = [desc.to_dict() for
-                                            desc in cur.ordered_description()]
+                    self.column_info = [desc.to_dict() for
+                                        desc in cur.ordered_description()]
 
                     pos = 0
                     if self.column_info:

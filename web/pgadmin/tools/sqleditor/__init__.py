@@ -1860,18 +1860,17 @@ def save_file():
     last_storage = Preferences.module('file_manager').preference(
         'last_storage').get()
     if last_storage != MY_STORAGE:
-        selectedDirList = [sdir for sdir in SHARED_STORAGE if
-                           sdir['name'] == last_storage]
-        selectedDir = selectedDirList[0] if len(
-            selectedDirList) == 1 else None
+        selected_dir_list = [sdir for sdir in SHARED_STORAGE if
+                             sdir['name'] == last_storage]
+        selected_dir = selected_dir_list[0] if len(
+            selected_dir_list) == 1 else None
 
-        if selectedDir:
-            if selectedDir['restricted_access'] and \
-                    not current_user.has_role("Administrator"):
-                return make_json_response(success=0,
-                                          errormsg=ACCESS_DENIED_MESSAGE,
-                                          info='ACCESS_DENIED',
-                                          status=403)
+        if selected_dir and selected_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            return make_json_response(success=0,
+                                      errormsg=ACCESS_DENIED_MESSAGE,
+                                      info='ACCESS_DENIED',
+                                      status=403)
         storage_manager_path = get_storage_directory(
             shared_storage=last_storage)
     else:

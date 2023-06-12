@@ -228,8 +228,6 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       let db_label = '';
       if(pData.database && pData.database._id) {
         db_label = _.escape(pData.database._label.replace('\\', '\\\\'));
-        db_label = db_label.replace('\'', '\'');
-        db_label = db_label.replace('"', '\"');
         openUrl += `&db=${db_label}`;
       } else {
         openUrl += `&db=${''}`;

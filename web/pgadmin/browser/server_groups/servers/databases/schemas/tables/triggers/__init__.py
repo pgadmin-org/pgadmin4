@@ -359,7 +359,6 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = [{'label': '', 'value': ''}]
 
-        # TODO: REMOVE True Condition , it's just for testing
         # If server type is EDB-PPAS then we also need to add
         # inline edb-spl along with options fetched by below sql
 

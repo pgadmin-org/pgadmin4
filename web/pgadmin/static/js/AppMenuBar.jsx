@@ -1,11 +1,10 @@
 import { Box, makeStyles } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PrimaryButton } from './components/Buttons';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './components/Menu';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
 import pgAdmin from 'sources/pgadmin';
-import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -96,17 +95,17 @@ export default function AppMenuBar() {
       <Box className={classes.root}>
         <div className={classes.logo} />
         <div className={classes.menus}>
-          {pgAdmin.Browser.MainMenus?.map((menu, i)=>{
+          {pgAdmin.Browser.MainMenus?.map((menu)=>{
             return (
               <PgMenu
-                menuButton={<PrimaryButton key={i} className={classes.menuButton} data-label={menu.label}>{menu.label}<KeyboardArrowDownIcon fontSize="small" /></PrimaryButton>}
+                menuButton={<PrimaryButton key={menu.label} className={classes.menuButton} data-label={menu.label}>{menu.label}<KeyboardArrowDownIcon fontSize="small" /></PrimaryButton>}
                 label={menu.label}
                 key={menu.name}
               >
                 {menu.getMenuItems().map((menuItem, i)=>{
                   const submenus = menuItem.getMenuItems();
                   if(submenus) {
-                    return <PgSubMenu key={i} label={menuItem.label}>
+                    return <PgSubMenu key={menuItem.label} label={menuItem.label}>
                       {submenus.map((submenuItem, si)=>{
                         return getPgMenuItem(submenuItem, si);
                       })}

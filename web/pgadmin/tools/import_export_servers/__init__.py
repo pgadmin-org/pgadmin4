@@ -117,9 +117,6 @@ def load_servers():
 
     file_path = unquote(filename)
 
-    # retrieve storage directory path
-    storage_manager_path = get_storage_directory()
-
     try:
         file_path = filename_with_file_manager_path(file_path)
     except PermissionError as e:

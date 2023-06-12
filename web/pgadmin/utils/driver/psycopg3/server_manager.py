@@ -389,7 +389,7 @@ WHERE db.oid = {0}""".format(did))
             conn = self.connections[conn_id]
             # only try to reconnect if connection was connected previously
             # and auto_reconnect is true.
-            wasConnected = conn.wasConnected
+            was_connected = conn.wasConnected
             auto_reconnect = conn.auto_reconnect
             if conn.wasConnected and conn.auto_reconnect:
                 try:
@@ -409,7 +409,7 @@ WHERE db.oid = {0}""".format(did))
                 except CryptKeyMissing:
                     # maintain the status as this will help to restore once
                     # the key is available
-                    conn.wasConnected = wasConnected
+                    conn.wasConnected = was_connected
                     conn.auto_reconnect = auto_reconnect
                 except Exception as e:
                     self.connections.pop(conn_id)

@@ -253,7 +253,7 @@ def set_multiple(key, param, data, args, driver, conn, with_schema=True):
     if key in data and \
             len(data[key]) > 0:
         if with_schema:
-            # TODO:// This is temporary
+            # This is temporary
             # Once object tree is implemented then we will use
             # list of tuples 'else' part
             _set_value_with_schema(data, key, args, param, driver, conn)

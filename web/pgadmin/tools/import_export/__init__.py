@@ -99,7 +99,6 @@ class IEMessage(IProcessDesc):
 
         if s is None:
             return _("Not available")
-        server_str = '{0}'.format(s.name)
         host_port_str = ''
         if s.host:
             host_port_str = '({0}:{1})'.format(

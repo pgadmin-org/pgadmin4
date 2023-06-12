@@ -195,8 +195,8 @@ export default function Analysis({explainTable}) {
       </tr>
     </thead>
     <tbody>
-      {_.sortBy(explainTable.rows,(r)=>r['data']['_serial']).map((row, i)=>{
-        return <ExplainRow key={i} row={row} show={{
+      {_.sortBy(explainTable.rows,(r)=>r['data']['_serial']).map((row)=>{
+        return <ExplainRow key={row?.data?.arr_id} row={row} show={{
           show_timings: explainTable.show_timings,
           show_rowsx: explainTable.show_rowsx,
           show_rows: explainTable.show_rows,

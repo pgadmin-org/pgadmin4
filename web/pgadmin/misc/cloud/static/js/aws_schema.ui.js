@@ -166,7 +166,7 @@ class DatabaseSchema extends BaseUISchema {
     }, {
       id: 'db_password', label: gettext('Password'), type: 'password',
       mode: ['create'], noEmpty: true,
-      helpMessage: gettext('At least 8 printable ASCII characters. Cannot contain any of the following: / \(slash\), \'\(single quote\), "\(double quote\) and @ \(at sign\).')
+      helpMessage: gettext('At least 8 printable ASCII characters. Cannot contain any of the following: / (slash), \'(single quote), "(double quote) and @ (at sign).')
     }, {
       id: 'db_confirm_password', label: gettext('Confirm password'),
       type: 'password',
