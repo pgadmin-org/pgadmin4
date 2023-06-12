@@ -178,7 +178,9 @@ The following example shows both a minimally defined and a fully defined server:
                 "TunnelHost": "192.168.1.253",
                 "TunnelPort": 22,
                 "TunnelUsername": "username",
-                "TunnelAuthentication": 0
+                "TunnelAuthentication": 0,
+                "PasswordExecCommand": "echo 'test'",
+                "PasswordExecExpiration": 100
             }
         }
     }
