@@ -30,14 +30,15 @@ module.exports = {
     }),
     new ImageMinimizerPlugin({
       test: /\.(jpe?g|png|gif)$/i,
-      minimizerOptions: {
-        // Lossless optimization with custom option
-        // Feel free to experiment with options for better result for you
-        plugins: [
-          ['mozjpeg', { progressive: true }],
-          ['optipng', { optimizationLevel: 7 }],
-          ['pngquant', {quality: [0.75, .9], speed: 3}],
-        ],
+      minimizer: {
+        implementation: ImageMinimizerPlugin.imageminMinify,
+        options: {
+          plugins: [
+            ['mozjpeg', { progressive: true }],
+            ['optipng', { optimizationLevel: 7 }],
+            ['pngquant', {quality: [0.75, .9], speed: 3}],
+          ],
+        },
       },
     }),
   ],
