@@ -69,7 +69,7 @@ const copyFiles = new CopyPlugin({
     pgadminThemesJson,
     {
       from: './pgadmin/static/scss/resources/**/*.png',
-      to: 'img/[name].[ext]',
+      to: 'img/[name][ext]',
     },
   ],
 });
