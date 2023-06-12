@@ -140,7 +140,7 @@
     "popper.js": "^1.16.1",
     "postcss": "^8.2.15",
     "raf": "^3.4.1",
-    "rc-dock": "^3.2.9",
+    "rc-dock": "^3.2.18",
     "react": "^17.0.1",
     "react-aspen": "^1.1.0",
     "react-checkbox-tree": "^1.7.2",

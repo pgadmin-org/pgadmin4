@@ -12401,9 +12401,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rc-dock@npm:^3.2.9":
-  version: 3.2.17
-  resolution: "rc-dock@npm:3.2.17"
+"rc-dock@npm:^3.2.18":
+  version: 3.2.18
+  resolution: "rc-dock@npm:3.2.18"
   dependencies:
     classnames: ^2.3.1
     lodash: ^4.17.21
@@ -12414,7 +12414,7 @@ __metadata:
   peerDependencies:
     react: ">=15.0.0"
     react-dom: ">=15.0.0"
-  checksum: 907dede2fc99c0668e7babced5f9bb45211c5dc5d33d03cea37a17a1a88f88ae4b7ef3f387c9f1c022da9c48e8b615fccbcfac06aed151b2d6fa82222bbb6855
+  checksum: d001da771dc369f237a0ae4629d3db8aa908df945e3ff026ff77651219fe71e5f2d1e191026cd41c1bde1e15c380da1cfe41d65915ba5092d674b9388c0186c7
   languageName: node
   linkType: hard
 
@@ -13437,7 +13437,7 @@ __metadata:
     process: ^0.11.10
     prop-types: ^15.7.2
     raf: ^3.4.1
-    rc-dock: ^3.2.9
+    rc-dock: ^3.2.18
     react: ^17.0.1
     react-aspen: ^1.1.0
     react-checkbox-tree: ^1.7.2
