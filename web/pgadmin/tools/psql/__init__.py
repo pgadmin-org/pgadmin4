@@ -296,7 +296,7 @@ def start_process(data):
         try:
             db = ''
             if data['db']:
-                db = underscore_unescape(data['db']).replace('\\', "\\\\")
+                db = underscore_unescape(data['db'])
 
             data['db'] = db
 
@@ -378,8 +378,6 @@ def get_connection_str(psql_utility, db, manager):
     :return: connection attribute list for PSQL connection.
     """
     manager.export_password_env('PGPASSWORD')
-    db = db.replace('"', '\\"')
-    db = db.replace("'", "\\'")
     database = db if db != '' else 'postgres'
     user = underscore_unescape(manager.user) if manager.user else None
     conn_attr = manager.create_connection_string(database, user)
