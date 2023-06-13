@@ -170,6 +170,7 @@ class Connection(BaseConnection):
         self.auto_reconnect = auto_reconnect
         self.async_ = async_
         self.__async_cursor = None
+        self.async_cursor_initialised = False
         self.__async_query_id = None
         self.__backend_pid = None
         self.execution_aborted = False
@@ -1042,6 +1043,7 @@ WHERE db.datname = current_database()""")
 
         query = query.encode(encoding)
         self.__async_cursor = cur
+        self.async_cursor_initialised = True
         self.__async_query_id = query_id
 
         current_app.logger.log(

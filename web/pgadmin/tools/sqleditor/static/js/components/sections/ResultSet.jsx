@@ -88,6 +88,10 @@ export class ResultSetUtils {
     return msg;
   }
 
+  static isCursorInitialised(httpMessage) {
+    return httpMessage.data.data.status === 'NotInitialised';
+  }
+
   static isQueryFinished(httpMessage) {
     return httpMessage.data.data.status === 'Success';
   }
@@ -302,7 +306,10 @@ export class ResultSetUtils {
       if(httpMessage.data.data.notifies) {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, httpMessage.data.data.notifies);
       }
-      if (ResultSetUtils.isQueryFinished(httpMessage)) {
+
+      if (ResultSetUtils.isCursorInitialised(httpMessage)) {
+        return Promise.resolve(this.pollForResult(onResultsAvailable, onExplain, onPollError));
+      } else if (ResultSetUtils.isQueryFinished(httpMessage)) {
         this.setEndTime(new Date());
         msg = this.queryFinished(httpMessage, onResultsAvailable, onExplain);
       } else if (ResultSetUtils.isQueryStillRunning(httpMessage)) {
@@ -828,8 +835,8 @@ export function ResultSet() {
     };
 
     const executeAndPoll = async ()=>{
-      let goForPoll = await yesCallback();
-      if (goForPoll) pollCallback();
+      yesCallback();
+      pollCallback();
     };
 
     if(isDataChanged()) {
