@@ -949,16 +949,30 @@ export function ResultSet() {
 
   const fetchMoreRows = async (all=false, callback=undefined)=>{
     if(queryData.has_more_rows) {
+      let res = [];
       setIsLoadingMore(true);
-      const res = await rsu.current.getMoreRows(all);
-      const newRows = rsu.current.processRows(res.data.data.result, columns);
-      setRows((prevRows)=>[...prevRows, ...newRows]);
-      setQueryData((prev)=>({
-        ...prev,
-        has_more_rows: res.data.data.has_more_rows,
-        rows_fetched_to: res.data.data.rows_fetched_to!=0 ? res.data.data.rows_fetched_to : prev.rows_fetched_to,
-      }));
-      setIsLoadingMore(false);
+      try {
+        res = await rsu.current.getMoreRows(all);
+        const newRows = rsu.current.processRows(res.data.data.result, columns);
+        setRows((prevRows)=>[...prevRows, ...newRows]);
+        setQueryData((prev)=>({
+          ...prev,
+          has_more_rows: res.data.data.has_more_rows,
+          rows_fetched_to: res.data.data.rows_fetched_to!=0 ? res.data.data.rows_fetched_to : prev.rows_fetched_to,
+        }));
+      } catch (e) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR,
+          e,
+          {
+            connectionLostCallback: ()=>{
+              eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, rsu.current.query, null, false, true);
+            },
+            checkTransaction: true,
+          }
+        );
+      } finally {
+        setIsLoadingMore(false);
+      }
     }
     callback?.();
   };
