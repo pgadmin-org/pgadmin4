@@ -885,7 +885,7 @@ def poll(trans_id):
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
-    if not conn.async_cursor_assigned:
+    if not conn.async_cursor_initialised():
         return make_json_response(data={'status': 'NotInitialised'})
 
     if status and conn is not None and session_obj is not None:
