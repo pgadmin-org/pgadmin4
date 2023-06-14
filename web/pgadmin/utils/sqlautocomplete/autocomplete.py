@@ -3,7 +3,7 @@
 # pgAdmin 4 - PostgreSQL Tools
 #
 # Copyright (C) 2013 - 2023, The pgAdmin Development Team
-# This software is released under the PostgreSQL Licence
+# This software is released under the PostgreSQL License
 #
 ##########################################################################
 
@@ -95,6 +95,7 @@ class SQLAutoComplete():
         the connection and get the tables, schemas, functions etc. based on
         the query.
     """
+
     def __init__(self, **kwargs):
         """
         This method is used to initialize the class.
