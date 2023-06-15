@@ -486,6 +486,13 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
 
+            # if desktop mode
+            if not current_app.config['SERVER_MODE']:
+                add_value(attr_dict, "PasswordExecCommand",
+                          server.passexec_cmd)
+                add_value(attr_dict, "PasswordExecExpiration",
+                          server.passexec_expiration)
+
             servers_dumped = servers_dumped + 1
 
             server_dict[servers_dumped] = attr_dict
@@ -710,6 +717,12 @@ def load_database_servers(input_file, selected_servers,
             new_server.shared = obj.get("Shared", None)
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
+
+            # if desktop mode
+            if not current_app.config['SERVER_MODE']:
+                new_server.passexec_cmd = obj.get("PasswordExecCommand", None)
+                new_server.passexec_expiration = obj.get(
+                    "PasswordExecExpiration", None)
 
             db.session.add(new_server)
 
