@@ -54,6 +54,8 @@ Use the fields in the *Definition* tab to define the index:
 * Move the *Unique?* switch to the *Yes* position to check for duplicate values
   in the table when the index is created and when data is added. The default is
   *No*.
+* Move the *NULLs not distinct?* switch to the *Yes* position to treat null values as not distinct. The default is
+  *No*. This option is available only on PostgreSQL 15 and above.
 * Move the *Clustered?* switch to the *Yes* position to instruct the server to
   cluster the table.
 * Move the *Concurrent build?* switch to the *Yes* position to build the index

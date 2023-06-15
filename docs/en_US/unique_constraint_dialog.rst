@@ -51,6 +51,8 @@ Use the fields in the *Definition* tab to define the unique constraint:
 * If enabled, move the *Deferred?* switch to the *Yes* position to specify the
   timing of the constraint is deferred to the end of the statement. The default
   is *No*.
+* Move the *NULLs not distinct?* switch to the *Yes* position to treat null values as not distinct. The default is
+  *No*. This option is available only on PostgreSQL 15 and above.
 
 Click the *SQL* tab to continue.
 
