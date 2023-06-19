@@ -86,6 +86,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       browser: {}, sqleditor: {}, graphs: {}, misc: {},
     },
     is_new_tab: window.location == window.parent?.location,
+    is_visible: true,
     current_file: null,
     obtaining_conn: true,
     connected: false,
@@ -128,8 +129,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   let pollTime = qtState.preferences.sqleditor.connection_status_fetch_time > 0
     && !qtState.obtaining_conn && qtState.connected_once && qtState.preferences?.sqleditor?.connection_status ?
     qtState.preferences.sqleditor.connection_status_fetch_time*1000 : -1;
-  /* No need to poll when the query is executing. Query poller will the txn status */
-  if(qtState.connection_status === CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE && qtState.connected) {
+  /* No need to poll when the query is executing. Query poller will get the txn status */
+  if(qtState.connection_status === CONNECTION_STATUS.TRANSACTION_STATUS_ACTIVE && qtState.connected
+      || !qtState.is_visible) {
     pollTime = -1;
   }
   useInterval(async ()=>{
@@ -346,6 +348,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     panel?.on(window.wcDocker.EVENT.VISIBILITY_CHANGED, function() {
       /* Focus the appropriate panel on visible */
       if(panel.isVisible()) {
+        setQtState({is_visible: true});
         if(LayoutHelper.isTabVisible(docker.current, PANELS.QUERY)) {
           LayoutHelper.focus(docker.current, PANELS.QUERY);
         } else if(LayoutHelper.isTabVisible(docker.current, PANELS.HISTORY)) {
@@ -353,6 +356,17 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         }
 
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL);
+      } else {
+        setQtState({is_visible: false});
+      }
+    });
+
+    /* If the tab or window is not visible */
+    document.addEventListener('visibilitychange', function() {
+      if(document.hidden) {
+        setQtState({is_visible: false});
+      } else {
+        setQtState({is_visible: true});
       }
     });
   }, []);
