@@ -58,11 +58,13 @@ following options (in alphabetical order):
 | *Create*                    | Click *Create* to access a context menu that provides context-sensitive selections.                                      |
 |                             | Your selection opens a *Create* dialog for creating a new object.                                                        |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Delete/Drop*               | Click to delete the currently selected object from the server.                                                           |
+| *Delete*                    | Click to delete the currently selected object from the server.                                                           |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Delete (Cascade)*          | Click to delete the currently selected object and all dependent objects from the server.                                 |
++-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
+| *Delete (Force)*            | Click to delete the currently selected database with force option.                                                       |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Disconnect from server*    | Click to disconnect from the currently selected server.                                                                  |
-+-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
-| *Drop Cascade*              | Click to delete the currently selected object and all dependent objects from the server.                                 |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+
 | *Properties...*             | Click to review or modify the currently selected object's properties.                                                    |
 +-----------------------------+--------------------------------------------------------------------------------------------------------------------------+

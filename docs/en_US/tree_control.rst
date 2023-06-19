@@ -49,13 +49,15 @@ following selections (options appear in alphabetical order):
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Debugging*               | Click through to open the :ref:`Debug <debugger>` tool or to select *Set breakpoint* to stop or pause a script execution. |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Delete/Drop*             | Click to delete the currently selected object from the server.                                                            |
+| *Delete*                  | Click to delete the currently selected object from the server.                                                            |
++---------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| *Delete (Cascade)*        | Click to delete the currently selected object and all dependent objects from the server.                                  |
++---------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| *Delete (Force)*          | Click to delete the currently selected database with force option.                                                        |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Disconnect Database...*  | Click to terminate a database connection.                                                                                 |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Disconnect from server*  | Click to disconnect from the currently selected server.                                                                   |
-+---------------------------+---------------------------------------------------------------------------------------------------------------------------+
-| *Drop Cascade*            | Click to delete the currently selected object and all dependent objects from the server.                                  |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | *Debugging*               | Click to access the :ref:`Debugger <debugger>` tool.                                                                      |
 +---------------------------+---------------------------------------------------------------------------------------------------------------------------+

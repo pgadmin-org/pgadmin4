@@ -564,7 +564,11 @@ def drop_database(connection, database_name):
         if pg_cursor.fetchall():
             old_isolation_level = connection.isolation_level
             set_isolation_level(connection, 0)
-            pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
+            if connection.info.server_version >= 130000:
+                pg_cursor.execute(
+                    '''DROP DATABASE "%s" WITH (FORCE)''' % database_name)
+            else:
+                pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
             set_isolation_level(connection, old_isolation_level)
             connection.commit()
             connection.close()
@@ -594,7 +598,11 @@ def drop_database_multiple(connection, database_names):
             if pg_cursor.fetchall():
                 old_isolation_level = connection.isolation_level
                 set_isolation_level(connection, 0)
-                pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
+                if connection.info.server_version >= 130000:
+                    pg_cursor.execute(
+                        '''DROP DATABASE "%s" WITH (FORCE)''' % database_name)
+                else:
+                    pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
                 set_isolation_level(connection, old_isolation_level)
                 connection.commit()
     connection.close()

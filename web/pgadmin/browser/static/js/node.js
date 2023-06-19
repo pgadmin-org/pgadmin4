@@ -144,7 +144,7 @@ define('pgadmin.browser.node', [
           applies: ['object', 'context'],
           callback: 'delete_obj',
           priority: self.dropPriority,
-          label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Delete/Drop'),
+          label: (self.dropAsRemove) ? gettext('Remove %s', self.label) : gettext('Delete'),
           data: {
             'url': 'drop',
             data_disabled: gettext('The selected tree node does not support this option.'),
@@ -162,8 +162,8 @@ define('pgadmin.browser.node', [
             module: self,
             applies: ['object', 'context'],
             callback: 'delete_obj',
-            priority: 3,
-            label: gettext('Drop Cascade'),
+            priority: 2,
+            label: gettext('Delete (Cascade)'),
             data: {
               'url': 'delete',
             },
@@ -657,11 +657,14 @@ define('pgadmin.browser.node', [
 
         let msg, title;
 
-        if (input.url == 'delete') {
+        if (input.url == 'delete' && d._type === 'database') {
+          msg = gettext('Delete database with the force option will attempt to terminate all existing connections to the "%s" database. Are you sure you want to proceed?', d.label);
+          title = gettext('Delete FORCE %s?', obj.label);
 
-          msg = gettext('Are you sure you want to drop %s "%s" and all the objects that depend on it?',
+        } else if (input.url == 'delete') {
+          msg = gettext('Are you sure you want to delete %s "%s" and all the objects that depend on it?',
             obj.label.toLowerCase(), d.label);
-          title = gettext('DROP CASCADE %s?', obj.label);
+          title = gettext('Delete CASCADE %s?', obj.label);
 
           if (!(_.isFunction(obj.canDropCascade) ?
             obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
@@ -676,8 +679,8 @@ define('pgadmin.browser.node', [
             msg = gettext('Are you sure you want to remove %s "%s"?', obj.label.toLowerCase(), d.label);
             title = gettext('Remove %s?', obj.label);
           } else {
-            msg = gettext('Are you sure you want to drop %s "%s"?', obj.label.toLowerCase(), d.label);
-            title = gettext('Drop %s?', obj.label);
+            msg = gettext('Are you sure you want to delete %s "%s"?', obj.label.toLowerCase(), d.label);
+            title = gettext('Delete %s?', obj.label);
           }
 
           if (!(_.isFunction(obj.canDrop) ?

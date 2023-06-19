@@ -358,9 +358,9 @@ function checkBinaryPathExists(binaryPathArray, selectedServerVersion) {
 }
 
 /* If a function, then evaluate */
-export function evalFunc(obj, func, param) {
+export function evalFunc(obj, func, ...param) {
   if(_.isFunction(func)) {
-    return func.apply(obj, [param]);
+    return func.apply(obj, [...param]);
   }
   return func;
 }

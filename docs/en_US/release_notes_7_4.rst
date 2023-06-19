@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #6367 <https://github.com/pgadmin-org/pgadmin4/issues/6367>`_ -  Added support to drop databases using the 'WITH (FORCE)' option.
 
 Housekeeping
 ************
