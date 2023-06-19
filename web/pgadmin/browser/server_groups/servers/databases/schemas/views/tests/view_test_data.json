@@ -11,7 +11,8 @@
         "datacl": [],
         "seclabels": [],
         "name": "test_view_add_",
-        "definition": "SELECT 'Hello World';"
+        "definition": "SELECT 'Hello World';",
+        "security_invoker": true
       },
       "mocking_required": false,
       "mock_data": {},
