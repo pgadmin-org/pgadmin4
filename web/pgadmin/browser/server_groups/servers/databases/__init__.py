@@ -195,7 +195,9 @@ class DatabaseView(PGChildNodeView):
         ],
         'vopts': [
             {}, {'get': 'variable_options'}
-        ]
+        ],
+        'delete': [{'delete': 'delete'},
+                   {'delete': 'delete'}]
     })
 
     def check_precondition(action=None):
@@ -1002,7 +1004,8 @@ class DatabaseView(PGChildNodeView):
 
                 sql = render_template(
                     "/".join([self.template_path, self._DELETE_SQL]),
-                    datname=res, conn=self.conn
+                    datname=res, conn=self.conn,
+                    with_force=self.cmd == 'delete'
                 )
 
                 status, msg = default_conn.execute_scalar(sql)
