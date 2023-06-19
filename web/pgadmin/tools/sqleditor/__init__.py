@@ -761,6 +761,7 @@ def start_view_data(trans_id):
 
     if status and conn is not None and \
             trans_obj is not None and session_obj is not None:
+
         # set fetched row count to 0 as we are executing query again.
         trans_obj.update_fetched_row_cnt(0)
 
@@ -1408,7 +1409,7 @@ def append_filter_exclusive(trans_id):
             else:
                 filter_sql = driver.qtIdent(
                     conn, column_name
-                ) + ' IS DISTINCT FROM ' + driver.qtLiteral(column_value)
+                ) + ' IS DISTINCT FROM ' + driver.qtLiteral(column_value, conn)
 
         # Call the append_filter method of transaction object
         trans_obj.append_filter(filter_sql)
