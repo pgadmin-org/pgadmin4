@@ -359,10 +359,32 @@ export default class IndexSchema extends BaseUISchema {
         min: 10, max:100, group: gettext('Definition'),
       },{
         id: 'indisunique', label: gettext('Unique?'), cell: 'string',
-        type: 'switch', disabled: () => inSchema(indexSchemaObj.node_info),
+        type: 'switch', deps:['amname'], disabled: (state) => {
+          return state.amname !== 'btree' || inSchema(indexSchemaObj.node_info);
+        },
         readonly: function (state) {
           return !indexSchemaObj.isNew(state);
         },
+        depChange: (state) => {
+          if (state.amname !== 'btree') {
+            return {indisunique:false};
+          }
+        },
+        group: gettext('Definition'),
+      },{
+        id: 'indnullsnotdistinct', label: gettext('NULLs not distinct?'), cell: 'string',
+        type: 'switch', deps:['indisunique', 'amname'], disabled: (state) => {
+          return !state.indisunique || inSchema(indexSchemaObj.node_info);
+        },
+        readonly: function (state) {
+          return !indexSchemaObj.isNew(state);
+        },
+        depChange: (state) => {
+          if (!state.indisunique) {
+            return {indnullsnotdistinct:false};
+          }
+        },
+        min_version: 150000,
         group: gettext('Definition'),
       },{
         id: 'indisclustered', label: gettext('Clustered?'), cell: 'string',

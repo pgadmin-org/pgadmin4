@@ -277,7 +277,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will return list of collation available
         via AJAX response
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'get_collations.sql'])
@@ -305,7 +305,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will return list of access methods available
         via AJAX response
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template("/".join([self.template_path, 'get_am.sql']))
             status, rset = self.conn.execute_2darray(SQL)
@@ -349,7 +349,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                op_class_list = [{'label': '', 'value': ''}]
+                op_class_list = []
 
                 for r in result['rows']:
                     op_class_list.append({'label': r['opcname'],
