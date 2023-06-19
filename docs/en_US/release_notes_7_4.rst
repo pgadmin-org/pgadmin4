@@ -22,7 +22,7 @@ New features
 
   | `Issue #6367 <https://github.com/pgadmin-org/pgadmin4/issues/6367>`_ -  Added support to drop databases using the 'WITH (FORCE)' option.
   | `Issue #6368 <https://github.com/pgadmin-org/pgadmin4/issues/6368>`_ -  Add "[ NULLS [ NOT ] DISTINCT ]" option while creating an Index.
-  
+
 
 Housekeeping
 ************
@@ -37,5 +37,6 @@ Bug fixes
   | `Issue #6291 <https://github.com/pgadmin-org/pgadmin4/issues/6291>`_ -  Fix an issue where loading more rows indicator will not disappear if connection is lost.
   | `Issue #6340 <https://github.com/pgadmin-org/pgadmin4/issues/6340>`_ -  Fix an encoding error when connecting through Pgbouncer.
   | `Issue #6363 <https://github.com/pgadmin-org/pgadmin4/issues/6363>`_ -  Fixed an issue where preview images for themes were not loading.
+  | `Issue #6420 <https://github.com/pgadmin-org/pgadmin4/issues/6420>`_ -  Fix raise notice from func/proc or code blocks are no longer displayed live.
   | `Issue #6431 <https://github.com/pgadmin-org/pgadmin4/issues/6431>`_ -  Fix an issue where PSQL is not working if the database name have quotes or double quotes.
-  
+
