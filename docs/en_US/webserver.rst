@@ -27,7 +27,7 @@ and modify the values for the following parameters:
 
    * [‘webserver’, ‘internal’]: pgAdmin will first try to authenticate the user
      through webserver. If that authentication fails, then it will return back
-     to the login dialog where you need to provide internal pgAdmin user
+     to the login page where you need to provide internal pgAdmin user
      credentials for authentication."
     "WEBSERVER_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Webserver user.

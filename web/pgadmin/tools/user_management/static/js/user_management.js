@@ -9,9 +9,8 @@
 
 import pgAdmin from 'sources/pgadmin';
 import gettext from 'sources/gettext';
-import { showUrlDialog } from '../../../../static/js/Dialogs/index';
+import { showChangeUserPassword, showUrlDialog } from '../../../../static/js/Dialogs/index';
 import { showUserManagement } from './UserManagementDialog';
-
 
 class UserManagement {
   static instance;
@@ -31,7 +30,7 @@ class UserManagement {
 
   // This is a callback function to show change user dialog.
   change_password(url) {
-    showUrlDialog(gettext('Change Password'), url, 'change_user_password.html', undefined, pgAdmin.Browser.stdH.lg);
+    showChangeUserPassword(url);
   }
 
   // This is a callback function to show 2FA dialog.

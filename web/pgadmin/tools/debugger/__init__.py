@@ -638,8 +638,6 @@ def direct_new(trans_id):
         is_linux=is_linux_platform,
         client_platform=user_agent.platform,
         function_name_with_arguments=function_name_with_arguments,
-        requirejs=True,
-        basejs=True,
         layout=layout
     )
 

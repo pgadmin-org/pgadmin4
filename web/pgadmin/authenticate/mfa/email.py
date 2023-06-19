@@ -18,6 +18,7 @@ import config
 from pgadmin.utils.csrf import pgCSRFProtect
 from .registry import BaseMFAuth
 from .utils import ValidationException, mfa_add, fetch_auth_option
+from pgadmin.utils.constants import MessageType
 
 
 def __generate_otp() -> str:
@@ -154,10 +155,7 @@ def send_email_code() -> Response:
     if success is False:
         return Response(message, http_code, mimetype='text/html')
 
-    return Response(render_template(
-        "mfa/email_code_sent.html", _=_,
-        message=message,
-    ), http_code, mimetype='text/html')
+    return dict(message=message)
 
 
 @pgCSRFProtect.exempt
@@ -204,28 +202,15 @@ class EmailAuthentication(BaseMFAuth):
 
     def validation_view(self):
         session.pop("mfa_email_code", None)
-        return render_template(
-            "mfa/email_view.html", _=_
+        return dict(
+            description=_("Verify with Email Authentication"),
+            button_label=_("Send Code"),
+            button_label_sending=_("Sending Code...")
         )
 
     def _registration_view(self):
         email = getattr(current_user, 'email', '')
-        return "\n".join([
-            "<h5 class='form-group text-center'>{label}</h5>",
-            "<input type='hidden' name='{auth_method}' value='SETUP'/>",
-            "<input type='hidden' name='validate' value='send_code'/>",
-            "<div class='form-group pt-3'>{description}</div>",
-            "<div class='form-group'>",
-            "  <input class='form-control' name='send_to' type='email'",
-            "         placeholder='{email_address_placeholder}'",
-            "         autofocus='' value='{email_address}' required",
-            "         pattern='[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{{2,}}$'/>",
-            "</div></div>",
-            "<div class='alert alert-warning alert-dismissible fade show'",
-            "     role='alert'>",
-            "  <strong>{note_label}:</strong><span>{note}</span>",
-            "</div>",
-        ]).format(
+        return dict(
             label=email_authentication_label(),
             auth_method=EMAIL_AUTH_METHOD,
             description=_("Enter the email address to send a code"),
@@ -247,20 +232,10 @@ class EmailAuthentication(BaseMFAuth):
         )
 
         if success is False:
-            flash(message, 'danger')
+            flash(message, MessageType.ERROR)
             return None
 
-        return "\n".join([
-            "<h5 class='form-group text-center'>{label}</h5>",
-            "<input type='hidden' name='{auth_method}' value='SETUP'/>",
-            "<input type='hidden' name='validate' value='verify_code'/>",
-            "<div class='form-group pt-3'>{message}</div>",
-            "<div class='form-group'>",
-            "  <input class='form-control' placeholder='{otp_placeholder}'",
-            "         pattern='\\d{{6}}' type='password' autofocus=''",
-            "         autocomplete='one-time-code' name='code' require>",
-            "</div>",
-        ]).format(
+        return dict(
             label=email_authentication_label(),
             auth_method=EMAIL_AUTH_METHOD,
             message=message,
@@ -282,13 +257,13 @@ class EmailAuthentication(BaseMFAuth):
 
                 flash(_(
                     "Email Authentication registered successfully."
-                ), "success")
+                ), MessageType.SUCCESS)
 
                 session.pop('mfa_email_code', None)
 
                 return None
 
-            flash(_('Invalid code'), 'danger')
+            flash(_('Invalid code'), MessageType.ERROR)
 
         return self._registration_view()
 
