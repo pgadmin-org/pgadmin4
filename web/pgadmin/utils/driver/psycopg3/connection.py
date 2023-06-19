@@ -1352,6 +1352,11 @@ WHERE db.datname = current_database()""")
             self.conn = None
         return False
 
+    def async_cursor_initialised(self):
+        if self.__async_cursor:
+            return True
+        return False
+
     def _decrypt_password(self, manager):
         """
         Decrypt password
