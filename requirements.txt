@@ -53,4 +53,4 @@ azure-identity==1.13.0
 google-api-python-client==2.*
 google-auth-oauthlib==1.0.0
 Werkzeug==2.2.3
-keyring==23.*
+keyring==24.*
