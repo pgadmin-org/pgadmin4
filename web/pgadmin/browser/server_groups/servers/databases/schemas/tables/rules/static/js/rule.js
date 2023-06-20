@@ -141,16 +141,11 @@ define('pgadmin.node.rule', [
               t.removeIcon(i);
               data.icon = 'icon-rule';
               t.addIcon(i, {icon: data.icon});
-              t.unload(i);
-              t.setInode(false);
-              t.deselect(i);
-              // Fetch updated data from server
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
+              t.updateAndReselectNode(i, data);
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
+              t.refresh(i);
             });
         },
         /* Disable rule */
@@ -171,16 +166,11 @@ define('pgadmin.node.rule', [
               t.removeIcon(i);
               data.icon = 'icon-rule-bad';
               t.addIcon(i, {icon: data.icon});
-              t.unload(i);
-              t.setInode(false);
-              t.deselect(i);
-              // Fetch updated data from server
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
+              t.updateAndReselectNode(i, data);
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
+              t.refresh(i);
             });
         },
       },

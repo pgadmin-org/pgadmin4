@@ -115,20 +115,14 @@ define('pgadmin.node.trigger', [
                 Notify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger';
+                data.has_enable_triggers =  res.data.has_enable_triggers;
                 t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                i.parent.parent._metadata.data.has_enable_triggers = res.data.has_enable_triggers;
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
+                t.updateAndReselectNode(i, data);
               }
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
-              t.unload(i);
+              t.refresh(i);
             });
         },
         /* Disable trigger */
@@ -149,20 +143,14 @@ define('pgadmin.node.trigger', [
                 Notify.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger-bad';
+                data.has_enable_triggers = res.data.has_enable_triggers;
                 t.addIcon(i, {icon: data.icon});
-                t.unload(i);
-                t.setInode(false);
-                t.deselect(i);
-                i.parent.parent._metadata.data.has_enable_triggers = res.data.has_enable_triggers;
-                // Fetch updated data from server
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
+                t.updateAndReselectNode(i, data);
               }
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
-              t.unload(i);
+              t.refresh(i);
             });
         },
       },
