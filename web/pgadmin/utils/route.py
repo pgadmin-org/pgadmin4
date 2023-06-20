@@ -100,6 +100,9 @@ class TestsGeneratorRegistry(ABCMeta):
         # if yes then import only that module
         if is_resql_only:
             BaseTestGenerator.setForModules(for_modules)
+            # In case of RESQL only clear the registry of modules, as
+            # RESQL test cases should be run.
+            cls.registry = dict()
             try:
                 import_module('regression.re_sql.tests.test_resql')
             except ImportError:
