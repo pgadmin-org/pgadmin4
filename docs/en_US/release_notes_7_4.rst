@@ -37,6 +37,7 @@ Bug fixes
   | `Issue #6266 <https://github.com/pgadmin-org/pgadmin4/issues/6266>`_ -  When opening pgAdmin the layout should be auto reset if it is corrupted. Reset layout menu should work if layout is corrupted while using pgAdmin.
   | `Issue #6291 <https://github.com/pgadmin-org/pgadmin4/issues/6291>`_ -  Fix an issue where loading more rows indicator will not disappear if connection is lost.
   | `Issue #6340 <https://github.com/pgadmin-org/pgadmin4/issues/6340>`_ -  Fix an encoding error when connecting through Pgbouncer.
+  | `Issue #6352 <https://github.com/pgadmin-org/pgadmin4/issues/6352>`_ -  Fix an issue where explain plan details is showing HTML escaped characters.
   | `Issue #6354 <https://github.com/pgadmin-org/pgadmin4/issues/6354>`_ -  Fixed an issue where queries with temporary tables in the same transaction is not working.
   | `Issue #6363 <https://github.com/pgadmin-org/pgadmin4/issues/6363>`_ -  Fixed an issue where preview images for themes were not loading.
   | `Issue #6420 <https://github.com/pgadmin-org/pgadmin4/issues/6420>`_ -  Fix raise notice from func/proc or code blocks are no longer displayed live.
