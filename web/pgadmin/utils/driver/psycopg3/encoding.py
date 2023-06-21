@@ -18,7 +18,9 @@ encode_dict = {
     # EUC_TW Not availble in Python,
     # so psycopg3 do not support it, we are on our own
     'EUC_TW': ['BIG5', 'big5'],
-    'EUCTW': ['BIG5', 'big5']
+    'EUCTW': ['BIG5', 'big5'],
+    # psycopg3 do not support unicode
+    'UNICODE': ['utf-8', 'utf-8']
 }
 
 
