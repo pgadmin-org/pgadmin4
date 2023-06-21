@@ -133,13 +133,7 @@ function(
           t.removeIcon(i);
           data.icon = 'icon-partition';
           t.addIcon(i, {icon: data.icon});
-          t.unload(i);
-          t.setInode(i);
-          t.deselect(i);
-          // Fetch updated data from server
-          setTimeout(function() {
-            t.select(i);
-          }, 10);
+          t.updateAndReselectNode(i, data);
         }
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -171,17 +165,12 @@ function(
             .then(({data: res})=>{
               if (res.success == 1) {
                 Notify.success(res.info);
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
+                t.updateAndReselectNode(i, d);
               }
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
-              t.unload(i);
+              t.refresh(i);
             });
         },
         /* Truncate table */

@@ -195,13 +195,7 @@ define('pgadmin.node.table', [
                     t.removeIcon(i);
                     data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                     t.addIcon(i, {icon: data.icon});
-                    t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                    // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
+                    t.updateAndReselectNode(i, data);
                   }
                   if (res.success == 2) {
                     Notify.error(res.info);
@@ -209,7 +203,7 @@ define('pgadmin.node.table', [
                 })
                 .catch((error)=>{
                   Notify.pgRespErrorNotify(error);
-                  t.unload(i);
+                  t.refresh(i);
                 });
             }, function() {/*This is intentional (SonarQube)*/}
           );
@@ -236,18 +230,12 @@ define('pgadmin.node.table', [
                     t.removeIcon(i);
                     data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                     t.addIcon(i, {icon: data.icon});
-                    t.unload(i);
-                    t.setInode(i);
-                    t.deselect(i);
-                    // Fetch updated data from server
-                    setTimeout(function() {
-                      t.select(i);
-                    }, 10);
+                    t.updateAndReselectNode(i, d);
                   }
                 })
                 .catch((error)=>{
                   Notify.pgRespErrorNotify(error);
-                  t.unload(i);
+                  t.refresh(i);
                 });
             },
             function() {/*This is intentional (SonarQube)*/}
@@ -271,16 +259,11 @@ define('pgadmin.node.table', [
             .then(({data: res})=>{
               Notify.success(res.info, null);
               d.rows_cnt = res.data.total_rows;
-              t.unload(i);
-              t.setInode(i);
-              t.deselect(i);
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
+              t.updateAndReselectNode(i, d);
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
-              t.unload(i);
+              t.refresh(i);
             });
         },
         /* Generate the ERD */

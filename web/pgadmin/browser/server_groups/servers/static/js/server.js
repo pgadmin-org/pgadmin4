@@ -551,7 +551,6 @@ define('pgadmin.node.server', [
                 function() {
                   d.is_connecting = false;
                   t.unload(i);
-                  t.setInode(i);
                   t.addIcon(i, {icon: 'icon-database-not-connected'});
                   pgBrowser.Events.trigger(
                     'pgadmin:server:connect:cancelled', i, d, self
@@ -588,13 +587,11 @@ define('pgadmin.node.server', [
               );
               data.is_connecting = false;
               tree.unload(item);
-              tree.setInode(item);
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
               Notify.info('Please enter the server details to connect to the server. This server is a shared server.');
             } else {
               data.is_connecting = false;
               tree.unload(item);
-              tree.setInode(item);
               tree.addIcon(item, {icon: 'icon-shared-server-not-connected'});
             }
           }
@@ -707,7 +704,6 @@ define('pgadmin.node.server', [
       let onCancel = function(_tree, _item, _data, _status) {
         _data.is_connecting = false;
         _tree.unload(_item);
-        _tree.setInode(_item);
         _tree.removeIcon(_item);
         if (_data.shared && pgAdmin.server_mode == 'True'){
           _tree.addIcon(_item, {icon: 'icon-shared-server-not-connected'});

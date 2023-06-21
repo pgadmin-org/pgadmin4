@@ -197,10 +197,9 @@ define('pgadmin.node.database', [
                 },
                 function() {
                   d.is_connecting = false;
-                  t.unload(i);
-                  t.setInode(i);
                   let dbIcon = d.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
                   t.addIcon(i, {icon: dbIcon});
+                  t.updateAndReselectNode(i, d);
                   pgBrowser.Events.trigger(
                     'pgadmin:database:connect:cancelled', i, d, self
                   );
@@ -473,11 +472,10 @@ define('pgadmin.node.database', [
           onCancel = function(_tree, _item, _data) {
             _data.is_connecting = false;
             let server = _tree.parent(_item);
-            _tree.unload(_item);
-            _tree.setInode(_item);
             _tree.removeIcon(_item);
             let dbIcon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
             _tree.addIcon(_item, {icon: dbIcon});
+            _tree.updateAndReselectNode(_item, _data);
             obj.trigger('connect:cancelled', obj, _item, _data);
             pgBrowser.Events.trigger(
               'pgadmin:database:connect:cancelled', _item, _data, obj
