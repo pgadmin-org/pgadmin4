@@ -7,17 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  pgAdmin4\n"
 "Report-Msgid-Bugs-To: oon@oo.or.id\n"
-"POT-Creation-Date: 2023-05-26 10:37+0530\n"
+"POT-Creation-Date: 2023-06-22 16:28+0530\n"
 "PO-Revision-Date: 2023-06-02 14:46+0700\n"
 "Last-Translator: oon arfiandwi <oon@oo.or.id>\n"
 "Language: id\n"
 "Language-Team: Indonesian <pgadmin-hackers@postgresql.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
-"X-Generator: Lokalize 21.12.3\n"
 
 #: pgadmin/__init__.py:351 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -25,8 +24,7 @@ msgstr "Nama pengguna atau sandi salah."
 
 #: pgadmin/__init__.py:660 pgadmin/__init__.py:710
 msgid "Auto-detected {0} installation with the data directory at {1}"
-msgstr ""
-"Instalasi {0} yang terdeteksi secara otomatis dengan direktori data di {1}"
+msgstr "Instalasi {0} yang terdeteksi secara otomatis dengan direktori data di {1}"
 
 #: pgadmin/__init__.py:794
 msgid "403 FORBIDDEN"
@@ -81,7 +79,7 @@ msgid "NW.js Version"
 msgstr "Versi NW.js"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:105
-#: pgadmin/browser/__init__.py:86
+#: pgadmin/browser/__init__.py:87
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:351
 msgid "Browser"
 msgstr "Browser"
@@ -150,8 +148,7 @@ msgid "kerberos"
 msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:171
-msgid ""
-"Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
+msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
 msgstr ""
 "Otentikasi Kerberos tidak dapat digunakan karena modul GSSAPI tidak dapat"
 " dimuat."
@@ -295,8 +292,7 @@ msgid "Failed to send the code to email."
 msgstr "Gagal mengirim kode ke email."
 
 #: pgadmin/authenticate/mfa/email.py:93
-msgid ""
-"A verification code was sent to {}. Check your email and enter the code."
+msgid "A verification code was sent to {}. Check your email and enter the code."
 msgstr "Kode verifikasi dikirim ke {}. Periksa email Anda dan masukkan kode."
 
 #: pgadmin/authenticate/mfa/email.py:148
@@ -402,6 +398,7 @@ msgid "Authentication registration"
 msgstr "Pendaftaran otentikasi"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:41
+#: pgadmin/browser/static/js/node.js:180
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:761
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:177
 msgid "Delete"
@@ -413,7 +410,7 @@ msgstr "Siapkan"
 
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:50
 #: pgadmin/authenticate/mfa/templates/mfa/register.html:58
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:423
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:437
 msgid "Continue"
 msgstr "Lanjutkan"
 
@@ -428,7 +425,7 @@ msgstr "Lanjutkan"
 #: pgadmin/static/js/helpers/ModalProvider.jsx:52
 #: pgadmin/static/js/helpers/Notifier.jsx:107
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:942
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:424
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:438
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:219
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:393
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:19
@@ -451,11 +448,11 @@ msgstr "Validasi"
 msgid "Logout"
 msgstr "Keluar"
 
-#: pgadmin/browser/__init__.py:75
+#: pgadmin/browser/__init__.py:76
 msgid "Your password has not been changed."
 msgstr "Sandi Anda belum diubah."
 
-#: pgadmin/browser/__init__.py:76
+#: pgadmin/browser/__init__.py:77
 msgid ""
 "SMTP Socket error: {error}\n"
 " {pass_error}"
@@ -463,7 +460,7 @@ msgstr ""
 "Kesalahan Soket SMTP: {error}\n"
 " {pass_error}"
 
-#: pgadmin/browser/__init__.py:79
+#: pgadmin/browser/__init__.py:80
 msgid ""
 "SMTP error: {error}\n"
 " {pass_error}"
@@ -471,7 +468,7 @@ msgstr ""
 "Kesalahan SMTP: {error}\n"
 " {pass_error}"
 
-#: pgadmin/browser/__init__.py:81
+#: pgadmin/browser/__init__.py:82
 msgid ""
 "Error: {error}\n"
 " {pass_error}"
@@ -479,55 +476,54 @@ msgstr ""
 "Kesalahan: {error}\n"
 " {pass_error}"
 
-#: pgadmin/browser/__init__.py:113
+#: pgadmin/browser/__init__.py:114
 #: pgadmin/browser/register_browser_preferences.py:102
 msgid "Lock Layout"
 msgstr "Kunci Tata Letak"
 
-#: pgadmin/browser/__init__.py:120
+#: pgadmin/browser/__init__.py:121
 #: pgadmin/browser/register_browser_preferences.py:104
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:182
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:236
 msgid "None"
 msgstr "Tidak ada"
 
-#: pgadmin/browser/__init__.py:127
+#: pgadmin/browser/__init__.py:128
 #: pgadmin/browser/register_browser_preferences.py:105
 msgid "Prevent Docking"
 msgstr "Mencegah docking"
 
-#: pgadmin/browser/__init__.py:134
+#: pgadmin/browser/__init__.py:135
 #: pgadmin/browser/register_browser_preferences.py:107
 msgid "Full Lock"
 msgstr "Kunci Penuh"
 
-#: pgadmin/browser/__init__.py:368 pgadmin/browser/collection.py:279
+#: pgadmin/browser/__init__.py:369 pgadmin/browser/collection.py:279
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:677
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:351
 msgid "Nodes"
 msgstr "Node"
 
-#: pgadmin/browser/__init__.py:832 pgadmin/browser/__init__.py:913
+#: pgadmin/browser/__init__.py:834 pgadmin/browser/__init__.py:962
 msgid "Incorrect master password"
 msgstr "Sandi utama salah"
 
-#: pgadmin/browser/__init__.py:894
+#: pgadmin/browser/__init__.py:943
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
 "utility specified {0}.Please check that the hook utility is configured "
 "correctly."
 msgstr ""
-"Sandi utama tidak dapat diambil dari MASTER_PASSWORD_HOOK"
-"utilitas yang ditentukan {0}. Periksa apakah utilitas pengait telah"
-" dikonfigurasi"
-"dengan benar."
+"Sandi utama tidak dapat diambil dari MASTER_PASSWORD_HOOKutilitas yang "
+"ditentukan {0}. Periksa apakah utilitas pengait telah dikonfigurasidengan"
+" benar."
 
-#: pgadmin/browser/__init__.py:961
+#: pgadmin/browser/__init__.py:1010
 msgid "Master password cannot be empty"
 msgstr "Sandi utama tidak boleh kosong"
 
-#: pgadmin/browser/__init__.py:1120
+#: pgadmin/browser/__init__.py:1169
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
@@ -535,7 +531,7 @@ msgstr ""
 "Akun Anda diotentikasi menggunakan sumber {} eksternal. Silakan hubungi "
 "administrator layanan ini jika Anda perlu mengatur ulang sandi Anda."
 
-#: pgadmin/browser/__init__.py:1226
+#: pgadmin/browser/__init__.py:1275
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -556,8 +552,8 @@ msgid ""
 "If turned off, then all object collections which are empty will be hidden"
 " from browser tree."
 msgstr ""
-"Jika dimatikan, maka semua koleksi objek yang kosong akan disembunyikan"
-"  dari pohon browser."
+"Jika dimatikan, maka semua koleksi objek yang kosong akan disembunyikan  "
+"dari pohon browser."
 
 #: pgadmin/browser/register_browser_preferences.py:44
 msgid "Show template databases?"
@@ -573,8 +569,7 @@ msgid "Display"
 msgstr "Tampilkan"
 
 #: pgadmin/browser/register_browser_preferences.py:53
-msgid ""
-"If set to True, then all shared servers will be hidden from browser tree"
+msgid "If set to True, then all shared servers will be hidden from browser tree"
 msgstr ""
 "Jika diatur ke True, maka semua server bersama akan disembunyikan dari "
 "pohon browser"
@@ -672,22 +667,22 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:144
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:41
-#: pgadmin/utils/__init__.py:802 pgadmin/utils/__init__.py:811
+#: pgadmin/utils/__init__.py:815 pgadmin/utils/__init__.py:824
 msgid "Key"
 msgstr "Kunci"
 
 #: pgadmin/browser/register_browser_preferences.py:145
-#: pgadmin/static/js/keyboard_shortcuts.js:76 pgadmin/utils/__init__.py:816
+#: pgadmin/static/js/keyboard_shortcuts.js:76 pgadmin/utils/__init__.py:829
 msgid "Shift"
 msgstr "Menggeser"
 
 #: pgadmin/browser/register_browser_preferences.py:146
-#: pgadmin/static/js/keyboard_shortcuts.js:79 pgadmin/utils/__init__.py:822
+#: pgadmin/static/js/keyboard_shortcuts.js:79 pgadmin/utils/__init__.py:835
 msgid "Ctrl"
 msgstr "Ctrl"
 
 #: pgadmin/browser/register_browser_preferences.py:147
-#: pgadmin/utils/__init__.py:827
+#: pgadmin/utils/__init__.py:840
 msgid "Alt/Option"
 msgstr "Alt/Opsi"
 
@@ -752,50 +747,42 @@ msgid "Delete object"
 msgstr "Hapus objek"
 
 #: pgadmin/browser/register_browser_preferences.py:349
-msgid "Delete/Drop multiple objects"
-msgstr "Hapus banyak objek"
-
-#: pgadmin/browser/register_browser_preferences.py:364
-msgid "Drop Cascade multiple objects"
-msgstr "Hapus kaskade banyak objek"
-
-#: pgadmin/browser/register_browser_preferences.py:379
 msgid "Open context menu"
 msgstr "Buka menu konteks"
 
-#: pgadmin/browser/register_browser_preferences.py:394
+#: pgadmin/browser/register_browser_preferences.py:364
 msgid "Direct debugging"
 msgstr "Debugging langsung"
 
-#: pgadmin/browser/register_browser_preferences.py:409
+#: pgadmin/browser/register_browser_preferences.py:379
 msgid "Dialog tab forward"
 msgstr "Tab dialog ke depan"
 
-#: pgadmin/browser/register_browser_preferences.py:424
+#: pgadmin/browser/register_browser_preferences.py:394
 msgid "Dialog tab backward"
 msgstr "Tab dialog ke belakang"
 
-#: pgadmin/browser/register_browser_preferences.py:439
+#: pgadmin/browser/register_browser_preferences.py:409
 msgid "Refresh object explorer"
 msgstr "Muat ulang penjelajah objek"
 
-#: pgadmin/browser/register_browser_preferences.py:454
+#: pgadmin/browser/register_browser_preferences.py:424
 msgid "Add grid row"
 msgstr "Tambah baris grid"
 
-#: pgadmin/browser/register_browser_preferences.py:468
+#: pgadmin/browser/register_browser_preferences.py:438
 #: pgadmin/browser/static/js/browser.js:843
 #: pgadmin/browser/static/js/browser.js:847
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:236
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:224
 #: pgadmin/help/__init__.py:27
 msgid "Quick Search"
 msgstr "Pencarian Cepat"
 
-#: pgadmin/browser/register_browser_preferences.py:481
+#: pgadmin/browser/register_browser_preferences.py:451
 msgid "Dynamic tab size"
 msgstr "Ukuran tab dinamis"
 
-#: pgadmin/browser/register_browser_preferences.py:483
+#: pgadmin/browser/register_browser_preferences.py:453
 msgid ""
 "If set to True, the tabs will take full size as per the title, it will "
 "also applicable for already opened tabs"
@@ -803,12 +790,12 @@ msgstr ""
 "Jika diatur ke True, tab akan mengambil ukuran penuh sesuai judul, itu "
 "juga akan berlaku untuk tab yang sudah dibuka"
 
-#: pgadmin/browser/register_browser_preferences.py:490
+#: pgadmin/browser/register_browser_preferences.py:460
 msgid "Query tool tab title"
 msgstr "Judul tab alat kueri"
 
-#: pgadmin/browser/register_browser_preferences.py:493
-#: pgadmin/browser/register_browser_preferences.py:564
+#: pgadmin/browser/register_browser_preferences.py:463
+#: pgadmin/browser/register_browser_preferences.py:534
 msgid ""
 "Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
 "can provide any string with or without placeholders of their choice. The "
@@ -819,11 +806,11 @@ msgstr ""
 "pilihan mereka. Judul kosong akan dikembalikan ke judul bawaan dengan "
 "placeholder."
 
-#: pgadmin/browser/register_browser_preferences.py:503
+#: pgadmin/browser/register_browser_preferences.py:473
 msgid "View/Edit data tab title"
 msgstr "Lihat/Edit judul tab data"
 
-#: pgadmin/browser/register_browser_preferences.py:506
+#: pgadmin/browser/register_browser_preferences.py:476
 msgid ""
 "Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
 " %SERVER%. Users can provide any string with or without placeholders of "
@@ -835,11 +822,11 @@ msgstr ""
 " atau tanpa placeholder pilihan mereka. Judul kosong akan dikembalikan ke"
 " judul bawaan dengan placeholder."
 
-#: pgadmin/browser/register_browser_preferences.py:516
+#: pgadmin/browser/register_browser_preferences.py:486
 msgid "Debugger tab title"
 msgstr "Judul tab debugger"
 
-#: pgadmin/browser/register_browser_preferences.py:519
+#: pgadmin/browser/register_browser_preferences.py:489
 #, python-format
 msgid ""
 "Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
@@ -852,7 +839,7 @@ msgstr ""
 "placeholder pilihan mereka. Judul kosong akan dikembalikan ke judul "
 "default dengan placeholder."
 
-#: pgadmin/browser/register_browser_preferences.py:528
+#: pgadmin/browser/register_browser_preferences.py:498
 #: pgadmin/browser/static/js/collection.js:76
 #: pgadmin/browser/static/js/node.js:229
 #: pgadmin/browser/static/js/preferences.js:135
@@ -868,7 +855,7 @@ msgstr ""
 msgid "Query Tool"
 msgstr "Alat kueri"
 
-#: pgadmin/browser/register_browser_preferences.py:529
+#: pgadmin/browser/register_browser_preferences.py:499
 #: pgadmin/tools/debugger/__init__.py:56
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:206
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:647
@@ -877,7 +864,7 @@ msgstr "Alat kueri"
 msgid "Debugger"
 msgstr "Debugger"
 
-#: pgadmin/browser/register_browser_preferences.py:530
+#: pgadmin/browser/register_browser_preferences.py:500
 #: pgadmin/tools/schema_diff/__init__.py:46
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:65
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:73
@@ -885,12 +872,12 @@ msgstr "Debugger"
 msgid "Schema Diff"
 msgstr "Schema Diff"
 
-#: pgadmin/browser/register_browser_preferences.py:531
+#: pgadmin/browser/register_browser_preferences.py:501
 #: pgadmin/tools/erd/static/js/ERDModule.js:65
 msgid "ERD Tool"
 msgstr "Alat ERD"
 
-#: pgadmin/browser/register_browser_preferences.py:536
+#: pgadmin/browser/register_browser_preferences.py:506
 #: pgadmin/browser/static/js/collection.js:93
 #: pgadmin/browser/static/js/node.js:248
 #: pgadmin/browser/static/js/toolbar.js:73
@@ -901,11 +888,11 @@ msgstr "Alat ERD"
 msgid "PSQL Tool"
 msgstr "Alat PSQL"
 
-#: pgadmin/browser/register_browser_preferences.py:540
+#: pgadmin/browser/register_browser_preferences.py:510
 msgid "Open in new browser tab"
 msgstr "Buka di tab browser baru"
 
-#: pgadmin/browser/register_browser_preferences.py:543
+#: pgadmin/browser/register_browser_preferences.py:513
 msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
@@ -913,19 +900,19 @@ msgstr ""
 "Pilih Alat Kueri, Debugger, Schema Diff, Alat ERD atau alat PSQL dari "
 "drop-down untuk disetel di tab browser baru untuk modul tertentu."
 
-#: pgadmin/browser/register_browser_preferences.py:553
+#: pgadmin/browser/register_browser_preferences.py:523
 msgid "Select open new tab..."
 msgstr "Pilih buka tab baru..."
 
-#: pgadmin/browser/register_browser_preferences.py:561
+#: pgadmin/browser/register_browser_preferences.py:531
 msgid "PSQL tool tab title"
 msgstr "Judul tab alat PSQL"
 
-#: pgadmin/browser/register_browser_preferences.py:574
+#: pgadmin/browser/register_browser_preferences.py:544
 msgid "Enable object breadcrumbs?"
 msgstr "Aktifkan breadcrumb objek?"
 
-#: pgadmin/browser/register_browser_preferences.py:577
+#: pgadmin/browser/register_browser_preferences.py:547
 msgid ""
 "Enable breadcrumbs to show the complete path of an object in the object "
 "explorer. The breadcrumbs are displayed on object mouse hover."
@@ -933,11 +920,11 @@ msgstr ""
 "Aktifkan breadcrumb untuk menunjukkan path lengkap suatu objek di dalam "
 "penjelajah objek. Breadcrumb ditampilkan pada objek mouse hover."
 
-#: pgadmin/browser/register_browser_preferences.py:586
+#: pgadmin/browser/register_browser_preferences.py:556
 msgid "Show comment with object breadcrumbs?"
 msgstr "Tampilkan komentar dengan breadcrumb objek?"
 
-#: pgadmin/browser/register_browser_preferences.py:589
+#: pgadmin/browser/register_browser_preferences.py:559
 msgid "Show object comment along with breadcrumbs."
 msgstr "Tampilkan komentar objek bersama breadcrumb."
 
@@ -986,19 +973,19 @@ msgid "Could not find the server group."
 msgstr "Tidak dapat menemukan grup server."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:130
-#: pgadmin/browser/server_groups/servers/__init__.py:1048
+#: pgadmin/browser/server_groups/servers/__init__.py:1077
 msgid "Servers"
 msgstr "Server"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:609
+#: pgadmin/browser/server_groups/servers/__init__.py:638
 msgid "The specified server group with id# {0} could not be found."
 msgstr "Grup server yang ditentukan dengan id# {0} tidak dapat ditemukan."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:630
+#: pgadmin/browser/server_groups/servers/__init__.py:659
 msgid "Could not find the server with id# {0}."
 msgstr "Tidak dapat menemukan server dengan id# {0}."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:709
+#: pgadmin/browser/server_groups/servers/__init__.py:738
 msgid ""
 "The specified server could not be found.\n"
 "Does the user have permission to access the server?"
@@ -1006,20 +993,20 @@ msgstr ""
 "Server yang ditentukan tidak dapat ditemukan.\n"
 "Apakah pengguna memiliki izin untuk mengakses server?"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:746
+#: pgadmin/browser/server_groups/servers/__init__.py:775
 msgid "Server deleted"
 msgstr "Server dihapus"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:758
-#: pgadmin/browser/server_groups/servers/__init__.py:2071
+#: pgadmin/browser/server_groups/servers/__init__.py:787
+#: pgadmin/browser/server_groups/servers/__init__.py:2109
 msgid "Could not find the required server."
 msgstr "Tidak dapat menemukan server yang diperlukan."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:793
+#: pgadmin/browser/server_groups/servers/__init__.py:822
 msgid "name"
 msgstr "nama"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:794
+#: pgadmin/browser/server_groups/servers/__init__.py:823
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:130
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:161
 #: pgadmin/misc/cloud/static/js/aws.js:252
@@ -1027,12 +1014,12 @@ msgstr "nama"
 msgid "Port"
 msgstr "Port"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:795
+#: pgadmin/browser/server_groups/servers/__init__.py:824
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:173
 msgid "Maintenance database"
 msgstr "Database pemeliharaan"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:796
+#: pgadmin/browser/server_groups/servers/__init__.py:825
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:146
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:177
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:254
@@ -1044,7 +1031,7 @@ msgstr "Database pemeliharaan"
 msgid "Username"
 msgstr "Nama pengguna"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:797
+#: pgadmin/browser/server_groups/servers/__init__.py:826
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:87
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:142
 #: pgadmin/tools/backup/static/js/backup.ui.js:186
@@ -1052,7 +1039,7 @@ msgstr "Nama pengguna"
 msgid "Comments"
 msgstr "Komentar"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:798
+#: pgadmin/browser/server_groups/servers/__init__.py:827
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:114
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:220
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:197
@@ -1061,21 +1048,21 @@ msgstr "Komentar"
 msgid "Role"
 msgstr "Aturan"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:821
-#: pgadmin/browser/server_groups/servers/__init__.py:1128
+#: pgadmin/browser/server_groups/servers/__init__.py:850
+#: pgadmin/browser/server_groups/servers/__init__.py:1157
 msgid "Not a valid Host address"
 msgstr "Bukan alamat host yang valid"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:837
+#: pgadmin/browser/server_groups/servers/__init__.py:866
 msgid "No parameters were changed."
 msgstr "Tidak ada parameter yang diubah."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:939
+#: pgadmin/browser/server_groups/servers/__init__.py:968
 msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "'{0}' tidak diperbolehkan untuk modifikasi, saat server terhubung."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1115
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:673
+#: pgadmin/browser/server_groups/servers/__init__.py:1144
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:675
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:394
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:413
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:699
@@ -1084,8 +1071,8 @@ msgstr "'{0}' tidak diperbolehkan untuk modifikasi, saat server terhubung."
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:425
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:422
 #: pgadmin/browser/server_groups/servers/databases/languages/__init__.py:480
-#: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:481
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:691
+#: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:480
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:698
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:467
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:214
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:206
@@ -1101,26 +1088,26 @@ msgstr "'{0}' tidak diperbolehkan untuk modifikasi, saat server terhubung."
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:613
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:462
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:949
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:399
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:398
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:509
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:484
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:547
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:552
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:551
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:367
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:342
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:597
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:341
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:595
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:961
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:553
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:454
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:316
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:375
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:304
-#: pgadmin/tools/import_export_servers/__init__.py:187
+#: pgadmin/tools/import_export_servers/__init__.py:184
 #: pgadmin/tools/sqleditor/utils/macros.py:142
 msgid "Could not find the required parameter ({})."
 msgstr "Tidak dapat menemukan parameter yang diperlukan ({})."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1219
+#: pgadmin/browser/server_groups/servers/__init__.py:1248
 msgid ""
 "Unable to connect to server:\n"
 "\n"
@@ -1130,50 +1117,50 @@ msgstr ""
 "\n"
 "{}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1317
+#: pgadmin/browser/server_groups/servers/__init__.py:1346
 msgid "Server has no active connection for generating statistics."
 msgstr "Server tidak memiliki koneksi aktif untuk menghasilkan statistik."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1410
+#: pgadmin/browser/server_groups/servers/__init__.py:1439
 msgid "Please enter the server details to connect"
 msgstr "Harap masukkan detail server untuk terhubung"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1623
+#: pgadmin/browser/server_groups/servers/__init__.py:1661
 #: pgadmin/tools/schema_diff/__init__.py:353
-#: pgadmin/tools/sqleditor/__init__.py:2407
+#: pgadmin/tools/sqleditor/__init__.py:2410
 msgid "Server connected."
 msgstr "Server terhubung."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1662
+#: pgadmin/browser/server_groups/servers/__init__.py:1700
 msgid "Server could not be disconnected."
 msgstr "Server tidak dapat diputus."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1666
+#: pgadmin/browser/server_groups/servers/__init__.py:1704
 msgid "Server disconnected."
 msgstr "Server terputus."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1686
+#: pgadmin/browser/server_groups/servers/__init__.py:1724
 msgid "Could not reload the server configuration."
 msgstr "Tidak dapat memuat kembali konfigurasi server."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1691
+#: pgadmin/browser/server_groups/servers/__init__.py:1729
 msgid "Server configuration reloaded."
 msgstr "Konfigurasi server dimuat ulang."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1732
+#: pgadmin/browser/server_groups/servers/__init__.py:1770
 msgid "Named restore point created: {0}"
 msgstr "Titik pemulihan bernama berhasil dibuat: {0}"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1738
+#: pgadmin/browser/server_groups/servers/__init__.py:1776
 msgid "Named restore point creation failed ({0})"
 msgstr "Titik pemulihan bernama gagal dibuat ({0})"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1792
-#: pgadmin/browser/server_groups/servers/__init__.py:1804
+#: pgadmin/browser/server_groups/servers/__init__.py:1830
+#: pgadmin/browser/server_groups/servers/__init__.py:1842
 msgid "Could not find the required parameter(s)."
 msgstr "Tidak dapat menemukan parameter yang diperlukan."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1813
+#: pgadmin/browser/server_groups/servers/__init__.py:1851
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:141
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:456
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:375
@@ -1183,29 +1170,29 @@ msgstr "Tidak dapat menemukan parameter yang diperlukan."
 msgid "Passwords do not match."
 msgstr "Sandi tidak cocok."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1829
+#: pgadmin/browser/server_groups/servers/__init__.py:1867
 msgid "Incorrect password."
 msgstr "Sandi salah."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1869
+#: pgadmin/browser/server_groups/servers/__init__.py:1907
 msgid "Password changed successfully."
 msgstr "Sandi berhasil diubah."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1907
+#: pgadmin/browser/server_groups/servers/__init__.py:1945
 msgid "WAL replay paused"
 msgstr "WAL Replay terhenti"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1918
+#: pgadmin/browser/server_groups/servers/__init__.py:1956
 msgid "WAL replay resumed"
 msgstr "Ulangan WAL dilanjutkan"
 
-#: pgadmin/browser/server_groups/servers/__init__.py:1924
-#: pgadmin/browser/server_groups/servers/__init__.py:1982
+#: pgadmin/browser/server_groups/servers/__init__.py:1962
+#: pgadmin/browser/server_groups/servers/__init__.py:2020
 msgid "Please connect the server."
 msgstr "Harap hubungkan server."
 
-#: pgadmin/browser/server_groups/servers/__init__.py:2113
-#: pgadmin/browser/server_groups/servers/__init__.py:2156
+#: pgadmin/browser/server_groups/servers/__init__.py:2151
+#: pgadmin/browser/server_groups/servers/__init__.py:2194
 msgid "The saved password cleared successfully."
 msgstr "Sandi yang disimpan berhasil dihapus."
 
@@ -1263,45 +1250,45 @@ msgid "PostgreSQL"
 msgstr "PostgreSQL"
 
 #: pgadmin/browser/server_groups/servers/databases/__init__.py:41
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:37
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:45
 msgid "Databases"
 msgstr "Database"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:217
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:214
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:224
 #: pgadmin/misc/cloud/__init__.py:187
 msgid "Could not find the server."
 msgstr "Tidak dapat menemukan server."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:574
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:576
 msgid "Database connected."
 msgstr "Database terhubung."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:594
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:596
 msgid "Database could not be disconnected."
 msgstr "Database tidak dapat diputus."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:598
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:600
 msgid "Database disconnected."
 msgstr "Database terputus."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:791
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:793
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2233
 msgid "Could not find the database on the server."
 msgstr "Tidak dapat menemukan database di server."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:950
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:952
 msgid "Database could not be deleted."
 msgstr "Database tidak dapat dihapus."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:991
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:993
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:525
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:572
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:377
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/__init__.py:582
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/__init__.py:577
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/__init__.py:600
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:807
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:814
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/__init__.py:660
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/domain_constraints/__init__.py:508
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:774
@@ -1313,17 +1300,17 @@ msgstr "Database tidak dapat dihapus."
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:478
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:502
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1094
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:481
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:480
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:587
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:633
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:698
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:766
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:752
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:722
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:721
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:763
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:491
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:441
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:677
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:440
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:675
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:1170
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:686
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:565
@@ -1331,11 +1318,11 @@ msgstr "Database tidak dapat dihapus."
 msgid "Error: Object not found."
 msgstr "Kesalahan: Objek tidak ditemukan."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:994
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:996
 msgid "The specified database could not be found.\n"
 msgstr "Database yang ditentukan tidak dapat ditemukan.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:1092
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1095
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:871
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1907
 msgid " -- definition incomplete"
@@ -1367,7 +1354,7 @@ msgid "Could not find the specified cast on the server."
 msgstr "Tidak dapat menemukan cast yang ditentukan di server."
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:625
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:641
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:640
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/utils.py:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/utils.py:181
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/utils.py:236
@@ -1445,7 +1432,7 @@ msgstr "Cast..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:191
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:61
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:265
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:278
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:170
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:39
@@ -1466,8 +1453,8 @@ msgstr "Cast..."
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:52
 #: pgadmin/browser/server_groups/servers/tablespaces/templates/tablespaces/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/static/js/server_group.ui.js:36
-#: pgadmin/dashboard/static/js/Dashboard.jsx:178
-#: pgadmin/dashboard/static/js/Dashboard.jsx:623
+#: pgadmin/dashboard/static/js/Dashboard.jsx:169
+#: pgadmin/dashboard/static/js/Dashboard.jsx:613
 #: pgadmin/misc/file_manager/static/js/components/ListView.jsx:133
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:40
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:120
@@ -1510,7 +1497,7 @@ msgstr "Nama"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:194
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:65
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:269
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:282
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:173
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:49
@@ -1560,11 +1547,6 @@ msgstr "Jenis Sumber"
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.ui.js:179
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.ui.js:182
 #: pgadmin/browser/server_groups/servers/databases/languages/static/js/language.ui.js:213
-#: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:273
-#: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:277
-#: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:304
-#: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:312
-#: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:320
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.ui.js:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.ui.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:83
@@ -1678,17 +1660,18 @@ msgstr "Jenis Sumber"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:233
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:251
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:272
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:286
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:342
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:359
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:366
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:369
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:381
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:385
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:395
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:299
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:355
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:372
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:386
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:401
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:404
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:407
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:425
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:416
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:420
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:430
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:439
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:442
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:462
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:68
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:83
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:93
@@ -1724,6 +1707,7 @@ msgstr "Jenis Sumber"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:84
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:83
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:91
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:122
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:127
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:133
@@ -1808,7 +1792,7 @@ msgstr "Sistem cast?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:200
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:71
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:437
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:474
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:209
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:110
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:481
@@ -1899,7 +1883,7 @@ msgstr "Trigger Event..."
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:111
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:118
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:59
-#: pgadmin/dashboard/static/js/Dashboard.jsx:640
+#: pgadmin/dashboard/static/js/Dashboard.jsx:630
 #: pgadmin/tools/backup/static/js/backup.ui.js:162
 #: pgadmin/tools/restore/static/js/restore.ui.js:164
 msgid "Owner"
@@ -1957,7 +1941,7 @@ msgstr "Fungsi trigger"
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/static/js/event_trigger.ui.js:92
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:75
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:82
-#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:50
+#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:42
 msgid "Event"
 msgstr "Event"
 
@@ -1990,7 +1974,7 @@ msgstr "Saat TAG di"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:981
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1521
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:121
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:119
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:123
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:192
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:222
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:89
@@ -2041,9 +2025,9 @@ msgstr "Label keamanan"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:115
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:124
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:77
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:113
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:122
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:370
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:126
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:381
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:162
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:165
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:168
@@ -2253,7 +2237,7 @@ msgstr "Jenis"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:216
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:219
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:231
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:430
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:431
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:748
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:755
 #: pgadmin/tools/backup/static/js/backup.ui.js:517
@@ -2305,7 +2289,7 @@ msgstr "Opsi"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:111
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:76
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:109
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:113
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:161
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:177
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:121
@@ -2356,7 +2340,7 @@ msgstr "Pemetaan Pengguna..."
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/user_mappings/static/js/user_mapping.ui.js:44
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:29
-#: pgadmin/dashboard/static/js/Dashboard.jsx:429
+#: pgadmin/dashboard/static/js/Dashboard.jsx:419
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:43
 #: pgadmin/static/js/Dialogs/ChangePasswordContent.jsx:40
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:175
@@ -2455,11 +2439,11 @@ msgstr "Publikasi"
 msgid "Could not find the publication information."
 msgstr "Tidak dapat menemukan informasi publikasi."
 
-#: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:337
+#: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:336
 msgid "Could not find the specified publication."
 msgstr "Tidak dapat menemukan publikasi yang ditentukan."
 
-#: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:566
+#: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:565
 msgid "Publication dropped"
 msgstr "Publikasi dihapus"
 
@@ -2556,7 +2540,7 @@ msgstr "Nama Tabel"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:316
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:81
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:406
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:441
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:485
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:637
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:638
@@ -2610,12 +2594,12 @@ msgstr "Tabel dalam Skema"
 msgid "Schemas"
 msgstr "Skema"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:182
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:186
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.js:30
 msgid "Catalogs"
 msgstr "Katalog"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:532
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:539
 msgid ""
 "Could not find the schema in the database.\n"
 "                    It may have been removed by another user."
@@ -2623,8 +2607,8 @@ msgstr ""
 "Tidak dapat menemukan skema dalam database.\n"
 "                    Mungkin telah dihapus oleh pengguna lain."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:594
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:1126
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:601
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:1132
 msgid ""
 "\n"
 "Could not find the schema in the database.\n"
@@ -2634,8 +2618,8 @@ msgstr ""
 "Tidak dapat menemukan skema dalam database.\n"
 "Mungkin telah dihapus oleh pengguna lain.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:640
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:943
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:647
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:950
 msgid ""
 "Could not find the schema in the database. It may have been removed by "
 "another user."
@@ -2643,20 +2627,20 @@ msgstr ""
 "Tidak dapat menemukan skema dalam database. Mungkin telah dihapus oleh "
 "pengguna lain."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:810
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:817
 msgid "The specified schema could not be found.\n"
 msgstr "Skema yang ditentukan tidak dapat ditemukan.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:832
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:839
 msgid "Schema dropped"
 msgstr "Skema dihapus"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:907
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:914
 #: pgadmin/static/js/SchemaView/index.jsx:732
 msgid "Definition incomplete."
 msgstr "Definisi tidak lengkap."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:1024
+#: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:1031
 msgid ""
 "Could not find the schema in the database.\n"
 "                It may have been removed by another user."
@@ -2749,7 +2733,7 @@ msgstr "Operator pengurutan"
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:206
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:311
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:318
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:323
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:324
 msgid "Advanced"
 msgstr "Canggih"
 
@@ -2788,7 +2772,7 @@ msgstr "catalog_object_column"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.js:45
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:87
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:95
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:105
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:52
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/FilterDialog.jsx:44
@@ -2814,7 +2798,7 @@ msgstr "Tipe data"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui.js:223
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:484
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:372
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:104
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:114
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:87
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:328
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:977
@@ -3113,8 +3097,7 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:952
-msgid ""
-"Could not generate reversed engineered query for FTS Configuration node."
+msgid "Could not generate reversed engineered query for FTS Configuration node."
 msgstr ""
 "Tidak dapat menghasilkan kueri rekayasa terbalik untuk node konfigurasi "
 "FTS."
@@ -3240,8 +3223,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/__init__.py:893
 msgid "Could not generate reversed engineered query for FTS Parser node."
-msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk node Parser FTS."
+msgstr "Tidak dapat menghasilkan kueri rekayasa terbalik untuk node Parser FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_parsers/static/js/fts_parser.js:39
 msgid "FTS Parser"
@@ -3296,8 +3278,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/__init__.py:764
 msgid "Could not generate reversed engineered query for FTS Template node."
-msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk node templat FTS."
+msgstr "Tidak dapat menghasilkan kueri rekayasa terbalik untuk node templat FTS."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_templates/static/js/fts_template.js:39
 msgid "FTS Template"
@@ -3375,7 +3356,7 @@ msgid "Function..."
 msgstr "Fungsi..."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:56
-#: pgadmin/dashboard/static/js/Dashboard.jsx:602
+#: pgadmin/dashboard/static/js/Dashboard.jsx:592
 msgid "Mode"
 msgstr "Mode"
 
@@ -3437,8 +3418,8 @@ msgstr "Simbol tautan"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.ui.js:83
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:148
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:475
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:102
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:103
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:106
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:107
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:159
 msgid "Code"
 msgstr "Kode"
@@ -3595,7 +3576,7 @@ msgstr "Jumlah panggilan"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/templates/trigger_functions/ppas/sql/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbfuncs/ppas/default/stats.sql:3
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/templates/edbprocs/ppas/default/stats.sql:3
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:88
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:79
 msgid "Total time"
 msgstr "Total waktu"
 
@@ -4031,7 +4012,7 @@ msgstr ""
 "coba lagi nanti.\r\n"
 "ID Proses Pemblokir : {0} Nama Aplikasi : {1}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:501
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:500
 msgid "Column is dropped"
 msgstr "Kolom dihapus"
 
@@ -4432,7 +4413,7 @@ msgid "Col/Exp"
 msgstr "Col/Exp"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:159
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:115
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:125
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:96
 msgid "Operator class"
 msgstr "Kelas Operator"
@@ -4457,7 +4438,7 @@ msgstr "Sistem exclusion constraint?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:278
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:181
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:272
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:285
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:185
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:447
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:91
@@ -4483,7 +4464,7 @@ msgstr "Mengubah metode akses akan menghapus koleksi kolom"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:325
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:205
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:217
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:356
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:369
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:229
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:762
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:99
@@ -4507,7 +4488,7 @@ msgid "Deferred?"
 msgstr "Ditunda?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:347
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:397
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:432
 msgid "Constraint"
 msgstr "Constraint"
 
@@ -4518,8 +4499,8 @@ msgstr "Kolom/Ekspresi"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:405
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:143
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:152
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:341
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:421
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:354
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:458
 msgid "Include columns"
 msgstr "Sertakan kolom"
 
@@ -4581,7 +4562,7 @@ msgid "Referencing"
 msgstr "Mereferensikan"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui.js:125
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:97
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:101
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:104
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:115
 msgid "Local"
@@ -4703,7 +4684,7 @@ msgid "Index"
 msgstr "Indeks"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:260
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:456
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:493
 msgid "Name cannot be empty in edit mode."
 msgstr "Nama tidak boleh kosong dalam mode edit."
 
@@ -4714,6 +4695,7 @@ msgid "Please specify columns for %s."
 msgstr "Harap tentukan kolom untuk %s."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:271
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:388
 msgid "NULLs not distinct?"
 msgstr "NULL tidak beda?"
 
@@ -4722,11 +4704,11 @@ msgstr "NULL tidak beda?"
 msgid "Indexes"
 msgstr "Indeks"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:548
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:547
 msgid "You must provide one or more column to create index."
 msgstr "Anda harus menyediakan satu atau lebih kolom untuk membuat indeks."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:743
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:742
 msgid "Index is dropped"
 msgstr "Indeks dihapus"
 
@@ -4740,8 +4722,8 @@ msgstr "Tidak dapat menemukan indeks dalam tabel."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/indexes/sql/default/coll_stats.sql:6
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1105
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1481
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:44
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:58
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:53
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:67
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:13
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:38
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:56
@@ -4760,23 +4742,23 @@ msgstr "Ukuran"
 msgid "Index..."
 msgstr "Indeks..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:151
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:161
 msgid "Sort order"
 msgstr "Urutkan pesanan"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:181
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:194
 msgid "NULLs"
 msgstr "NULL"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:239
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:252
 msgid "Select the column(s)"
 msgstr "Pilih kolom"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:280
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:293
 msgid "Access Method"
 msgstr "Metode akses"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:320
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:333
 #: pgadmin/browser/static/js/node_view.jsx:155
 #: pgadmin/static/js/SchemaView/index.jsx:642
 #: pgadmin/static/js/SchemaView/index.jsx:669
@@ -4785,7 +4767,7 @@ msgstr "Metode akses"
 msgid "Warning"
 msgstr "Peringatan"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:321
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:334
 msgid ""
 "Changing access method will clear columns collection. Do you want to "
 "continue?"
@@ -4793,31 +4775,31 @@ msgstr ""
 "Mengubah metode akses akan menghapus koleksi kolom. Apakah Anda ingin "
 "melanjutkan?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:361
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:374
 msgid "Unique?"
 msgstr "Unik?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:368
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:403
 msgid "Clustered?"
 msgstr "Berkelompok?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:379
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:414
 msgid "Valid?"
 msgstr "Valid?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:383
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:418
 msgid "Primary?"
 msgstr "Primary?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:387
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:422
 msgid "System index?"
 msgstr "Sistem indeks?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:390
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:425
 msgid "Concurrent build?"
 msgstr "Bangun bersamaan?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:466
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:504
 msgid "You must specify at least one column."
 msgstr "Anda harus menentukan setidaknya satu kolom."
 
@@ -4939,7 +4921,7 @@ msgstr "Aktifkan semua"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:113
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:121
 #: pgadmin/browser/static/js/node.js:183 pgadmin/browser/static/js/node.js:278
-#: pgadmin/browser/static/js/node.js:873
+#: pgadmin/browser/static/js/node.js:876
 #: pgadmin/tools/erd/static/js/ERDModule.js:68
 #: pgadmin/tools/sqleditor/static/js/SQLEditorModule.js:247
 msgid "The selected tree node does not support this option."
@@ -4956,7 +4938,7 @@ msgid "Reset Statistics"
 msgstr "Reset Statistik"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:108
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:273
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:261
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:382
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:921
 msgid "Detach Partition"
@@ -4967,29 +4949,29 @@ msgstr "Lepaskan partisi"
 msgid "Count Rows"
 msgstr "Hitung baris"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:220
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:208
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:195
 msgid "Truncate Table"
 msgstr "Kosongkan Tabel"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:221
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:209
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:196
 #, python-format
 msgid "Are you sure you want to truncate table %s?"
 msgstr "Apakah Anda yakin ingin mengosongkan tabel %s?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:246
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:237
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:234
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:230
 msgid "Reset statistics"
 msgstr "Reset statistik"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:247
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:238
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:235
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:231
 #, python-format
 msgid "Are you sure you want to reset the statistics for table \"%s\"?"
 msgstr "Apakah Anda yakin ingin mengatur ulang statistik untuk tabel \"%s\"?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:274
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:262
 #, python-format
 msgid "Are you sure you want to detach the partition %s?"
 msgstr "Anda yakin ingin melepaskan partisi %s?"
@@ -5329,7 +5311,7 @@ msgstr ""
 msgid "Rules"
 msgstr "Aturan"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:464
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:463
 msgid "Rule dropped"
 msgstr "Aturan dihapus"
 
@@ -5857,12 +5839,12 @@ msgstr "Persentase kosong"
 msgid "Triggers"
 msgstr "Trigger"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:318
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:332
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:317
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:331
 msgid "Could not find the specified trigger function"
 msgstr "Tidak dapat menemukan fungsi trigger yang ditentukan"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:699
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:697
 msgid "Trigger is dropped"
 msgstr "Trigger dihapus"
 
@@ -6266,7 +6248,7 @@ msgstr ""
 "-- memperhitungkan perubahan.\n"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2212
-#: pgadmin/tools/import_export/__init__.py:251
+#: pgadmin/tools/import_export/__init__.py:250
 #: pgadmin/tools/maintenance/__init__.py:206
 msgid "Could not find the given server"
 msgstr "Tidak dapat menemukan server yang diberikan"
@@ -6284,7 +6266,7 @@ msgstr "Pekerjaan penyegaran Materialized View berhasil dibuat."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2339
 #: pgadmin/tools/backup/__init__.py:348 pgadmin/tools/backup/__init__.py:451
-#: pgadmin/tools/import_export/__init__.py:397
+#: pgadmin/tools/import_export/__init__.py:396
 #: pgadmin/tools/maintenance/__init__.py:298
 #: pgadmin/tools/restore/__init__.py:170 pgadmin/tools/restore/__init__.py:427
 msgid "Could not find the specified server."
@@ -6390,10 +6372,14 @@ msgid "Security barrier?"
 msgstr "Penghalang Keamanan?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:86
+msgid "Security invoker?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:90
 msgid "Check options"
 msgstr "Opsi Pemeriksaan"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:95
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:99
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:92
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:131
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:400
@@ -6402,15 +6388,15 @@ msgstr "Opsi Pemeriksaan"
 msgid "No"
 msgstr "Tidak"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:99
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:103
 msgid "Cascaded"
 msgstr "Kaskade"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:136
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:140
 msgid "Please enter view code."
 msgstr "Harap masukkan kode view."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:172
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:176
 msgid ""
 "Changing the columns in a view requires dropping and re-creating the "
 "view. This may fail if other objects are dependent upon this view, or may"
@@ -6422,7 +6408,7 @@ msgstr ""
 "dapat menyebabkan fungsi prosedural gagal jika mereka tidak dimodifikasi "
 "untuk memperhitungkan perubahan."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:174
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:178
 msgid "Do you wish to continue?"
 msgstr "Apakah Anda ingin melanjutkan?"
 
@@ -6431,12 +6417,12 @@ msgstr "Apakah Anda ingin melanjutkan?"
 msgid "View Name"
 msgstr "Nama View"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:44
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:58
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:53
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:67
 msgid "Size of temporary files"
 msgstr "Ukuran file sementara"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:63
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:72
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:105
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:142
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:2
@@ -6444,68 +6430,72 @@ msgstr "Ukuran file sementara"
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:194
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:4
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:30
-#: pgadmin/dashboard/static/js/Dashboard.jsx:419
-#: pgadmin/dashboard/static/js/Dashboard.jsx:514
-#: pgadmin/dashboard/static/js/Dashboard.jsx:630
+#: pgadmin/dashboard/static/js/Dashboard.jsx:409
+#: pgadmin/dashboard/static/js/Dashboard.jsx:504
+#: pgadmin/dashboard/static/js/Dashboard.jsx:620
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:160
 msgid "Database"
 msgstr "Database"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:78
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:84
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:90
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:87
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:93
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:99
 msgid "Database..."
 msgstr "Database..."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:96
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:105
 msgid "Connect Database"
 msgstr "Hubungkan Database"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:98
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:107
 msgid "Selected database is already connected."
 msgstr "Database yang dipilih sudah terhubung."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:103
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:237
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:112
+msgid "Delete (Force)"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:117
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:244
 msgid "Disconnect from database"
 msgstr "Putuskan sambungan dari database"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:105
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:119
 msgid "Selected database is already disconnected."
 msgstr "Database yang dipilih sudah terputus."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:110
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:124
 msgid "ERD For Database"
 msgstr "ERD Untuk Database"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:189
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:202
 #: pgadmin/browser/server_groups/servers/static/js/server.js:567
 msgid "Connection lost"
 msgstr "Koneksi terputus"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:190
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:203
 #: pgadmin/browser/server_groups/servers/static/js/server.js:568
 msgid "Would you like to reconnect to the database?"
 msgstr "Apakah Anda ingin terhubung kembali ke database?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:238
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:245
 #, python-format
 msgid "Are you sure you want to disconnect from database - %s?"
 msgstr "Anda yakin ingin memutuskan hubungan dari database - %s?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:407
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:418
 msgid "Connect to database."
 msgstr "Terhubung ke database."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:423
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:434
 msgid "Connect to database"
 msgstr "Terhubung ke database"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:447
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:458
 msgid "Database already connected."
 msgstr "Database sudah terhubung."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:498
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:506
 #: pgadmin/static/js/helpers/Notifier.jsx:165
 #, python-format
 msgid "Error: Object not found - %s."
@@ -6655,7 +6645,7 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:175
 #: pgadmin/misc/cloud/static/js/azure.js:341
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:498
-#: pgadmin/misc/cloud/static/js/biganimal.js:261
+#: pgadmin/misc/cloud/static/js/biganimal.js:250
 #: pgadmin/misc/cloud/static/js/google.js:329
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:396
 msgid "Password"
@@ -6674,7 +6664,7 @@ msgid "Click the refresh button to get the publications"
 msgstr "Klik tombol segarkan untuk mendapatkan publikasi"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:198
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:458
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:459
 msgid "SSL mode"
 msgstr "Mode SSL"
 
@@ -6714,31 +6704,31 @@ msgstr "Verifikasi-penuh"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:212
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:252
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:464
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:465
 msgid "Client certificate"
 msgstr "Sertifikat Klien"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:221
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:260
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:466
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:467
 msgid "Client certificate key"
 msgstr "Kunci Sertifikat Klien"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:229
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:268
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:471
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:472
 msgid "Root certificate"
 msgstr "Sertifikat root"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:237
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:276
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:473
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:474
 msgid "Certificate revocation list"
 msgstr "Daftar Pencabutan Sertifikat"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:246
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:284
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:462
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:463
 msgid "SSL compression?"
 msgstr "Kompresi SSL?"
 
@@ -6838,12 +6828,12 @@ msgid "Either Host name, Address must be specified."
 msgstr "Seperti halnya nama Host, Alamat harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:381
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:358
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:359
 msgid "Username must be specified."
 msgstr "Nama pengguna harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:389
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:366
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:367
 msgid "Port must be specified."
 msgstr "Port harus ditentukan."
 
@@ -6852,22 +6842,22 @@ msgid "Publication must be specified."
 msgstr "Publikasi harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:406
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:380
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:381
 msgid "SSH Tunnel host must be specified."
 msgstr "Host Terowongan SSH harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:414
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:388
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:389
 msgid "SSH Tunnel port must be specified."
 msgstr "Port Terowongan SSH harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:422
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:396
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:397
 msgid "SSH Tunnel username must be specified."
 msgstr "Nama pengguna Terowongan SSH harus ditentukan."
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:431
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:405
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:406
 msgid "SSH Tunnel identity file must be specified."
 msgstr "File identitas Terowongan SSH harus ditentukan."
 
@@ -7769,8 +7759,8 @@ msgstr "Gagal"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:151
 #: pgadmin/dashboard/__init__.py:509 pgadmin/dashboard/__init__.py:536
-#: pgadmin/dashboard/static/js/Dashboard.jsx:269
-#: pgadmin/dashboard/static/js/Dashboard.jsx:336
+#: pgadmin/dashboard/static/js/Dashboard.jsx:259
+#: pgadmin/dashboard/static/js/Dashboard.jsx:326
 #: pgadmin/tools/sqleditor/utils/filter_dialog.py:37
 msgid "Success"
 msgstr "Sukses"
@@ -7818,7 +7808,7 @@ msgstr "Status"
 
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_job/sql/pre3.4/stats.sql:4
 #: pgadmin/browser/server_groups/servers/pgagent/templates/pga_jobstep/sql/pre3.4/stats.sql:5
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:170
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:162
 msgid "Start time"
 msgstr "Waktu mulai"
 
@@ -8264,8 +8254,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:915
 msgid "Could not generate reversed engineered query for the role."
-msgstr ""
-"Tidak dapat menghasilkan kueri rekayasa terbalik untuk aturan tersebut."
+msgstr "Tidak dapat menghasilkan kueri rekayasa terbalik untuk aturan tersebut."
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:935
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:989
@@ -8468,7 +8457,7 @@ msgstr ""
 "aturan yang dipilih?"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:195
-#: pgadmin/browser/static/js/node.js:1105 pgadmin/misc/sql/static/js/SQL.jsx:80
+#: pgadmin/browser/static/js/node.js:1108 pgadmin/misc/sql/static/js/SQL.jsx:80
 #: pgadmin/tools/backup/static/js/backup.js:191
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:297
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:835
@@ -8539,7 +8528,7 @@ msgstr "Opsi"
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:24
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:174
 #: pgadmin/browser/templates/browser/js/messages.js:41
-#: pgadmin/dashboard/static/js/Dashboard.jsx:196
+#: pgadmin/dashboard/static/js/Dashboard.jsx:187
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:71
 #: pgadmin/tools/debugger/static/js/components/LocalVariablesAndParams.jsx:122
 #: pgadmin/tools/debugger/static/js/components/Stack.jsx:71
@@ -8560,7 +8549,7 @@ msgid "At least one privilege should be selected."
 msgstr "Setidaknya satu hak harus dipilih."
 
 #: pgadmin/browser/server_groups/servers/static/js/sec_label.ui.js:31
-#: pgadmin/misc/cloud/static/js/biganimal.js:245
+#: pgadmin/misc/cloud/static/js/biganimal.js:234
 msgid "Provider"
 msgstr "Penyedia"
 
@@ -8598,8 +8587,7 @@ msgstr "Muat Ulang Konfigurasi"
 msgid ""
 "Please select a server from the object explorer to reload the "
 "configuration files."
-msgstr ""
-"Pilih server dari penjelajah objek untuk memuat ulang file konfigurasi."
+msgstr "Pilih server dari penjelajah objek untuk memuat ulang file konfigurasi."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:95
 msgid "Add Named Restore Point..."
@@ -8676,7 +8664,7 @@ msgid "Restore point name"
 msgstr "Pulihkan titik bernama"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:368
-#: pgadmin/static/js/Dialogs/index.jsx:292
+#: pgadmin/static/js/Dialogs/index.jsx:289
 #: pgadmin/templates/security/change_password.html:19
 #: pgadmin/templates/security/change_password.html:20
 #: pgadmin/tools/user_management/static/js/user_management.js:43
@@ -8705,7 +8693,7 @@ msgstr ""
 "Anda yakin ingin menghapus sandi terowongan SSH yang disimpan untuk "
 "server %s?"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:590
+#: pgadmin/browser/server_groups/servers/static/js/server.js:589
 msgid ""
 "You have connected to a server version that is older than is supported by"
 " pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
@@ -8716,15 +8704,15 @@ msgstr ""
 "cara yang aneh dan tidak terduga. Atau plague of frogs. Bagaimanapun, "
 "Anda telah diperingatkan!"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:593
+#: pgadmin/browser/server_groups/servers/static/js/server.js:592
 msgid "Server connected"
 msgstr "Server terhubung"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:660
+#: pgadmin/browser/server_groups/servers/static/js/server.js:657
 msgid "Connect to server."
 msgstr "Sambungkan ke server."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.js:670
+#: pgadmin/browser/server_groups/servers/static/js/server.js:667
 msgid "Connect to Server"
 msgstr "Sambungkan ke server"
 
@@ -8825,197 +8813,197 @@ msgstr "Pembatasan DB"
 msgid "Password exec command"
 msgstr "Perintah eksekusi sandi"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:322
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:323
 msgid "Password exec expiration (seconds)"
 msgstr "Kedaluwarsa eksekusi sandi (detik)"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:336
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:337
 msgid "Either Host name or Service must be specified."
 msgstr "Nama atau layanan host harus ditentukan."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:349
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:350
 msgid "Host name must be valid hostname or IPv4 or IPv6 address."
 msgstr "Nama host harus valid nama host atau alamat IPv4 atau IPv6."
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:418
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:419
 msgid "Host address"
 msgstr "Alamat host"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:420
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:421
 msgid "Password file"
 msgstr "File sandi"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:422
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:423
 msgid "Channel binding"
 msgstr "Pengikatan saluran"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:423
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:455
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:459
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:424
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:456
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
 msgid "prefer"
 msgstr "lebih menyukai"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:423
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:455
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:459
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:424
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:456
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
 msgid "require"
 msgstr "memerlukan"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:423
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:455
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:424
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:456
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:461
 msgid "disable"
 msgstr "nonaktif"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:426
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:427
 msgid "Connection timeout (seconds)"
 msgstr "Batas waktu koneksi (detik)"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:428
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:429
 msgid "Client encoding"
 msgstr "Pengkodean Klien"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:432
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:433
 msgid "Application name"
 msgstr "Nama aplikasi"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:434
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:435
 msgid "Fallback application name"
 msgstr "Nama aplikasi fallback"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:436
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:437
 msgid "Keepalives"
 msgstr "Keepalives"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:438
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:439
 msgid "Keepalives idle (seconds)"
 msgstr "Keepalives tanpa aktivitas (detik)"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:440
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:441
 msgid "Keepalives interval (seconds)"
 msgstr "Interval Keepalives (detik)"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:442
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:443
 msgid "Keepalives count"
 msgstr "Hitungan Keepalives"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:444
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:445
 msgid "TCP user timeout (milliseconds)"
 msgstr "Batas waktu TCP pengguna (milidetik)"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:447
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:448
 msgid "TTY"
 msgstr "TTY"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:450
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:451
 msgid "Replication"
 msgstr "Replikasi"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:451
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:452
 msgid "on"
 msgstr "aktif"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:451
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:452
 msgid "off"
 msgstr "nonaktif"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:451
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:452
 msgid "database"
 msgstr "database"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:454
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:455
 msgid "GSS encmode"
 msgstr "GSS encmode"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:459
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
 msgid "allow"
 msgstr "mengizinkan"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:461
 msgid "verify-ca"
 msgstr "Verifikasi-CA"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:460
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:461
 msgid "verify-full"
 msgstr "Verifikasi-penuh"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:468
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:469
 msgid "SSL password"
 msgstr "Sandi SSL"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:475
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:476
 msgid "Certificate revocation list directory"
 msgstr "Direktori daftar pencabutan sertifikat"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:478
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:479
 msgid "Server name indication"
 msgstr "Indikasi nama server"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:481
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:482
 msgid "Require peer"
 msgstr "Membutuhkan rekan"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:483
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:484
 msgid "SSL min protocol version"
 msgstr "Versi protokol SSL min"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:485
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:490
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:486
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
 msgid "TLSv1"
 msgstr "TLSv1"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:485
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:490
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:486
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
 msgid "TLSv1.1"
 msgstr "TLSv1.1"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:485
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:490
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:486
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
 msgid "TLSv1.2"
 msgstr "TLSv1.2"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:486
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:487
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:492
 msgid "TLSv1.3"
 msgstr "TLSv1.3"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:488
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:489
 msgid "SSL max protocol version"
 msgstr "Versi protokol SSL maks"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:493
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:494
 msgid "Kerberos service name"
 msgstr "Nama layanan Kerberos"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:495
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:496
 msgid "GSS library"
 msgstr "Pustaka GSS"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:497
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:498
 msgid "Target session attribute"
 msgstr "Atribut Sesi Target"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:499
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:500
 msgid "any"
 msgstr "any"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:499
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:500
 msgid "read-write"
 msgstr "read-write"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:499
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:500
 msgid "read-only"
 msgstr "read-only"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:500
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:501
 msgid "primary"
 msgstr "primary"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:500
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:501
 msgid "standby"
 msgstr "standby"
 
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:500
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:501
 msgid "prefer-standby"
 msgstr "mengutamakan-standby"
 
@@ -9120,8 +9108,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:8
 msgid "Please enter the password for the user to connect the server - \"{0}\""
-msgstr ""
-"Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"{0}\""
+msgstr "Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"{0}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:24
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:20
@@ -9135,8 +9122,7 @@ msgstr "Simpan sandi"
 msgid ""
 "SSH Tunnel password for the identity file '{0}' to connect the server "
 "\"{1}\""
-msgstr ""
-"Sandi terowongan SSH untuk file identitas '{0}' menghubungi server \"{1}\""
+msgstr "Sandi terowongan SSH untuk file identitas '{0}' menghubungi server \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:7
 msgid "SSH Tunnel password for the user '{0}' to connect the server \"{1}\""
@@ -9147,25 +9133,24 @@ msgid "Database server password for the user to connect the server \"{0}\""
 msgstr "Sandi server database untuk pengguna menghubungi server \"{0}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:30
-msgid ""
-"Database server password for the user '{0}' to connect the server \"{1}\""
+msgid "Database server password for the user '{0}' to connect the server \"{1}\""
 msgstr "Sandi server database untuk pengguna '{0}' menghubungi server \"{1}\""
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:31
-#: pgadmin/dashboard/static/js/Dashboard.jsx:454
+#: pgadmin/dashboard/static/js/Dashboard.jsx:444
 msgid "Backend start"
 msgstr "Mulai Backend"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:15
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:41
-#: pgadmin/dashboard/static/js/Dashboard.jsx:446
+#: pgadmin/dashboard/static/js/Dashboard.jsx:436
 msgid "Client"
 msgstr "Klien"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:16
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:42
-#: pgadmin/dashboard/static/js/Dashboard.jsx:438
+#: pgadmin/dashboard/static/js/Dashboard.jsx:428
 msgid "Application"
 msgstr "Aplikasi"
 
@@ -9181,7 +9166,7 @@ msgstr "Tunggu event nama"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:19
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:45
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:182
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:184
 msgid "Query"
 msgstr "Kueri"
 
@@ -9208,33 +9193,33 @@ msgid "Server Group..."
 msgstr "Grup server..."
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:27
-#: pgadmin/browser/static/js/keyboard.js:133
+#: pgadmin/browser/static/js/keyboard.js:127
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:202
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffButtonComponent.jsx:184
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:505
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:497
 msgid "File"
 msgstr "File"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:28
-#: pgadmin/browser/static/js/keyboard.js:136
+#: pgadmin/browser/static/js/keyboard.js:130
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:198
 msgid "Object"
 msgstr "Objek"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:29
-#: pgadmin/browser/static/js/keyboard.js:139
+#: pgadmin/browser/static/js/keyboard.js:133
 msgid "Tools"
 msgstr "Peralatan"
 
 #: pgadmin/browser/static/js/MainMenuFactory.js:30
-#: pgadmin/browser/static/js/keyboard.js:142 pgadmin/help/__init__.py:65
+#: pgadmin/browser/static/js/keyboard.js:136 pgadmin/help/__init__.py:65
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:288
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:112
 #: pgadmin/static/js/Dialogs/UrlDialogContent.jsx:42
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:153
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:318
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:726
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:558
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:550
 msgid "Help"
 msgstr "Bantuan"
 
@@ -9328,7 +9313,7 @@ msgid "Error retrieving details for the node."
 msgstr "Kesalahan mengambil detail untuk node."
 
 #: pgadmin/browser/static/js/collection.js:66
-#: pgadmin/dashboard/static/js/Dashboard.jsx:846
+#: pgadmin/dashboard/static/js/Dashboard.jsx:820
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:735
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:614
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:629
@@ -9358,7 +9343,7 @@ msgstr ""
 "Kesalahan logging heartbeat server: ${error.message || "
 "error.response.data.errormsg}"
 
-#: pgadmin/browser/static/js/layout.js:81
+#: pgadmin/browser/static/js/layout.js:80
 msgid ""
 "pgAdmin has reset the layout because the previously saved layout is "
 "invalid."
@@ -9366,7 +9351,7 @@ msgstr ""
 "pgAdmin telah mengatur ulang tata letak karena tata letak yang sebelumnya"
 " disimpan tidak valid."
 
-#: pgadmin/browser/static/js/layout.js:163
+#: pgadmin/browser/static/js/layout.js:162
 msgid "Failed to save the lock layout setting."
 msgstr "Gagal menyimpan pengaturan penguncian tata letak."
 
@@ -9383,13 +9368,9 @@ msgstr "Properti..."
 msgid "Remove %s"
 msgstr "Hapus %s"
 
-#: pgadmin/browser/static/js/node.js:180
-msgid "Delete/Drop"
-msgstr "Hapus"
-
 #: pgadmin/browser/static/js/node.js:199
-msgid "Drop Cascade"
-msgstr "Hapus Kaskade"
+msgid "Delete (Cascade)"
+msgstr ""
 
 #: pgadmin/browser/static/js/node.js:261
 #, python-format
@@ -9428,51 +9409,62 @@ msgstr ""
 msgid "Edit in progress?"
 msgstr "Edit sedang berlangsung?"
 
-#: pgadmin/browser/static/js/node.js:741
+#: pgadmin/browser/static/js/node.js:739
 #, python-format
 msgid ""
-"Are you sure you want to drop %s \"%s\" and all the objects that depend "
-"on it?"
+"Delete database with the force option will attempt to terminate all "
+"existing connections to the \"%s\" database. Are you sure you want to "
+"proceed?"
 msgstr ""
-"Apakah Anda yakin ingin menghapus %s \"%s\" dan semua objek yang "
-"bergantung padanya?"
 
-#: pgadmin/browser/static/js/node.js:742
+#: pgadmin/browser/static/js/node.js:740
 #, python-format
-msgid "DROP CASCADE %s?"
-msgstr "Hapus Kaskade %s?"
+msgid "Delete FORCE %s?"
+msgstr ""
 
-#: pgadmin/browser/static/js/node.js:747
+#: pgadmin/browser/static/js/node.js:744
+#, python-format
+msgid ""
+"Are you sure you want to delete %s \"%s\" and all the objects that depend"
+" on it?"
+msgstr ""
+
+#: pgadmin/browser/static/js/node.js:745
+#, python-format
+msgid "Delete CASCADE %s?"
+msgstr ""
+
+#: pgadmin/browser/static/js/node.js:750
 #, python-format
 msgid "The %s \"%s\" cannot be dropped."
 msgstr "%s \"%s\" tidak dapat dihapus."
 
-#: pgadmin/browser/static/js/node.js:754
+#: pgadmin/browser/static/js/node.js:757
 #, python-format
 msgid "Are you sure you want to remove %s \"%s\"?"
 msgstr "Apakah Anda yakin ingin menghapus %s \"%s\"?"
 
-#: pgadmin/browser/static/js/node.js:755
+#: pgadmin/browser/static/js/node.js:758
 #, python-format
 msgid "Remove %s?"
 msgstr "Hapus %s?"
 
-#: pgadmin/browser/static/js/node.js:757
+#: pgadmin/browser/static/js/node.js:760
 #, python-format
-msgid "Are you sure you want to drop %s \"%s\"?"
-msgstr "Apakah Anda yakin ingin hapus %s \"%s\"?"
+msgid "Are you sure you want to delete %s \"%s\"?"
+msgstr ""
 
-#: pgadmin/browser/static/js/node.js:758
+#: pgadmin/browser/static/js/node.js:761
 #, python-format
-msgid "Drop %s?"
-msgstr "Hapus %s?"
+msgid "Delete %s?"
+msgstr ""
 
-#: pgadmin/browser/static/js/node.js:764
+#: pgadmin/browser/static/js/node.js:767
 #, python-format
 msgid "The %s \"%s\" cannot be dropped/removed."
 msgstr "%s \"%s\" tidak dapat dihapus."
 
-#: pgadmin/browser/static/js/node.js:806
+#: pgadmin/browser/static/js/node.js:809
 #, python-format
 msgid "Error dropping/removing %s: \"%s\""
 msgstr "Kesalahan saat menghapus %s: \"%s\""
@@ -9487,25 +9479,25 @@ msgstr "Sandi utama tidak tersedia."
 msgid "Changes will be lost. Are you sure you want to close the dialog?"
 msgstr "Perubahan akan hilang. Apakah Anda yakin ingin menutup dialog?"
 
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:42
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:220
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:34
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:208
 msgid "Searching..."
 msgstr "Mencari..."
 
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:251
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:239
 msgid "MENU ITEMS"
 msgstr "MENU ITEMS"
 
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:258
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:275
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:246
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:263
 msgid "No search results"
 msgstr "Tidak ada hasil pencarian"
 
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:263
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:251
 msgid "HELP ARTICLES"
 msgstr "HELP ARTICLES"
 
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:267
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:255
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:375
 #: pgadmin/misc/cloud/static/js/azure.js:52
 #: pgadmin/misc/cloud/static/js/google.js:52
@@ -9514,7 +9506,7 @@ msgstr "HELP ARTICLES"
 msgid "Loading..."
 msgstr "Memuat..."
 
-#: pgadmin/browser/static/js/quick_search/trigger_search.js:268
+#: pgadmin/browser/static/js/quick_search/trigger_search.js:256
 msgid "Show all"
 msgstr "Tunjukkan semua"
 
@@ -9579,11 +9571,11 @@ msgstr "Keluar berhasil."
 #: pgadmin/browser/templates/browser/messages.html:6
 #: pgadmin/misc/file_manager/static/js/components/Uploader.jsx:185
 #: pgadmin/static/js/Dialogs/UrlDialogContent.jsx:52
-#: pgadmin/static/js/Explain/Graphical.jsx:418
+#: pgadmin/static/js/Explain/Graphical.jsx:430
 #: pgadmin/static/js/SchemaView/index.jsx:805
 #: pgadmin/static/js/components/CodeMirror.jsx:298
 #: pgadmin/static/js/helpers/Layout.jsx:279
-#: pgadmin/static/js/helpers/ModalProvider.jsx:314
+#: pgadmin/static/js/helpers/ModalProvider.jsx:316
 #: pgadmin/templates/security/messages.html:7
 msgid "Close"
 msgstr "Menutup"
@@ -9675,10 +9667,10 @@ msgid "Retrieving data from the server..."
 msgstr "Mengambil data dari server..."
 
 #: pgadmin/browser/templates/browser/js/messages.js:52
-#: pgadmin/dashboard/static/js/Dashboard.jsx:278
-#: pgadmin/dashboard/static/js/Dashboard.jsx:347
-#: pgadmin/dashboard/static/js/Dashboard.jsx:808
-#: pgadmin/dashboard/static/js/Dashboard.jsx:813
+#: pgadmin/dashboard/static/js/Dashboard.jsx:268
+#: pgadmin/dashboard/static/js/Dashboard.jsx:337
+#: pgadmin/dashboard/static/js/Dashboard.jsx:784
+#: pgadmin/dashboard/static/js/Dashboard.jsx:788
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:147
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:152
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:138
@@ -9826,235 +9818,235 @@ msgstr "Kueri dimulai pada"
 msgid "Last state changed at"
 msgstr "Status terakhir berubah pada"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:159
+#: pgadmin/dashboard/static/js/Dashboard.jsx:150
 msgid "Sessions"
 msgstr "Sesi"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:159
+#: pgadmin/dashboard/static/js/Dashboard.jsx:150
 msgid "Locks"
 msgstr "Kunci"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:159
+#: pgadmin/dashboard/static/js/Dashboard.jsx:150
 msgid "Prepared Transactions"
 msgstr "Transaksi yang disiapkan"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:168
+#: pgadmin/dashboard/static/js/Dashboard.jsx:159
 msgid "Configuration"
 msgstr "Konfigurasi"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:188
+#: pgadmin/dashboard/static/js/Dashboard.jsx:179
 msgid "Category"
 msgstr "Kategori"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:205
+#: pgadmin/dashboard/static/js/Dashboard.jsx:196
 msgid "Unit"
 msgstr "Satuan"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:214
+#: pgadmin/dashboard/static/js/Dashboard.jsx:205
 msgid "Description"
 msgstr "Deskripsi"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:236
-#: pgadmin/dashboard/static/js/Dashboard.jsx:290
+#: pgadmin/dashboard/static/js/Dashboard.jsx:226
+#: pgadmin/dashboard/static/js/Dashboard.jsx:280
 msgid "Terminate Session?"
 msgstr "Sesi berakhir?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:237
+#: pgadmin/dashboard/static/js/Dashboard.jsx:227
 msgid "Are you sure you wish to terminate the session?"
 msgstr "Apakah Anda yakin ingin mengakhiri sesi?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:240
+#: pgadmin/dashboard/static/js/Dashboard.jsx:230
 msgid "Session terminated successfully."
 msgstr "Sesi berhasil diakhiri."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:241
+#: pgadmin/dashboard/static/js/Dashboard.jsx:231
 msgid "An error occurred whilst terminating the active query."
 msgstr "Terjadi kesalahan saat mengakhiri kueri aktif."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:307
+#: pgadmin/dashboard/static/js/Dashboard.jsx:297
 msgid "Cancel Active Query?"
 msgstr "Batalkan kueri aktif?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:308
+#: pgadmin/dashboard/static/js/Dashboard.jsx:298
 msgid "Are you sure you wish to cancel the active query?"
 msgstr "Apakah Anda yakin ingin membatalkan kueri aktif?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:311
+#: pgadmin/dashboard/static/js/Dashboard.jsx:301
 msgid "Active query cancelled successfully."
 msgstr "Kueri aktif dibatalkan dengan sukses."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:312
+#: pgadmin/dashboard/static/js/Dashboard.jsx:302
 msgid "An error occurred whilst cancelling the active query."
 msgstr "Terjadi kesalahan saat membatalkan kueri aktif."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:359
+#: pgadmin/dashboard/static/js/Dashboard.jsx:349
 msgid "Cancel the active query"
 msgstr "Batalkan kueri aktif"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:403
+#: pgadmin/dashboard/static/js/Dashboard.jsx:393
 msgid "View the active session details"
 msgstr "Lihat detail sesi aktif"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:410
-#: pgadmin/dashboard/static/js/Dashboard.jsx:505
+#: pgadmin/dashboard/static/js/Dashboard.jsx:400
+#: pgadmin/dashboard/static/js/Dashboard.jsx:495
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:171
 msgid "PID"
 msgstr "PID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:462
+#: pgadmin/dashboard/static/js/Dashboard.jsx:452
 msgid "Transaction start"
 msgstr "Transaksi Mulai"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:470
+#: pgadmin/dashboard/static/js/Dashboard.jsx:460
 msgid "State"
 msgstr "Status"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:480
+#: pgadmin/dashboard/static/js/Dashboard.jsx:470
 msgid "Waiting"
 msgstr "Menunggu"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:488
+#: pgadmin/dashboard/static/js/Dashboard.jsx:478
 msgid "Wait event"
 msgstr "Tunggu event"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:495
+#: pgadmin/dashboard/static/js/Dashboard.jsx:485
 msgid "Blocking PIDs"
 msgstr "Memblokir PID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:524
+#: pgadmin/dashboard/static/js/Dashboard.jsx:514
 msgid "Lock type"
 msgstr "Jenis kunci"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:533
+#: pgadmin/dashboard/static/js/Dashboard.jsx:523
 msgid "Target relation"
 msgstr "Relasi target"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:540
+#: pgadmin/dashboard/static/js/Dashboard.jsx:530
 msgid "Page"
 msgstr "Halaman"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:549
+#: pgadmin/dashboard/static/js/Dashboard.jsx:539
 msgid "Tuple"
 msgstr "Tupel"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:557
+#: pgadmin/dashboard/static/js/Dashboard.jsx:547
 msgid "vXID (target)"
 msgstr "vXID (target)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:566
+#: pgadmin/dashboard/static/js/Dashboard.jsx:556
 msgid "XID (target)"
 msgstr "XID (target)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:575
+#: pgadmin/dashboard/static/js/Dashboard.jsx:565
 msgid "Class"
 msgstr "Kelas"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:584
+#: pgadmin/dashboard/static/js/Dashboard.jsx:574
 msgid "Object ID"
 msgstr "ID objek"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:594
+#: pgadmin/dashboard/static/js/Dashboard.jsx:584
 msgid "vXID (owner)"
 msgstr "vXID (pemilik)"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:610
+#: pgadmin/dashboard/static/js/Dashboard.jsx:600
 msgid "Granted?"
 msgstr "Diizinkan?"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:647
+#: pgadmin/dashboard/static/js/Dashboard.jsx:637
 msgid "XID"
 msgstr "XID"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:654
+#: pgadmin/dashboard/static/js/Dashboard.jsx:644
 msgid "Prepared at"
 msgstr "Disiapkan pada"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:706
+#: pgadmin/dashboard/static/js/Dashboard.jsx:689
 msgid "You cannot cancel background worker processes."
 msgstr "Anda tidak dapat membatalkan proses pekerja latar belakang."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:708
+#: pgadmin/dashboard/static/js/Dashboard.jsx:691
 msgid "You cannot terminate background worker processes."
 msgstr "Anda tidak dapat mengakhiri proses pekerja latar belakang."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:721
+#: pgadmin/dashboard/static/js/Dashboard.jsx:703
 msgid "You are not allowed to cancel the main active session."
 msgstr "Anda tidak diizinkan membatalkan sesi aktif utama."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:725
+#: pgadmin/dashboard/static/js/Dashboard.jsx:707
 msgid "You are not allowed to terminate the main active session."
 msgstr "Anda tidak diizinkan untuk mengakhiri sesi aktif utama."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:734
+#: pgadmin/dashboard/static/js/Dashboard.jsx:715
 msgid "The session is already in idle state."
 msgstr "Sesi ini sudah dalam keadaan tanpa aktivitas."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:752
+#: pgadmin/dashboard/static/js/Dashboard.jsx:729
 msgid "Superuser privileges are required to cancel another users query."
 msgstr "Hak superuser diperlukan untuk membatalkan kueri pengguna lain."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:756
+#: pgadmin/dashboard/static/js/Dashboard.jsx:733
 msgid "Superuser privileges are required to terminate another users query."
 msgstr "Hak superuser diperlukan untuk mengakhiri kueri pengguna lain."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:772
+#: pgadmin/dashboard/static/js/Dashboard.jsx:748
 msgid "Please connect to the selected server to view the dashboard."
 msgstr "Harap terhubung ke server yang dipilih untuk melihat dasbor."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:792
+#: pgadmin/dashboard/static/js/Dashboard.jsx:768
 msgid "Loading dashboard..."
 msgstr "Memuat dasbor..."
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:874
-#: pgadmin/dashboard/static/js/Dashboard.jsx:879
+#: pgadmin/dashboard/static/js/Dashboard.jsx:848
+#: pgadmin/dashboard/static/js/Dashboard.jsx:853
 msgid "Active sessions only"
 msgstr "Sesi aktif saja"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:909
-#: pgadmin/dashboard/static/js/Dashboard.jsx:911
+#: pgadmin/dashboard/static/js/Dashboard.jsx:883
+#: pgadmin/dashboard/static/js/Dashboard.jsx:885
 msgid "Database activity"
 msgstr "Aktivitas database"
 
-#: pgadmin/dashboard/static/js/Dashboard.jsx:909
-#: pgadmin/dashboard/static/js/Dashboard.jsx:911
+#: pgadmin/dashboard/static/js/Dashboard.jsx:883
+#: pgadmin/dashboard/static/js/Dashboard.jsx:885
 msgid "Server activity"
 msgstr "Aktivitas server"
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:204
+#: pgadmin/dashboard/static/js/Graphs.jsx:196
 msgid "Please connect to the selected server to view the graph."
 msgstr "Harap terhubung ke server yang dipilih untuk melihat grafik."
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:206
+#: pgadmin/dashboard/static/js/Graphs.jsx:198
 msgid "An error occurred whilst rendering the graph."
 msgstr "Terjadi kesalahan saat membuat grafik."
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:209
+#: pgadmin/dashboard/static/js/Graphs.jsx:201
 msgid ""
 "Not connected to the server or the connection to the server has been "
 "closed."
 msgstr "Tidak terhubung ke server atau koneksi ke server telah ditutup."
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:266
+#: pgadmin/dashboard/static/js/Graphs.jsx:258
 msgid "Database sessions"
 msgstr "Sesi database"
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:266
+#: pgadmin/dashboard/static/js/Graphs.jsx:258
 msgid "Server sessions"
 msgstr "Sesi server"
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:272
+#: pgadmin/dashboard/static/js/Graphs.jsx:264
 msgid "Transactions per second"
 msgstr "Transaksi per detik"
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:279
+#: pgadmin/dashboard/static/js/Graphs.jsx:271
 msgid "Tuples in"
 msgstr "Tupel masuk"
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:284
+#: pgadmin/dashboard/static/js/Graphs.jsx:276
 msgid "Tuples out"
 msgstr "Tupel keluar"
 
-#: pgadmin/dashboard/static/js/Graphs.jsx:289
+#: pgadmin/dashboard/static/js/Graphs.jsx:281
 msgid "Block I/O"
 msgstr "Blok I/O"
 
@@ -10220,8 +10212,7 @@ msgstr "Tema"
 msgid ""
 "A refresh is required to apply the theme. Above is the preview of the "
 "theme"
-msgstr ""
-"Diperlukan penyegaran untuk menerapkan tema. Di atas adalah pratinjau tema"
+msgstr "Diperlukan penyegaran untuk menerapkan tema. Di atas adalah pratinjau tema"
 
 #: pgadmin/misc/__init__.py:287
 msgid "Invalid binary path."
@@ -10271,68 +10262,68 @@ msgstr "Proses diakhiri"
 msgid "Process failed"
 msgstr "Proses gagal"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:100
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:92
 #: pgadmin/misc/bgprocess/static/js/Processes.jsx:97
 msgid "Not started"
 msgstr "Belum mulai"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:115
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:107
 msgid "Running..."
 msgstr "Beroperasi..."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:118
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:110
 msgid "Successfully completed."
 msgstr "Berhasil diselesaikan."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:121
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:113
 #, python-format
 msgid "Failed (exit code: %s)."
 msgstr "Gagal (kode exit: %s)."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:124
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:116
 msgid "Terminated by user."
 msgstr "Diakhiri oleh pengguna."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:126
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:118
 msgid "Terminating the process..."
 msgstr "Mengakhiri proses..."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:157
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:149
 msgid "error"
 msgstr "kesalahan"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:157
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:149
 msgid "fatal"
 msgstr "fatal"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:162
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:154
 msgid "Running command"
 msgstr "Perintah Menjalankan"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:166
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:158
 msgid "Running query"
 msgstr "Menjalankan kueri"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:173
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:165
 #: pgadmin/misc/file_manager/__init__.py:394
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:62
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:76
 msgid "Storage Manager"
 msgstr "Manajer Penyimpanan"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:183
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:175
 msgid "Loading process logs..."
 msgstr "Memuat log proses..."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:184
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:176
 msgid "No logs available."
 msgstr "Tidak ada log yang tersedia."
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:195
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:188
 msgid "Execution time"
 msgstr "Waktu eksekusi"
 
-#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:195
+#: pgadmin/misc/bgprocess/static/js/ProcessDetails.jsx:188
 msgid "seconds"
 msgstr "detik"
 
@@ -10389,7 +10380,7 @@ msgstr "Pengamat Proses - %s"
 #: pgadmin/misc/file_manager/__init__.py:190 pgadmin/settings/__init__.py:85
 #: pgadmin/tools/backup/__init__.py:177 pgadmin/tools/debugger/__init__.py:243
 #: pgadmin/tools/grant_wizard/__init__.py:129
-#: pgadmin/tools/import_export/__init__.py:141
+#: pgadmin/tools/import_export/__init__.py:140
 #: pgadmin/tools/import_export_servers/__init__.py:59
 #: pgadmin/tools/maintenance/__init__.py:145
 #: pgadmin/tools/restore/__init__.py:118
@@ -10489,8 +10480,7 @@ msgstr "Proses otentikasi BigAnimal EDB sedang berlangsung..."
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:383
 #: pgadmin/misc/cloud/static/js/azure.js:61
 #: pgadmin/misc/cloud/static/js/google.js:87
-msgid ""
-"Authentication completed successfully. Click the Next button to proceed."
+msgid "Authentication completed successfully. Click the Next button to proceed."
 msgstr ""
 "Otentikasi berhasil diselesaikan. Klik tombol Berikutnya untuk "
 "melanjutkan."
@@ -10548,14 +10538,14 @@ msgstr "Harap tinjau detailnya sebelum membuat instance cloud."
 
 #: pgadmin/misc/cloud/static/js/aws.js:228
 #: pgadmin/misc/cloud/static/js/azure.js:323
-#: pgadmin/misc/cloud/static/js/biganimal.js:233
+#: pgadmin/misc/cloud/static/js/biganimal.js:222
 #: pgadmin/misc/cloud/static/js/google.js:309
 msgid "Cloud"
 msgstr "Cloud"
 
 #: pgadmin/misc/cloud/static/js/aws.js:229
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:46
-#: pgadmin/misc/cloud/static/js/biganimal.js:234
+#: pgadmin/misc/cloud/static/js/biganimal.js:223
 #: pgadmin/misc/cloud/static/js/google.js:310
 msgid "Instance name"
 msgstr "Nama instance"
@@ -10576,7 +10566,7 @@ msgstr "Versi PostgreSQL"
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:221
 #: pgadmin/misc/cloud/static/js/azure.js:332
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:351
-#: pgadmin/misc/cloud/static/js/biganimal.js:249
+#: pgadmin/misc/cloud/static/js/biganimal.js:238
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:132
 #: pgadmin/misc/cloud/static/js/google.js:319
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:218
@@ -10638,7 +10628,7 @@ msgstr "Ketersediaan"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:97
 #: pgadmin/misc/cloud/static/js/azure.js:326
-#: pgadmin/misc/cloud/static/js/biganimal.js:235
+#: pgadmin/misc/cloud/static/js/biganimal.js:224
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:464
 #: pgadmin/misc/cloud/static/js/google.js:312
 msgid "Region"
@@ -10974,48 +10964,48 @@ msgstr ""
 "Nama harus lebih dari 2 karakter dan hanya harus berisi huruf kecil, "
 "angka, dan tanda hubung"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:236
-#: pgadmin/misc/cloud/static/js/biganimal.js:243
+#: pgadmin/misc/cloud/static/js/biganimal.js:225
+#: pgadmin/misc/cloud/static/js/biganimal.js:232
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:68
 msgid "Cluster type"
 msgstr "Tipe cluster"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:237
+#: pgadmin/misc/cloud/static/js/biganimal.js:226
 msgid "Public IPs"
 msgstr "IP Publik"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:244
+#: pgadmin/misc/cloud/static/js/biganimal.js:233
 msgid "No. of Standby Replicas"
 msgstr "Jumlah replika siaga"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:250
+#: pgadmin/misc/cloud/static/js/biganimal.js:239
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:160
 msgid "Instance series"
 msgstr "Seri instance"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:251
+#: pgadmin/misc/cloud/static/js/biganimal.js:240
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:187
 msgid "Instance size"
 msgstr "Ukuran instance"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:255
+#: pgadmin/misc/cloud/static/js/biganimal.js:244
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:277
 msgid "Volume type"
 msgstr "Jenis volume"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:256
+#: pgadmin/misc/cloud/static/js/biganimal.js:245
 msgid "Volume size"
 msgstr "Ukuran volume"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:257
+#: pgadmin/misc/cloud/static/js/biganimal.js:246
 msgid "Volume IOPS"
 msgstr "Volume IOPS"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:262
+#: pgadmin/misc/cloud/static/js/biganimal.js:251
 msgid "Database Type"
 msgstr "Jenis database"
 
-#: pgadmin/misc/cloud/static/js/biganimal.js:263
+#: pgadmin/misc/cloud/static/js/biganimal.js:252
 msgid "Database Version"
 msgstr "Versi Database"
 
@@ -11256,8 +11246,7 @@ msgstr "Penggelaran Cloud"
 
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:125
 msgid "No dependency information is available for the selected object."
-msgstr ""
-"Tidak ada informasi ketergantungan yang tersedia untuk objek yang dipilih."
+msgstr "Tidak ada informasi ketergantungan yang tersedia untuk objek yang dipilih."
 
 #: pgadmin/misc/dependencies/static/js/Dependencies.jsx:173
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:164
@@ -11321,15 +11310,15 @@ msgstr "Izin ditolak"
 msgid "Access denied ({0})"
 msgstr "Akses ditolak ({0})"
 
-#: pgadmin/misc/file_manager/__init__.py:836
+#: pgadmin/misc/file_manager/__init__.py:834
 msgid "There was an error renaming the file:"
 msgstr "Ada kesalahan saat mengganti nama file:"
 
-#: pgadmin/misc/file_manager/__init__.py:866
+#: pgadmin/misc/file_manager/__init__.py:864
 msgid "There was an error deleting the file:"
 msgstr "Ada kesalahan saat menghapus file:"
 
-#: pgadmin/misc/file_manager/__init__.py:910
+#: pgadmin/misc/file_manager/__init__.py:908
 msgid "There was an error adding the file:"
 msgstr "Ada kesalahan saat menambahkan file:"
 
@@ -11338,7 +11327,7 @@ msgid "Storage Manager..."
 msgstr "Manajer Penyimpanan..."
 
 #: pgadmin/misc/file_manager/static/js/FileManagerModule.jsx:72
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:502
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:494
 msgid "Save File"
 msgstr "Simpan File"
 
@@ -11374,7 +11363,7 @@ msgid "Search"
 msgstr "Cari"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:742
-#: pgadmin/static/js/Explain/Graphical.jsx:407
+#: pgadmin/static/js/Explain/Graphical.jsx:419
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:475
 msgid "Download"
 msgstr "Unduh"
@@ -11411,7 +11400,7 @@ msgstr "${selectedSS}"
 msgid "All Files"
 msgstr "Semua data"
 
-#: pgadmin/misc/file_manager/static/js/components/GridView.jsx:148
+#: pgadmin/misc/file_manager/static/js/components/GridView.jsx:140
 #: pgadmin/misc/file_manager/static/js/components/ListView.jsx:183
 msgid "No files/folders found"
 msgstr "Tidak ada file/folder yang ditemukan"
@@ -11483,8 +11472,8 @@ msgstr "Penyegaran penjelajah objek diperlukan"
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:602
 msgid "An object explorer refresh is required. Do you wish to refresh it now?"
 msgstr ""
-"Penyegaran penjelajah objek diperlukan. Apakah Anda ingin menyegarkannya"
-" sekarang?"
+"Penyegaran penjelajah objek diperlukan. Apakah Anda ingin menyegarkannya "
+"sekarang?"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:615
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:630
@@ -11521,7 +11510,7 @@ msgstr "Atur ulang tata letak"
 
 #: pgadmin/settings/static/js/settings.js:49
 #: pgadmin/tools/debugger/static/js/components/ToolBar.jsx:156
-#: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:137
+#: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:129
 msgid "Reset layout"
 msgstr "Atur ulang tata letak"
 
@@ -11661,8 +11650,7 @@ msgstr ""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:95
 #, python-format
-msgid ""
-"Please enter the password for the user '%s' to connect the server - \"%s\""
+msgid "Please enter the password for the user '%s' to connect the server - \"%s\""
 msgstr ""
 "Harap masukkan sandi untuk pengguna '%s' untuk menghubungkan server - "
 "\"%s\""
@@ -11670,8 +11658,7 @@ msgstr ""
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:96
 #, python-format
 msgid "Please enter the password for the user to connect the server - \"%s\""
-msgstr ""
-"Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"%s\""
+msgstr "Harap masukkan sandi untuk pengguna untuk menghubungkan server - \"%s\""
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:136
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:142
@@ -11698,9 +11685,9 @@ msgid ""
 "master password for your existing pgAdmin saved passwords and they will "
 "be migrated to the operating system store when you click OK."
 msgstr ""
-"pgAdmin sekarang menyimpan sandi yang disimpan di ${keyringName}. Masukkan"
-"sandi utama untuk sandi Anda yang sudah tersimpan di pgAdmin dan akan"
-"dimigrasikan ke penyimpanan sistem operasi saat Anda mengklik OK."
+"pgAdmin sekarang menyimpan sandi yang disimpan di ${keyringName}. "
+"Masukkansandi utama untuk sandi Anda yang sudah tersimpan di pgAdmin dan "
+"akandimigrasikan ke penyimpanan sistem operasi saat Anda mengklik OK."
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:94
 msgid "Please set a master password for pgAdmin."
@@ -11724,7 +11711,7 @@ msgstr ""
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:122
 #: pgadmin/static/js/Dialogs/index.jsx:180
-#: pgadmin/static/js/Dialogs/index.jsx:233
+#: pgadmin/static/js/Dialogs/index.jsx:230
 msgid "Reset Master Password"
 msgstr "Atur Ulang Sandi Utama"
 
@@ -11741,8 +11728,8 @@ msgid ""
 "The master password retrieved from the master password hook utility is "
 "different from what was previously retrieved."
 msgstr ""
-"Sandi utama yang diambil dari utilitas pengait kata sandi utama "
-"berbeda dengan yang diambil sebelumnya."
+"Sandi utama yang diambil dari utilitas pengait kata sandi utama berbeda "
+"dengan yang diambil sebelumnya."
 
 #: pgadmin/static/js/Dialogs/index.jsx:182
 msgid "Do you want to reset your master password to match?"
@@ -11754,8 +11741,7 @@ msgid ""
 "saved passwords."
 msgstr ""
 "Perhatikan bahwa ini akan menutup semua koneksi database yang terbuka dan"
-" menghapus semua"
-"sandi tersimpan."
+" menghapus semuasandi tersimpan."
 
 #: pgadmin/static/js/Dialogs/index.jsx:205
 msgid "Migration successful"
@@ -11766,8 +11752,9 @@ msgid ""
 "Passwords previously saved by pgAdmin have been successfully migrated to "
 "${res.data.data.keyring_name} and removed from the pgAdmin store."
 msgstr ""
-"Sandi yang sebelumnya disimpan oleh pgAdmin telah berhasil dimigrasikan"
-"${res.data.data.keyring_name} dan dihapus dari penyimpanan pgAdmin."
+"Sandi yang sebelumnya disimpan oleh pgAdmin telah berhasil "
+"dimigrasikan${res.data.data.keyring_name} dan dihapus dari penyimpanan "
+"pgAdmin."
 
 #: pgadmin/static/js/Dialogs/index.jsx:218
 msgid "Migrate Saved Passwords"
@@ -11781,7 +11768,7 @@ msgstr "Buka kunci sandi yang tersimpan"
 msgid "Set Master Password"
 msgstr "Atur sandi utama"
 
-#: pgadmin/static/js/Dialogs/index.jsx:234
+#: pgadmin/static/js/Dialogs/index.jsx:231
 msgid ""
 "This will remove all the saved passwords. This will also remove "
 "established connections to the server and you may need to reconnect "
@@ -11791,7 +11778,7 @@ msgstr ""
 "koneksi yang ditetapkan ke server dan Anda mungkin perlu terhubung "
 "kembali. Apakah Anda ingin melanjutkan?"
 
-#: pgadmin/static/js/Dialogs/index.jsx:293
+#: pgadmin/static/js/Dialogs/index.jsx:290
 msgid ""
 "Please make sure to disconnect the server and update the new password in "
 "the pgpass file before performing any other operation"
@@ -11799,96 +11786,96 @@ msgstr ""
 "Harap pastikan untuk memutuskan server dan memperbarui sandi baru di file"
 " pgpass sebelum melakukan operasi lainnya"
 
-#: pgadmin/static/js/Dialogs/index.jsx:413
+#: pgadmin/static/js/Dialogs/index.jsx:410
 msgid "Rename Panel ${_.escape(title)}"
 msgstr "Ganti nama panel ${_.escape(title)}"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:183
+#: pgadmin/static/js/Explain/Analysis.jsx:175
 msgid "Timings"
 msgstr "Pengaturan waktu"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:187
+#: pgadmin/static/js/Explain/Analysis.jsx:179
 msgid "Rows"
 msgstr "Baris"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:190
+#: pgadmin/static/js/Explain/Analysis.jsx:182
 msgid "Loops"
 msgstr "Loop"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:195
+#: pgadmin/static/js/Explain/Analysis.jsx:187
 msgid "Exclusive"
 msgstr "Eksklusif"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:198
+#: pgadmin/static/js/Explain/Analysis.jsx:190
 msgid "Inclusive"
 msgstr "Inklusif"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:200
+#: pgadmin/static/js/Explain/Analysis.jsx:192
 msgid "Rows X"
 msgstr "Baris x"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:201
+#: pgadmin/static/js/Explain/Analysis.jsx:193
 msgid "Actual"
 msgstr "Sebenarnya"
 
-#: pgadmin/static/js/Explain/Analysis.jsx:202
+#: pgadmin/static/js/Explain/Analysis.jsx:194
 msgid "Plan"
 msgstr "Rencana"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:53
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:44
 msgid "Statistics per Node Type"
 msgstr "Statistik per tipe node"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:57
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:93
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:48
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:84
 msgid "Node type"
 msgstr "Tipe node"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:58
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:94
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:49
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:85
 msgid "Count"
 msgstr "Hitung"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:60
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:51
 msgid "Time spent"
 msgstr "Waktu yang dihabiskan"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:61
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:89
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:52
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:80
 msgid "of query"
 msgstr "dari kueri"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:81
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:72
 msgid "Statistics per Relation"
 msgstr "Statistik per Relasi"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:85
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:76
 msgid "Relation name"
 msgstr "Nama relasi"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:86
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:77
 msgid "Scan count"
 msgstr "Hitung pemindaian"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:96
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:87
 msgid "Sum of times"
 msgstr "Jumlah kali"
 
-#: pgadmin/static/js/Explain/ExplainStatistics.jsx:97
+#: pgadmin/static/js/Explain/ExplainStatistics.jsx:88
 msgid "of relation"
 msgstr "dari relasi"
 
-#: pgadmin/static/js/Explain/Graphical.jsx:402
+#: pgadmin/static/js/Explain/Graphical.jsx:414
 #: pgadmin/tools/erd/__init__.py:343
 msgid "Zoom in"
 msgstr "Zoom perbesar"
 
-#: pgadmin/static/js/Explain/Graphical.jsx:403
+#: pgadmin/static/js/Explain/Graphical.jsx:415
 #: pgadmin/tools/sqleditor/static/js/components/sections/GraphVisualiser.jsx:473
 msgid "Zoom to original"
 msgstr "Zoom ke asli"
 
-#: pgadmin/static/js/Explain/Graphical.jsx:404
+#: pgadmin/static/js/Explain/Graphical.jsx:416
 #: pgadmin/tools/erd/__init__.py:361
 msgid "Zoom out"
 msgstr "Zoom perkecil"
@@ -12005,7 +11992,7 @@ msgid "Next"
 msgstr "Berikutnya"
 
 #: pgadmin/static/js/components/CodeMirror.jsx:293
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:578
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:570
 msgid "Replace"
 msgstr "Ganti"
 
@@ -12053,7 +12040,7 @@ msgstr "(dalam menit)"
 msgid "Preview not available..."
 msgstr "Pratinjau tidak tersedia..."
 
-#: pgadmin/static/js/components/ShortcutTitle.jsx:47
+#: pgadmin/static/js/components/ShortcutTitle.jsx:44
 msgid "Accesskey"
 msgstr "Accesskey"
 
@@ -12070,11 +12057,11 @@ msgstr "Pulihkan"
 msgid "Invalid MenuItem instance"
 msgstr "Instance MenuItem Tidak Valid"
 
-#: pgadmin/static/js/helpers/ModalProvider.jsx:307
+#: pgadmin/static/js/helpers/ModalProvider.jsx:309
 msgid "Maximize"
 msgstr "Maksimalkan"
 
-#: pgadmin/static/js/helpers/ModalProvider.jsx:311
+#: pgadmin/static/js/helpers/ModalProvider.jsx:313
 msgid "Minimize"
 msgstr "Minimalkan"
 
@@ -12250,8 +12237,7 @@ msgstr "Server cadangan..."
 
 #: pgadmin/tools/backup/static/js/backup.js:92
 #: pgadmin/tools/backup/static/js/backup.js:118
-msgid ""
-"Please select any server from the object explorer to take Server Backup."
+msgid "Please select any server from the object explorer to take Server Backup."
 msgstr ""
 "Pilih server mana pun dari penjelajah objek untuk mengambil cadangan "
 "server."
@@ -12590,8 +12576,7 @@ msgstr ""
 
 #: pgadmin/tools/debugger/__init__.py:742
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
-msgstr ""
-"Harap tingkatkan ekstensi pldbgapi ke 1.1 atau lebih tinggi dan coba lagi."
+msgstr "Harap tingkatkan ekstensi pldbgapi ke 1.1 atau lebih tinggi dan coba lagi."
 
 #: pgadmin/tools/debugger/__init__.py:1283
 msgid "Debugging aborted successfully."
@@ -12847,7 +12832,7 @@ msgid "Local Variables"
 msgstr "Variabel Lokal"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:1349
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:213
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:215
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:369
 msgid "Messages"
 msgstr "Pesan"
@@ -13150,13 +13135,13 @@ msgid "Fetching schema data..."
 msgstr "Mengambil data skema..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:128
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:368
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:857
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:360
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:864
 msgid "Unsaved changes"
 msgstr "Perubahan belum disimpan"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:129
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:369
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:361
 msgid "Are you sure you wish to discard the current changes?"
 msgstr "Apakah Anda yakin ingin mengabaikan perubahan saat ini?"
 
@@ -13223,12 +13208,12 @@ msgid "Zoom to Fit"
 msgstr "Zoom agar Pas"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:325
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:565
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:557
 msgid "File Menu"
 msgstr "Menu File"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:329
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:567
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:559
 msgid "Save as"
 msgstr "Simpan sebagai"
 
@@ -13334,36 +13319,36 @@ msgstr ""
 msgid "Import/Export"
 msgstr "Impor/Ekspor"
 
-#: pgadmin/tools/import_export/__init__.py:113
+#: pgadmin/tools/import_export/__init__.py:112
 msgid "Copying table data '{0}.{1}' on database '{2}' and server '{3}'"
 msgstr "Menyalin data tabel '{0}.{1}' di database '{2}' dan server '{3}'"
 
-#: pgadmin/tools/import_export/__init__.py:123
+#: pgadmin/tools/import_export/__init__.py:122
 msgid "Import - "
 msgstr "Impor -"
 
-#: pgadmin/tools/import_export/__init__.py:123
+#: pgadmin/tools/import_export/__init__.py:122
 msgid "Export - "
 msgstr "Ekspor -"
 
-#: pgadmin/tools/import_export/__init__.py:124
+#: pgadmin/tools/import_export/__init__.py:123
 msgid "Copying table data"
 msgstr "Menyalin data tabel"
 
-#: pgadmin/tools/import_export/__init__.py:134
+#: pgadmin/tools/import_export/__init__.py:133
 msgid "Import Data"
 msgstr "Impor data"
 
-#: pgadmin/tools/import_export/__init__.py:134
+#: pgadmin/tools/import_export/__init__.py:133
 msgid "Export Data"
 msgstr "Ekspor Data"
 
-#: pgadmin/tools/import_export/__init__.py:261
+#: pgadmin/tools/import_export/__init__.py:260
 msgid "Please connect to the server first..."
 msgstr "Harap terhubung ke server terlebih dahulu..."
 
-#: pgadmin/tools/import_export/__init__.py:287
-#: pgadmin/tools/import_export/__init__.py:293
+#: pgadmin/tools/import_export/__init__.py:286
+#: pgadmin/tools/import_export/__init__.py:292
 msgid "Please specify a valid file"
 msgstr "Harap tentukan file yang valid"
 
@@ -13373,8 +13358,7 @@ msgstr "Impor/Ekspor Data..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:65
 msgid "Please select any table from the object explorer to Import/Export data."
-msgstr ""
-"Pilih tabel apa pun dari penjelajah objek untuk mengimpor/mengekspor data."
+msgstr "Pilih tabel apa pun dari penjelajah objek untuk mengimpor/mengekspor data."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:170
 #, python-format
@@ -13510,15 +13494,15 @@ msgstr ""
 msgid "Import/Export Servers"
 msgstr "Server Impor/Ekspor"
 
-#: pgadmin/tools/import_export_servers/__init__.py:158
+#: pgadmin/tools/import_export_servers/__init__.py:155
 msgid "The specified file is not in the correct format."
 msgstr "File yang ditentukan tidak dalam format yang benar."
 
-#: pgadmin/tools/import_export_servers/__init__.py:164
+#: pgadmin/tools/import_export_servers/__init__.py:161
 msgid "Unable to load the specified file."
 msgstr "Tidak dapat memuat file yang ditentukan."
 
-#: pgadmin/tools/import_export_servers/__init__.py:166
+#: pgadmin/tools/import_export_servers/__init__.py:163
 msgid "The specified file does not exist."
 msgstr "File yang ditentukan tidak ada."
 
@@ -13527,7 +13511,7 @@ msgid "Database Servers"
 msgstr "Server database"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:68
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:623
 msgid "Summary"
 msgstr "Ringkasan"
 
@@ -13680,8 +13664,7 @@ msgstr "Pemeliharaan..."
 #: pgadmin/tools/maintenance/static/js/maintenance.js:63
 #: pgadmin/tools/maintenance/static/js/maintenance.js:82
 msgid "Please select any database from the object explorer to do Maintenance."
-msgstr ""
-"Pilih database apa pun dari penjelajah objek untuk melakukan pemeliharaan."
+msgstr "Pilih database apa pun dari penjelajah objek untuk melakukan pemeliharaan."
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:162
 msgid "Maintenance error"
@@ -13717,13 +13700,13 @@ msgstr "Pesan Verbose"
 msgid "PSQL"
 msgstr "PSQL"
 
-#: pgadmin/tools/psql/__init__.py:406
+#: pgadmin/tools/psql/__init__.py:404
 msgid ""
 "Connection terminated, To create new connection please open another psql "
 "tool."
 msgstr "Koneksi diakhiri, untuk membuat koneksi baru, buka alat psql lain."
 
-#: pgadmin/tools/psql/__init__.py:470
+#: pgadmin/tools/psql/__init__.py:468
 msgid "Invalid session.\r\n"
 msgstr "Sesi tidak valid.\r\n"
 
@@ -13737,23 +13720,21 @@ msgstr "Kesalahan PSQL"
 msgid "Please select a server/database object."
 msgstr "Pilih objek server/database."
 
-#: pgadmin/tools/psql/static/js/psql_module.js:358
+#: pgadmin/tools/psql/static/js/psql_module.js:356
 msgid "Clipboard write permission required"
 msgstr "Izin tulis clipboard diperlukan"
 
-#: pgadmin/tools/psql/static/js/psql_module.js:358
+#: pgadmin/tools/psql/static/js/psql_module.js:356
 msgid "To copy data from PSQL terminal, Clipboard write permission required."
-msgstr ""
-"Untuk menyalin data dari terminal PSQL, diperlukan izin tulis clipboard."
+msgstr "Untuk menyalin data dari terminal PSQL, diperlukan izin tulis clipboard."
 
-#: pgadmin/tools/psql/static/js/psql_module.js:376
+#: pgadmin/tools/psql/static/js/psql_module.js:374
 msgid "Clipboard read permission required"
 msgstr "Izin baca clipboard diperlukan"
 
-#: pgadmin/tools/psql/static/js/psql_module.js:376
+#: pgadmin/tools/psql/static/js/psql_module.js:374
 msgid "To paste data on the PSQL terminal, Clipboard read permission required."
-msgstr ""
-"Untuk menempelkan data di terminal PSQL, diperlukan izin baca clipboard."
+msgstr "Untuk menempelkan data di terminal PSQL, diperlukan izin baca clipboard."
 
 #: pgadmin/tools/restore/__init__.py:98
 msgid "Restoring backup on the server '{0}'"
@@ -13845,27 +13826,19 @@ msgstr ""
 "Atur abaikan pemilik aktif atau nonaktif secara bawaan di menu drop-down "
 "di dekat tombol Bandingkan di tab Schema Diff."
 
-#: pgadmin/tools/schema_diff/__init__.py:565
-msgid "Successfully compare the specified databases."
-msgstr "Berhasil membandingkan database yang ditentukan."
-
-#: pgadmin/tools/schema_diff/__init__.py:617
+#: pgadmin/tools/schema_diff/__init__.py:615
 msgid "Schema Objects"
 msgstr "Skema Objek"
 
-#: pgadmin/tools/schema_diff/__init__.py:627
-msgid "Successfully compare the specified schemas."
-msgstr "Berhasil membandingkan skema yang ditentukan."
-
-#: pgadmin/tools/schema_diff/__init__.py:677
+#: pgadmin/tools/schema_diff/__init__.py:673
 msgid "Selected object is not supported for DDL comparison."
 msgstr "Objek yang dipilih tidak didukung untuk perbandingan DDL."
 
-#: pgadmin/tools/schema_diff/__init__.py:701
+#: pgadmin/tools/schema_diff/__init__.py:697
 msgid "Server(s) disconnected."
 msgstr "Server terputus."
 
-#: pgadmin/tools/schema_diff/__init__.py:704
+#: pgadmin/tools/schema_diff/__init__.py:700
 msgid ""
 "Schema diff does not support the comparison between Postgres Server and "
 "EDB Postgres Advanced Server."
@@ -13873,23 +13846,23 @@ msgstr ""
 "Schema Diff tidak mendukung perbandingan antara Server Postgres dan EDB "
 "Postgres Advanced Server."
 
-#: pgadmin/tools/schema_diff/__init__.py:718
+#: pgadmin/tools/schema_diff/__init__.py:714
 msgid "Source and Target database server must be of the same major version."
 msgstr "Server database Sumber dan Target harus dari versi major yang sama."
 
-#: pgadmin/tools/schema_diff/__init__.py:765
+#: pgadmin/tools/schema_diff/__init__.py:761
 msgid "Comparing {0}"
 msgstr "Membandingkan {0}"
 
-#: pgadmin/tools/schema_diff/__init__.py:779
+#: pgadmin/tools/schema_diff/__init__.py:775
 msgid "Database Objects"
 msgstr "Objek Database"
 
-#: pgadmin/tools/schema_diff/__init__.py:825
+#: pgadmin/tools/schema_diff/__init__.py:821
 msgid "Comparing {0} "
 msgstr "Membandingkan {0}"
 
-#: pgadmin/tools/schema_diff/__init__.py:828
+#: pgadmin/tools/schema_diff/__init__.py:824
 msgid "Comparing {0} of schema '{1}'"
 msgstr "Membandingkan {0} skema '{1}'"
 
@@ -13968,8 +13941,7 @@ msgid "Generating script..."
 msgstr "Membuat skrip..."
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:336
-msgid ""
-"-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
+msgid "-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
 msgstr "-- Skrip ini dihasilkan oleh utilitas Schema Diff di pgAdmin 4. \n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:337
@@ -13989,8 +13961,7 @@ msgstr ""
 "perubahan diterapkan dalam urutan yang benar.\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:339
-msgid ""
-"-- Please report an issue for any failure with the reproduction steps. \n"
+msgid "-- Please report an issue for any failure with the reproduction steps. \n"
 msgstr ""
 "-- Harap laporkan masalah untuk setiap kegagalan dengan langkah-langkah "
 "reproduksi.\n"
@@ -14008,7 +13979,7 @@ msgid "Error in connect server ${error.response.data}"
 msgstr "Kesalahan saat menghubungkan server ${error.response.data}"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:677
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:513
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:527
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:233
 msgid "Connect to server"
 msgstr "Sambungkan ke server"
@@ -14111,30 +14082,30 @@ msgstr "Pemeriksaan status transaksi gagal."
 msgid "Query tool"
 msgstr "Alat kueri"
 
-#: pgadmin/tools/sqleditor/__init__.py:897
+#: pgadmin/tools/sqleditor/__init__.py:901
 msgid "******* Error *******"
 msgstr "******* Kesalahan *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:1281
+#: pgadmin/tools/sqleditor/__init__.py:1285
 msgid "No primary key found for this object, so unable to save records."
 msgstr ""
 "Tidak ada primary key yang ditemukan untuk objek ini, jadi tidak dapat "
 "menyimpan catatan."
 
-#: pgadmin/tools/sqleditor/__init__.py:1603
+#: pgadmin/tools/sqleditor/__init__.py:1607
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:104
 msgid "Either transaction object or session object not found."
 msgstr "Objek transaksi atau objek sesi tidak ditemukan."
 
-#: pgadmin/tools/sqleditor/__init__.py:1843
+#: pgadmin/tools/sqleditor/__init__.py:1847
 msgid "File type not supported"
 msgstr "Jenis file tidak didukung"
 
-#: pgadmin/tools/sqleditor/__init__.py:1905
+#: pgadmin/tools/sqleditor/__init__.py:1908
 msgid "Error: {0}"
 msgstr "Kesalahan: {0}"
 
-#: pgadmin/tools/sqleditor/__init__.py:1946
+#: pgadmin/tools/sqleditor/__init__.py:1949
 msgid "Could not find the required parameter (query)."
 msgstr "Tidak dapat menemukan parameter yang diperlukan (kueri)."
 
@@ -14143,15 +14114,14 @@ msgid "This feature has not been implemented for object type '{0}'."
 msgstr "Fitur ini belum diimplementasikan untuk tipe objek '{0}'."
 
 #: pgadmin/tools/sqleditor/command.py:192
-#: pgadmin/tools/sqleditor/utils/get_column_types.py:31
 msgid "The specified object could not be found."
 msgstr "Objek yang ditentukan tidak dapat ditemukan."
 
-#: pgadmin/tools/sqleditor/command.py:416
+#: pgadmin/tools/sqleditor/command.py:418
 msgid "Data cannot be saved for the current object."
 msgstr "Data tidak dapat disimpan untuk objek saat ini."
 
-#: pgadmin/tools/sqleditor/command.py:948
+#: pgadmin/tools/sqleditor/command.py:966
 msgid "Resultset is not updatable."
 msgstr "Resultset tidak dapat diperbarui."
 
@@ -14230,70 +14200,69 @@ msgstr "Alat Kueri -"
 msgid "Database moved/renamed"
 msgstr "Database dipindah/diganti nama"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:157
-msgid ""
-"An unexpected error occurred - ensure you are logged into the application."
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:159
+msgid "An unexpected error occurred - ensure you are logged into the application."
 msgstr ""
 "Terjadi kesalahan yang tidak terduga - pastikan Anda masuk ke dalam "
 "aplikasi."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:183
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:185
 msgid "Query History"
 msgstr "Riwayat Kueri"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:191
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:193
 msgid "Scratch Pad"
 msgstr "Pad Gores"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:210
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:212
 msgid "Data Output"
 msgstr "Output data"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:216
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:218
 msgid "Notifications"
 msgstr "Notifikasi"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:310
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:312
 msgid "Not Connected"
 msgstr "Tidak terhubung"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:411
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:425
 msgid "Connection Warning"
 msgstr "Peringatan Koneksi"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:413
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:427
 msgid "The application has lost the database connection:"
 msgstr "Aplikasi telah kehilangan koneksi database:"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:414
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:428
 msgid "⁃ If the connection was idle it may have been forcibly disconnected."
 msgstr "⁃ Jika koneksi tidak ada aktivitas, itu mungkin terputus secara paksa."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:415
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:429
 msgid "⁃ The application server or database server may have been restarted."
 msgstr "⁃ Server aplikasi atau server database mungkin telah dimulai ulang."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:416
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:430
 msgid "⁃ The user session may have timed out."
 msgstr "⁃ Sesi pengguna mungkin sudah berakhir."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:418
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:432
 msgid "Do you want to continue and establish a new session"
 msgstr "Apakah Anda ingin melanjutkan dan membuat sesi baru"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:634
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:648
 msgid "Add New Connection"
 msgstr "Tambahkan Koneksi Baru"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:658
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:672
 msgid "Connection with this configuration already present."
 msgstr "Koneksi dengan konfigurasi ini sudah ada."
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:704
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:718
 msgid "Manage Macros"
 msgstr "Kelola Makro"
 
-#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:723
+#: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:737
 msgid "Sort/Filter options"
 msgstr "Opsi Sortir/Filter"
 
@@ -14341,14 +14310,14 @@ msgid "View all geometries in this column"
 msgstr "Lihat semua geometri di kolom ini"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:23
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:549
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:714
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:541
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:701
 msgid "Rollback"
 msgstr "Mengembalikan"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/ConfirmTransactionContent.jsx:27
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:547
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:696
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:539
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:683
 msgid "Commit"
 msgstr "Commit"
 
@@ -14380,11 +14349,11 @@ msgstr ""
 "Dengan mengubah koneksi, Anda akan kehilangan semua data yang belum "
 "disimpan untuk koneksi saat ini. <br> Apakah Anda ingin melanjutkan?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:128
+#: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:120
 msgid "(Obtaining connection)"
 msgstr "(Mendapatkan koneksi)"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:133
+#: pgadmin/tools/sqleditor/static/js/components/sections/ConnectionBar.jsx:125
 msgid "New query tool for current connection"
 msgstr "Alat kueri baru untuk koneksi saat ini"
 
@@ -14490,11 +14459,11 @@ msgstr "Sumbu X"
 msgid "Y Axis"
 msgstr "Sumbu Y"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:301
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:293
 msgid "Commit transaction?"
 msgstr "Commit transaksi?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:304
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:296
 msgid ""
 "The current transaction is not commited to the database. Do you want to "
 "commit or rollback the transaction?"
@@ -14502,175 +14471,175 @@ msgstr ""
 "Transaksi saat ini tidak commit ke database. Apakah Anda ingin commit "
 "atau mengembalikan transaksi?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:500
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:492
 msgid "Open File"
 msgstr "Membuka file"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:510
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:502
 msgid "Edit"
 msgstr "Edit"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:516
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:508
 msgid "Sort/Filter"
 msgstr "Sortir/Filter"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:518
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:510
 msgid "Filter options"
 msgstr "Opsi filter"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:523
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:515
 msgid "No limit"
 msgstr "Tidak ada batas"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:524
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:516
 msgid "1000 rows"
 msgstr "1000 baris"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:525
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:517
 msgid "500 rows"
 msgstr "500 baris"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:526
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:518
 msgid "100 rows"
 msgstr "100 baris"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:529
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:521
 msgid "Cancel query"
 msgstr "Batalkan kueri"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:531
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:523
 msgid "Execute/Refresh"
 msgstr "Operasikan/Segarkan"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:533
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:525
 msgid "Execute options"
 msgstr "Operasikan opsi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:538
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:838
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:530
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:845
 #: pgadmin/utils/constants.py:23
 msgid "Explain"
 msgstr "Explain"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:540
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:532
 msgid "Explain Analyze"
 msgstr "Explain Analyze"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:542
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:534
 msgid "Explain Settings"
 msgstr "Pengaturan Explain"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:553
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:545
 msgid "Macros"
 msgstr "Makro"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:573
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:565
 msgid "Edit Menu"
 msgstr "Edit Menu"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:576
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:568
 msgid "Find"
 msgstr "Temukan"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:580
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:572
 msgid "Jump"
 msgstr "Melompat"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:583
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:575
 msgid "Indent Selection"
 msgstr "Seleksi Indentasi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:585
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:577
 msgid "Unindent Selection"
 msgstr "Seleksi yang Tidak Diindentasi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:587
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:579
 msgid "Toggle Comment"
 msgstr "Toggle Comment"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:589
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:581
 msgid "Toggle Case Of Selected Text"
 msgstr "Toggle Case dari Teks yang Dipilih"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:591
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:583
 msgid "Clear Query"
 msgstr "Bersihkan Kueri"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:593
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:585
 msgid "Format SQL"
 msgstr "Format SQL"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:599
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:591
 msgid "Filter Options Menu"
 msgstr "Menu Opsi Filter"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:601
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:593
 msgid "Filter by Selection"
 msgstr "Filter berdasarkan Seleksi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:602
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:594
 msgid "Exclude by Selection"
 msgstr "Kecualikan berdasarkan Seleksi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:603
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:595
 msgid "Remove Sort/Filter"
 msgstr "Hapus Sortir/Filter"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:609
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:601
 msgid "Execute Options Menu"
 msgstr "Menu Opsi Ekskusi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:612
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:604
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:60
 msgid "Auto commit?"
 msgstr "Commit otomatis?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:614
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:606
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:68
 msgid "Auto rollback on error?"
 msgstr "Mengembalikan otomatis saat kesalahan?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:620
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:612
 msgid "Explain Options Menu"
 msgstr "Menu Opsi Explain"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:623
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:615
 msgid "Verbose"
 msgstr "Verbose"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:625
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:617
 msgid "Costs"
 msgstr "Biaya"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:627
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:619
 msgid "Buffers"
 msgstr "Buffer"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:629
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:621
 msgid "Timing"
 msgstr "Waktu"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:633
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:625
 msgid "Settings"
 msgstr "Pengaturan"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:639
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:631
 msgid "Macros Menu"
 msgstr "Menu Makro"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:641
+#: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:633
 msgid "Manage macros"
 msgstr "Kelola makro"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:49
+#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:41
 msgid "Recorded time"
 msgstr "Waktu yang direkam"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:51
+#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:43
 msgid "Process ID"
 msgstr "ID Proses"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:52
+#: pgadmin/tools/sqleditor/static/js/components/sections/Notifications.jsx:44
 msgid "Payload"
 msgstr "Muatan"
 
@@ -14759,61 +14728,61 @@ msgstr "Menghapus"
 msgid "Remove All"
 msgstr "Hapus semua"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:140
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:144
 msgid "hr"
 msgstr "jam"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:141
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:145
 msgid "min"
 msgstr "mnt"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:142
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:146
 msgid "secs"
 msgstr "dtk"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:143
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:147
 msgid "msec"
 msgstr "mdtk"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:196
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:812
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:200
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:819
 msgid "Waiting for the query to complete..."
 msgstr "Menunggu kueri selesai..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:328
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:335
 msgid "Connection Error"
 msgstr "Kesalahan Koneksi"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:331
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:332
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:338
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:339
 msgid "Execution Cancelled!"
 msgstr "Eksekusi Dibatalkan!"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:334
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:341
 msgid "Execution Cancelled"
 msgstr "Eksekusi Dibatalkan"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:658
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:665
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:70
 msgid "Query complete"
 msgstr "Kueri lengkap"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:661
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:668
 #, python-format
 msgid "Query returned successfully in %s."
 msgstr "Kueri berhasil kembali dalam %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:663
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:670
 #, python-format
 msgid "Successfully run. Total query runtime: %s."
 msgstr "Berhasil dioperasikan. Total runtime kueri: %s."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:664
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:671
 #, python-format
 msgid "%s rows affected."
 msgstr "%s baris terpengaruh."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:858
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:865
 msgid ""
 "The data has been modified, but not saved. Are you sure you wish to "
 "discard the changes?"
@@ -14821,42 +14790,41 @@ msgstr ""
 "Data telah dimodifikasi, tetapi tidak disimpan. Apakah Anda yakin ingin "
 "mengabaikan perubahan?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:873
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:880
 msgid "Applying the new filter..."
 msgstr "Menerapkan filter baru..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:914
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:921
 msgid "Downloading results..."
 msgstr "Mengunduh hasil..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:920
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:927
 msgid "Setting the limit on the result..."
 msgstr "Mengatur batas hasil..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:934
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:941
 msgid "Removing the filter..."
 msgstr "Menghapus filter..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1003
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1024
 msgid "Save data changes?"
 msgstr "Simpan perubahan data?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1006
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1027
 msgid "The data has changed. Do you want to save changes?"
 msgstr "Data telah berubah. Apakah Anda ingin menyimpan perubahan?"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1032
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1053
 msgid "Saving data..."
 msgstr "Menyimpan data..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1058
-msgid ""
-"This query was generated by pgAdmin as part of a \"Save Data\" operation"
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1079
+msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr ""
 "Kueri ini dihasilkan oleh pgAdmin sebagai bagian dari operasi \"Simpan "
 "Data\""
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1072
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1093
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
@@ -14864,31 +14832,31 @@ msgstr ""
 "Menyimpan perubahan data diulang kembali tetapi transaksi saat ini masih "
 "aktif; kueri sebelumnya tidak terpengaruh."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1117
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1138
 msgid "Data saved successfully."
 msgstr "Data disimpan dengan sukses."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1119
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1140
 msgid "Auto-commit is off. You still need to commit changes to the database."
 msgstr ""
 "Auto-Commit tidak aktif. Anda masih perlu melakukan perubahan pada "
 "database."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1285
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1306
 msgid "Geometry Viewer"
 msgstr "Penampil Geometri"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1371
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1392
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:190
 #: pgadmin/utils/constants.py:30
 msgid "Graph Visualiser"
 msgstr "Grafik Visualiser"
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1387
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1408
 msgid "Loading more rows..."
 msgstr "Memuat lebih banyak baris..."
 
-#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1389
+#: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1410
 msgid "No data output. Execute a query to get output."
 msgstr "Tidak ada output data. Ekskusu kueri untuk mendapatkan output."
 
@@ -15013,8 +14981,7 @@ msgstr "Tampilkan pengaturan?"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:62
 msgid "Set auto commit on or off by default in new Query Tool tabs."
-msgstr ""
-"Atur Auto Commit aktif atau tidak secara bawaan di tab Alat Kueri baru."
+msgstr "Atur Auto Commit aktif atau tidak secara bawaan di tab Alat Kueri baru."
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:70
 msgid "Set auto rollback on or off by default in new Query Tool tabs."
@@ -15349,27 +15316,23 @@ msgid "Accesskey (Cancel query)"
 msgstr "Accesskey (Batalkan kueri)"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:633
-msgid "Accesskey (Connection status)"
-msgstr "Accesskey (Status koneksi)"
+msgid "Accesskey (Edit options)"
+msgstr ""
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:646
-msgid "Accesskey (Find options)"
-msgstr "Accesskey (Opsi pencarian)"
-
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:660
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:647
 msgid "Toggle case of selected text"
 msgstr "Toggle case dari teks yang dipilih"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:677
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:664
 msgid "Keywords in uppercase"
 msgstr "Kata kunci dalam huruf besar"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:678
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:686
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:665
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:673
 msgid "Auto completion"
 msgstr "Pelengkapan otomatis"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:679
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:666
 msgid ""
 "If set to True, Keywords will be displayed in upper case for auto "
 "completion."
@@ -15377,11 +15340,11 @@ msgstr ""
 "Jika diatur ke True, kata kunci akan ditampilkan dalam huruf besar untuk "
 "pelengkapan otomatis."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:685
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:672
 msgid "Autocomplete on key press"
 msgstr "Autocomplete saat tombol ditekan"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:687
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:674
 msgid ""
 "If set to True, autocomplete will be available on key press along with "
 "CTRL/CMD + Space. If set to False, autocomplete is only activated when "
@@ -15391,59 +15354,58 @@ msgstr ""
 "bersama dengan CTRL/CMD + Spasi. Jika diatur ke False, autocomplete hanya"
 " diaktifkan ketika CTRL/CMD + Spasi ditekan."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:731
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:718
 msgid "Keyword case"
 msgstr "Huruf kata kunci"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:732
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:744
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:719
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:731
 msgid "Upper case"
 msgstr "Huruf besar"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:733
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:745
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:720
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:732
 msgid "Lower case"
 msgstr "Huruf kecil"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:734
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:746
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:721
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:733
 msgid "Capitalized"
 msgstr "Kapitalisasi"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:736
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:723
 msgid "Convert keywords to upper, lower, or capitalized casing."
 msgstr "Konversi kata kunci ke huruf besar, kecil, atau kapitalisasi."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:743
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:730
 msgid "Identifier case"
 msgstr "Kasus Identifier"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:748
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:735
 msgid "Convert identifiers to upper, lower, or capitalized casing."
-msgstr ""
-"Konversi pengidentifikasi menjadi huruf besar, kecil, atau kapitalisasi."
+msgstr "Konversi pengidentifikasi menjadi huruf besar, kecil, atau kapitalisasi."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:755
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:742
 msgid "Strip comments?"
 msgstr "Hilangkan komentar?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:757
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:744
 msgid "If set to True, comments will be removed."
 msgstr "Jika diatur ke True, komentar akan dihapus."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:762
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:749
 msgid "Re-indent?"
 msgstr "Re-indent?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:764
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:751
 msgid "If set to True, the indentations of the statements are changed."
 msgstr "Jika diatur ke True, indentasi pernyataan diubah."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:770
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:757
 msgid "Re-indent aligned?"
 msgstr "Re-indent diselaraskan?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:772
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:759
 msgid ""
 "If set to True, the indentations of the statements are changed, and "
 "statements are aligned by keywords."
@@ -15451,27 +15413,27 @@ msgstr ""
 "Jika diatur ke True, indentasi pernyataan diubah, dan pernyataan "
 "diselaraskan dengan kata kunci."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:779
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:766
 msgid "Spaces around operators?"
 msgstr "Spasi di sekitar operator?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:781
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:768
 msgid "If set to True, spaces are used around all operators."
 msgstr "Jika diatur ke True, spasi digunakan di sekitar semua operator."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:787
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:774
 msgid "Comma-first notation?"
 msgstr "Notasi dahulukan-koma?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:789
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:776
 msgid "If set to True, comma-first notation for column names is used."
 msgstr "Jika diatur ke True, notasi dahulukan-koma untuk nama kolom digunakan."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:795
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:782
 msgid "Wrap after N characters"
 msgstr "Bungkus setelah N karakter"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:797
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:784
 msgid ""
 "The column limit (in characters) for wrapping comma-separated lists. If "
 "zero, it puts every item in the list on its own line."
@@ -15480,19 +15442,19 @@ msgstr ""
 "koma. Jika nol, itu menempatkan setiap item dalam daftar pada baris "
 "sendiri."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:804
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:791
 msgid "Tab size"
 msgstr "Ukuran tab"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:808
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:795
 msgid "The number of spaces per tab. Minimum 2, maximum 8."
 msgstr "Jumlah spasi per tab. Minimum 2, maksimum 8."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:815
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:802
 msgid "Use spaces?"
 msgstr "Gunakan spasi?"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:817
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:804
 msgid ""
 "Specifies whether or not to insert spaces instead of tabs when the tab "
 "key or auto-indent are used."
@@ -15500,11 +15462,11 @@ msgstr ""
 "Menentukan apakah akan memasukkan spasi atau tidak, bukan tab ketika "
 "kunci tab atau indentasi-otomatis digunakan."
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:825
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:812
 msgid "Row Limit"
 msgstr "Batas baris"
 
-#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:827
+#: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:814
 msgid ""
 "This setting specifies the maximum number of rows that will be plotted on"
 " a chart. Increasing this limit may impact performance if charts are "
@@ -15654,51 +15616,51 @@ msgstr ""
 "File '%s' tidak ditemukan. Harap perbaiki Path Biner dalam dialog "
 "Preferensi"
 
-#: pgadmin/utils/__init__.py:517
+#: pgadmin/utils/__init__.py:524
 #, python-format
 msgid "Configuration for %s servers dumped to %s"
 msgstr "Konfigurasi untuk server %s diarahkan ke %s"
 
-#: pgadmin/utils/__init__.py:533
+#: pgadmin/utils/__init__.py:540
 msgid "'Servers' attribute not found in the specified file."
 msgstr "Atribut 'Server' tidak ditemukan di file yang ditentukan."
 
-#: pgadmin/utils/__init__.py:548
+#: pgadmin/utils/__init__.py:555
 #, python-format
 msgid "'%s' attribute not found for server '%s'"
 msgstr "Atribut '%s' tidak ditemukan untuk server '%s'"
 
-#: pgadmin/utils/__init__.py:553
+#: pgadmin/utils/__init__.py:560
 #, python-format
 msgid "Port must be integer for server '%s'"
 msgstr "Port harus bilangan bulat untuk server '%s'"
 
-#: pgadmin/utils/__init__.py:578
+#: pgadmin/utils/__init__.py:585
 #, python-format
 msgid "'Host' or 'Service' attribute not found for server '%s'"
 msgstr "Atribut 'Host' atau 'Service' tidak ditemukan untuk server '%s'"
 
-#: pgadmin/utils/__init__.py:608
+#: pgadmin/utils/__init__.py:615
 #, python-format
 msgid "Error parsing input file %s: %s"
 msgstr "Kesalahan parsing file input %s: %s"
 
-#: pgadmin/utils/__init__.py:611
+#: pgadmin/utils/__init__.py:618
 #, python-format
 msgid "Error reading input file %s: [%d] %s"
 msgstr "Kesalahan membaca file input %s: [%d] %s"
 
-#: pgadmin/utils/__init__.py:650
+#: pgadmin/utils/__init__.py:657
 #, python-format
 msgid "Error creating server group '%s': %s"
 msgstr "Kesalahan membuat grup server '%s': %s"
 
-#: pgadmin/utils/__init__.py:722
+#: pgadmin/utils/__init__.py:735
 #, python-format
 msgid "Error creating server '%s': %s"
 msgstr "Kesalahan membuat server '%s': %s"
 
-#: pgadmin/utils/__init__.py:760
+#: pgadmin/utils/__init__.py:773
 #, python-format
 msgid "Error clearing server configuration with error (%s)"
 msgstr "Kesalahan membersihkan konfigurasi server dengan kesalahan (%s)"
@@ -15895,17 +15857,17 @@ msgstr ""
 "Mencoba menghubungkan kembali ke server database (#{server_id}) untuk "
 "koneksi - '{conn_id}'."
 
-#: pgadmin/utils/driver/psycopg3/connection.py:820
-#: pgadmin/utils/driver/psycopg3/connection.py:1326
+#: pgadmin/utils/driver/psycopg3/connection.py:818
+#: pgadmin/utils/driver/psycopg3/connection.py:1324
 msgid "Asynchronous query execution/operation underway."
 msgstr "Eksekusi/operasi kueri asinkron sedang berlangsung."
 
-#: pgadmin/utils/driver/psycopg3/connection.py:852
-#: pgadmin/utils/driver/psycopg3/connection.py:883
+#: pgadmin/utils/driver/psycopg3/connection.py:850
+#: pgadmin/utils/driver/psycopg3/connection.py:881
 msgid "The query executed did not return any data."
 msgstr "Kueri yang dijalankan tidak mengembalikan data apa pun."
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1407
+#: pgadmin/utils/driver/psycopg3/connection.py:1410
 msgid ""
 "\n"
 "Failed to reset the connection to the server due to following error:\n"
@@ -15915,11 +15877,11 @@ msgstr ""
 "Gagal mengatur ulang koneksi ke server karena kesalahan berikut:\n"
 "{0}"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1601
+#: pgadmin/utils/driver/psycopg3/connection.py:1603
 msgid "Not connected to the database server."
 msgstr "Tidak terhubung ke server database."
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1620
+#: pgadmin/utils/driver/psycopg3/connection.py:1622
 msgid ""
 "Asynchronous notification \"{0}\" with payload \"{1}\" received from "
 "server process with PID {2}\n"
@@ -15927,34 +15889,33 @@ msgstr ""
 "Notifikasi asinkron \"{0}\" dengan muatan \"{1}\" diterima dari proses "
 "server dengan PID {2}\n"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1626
+#: pgadmin/utils/driver/psycopg3/connection.py:1628
 msgid ""
 "Asynchronous notification \"{0}\" received from server process with PID "
 "{1}\n"
-msgstr ""
-"Notifikasi asinkron \"{0}\" diterima dari proses server dengan PID {1}\n"
+msgstr "Notifikasi asinkron \"{0}\" diterima dari proses server dengan PID {1}\n"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1664
+#: pgadmin/utils/driver/psycopg3/connection.py:1666
 msgid "ERROR:  "
 msgstr "KESALAHAN:"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1685
+#: pgadmin/utils/driver/psycopg3/connection.py:1687
 msgid "SQL state: "
 msgstr "Status SQL:"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1692
+#: pgadmin/utils/driver/psycopg3/connection.py:1694
 msgid "Detail: "
 msgstr "Detail:"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1699
+#: pgadmin/utils/driver/psycopg3/connection.py:1701
 msgid "Hint: "
 msgstr "Petunjuk:"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1706
+#: pgadmin/utils/driver/psycopg3/connection.py:1708
 msgid "Character: "
 msgstr "Karakter:"
 
-#: pgadmin/utils/driver/psycopg3/connection.py:1713
+#: pgadmin/utils/driver/psycopg3/connection.py:1715
 msgid "Context: "
 msgstr "Konteks:"
 
@@ -15966,7 +15927,7 @@ msgstr "Informasi tidak tersedia."
 msgid "Could not find the specified database."
 msgstr "Tidak dapat menemukan database yang ditentukan."
 
-#: pgadmin/utils/driver/psycopg3/server_manager.py:583
+#: pgadmin/utils/driver/psycopg3/server_manager.py:577
 msgid ""
 "Failed to decrypt the SSH tunnel password.\n"
 "Error: {0}"
@@ -15974,7 +15935,7 @@ msgstr ""
 "Gagal mendekripsi sandi terowongan SSH.\n"
 "Kesalahan: {0}"
 
-#: pgadmin/utils/driver/psycopg3/server_manager.py:618
+#: pgadmin/utils/driver/psycopg3/server_manager.py:612
 msgid ""
 "Failed to create the SSH tunnel.\n"
 "Error: {0}"
@@ -16012,4 +15973,46 @@ msgstr ""
 #~ msgstr ""
 #~ "Gagal mengatur aturan dengan pesan kesalahan:\n"
 #~ "{0}"
+
+#~ msgid "Delete/Drop multiple objects"
+#~ msgstr "Hapus banyak objek"
+
+#~ msgid "Drop Cascade multiple objects"
+#~ msgstr "Hapus kaskade banyak objek"
+
+#~ msgid "Delete/Drop"
+#~ msgstr "Hapus"
+
+#~ msgid "Drop Cascade"
+#~ msgstr "Hapus Kaskade"
+
+#~ msgid ""
+#~ "Are you sure you want to drop "
+#~ "%s \"%s\" and all the objects that"
+#~ " depend on it?"
+#~ msgstr ""
+#~ "Apakah Anda yakin ingin menghapus %s "
+#~ "\"%s\" dan semua objek yang bergantung"
+#~ " padanya?"
+
+#~ msgid "DROP CASCADE %s?"
+#~ msgstr "Hapus Kaskade %s?"
+
+#~ msgid "Are you sure you want to drop %s \"%s\"?"
+#~ msgstr "Apakah Anda yakin ingin hapus %s \"%s\"?"
+
+#~ msgid "Drop %s?"
+#~ msgstr "Hapus %s?"
+
+#~ msgid "Successfully compare the specified databases."
+#~ msgstr "Berhasil membandingkan database yang ditentukan."
+
+#~ msgid "Successfully compare the specified schemas."
+#~ msgstr "Berhasil membandingkan skema yang ditentukan."
+
+#~ msgid "Accesskey (Connection status)"
+#~ msgstr "Accesskey (Status koneksi)"
+
+#~ msgid "Accesskey (Find options)"
+#~ msgstr "Accesskey (Opsi pencarian)"
 
