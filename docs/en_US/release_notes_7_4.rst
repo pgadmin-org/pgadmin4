@@ -23,6 +23,7 @@ New features
   | `Issue #6367 <https://github.com/pgadmin-org/pgadmin4/issues/6367>`_ -  Added support to drop databases using the 'WITH (FORCE)' option.
   | `Issue #6368 <https://github.com/pgadmin-org/pgadmin4/issues/6368>`_ -  Add "[ NULLS [ NOT ] DISTINCT ]" option while creating an Index.
   | `Issue #6370 <https://github.com/pgadmin-org/pgadmin4/issues/6370>`_ -  Added 'OR REPLACE' clause while creating trigger.
+  | `Issue #6371 <https://github.com/pgadmin-org/pgadmin4/issues/6371>`_ -  Added security_invoker option while creating a view.
 
 Housekeeping
 ************
