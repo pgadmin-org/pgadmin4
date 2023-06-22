@@ -75,6 +75,10 @@ export default class ViewSchema extends BaseUISchema {
       type: 'switch', min_version: '90200', group: gettext('Definition'),
       disabled: obj.notInSchema,
     },{
+      id: 'security_invoker', label: gettext('Security invoker?'),
+      type: 'switch', min_version: '150000', group: gettext('Definition'),
+      disabled: obj.notInSchema,
+    },{
       id: 'check_option', label: gettext('Check options'),
       type: 'select', group: gettext('Definition'),
       min_version: '90400', mode:['properties', 'create', 'edit'],

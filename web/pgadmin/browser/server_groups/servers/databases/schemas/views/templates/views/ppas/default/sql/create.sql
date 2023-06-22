@@ -10,7 +10,7 @@ CREATE{% if add_replace_clause %} OR REPLACE{% endif %} VIEW {{ conn|qtIdent(dat
 {% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
 WITH ({% if data.check_option and data.check_option.lower() != 'no' %}
 
-  check_option={{ data.check_option }}{% endif %}{{ ',' if data.check_option and data.check_option.lower() != 'no' and data.security_barrier }}
+  check_option={{ data.check_option }}{% endif %}{{ ',' if data.security_barrier }}
 {% if data.security_barrier %}
   security_barrier={{ data.security_barrier|lower }}
 {% endif %}

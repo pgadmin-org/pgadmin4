@@ -1,0 +1,207 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create Table for Views",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "data": {
+        "name": "test_view_table",
+        "check_constraint": [],
+        "coll_inherits": "[]",
+        "columns": [
+          {
+            "name": "col1",
+            "cltype": "integer"
+          }
+        ],
+        "schema": "public"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create View",
+      "endpoint": "NODE-view.obj",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql",
+      "data": {
+        "definition": "select col1 from test_view_table;",
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "local",
+        "security_barrier": false,
+        "security_invoker": false,
+        "comment":"Testcomment",
+        "datacl":[{"grantee":"enterprisedb", "grantor":"enterprisedb", "privileges":[{"privilege_type": "a", "privilege": true,
+                  "with_grant":false}]}]
+      },
+      "expected_sql_file": "create_view.sql",
+      "expected_msql_file": "create_view_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter View",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "security_invoker": true,
+        "comment":"Testcomment-updated",
+        "datacl":[{"grantee":"enterprisedb", "grantor":"enterprisedb", "privileges":[{"privilege_type": "a", "privilege": true,
+                  "with_grant":false}]}]
+      },
+      "expected_sql_file": "alter_view.sql",
+      "expected_msql_file": "alter_view_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (adding privileges)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "datacl":{
+            "added":[
+                {
+                  "grantee":"PUBLIC",
+                  "grantor":"enterprisedb",
+                  "privileges":[
+                    {
+                        "privilege_type":"r",
+                        "privilege":true,
+                        "with_grant":false
+                    }
+                  ]
+                }
+            ]
+        }
+      },
+      "expected_sql_file": "alter_view_add_some_priv.sql",
+      "expected_msql_file": "alter_view_add_some_priv_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (deleting privileges (PUBLIC))",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "deleted":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"enterprisedb",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      }
+    },
+    {
+      "type": "alter",
+      "name": "Alter View (changing privileges (enterprisedb to PUBLIC))",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "changed":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"enterprisedb",
+                "old_grantee": "enterprisedb",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      },
+      "expected_sql_file": "alter_view_update_priv.sql",
+      "expected_msql_file": "alter_view_update_priv_msql.sql"
+    },
+     {
+      "type": "alter",
+      "name": "Alter View (deleting privileges)",
+      "endpoint": "NODE-view.obj_id",
+      "sql_endpoint": "NODE-view.sql_id",
+      "msql_endpoint": "NODE-view.msql_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public",
+        "check_option": "cascaded",
+        "security_barrier": true,
+        "comment":"Testcomment-updated",
+        "datacl":
+          {
+            "deleted":[
+              {
+                "grantee":"PUBLIC",
+                "grantor":"enterprisedb",
+                "privileges":[
+                  {
+                    "privilege_type":"r",
+                    "privilege":true,
+                    "with_grant":false
+                  }
+                ]
+              }
+            ]
+          }
+      },
+      "expected_sql_file": "alter_view_delete_priv.sql",
+      "expected_msql_file": "alter_view_delete_priv_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop View",
+      "endpoint": "NODE-view.obj_id",
+      "data": {
+        "name": "testview_$%{}[]()&*^!@\"'`\\/#",
+        "owner": "enterprisedb",
+        "schema": "public"
+      }
+    },
+    {
+      "type": "delete",
+      "name": "Drop Table for view",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "test_view_table",
+        "owner": "enterprisedb",
+        "schema": "public"
+      }
+    }
+  ]
+}

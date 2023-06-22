@@ -39,7 +39,10 @@ Use the fields in the *Definition* tab to define properties of the view:
 
 * Set the *Security Barrier* switch to *Yes* to indicate that the view is to act
   as a security barrier.  For more information about defining and using a
-  security barrier rule, see Section 38.5 of the PostgreSQL documentation.
+  security barrier rule, see Rules and Privileges of the PostgreSQL documentation.
+* Set the *Security Invoker* switch to *Yes* to indicate that the underlying base
+  relations are to be checked against the privileges of the user of the view rather
+  than the view owner. This option is available from PostgreSQL 15 onwards.
 * Use the drop-down listbox next to *Check options* to select from *No*, *Local*
   or *Cascaded*:
 
