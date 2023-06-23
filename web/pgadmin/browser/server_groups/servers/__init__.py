@@ -1048,20 +1048,20 @@ class ServerNode(PGChildNodeView):
                                                                shared_server)
             server_owner = server.server_owner
 
-        use_ssh_tunnel = 0
+        use_ssh_tunnel = False
         tunnel_host = None
         tunnel_port = 22
         tunnel_username = None
-        tunnel_authentication = 0
+        tunnel_authentication = False
         connection_params = \
             self.convert_connection_parameter(server.connection_params)
 
         if server.use_ssh_tunnel:
-            use_ssh_tunnel = server.use_ssh_tunnel
+            use_ssh_tunnel = bool(server.use_ssh_tunnel)
             tunnel_host = server.tunnel_host
             tunnel_port = server.tunnel_port
             tunnel_username = server.tunnel_username
-            tunnel_authentication = server.tunnel_authentication
+            tunnel_authentication = bool(server.tunnel_authentication)
 
         response = {
             'id': server.id,
@@ -1300,7 +1300,9 @@ class ServerNode(PGChildNodeView):
                     else None,
                     is_kerberos_conn=bool(server.kerberos_conn),
                     gss_authenticated=manager.gss_authenticated if
-                    manager and manager.gss_authenticated else False
+                    manager and manager.gss_authenticated else False,
+                    is_password_saved=bool(server.save_password),
+                    is_tunnel_password_saved=bool(server.tunnel_password)
                 )
             )
 
