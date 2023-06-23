@@ -835,7 +835,7 @@ export function ResultSet() {
     };
 
     const executeAndPoll = async ()=>{
-      yesCallback();
+      await yesCallback();
       pollCallback();
     };
 

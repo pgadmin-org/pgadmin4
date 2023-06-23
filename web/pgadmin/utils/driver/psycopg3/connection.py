@@ -171,6 +171,7 @@ class Connection(BaseConnection):
         self.async_ = async_
         self.__async_cursor = None
         self.__async_query_id = None
+        self.__async_query_error = None
         self.__backend_pid = None
         self.execution_aborted = False
         self.row_count = 0
@@ -784,7 +785,7 @@ WHERE db.datname = current_database()""")
                 25,
                 'Psycopg3 Cursor: {0}'.format(str(e)))
 
-    def __internal_blocking_execute(self, cur, query, params):
+    def __internal_blocking_execute(self, cur, query, params, timeout=None):
         """
         This function executes the query using cursor's execute function,
         but in case of asynchronous connection we need to wait for the
@@ -798,7 +799,11 @@ WHERE db.datname = current_database()""")
         """
 
         query = query.encode(self.python_encoding)
-        cur.execute(query, params)
+        if timeout:
+            print("time=",timeout)
+            cur.execute(query, params, timeout)
+        else:
+            cur.execute(query, params)
 
     def execute_on_server_as_csv(self, records=2000):
         """
@@ -825,7 +830,8 @@ WHERE db.datname = current_database()""")
             query = str(cur.query, encoding) \
                 if cur and cur.query is not None else None
         except Exception:
-            current_app.logger.warning('Error encoding query')
+            current_app.logger.warning('Error encoding query with {0}'.format(
+                encoding))
 
         current_app.logger.log(
             25,
@@ -1032,6 +1038,7 @@ WHERE db.datname = current_database()""")
         """
 
         self.__async_cursor = None
+        self.__async_query_error = None
         status, cur = self.__cursor(scrollable=True)
 
         if not status:
@@ -1077,6 +1084,7 @@ WHERE db.datname = current_database()""")
                     query_id=query_id
                 )
             )
+            self.__async_query_error = errmsg
 
             if self.is_disconnected(pe):
                 raise ConnectionLost(
@@ -1084,6 +1092,7 @@ WHERE db.datname = current_database()""")
                     self.db,
                     None if self.conn_id[0:3] == 'DB:' else self.conn_id[5:]
                 )
+
             return False, errmsg
 
         return True, None
@@ -1240,7 +1249,8 @@ WHERE db.datname = current_database()""")
 
         return True, {'columns': columns, 'rows': rows}
 
-    def execute_dict(self, query, params=None, formatted_exception_msg=False):
+    def execute_dict(self, query, params=None, formatted_exception_msg=False,
+                     timeout=None):
         status, cur = self.__cursor()
         self.row_count = 0
 
@@ -1263,7 +1273,8 @@ WHERE db.datname = current_database()""")
             )
         )
         try:
-            self.__internal_blocking_execute(cur, query, params)
+            self.__internal_blocking_execute(cur, query, params,
+                                             timeout=timeout)
         except psycopg.Error as pe:
             cur.close_cursor()
             if not self.connected():
@@ -1422,9 +1433,12 @@ Failed to reset the connection to the server due to following error:
         return True, None
 
     def transaction_status(self):
-        if self.conn:
+        if self.conn and self.conn.info:
             return self.conn.info.transaction_status
         return None
+
+    def async_query_error(self):
+        return self.__async_query_error
 
     def ping(self):
         return self.execute_scalar('SELECT 1')
@@ -1457,6 +1471,8 @@ Failed to reset the connection to the server due to following error:
 
         if self.conn and self.conn.pgconn.is_busy():
             status = 3
+        elif self.__async_query_error:
+            return False, self.__async_query_error
         else:
             status = 1
 
@@ -1733,7 +1749,7 @@ Failed to reset the connection to the server due to following error:
     # https://github.com/zzzeek/sqlalchemy/blob/master/lib/sqlalchemy/dialects/postgresql/psycopg2.py
     #
     def is_disconnected(self, err):
-        if not self.conn.closed:
+        if self.conn and not self.conn.closed:
             # checks based on strings.  in the case that .closed
             # didn't cut it, fall back onto these.
             str_e = str(err).partition("\n")[0]

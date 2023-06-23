@@ -881,6 +881,8 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         FetchedRowTracker.__init__(self, **kwargs)
 
         self.conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else None
+        self.conn_id_ac = kwargs['conn_id_ac'] if 'conn_id_ac' in kwargs\
+            else None
         self.auto_rollback = False
         self.auto_commit = True
 
@@ -981,6 +983,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
 
     def set_connection_id(self, conn_id):
         self.conn_id = conn_id
+
+    def set_connection_id_ac(self, conn_id):
+        self.conn_id_ac = conn_id
 
     def set_auto_rollback(self, auto_rollback):
         self.auto_rollback = auto_rollback
