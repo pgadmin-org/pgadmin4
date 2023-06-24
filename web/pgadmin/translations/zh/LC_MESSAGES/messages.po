@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-06-22 16:28+0530\n"
-"PO-Revision-Date: 2023-06-24 20:10+0800\n"
+"PO-Revision-Date: 2023-06-24 23:52+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
 "Language-Team: zh\n"
 "Language: zh\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.12.1\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Poedit 3.3.1\n"
 
 #: pgadmin/__init__.py:351 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -318,7 +318,8 @@ msgstr "注意"
 msgid ""
 "This email address will only be used for two factor authentication purposes. "
 "The email address for the user account will not be changed."
-msgstr "邮件地址仅用于两步认证且不可变更"
+msgstr ""
+"这个电子邮件地址将只用于双因素认证目的。用户账户的电子邮件地址将不会被改变。"
 
 #: pgadmin/authenticate/mfa/email.py:267
 msgid "Enter code here"
@@ -326,7 +327,7 @@ msgstr "这里输入验证码"
 
 #: pgadmin/authenticate/mfa/email.py:283
 msgid "Email Authentication registered successfully."
-msgstr "邮件认证注册成功"
+msgstr "邮箱验证已成功注册。"
 
 #: pgadmin/authenticate/mfa/email.py:291
 msgid "Invalid code"
@@ -350,7 +351,7 @@ msgstr "'{}' 已从认证列表中注销."
 
 #: pgadmin/authenticate/mfa/views.py:181
 msgid "'{}' is not found in the authentication list."
-msgstr "在认证列表中没有发现'{}'"
+msgstr "在认证列表中没有发现'{}'。"
 
 #: pgadmin/authenticate/mfa/views.py:258
 msgid "Please close the dialog."
@@ -525,7 +526,7 @@ msgstr ""
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
-msgstr "密码已重置但账户被锁定，请联系管理员"
+msgstr "密码已重置但账户被锁定，请联系管理员。"
 
 #: pgadmin/browser/register_browser_preferences.py:28
 msgid "Show system objects?"
@@ -567,7 +568,7 @@ msgstr "对象浏览器树状态保存间隔"
 msgid ""
 "Object explorer state saving interval in seconds. Use -1 to disable the tree "
 "saving mechanism."
-msgstr "对象浏览器状态保存间隔单位秒，使用-1禁用特性"
+msgstr "对象浏览器状态保存间隔单位秒，使用-1禁用特性。"
 
 #: pgadmin/browser/register_browser_preferences.py:71
 msgid "Confirm on close or refresh?"
@@ -636,7 +637,7 @@ msgstr "进程"
 msgid ""
 "After this many days, the process info and logs will be automatically "
 "cleared."
-msgstr "指定天数后进程的信息和日志将被自动清理"
+msgstr "这么多天后，进程信息和日志将被自动清除。"
 
 #: pgadmin/browser/register_browser_preferences.py:144
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:41
@@ -771,7 +772,9 @@ msgid ""
 "Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users can "
 "provide any string with or without placeholders of their choice. The blank "
 "title will be revert back to the default title with placeholders."
-msgstr "支持的占位提示有%DATABASE%, %USERNAME%, 和 %SERVER%，"
+msgstr ""
+"支持的占位符是%DATABASE%、%USERNAME%和%SERVER%。用户可以提供任何带或不带占位"
+"符的字符串，由他们自己选择。空白的标题将被恢复为带有占位符的默认标题。"
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid "View/Edit data tab title"
@@ -784,8 +787,9 @@ msgid ""
 "choice. The blank title will be revert back to the default title with "
 "placeholders."
 msgstr ""
-"支持的占位提示有 %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, 和 %SERVER% 用户"
-"可以提供任何包含或不包含占位符的字符串，留空将使用默认值"
+"支持的占位符是%SCHEMA%、%TABLE%、%DATABASE%、%USERNAME%和%SERVER%。用户可以提"
+"供任何带或不带占位符的字符串，由他们自己选择。空白的标题将被恢复为带有占位符"
+"的默认标题。"
 
 #: pgadmin/browser/register_browser_preferences.py:486
 msgid "Debugger tab title"
@@ -798,8 +802,8 @@ msgid ""
 "Users can provide any string with or without placeholders of their choice. "
 "The blank title will be revert back to the default title with placeholders."
 msgstr ""
-"支持的占位提示有 %FUNCTION%, %ARGS%, %SCHEMA% 和 %DATABASE% 用户可以提供任何"
-"包含或不包含占位符的字符串，留空将使用默认值"
+"支持的占位符是%FUNCTION%、%ARGS%、%SCHEMA%和%DATABASE%。用户可以根据自己的选"
+"择提供任何带或不带占位符的字符串。空白的标题将被恢复为带有占位符的默认标题。"
 
 #: pgadmin/browser/register_browser_preferences.py:498
 #: pgadmin/browser/static/js/collection.js:76
@@ -859,12 +863,12 @@ msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
 msgstr ""
-"从下拉菜单中选择查询工具、调试器、架构差异、ERD工具或PSQL工具来设置特殊模块在"
-"新选项卡中打开"
+"从下拉菜单中选择查询工具、调试器、架构差异、ERD工具或PSQL工具来为该特定模块设"
+"置在新浏览器标签中打开。"
 
 #: pgadmin/browser/register_browser_preferences.py:523
 msgid "Select open new tab..."
-msgstr "选择打开新选项卡"
+msgstr "选择打开新选项卡..."
 
 #: pgadmin/browser/register_browser_preferences.py:531
 msgid "PSQL tool tab title"
@@ -872,21 +876,23 @@ msgstr "PSQL工具选项卡标题"
 
 #: pgadmin/browser/register_browser_preferences.py:544
 msgid "Enable object breadcrumbs?"
-msgstr "开启对象面包屑"
+msgstr "启用对象面包屑？"
 
 #: pgadmin/browser/register_browser_preferences.py:547
 msgid ""
 "Enable breadcrumbs to show the complete path of an object in the object "
 "explorer. The breadcrumbs are displayed on object mouse hover."
-msgstr "开启面包屑显示完整路径"
+msgstr ""
+"启用面包屑，在对象资源管理器中显示一个对象的完整路径。面包屑会在对象的鼠标悬"
+"停处显示。"
 
 #: pgadmin/browser/register_browser_preferences.py:556
 msgid "Show comment with object breadcrumbs?"
-msgstr "对象面包屑显示注释"
+msgstr "显示带有注释的对象面包屑？"
 
 #: pgadmin/browser/register_browser_preferences.py:559
 msgid "Show object comment along with breadcrumbs."
-msgstr "显示对象注释"
+msgstr "与面包屑一起显示对象注释。"
 
 #: pgadmin/browser/utils.py:305
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -2612,7 +2618,7 @@ msgstr "聚合"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:80
 msgid "System aggregate?"
-msgstr "系统聚合"
+msgstr "系统集合？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:89
 msgid "Input types"
@@ -6686,11 +6692,11 @@ msgstr "指定订阅是否可以激活复制或是否只能在未启动时进行
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:325
 msgid "Refresh publication?"
-msgstr "刷新发布"
+msgstr "刷新发布？"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:328
 msgid "Fetch missing table information from publisher."
-msgstr "从发布任务中获取缺失的表信息"
+msgstr "从发布者获取缺失的表信息"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:337
 msgid "Connect?"
@@ -6725,7 +6731,7 @@ msgstr "此值覆盖'同步提交'设置，默认值为off"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:373
 msgid "Either Host name, Address must be specified."
-msgstr "必须指定主机名或地址"
+msgstr "必须指定主机名或地址。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:381
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:359
@@ -7416,7 +7422,7 @@ msgstr "重复"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:314
 msgid "Schedules are specified using a "
-msgstr "定时任务被指定使用"
+msgstr "定时任务被指定使用 "
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:315
 msgid "cron-style"
@@ -7424,7 +7430,7 @@ msgstr "定时风格"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:318
 msgid "For each selected time or date element, the schedule will execute."
-msgstr "每一个指定的时间或日期任务都会执行"
+msgstr "每一个指定的时间或日期任务都会执行。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:320
 msgid ""
@@ -7621,9 +7627,9 @@ msgid ""
 "sign are optional. To write an empty value, or a value containing spaces, "
 "surround it with single quotes, e.g., keyword = 'a value'. Single quotes and "
 "backslashes within the value must be escaped with a backslash, i.e., ' and "
-"\\.<br>For more information, please see the documentation on <a href="
-"\"https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING"
-"\" target=\"_blank\">libpq connection strings</a>."
+"\\.<br>For more information, please see the documentation on <a "
+"href=\"https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-"
+"CONNSTRING\" target=\"_blank\">libpq connection strings</a>."
 msgstr ""
 "请为远程数据库服务器指定连接字符串。每个参数的设置都是“关键字 = 值”的形式。等"
 "号周围的空格是可选的。要写入空值，或包含空格的值，请用单引号括起来，例如：关"
@@ -8152,11 +8158,11 @@ msgstr "检索角色的变量选项时出错。{0}"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1435
 msgid "Reassign owned executed successfully!"
-msgstr "再分配所有者执行成功"
+msgstr "重新分配所有者成功执行!"
 
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1437
 msgid "Drop owned executed successfully!"
-msgstr "删除所有者信息执行成功"
+msgstr "删除所有者成功执行！"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.js:51
 msgid "Login/Group Role"
@@ -8192,7 +8198,7 @@ msgstr "帐户过期"
 msgid ""
 "Please note that if you leave this field blank, then password will never "
 "expire."
-msgstr "请注意如果此项留空那么密码将不会过期"
+msgstr "请注意，如果你把这个字段留空，那么密码将永远不会过期。"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:106
 msgid "No Expiry"
@@ -8368,7 +8374,7 @@ msgstr "验证二进制路径"
 
 #: pgadmin/browser/server_groups/servers/static/js/binary_path.ui.js:79
 msgid "Failed to validate binary path."
-msgstr "验证二进制目录失败"
+msgstr "验证二进制路径失败。"
 
 #: pgadmin/browser/server_groups/servers/static/js/membership.ui.js:41
 msgid "User/Role"
@@ -10068,7 +10074,7 @@ msgstr "云服务器部署挂起中"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessManager.js:220
 msgid "Failed Cloud Deployment."
-msgstr "部署云服务失败"
+msgstr "部署云服务失败。"
 
 #: pgadmin/misc/bgprocess/static/js/BgProcessNotify.jsx:81
 msgid "Process started"
@@ -10467,11 +10473,11 @@ msgstr "AWS会话令牌"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:112
 msgid "Temporary AWS session required session token."
-msgstr "临时AWS会话需求会话令牌"
+msgstr "临时的AWS会话需要会话令牌。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:145
 msgid "Password must be 8 characters or more."
-msgstr "密码至少8个字符"
+msgstr "密码必须是8个字符或以上。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:150
 msgid "Invalid passowrd."
@@ -10488,7 +10494,9 @@ msgstr "pgAdmin服务器组"
 msgid ""
 "At least 8 printable ASCII characters. Cannot contain any of the "
 "following: / (slash), '(single quote), \"(double quote) and @ (at sign)."
-msgstr "至少8个可见ASCII字符，不能包含一下:/,',\"和@"
+msgstr ""
+"至少有8个可打印的ASCII字符。不能包含以下任何内容：/（斜线）、'（单引"
+"号）、\"（双引号）和@（at符号）。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:179
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:508
@@ -10546,8 +10554,8 @@ msgid ""
 "redundancy, eliminate I/O freezes, and minimize latency spikes during system "
 "backups."
 msgstr ""
-"在不同的可用区域创建一个从节点来确保数据冗余，消除读写冻结和降低系统备份的最"
-"小延迟"
+"在不同的可用性区域（AZ）创建一个备用，以提供数据冗余，消除I/O冻结，并在系统备"
+"份期间尽量减少延迟峰值。"
 
 #: pgadmin/misc/cloud/static/js/azure.js:72
 msgid "Error while verifying Microsoft Azure: ${error}"
@@ -10575,7 +10583,7 @@ msgstr "可用区域"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:53
 msgid "Azure Tenant ID is required for Azure interactive authentication."
-msgstr "Azure的交互式认证需要租户ID"
+msgstr "Azure的交互式认证需要租户ID。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:64
 msgid "Authenticate via"
@@ -10619,7 +10627,7 @@ msgstr "点击上面按钮后将在新浏览器窗口跳转到微软的Azure认�
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:337
 msgid "Burstable (1-2 vCores) "
-msgstr "突发表（1-2核心"
+msgstr "Burstable (1-2 vCores) "
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:340
 msgid "General Purpose (2-64 vCores)"
@@ -10637,11 +10645,11 @@ msgstr "存储空间大小"
 msgid ""
 "The Admin username must be between 1-63 characters long, and must only "
 "contain alphabetic characters and numbers."
-msgstr "管理员用户名长度必须在1-63字符之间，且只能包含字母和数字"
+msgstr "管理员用户名长度必须在1-63字符之间，且只能包含字母和数字。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:444
 msgid "Specified Admin username is not allowed."
-msgstr "指定的管理员用户名不被允许"
+msgstr "不允许指定的管理员用户名。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:462
 msgid ""
@@ -10660,12 +10668,13 @@ msgstr "管理员用户名"
 msgid ""
 "The admin username must be 1-63 characters long and can only contain "
 "characters, numbers and the underscore character. The username cannot be "
-"\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", \"root"
-"\", \"guest\", \"public\", or start with \"pg_\"."
+"\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", "
+"\"root\", \"guest\", \"public\", or start with \"pg_\"."
 msgstr ""
-"管理员用户名长度必须在1-63位，且只能包含字母、数字、下划线，且不能使用："
-"azure_superuser、azure_pg_admin、admin、administrator、root、guest、public或"
-"者pg_开头"
+"管理员的用户名必须是1-63个字符的长度，并且只能包含字符、数字和下划线字符。用"
+"户名不能是 "
+"\"azure_superuser\"、\"azure_pg_admin\"、\"admin\"、\"administrator\"、\"root\"、\"guest\"、\"public\"，"
+"或者以 \"pg_\"开头。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:502
 msgid ""
@@ -10695,7 +10704,9 @@ msgstr "高可用冗余区域"
 msgid ""
 "Zone redundant high availability deploys a standby replica in a different "
 "zone. The Burstable instance type does not support high availability."
-msgstr "不同的冗余区域提供部署复制从节点的能力，突发类型实例不支持高可用"
+msgstr ""
+"区域冗余高可用性在不同的区域部署了一个备用的副本。Burstable实例类型不支持高可"
+"用性。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:647
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:461
@@ -10715,11 +10726,11 @@ msgstr "网络连接"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:681
 msgid "Subscription cannot be empty."
-msgstr "订阅不能为空"
+msgstr "订阅不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:686
 msgid "Resource group cannot be empty."
-msgstr "资源组不能为空"
+msgstr "资源组不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:691
 msgid "Location cannot be empty."
@@ -10727,27 +10738,27 @@ msgstr "位置不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:698
 msgid "Availability zone cannot be empty."
-msgstr "可用区域不能为空"
+msgstr "可用区不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:703
 msgid "Database version cannot be empty."
-msgstr "数据库版本不能为空"
+msgstr "数据库版本不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:708
 msgid "Instance class cannot be empty."
-msgstr "实例分类不能为空"
+msgstr "实例类不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:715
 msgid "Instance type cannot be empty."
-msgstr "实例类型不能为空"
+msgstr "实例类型不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:720
 msgid "Storage size cannot be empty."
-msgstr "存储空间大小不能为空"
+msgstr "存储大小不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:725
 msgid "Public IP range cannot be empty."
-msgstr "外部IP范围不能为空"
+msgstr "公共 IP 范围不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:732
 msgid ""
@@ -10803,7 +10814,7 @@ msgstr "数据库版本"
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:47
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:383
 msgid "Please select number of stand by replicas."
-msgstr "请选择复制从节点的数量"
+msgstr "请选择复制从节点的数量。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:56
 #: pgadmin/misc/cloud/static/js/google.js:311
@@ -10831,7 +10842,7 @@ msgstr "复制从节点数量"
 msgid ""
 "Adding standby replicas will increase your number of CPUs, as well as your "
 "cost."
-msgstr "添加复制从节点将增加CPU核心数并且会增加你的花费"
+msgstr "添加复制从节点将增加CPU核心数并且会增加你的花费。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:85
 msgid "1"
@@ -10851,23 +10862,23 @@ msgstr "请选择卷属性"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:246
 msgid "Please select volume IOPS."
-msgstr "请选择卷的IOPS性能参数"
+msgstr "请选择卷的IOPS性能参数。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:251
 msgid "Please enter the volume size in the range between 1 tp 16384."
-msgstr "请在1-16384范围内输入卷的尺寸"
+msgstr "请在1-16384范围内输入卷的尺寸。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:255
 msgid "Please enter the volume size in the range between 4 tp 16384."
-msgstr "请在4和16384范围内输入卷尺寸"
+msgstr "请在4和16384范围内输入卷尺寸。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:261
 msgid "Please enter the volume IOPS 3000."
-msgstr "请输入卷IOPS 3000"
+msgstr "请输入卷IOPS 3000。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:265
 msgid "Please enter the volume IOPS in the range between 100 tp 2000."
-msgstr "请在范围100到2000内输入卷IOPS"
+msgstr "请在范围100到2000内输入卷IOPS。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:296
 msgid "Volume properties"
@@ -10895,7 +10906,7 @@ msgstr "IOPS (3,000-3,000)"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:379
 msgid "Password must be 12 characters or more."
-msgstr "密码长度必须在12位以上"
+msgstr "密码长度必须在12位以上。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:402
 msgid "Database type"
@@ -10920,7 +10931,7 @@ msgstr "实例类型"
 #: pgadmin/misc/cloud/static/js/cloud.js:58
 #: pgadmin/misc/cloud/static/js/cloud.js:70
 msgid "Deploy Cloud Instance..."
-msgstr "部署云实例"
+msgstr "部署云实例。"
 
 #: pgadmin/misc/cloud/static/js/cloud.js:103
 msgid "Error while clearing cloud wizard data: ${error.response.data.errormsg}"
@@ -10942,15 +10953,15 @@ msgstr "客户端密钥文件"
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:49
 msgid ""
 "Select a client secrets file containing the client ID, client secret, and "
-"other OAuth 2.0 parameters for google authentication. Refer <a href="
-"\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy="
-"%2Cuser-consent%2Cpublic-and-internal-applications\" target=\"_blank\">link</"
-"a> for creating client secret."
+"other OAuth 2.0 parameters for google authentication. Refer <a "
+"href=\"https://support.google.com/cloud/answer/6158849?"
+"hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"target=\"_blank\">link</a> for creating client secret."
 msgstr ""
-"选择一个包含客户端密钥、客户端ID和其他OAuth2参数的密钥文件。来源 <a href="
-"\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy="
-"%2Cuser-consent%2Cpublic-and-internal-applications\" target=\"_blank\">link</"
-"a>"
+"选择一个包含客户端密钥、客户端ID和其他OAuth2参数的密钥文件。来源 <a "
+"href=\"https://support.google.com/cloud/answer/6158849?"
+"hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"target=\"_blank\">link</a>"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:61
 msgid "Click here to authenticate yourself to Google"
@@ -11762,7 +11773,7 @@ msgstr "选择颜色"
 
 #: pgadmin/static/js/components/PgReactDataGrid.jsx:154
 msgid "No rows found."
-msgstr "没有找到结果"
+msgstr "未找到行。"
 
 #: pgadmin/static/js/components/PgTable.jsx:552
 msgid "No rows found"
@@ -12147,7 +12158,7 @@ msgstr "自定义"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:435
 msgid "Tar"
-msgstr "tar压缩包"
+msgstr "Tar"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:439
 msgid "Plain"
@@ -12192,7 +12203,7 @@ msgstr "数据/对象"
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:95
 #: pgadmin/tools/restore/static/js/restore.ui.js:461
 msgid "Please provide a filename."
-msgstr "请提供一个文件名"
+msgstr "请提供一个文件名。"
 
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:104
 msgid ""
@@ -12425,7 +12436,7 @@ msgstr "清除失败"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:805
 msgid "Error occured: "
-msgstr "遇到错误："
+msgstr "发生了错误："
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgumentComponent.jsx:839
 msgid "Debugger Listener Startup Error"
@@ -12787,7 +12798,7 @@ msgstr "正在保存..."
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:653
 msgid "Project saved successfully."
-msgstr "项目保存成功"
+msgstr "项目保存成功。"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:688
 msgid "-- This script was generated by the ERD tool in pgAdmin 4.\n"
@@ -12983,7 +12994,7 @@ msgstr "获取授权向导数据出错"
 
 #: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:215
 msgid "Error while fetching SQL."
-msgstr "获取SQL出错"
+msgstr "获取 SQL 时出错。"
 
 #: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:238
 msgid "Error while saving grant wizard data: ${error.response.data.errormsg}"
@@ -13058,7 +13069,7 @@ msgstr "请指定一个有效的文件"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:60
 msgid "Import/Export Data..."
-msgstr "导入/导出 数据"
+msgstr "导入/导出 数据..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:65
 msgid "Please select any table from the object explorer to Import/Export data."
@@ -13264,7 +13275,7 @@ msgstr "选择服务器组/服务器来导入/导出"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:73
 msgid "Supports only JSON format."
-msgstr "只支持JSON格式"
+msgstr "仅支持JSON格式。"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:76
 msgid "Remove all the existing servers?"
@@ -13281,7 +13292,7 @@ msgstr ""
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_servers.js:49
 msgid "Import/Export Servers..."
-msgstr "导入/导出 服务器"
+msgstr "导入/导出 服务器..."
 
 #: pgadmin/tools/maintenance/__init__.py:36
 #: pgadmin/tools/maintenance/__init__.py:109
@@ -13533,7 +13544,7 @@ msgstr "数据库对象"
 
 #: pgadmin/tools/schema_diff/__init__.py:821
 msgid "Comparing {0} "
-msgstr "比对中 {0}"
+msgstr "正在比较 {0} "
 
 #: pgadmin/tools/schema_diff/__init__.py:824
 msgid "Comparing {0} of schema '{1}'"
@@ -13565,7 +13576,7 @@ msgstr "未发现差异"
 
 #: pgadmin/tools/schema_diff/static/js/components/ResultGridComponent.jsx:744
 msgid "Loading result grid..."
-msgstr "加载结果表格"
+msgstr "加载结果表格..."
 
 #: pgadmin/tools/schema_diff/static/js/components/Results.jsx:87
 msgid "DDL Comparision"
@@ -13667,7 +13678,7 @@ msgstr " 来源和目标数据库服务器必须是同一个大的数据库版�
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:792
 msgid " Database Compare:"
-msgstr "数据库比对："
+msgstr "数据库比较："
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:793
 msgid " Select the server and database for the source and target and Click"
@@ -13676,7 +13687,7 @@ msgstr "\"请为来源和目标选择服务器和数据"
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:793
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:796
 msgid "Compare."
-msgstr "对比"
+msgstr "比较."
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:795
 msgid "Schema Compare:"
@@ -13706,8 +13717,8 @@ msgstr "对象路径"
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:307
 #, python-format
 msgid ""
-"%s objects are disabled in the browser. You can enable them in the <a id="
-"\"prefdlgid\" class=\"pref-dialog-link\">preferences dialog</a>."
+"%s objects are disabled in the browser. You can enable them in the <a "
+"id=\"prefdlgid\" class=\"pref-dialog-link\">preferences dialog</a>."
 msgstr ""
 "%s 对象已在浏览器中禁用。你可以通过 <a id=\"prefdlgid\" class=\"pref-dialog-"
 "link\">参数对话框</a> 启用"
@@ -13838,7 +13849,7 @@ msgstr "数据筛选"
 
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:49
 msgid "Data filter can not be empty."
-msgstr "数据过滤器不能为空"
+msgstr "数据过滤器不能为空。"
 
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:69
 msgid "Data Grid Error"
@@ -14003,7 +14014,7 @@ msgstr "数据排序"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:86
 msgid "Key must be unique."
-msgstr "主键必须唯一"
+msgstr "主键必须唯一。"
 
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/NewConnectionDialog.jsx:44
 msgid ""
@@ -14034,7 +14045,7 @@ msgstr "未渲染不受支持的几何图形。"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:133
 msgid "Empty row."
-msgstr "空行"
+msgstr "空行。"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/GeometryViewer.jsx:196
 #, python-format
@@ -15099,7 +15110,7 @@ msgstr "所有者已成功更改。"
 
 #: pgadmin/tools/user_management/__init__.py:287
 msgid "{0} Shared servers are associated with this user."
-msgstr "{0} 共享服务器已分配给指定用户"
+msgstr "{0} 共享服务器已分配给指定用户。"
 
 #: pgadmin/tools/user_management/__init__.py:296
 #: pgadmin/tools/user_management/__init__.py:333
@@ -15230,7 +15241,7 @@ msgstr "服务器%s的配置已保存到%s"
 
 #: pgadmin/utils/__init__.py:540
 msgid "'Servers' attribute not found in the specified file."
-msgstr "没有在指定文件中找到'服务器'属性"
+msgstr "在指定文件中没有找到'Servers'属性。"
 
 #: pgadmin/utils/__init__.py:555
 #, python-format
@@ -15373,7 +15384,7 @@ msgstr "PostgreSQL 15"
 #: pgadmin/utils/constants.py:118
 #, python-format
 msgid "The specified user ID (%s) could not be found."
-msgstr "指定用户ID（%s）无法找到"
+msgstr "找不到指定的用户 ID（%s）。"
 
 #: pgadmin/utils/constants.py:126
 msgid ""
@@ -15389,7 +15400,7 @@ msgstr "与主机 \"{0}\" 的 SSH 隧道的连接已丢失。重新连接到数�
 
 #: pgadmin/utils/heartbeat.py:34
 msgid "Manager not found. Stopped Heartbeat logging."
-msgstr "没有找到管理器，停止心跳记录"
+msgstr "没有找到管理器，停止心跳日志。"
 
 #: pgadmin/utils/heartbeat.py:45
 msgid "Heartbeat logged successfully."
