@@ -86,13 +86,6 @@ class StartRunningQuery:
                     self.logger.error(msg)
                     return internal_server_error(errormsg=str(msg))
 
-            # Connect to the Server if not connected.
-            if connect and not conn1.connected():
-                status, msg = conn1.connect()
-                if not status:
-                    self.logger.error(msg)
-                    return internal_server_error(errormsg=str(msg))
-
             effective_sql_statement = apply_explain_plan_wrapper_if_needed(
                 manager, sql)
 
@@ -130,7 +123,6 @@ class StartRunningQuery:
         if conn_id is not None:
             self.connection_id = conn_id
 
-
     def __execute_query(self, conn, session_obj, sql, trans_id, trans_obj):
         # on successful connection set the connection id to the
         # transaction object
@@ -165,7 +157,6 @@ class StartRunningQuery:
                 except Exception as e:
                     self.logger.error(e)
                     return internal_server_error(errormsg=str(e))
-
 
         pgAdminThread(target=asyn_exec_query,
                       args=(conn, sql, trans_obj,

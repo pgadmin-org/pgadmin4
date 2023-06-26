@@ -282,7 +282,7 @@ export class ResultSetUtils {
     });
   }
 
-  handlePollError(error) {
+  handlePollError(error, explainObject, flags) {
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_INERROR);
@@ -296,10 +296,15 @@ export class ResultSetUtils {
       query_source: this.historyQuerySource,
       is_pgadmin_query: false,
     });
-    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error);
+    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+      connectionLostCallback: ()=>{
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, this.query, explainObject, flags.external, true);
+      },
+      checkTransaction: true,
+    });
   }
 
-  async pollForResult(onResultsAvailable, onExplain, onPollError) {
+  async pollForResult(onResultsAvailable, onExplain, onPollError, explainObject, flags) {
     try {
       let httpMessage = await this.poll();
       let msg = '';
@@ -348,7 +353,7 @@ export class ResultSetUtils {
       }
     } catch (error) {
       onPollError();
-      this.handlePollError(error);
+      this.handlePollError(error, explainObject, flags);
     }
   }
 
@@ -830,7 +835,9 @@ export function ResultSet() {
         ()=>{
           setColumns([]);
           setRows([]);
-        }
+        },
+        explainObject,
+        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
       );
     };
 

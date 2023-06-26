@@ -34,7 +34,7 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error
+    success_return, internal_server_error, service_unavailable
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
@@ -672,6 +672,20 @@ def close_sqleditor_session(trans_id):
                     conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
                     manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
+        # Close the auto complete connection
+        if cmd_obj.conn_id_ac is not None:
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+            if manager is not None:
+                conn = manager.connection(
+                    did=cmd_obj.did, conn_id=cmd_obj.conn_id_ac)
+
+                # Release the connection
+                if conn.connected():
+                    conn.cancel_transaction(cmd_obj.conn_id_ac, cmd_obj.did)
+                    manager.release(did=cmd_obj.did,
+                                    conn_id=cmd_obj.conn_id_ac)
+
 
 def check_transaction_status(trans_id, auto_comp=False):
     """
@@ -703,8 +717,11 @@ def check_transaction_status(trans_id, auto_comp=False):
 
     if auto_comp:
         conn_id = trans_obj.conn_id_ac
+        connect = True
     else:
         conn_id = trans_obj.conn_id
+        connect = True if 'connect' in request.args and \
+                          request.args['connect'] == '1' else False
     try:
         manager = get_driver(
             PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
@@ -721,10 +738,7 @@ def check_transaction_status(trans_id, auto_comp=False):
         current_app.logger.error(e)
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
-    connect = True if 'connect' in request.args and \
-                      request.args['connect'] == '1' else False
-
-    if connect:
+    if connect and conn and not conn.connected():
         conn.connect()
 
     return True, None, conn, trans_obj, session_obj
@@ -908,11 +922,16 @@ def poll(trans_id):
     if conn and conn.connected() and not conn.async_cursor_initialised():
         return make_json_response(data={'status': 'NotInitialised'})
 
-    if status and conn is not None and\
-        session_obj is not None:
+    if status and conn is not None and session_obj is not None:
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)
         if not status:
+            if not conn.connected():
+                return service_unavailable(
+                    gettext("Connection to the server has been lost."),
+                    info="CONNECTION_LOST",
+                )
+
             messages = conn.messages()
             if messages and len(messages) > 0:
                 additional_messages = ''.join(messages)
@@ -1801,10 +1820,10 @@ def auto_complete(trans_id):
                     SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
                                     conn=conn)
 
-
             auto_complete_obj = auto_complete_objects[trans_id]
             # # Get the auto completion suggestions.
-            res = auto_complete_obj.get_completions(full_sql, text_before_cursor)
+            res = auto_complete_obj.get_completions(full_sql,
+                                                    text_before_cursor)
     else:
         status = False
         res = error_msg

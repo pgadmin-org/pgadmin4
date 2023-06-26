@@ -785,7 +785,7 @@ WHERE db.datname = current_database()""")
                 25,
                 'Psycopg3 Cursor: {0}'.format(str(e)))
 
-    def __internal_blocking_execute(self, cur, query, params, timeout=None):
+    def __internal_blocking_execute(self, cur, query, params):
         """
         This function executes the query using cursor's execute function,
         but in case of asynchronous connection we need to wait for the
@@ -799,11 +799,7 @@ WHERE db.datname = current_database()""")
         """
 
         query = query.encode(self.python_encoding)
-        if timeout:
-            print("time=",timeout)
-            cur.execute(query, params, timeout)
-        else:
-            cur.execute(query, params)
+        cur.execute(query, params)
 
     def execute_on_server_as_csv(self, records=2000):
         """
@@ -1086,7 +1082,7 @@ WHERE db.datname = current_database()""")
             )
             self.__async_query_error = errmsg
 
-            if self.is_disconnected(pe):
+            if self.conn and self.conn.closed or self.is_disconnected(pe):
                 raise ConnectionLost(
                     self.manager.sid,
                     self.db,
@@ -1249,8 +1245,7 @@ WHERE db.datname = current_database()""")
 
         return True, {'columns': columns, 'rows': rows}
 
-    def execute_dict(self, query, params=None, formatted_exception_msg=False,
-                     timeout=None):
+    def execute_dict(self, query, params=None, formatted_exception_msg=False):
         status, cur = self.__cursor()
         self.row_count = 0
 
@@ -1273,8 +1268,7 @@ WHERE db.datname = current_database()""")
             )
         )
         try:
-            self.__internal_blocking_execute(cur, query, params,
-                                             timeout=timeout)
+            self.__internal_blocking_execute(cur, query, params)
         except psycopg.Error as pe:
             cur.close_cursor()
             if not self.connected():
@@ -1770,6 +1764,7 @@ Failed to reset the connection to the server due to following error:
                 'connection has been closed unexpectedly',
                 'SSL SYSCALL error: Bad file descriptor',
                 'SSL SYSCALL error: EOF detected',
+                'terminating connection due to administrator command'
             ]:
                 idx = str_e.find(msg)
                 if idx >= 0 and '"' not in str_e[:idx]:
