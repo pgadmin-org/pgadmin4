@@ -27,7 +27,7 @@ describe('#nodeHasStatistics', () => {
         };
         const pgBrowser = {
           tree: {
-            getTreeNodeHierarchy: jasmine.createSpy(),
+            getTreeNodeHierarchy: jest.fn(),
           }
         };
         const item = {};

@@ -9,7 +9,6 @@
 
 import React from 'react';
 import gettext from 'sources/gettext';
-import Notify from '../../../static/js/helpers/Notifier';
 import pgAdmin from 'sources/pgadmin';
 import AboutComponent from './AboutComponent';
 import current_user from 'pgadmin.user_management.current_user';
@@ -41,9 +40,9 @@ class About {
     }
 
     // Render About component
-    Notify.showModal(gettext('About %s', pgAdmin.Browser.utils.app_name), () => {
+    pgAdmin.Browser.notifier.showModal(gettext('About %s', pgAdmin.Browser.utils.app_name), () => {
       return <AboutComponent />;
-    }, { isFullScreen: false, isResizeable: true, showFullScreen: true, 
+    }, { isFullScreen: false, isResizeable: true, showFullScreen: true,
       isFullWidth: true, dialogWidth: dlgWidth, dialogHeight: dlgHeight, minHeight: dlgHeight
     });
   }

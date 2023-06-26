@@ -7,21 +7,19 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { makeStyles } from '@material-ui/core';
 import SchemaView from '../../../../static/js/SchemaView';
 import BaseUISchema from '../../../../static/js/SchemaView/base_schema.ui';
 import pgAdmin from 'sources/pgadmin';
-import Theme from 'sources/Theme';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import PropTypes from 'prop-types';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
-import authConstant from 'pgadmin.browser.constants';
+import {AUTH_METHODS} from 'pgadmin.browser.constants';
 import current_user from 'pgadmin.user_management.current_user';
 import { isEmptyString } from '../../../../static/js/validators';
-import Notify from '../../../../static/js/helpers/Notifier';
 import { showChangeOwnership } from '../../../../static/js/Dialogs/index';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 
 class UserManagementCollection extends BaseUISchema {
   constructor(authSources, roleOptions) {
@@ -34,11 +32,11 @@ class UserManagementCollection extends BaseUISchema {
       newPassword: undefined,
       confirmPassword: undefined,
       locked: false,
-      auth_source: authConstant['INTERNAL']
+      auth_source: AUTH_METHODS['INTERNAL']
     });
 
     this.authOnlyInternal = (current_user['auth_sources'].length  == 1 &&
-      current_user['auth_sources'].includes(authConstant['INTERNAL'])) ? true : false;
+      current_user['auth_sources'].includes(AUTH_METHODS['INTERNAL'])) ? true : false;
     this.authSources = authSources;
     this.roleOptions = roleOptions;
   }
@@ -48,7 +46,7 @@ class UserManagementCollection extends BaseUISchema {
   }
 
   isUserNameEnabled(state) {
-    return !(this.authOnlyInternal || state.auth_source == authConstant['INTERNAL']);
+    return !(this.authOnlyInternal || state.auth_source == AUTH_METHODS['INTERNAL']);
   }
 
   isEditable(state) {
@@ -91,7 +89,7 @@ class UserManagementCollection extends BaseUISchema {
           if (obj.isNew(state))
             return true;
 
-          return obj.isEditable(state) && state.auth_source != authConstant['INTERNAL'];
+          return obj.isEditable(state) && state.auth_source != AUTH_METHODS['INTERNAL'];
         }
       }, {
         id: 'role', label: gettext('Role'), cell: 'select',
@@ -113,13 +111,13 @@ class UserManagementCollection extends BaseUISchema {
         id: 'newPassword', label: gettext('New password'), cell: 'password',
         minWidth: 90, width: 90, deps: ['auth_source'],
         editable: (state)=> {
-          return obj.isEditable(state) && state.auth_source == authConstant['INTERNAL'];
+          return obj.isEditable(state) && state.auth_source == AUTH_METHODS['INTERNAL'];
         }
       }, {
         id: 'confirmPassword', label: gettext('Confirm password'), cell: 'password',
         minWidth: 90, width: 90, deps: ['auth_source'],
         editable: (state)=> {
-          return obj.isEditable(state) && state.auth_source == authConstant['INTERNAL'];
+          return obj.isEditable(state) && state.auth_source == AUTH_METHODS['INTERNAL'];
         }
       }, {
         id: 'locked', label: gettext('Locked'), cell: 'switch', width: 60, disableResizing: true,
@@ -142,7 +140,7 @@ class UserManagementCollection extends BaseUISchema {
       setError('username', null);
     }
 
-    if (state.auth_source != authConstant['INTERNAL']) {
+    if (state.auth_source != AUTH_METHODS['INTERNAL']) {
       if (obj.isNew(state) && obj.top?._sessData?.userManagement) {
         for (let i=0; i < obj.top._sessData.userManagement.length; i++) {
           if (obj.top._sessData.userManagement[i]?.id &&
@@ -156,7 +154,7 @@ class UserManagementCollection extends BaseUISchema {
       }
     }
 
-    if (state.auth_source == authConstant['INTERNAL']) {
+    if (state.auth_source == AUTH_METHODS['INTERNAL']) {
       let email_filter = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
       if (isEmptyString(state.email)) {
         msg = gettext('Email cannot be empty');
@@ -222,7 +220,7 @@ class UserManagementSchema extends BaseUISchema {
   }
 
   deleteUser(deleteRow) {
-    Notify.confirm(
+    pgAdmin.Browser.notifier.confirm(
       gettext('Delete user?'),
       gettext('Are you sure you wish to delete this user?'),
       deleteRow,
@@ -261,14 +259,14 @@ class UserManagementSchema extends BaseUISchema {
                     );
                   })
                   .catch((err)=>{
-                    Notify.error(err);
+                    pgAdmin.Browser.notifier.error(err);
                   });
               } else {
                 obj.deleteUser(deleteRow);
               }
             })
             .catch((err)=>{
-              Notify.error(err);
+              pgAdmin.Browser.notifier.error(err);
               obj.deleteUser(deleteRow);
             });
         },
@@ -304,7 +302,7 @@ function UserManagementDialog({onClose}) {
           setAuthSources(res.data);
         })
         .catch((err)=>{
-          Notify.error(err);
+          pgAdmin.Browser.notifier.error(err);
         });
 
       api.get(url_for('user_management.roles'))
@@ -312,10 +310,10 @@ function UserManagementDialog({onClose}) {
           setRoles(res.data);
         })
         .catch((err)=>{
-          Notify.error(err);
+          pgAdmin.Browser.notifier.error(err);
         });
     } catch (error) {
-      Notify.error(parseApiError(error));
+      pgAdmin.Browser.notifier.error(parseApiError(error));
     }
   }, []);
 
@@ -324,7 +322,7 @@ function UserManagementDialog({onClose}) {
       try {
         if (changeData['refreshBrowserTree']) {
           // Confirmation dialog to refresh the browser tree.
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             gettext('Object explorer tree refresh required'),
             gettext('The ownership of the shared server was changed or the shared server was deleted, so the object explorer tree refresh is required. Do you wish to refresh the tree?'),
             function () {
@@ -339,7 +337,7 @@ function UserManagementDialog({onClose}) {
         }
         api.post(url_for('user_management.save'), changeData['userManagement'])
           .then(()=>{
-            Notify.success('Users Saved Successfully');
+            pgAdmin.Browser.notifier.success('Users Saved Successfully');
             resolve();
             onClose();
           })
@@ -404,20 +402,16 @@ UserManagementDialog.propTypes = {
 };
 
 export function showUserManagement() {
-  pgAdmin.Browser.Node.registerUtilityPanel();
-  let panel = pgAdmin.Browser.Node.addUtilityPanel(980, pgAdmin.Browser.stdH.md),
-    j = panel.$container.find('.obj_properties').first();
-  panel.title(gettext('User Management'));
-
-  const onClose = ()=> {
-    ReactDOM.unmountComponentAtNode(j[0]);
-    panel.close();
-  };
-
-  ReactDOM.render(
-    <Theme>
+  const panelTitle = gettext('User Management');
+  const panelId = BROWSER_PANELS.USER_MANAGEMENT;
+  pgAdmin.Browser.docker.openDialog({
+    id: panelId,
+    title: panelTitle,
+    manualClose: false,
+    content: (
       <UserManagementDialog
-        onClose={onClose}
+        onClose={()=>{pgAdmin.Browser.docker.close(panelId);}}
       />
-    </Theme>, j[0]);
+    )
+  }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
 }

@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-// eslint-disable-next-line react/display-name
 import React, { useEffect, useMemo, useState } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -16,8 +15,7 @@ import { InputCheckbox } from '../../../static/js/components/FormComponents';
 import { makeStyles } from '@material-ui/core/styles';
 import url_for from 'sources/url_for';
 import Graphs from './Graphs';
-import Notify from '../../../static/js/helpers/Notifier';
-import { Box, Card, CardContent, CardHeader, Tab, Tabs } from '@material-ui/core';
+import { Box, Tab, Tabs } from '@material-ui/core';
 import { PgIconButton } from '../../../static/js/components/Buttons';
 import CancelIcon from '@material-ui/icons/Cancel';
 import StopSharpIcon from '@material-ui/icons/StopSharp';
@@ -33,6 +31,11 @@ import Summary from './SystemStats/Summary';
 import CPU from './SystemStats/CPU';
 import Memory from './SystemStats/Memory';
 import Storage from './SystemStats/Storage';
+import withStandardTabInfo from '../../../static/js/helpers/withStandardTabInfo';
+import { BROWSER_PANELS } from '../../../browser/static/js/constants';
+import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import usePreferences from '../../../preferences/static/js/store';
+import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
 
 function parseData(data) {
   let res = [];
@@ -45,13 +48,11 @@ function parseData(data) {
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
-    height: '100%',
-    background: theme.palette.grey[400],
+    width: '100%',
+    background: theme.otherVars.emptySpaceBg,
     overflow: 'auto',
     padding: '8px',
     display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
   },
   fixedSizeList: {
     overflowX: 'hidden !important',
@@ -91,12 +92,20 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '0.875rem',
   },
   panelContent: {
-    ...theme.mixins.panelBorder,
+    ...theme.mixins.panelBorder.all,
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden !important',
     height: '100%',
-    minHeight: '400px'
+    width: '100%',
+    minHeight: '400px',
+    padding: '8px'
+  },
+  mainTabs: {
+    ...theme.mixins.panelBorder.all,
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   },
   arrowButton: {
     fontSize: '2rem !important',
@@ -139,16 +148,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-/* eslint-disable react/display-name */
-export default function Dashboard({
-  nodeData,
-  node,
-  item,
-  pgBrowser,
-  preferences,
-  sid,
-  did,
-  treeNodeInfo,
+function Dashboard({
+  nodeItem, nodeData, node, treeNodeInfo,
   ...props
 }) {
   const classes = useStyles();
@@ -169,6 +170,16 @@ export default function Dashboard({
   const systemStatsTabChanged = (e, tabVal) => {
     setSystemStatsTabVal(tabVal);
   };
+  const pgAdmin = usePgAdmin();
+  const did = treeNodeInfo?.database?._id ?? 0;
+  const sid = treeNodeInfo?.server?._id ?? 0;
+  const dbConnected = treeNodeInfo?.database?.connected ?? false;
+  const serverConnected = treeNodeInfo?.server?.connected ?? false;
+  const prefStore = usePreferences();
+  const preferences = _.merge(
+    usePreferences().getPreferencesForModule('dashboards'),
+    usePreferences().getPreferencesForModule('graphs')
+  );
 
   if (!did) {
     tabs.push(gettext('Configuration'));
@@ -268,7 +279,7 @@ export default function Dashboard({
               )
                 return;
               let url = action_url + '/' + row.values.pid;
-              Notify.confirm(
+              pgAdmin.Browser.notifier.confirm(
                 title,
                 txtConfirm,
                 function () {
@@ -276,14 +287,14 @@ export default function Dashboard({
                     .delete(url)
                     .then(function (res) {
                       if (res.data == gettext('Success')) {
-                        Notify.success(txtSuccess);
+                        pgAdmin.Browser.notifier.success(txtSuccess);
                         setRefresh(!refresh);
                       } else {
-                        Notify.error(txtError);
+                        pgAdmin.Browser.notifier.error(txtError);
                       }
                     })
                     .catch(function (error) {
-                      Notify.alert(
+                      pgAdmin.Browser.notifier.alert(
                         gettext('Failed to retrieve data from the server.'),
                         error.message
                       );
@@ -335,7 +346,7 @@ export default function Dashboard({
               if (!canTakeAction(row, 'cancel'))
                 return;
               let url = action_url + '/' + row.values.pid;
-              Notify.confirm(
+              pgAdmin.Browser.notifier.confirm(
                 title,
                 txtConfirm,
                 function () {
@@ -343,16 +354,16 @@ export default function Dashboard({
                     .delete(url)
                     .then(function (res) {
                       if (res.data == gettext('Success')) {
-                        Notify.success(txtSuccess);
+                        pgAdmin.Browser.notifier.success(txtSuccess);
                         setRefresh(!refresh);
                       } else {
-                        Notify.error(txtError);
+                        pgAdmin.Browser.notifier.error(txtError);
                         setRefresh(!refresh);
 
                       }
                     })
                     .catch(function (error) {
-                      Notify.alert(
+                      pgAdmin.Browser.notifier.alert(
                         gettext('Failed to retrieve data from the server.'),
                         error.message
                       );
@@ -711,7 +722,7 @@ export default function Dashboard({
           'You cannot terminate background worker processes.'
         );
       }
-      Notify.info(txtMessage);
+      pgAdmin.Browser.notifier.info(txtMessage);
       return false;
       // If it is the last active connection on maintenance db then error out
     } else if (
@@ -727,11 +738,11 @@ export default function Dashboard({
           'You are not allowed to terminate the main active session.'
         );
       }
-      Notify.error(txtMessage);
+      pgAdmin.Browser.notifier.error(txtMessage);
       return false;
     } else if (is_cancel_session && row.original.state == 'idle') {
       // If this session is already idle then do nothing
-      Notify.info(gettext('The session is already in idle state.'));
+      pgAdmin.Browser.notifier.info(gettext('The session is already in idle state.'));
       return false;
     } else if (can_signal_backend) {
       // user with membership of 'pg_signal_backend' can terminate the session of non admin user.
@@ -753,7 +764,7 @@ export default function Dashboard({
           'Superuser privileges are required to terminate another users query.'
         );
       }
-      Notify.error(txtMessage);
+      pgAdmin.Browser.notifier.error(txtMessage);
       return false;
     }
   };
@@ -773,7 +784,7 @@ export default function Dashboard({
       setTabVal(0);
     }
 
-    if (sid && props.serverConnected) {
+    if (sid && serverConnected) {
       if (tabVal === 0) {
         url = url_for('dashboard.activity');
       } else if (tabVal === 1) {
@@ -785,11 +796,11 @@ export default function Dashboard({
       }
 
       message = gettext('Loading dashboard...');
-      if (did && !props.dbConnected) return;
+      if (did && !dbConnected) return;
       if (did) url += sid + '/' + did;
       else url += sid;
 
-      if (did && !props.dbConnected) return;
+      if (did && !dbConnected) return;
       if (did && did > 0) ssExtensionCheckUrl += '/' + sid + '/' + did;
       else ssExtensionCheckUrl += '/' + sid;
 
@@ -804,7 +815,7 @@ export default function Dashboard({
               setdashData(parseData(res.data));
             })
             .catch((error) => {
-              Notify.alert(
+              pgAdmin.Browser.notifier.alert(
                 gettext('Failed to retrieve data from the server.'),
                 _.isUndefined(error.response) ? error.message : error.response.data.errormsg
               );
@@ -842,7 +853,7 @@ export default function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, tabVal, did, preferences, refresh, props.dbConnected, mainTabVal]);
+  }, [nodeData, tabVal, treeNodeInfo, prefStore, refresh, mainTabVal]);
 
   const filteredDashData = useMemo(()=>{
     if (tabVal == 0 && activeOnly) {
@@ -872,7 +883,7 @@ export default function Dashboard({
 
   const showDefaultContents = () => {
     return (
-      sid && !props.serverConnected ? (
+      sid && !serverConnected ? (
         <Box className={classes.dashboardPanel}>
           <div className={classes.emptyPanel}>
             <EmptyPanelMessage text={msg}/>
@@ -880,10 +891,10 @@ export default function Dashboard({
         </Box>
       ) : (
         <WelcomeDashboard
-          pgBrowser={pgBrowser}
+          pgBrowser={pgAdmin.Browser}
           node={node}
           itemData={nodeData}
-          item={item}
+          item={nodeItem}
           sid={sid}
           did={did}
         />
@@ -912,150 +923,148 @@ export default function Dashboard({
 
   return (
     <>
-      {sid && props.serverConnected ? (
+      {sid && serverConnected ? (
         <Box className={classes.dashboardPanel}>
-          <Box className={classes.emptyPanel}>
-            <Box className={classes.panelContent}>
-              <Box height="100%" display="flex" flexDirection="column">
-                <Box>
-                  <Tabs
-                    value={mainTabVal}
-                    onChange={mainTabChanged}
-                  >
-                    {mainTabs.map((tabValue) => {
-                      return <Tab key={tabValue} label={tabValue} />;
-                    })}
-                  </Tabs>
-                </Box>
-                {/* General Statistics */}
-                <TabPanel value={mainTabVal} index={0} classNameRoot={classes.tabPanel}>
-                  {!_.isUndefined(preferences) && preferences.show_graphs && (
-                    <Graphs
-                      key={sid + did}
-                      preferences={preferences}
-                      sid={sid}
-                      did={did}
-                      pageVisible={props.panelVisible}
-                    ></Graphs>
-                  )}
-                  {!_.isUndefined(preferences) && preferences.show_activity && (
-                    <Box className={classes.panelContent}>
-                      <Box
-                        className={classes.cardHeader}
-                        title={props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}
-                      >
-                        {props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}{' '}
-                      </Box>
-                      <Box height="100%" display="flex" flexDirection="column">
-                        <Box>
-                          <Tabs
-                            value={tabVal}
-                            onChange={tabChanged}
-                          >
-                            {tabs.map((tabValue) => {
-                              return <Tab key={tabValue} label={tabValue} />;
-                            })}
-                            <RefreshButton/>
-                          </Tabs>
-                        </Box>
-                        <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
-                          <PgTable
-                            caveTable={false}
-                            CustomHeader={CustomActiveOnlyHeader}
-                            columns={activityColumns}
-                            data={filteredDashData}
-                            schema={schemaDict}
-                          ></PgTable>
-                        </TabPanel>
-                        <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
-                          <PgTable
-                            caveTable={false}
-                            columns={databaseLocksColumns}
-                            data={dashData}
-                          ></PgTable>
-                        </TabPanel>
-                        <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
-                          <PgTable
-                            caveTable={false}
-                            columns={databasePreparedColumns}
-                            data={dashData}
-                          ></PgTable>
-                        </TabPanel>
-                        <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
-                          <PgTable
-                            caveTable={false}
-                            columns={serverConfigColumns}
-                            data={dashData}
-                          ></PgTable>
-                        </TabPanel>
-                      </Box>
-                    </Box>
-                  )}
-                </TabPanel>
-                {/* System Statistics */}
-                <TabPanel value={mainTabVal} index={1} classNameRoot={classes.tabPanel}>
-                  <Box height="100%" display="flex" flexDirection="column">
-                    {ssMsg === 'installed' && did === ldid ?
-                      <>
-                        <Box>
-                          <Tabs
-                            value={systemStatsTabVal}
-                            onChange={systemStatsTabChanged}
-                          >
-                            {systemStatsTabs.map((tabValue) => {
-                              return <Tab key={tabValue} label={tabValue} />;
-                            })}
-                          </Tabs>
-                        </Box>
-                        <TabPanel value={systemStatsTabVal} index={0} classNameRoot={classes.tabPanel}>
-                          <Summary
-                            key={sid + did}
-                            preferences={preferences}
-                            sid={sid}
-                            did={did}
-                            pageVisible={props.panelVisible}
-                            serverConnected={props.serverConnected}
-                          />
-                        </TabPanel>
-                        <TabPanel value={systemStatsTabVal} index={1} classNameRoot={classes.tabPanel}>
-                          <CPU
-                            key={sid + did}
-                            preferences={preferences}
-                            sid={sid}
-                            did={did}
-                            pageVisible={props.panelVisible}
-                            serverConnected={props.serverConnected}
-                          />
-                        </TabPanel>
-                        <TabPanel value={systemStatsTabVal} index={2} classNameRoot={classes.tabPanel}>
-                          <Memory
-                            key={sid + did}
-                            preferences={preferences}
-                            sid={sid}
-                            did={did}
-                            pageVisible={props.panelVisible}
-                            serverConnected={props.serverConnected}
-                          />
-                        </TabPanel>
-                        <TabPanel value={systemStatsTabVal} index={3} classNameRoot={classes.tabPanel}>
-                          <Storage
-                            key={sid + did}
-                            preferences={preferences}
-                            sid={sid}
-                            did={did}
-                            pageVisible={props.panelVisible}
-                            serverConnected={props.serverConnected}
-                            systemStatsTabVal={systemStatsTabVal}
-                          />
-                        </TabPanel>
-                      </> :
-                      <div className={classes.emptyPanel}>
-                        <EmptyPanelMessage text={ssMsg}/>
-                      </div>
-                    }
-                  </Box>
-                </TabPanel>
+          <Box className={classes.panelContent}>
+            <Box className={classes.mainTabs}>
+              <Box>
+                <Tabs
+                  value={mainTabVal}
+                  onChange={mainTabChanged}
+                >
+                  {mainTabs.map((tabValue) => {
+                    return <Tab key={tabValue} label={tabValue} />;
+                  })}
+                </Tabs>
               </Box>
+              {/* General Statistics */}
+              <TabPanel value={mainTabVal} index={0} classNameRoot={classes.tabPanel}>
+                {!_.isUndefined(preferences) && preferences.show_graphs && (
+                  <Graphs
+                    key={sid + did}
+                    preferences={preferences}
+                    sid={sid}
+                    did={did}
+                    pageVisible={props.isActive}
+                  ></Graphs>
+                )}
+                {!_.isUndefined(preferences) && preferences.show_activity && (
+                  <Box className={classes.panelContent}>
+                    <Box
+                      className={classes.cardHeader}
+                      title={dbConnected ?  gettext('Database activity') : gettext('Server activity')}
+                    >
+                      {dbConnected ?  gettext('Database activity') : gettext('Server activity')}{' '}
+                    </Box>
+                    <Box height="100%" display="flex" flexDirection="column">
+                      <Box>
+                        <Tabs
+                          value={tabVal}
+                          onChange={tabChanged}
+                        >
+                          {tabs.map((tabValue) => {
+                            return <Tab key={tabValue} label={tabValue} />;
+                          })}
+                          <RefreshButton/>
+                        </Tabs>
+                      </Box>
+                      <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
+                        <PgTable
+                          caveTable={false}
+                          CustomHeader={CustomActiveOnlyHeader}
+                          columns={activityColumns}
+                          data={filteredDashData}
+                          schema={schemaDict}
+                        ></PgTable>
+                      </TabPanel>
+                      <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
+                        <PgTable
+                          caveTable={false}
+                          columns={databaseLocksColumns}
+                          data={dashData}
+                        ></PgTable>
+                      </TabPanel>
+                      <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                        <PgTable
+                          caveTable={false}
+                          columns={databasePreparedColumns}
+                          data={dashData}
+                        ></PgTable>
+                      </TabPanel>
+                      <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
+                        <PgTable
+                          caveTable={false}
+                          columns={serverConfigColumns}
+                          data={dashData}
+                        ></PgTable>
+                      </TabPanel>
+                    </Box>
+                  </Box>
+                )}
+              </TabPanel>
+              {/* System Statistics */}
+              <TabPanel value={mainTabVal} index={1} classNameRoot={classes.tabPanel}>
+                <Box height="100%" display="flex" flexDirection="column">
+                  {ssMsg === 'installed' && did === ldid ?
+                    <ErrorBoundary>
+                      <Box>
+                        <Tabs
+                          value={systemStatsTabVal}
+                          onChange={systemStatsTabChanged}
+                        >
+                          {systemStatsTabs.map((tabValue) => {
+                            return <Tab key={tabValue} label={tabValue} />;
+                          })}
+                        </Tabs>
+                      </Box>
+                      <TabPanel value={systemStatsTabVal} index={0} classNameRoot={classes.tabPanel}>
+                        <Summary
+                          key={sid + did}
+                          preferences={preferences}
+                          sid={sid}
+                          did={did}
+                          pageVisible={props.isActive}
+                          serverConnected={serverConnected}
+                        />
+                      </TabPanel>
+                      <TabPanel value={systemStatsTabVal} index={1} classNameRoot={classes.tabPanel}>
+                        <CPU
+                          key={sid + did}
+                          preferences={preferences}
+                          sid={sid}
+                          did={did}
+                          pageVisible={props.isActive}
+                          serverConnected={serverConnected}
+                        />
+                      </TabPanel>
+                      <TabPanel value={systemStatsTabVal} index={2} classNameRoot={classes.tabPanel}>
+                        <Memory
+                          key={sid + did}
+                          preferences={preferences}
+                          sid={sid}
+                          did={did}
+                          pageVisible={props.isActive}
+                          serverConnected={serverConnected}
+                        />
+                      </TabPanel>
+                      <TabPanel value={systemStatsTabVal} index={3} classNameRoot={classes.tabPanel}>
+                        <Storage
+                          key={sid + did}
+                          preferences={preferences}
+                          sid={sid}
+                          did={did}
+                          pageVisible={props.isActive}
+                          serverConnected={serverConnected}
+                          systemStatsTabVal={systemStatsTabVal}
+                        />
+                      </TabPanel>
+                    </ErrorBoundary> :
+                    <div className={classes.emptyPanel}>
+                      <EmptyPanelMessage text={ssMsg}/>
+                    </div>
+                  }
+                </Box>
+              </TabPanel>
             </Box>
           </Box>
         </Box>
@@ -1069,48 +1078,14 @@ Dashboard.propTypes = {
   itemData: PropTypes.object,
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
-  item: PropTypes.object,
-  pgBrowser: PropTypes.object,
+  nodeItem: PropTypes.object,
   preferences: PropTypes.object,
   sid: PropTypes.string,
   did: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
   row: PropTypes.object,
   serverConnected: PropTypes.bool,
   dbConnected: PropTypes.bool,
-  panelVisible: PropTypes.bool,
+  isActive: PropTypes.bool,
 };
 
-export function ChartContainer(props) {
-  const classes = useStyles();
-
-  return (
-    <Card className={classes.chartCard} elevation={0}>
-      <CardHeader title={<Box display="flex" justifyContent="space-between">
-        <div id={props.id}>{props.title}</div>
-        <div className={classes.chartLegend}>
-          <div className="d-flex">
-            {props.datasets?.map((datum)=>(
-              <div className="legend-value" key={datum.label}>
-                <span style={{backgroundColor: datum.borderColor}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span className="legend-label">{datum.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Box>} />
-      <CardContent className={classes.chartCardContent}>
-        {!props.errorMsg && !props.isTest && props.children}
-        {props.errorMsg && <EmptyPanelMessage text={props.errorMsg}/>}
-      </CardContent>
-    </Card>
-  );
-}
-
-ChartContainer.propTypes = {
-  id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  datasets: PropTypes.array.isRequired,
-  children: PropTypes.node.isRequired,
-  errorMsg: PropTypes.string,
-  isTest: PropTypes.bool
-};
+export default withStandardTabInfo(Dashboard, BROWSER_PANELS.DASHBOARD);

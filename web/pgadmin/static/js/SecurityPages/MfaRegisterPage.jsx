@@ -13,7 +13,7 @@ function EmailRegisterView({mfaView}) {
 
   if(mfaView.email_address_placeholder) {
     return <>
-      <div style={{textAlign: 'center', fontSize: '1.2em'}}>{mfaView.label}</div>
+      <div style={{textAlign: 'center', fontSize: '1.2em'}} data-test="email-register-view">{mfaView.label}</div>
       <div>
         <input type='hidden' name={mfaView.auth_method} value='SETUP'/>
         <input type='hidden' name='validate' value='send_code'/>
@@ -26,7 +26,7 @@ function EmailRegisterView({mfaView}) {
     </>;
   } else if(mfaView.otp_placeholder) {
     return <>
-      <div style={{textAlign: 'center', fontSize: '1.2em'}}>{mfaView.label}</div>
+      <div style={{textAlign: 'center', fontSize: '1.2em'}} data-test="email-register-view">{mfaView.label}</div>
       <div>
         <input type='hidden' name={mfaView.auth_method} value='SETUP'/>
         <input type='hidden' name='validate' value='verify_code'/>
@@ -47,7 +47,7 @@ function AuthenticatorRegisterView({mfaView}) {
   const [inputValue, setInputValue] = useState(mfaView.email_address);
 
   return <>
-    <div style={{textAlign: 'center', fontSize: '1.2em'}}>{mfaView.auth_title}</div>
+    <div style={{textAlign: 'center', fontSize: '1.2em'}} data-test="auth-register-view">{mfaView.auth_title}</div>
     <div>
       <input type='hidden' name={mfaView.auth_method} value='SETUP'/>
       <input type='hidden' name='VALIDATE' value='validate'/>

@@ -23,11 +23,11 @@ export const tabPanelStyles = makeStyles((theme)=>({
 }));
 
 /* Material UI does not have any tabpanel component, we create one for us */
-export default function TabPanel({children, classNameRoot, className, value, index}) {
+export default function TabPanel({children, classNameRoot, className, value, index, ...props}) {
   const classes = tabPanelStyles();
   const active = value === index;
   return (
-    <Box className={clsx(classes.root, classNameRoot)} component="div" hidden={!active}>
+    <Box className={clsx(classes.root, classNameRoot)} component="div" hidden={!active} data-test="tabpanel" {...props}>
       <Box className={clsx(classes.content, className)}>{children}</Box>
     </Box>
   );

@@ -13,6 +13,7 @@ import Mousetrap from 'mousetrap';
 import * as commonUtils from '../../../static/js/utils';
 import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
+import usePreferences from '../../../preferences/static/js/store';
 
 const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -20,51 +21,53 @@ pgBrowser.keyboardNavigation = pgBrowser.keyboardNavigation || {};
 
 _.extend(pgBrowser.keyboardNavigation, {
   init: function() {
-    Mousetrap.reset();
-    if (pgBrowser.preferences_cache.length > 0) {
-      this.keyboardShortcut = {
-        ...(pgBrowser.get_preference('browser', 'main_menu_file')?.value) && {'file_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_file')?.value)},
-        ...(pgBrowser.get_preference('browser', 'main_menu_object')?.value) && {'object_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_object')?.value)},
-        ...(pgBrowser.get_preference('browser', 'main_menu_tools')?.value) && {'tools_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_tools')?.value)},
-        ...(pgBrowser.get_preference('browser', 'main_menu_help')?.value) && {'help_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'main_menu_help')?.value)},
-        'left_tree_shortcut': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'browser_tree').value),
-        'tabbed_panel_backward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_backward').value),
-        'tabbed_panel_forward': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'tabbed_panel_forward').value),
-        'sub_menu_query_tool': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_query_tool').value),
-        'sub_menu_view_data': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_view_data').value),
-        'sub_menu_search_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_search_objects').value),
-        'sub_menu_properties': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_properties').value),
-        'sub_menu_create': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_create').value),
-        'sub_menu_delete': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_delete').value),
-        'sub_menu_refresh': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_refresh').value),
-        'context_menu': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'context_menu').value),
-        'direct_debugging': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'direct_debugging').value),
-        'add_grid_row': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'add_grid_row').value),
-        'open_quick_search': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'open_quick_search').value),
+    usePreferences.subscribe((prefStore)=>{
+      Mousetrap.reset();
+      if (prefStore.version > 0) {
+        this.keyboardShortcut = {
+          ...(prefStore.getPreferences('browser', 'main_menu_file')?.value) && {'file_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'main_menu_file')?.value)},
+          ...(prefStore.getPreferences('browser', 'main_menu_object')?.value) && {'object_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'main_menu_object')?.value)},
+          ...(prefStore.getPreferences('browser', 'main_menu_tools')?.value) && {'tools_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'main_menu_tools')?.value)},
+          ...(prefStore.getPreferences('browser', 'main_menu_help')?.value) && {'help_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'main_menu_help')?.value)},
+          'left_tree_shortcut': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'browser_tree').value),
+          'tabbed_panel_backward': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'tabbed_panel_backward').value),
+          'tabbed_panel_forward': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'tabbed_panel_forward').value),
+          'sub_menu_query_tool': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_query_tool').value),
+          'sub_menu_view_data': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_view_data').value),
+          'sub_menu_search_objects': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_search_objects').value),
+          'sub_menu_properties': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_properties').value),
+          'sub_menu_create': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_create').value),
+          'sub_menu_delete': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_delete').value),
+          'sub_menu_refresh': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'sub_menu_refresh').value),
+          'context_menu': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'context_menu').value),
+          'direct_debugging': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'direct_debugging').value),
+          'add_grid_row': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'add_grid_row').value),
+          'open_quick_search': commonUtils.parseShortcutValue(prefStore.getPreferences('browser', 'open_quick_search').value),
 
-      };
-      this.shortcutMethods = {
-        ...(pgBrowser.get_preference('browser', 'main_menu_file')?.value) && {'bindMainMenu': {
-          'shortcuts': [this.keyboardShortcut.file_shortcut,
-            this.keyboardShortcut.object_shortcut, this.keyboardShortcut.tools_shortcut,
-            this.keyboardShortcut.help_shortcut],
-        }}, // Main menu
-        'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
-        'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
-        'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
-        'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
-        'bindSubMenuSearchObjects': {'shortcuts': this.keyboardShortcut.sub_menu_search_objects}, // Sub menu - Open search objects,
-        'bindSubMenuProperties': {'shortcuts': this.keyboardShortcut.sub_menu_properties}, // Sub menu - Edit Properties,
-        'bindSubMenuCreate': {'shortcuts': this.keyboardShortcut.sub_menu_create}, // Sub menu - Create Object,
-        'bindSubMenuDelete': {'shortcuts': this.keyboardShortcut.sub_menu_delete}, // Sub menu - Delete object,
-        'bindSubMenuRefresh': {'shortcuts': this.keyboardShortcut.sub_menu_refresh, 'bindElem': '#tree'}, // Sub menu - Refresh object,
-        'bindContextMenu': {'shortcuts': this.keyboardShortcut.context_menu}, // Sub menu - Open context menu,
-        'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
-        'bindAddGridRow': {'shortcuts': this.keyboardShortcut.add_grid_row}, // Subnode Grid Add Row
-        'bindOpenQuickSearch': {'shortcuts': this.keyboardShortcut.open_quick_search}, // Subnode Grid Refresh Row
-      };
-      this.bindShortcuts();
-    }
+        };
+        this.shortcutMethods = {
+          ...(prefStore.getPreferences('browser', 'main_menu_file')?.value) && {'bindMainMenu': {
+            'shortcuts': [this.keyboardShortcut.file_shortcut,
+              this.keyboardShortcut.object_shortcut, this.keyboardShortcut.tools_shortcut,
+              this.keyboardShortcut.help_shortcut],
+          }}, // Main menu
+          'bindRightPanel': {'shortcuts': [this.keyboardShortcut.tabbed_panel_backward, this.keyboardShortcut.tabbed_panel_forward]}, // Main window panels
+          'bindLeftTree': {'shortcuts': this.keyboardShortcut.left_tree_shortcut}, // Main menu,
+          'bindSubMenuQueryTool': {'shortcuts': this.keyboardShortcut.sub_menu_query_tool}, // Sub menu - Open Query Tool,
+          'bindSubMenuViewData': {'shortcuts': this.keyboardShortcut.sub_menu_view_data}, // Sub menu - Open View Data,
+          'bindSubMenuSearchObjects': {'shortcuts': this.keyboardShortcut.sub_menu_search_objects}, // Sub menu - Open search objects,
+          'bindSubMenuProperties': {'shortcuts': this.keyboardShortcut.sub_menu_properties}, // Sub menu - Edit Properties,
+          'bindSubMenuCreate': {'shortcuts': this.keyboardShortcut.sub_menu_create}, // Sub menu - Create Object,
+          'bindSubMenuDelete': {'shortcuts': this.keyboardShortcut.sub_menu_delete}, // Sub menu - Delete object,
+          'bindSubMenuRefresh': {'shortcuts': this.keyboardShortcut.sub_menu_refresh, 'bindElem': '#tree'}, // Sub menu - Refresh object,
+          'bindContextMenu': {'shortcuts': this.keyboardShortcut.context_menu}, // Sub menu - Open context menu,
+          'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
+          'bindAddGridRow': {'shortcuts': this.keyboardShortcut.add_grid_row}, // Subnode Grid Add Row
+          'bindOpenQuickSearch': {'shortcuts': this.keyboardShortcut.open_quick_search}, // Subnode Grid Refresh Row
+        };
+        this.bindShortcuts();
+      }
+    });
   },
   bindShortcuts: function() {
     const self = this;
@@ -116,7 +119,7 @@ _.extend(pgBrowser.keyboardNavigation, {
     }
 
     if(menuLabel) {
-      document.querySelector(`#main-menu-container button[data-label="${menuLabel}"]`)?.click();
+      document.querySelector(`div[data-test="app-menu-bar"] button[data-label="${menuLabel}"]`)?.click();
     }
   },
   bindRightPanel: function(event, combo) {

@@ -7,12 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import IndexSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui';
-import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class SchemaInColl extends BaseUISchema {
   constructor(indexSchemaObj) {
@@ -36,16 +34,12 @@ function getFieldDepChange(schema, id) {
 }
 
 describe('IndexSchema', ()=>{
-  let mount;
   let indexSchemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
-    spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue(Promise.resolve([]));
-    spyOn(nodeAjax, 'getNodeListByName').and.returnValue(Promise.resolve([]));
+    jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
+    jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
     indexSchemaObj = new IndexSchema(
       {
         tablespaceList: ()=>[],
@@ -63,35 +57,33 @@ describe('IndexSchema', ()=>{
     );
   });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(indexSchemaObj));
+  it('create', async ()=>{
+    await getCreateView(indexSchemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(indexSchemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(indexSchemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(indexSchemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(indexSchemaObj, getInitData);
   });
 
-  it('create collection', ()=>{
+  it('create collection', async ()=>{
     let schemaCollObj = new SchemaInColl(indexSchemaObj);
-    let ctrl = mount(getCreateView(schemaCollObj));
+    let {ctrl, user} = await getCreateView(schemaCollObj);
     /* Make sure you hit every corner */
-    ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+    /* Make sure you hit every corner */
+
+    await addNewDatagridRow(user, ctrl);
   });
 
   it('changeColumnOptions', ()=>{
-    spyOn(indexSchemaObj.indexHeaderSchema, 'changeColumnOptions').and.callThrough();
+    jest.spyOn(indexSchemaObj.indexHeaderSchema, 'changeColumnOptions');
     let columns = [{label: 'label', value: 'value'}];
     indexSchemaObj.changeColumnOptions(columns);
     expect(indexSchemaObj.indexHeaderSchema.changeColumnOptions).toHaveBeenCalledWith(columns);
@@ -103,7 +95,7 @@ describe('IndexSchema', ()=>{
         {label: 'id', value: 'id'},
         {label: 'name', value: 'name'}
       ];
-      spyOn(indexSchemaObj.indexColumnSchema, 'getNewData');
+      jest.spyOn(indexSchemaObj.indexColumnSchema, 'getNewData');
       indexSchemaObj.indexHeaderSchema.getNewData({
         is_exp: false,
         colname: 'id',
@@ -153,12 +145,12 @@ describe('IndexSchema', ()=>{
         _sessData: { amname: 'btree' }
       };
       let state = {};
-      spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').and.returnValue(true);
+      jest.spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').mockReturnValue(true);
       let editable = _.find(indexSchemaObj.indexColumnSchema.fields, (f)=>f.id=='sort_order').editable;
       let status = editable(state);
       expect(status).toBe(false);
 
-      spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').and.returnValue(false);
+      jest.spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').mockReturnValue(false);
       status = editable(state);
       expect(status).toBe(true);
 
@@ -172,12 +164,12 @@ describe('IndexSchema', ()=>{
         _sessData: { amname: 'btree' }
       };
       let state = {};
-      spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').and.returnValue(true);
+      jest.spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').mockReturnValue(true);
       let editable = _.find(indexSchemaObj.indexColumnSchema.fields, (f)=>f.id=='nulls').editable;
       let status = editable(state);
       expect(status).toBe(false);
 
-      spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').and.returnValue(false);
+      jest.spyOn(indexSchemaObj.indexColumnSchema, 'inSchemaWithModelCheck').mockReturnValue(false);
       status = editable(state);
       expect(status).toBe(true);
 
@@ -223,7 +215,7 @@ describe('IndexSchema', ()=>{
 
   it('validate', ()=>{
     let state = { columns: [] };
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     indexSchemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('columns', 'You must specify at least one column/expression.');

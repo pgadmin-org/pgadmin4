@@ -11,7 +11,6 @@ import pgAdmin from 'sources/pgadmin';
 import Menu, { MenuItem } from '../../../static/js/helpers/Menu';
 import getApiInstance from '../../../static/js/api_instance';
 import url_for from 'sources/url_for';
-import Notifier from '../../../static/js/helpers/Notifier';
 import { getBrowser } from '../../../static/js/utils';
 import { isMac } from '../../../static/js/keyboard_shortcuts';
 
@@ -98,7 +97,7 @@ export default class MainMenuFactory {
           ).then(()=>{
             window.open(options.url);
           }).catch(()=>{
-            Notifier.error(gettext('Error in opening window'));
+            pgAdmin.Browser.notifier.error(gettext('Error in opening window'));
           });
         }
       }

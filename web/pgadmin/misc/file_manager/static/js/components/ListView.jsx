@@ -153,13 +153,13 @@ export default function ListView({items, operation, ...props}) {
   }, [operation]);
 
   useEffect(()=>{
-    gridRef.current.selectCell({idx: 0, rowIdx: 0});
+    gridRef.current?.selectCell({idx: 0, rowIdx: 0});
   }, [gridRef.current?.element]);
 
   return (
     <PgReactDataGrid
       gridRef={gridRef}
-      id="files"
+      id="list"
       className={classes.grid}
       hasSelectColumn={false}
       columns={columns}

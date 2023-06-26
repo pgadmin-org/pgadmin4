@@ -27,7 +27,7 @@ import { FILTER_NAME, SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { InputCheckbox } from '../../../../../static/js/components/FormComponents';
 import PgReactDataGrid from '../../../../../static/js/components/PgReactDataGrid';
-import Notifier from '../../../../../static/js/helpers/Notifier';
+import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -448,6 +448,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
   const [rootSelection, setRootSelection] = useState(false);
   const [activeRow, setActiveRow] = useState(null);
   const schemaDiffToolContext = useContext(SchemaDiffContext);
+  const pgAdmin = usePgAdmin();
 
   function checkAllChildInclude(row, tempSelectedRows) {
     let isChildAllInclude = true;
@@ -714,7 +715,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
           };
           eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
         }).catch((err) => {
-          Notifier.alert(err.message);
+          pgAdmin.Browser.notifier.alert(err.message);
         });
       } else {
         eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, {});

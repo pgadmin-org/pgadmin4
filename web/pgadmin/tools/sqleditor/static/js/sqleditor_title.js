@@ -10,7 +10,7 @@
 import gettext from 'sources/gettext';
 import pgWindow from 'sources/window';
 import { retrieveNameSpaceName, retrieveNodeName } from './show_view_data';
-import Notify from '../../../../static/js/helpers/Notifier';
+import usePreferences from '../../../../preferences/static/js/store';
 
 const pgAdmin = pgWindow.pgAdmin;
 
@@ -43,7 +43,7 @@ export function getTitle(pgAdmin, browserPref, parentData=null, isConnTitle=fals
 }
 
 export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, parentData=null, conn_title=false, db_label=null) {
-  let preferences = pgBrowser.get_preferences_for_module('browser');
+  let preferences = usePreferences.getState().getPreferencesForModule('browser');
   if(selected_item == null && parentData == null) {
     selected_item = pgBrowser.tree.selected();
   }
@@ -81,28 +81,30 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
   return generateTitle(qt_title_placeholder, title_data);
 }
 
-export function setQueryToolDockerTitle(panel, is_query_tool, panel_title, is_file) {
-  let panel_icon = '', panel_tooltip = '';
-  // Enable/ Disabled the rename panel option if file is open.
-  set_renamable_option(panel, is_file);
+export function getQueryToolIcon(title, isQt, isFile) {
+  let panelIcon = '';
+  let panelTooltip = title;
 
-  if(is_file || is_file == 'true'){
-    panel_tooltip = gettext('File - ') + panel_title;
-    panel_icon = 'fa fa-file-alt';
+  if(isFile || isFile == 'true'){
+    panelIcon = 'fa fa-file-alt';
+    panelTooltip = gettext('File - ') + title;
   }
-  else if (is_query_tool == 'false' || !is_query_tool) {
-    // Edit grid titles
-    panel_tooltip = gettext('View/Edit Data - ') + panel_title;
-    panel_icon = 'pg-font-icon icon-view_data';
+  else if (isQt == 'false' || !isQt) {
+    panelIcon = 'pg-font-icon icon-view_data';
+    panelTooltip = gettext('View/Edit Data - ') + title;
   } else {
-    // Query tool titles
-    panel_tooltip = gettext('Query Tool - ') + panel_title;
-    panel_icon = 'pg-font-icon icon-query_tool';
+    panelIcon = 'pg-font-icon icon-query_tool';
+    panelTooltip = gettext('Query Tool - ') + title;
   }
 
-  panel.title('<span title="'+ _.escape(panel_tooltip) +'">'+ _.escape(panel_title) +'</span>');
-  panel.icon(panel_icon);
+  return [panelIcon, panelTooltip];
+}
 
+export function setQueryToolDockerTitle(docker, panelId, isQt, panelTitle, isFile) {
+  let [icon, tooltip] = getQueryToolIcon(panelTitle, isQt, isFile);
+  // Enable/ Disabled the rename panel option if file is open.
+  // set_renamable_option(panel, is_file);
+  docker.setTitle(panelId, panelTitle, icon, tooltip);
 }
 
 export function set_renamable_option(panel, is_file) {
@@ -139,7 +141,7 @@ export function generateTitle(title_placeholder, title_data) {
  * This function is used refresh the db node after showing alert to the user
  */
 export function refresh_db_node(message, dbNode) {
-  Notify.alert(gettext('Database moved/renamed'), gettext(message), ()=>{
+  pgAdmin.Browser.notifier.alert(gettext('Database moved/renamed'), gettext(message), ()=>{
     pgAdmin.Browser.Nodes.database.callbacks.refresh(undefined, dbNode);
   });
 }

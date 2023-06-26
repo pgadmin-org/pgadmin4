@@ -6,6 +6,23 @@ import CustomPropTypes from '../custom_prop_types';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { PgIconButton } from './Buttons';
 
+function ChildContent({cid, helpid, onRefreshClick, label, ...props}) {
+  return <Box display="flex" >
+    <Box flexGrow="1">
+      <InputSelect {...props} cid={cid} helpid={helpid} />
+    </Box>
+    <Box>
+      <PgIconButton onClick={onRefreshClick} icon={<RefreshIcon />} title={label||''}/>
+    </Box>
+  </Box>;
+}
+
+ChildContent.propTypes = {
+  cid: PropTypes.string,
+  helpid: PropTypes.string,
+  onRefreshClick: PropTypes.func,
+  label: PropTypes.string,
+};
 export function SelectRefresh({ required, className, label, helpMessage, testcid, controlProps, ...props }){
   const [options, setOptions] = useState([]);
   const [optionsReloadBasis, setOptionsReloadBasis] = useState(false);
@@ -18,16 +35,11 @@ export function SelectRefresh({ required, className, label, helpMessage, testcid
         setOptionsReloadBasis((prevVal)=>!prevVal);
       });
   };
+
   return (
     <FormInput required={required} label={label} className={className} helpMessage={helpMessage} testcid={testcid}>
-      <Box display="flex" >
-        <Box flexGrow="1">
-          <InputSelect {...props} options={options} optionsReloadBasis={optionsReloadBasis} controlProps={selectControlProps}/>
-        </Box>
-        <Box>
-          <PgIconButton onClick={onRefreshClick} icon={<RefreshIcon />} title={label||''}/>
-        </Box>
-      </Box>
+      <ChildContent options={options} optionsReloadBasis={optionsReloadBasis}
+        onRefreshClick={onRefreshClick} controlProps={selectControlProps} label={label} {...props} />
     </FormInput>
   );
 }

@@ -7,11 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import gettext from '../../../../static/js/gettext';
-import url_for from '../../../../static/js/url_for';
+import gettext from 'sources/gettext';
+import url_for from 'sources/url_for';
 import {getPanelTitle} from './sqleditor_title';
 import {getRandomInt} from 'sources/utils';
-import Notify from '../../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 function hasDatabaseInformation(parentData) {
   return parentData.database;
@@ -56,7 +56,7 @@ export function showQueryTool(queryToolMod, pgBrowser, url, treeIdentifier, tran
 
   const currentNode = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
   if (currentNode === undefined) {
-    Notify.alert(
+    pgAdmin.Browser.notifier.alert(
       gettext('Query Tool Error'),
       gettext('No object selected.')
     );
@@ -116,26 +116,11 @@ export function launchQueryTool(queryToolMod, transId, gridUrl, queryToolTitle, 
   let retVal = queryToolMod.launch(transId, gridUrl, true, queryToolTitle, params);
 
   if(!retVal) {
-    Notify.alert(
+    pgAdmin.Browser.notifier.alert(
       gettext('Query tool launch error'),
       gettext(
         'Please allow pop-ups for this site to perform the desired action. If the main window of pgAdmin is closed then close this window and open a new pgAdmin session.'
       )
     );
   }
-}
-
-export function _set_dynamic_tab(pgBrowser, value){
-  let sqleditor_panels = pgBrowser.docker.findPanels('frm_sqleditor');
-  const process = panel => {
-    if(value) {
-      document.querySelector(`.wcPanelTab[id="${panel.$title.index()}"] div`).classList.add('wcPanelTab-dynamic');
-    } else {
-      document.querySelector(`.wcPanelTab[id="${panel.$title.index()}"] div`).classList.remove('wcPanelTab-dynamic');
-    }
-  };
-  sqleditor_panels.forEach(process);
-
-  let debugger_panels = pgBrowser.docker.findPanels('frm_debugger');
-  debugger_panels.forEach(process);
 }

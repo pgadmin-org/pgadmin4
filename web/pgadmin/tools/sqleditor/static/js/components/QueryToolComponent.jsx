@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import React, {useCallback, useRef, useMemo, useState, useEffect} from 'react';
 import _ from 'lodash';
-import Layout, { LayoutHelper } from '../../../../../static/js/helpers/Layout';
+import Layout, { LayoutDocker, LAYOUT_EVENTS } from '../../../../../static/js/helpers/Layout';
 import EventBus from '../../../../../static/js/helpers/EventBus';
 import Query from './sections/Query';
 import { ConnectionBar } from './sections/ConnectionBar';
@@ -27,7 +27,6 @@ import NewConnectionDialog from './dialogs/NewConnectionDialog';
 import { evalFunc } from '../../../../../static/js/utils';
 import { Notifications } from './sections/Notifications';
 import MacrosDialog from './dialogs/MacrosDialog';
-import Notifier from '../../../../../static/js/helpers/Notifier';
 import FilterDialog from './dialogs/FilterDialog';
 import { QueryHistory } from './sections/QueryHistory';
 import * as showQueryTool from '../show_query_tool';
@@ -35,9 +34,9 @@ import * as commonUtils from 'sources/utils';
 import * as Kerberos from 'pgadmin.authenticate.kerberos';
 import PropTypes from 'prop-types';
 import { retrieveNodeName } from '../show_view_data';
-import 'wcdocker';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
+import usePreferences from '../../../../../preferences/static/js/store';
 
 export const QueryToolContext = React.createContext();
 export const QueryToolConnectionContext = React.createContext();
@@ -51,16 +50,15 @@ function initConnection(api, params, passdata) {
   return api.post(url_for('NODE-server.connect_id', params), passdata);
 }
 
-function setPanelTitle(panel, title, qtState, dirty=false) {
+function setPanelTitle(docker, panelId, title, qtState, dirty=false) {
   if(qtState.current_file) {
     title = qtState.current_file.split('\\').pop().split('/').pop();
-  } else if (!qtState.is_new_tab) {
-    if(!title) {
-      title = panel.$titleText?.[0].textContent;
-      if(panel.is_dirty_editor) {
-        // remove asterisk
-        title = title.slice(0, -1);
-      }
+  } else if (!qtState.is_new_tab && !title) {
+    const internal = docker.getInternalAttrs(panelId);
+    title = internal.title;
+    if(internal.isDirty) {
+      // remove asterisk
+      title = title.slice(0, -1);
     }
   } else {
     title = qtState.params.title;
@@ -70,8 +68,10 @@ function setPanelTitle(panel, title, qtState, dirty=false) {
   if (qtState.is_new_tab) {
     window.document.title = title;
   } else {
-    panel.is_dirty_editor = dirty;
-    setQueryToolDockerTitle(panel, true, title, qtState.current_file ? true : false);
+    docker.setInternalAttrs(panelId, {
+      isDirty: dirty,
+    });
+    setQueryToolDockerTitle(docker, panelId, true, title, qtState.current_file ? true : false);
   }
 }
 
@@ -79,11 +79,15 @@ function onBeforeUnload(e) {
   e.preventDefault();
   e.returnValue = 'prevent';
 }
-export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, panel, eventBusObj}) {
+export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedNodeInfo, qtPanelDocker, qtPanelId, eventBusObj}) {
   const containerRef = React.useRef(null);
+  const preferencesStore = usePreferences();
   const [qtState, _setQtState] = useState({
     preferences: {
-      browser: {}, sqleditor: {}, graphs: {}, misc: {},
+      browser: preferencesStore.getPreferencesForModule('browser'),
+      sqleditor: preferencesStore.getPreferencesForModule('sqleditor'),
+      graphs: preferencesStore.getPreferencesForModule('graphs'),
+      misc: preferencesStore.getPreferencesForModule('misc'),
     },
     is_new_tab: window.location == window.parent?.location,
     is_visible: true,
@@ -172,15 +176,15 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           children: [
             {
               tabs: [
-                LayoutHelper.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query />}),
-                LayoutHelper.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
+                LayoutDocker.getPanel({id: PANELS.QUERY, title: gettext('Query'), content: <Query />}),
+                LayoutDocker.getPanel({id: PANELS.HISTORY, title: gettext('Query History'), content: <QueryHistory />,
                   cached: undefined}),
               ],
             },
             {
               size: 75,
               tabs: [
-                LayoutHelper.getPanel({
+                LayoutDocker.getPanel({
                   id: PANELS.SCRATCH, title: gettext('Scratch Pad'),
                   closable: true,
                   content: <textarea style={{
@@ -199,13 +203,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           children: [
             {
               tabs: [
-                LayoutHelper.getPanel({
+                LayoutDocker.getPanel({
                   id: PANELS.DATA_OUTPUT, title: gettext('Data Output'), content: <ResultSet />,
                 }),
-                LayoutHelper.getPanel({
+                LayoutDocker.getPanel({
                   id: PANELS.MESSAGES, title: gettext('Messages'), content: <Messages />,
                 }),
-                LayoutHelper.getPanel({
+                LayoutDocker.getPanel({
                   id: PANELS.NOTIFICATIONS, title: gettext('Notifications'), content: <Notifications />,
                 }),
               ],
@@ -215,15 +219,6 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       ]
     },
   };
-
-  const reflectPreferences = useCallback(()=>{
-    setQtState({preferences: {
-      browser: pgWindow.pgAdmin.Browser.get_preferences_for_module('browser'),
-      sqleditor: pgWindow.pgAdmin.Browser.get_preferences_for_module('sqleditor'),
-      graphs: pgWindow.pgAdmin.Browser.get_preferences_for_module('graphs'),
-      misc: pgWindow.pgAdmin.Browser.get_preferences_for_module('misc'),
-    }});
-  }, []);
 
   const getSQLScript = ()=>{
     // Fetch the SQL for Scripts (eg: CREATE/UPDATE/DELETE/SELECT)
@@ -315,8 +310,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     getSQLScript();
     initializeQueryTool();
 
-    eventBus.current.registerListener(QUERY_TOOL_EVENTS.FOCUS_PANEL, (panelId)=>{
-      LayoutHelper.focus(docker.current, panelId);
+    eventBus.current.registerListener(QUERY_TOOL_EVENTS.FOCUS_PANEL, (qtPanelId)=>{
+      docker.current.focus(qtPanelId);
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, (status)=>{
@@ -324,43 +319,32 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     });
 
     eventBus.current.registerListener(QUERY_TOOL_EVENTS.FORCE_CLOSE_PANEL, ()=>{
-      panel.off(window.wcDocker.EVENT.CLOSING);
-      panel.close();
+      qtPanelDocker.close(qtPanelId, true);
     });
 
-    reflectPreferences();
-    pgWindow.pgAdmin.Browser.onPreferencesChange('sqleditor', function() {
-      reflectPreferences();
-    });
-    pgWindow.pgAdmin.Browser.onPreferencesChange('graphs', function() {
-      reflectPreferences();
-    });
-
-    pgWindow.pgAdmin.Browser.onPreferencesChange('browser', function() {
-      reflectPreferences();
+    qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
+      if(qtPanelId == id) {
+        window.removeEventListener('beforeunload', onBeforeUnload);
+        eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
+      }
     });
 
-    /* WC docker events */
-    panel?.on(window.wcDocker.EVENT.CLOSING, function() {
-      window.removeEventListener('beforeunload', onBeforeUnload);
-      eventBus.current.fireEvent(QUERY_TOOL_EVENTS.WARN_SAVE_DATA_CLOSE);
-    });
-
-    panel?.on(window.wcDocker.EVENT.VISIBILITY_CHANGED, function() {
+    qtPanelDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, _.debounce((currentTabId)=>{
       /* Focus the appropriate panel on visible */
-      if(panel.isVisible()) {
+      if(qtPanelId == currentTabId) {
         setQtState({is_visible: true});
-        if(LayoutHelper.isTabVisible(docker.current, PANELS.QUERY)) {
-          LayoutHelper.focus(docker.current, PANELS.QUERY);
-        } else if(LayoutHelper.isTabVisible(docker.current, PANELS.HISTORY)) {
-          LayoutHelper.focus(docker.current, PANELS.HISTORY);
+
+        if(docker.current.isTabVisible(PANELS.QUERY)) {
+          docker.current.focus(PANELS.QUERY);
+        } else if(docker.current.isTabVisible(PANELS.HISTORY)) {
+          docker.current.isTabVisible(PANELS.HISTORY);
         }
 
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL);
       } else {
         setQtState({is_visible: false});
       }
-    });
+    }, 100));
 
     /* If the tab or window is not visible */
     document.addEventListener('visibilitychange', function() {
@@ -371,6 +355,17 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }
     });
   }, []);
+
+  useEffect(() => usePreferences.subscribe(
+    state => {
+      setQtState({preferences: {
+        browser: state.getPreferencesForModule('browser'),
+        sqleditor: state.getPreferencesForModule('sqleditor'),
+        graphs: state.getPreferencesForModule('graphs'),
+        misc: state.getPreferencesForModule('misc'),
+      }});
+    }
+  ), []);
 
   useEffect(()=>{
     const closeConn = ()=>{
@@ -445,7 +440,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
       });
     } else if(error.response?.status == 403  && error.response?.data.info == 'ACCESS_DENIED') {
-      Notifier.error(error.response.data.errormsg);
+      pgAdmin.Browser.notifier.error(error.response.data.errormsg);
     }else {
       let msg = parseApiError(error);
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, msg, true);
@@ -460,7 +455,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
           current_file: fileName,
         });
         isDirtyRef.current = false;
-        setPanelTitle(panel, fileName, {...qtState, current_file: fileName});
+        setPanelTitle(qtPanelDocker, qtPanelId, fileName, {...qtState, current_file: fileName});
       }
       eventBus.current.fireEvent(QUERY_TOOL_EVENTS.EDITOR_LAST_FOCUS);
     };
@@ -494,7 +489,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       [QUERY_TOOL_EVENTS.QUERY_CHANGED, (isDirty)=>{
         isDirtyRef.current = isDirty;
         if(qtState.params.is_query_tool) {
-          setPanelTitle(panel, null, qtState, isDirty);
+          setPanelTitle(qtPanelDocker, qtPanelId, null, qtState, isDirty);
         }
       }],
       [QUERY_TOOL_EVENTS.HANDLE_API_ERROR, handleApiError],
@@ -608,9 +603,9 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               obtaining_conn: false,
             };
           });
-          setPanelTitle(panel, connectionData.title, qtState, isDirtyRef.current);
+          setPanelTitle(qtPanelDocker, qtPanelId, connectionData.title, qtState, isDirtyRef.current);
           let msg = `${connectionData['server_name']}/${connectionData['database_name']} - Database connected`;
-          Notifier.success(_.escape(msg));
+          pgAdmin.Browser.notifier.success(_.escape(msg));
           resolve();
         })
         .catch((error)=>{
@@ -634,8 +629,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   const onNewConnClick = useCallback(()=>{
-    const onClose = ()=>LayoutHelper.close(docker.current, 'new-conn');
-    LayoutHelper.openDialog(docker.current, {
+    const onClose = ()=>docker.current.close('new-conn');
+    docker.current.openDialog({
       id: 'new-conn',
       title: gettext('Add New Connection'),
       content: <NewConnectionDialog onSave={(_isNew, data)=>{
@@ -705,8 +700,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   };
 
   const onManageMacros = useCallback(()=>{
-    const onClose = ()=>LayoutHelper.close(docker.current, 'manage-macros');
-    LayoutHelper.openDialog(docker.current, {
+    const onClose = ()=>LayoutDocker.close(docker.current, 'manage-macros');
+    docker.current.openDialog({
       id: 'manage-macros',
       title: gettext('Manage Macros'),
       content: <MacrosDialog onSave={(newMacros)=>{
@@ -724,8 +719,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
   }, [qtState.preferences.browser]);
 
   const onFilterClick = useCallback(()=>{
-    const onClose = ()=>LayoutHelper.close(docker.current, 'filter-dialog');
-    LayoutHelper.openDialog(docker.current, {
+    const onClose = ()=>LayoutDocker.close(docker.current, 'filter-dialog');
+    docker.current.openDialog({
       id: 'filter-dialog',
       title: gettext('Sort/Filter options'),
       content: <FilterDialog onSave={()=>{
@@ -786,6 +781,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
               defaultLayout={defaultLayout}
               layoutId="SQLEditor/Layout"
               savedLayout={params.layout}
+              resetToTabPanel={PANELS.MESSAGES}
             />
             <StatusBar />
           </Box>
@@ -815,6 +811,7 @@ QueryToolComponent.propTypes = {
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
   selectedNodeInfo: PropTypes.object,
-  panel: PropTypes.object,
+  qtPanelDocker: PropTypes.object,
+  qtPanelId: PropTypes.string,
   eventBusObj: PropTypes.objectOf(EventBus),
 };

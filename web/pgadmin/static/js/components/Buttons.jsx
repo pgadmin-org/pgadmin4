@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme)=>({
   },
   iconButton: {
     minWidth: 0,
-    padding: '3px 6px',
+    padding: '2px 4px',
     '&.MuiButton-sizeSmall, &.MuiButton-outlinedSizeSmall, &.MuiButton-containedSizeSmall': {
       padding: '1px 4px',
     },

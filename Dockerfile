@@ -55,7 +55,8 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
            .[^.]* \
            babel.cfg \
            webpack.* \
-           karma.conf.js \
+           jest.config.js \
+           babel.* \
            ./pgadmin/static/js/generated/.cache
 
 #########################################################################

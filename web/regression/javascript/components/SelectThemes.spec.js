@@ -7,17 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import SelectThemes from '../../../pgadmin/static/js/components/SelectThemes';
-import { InputSelect } from '../../../pgadmin/static/js/components/FormComponents';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('SelectThemes', () => {
-  let mount;
   let options = [{
     value: 'standard',
     preview_src: 'sd',
@@ -37,60 +35,44 @@ describe('SelectThemes', () => {
   }
   ];
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(() => {
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(() => {
-    jasmineEnzyme();
-  });
-
   describe('Select Themes', () => {
-    let ThemedFormInputThemes = withTheme(SelectThemes), ctrl, onChange = jasmine.createSpy('onChange');
-
-    beforeEach(() => {
-      ctrl = mount(
+    let ThemedFormInputThemes = withTheme(SelectThemes), ctrl, onChange = jest.fn();
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
         <ThemedFormInputThemes
           testcid="SelectThemeCid"
           helpMessage="some help message"
           options={options}
           onChange={onChange}
           value={'standard'}
+          {...props}
         />);
+    };
+    beforeEach(async () => {
+      await act( async () => {
+        ctrl = render(
+          <ThemedFormInputThemes
+            testcid="SelectThemeCid"
+            helpMessage="some help message"
+            options={options}
+            onChange={onChange}
+            value={'standard'}
+          />);
+      });
     });
 
     it('init options', () => {
-      expect(ctrl.find(InputSelect).at(0).prop('options').length).toBe(3);
+      expect(screen.getByRole('img').getAttribute('src')).toBe(options[0].preview_src);
     });
 
-    it('change value', () => {
-      ctrl.setProps({
+    it('change value', async () => {
+      ctrlRerender({
         value: 'dark',
         onChange: onChange,
       });
-      expect(ctrl.find(InputSelect).at(0).prop('value')).toBe('dark');
-    });
-
-
-    it('onChange', () => {
-      let select = ctrl.find(InputSelect).at(0);
-      const input = select.find('input');
-      input.simulate('keyDown', { key: 'ArrowDown', keyCode: 40 });
-
-      input.simulate('keyDown', { key: 'Enter', keyCode: 13 });
-      
-      ctrl.setProps({
-        value: 'dark',
-        onChange: onChange,
-      });
-      expect(ctrl.find(InputSelect).at(0).prop('value')).toBe('dark');
+      await waitFor(()=>{
+        expect(screen.getByRole('img').getAttribute('src')).toBe(options[1].preview_src);
+      }, {timeout: 500});
     });
   });
-
 });

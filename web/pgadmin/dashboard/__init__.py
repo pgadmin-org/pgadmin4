@@ -44,22 +44,6 @@ class DashboardModule(PgAdminModule):
         stylesheets = []
         return stylesheets
 
-    def get_panels(self):
-        return [
-            Panel(
-                name='dashboard',
-                priority=1,
-                title=gettext('Dashboard'),
-                icon='',
-                content='',
-                is_closeable=True,
-                is_private=False,
-                limit=1,
-                is_iframe=False,
-                can_hide=True
-            ).__dict__
-        ]
-
     def register_preferences(self):
         """
         register_preferences

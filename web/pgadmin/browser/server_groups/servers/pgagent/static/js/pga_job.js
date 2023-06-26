@@ -10,13 +10,13 @@
 import { getNodeAjaxOptions } from '../../../../../static/js/node_ajax';
 import PgaJobSchema from './pga_job.ui';
 import { getNodePgaJobStepSchema } from '../../steps/static/js/pga_jobstep.ui';
-import Notify from '../../../../../../static/js/helpers/Notifier';
 import getApiInstance from '../../../../../../static/js/api_instance';
+import pgAdmin from 'sources/pgadmin';
 
 define('pgadmin.node.pga_job', [
-  'sources/gettext', 'sources/url_for', 'jquery', 'pgadmin.browser',
+  'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.pga_jobstep', 'pgadmin.node.pga_schedule',
-], function(gettext, url_for, $, pgBrowser) {
+], function(gettext, url_for, pgBrowser) {
 
   if (!pgBrowser.Nodes['coll-pga_job']) {
     pgBrowser.Nodes['coll-pga_job'] =
@@ -95,10 +95,10 @@ define('pgadmin.node.pga_job', [
           getApiInstance().put(
             obj.generate_url(i, 'run_now', d, true),
           ).then(({data: res})=> {
-            Notify.success(res.info);
+            pgAdmin.Browser.notifier.success(res.info);
             t.unload(i);
           }).catch(function(error) {
-            Notify.pgRespErrorNotify(error);
+            pgAdmin.Browser.notifier.pgRespErrorNotify(error);
             t.unload(i);
           });
         }

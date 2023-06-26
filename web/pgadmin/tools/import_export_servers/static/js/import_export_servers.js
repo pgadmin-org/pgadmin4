@@ -8,11 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import gettext from 'sources/gettext';
-import Theme from 'sources/Theme';
 import ImportExportServers from './ImportExportServers';
-import pgBrowser from 'top/browser/static/js/browser';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import pgAdmin from 'sources/pgadmin';
 
 export default class ImportExportServersModule {
   static instance;
@@ -40,24 +39,20 @@ export default class ImportExportServersModule {
       label: gettext('Import/Export Servers...'),
     }];
 
-    pgBrowser.add_menus(menus);
+    pgAdmin.Browser.add_menus(menus);
   }
 
   // This is a callback function to show import/export servers when user click on menu item.
   showImportExportServers() {
-    // Register dialog panel
-    pgBrowser.Node.registerUtilityPanel();
-    let panel = pgBrowser.Node.addUtilityPanel(880, 550),
-      j = panel.$container.find('.obj_properties').first();
-    panel.title(gettext('Import/Export Servers'));
-
-    ReactDOM.render(
-      <Theme>
-        <ImportExportServers
-          onClose={() => {
-            ReactDOM.unmountComponentAtNode(j[0]);
-            panel.close();
-          }}/>
-      </Theme>, j[0]);
+    const panelTitle = gettext('Import/Export Servers');
+    const panelId = BROWSER_PANELS.IMPORT_EXPORT_SERVERS;
+    pgAdmin.Browser.docker.openDialog({
+      id: panelId,
+      title: panelTitle,
+      manualClose: false,
+      content: (
+        <ImportExportServers onClose={()=>{pgAdmin.Browser.docker.close(panelId);}}/>
+      )
+    }, pgAdmin.Browser.stdW.lg, pgAdmin.Browser.stdH.lg);
   }
 }

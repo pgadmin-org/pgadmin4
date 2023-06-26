@@ -69,7 +69,7 @@ class PgadminPage:
 
         self.click_element(self.find_by_css_selector(
             "li[data-label='Reset Layout']"))
-        self.click_modal('Yes')
+        self.click_modal('Yes', docker=True)
         confirmation_alert = True
         try:
             WebDriverWait(self.driver, 1).until(EC.alert_is_present())
@@ -91,14 +91,18 @@ class PgadminPage:
         except TimeoutException:
             pass
 
-    def click_modal(self, button_text):
+    def click_modal(self, button_text, docker=False):
         time.sleep(0.5)
         # Find active dialog in case of multiple dialog
         # & click on that dialog
 
         # In case of react dialog we use different xpath
-        modal_button = self.find_by_xpath(
-            "//span[text()='{}']".format(button_text))
+        if docker:
+            modal_button = self.find_by_css_selector(
+                ".dock-fbox button[data-label='{}']".format(button_text))
+        else:
+            modal_button = self.find_by_css_selector(
+                ".MuiDialog-root button[data-label='{}']".format(button_text))
 
         self.click_element(modal_button)
 
@@ -197,12 +201,10 @@ class PgadminPage:
 
     def close_query_tool(self, prompt=True):
         self.driver.switch_to.default_content()
-        tab = self.find_by_xpath(
-            "//div[@class='wcPanelTab wcPanelTabActive']")
-        ActionChains(self.driver).context_click(tab).perform()
-        self.find_by_xpath(
-            "//li[contains(@class, 'context-menu-item')]/span[contains(text(),"
-            " 'Remove Panel')]").click()
+        time.sleep(.5)
+        self.find_by_css_selector("div[data-dockid='id-main'] "
+                                  ".dock-tab.dock-tab-active "
+                                  "button[data-label='Close']").click()
         if prompt:
             self.driver.switch_to.frame(
                 self.driver.find_elements(By.TAG_NAME, "iframe")[0])
@@ -323,11 +325,6 @@ class PgadminPage:
     def open_explain_options(self):
         return self._open_query_tool_bar_drop_down(
             QueryToolLocators.btn_explain_options_dropdown)
-
-    def close_data_grid(self):
-        self.driver.switch_to.default_content()
-        xpath = "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]"
-        self.click_element(self.find_by_xpath(xpath))
 
     def remove_server(self, server_config):
         self.driver.switch_to.default_content()
@@ -870,7 +867,7 @@ class PgadminPage:
                                  key_after_input=Keys.ARROW_DOWN,
                                  loose_focus=False):
         field = self.find_by_css_selector(
-            "input[name='" + field_name + "']:not(:disabled)")
+            "input[name='" + field_name + "']:read-write")
         self.fill_input(field, field_content, input_keys=input_keys,
                         key_after_input=key_after_input)
 
@@ -941,21 +938,11 @@ class PgadminPage:
                 "arguments[0].CodeMirror.lineCount(),0);",
                 codemirror_ele, field_content)
 
-    def click_tab(self, tab_name, rc_dock=False):
-        if rc_dock:
-            tab = self.find_by_css_selector(
-                NavMenuLocators.rcdock_tab.format(tab_name))
-            self.click_element(tab)
-            return
-
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(
-            (By.XPATH, NavMenuLocators.select_tab_xpath.format(tab_name))))
-        while True:
-            tab = self.find_by_xpath(
-                NavMenuLocators.select_tab_xpath.format(tab_name))
-            self.click_element(tab)
-            if 'wcPanelTabActive' in tab.get_attribute('class'):
-                break
+    def click_tab(self, tab_name):
+        tab = self.find_by_css_selector(
+            NavMenuLocators.select_tab.format(tab_name))
+        self.click_element(tab)
+        time.sleep(0.5)
 
     def wait_for_input_by_element(self, element, content):
         def input_field_has_content(driver):
@@ -1145,7 +1132,8 @@ class PgadminPage:
                 if f_scroll > 0:
                     bottom_ele = self.driver.find_element(
                         By.XPATH,
-                        "//div[@id='tree']/div/div/div/div/div[last()]")
+                        "//div[@id='id-object-explorer']"
+                        "/div/div/div/div/div[last()]")
                     bottom_ele_location = int(
                         bottom_ele.value_of_css_property('top').split("px")[0])
 
@@ -1158,7 +1146,8 @@ class PgadminPage:
                 elif r_scroll > 0:
                     top_el = self.driver.find_element(
                         By.XPATH,
-                        "//div[@id='tree']/div/div/div/div/div[1]")
+                        "//div[@id='id-object-explorer']"
+                        "/div/div/div/div/div[1]")
                     top_el_location = int(
                         top_el.value_of_css_property('top').split("px")[0])
 
@@ -1300,7 +1289,7 @@ class PgadminPage:
             click = True
             while click:
                 try:
-                    self.click_modal('OK')
+                    self.click_modal('OK', docker=True)
                     wait.until(EC.invisibility_of_element(
                         (By.XPATH, "//div[@class ='MuiDialogTitle-root']"
                                    "//div[text()='Utility not found']")

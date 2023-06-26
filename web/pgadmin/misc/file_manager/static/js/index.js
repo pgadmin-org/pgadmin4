@@ -14,7 +14,6 @@ import FileManagerModule from './FileManagerModule';
 /* Do not add let, var, const to this variable */
 __webpack_public_path__ = window.resourceBasePath;
 /* eslint-enable */
-
 if(!pgAdmin.Tools) {
   pgAdmin.Tools = {};
 }

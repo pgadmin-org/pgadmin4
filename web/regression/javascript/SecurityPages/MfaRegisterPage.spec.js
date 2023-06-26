@@ -7,37 +7,23 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import MfaRegisterPage from '../../../pgadmin/static/js/SecurityPages/MfaRegisterPage';
 
 describe('MfaRegisterPage', ()=>{
-  let mount;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
 
   let ctrlMount = (props)=>{
-    return mount(<Theme>
+    return render(<Theme>
       <MfaRegisterPage {...props}/>
     </Theme>);
   };
 
-  it('email registered', (done)=>{
+  it('email registered', ()=>{
     const ctrl = ctrlMount({
       actionUrl: '/mfa/register',
       mfaList: [{
@@ -52,18 +38,14 @@ describe('MfaRegisterPage', ()=>{
       nextUrl: '',
       mfaView: null,
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/mfa/register');
-      expect(ctrl.find('EmailRegisterView')).not.toExist();
-      expect(ctrl.find('AuthenticatorRegisterView')).not.toExist();
-      expect(ctrl.find('SecurityButton[value="DELETE"]').length).toBe(1);
-      expect(ctrl.find('SecurityButton[value="SETUP"]').length).toBe(1);
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/mfa/register');
+    expect(ctrl.container.querySelector('[data-test="email-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelector('[data-test="auth-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelectorAll('button[value="DELETE"]').length).toBe(1);
+    expect(ctrl.container.querySelectorAll('button[value="SETUP"]').length).toBe(1);
   });
 
-  it('both registered', (done)=>{
+  it('both registered', ()=>{
     const ctrl = ctrlMount({
       actionUrl: '/mfa/register',
       mfaList: [{
@@ -78,18 +60,14 @@ describe('MfaRegisterPage', ()=>{
       nextUrl: '',
       mfaView: null,
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/mfa/register');
-      expect(ctrl.find('EmailRegisterView')).not.toExist();
-      expect(ctrl.find('AuthenticatorRegisterView')).not.toExist();
-      expect(ctrl.find('SecurityButton[value="DELETE"]').length).toBe(2);
-      expect(ctrl.find('SecurityButton[value="SETUP"]').length).toBe(0);
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/mfa/register');
+    expect(ctrl.container.querySelector('[data-test="email-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelector('[data-test="auth-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelectorAll('button[value="DELETE"]').length).toBe(2);
+    expect(ctrl.container.querySelectorAll('button[value="SETUP"]').length).toBe(0);
   });
 
-  it('email view register', (done)=>{
+  it('email view register', ()=>{
     const ctrl = ctrlMount({
       actionUrl: '/mfa/register',
       mfaList: [{
@@ -112,19 +90,15 @@ describe('MfaRegisterPage', ()=>{
         note:'This email address will only be used for two factor'
       },
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/mfa/register');
-      expect(ctrl.find('EmailRegisterView')).toExist();
-      expect(ctrl.find('input[name="send_to"]')).toExist();
-      expect(ctrl.find('AuthenticatorRegisterView')).not.toExist();
-      expect(ctrl.find('SecurityButton[value="DELETE"]').length).toBe(0);
-      expect(ctrl.find('SecurityButton[value="SETUP"]').length).toBe(0);
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/mfa/register');
+    expect(ctrl.container.querySelector('[data-test="email-register-view"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('input[name="send_to"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('[data-test="auth-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelectorAll('button[value="DELETE"]').length).toBe(0);
+    expect(ctrl.container.querySelectorAll('button[value="SETUP"]').length).toBe(0);
   });
 
-  it('email view otp code', (done)=>{
+  it('email view otp code', ()=>{
     const ctrl = ctrlMount({
       actionUrl: '/mfa/register',
       mfaList: [{
@@ -147,19 +121,15 @@ describe('MfaRegisterPage', ()=>{
         note:'This email address will only be used for two factor'
       },
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/mfa/register');
-      expect(ctrl.find('EmailRegisterView')).toExist();
-      expect(ctrl.find('input[name="code"]')).toExist();
-      expect(ctrl.find('AuthenticatorRegisterView')).not.toExist();
-      expect(ctrl.find('SecurityButton[value="DELETE"]').length).toBe(0);
-      expect(ctrl.find('SecurityButton[value="SETUP"]').length).toBe(0);
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/mfa/register');
+    expect(ctrl.container.querySelector('[data-test="email-register-view"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('input[name="code"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('[data-test="auth-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelectorAll('button[value="DELETE"]').length).toBe(0);
+    expect(ctrl.container.querySelectorAll('button[value="SETUP"]').length).toBe(0);
   });
 
-  it('authenticator view register', (done)=>{
+  it('authenticator view register', ()=>{
     const ctrl = ctrlMount({
       actionUrl: '/mfa/register',
       mfaList: [{
@@ -181,15 +151,12 @@ describe('MfaRegisterPage', ()=>{
         otp_placeholder: 'Enter code'
       },
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/mfa/register');
-      expect(ctrl.find('EmailRegisterView')).not.toExist();
-      expect(ctrl.find('AuthenticatorRegisterView')).toExist();
-      expect(ctrl.find('input[name="code"]')).toExist();
-      expect(ctrl.find('SecurityButton[value="DELETE"]').length).toBe(0);
-      expect(ctrl.find('SecurityButton[value="SETUP"]').length).toBe(0);
-      ctrl.unmount();
-      done();
-    }, 100);
+
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/mfa/register');
+    expect(ctrl.container.querySelector('[data-test="email-register-view"]')).toBeNull();
+    expect(ctrl.container.querySelector('input[name="code"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('[data-test="auth-register-view"]')).not.toBeNull();
+    expect(ctrl.container.querySelectorAll('button[value="DELETE"]').length).toBe(0);
+    expect(ctrl.container.querySelectorAll('button[value="SETUP"]').length).toBe(0);
   });
 });

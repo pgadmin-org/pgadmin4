@@ -10,11 +10,11 @@
 import React from 'react';
 import gettext from 'sources/gettext';
 import _ from 'lodash';
-import { Link, BrowserRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import pgAdmin from 'sources/pgadmin';
 import PgAdminLogo from './PgAdminLogo';
+import { Link } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -119,118 +119,116 @@ export default function WelcomeDashboard({ pgBrowser }) {
   const classes = useStyles();
 
   return (
-    <BrowserRouter>
-      <div className={classes.emptyPanel}>
-        <div className={classes.dashboardContainer}>
-          <div className={classes.row}>
-            <div className={classes.cardColumn}>
-              <div className={classes.card}>
-                <div className={classes.cardHeader}>{gettext('Welcome')}</div>
-                <div className={classes.cardBody}>
-                  <PgAdminLogo />
-                  <h4>
-                    {gettext('Feature rich')} | {gettext('Maximises PostgreSQL')}{' '}
-                    | {gettext('Open Source')}{' '}
-                  </h4>
-                  <p>
-                    {gettext(
-                      'pgAdmin is an Open Source administration and management tool for the PostgreSQL database. It includes a graphical administration interface, an SQL query tool, a procedural code debugger and much more. The tool is designed to answer the needs of developers, DBAs and system administrators alike.'
-                    )}
-                  </p>
-                </div>
+    <div className={classes.emptyPanel}>
+      <div className={classes.dashboardContainer}>
+        <div className={classes.row}>
+          <div className={classes.cardColumn}>
+            <div className={classes.card}>
+              <div className={classes.cardHeader}>{gettext('Welcome')}</div>
+              <div className={classes.cardBody}>
+                <PgAdminLogo />
+                <h4>
+                  {gettext('Feature rich')} | {gettext('Maximises PostgreSQL')}{' '}
+                  | {gettext('Open Source')}{' '}
+                </h4>
+                <p>
+                  {gettext(
+                    'pgAdmin is an Open Source administration and management tool for the PostgreSQL database. It includes a graphical administration interface, an SQL query tool, a procedural code debugger and much more. The tool is designed to answer the needs of developers, DBAs and system administrators alike.'
+                  )}
+                </p>
               </div>
             </div>
           </div>
-          <div className={classes.row}>
-            <div className={classes.cardColumn}>
-              <div className={classes.card}>
-                <div className={classes.cardHeader}>{gettext('Quick Links')}</div>
-                <div className={classes.cardBody}>
-                  <div className={classes.rowContent}>
-                    <div className={classes.dashboardLink}>
-                      <Link to="#" onClick={() => { AddNewServer(pgBrowser); }} className={classes.link}>
-                        <span
-                          className="fa fa-4x dashboard-icon fa-server"
-                          aria-hidden="true"
-                        ></span>
-                        <br />
-                        {gettext('Add New Server')}
-                      </Link>
-                    </div>
-                    <div className={classes.dashboardLink}>
-                      <Link to="#" onClick={() => pgAdmin.Preferences.show()} className={classes.link}>
-                        <span
-                          id="mnu_preferences"
-                          className="fa fa-4x dashboard-icon fa-cogs"
-                          aria-hidden="true"
-                        ></span>
-                        <br />
-                        {gettext('Configure pgAdmin')}
-                      </Link>
-                    </div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.cardColumn}>
+            <div className={classes.card}>
+              <div className={classes.cardHeader}>{gettext('Quick Links')}</div>
+              <div className={classes.cardBody}>
+                <div className={classes.rowContent}>
+                  <div className={classes.dashboardLink}>
+                    <Link onClick={() => { AddNewServer(pgBrowser); }} className={classes.link}>
+                      <span
+                        className="fa fa-4x dashboard-icon fa-server"
+                        aria-hidden="true"
+                      ></span>
+                      <br />
+                      {gettext('Add New Server')}
+                    </Link>
+                  </div>
+                  <div className={classes.dashboardLink}>
+                    <Link onClick={() => pgAdmin.Preferences.show()} className={classes.link}>
+                      <span
+                        id="mnu_preferences"
+                        className="fa fa-4x dashboard-icon fa-cogs"
+                        aria-hidden="true"
+                      ></span>
+                      <br />
+                      {gettext('Configure pgAdmin')}
+                    </Link>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className={classes.row}>
-            <div className={classes.cardColumn}>
-              <div className={classes.card}>
-                <div className={classes.cardHeader}>{gettext('Getting Started')}</div>
-                <div className={classes.cardBody}>
-                  <div className={classes.rowContent}>
-                    <div className={classes.gettingStartedLink}>
-                      <a
-                        href="https://www.postgresql.org/docs"
-                        target="postgres_help"
-                        className={classes.link}
-                      >
-                        <span
-                          className="fa fa-4x dashboard-icon dashboard-pg-doc"
-                          aria-hidden="true"
-                        ></span>
-                        <br />
-                        {gettext('PostgreSQL Documentation')}
-                      </a>
-                    </div>
-                    <div className={classes.gettingStartedLink}>
-                      <a href="https://www.pgadmin.org" target="pgadmin_website" className={classes.link}>
-                        <span
-                          className="fa fa-4x dashboard-icon fa-globe"
-                          aria-hidden="true"
-                        ></span>
-                        <br />
-                        {gettext('pgAdmin Website')}
-                      </a>
-                    </div>
-                    <div className={classes.gettingStartedLink}>
-                      <a
-                        href="https://planet.postgresql.org"
-                        target="planet_website"
-                        className={classes.link}
-                      >
-                        <span
-                          className="fa fa-4x dashboard-icon fa-book"
-                          aria-hidden="true"
-                        ></span>
-                        <br />
-                        {gettext('Planet PostgreSQL')}
-                      </a>
-                    </div>
-                    <div className={classes.gettingStartedLink}>
-                      <a
-                        href="https://www.postgresql.org/community"
-                        target="postgres_website"
-                        className={classes.link}
-                      >
-                        <span
-                          className="fa fa-4x dashboard-icon fa-users"
-                          aria-hidden="true"
-                        ></span>
-                        <br />
-                        {gettext('Community Support')}
-                      </a>
-                    </div>
+        </div>
+        <div className={classes.row}>
+          <div className={classes.cardColumn}>
+            <div className={classes.card}>
+              <div className={classes.cardHeader}>{gettext('Getting Started')}</div>
+              <div className={classes.cardBody}>
+                <div className={classes.rowContent}>
+                  <div className={classes.gettingStartedLink}>
+                    <a
+                      href="https://www.postgresql.org/docs"
+                      target="postgres_help"
+                      className={classes.link}
+                    >
+                      <span
+                        className="fa fa-4x dashboard-icon dashboard-pg-doc"
+                        aria-hidden="true"
+                      ></span>
+                      <br />
+                      {gettext('PostgreSQL Documentation')}
+                    </a>
+                  </div>
+                  <div className={classes.gettingStartedLink}>
+                    <a href="https://www.pgadmin.org" target="pgadmin_website" className={classes.link}>
+                      <span
+                        className="fa fa-4x dashboard-icon fa-globe"
+                        aria-hidden="true"
+                      ></span>
+                      <br />
+                      {gettext('pgAdmin Website')}
+                    </a>
+                  </div>
+                  <div className={classes.gettingStartedLink}>
+                    <a
+                      href="https://planet.postgresql.org"
+                      target="planet_website"
+                      className={classes.link}
+                    >
+                      <span
+                        className="fa fa-4x dashboard-icon fa-book"
+                        aria-hidden="true"
+                      ></span>
+                      <br />
+                      {gettext('Planet PostgreSQL')}
+                    </a>
+                  </div>
+                  <div className={classes.gettingStartedLink}>
+                    <a
+                      href="https://www.postgresql.org/community"
+                      target="postgres_website"
+                      className={classes.link}
+                    >
+                      <span
+                        className="fa fa-4x dashboard-icon fa-users"
+                        aria-hidden="true"
+                      ></span>
+                      <br />
+                      {gettext('Community Support')}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -238,7 +236,7 @@ export default function WelcomeDashboard({ pgBrowser }) {
           </div>
         </div>
       </div>
-    </BrowserRouter>
+    </div>
   );
 }
 

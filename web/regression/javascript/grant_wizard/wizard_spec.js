@@ -7,39 +7,18 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
-import pgAdmin from 'sources/pgadmin';
-import { messages } from '../fake_messages';
+
+import { render } from '@testing-library/react';
+
 import Theme from 'sources/Theme';
 import Wizard from '../../../pgadmin/static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../pgadmin/static/js/helpers/wizard/WizardStep';
 
 describe('Wizard', () => {
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(() => {
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(() => {
-    jasmineEnzyme();
-    /* messages used by validators */
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.messages = pgAdmin.Browser.messages || messages;
-    pgAdmin.Browser.utils = pgAdmin.Browser.utils || {};
-  });
-
   it('WizardPanel', () => {
-    mount(
+    render(
       <Theme>
         <Wizard
           stepList={['Test']}

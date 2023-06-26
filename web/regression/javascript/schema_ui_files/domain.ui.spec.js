@@ -7,14 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import DomainSchema, { DomainConstSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui';
-import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('DomainSchema', ()=>{
-  let mount;
+
   let schemaObj = new DomainSchema(
     {
       role: ()=>[],
@@ -31,30 +30,24 @@ describe('DomainSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 });
 
@@ -77,43 +70,38 @@ class MockSchema extends BaseUISchema {
 }
 
 describe('DomainConstSchema', ()=>{
-  let mount;
+
   let schemaObj = new MockSchema();
   let domainConstObj = new DomainConstSchema();
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    let ctrl = mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    const {ctrl, user} = await getCreateView(schemaObj);
 
     /* Make sure you hit every corner */
-    ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+
+    await addNewDatagridRow(user, ctrl);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     state.conname = undefined;
     domainConstObj.validate(state, setError);

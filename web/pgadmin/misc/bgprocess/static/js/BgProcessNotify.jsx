@@ -1,13 +1,13 @@
 import { Box, makeStyles } from '@material-ui/core';
 import React from 'react';
-import Notifier from '../../../../static/js/helpers/Notifier';
 import CloseIcon from '@material-ui/icons/CloseRounded';
 import { DefaultButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import clsx from 'clsx';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
-import { BgProcessManagerProcessState } from './BgProcessManager';
+import { BgProcessManagerProcessState } from './BgProcessConstants';
 import PropTypes from 'prop-types';
 import gettext from 'sources/gettext';
+import pgAdmin from 'sources/pgadmin';
 
 
 const useStyles = makeStyles((theme)=>({
@@ -77,7 +77,7 @@ ProcessNotifyMessage.propTypes = {
 
 
 export function processStarted(desc, onViewProcess) {
-  Notifier.notify(
+  pgAdmin.Browser.notifier.notify(
     <ProcessNotifyMessage title={gettext('Process started')} desc={desc} onViewProcess={onViewProcess} dataTestSuffix="start"/>,
     null
   );
@@ -94,7 +94,7 @@ export function processCompleted(desc, process_state, onViewProcess) {
     success = false;
   }
 
-  Notifier.notify(
+  pgAdmin.Browser.notifier.notify(
     <ProcessNotifyMessage title={title} desc={desc} onViewProcess={onViewProcess} success={success} dataTestSuffix="end"/>,
     null
   );

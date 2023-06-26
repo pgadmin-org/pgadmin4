@@ -7,68 +7,33 @@
 //
 //////////////////////////////////////////////////////////////
 
-import $ from 'jquery';
-window.jQuery = window.$ = $;
 
-import 'wcdocker';
-import '../helper/enzyme.helper';
 
 import React from 'react';
-import { createMount } from '@material-ui/core/test-utils';
-import jasmineEnzyme from 'jasmine-enzyme';
+import { act, render } from '@testing-library/react';
+
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 
+import pgAdmin from 'sources/pgadmin';
 import pgWindow from 'sources/window';
 import url_for from 'sources/url_for';
 
-import { messages } from '../fake_messages';
-import { TreeFake } from '../tree/tree_fake';
+
 import Theme from '../../../pgadmin/static/js/Theme';
 import SchemaDiffComponent from '../../../pgadmin/tools/schema_diff/static/js/components/SchemaDiffComponent';
 import SchemaDiff from '../../../pgadmin/tools/schema_diff/static/js/SchemaDiffModule';
 
 
 describe('Schema Diff Component', () => {
-  let mount;
-  let mountDOM;
-  let tree;
+
   let params;
   let networkMock;
   let schemaDiffInstance;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(() => {
-    mount = createMount();
-  });
-
   beforeEach(() => {
-    jasmineEnzyme();
-    // Element for mount wcDocker panel
-    mountDOM = $('<div class="dockerContainer">');
-    $(document.body).append(mountDOM);
-
-    $(document.body).append($('<div id="debugger-main-container">'));
-
-    /* messages used by validators */
-    pgWindow.pgAdmin.Browser = pgWindow.pgAdmin.Browser || {};
-    pgWindow.pgAdmin.Browser.messages = pgWindow.pgAdmin.Browser.messages || messages;
-    pgWindow.pgAdmin.Browser.utils = pgWindow.pgAdmin.Browser.utils || {};
-
+    pgWindow.pgAdmin = pgAdmin;
     schemaDiffInstance = new SchemaDiff(pgWindow.pgAdmin, pgWindow.pgAdmin.Browser);
-
-    // eslint-disable-next-line
-    let docker = new wcDocker(
-      '.dockerContainer', {
-        allowContextMenu: false,
-        allowCollapse: false,
-        loadingClass: 'pg-sp-icon',
-      });
-
-    tree = new TreeFake();
-    pgWindow.pgAdmin.Browser.tree = tree;
-    pgWindow.pgAdmin.Browser.docker = docker;
 
     params = {
       transId: 1234,
@@ -77,7 +42,7 @@ describe('Schema Diff Component', () => {
     networkMock = new MockAdapter(axios);
   });
 
-  it('SchemaDiff Init', () => {
+  it('SchemaDiff Init', async () => {
     networkMock.onGet(url_for('schema_diff.servers')).reply(200,
       {'success':1,
         'errormsg':'',
@@ -95,14 +60,16 @@ describe('Schema Diff Component', () => {
         }
       }
     );
-    mount(
-      <Theme>
-        <SchemaDiffComponent
-          params={{ transId: params.transId, pgAdmin: pgWindow.pgAdmin }}
-        >
-        </SchemaDiffComponent>
-      </Theme>
-    );
+    await act(async ()=>{
+      render(
+        <Theme>
+          <SchemaDiffComponent
+            params={{ transId: params.transId, pgAdmin: pgWindow.pgAdmin }}
+          >
+          </SchemaDiffComponent>
+        </Theme>
+      );
+    });
   });
 });
 

@@ -48,7 +48,7 @@ function EmailValidateView({mfaView, sendEmailUrl, csrfHeader, csrfToken}) {
   };
 
   return <>
-    <div style={{textAlign: 'center'}}>{mfaView.description}</div>
+    <div style={{textAlign: 'center'}} data-test="email-validate-view">{mfaView.description}</div>
     {sentMessage && <>
       <div>{sentMessage}</div>
       {showResend && <div>
@@ -78,7 +78,7 @@ function AuthenticatorValidateView({mfaView}) {
   const [inputValue, setInputValue] = useState('');
 
   return <>
-    <div>{mfaView.auth_description}</div>
+    <div data-test="auth-validate-view">{mfaView.auth_description}</div>
     <InputText value={inputValue} type="password" name="code" placeholder={mfaView.otp_placeholder}
       onChange={setInputValue} autoFocus
     />

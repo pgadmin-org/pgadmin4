@@ -13,7 +13,7 @@ import url_for from 'sources/url_for';
 import { Box, makeStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { MESSAGE_TYPE, NotifierMessage } from '../../../../static/js/components/FormComponents';
-import { BgProcessManagerProcessState } from './BgProcessManager';
+import { BgProcessManagerProcessState } from './BgProcessConstants';
 import { DefaultButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
 import AccessTimeRoundedIcon from '@material-ui/icons/AccessTimeRounded';

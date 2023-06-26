@@ -10,7 +10,7 @@ import { getNodeListByName } from '../../../../../../static/js/node_ajax';
 import SubscriptionSchema from './subscription.ui';
 import getApiInstance from '../../../../../../../static/js/api_instance';
 import _ from 'lodash';
-import Notify from '../../../../../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 define('pgadmin.node.subscription', [
   'sources/gettext', 'sources/url_for',
@@ -100,12 +100,12 @@ define('pgadmin.node.subscription', [
                     .then(res=>{
                       if ((res.data.errormsg === '') && !_.isNull(res.data.data)){
                         resolve(res.data.data);
-                        Notify.info(
+                        pgAdmin.Browser.notifier.info(
                           gettext('Publication fetched successfully.')
                         );
                       }else if(!_.isNull(res.data.errormsg) && _.isNull(res.data.data)){
                         reject(res.data.errormsg);
-                        Notify.alert(
+                        pgAdmin.Browser.notifier.alert(
                           gettext('Check connection?'),
                           gettext(res.data.errormsg)
                         );

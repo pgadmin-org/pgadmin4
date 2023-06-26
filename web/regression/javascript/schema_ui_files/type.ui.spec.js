@@ -7,27 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui';
 import TypeSchema, { EnumerationSchema, getCompositeSchema, getExternalSchema, getRangeSchema, getDataTypeSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('TypeSchema', ()=>{
-
-  let mount;
   let getInitData = ()=>Promise.resolve({});
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
 
   beforeEach(()=>{
     genericBeforeEach();
@@ -39,21 +26,17 @@ describe('TypeSchema', ()=>{
     let types = [{ label: '', value: ''}, { label: 'lb1', value: 'numeric[]', length: true, min_val: 10, max_val: 100, precision: true, is_collatable: true}];
     let collations = [{ label: '', value: ''}, { label: 'lb1', value: 'numeric[]'}];
 
-    it('composite collection', ()=>{
-
-      spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
-      spyOn(compositeCollObj.fieldOptions, 'types').and.returnValue(types);
-      spyOn(compositeCollObj.fieldOptions, 'collations').and.returnValue(collations);
-
-      spyOn(compositeCollObj, 'type_options').and.returnValue(compositeCollObj.fieldOptions.types());
-
-      mount(getCreateView(compositeCollObj));
-      mount(getEditView(compositeCollObj, getInitData));
+    it('composite collection', async ()=>{
+      jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
+      jest.spyOn(compositeCollObj.fieldOptions, 'types').mockReturnValue(types);
+      jest.spyOn(compositeCollObj.fieldOptions, 'collations').mockReturnValue(collations);
+      await getCreateView(compositeCollObj);
+      await getEditView(compositeCollObj, getInitData);
     });
 
     it('composite validate', () => {
       let state = { typtype: 'b' }; //validating for ExternalSchema which is distinguish as r
-      let setError = jasmine.createSpy('setError');
+      let setError = jest.fn();
       compositeCollObj.top = {
         'sessData': { 'typtype':'c' }
       };
@@ -94,15 +77,15 @@ describe('TypeSchema', ()=>{
 
   describe('enumeration schema describe', () => {
 
-    it('enumeration collection', ()=>{
+    it('enumeration collection', async ()=>{
 
       let enumerationCollObj = new EnumerationSchema(
         ()=>[],
         ()=>[]
       );
 
-      mount(getCreateView(enumerationCollObj));
-      mount(getEditView(enumerationCollObj, getInitData));
+      await getCreateView(enumerationCollObj);
+      await getEditView(enumerationCollObj, getInitData);
     });
   });
 
@@ -110,19 +93,19 @@ describe('TypeSchema', ()=>{
 
     let externalCollObj = getExternalSchema({}, {server: {user: {name: 'postgres'}}}, {});
 
-    it('external collection', ()=>{
+    it('external collection', async ()=>{
 
-      spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
-      spyOn(externalCollObj.fieldOptions, 'externalFunctionsList').and.returnValue([{ label: '', value: ''}, { label: 'lb1', cbtype: 'typmodin', value: 'val1'}, { label: 'lb2', cbtype: 'all', value: 'val2'}]);
-      spyOn(externalCollObj.fieldOptions, 'types').and.returnValue([{ label: '', value: ''}]);
+      jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
+      jest.spyOn(externalCollObj.fieldOptions, 'externalFunctionsList').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', cbtype: 'typmodin', value: 'val1'}, { label: 'lb2', cbtype: 'all', value: 'val2'}]);
+      jest.spyOn(externalCollObj.fieldOptions, 'types').mockReturnValue([{ label: '', value: ''}]);
 
-      mount(getCreateView(externalCollObj));
-      mount(getEditView(externalCollObj, getInitData));
+      await getCreateView(externalCollObj);
+      await getEditView(externalCollObj, getInitData);
     });
 
     it('external validate', () => {
       let state = { typtype: 'b' }; //validating for ExternalSchema which is distinguish as r
-      let setError = jasmine.createSpy('setError');
+      let setError = jest.fn();
 
       externalCollObj.validate(state, setError);
       expect(setError).toHaveBeenCalledWith('typinput', 'Input function cannot be empty');
@@ -137,22 +120,22 @@ describe('TypeSchema', ()=>{
 
     let rangeCollObj = getRangeSchema({}, {server: {user: {name: 'postgres'}}}, {});
 
-    it('range collection', ()=>{
+    it('range collection', async ()=>{
 
-      spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
-      spyOn(rangeCollObj.fieldOptions, 'getSubOpClass').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      spyOn(rangeCollObj.fieldOptions, 'getCanonicalFunctions').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      spyOn(rangeCollObj.fieldOptions, 'getSubDiffFunctions').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      spyOn(rangeCollObj.fieldOptions, 'typnameList').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
-      spyOn(rangeCollObj.fieldOptions, 'collationsList').and.returnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
+      jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
+      jest.spyOn(rangeCollObj.fieldOptions, 'getSubOpClass').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
+      jest.spyOn(rangeCollObj.fieldOptions, 'getCanonicalFunctions').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
+      jest.spyOn(rangeCollObj.fieldOptions, 'getSubDiffFunctions').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
+      jest.spyOn(rangeCollObj.fieldOptions, 'typnameList').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
+      jest.spyOn(rangeCollObj.fieldOptions, 'collationsList').mockReturnValue([{ label: '', value: ''}, { label: 'lb1', value: 'val1'}]);
 
-      mount(getCreateView(rangeCollObj));
-      mount(getEditView(rangeCollObj, getInitData));
+      await getCreateView(rangeCollObj);
+      await getEditView(rangeCollObj, getInitData);
     });
 
     it('range validate', () => {
       let state = { typtype: 'r' }; //validating for RangeSchema which is distinguish as r
-      let setError = jasmine.createSpy('setError');
+      let setError = jest.fn();
 
       rangeCollObj.validate(state, setError);
       expect(setError).toHaveBeenCalledWith('typname', 'Subtype cannot be empty');
@@ -164,11 +147,11 @@ describe('TypeSchema', ()=>{
     let dataTypeObj = getDataTypeSchema({}, {server: {user: {name: 'postgres'}}}, {});
     let types = [{ label: '', value: ''}, { label: 'lb1', value: 'numeric', length: true, min_val: 10, max_val: 100, precision: true}];
 
-    it('data type collection', ()=>{
+    it('data type collection', async ()=>{
 
-      spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
-      mount(getCreateView(dataTypeObj));
-      mount(getEditView(dataTypeObj, getInitData));
+      jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
+      await getCreateView(dataTypeObj);
+      await getEditView(dataTypeObj, getInitData);
     });
 
     it('tlength editable', ()=>{
@@ -219,15 +202,15 @@ describe('TypeSchema', ()=>{
     }
   );
 
-  it('create', ()=>{
-    mount(getCreateView(typeSchemaObj));
+  it('create', async ()=>{
+    await getCreateView(typeSchemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(typeSchemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(typeSchemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(typeSchemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(typeSchemaObj, getInitData);
   });
 });

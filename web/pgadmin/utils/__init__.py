@@ -104,13 +104,6 @@ class PgAdminModule(Blueprint):
         """
         return defaultdict(list)
 
-    def get_panels(self):
-        """
-        Returns:
-            list: a list of panel objects to add
-        """
-        return []
-
     def get_exposed_url_endpoints(self):
         """
         Returns:

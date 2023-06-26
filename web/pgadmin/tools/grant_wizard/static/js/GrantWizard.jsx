@@ -23,7 +23,7 @@ import SchemaView from '../../../../static/js/SchemaView';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import PrivilegeSchema from './privilege_schema.ui';
-import Notify from '../../../../static/js/helpers/Notifier';
+import { usePgAdmin } from '../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles(() =>
   ({
@@ -122,6 +122,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
   const [privileges, setPrivileges] = React.useState([]);
   const [privSchemaInstance, setPrivSchemaInstance] = React.useState();
   const [errMsg, setErrMsg] = React.useState('');
+  const pgAdmin = usePgAdmin();
 
   const api = getApiInstance();
   const validatePrivilege = () => {
@@ -181,7 +182,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
         setLoaderText('');
       })
       .catch(() => {
-        Notify.error(gettext('Error while fetching grant wizard data.'));
+        pgAdmin.Browser.notifier.error(gettext('Error while fetching grant wizard data.'));
         setLoaderText('');
       });
   }, [nodeData]);
@@ -204,7 +205,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
           setLoaderText('');
         })
         .catch(() => {
-          Notify.error(gettext('Error while fetching SQL.'));
+          pgAdmin.Browser.notifier.error(gettext('Error while fetching SQL.'));
         });
     }
   };
@@ -227,7 +228,7 @@ export default function GrantWizard({ sid, did, nodeInfo, nodeData, onClose }) {
       })
       .catch((error) => {
         setLoaderText('');
-        Notify.error(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.error(gettext(`Error while saving grant wizard data: ${error.response.data.errormsg}`));
       });
   };
 

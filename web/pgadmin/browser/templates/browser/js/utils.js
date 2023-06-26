@@ -20,7 +20,7 @@
   {% endif %}label: "{{ item.label }}", applies: ["{{ key.lower() }}"],
   priority: {{ item.priority }},
   enable: "{{ item.enable }}",
-  {% if item.checked is defined %}checked: {% if (item.checked or item.name == 'mnu_lock_'+current_ui_lock) %}true{% else %}false{% endif %},
+  {% if item.checked is defined %}checked: {% if item.checked %}true{% else %}false{% endif %},
   {% endif %}
   {% if item.below is defined %}below: {% if item.below %}true{% else %}false{% endif %},
   {% endif %}
@@ -40,9 +40,6 @@ define('pgadmin.browser.utils',
   ['sources/pgadmin'], function(pgAdmin) {
 
   let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
-
-  /* Add hooked-in panels by extensions */
-  pgBrowser['panels_items'] = '{{ current_app.panels|tojson }}';
 
   pgBrowser['MainMenus'] = [];
 

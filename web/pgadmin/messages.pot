@@ -11723,7 +11723,7 @@ msgstr ""
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:136
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:142
 #: pgadmin/static/js/Dialogs/NamedRestoreContent.jsx:88
-#: pgadmin/static/js/Dialogs/RenamePanelContent.jsx:115
+#: pgadmin/static/js/Dialogs/RenameTabContent.jsx:115
 #: pgadmin/static/js/helpers/ModalProvider.jsx:52
 #: pgadmin/static/js/helpers/ModalProvider.jsx:75
 #: pgadmin/static/js/helpers/Notifier.jsx:107
@@ -11772,7 +11772,7 @@ msgstr ""
 msgid "Enter the name of the restore point to add"
 msgstr ""
 
-#: pgadmin/static/js/Dialogs/RenamePanelContent.jsx:85
+#: pgadmin/static/js/Dialogs/RenameTabContent.jsx:85
 msgid "Title cannot be empty"
 msgstr ""
 

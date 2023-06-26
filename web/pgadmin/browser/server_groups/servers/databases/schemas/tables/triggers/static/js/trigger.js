@@ -8,17 +8,16 @@
 //////////////////////////////////////////////////////////////
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../../static/js/node_ajax';
 import TriggerSchema from './trigger.ui';
-import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.trigger', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection',
 ], function(
-  gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-trigger']) {
@@ -118,7 +117,7 @@ define('pgadmin.node.trigger', [
           getApiInstance().put(obj.generate_url(i, 'enable' , d, true), {'is_enable_trigger' : 'O'})
             .then(({data: res})=>{
               if (res.success == 1) {
-                Notify.success(res.info);
+                pgAdmin.Browser.notifier.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger';
                 data.has_enable_triggers =  res.data.has_enable_triggers;
@@ -127,7 +126,7 @@ define('pgadmin.node.trigger', [
               }
             })
             .catch((error)=>{
-              Notify.pgRespErrorNotify(error);
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
               t.refresh(i);
             });
         },
@@ -146,7 +145,7 @@ define('pgadmin.node.trigger', [
           getApiInstance().put(obj.generate_url(i, 'enable' , d, true), {'is_enable_trigger' : 'D'})
             .then(({data: res})=>{
               if (res.success == 1) {
-                Notify.success(res.info);
+                pgAdmin.Browser.notifier.success(res.info);
                 t.removeIcon(i);
                 data.icon = 'icon-trigger-bad';
                 data.has_enable_triggers = res.data.has_enable_triggers;
@@ -155,7 +154,7 @@ define('pgadmin.node.trigger', [
               }
             })
             .catch((error)=>{
-              Notify.pgRespErrorNotify(error);
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
               t.refresh(i);
             });
         },

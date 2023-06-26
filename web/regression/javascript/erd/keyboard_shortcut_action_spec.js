@@ -26,11 +26,11 @@ describe('KeyboardShortcutAction', ()=>{
       key_code: 66,
     },
   };
-  let handler1 = jasmine.createSpy('handler1');
-  let handler2 = jasmine.createSpy('handler2');
+  let handler1 = jest.fn();
+  let handler2 = jest.fn();
 
   beforeAll(()=>{
-    spyOn(KeyboardShortcutAction.prototype, 'shortcutKey').and.callThrough();
+    jest.spyOn(KeyboardShortcutAction.prototype, 'shortcutKey');
     keyAction = new KeyboardShortcutAction([
       [key1, handler1],
       [key2, handler2],

@@ -12,14 +12,14 @@ import { QueryToolContext, QueryToolEventsContext } from '../QueryToolComponent'
 import CodeMirror from '../../../../../../static/js/components/CodeMirror';
 import {PANELS, QUERY_TOOL_EVENTS} from '../QueryToolConstants';
 import url_for from 'sources/url_for';
-import { LayoutEventsContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
+import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
 import gettext from 'sources/gettext';
 import OrigCodeMirror from 'bundled_codemirror';
-import Notifier from '../../../../../../static/js/helpers/Notifier';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
 import { checkTrojanSource } from '../../../../../../static/js/utils';
 import { parseApiError } from '../../../../../../static/js/api_instance';
+import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles(()=>({
   sql: {
@@ -240,11 +240,12 @@ export default function Query() {
   const editor = React.useRef();
   const eventBus = useContext(QueryToolEventsContext);
   const queryToolCtx = useContext(QueryToolContext);
-  const layoutEvenBus = useContext(LayoutEventsContext);
+  const layoutDocker = useContext(LayoutDockerContext);
   const lastCursorPos = React.useRef();
   const lastSavedText = React.useRef('');
   const markedLine = React.useRef(0);
   const marker = React.useRef();
+  const pgAdmin = usePgAdmin();
 
   const removeHighlightError = (cmObj)=>{
     // Remove already existing marker
@@ -336,7 +337,7 @@ export default function Query() {
   };
 
   useEffect(()=>{
-    layoutEvenBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
+    layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
       currentTabId == PANELS.QUERY && editor.current.focus();
     });
 
@@ -367,7 +368,7 @@ export default function Query() {
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, fileName, true);
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.LOAD_FILE_DONE, null, false);
-        Notifier.error(parseApiError(err));
+        pgAdmin.Browser.notifier.error(parseApiError(err));
       });
     });
 
@@ -380,7 +381,7 @@ export default function Query() {
         lastSavedText.current = editorValue;
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, fileName, true);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, isDirty());
-        Notifier.success(gettext('File saved successfully.'));
+        pgAdmin.Browser.notifier.success(gettext('File saved successfully.'));
       }).catch((err)=>{
         eventBus.fireEvent(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, null, false);
         eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, err);
@@ -423,29 +424,6 @@ export default function Query() {
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_QUERY_CHANGE, ()=>{
       change();
     });
-    eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE, ()=>{
-      if(!isDirty() || !queryToolCtx.preferences?.sqleditor.prompt_save_query_changes) {
-        eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
-        return;
-      }
-      queryToolCtx.modal.showModal(gettext('Save query changes?'), (closeModal)=>(
-        <ConfirmSaveContent
-          closeModal={closeModal}
-          text={gettext('The query text has changed. Do you want to save changes?')}
-          onDontSave={()=>{
-            eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
-          }}
-          onSave={()=>{
-            eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, (_f, success)=>{
-              if(success) {
-                eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
-              }
-            }, true);
-            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE);
-          }}
-        />
-      ));
-    });
     eventBus.registerListener(QUERY_TOOL_EVENTS.TRIGGER_FORMAT_SQL, ()=>{
       let selection = true, sql = editor.current?.getSelection();
       if(sql == '') {
@@ -484,6 +462,33 @@ export default function Query() {
       editor.current.focus();
     }, 250);
   }, []);
+
+  useEffect(()=>{
+    const warnSaveTextClose = ()=>{
+      if(!isDirty() || !queryToolCtx.preferences?.sqleditor.prompt_save_query_changes) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
+        return;
+      }
+      queryToolCtx.modal.showModal(gettext('Save query changes?'), (closeModal)=>(
+        <ConfirmSaveContent
+          closeModal={closeModal}
+          text={gettext('The query text has changed. Do you want to save changes?')}
+          onDontSave={()=>{
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
+          }}
+          onSave={()=>{
+            eventBus.registerListener(QUERY_TOOL_EVENTS.SAVE_FILE_DONE, (_f, success)=>{
+              if(success) {
+                eventBus.fireEvent(QUERY_TOOL_EVENTS.WARN_TXN_CLOSE);
+              }
+            }, true);
+            eventBus.fireEvent(QUERY_TOOL_EVENTS.TRIGGER_SAVE_FILE);
+          }}
+        />
+      ));
+    };
+    return eventBus.registerListener(QUERY_TOOL_EVENTS.WARN_SAVE_TEXT_CLOSE, warnSaveTextClose);
+  }, [queryToolCtx.preferences]);
 
   useEffect(()=>{
     registerAutocomplete(queryToolCtx.api, queryToolCtx.params.trans_id, queryToolCtx.preferences.sqleditor,

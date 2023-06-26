@@ -169,7 +169,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.page.click_element(editor_input)
         self.page.execute_query(self.select_query % self.invalid_table_name)
 
-        self.page.click_tab(self.query_history_tab_id, rc_dock=True)
+        self.page.click_tab("Query History")
         self.page.wait_for_query_tool_loading_indicator_to_disappear(
             container_id="id-history")
         selected_history_entry = self.page.find_by_css_selector(
@@ -211,7 +211,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.assertIn(self.select_query % self.invalid_table_name,
                       invalid_history_entry.text)
 
-        self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
+        self.page.click_tab("Query")
         self.page.clear_query_tool()
         self.page.click_element(editor_input)
 
@@ -223,7 +223,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
                 QueryToolLocators.btn_execute_query_css).click()
             self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab(self.query_history_tab_id, rc_dock=True)
+        self.page.click_tab("Query History")
 
         query_list = self.page.wait_for_elements(
             lambda driver: driver.find_elements(
@@ -237,10 +237,10 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self._test_toggle_generated_queries()
 
     def _test_history_query_sources(self):
-        self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
+        self.page.click_tab("Query")
         self._execute_sources_test_queries()
 
-        self.page.click_tab(self.query_history_tab_id, rc_dock=True)
+        self.page.click_tab("Query History")
 
         history_entries_icons = [
             'CommitIcon',
@@ -275,7 +275,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         self.assertTrue(self.page.check_if_element_exist_by_xpath(xpath))
 
     def _test_updatable_resultset(self):
-        self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
+        self.page.click_tab("Query")
 
         # Select all data
         # (contains the primary key -> all columns should be editable)
@@ -309,7 +309,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
     def _test_is_editable_columns_icons(self):
         if self.driver_version < 2.8:
             return
-        self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
+        self.page.click_tab("Query")
 
         self.page.clear_query_tool()
         query = "SELECT pk_column FROM %s" % self.test_editable_table_name
@@ -404,7 +404,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
                 retry -= 1
 
     def _insert_data_into_test_editable_table(self):
-        self.page.click_tab(self.query_editor_tab_id, rc_dock=True)
+        self.page.click_tab("Query")
         self.page.clear_query_tool()
         self.page.execute_query(
             "INSERT INTO %s VALUES (1, 1), (2, 2);"
@@ -412,7 +412,7 @@ class QueryToolJourneyTest(BaseFeatureTest):
         )
 
     def __clear_query_history(self):
-        self.page.click_tab(self.query_history_tab_id, rc_dock=True)
+        self.page.click_tab("Query History")
         self.page.wait_for_query_tool_loading_indicator_to_disappear(
             container_id="id-history")
         self.page.click_element(

@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import {getPanelView} from './panel_view';
 import _ from 'lodash';
 
 define([
@@ -84,15 +83,6 @@ define([
       canDrop: true,
       canDropCascade: true,
       selectParentNodeOnDelete: false,
-      showProperties: function(item, data, panel) {
-        let container =  panel.$container.find('.obj_properties').first();
-        getPanelView(
-          pgBrowser.tree,
-          container[0],
-          pgBrowser,
-          panel._type
-        );
-      },
       generate_url: function(item, type) {
         /*
          * Using list, and collection functions of a node to get the nodes

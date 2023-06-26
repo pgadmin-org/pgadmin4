@@ -10,7 +10,6 @@
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import getApiInstance from '../../../static/js/api_instance';
-import Notifier from '../../../static/js/helpers/Notifier';
 import pgAdmin from 'sources/pgadmin';
 
 const axiosApi = getApiInstance();
@@ -28,9 +27,9 @@ export function send_heartbeat(_server_id, _item) {
       })
       .catch((error) => {
         if (error && error.message == 'Network Error') {
-          Notifier.error(gettext(`pgAdmin server not responding, try to login again: ${error.message || error.response.data.errormsg}`));
+          pgAdmin.Browser.notifier.error(gettext(`pgAdmin server not responding, try to login again: ${error.message || error.response.data.errormsg}`));
         } else {
-          Notifier.error(gettext(`Server heartbeat logging error: ${error.message || error.response.data.errormsg}`));
+          pgAdmin.Browser.notifier.error(gettext(`Server heartbeat logging error: ${error.message || error.response.data.errormsg}`));
         }
         stop_heartbeat(_item);
       });

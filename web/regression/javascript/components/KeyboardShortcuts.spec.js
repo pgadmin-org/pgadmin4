@@ -7,20 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
-import {
-  OutlinedInput,
-} from '@material-ui/core';
+import { fireEvent, render, screen } from '@testing-library/react';
+
+
 import KeyboardShortcuts from '../../../pgadmin/static/js/components/KeyboardShortcuts';
-import { InputCheckbox } from '../../../pgadmin/static/js/components/FormComponents';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('KeyboardShortcuts', () => {
-  let mount;
   let defult_value = {
     'control': true,
     'alt': true,
@@ -49,25 +45,11 @@ describe('KeyboardShortcuts', () => {
     type: 'checkbox'
   }];
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(() => {
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(() => {
-    jasmineEnzyme();
-  });
-
   describe('KeyboardShortcuts', () => {
-    let ThemedFormInputKeyboardShortcuts = withTheme(KeyboardShortcuts), ctrl;
-    let onChange = jasmine.createSpy('onChange');
+    let ThemedFormInputKeyboardShortcuts = withTheme(KeyboardShortcuts);
+    let onChange = jest.fn();
     beforeEach(() => {
-      ctrl = mount(
+      render(
         <ThemedFormInputKeyboardShortcuts
           value={defult_value}
           fields={fields}
@@ -80,33 +62,33 @@ describe('KeyboardShortcuts', () => {
     });
 
     it('init', () => {
-      expect(ctrl.find(OutlinedInput).prop('value')).toBe('a');
+      expect(screen.getByRole('textbox').getAttribute('value')).toBe('a');
     });
 
-    it('Key change', (done) => {
-      ctrl.find(OutlinedInput).at(0).find('input').simulate('keydown', { key: '', keyCode: 32});
+    it('Key change', () => {
+      fireEvent.keyDown(screen.getByRole('textbox'), {
+        key: 'Space', code: 32, keyCode: 32
+      });
       expect(onChange).toHaveBeenCalledWith({ control: true, alt: true, key: { char: 'Space', key_code: 32 }, shift: false });
-      done();
     });
 
-    it('Shift option', (done) => {
-      ctrl.find(InputCheckbox).at(0).find('input').simulate('change', { target: { checked: true, name: 'shift' } });
+    it('Shift option', () => {
+      const input = screen.getAllByRole('checkbox').at(0);
+      fireEvent.click(input);
       expect(onChange).toHaveBeenCalledWith({ control: true, alt: true, key: { char: 'a', key_code: 97 }, shift: true });
-      done();
     });
 
-    it('Control option', (done) => {
-      ctrl.find(InputCheckbox).at(1).find('input').simulate('change', { target: { checked: false, name: 'ctrl' } });
+    it('Control option', () => {
+      const input = screen.getAllByRole('checkbox').at(1);
+      fireEvent.click(input);
       expect(onChange).toHaveBeenCalledWith({ control: false, alt: true, key: { char: 'a', key_code: 97 }, shift: false });
-      done();
     });
 
 
-    it('Alt option', (done) => {
-      ctrl.find(InputCheckbox).at(2).find('input').simulate('change', { target: { checked: false, name: 'alt' } });
+    it('Alt option', () => {
+      const input = screen.getAllByRole('checkbox').at(2);
+      fireEvent.click(input);
       expect(onChange).toHaveBeenCalledWith({ control: true, alt: false, key: { char: 'a', key_code: 97 }, shift: false });
-      done();
     });
-
   });
 });

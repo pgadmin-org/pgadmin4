@@ -35,15 +35,6 @@ export default class ChartsDOM {
     this.render();
   }
 
-  reflectPreferences(preferences) {
-    this.preferences = preferences;
-    if(preferences.show_graphs) {
-      this.render();
-    } else {
-      this.unmount();
-    }
-  }
-
   setPageVisible(visible) {
     this.pageVisible = visible;
     this.render();

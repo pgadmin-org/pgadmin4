@@ -8,15 +8,12 @@
 //////////////////////////////////////////////////////////////////////////
 
 import _ from 'lodash';
-import url_for from './url_for';
 import gettext from 'sources/gettext';
-import 'wcdocker';
-import Notify from './helpers/Notifier';
 import { hasTrojanSource } from 'anti-trojan-source';
 import convert from 'convert-units';
 import getApiInstance from './api_instance';
-
-let wcDocker = window.wcDocker;
+import usePreferences from '../../preferences/static/js/store';
+import pgAdmin from 'sources/pgadmin';
 
 export function parseShortcutValue(obj) {
   let shortcut = '';
@@ -320,15 +317,15 @@ export function hasBinariesConfiguration(pgBrowser, serverInformation) {
     msg = gettext('Please configure the EDB Advanced Server Binary Path in the Preferences dialog.');
   }
 
-  const preference = pgBrowser.get_preference(module, preference_name);
+  const preference = usePreferences.getState().getPreferences(module, preference_name);
 
   if (preference) {
     if (_.isUndefined(preference.value) || !checkBinaryPathExists(preference.value, serverInformation.version)) {
-      Notify.alert(gettext('Configuration required'), msg);
+      pgAdmin.Browser.notifier.alert(gettext('Configuration required'), msg);
       return false;
     }
   } else {
-    Notify.alert(
+    pgAdmin.Browser.notifier.alert(
       gettext('Preferences Error'),
       gettext('Failed to load preference %s of module %s', preference_name, module)
     );
@@ -365,32 +362,6 @@ export function evalFunc(obj, func, ...param) {
   return func;
 }
 
-export function registerDetachEvent(panel){
-  function updateIframePosition() {
-    let docker = this.docker(this._panel);
-    let dockerPos = docker.$container.offset();
-    let pos = this.$container.offset();
-    let width = this.$container.width();
-    let height = this.$container.height();
-    let zIndex = window.getComputedStyle(this._parent.$frame[0]).getPropertyValue('z-index');
-
-    let ele = this.$container[0].ownerDocument.querySelector('.wcIFrameFloating');
-    if(ele) {
-      ele.style.top = pos.top - dockerPos.top;
-      ele.style.left = pos.left - dockerPos.left;
-      ele.style.width = width;
-      ele.style.height = height;
-      ele.style.zIndex = parseInt(zIndex)+1;
-    }
-  }
-  panel.on(wcDocker.EVENT.DETACHED, function() {
-    updateIframePosition.call(this);
-  });
-  panel.on(wcDocker.EVENT.ORDER_CHANGED, function() {
-    updateIframePosition.call(this);
-  });
-}
-
 export function getBrowser() {
   let ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
   if(/trident/i.test(M[1])) {
@@ -422,7 +393,7 @@ export function checkTrojanSource(content, isPasteEvent) {
     if (isPasteEvent) {
       msg = gettext('The pasted text contains bidirectional Unicode characters which could be interpreted differently than what is displayed. If this is unexpected it is recommended that you review the text in an application that can display hidden Unicode characters before proceeding.');
     }
-    Notify.alert(gettext('Trojan Source Warning'), msg);
+    pgAdmin.Browser.notifier.alert(gettext('Trojan Source Warning'), msg);
   }
 }
 
@@ -608,37 +579,30 @@ export function fullHexColor(shortHex) {
   return shortHex;
 }
 
-export function openNewWindow(toolForm, title) {
-  let {name: browser} = getBrowser();
-  if(browser == 'Nwjs') {
-    let api = getApiInstance();
-    api({
-      url: url_for('tools.initialize', null),
-      method: 'GET',
-    })
-      .then(function () {
-        openWindow(toolForm, title);
-      })
-      .catch(function (error) {
-        Notify.error(gettext(`Error in Tool initialize ${error.response.data}`));
-      });
-  }
-  else {
-    openWindow(toolForm, title);
-  }
-}
+export function gettextForTranslation(translations, ...replaceArgs) {
+  const text = replaceArgs[0];
+  let rawTranslation = translations[text] ? translations[text] : text;
 
-function openWindow(toolForm, title) {
-  let newWin = window.open('', '_blank');
-  if (newWin) {
-    newWin.document.write(toolForm);
-    newWin.document.title = title;
-    let pgBrowser = window.pgAdmin.Browser;
-    // Send the signal to runtime, so that proper zoom level will be set.
-    setTimeout(function() {
-      pgBrowser.Events.trigger('pgadmin:nw-set-new-window-open-size');
-    }, 500);
-  } else {
-    return false;
+  if(arguments.length == 2) {
+    return rawTranslation;
+  }
+
+  try {
+    return rawTranslation.split('%s')
+      .map(function(w, i) {
+        if(i > 0) {
+          if(i < replaceArgs.length) {
+            return [replaceArgs[i], w].join('');
+          } else {
+            return ['%s', w].join('');
+          }
+        } else {
+          return w;
+        }
+      })
+      .join('');
+  } catch(e) {
+    console.error(e);
+    return rawTranslation;
   }
 }

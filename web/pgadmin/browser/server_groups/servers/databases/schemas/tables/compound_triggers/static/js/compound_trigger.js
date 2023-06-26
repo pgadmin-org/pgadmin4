@@ -9,7 +9,6 @@
 
 import { getNodeListByName } from '../../../../../../../../static/js/node_ajax';
 import CompoundTriggerSchema from './compound_trigger.ui';
-import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.compound_trigger', [
@@ -118,14 +117,14 @@ define('pgadmin.node.compound_trigger', [
             {'is_enable_trigger' : 'O'}
           ).then(({data: res})=> {
             if(res.success == 1) {
-              Notify.success(res.info);
+              pgAdmin.Browser.notifier.success(res.info);
               t.removeIcon(i);
               data.icon = 'icon-compound_trigger';
               t.addIcon(i, {icon: data.icon});
               t.updateAndReselectNode(i, data);
             }
           }).catch(function(error) {
-            Notify.pgRespErrorNotify(error);
+            pgAdmin.Browser.notifier.pgRespErrorNotify(error);
             t.refresh(i);
           });
         },
@@ -146,14 +145,14 @@ define('pgadmin.node.compound_trigger', [
             {'is_enable_trigger' : 'D'}
           ).then(({data: res})=> {
             if(res.success == 1) {
-              Notify.success(res.info);
+              pgAdmin.Browser.notifier.success(res.info);
               t.removeIcon(i);
               data.icon = 'icon-compound_trigger-bad';
               t.addIcon(i, {icon: data.icon});
               t.updateAndReselectNode(i, data);
             }
           }).catch(function(error) {
-            Notify.pgRespErrorNotify(error);
+            pgAdmin.Browser.notifier.pgRespErrorNotify(error);
             t.refresh(i);
           });
         },

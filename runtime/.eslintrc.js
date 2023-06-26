@@ -12,7 +12,6 @@ module.exports = {
     'browser': true,
     'es6': true,
     'amd': true,
-    'jasmine': true,
   },
   'extends': [
     'eslint:recommended',

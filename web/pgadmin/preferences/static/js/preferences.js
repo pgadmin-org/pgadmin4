@@ -10,8 +10,8 @@
 import React from 'react';
 import gettext from 'sources/gettext';
 import PreferencesComponent from './components/PreferencesComponent';
-import Notify from '../../../static/js/helpers/Notifier';
 import PreferencesTree from './components/PreferencesTree';
+import pgAdmin from 'sources/pgadmin';
 
 export default class Preferences {
   static instance;
@@ -50,7 +50,7 @@ export default class Preferences {
   show() {
 
     // Render Preferences component
-    Notify.showModal(gettext('Preferences'), (closeModal) => {
+    pgAdmin.Browser.notifier.showModal(gettext('Preferences'), (closeModal) => {
       return <PreferencesComponent
         renderTree={(prefTreeData) => {
           // Render preferences tree component

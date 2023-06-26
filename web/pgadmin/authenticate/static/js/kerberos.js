@@ -9,7 +9,7 @@
 
 import url_for from 'sources/url_for';
 import userInfo from 'pgadmin.user_management.current_user';
-import pgConst from 'pgadmin.browser.constants';
+import {AUTH_METHODS} from 'pgadmin.browser.constants';
 
 function fetch_ticket() {
   // Fetch the Kerberos Updated ticket through SPNEGO
@@ -52,7 +52,7 @@ function fetch_ticket_lifetime () {
 function validate_kerberos_ticket() {
   // Ping pgAdmin server every 10 seconds
   // to fetch the Kerberos ticket lifetime left
-  if (userInfo['current_auth_source'] != pgConst['KERBEROS']) return;
+  if (userInfo['current_auth_source'] != AUTH_METHODS['KERBEROS']) return;
 
   return setInterval(function() {
     let newPromise = fetch_ticket_lifetime();

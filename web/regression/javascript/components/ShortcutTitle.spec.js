@@ -7,31 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
+import { render } from '@testing-library/react';
 import ShortcutTitle, { shortcutToString } from '../../../pgadmin/static/js/components/ShortcutTitle';
 import * as keyShort from '../../../pgadmin/static/js/keyboard_shortcuts';
 
 describe('ShortcutTitle', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
   const shortcut = {
     'control': true,
     'shift': true,
@@ -41,34 +25,30 @@ describe('ShortcutTitle', ()=>{
       'char': 'k',
     },
   };
-  it('ShortcutTitle', (done)=>{
+  it('ShortcutTitle', ()=>{
     let ThemedShortcutTitle = withTheme(ShortcutTitle);
-    spyOn(keyShort, 'isMac').and.returnValue(false);
-    let ctrl = mount(
+    jest.spyOn(keyShort, 'isMac').mockReturnValue(false);
+    let ctrl = render(
       <ThemedShortcutTitle
         title="the title"
         shortcut={shortcut}
       />);
-    setTimeout(()=>{
-      ctrl.update();
-      expect(ctrl.text()).toBe('the titleCtrlShiftK');
-      done();
-    }, 0);
+    expect(ctrl.container.textContent).toBe('the titleCtrlShiftK');
   });
 
   describe('shortcutToString', ()=>{
     it('shortcut', ()=>{
-      spyOn(keyShort, 'isMac').and.returnValue(false);
+      jest.spyOn(keyShort, 'isMac').mockReturnValue(false);
       expect(shortcutToString(shortcut)).toBe('Ctrl + Shift + K');
     });
 
     it('shortcut as array', ()=>{
-      spyOn(keyShort, 'isMac').and.returnValue(false);
+      jest.spyOn(keyShort, 'isMac').mockReturnValue(false);
       expect(shortcutToString(shortcut, null, true)).toEqual(['Ctrl', 'Shift', 'K']);
     });
 
     it('accesskey', ()=>{
-      spyOnProperty(window.navigator, 'userAgent').and.returnValue('Unknown');
+      jest.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue('Unknown');
       expect(shortcutToString(null, 'A')).toEqual('Accesskey + A');
     });
 
@@ -78,7 +58,7 @@ describe('ShortcutTitle', ()=>{
 
     it('mac meta key', ()=>{
       shortcut.ctrl_is_meta = true;
-      spyOn(keyShort, 'isMac').and.returnValue(true);
+      jest.spyOn(keyShort, 'isMac').mockReturnValue(true);
       expect(shortcutToString(shortcut)).toBe('Cmd + Shift + K');
     });
   });

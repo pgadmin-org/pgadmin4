@@ -13,7 +13,6 @@ import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
 import { FileType } from 'react-aspen';
 import { findInTree } from './tree';
-import Notify from '../../../static/js/helpers/Notifier';
 import gettext from 'sources/gettext';
 
 import { unix } from 'path-fx';
@@ -127,7 +126,7 @@ export class ManageTreeNodes {
       } catch (error) {
         /* react-aspen does not handle reject case */
         console.error(error);
-        Notify.error(parseApiError(error)||'Node Load Error...');
+        pgAdmin.Browser.notifier.error(parseApiError(error)||'Node Load Error...');
         return [];
       }
     }
@@ -141,7 +140,7 @@ export class ManageTreeNodes {
     if (node.children.length > 0) return node.children;
     else {
       if (node.data && node.data._type == 'server' && node.data.connected) {
-        Notify.info(gettext('Server children are not available.'
+        pgAdmin.Browser.notifier.info(gettext('Server children are not available.'
         +' Please check these nodes are not hidden through the preferences setting `Browser > Nodes`.'), null);
       }
       return [];

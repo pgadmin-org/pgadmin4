@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { useSnackbar, SnackbarProvider, SnackbarContent } from 'notistack';
+import { SnackbarProvider, SnackbarContent } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import {Box} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/CloseRounded';
@@ -15,68 +15,17 @@ import { DefaultButton, PrimaryButton } from '../components/Buttons';
 import HTMLReactParser from 'html-react-parser';
 import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
 import PropTypes from 'prop-types';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Theme from 'sources/Theme';
+import React, { useEffect } from 'react';
 import { NotifierMessage, MESSAGE_TYPE } from '../components/FormComponents';
 import CustomPropTypes from '../custom_prop_types';
 import gettext from 'sources/gettext';
 import _ from 'lodash';
-import pgWindow from 'sources/window';
-import ModalProvider, { useModal } from './ModalProvider';
+import { useModal } from './ModalProvider';
 import { parseApiError } from '../api_instance';
 
 const AUTO_HIDE_DURATION = 3000;  // In milliseconds
 
-let snackbarRef;
-let notifierInitialized = false;
-export function initializeNotifier(notifierContainer) {
-  notifierInitialized = true;
-  const RefLoad = ()=>{
-    snackbarRef = useSnackbar();
-    return <></>;
-  };
-
-  if (!notifierContainer) {
-    notifierContainer = document.createElement('div');
-    document.body.appendChild(notifierContainer);
-  }
-
-  ReactDOM.render(
-    <Theme>
-      <SnackbarProvider
-        maxSnack={30}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-        <RefLoad />
-      </SnackbarProvider>
-    </Theme>, notifierContainer
-  );
-}
-
-let modalRef;
-let modalInitialized = false;
-export function initializeModalProvider(modalContainer) {
-  modalInitialized = true;
-  const RefLoad = ()=>{
-    modalRef = useModal();
-    return <></>;
-  };
-
-  if (!modalContainer) {
-    modalContainer = document.createElement('div');
-    document.body.appendChild(modalContainer);
-  }
-
-  ReactDOM.render(
-    <Theme>
-      <ModalProvider>
-        <RefLoad />
-      </ModalProvider>
-    </Theme>, modalContainer
-  );
-}
-
-export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
+const FinalNotifyContent = React.forwardRef(({children}, ref) => {
   return <SnackbarContent style= {{justifyContent:'end', maxWidth: '700px'}} ref={ref}>{children}</SnackbarContent>;
 });
 FinalNotifyContent.displayName = 'FinalNotifyContent';
@@ -118,38 +67,57 @@ AlertContent.propTypes = {
   cancelLabel: PropTypes.string,
 };
 
+// This can be called from iframe,
+// so need to separate the context to avoid hooks error
+class SnackbarNotifier {
+  constructor(snackbar) {
+    this.snackbarObj = snackbar;
+  }
 
-let Notifier = {
-  success(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.SUCCESS, autoHideDuration);
-  },
-  warning(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.WARNING, autoHideDuration);
-  },
-  info(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.INFO, autoHideDuration);
-  },
-  error(msg, autoHideDuration = AUTO_HIDE_DURATION) {
-    this._callNotify(msg, MESSAGE_TYPE.ERROR, autoHideDuration);
-  },
   notify(content, autoHideDuration) {
     if (content) {
-      if(!notifierInitialized) {
-        initializeNotifier();
-      }
       let  options = {autoHideDuration, content:(key) => (
-        <FinalNotifyContent>{React.cloneElement(content, {onClose:()=>{snackbarRef.closeSnackbar(key);}})}</FinalNotifyContent>
+        <FinalNotifyContent>{React.cloneElement(content, {onClose:()=>{this.snackbarObj.closeSnackbar(key);}})}</FinalNotifyContent>
       )};
       options.content.displayName = 'content';
-      snackbarRef.enqueueSnackbar(null, options);
+      this.snackbarObj.enqueueSnackbar(null, options);
     }
-  },
-  _callNotify(msg, type, autoHideDuration) {
+  }
+
+  callNotify(msg, type, autoHideDuration) {
     this.notify(
       <NotifierMessage style={{maxWidth: '50vw'}} type={type} message={msg} closable={true} />,
       autoHideDuration
     );
-  },
+  }
+}
+
+class Notifier {
+  constructor(modal, snackbar) {
+    this.modal = modal;
+    this.snackbar = snackbar;
+  }
+
+  success(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.SUCCESS, autoHideDuration);
+  }
+
+  warning(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.WARNING, autoHideDuration);
+  }
+
+  info(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.INFO, autoHideDuration);
+  }
+
+  error(msg, autoHideDuration = AUTO_HIDE_DURATION) {
+    this.snackbar.callNotify(msg, MESSAGE_TYPE.ERROR, autoHideDuration);
+  }
+
+  // proxy
+  notify(...args) {
+    this.snackbar.notify(...args);
+  }
 
   pgRespErrorNotify(error, prefixMsg='') {
     if (error.response?.status === 410) {
@@ -157,7 +125,7 @@ let Notifier = {
     } else {
       this.error(prefixMsg + ' ' + parseApiError(error));
     }
-  },
+  }
 
   pgNotifier(type, error, promptmsg, onJSONResult) {
     let msg;
@@ -196,34 +164,63 @@ let Notifier = {
       return onJSONResult();
     }
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
-  },
-  alert: (title, text, onOkClick, okLabel=gettext('OK'))=>{
-    /* Use this if you want to use pgAdmin global notifier.
-    Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
-    if(!modalInitialized) {
-      initializeModalProvider();
-    }
-    modalRef.alert(title, text, onOkClick, okLabel);
-  },
-  confirm: (title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No'))=>{
-    /* Use this if you want to use pgAdmin global notifier.
-    Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
-    if(!modalInitialized) {
-      initializeModalProvider();
-    }
-    modalRef.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel);
-  },
-  showModal: (title, content, modalOptions) => {
-    if(!modalInitialized) {
-      initializeModalProvider();
-    }
-    modalRef.showModal(title, content, modalOptions);
   }
+
+  alert(title, text, onOkClick, okLabel=gettext('OK')) {
+    /* Use this if you want to use pgAdmin global notifier.
+    Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
+    this.modal.alert(title, text, onOkClick, okLabel);
+  }
+
+  confirm(title, text, onOkClick, onCancelClick, okLabel=gettext('Yes'), cancelLabel=gettext('No')) {
+    /* Use this if you want to use pgAdmin global notifier.
+    Or else, if you want to use modal inside iframe only then use ModalProvider eg- query tool */
+    this.modal.confirm(title, text, onOkClick, onCancelClick, okLabel, cancelLabel);
+  }
+
+  showModal(title, content, modalOptions) {
+    this.modal.showModal(title, content, modalOptions);
+  }
+}
+
+export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children }) {
+  const modal = useModal();
+
+  useEffect(()=>{
+    // if open in an iframe then use top pgAdmin
+    if(window.self != window.top) {
+      pgAdmin.Browser.notifier = new Notifier(modal, pgWindow.pgAdmin.Browser.notifier.snackbar);
+      getInstance?.(pgAdmin.Browser.notifier);
+    }
+  }, []);
+
+  // if open in a window, then create your own Snackbar
+  if(window.self == window.top) {
+    return (
+      <SnackbarProvider
+        maxSnack={30}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        ref={(obj)=>{
+          pgAdmin.Browser.notifier = new Notifier(modal, new SnackbarNotifier(obj));
+          getInstance?.(pgAdmin.Browser.notifier);
+        }}
+      >
+        {children}
+      </SnackbarProvider>
+    );
+  }
+  return (
+    <>
+      {children}
+    </>
+  );
+}
+
+NotifierProvider.propTypes = {
+  pgAdmin: PropTypes.object,
+  pgWindow: PropTypes.object,
+  getInstance: PropTypes.func,
+  children: CustomPropTypes.children,
 };
 
-if(window.frameElement) {
-  Notifier = pgWindow.Notifier || Notifier;
-} else if(!pgWindow.Notifier){
-  pgWindow.Notifier = Notifier;
-}
 export default Notifier;

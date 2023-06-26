@@ -24,7 +24,6 @@ import getApiInstance from '../../../../static/js/api_instance';
 import PropTypes from 'prop-types';
 import { commonTableStyles } from '../../../../static/js/Theme';
 import clsx from 'clsx';
-import Notify from '../../../../static/js/helpers/Notifier';
 import pgAdmin from 'sources/pgadmin';
 
 const useStyles = makeStyles(() =>
@@ -77,10 +76,10 @@ export default function ImportExportServers({onClose}) {
       post_data['selected_sever_ids'] = selectedServers;
       api.post(save_url, post_data)
         .then(() => {
-          Notify.alert(gettext('Export Servers'), gettext('The selected servers were exported successfully.'));
+          pgAdmin.Browser.notifier.alert(gettext('Export Servers'), gettext('The selected servers were exported successfully.'));
         })
         .catch((err) => {
-          Notify.alert(gettext('Export Error'), err.response.data.errormsg);
+          pgAdmin.Browser.notifier.alert(gettext('Export Error'), err.response.data.errormsg);
         });
     } else if (selectionFormData.imp_exp == 'i') {
       // Remove the random number added to create unique tree item,
@@ -102,10 +101,10 @@ export default function ImportExportServers({onClose}) {
             msg = gettext('The existing server groups and servers were removed, and the selected servers were imported successfully.');
           }
 
-          Notify.alert(gettext('Import Servers'), msg);
+          pgAdmin.Browser.notifier.alert(gettext('Import Servers'), msg);
         })
         .catch((err) => {
-          Notify.alert(gettext('Import error'), err.response.data.errormsg);
+          pgAdmin.Browser.notifier.alert(gettext('Import error'), err.response.data.errormsg);
         });
     }
 
