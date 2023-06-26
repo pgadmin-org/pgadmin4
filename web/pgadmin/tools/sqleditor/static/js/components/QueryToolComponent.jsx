@@ -263,8 +263,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       });
     }
     api.post(baseUrl, qtState.params.is_query_tool ? {
-      user: qtState.params.user,
-      role: qtState.params.role,
+      user: selectedConn.user,
+      role: selectedConn.role,
       password: password
     } : JSON.stringify(qtState.params.sql_filter))
       .then(()=>{
