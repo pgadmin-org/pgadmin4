@@ -56,6 +56,7 @@ class IEMessage(IProcessDesc):
 
     Defines the message shown for the import/export operation.
     """
+
     def __init__(self, *_args, **io_params):
         self.sid = io_params['sid']
         self.schema = io_params['schema']
@@ -102,7 +103,7 @@ class IEMessage(IProcessDesc):
         host_port_str = ''
         if s.host:
             host_port_str = '({0}:{1})'.format(
-                            s.host, s.port)if s.port else '{0}'.format(s.host)
+                s.host, s.port) if s.port else '{0}'.format(s.host)
 
         return "{0} {1}".format(s.name, host_port_str)
 
@@ -349,10 +350,13 @@ def create_import_export_job(sid):
             if value is None:
                 del env[key]
 
-        if manager.connection_params and isinstance(manager.connection_params, dict):
-            if 'passfile' in manager.connection_params and manager.connection_params['passfile']: 
-                env['PGPASSFILE'] = get_complete_file_path(manager.connection_params['passfile'])
-
+        # Export PGPASSFILE to work with PGPASSFILE authenthification
+        if manager.connection_params \
+                and isinstance(manager.connection_params, dict):
+            if 'passfile' in manager.connection_params \
+                    and manager.connection_params['passfile']:
+                env['PGPASSFILE'] = get_complete_file_path(
+                    manager.connection_params['passfile'])
 
         p.set_env_variables(server, env=env)
         p.start()
