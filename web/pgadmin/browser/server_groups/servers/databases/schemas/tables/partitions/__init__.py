@@ -542,6 +542,11 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
            tid: Table ID
            ptid: Partition Table ID
         """
+        data = request.form if request.form else json.loads(
+            request.data
+        )
+        mode = data.get('mode')
+
         # Fetch schema name
         status, parent_schema = self.conn.execute_scalar(
             render_template(
@@ -595,6 +600,7 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
             temp_data['partitioned_table_name'] = partitioned_table_name
             temp_data['schema'] = partition_schema
             temp_data['name'] = partition_name
+            temp_data['mode'] = mode
 
             SQL = render_template(
                 "/".join([self.partition_template_path, 'detach.sql']),
