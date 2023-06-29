@@ -29,3 +29,5 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #6165 <https://github.com/pgadmin-org/pgadmin4/issues/6165>`_ -  Fixed an issue where Import Export not working when using pgpassfile.
+  | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
