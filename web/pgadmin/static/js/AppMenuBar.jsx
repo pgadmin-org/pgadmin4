@@ -125,7 +125,7 @@ export default function AppMenuBar() {
                 <div className={classes.gravatar}>
                   {userMenuInfo.gravatar &&
                   <img src={userMenuInfo.gravatar} width = "18" height = "18"
-                    alt = "Gravatar image for {{ username }}" />}
+                    alt ={`Gravatar image for ${ userMenuInfo.username }`} />}
                   {!userMenuInfo.gravatar && <AccountCircleRoundedIcon />}
                 </div>
                 { userMenuInfo.username } ({userMenuInfo.auth_source})

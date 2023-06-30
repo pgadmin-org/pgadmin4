@@ -760,17 +760,19 @@ const customReactSelectStyles = (theme, readonly) => ({
   }),
 });
 
-function OptionView({ image, label }) {
+function OptionView({ image, imageUrl, label }) {
   const classes = useStyles();
   return (
     <>
       {image && <span className={clsx(classes.optionIcon, image)}></span>}
+      {imageUrl && <img style={{height: '20px', marginRight: '4px'}} src={imageUrl} />}
       <span>{label}</span>
     </>
   );
 }
 OptionView.propTypes = {
   image: PropTypes.string,
+  imageUrl: PropTypes.string,
   label: PropTypes.string,
 };
 
@@ -787,7 +789,7 @@ CustomSelectInput.propTypes = {
 function CustomSelectOption(props) {
   return (
     <RSComponents.Option {...props}>
-      <OptionView image={props.data.image} label={props.data.label} />
+      <OptionView image={props.data.image} imageUrl={props.data.imageUrl} label={props.data.label} />
     </RSComponents.Option>
   );
 }
@@ -798,7 +800,7 @@ CustomSelectOption.propTypes = {
 function CustomSelectSingleValue(props) {
   return (
     <RSComponents.SingleValue {...props}>
-      <OptionView image={props.data.image} label={props.data.label} />
+      <OptionView image={props.data.image} imageUrl={props.data.imageUrl} label={props.data.label} />
     </RSComponents.SingleValue>
   );
 }
@@ -1111,9 +1113,11 @@ const useStylesFormFooter = makeStyles((theme) => ({
     color: theme.palette.warning.main,
   },
   message: {
+    color: theme.palette.text.primary,
     marginLeft: theme.spacing(0.5),
   },
   messageCenter: {
+    color: theme.palette.text.primary,
     margin: 'auto',
   },
   closeButton: {
