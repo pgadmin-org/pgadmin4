@@ -9,7 +9,7 @@ WHERE
     cl.relname = {{table_name|qtLiteral(conn)}} AND nsp.nspname={{table_nspname|qtLiteral(conn)}} AND
 {% endif %}
 attnum = ANY (
-(SELECT con.conkey FROM pg_catalog.pg_class  LEFT OUTER JOIN pg_catalog.pg_constraint con ON con.conrelid=rel.oid
+(SELECT con.conkey FROM pg_catalog.pg_class rel LEFT OUTER JOIN pg_catalog.pg_constraint con ON con.conrelid=rel.oid
 JOIN pg_catalog.pg_namespace as nsp ON nsp.oid=REL.relnamespace
 AND con.contype='p' WHERE rel.relkind IN ('r','s','t') AND
 {% if obj_id %}
