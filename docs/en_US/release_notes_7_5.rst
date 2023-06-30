@@ -25,9 +25,11 @@ New features
 Housekeeping
 ************
 
+  | `Issue #6295 <https://github.com/pgadmin-org/pgadmin4/issues/6295>`_ -  Remove Bootstrap and jQuery from authentication pages and rewrite them in ReactJS.
 
 Bug fixes
 *********
 
   | `Issue #6165 <https://github.com/pgadmin-org/pgadmin4/issues/6165>`_ -  Fixed an issue where Import Export not working when using pgpassfile.
   | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
+  | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
