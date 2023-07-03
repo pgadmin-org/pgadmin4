@@ -12,9 +12,9 @@ name: Run Python tests on EPAS
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "dummy-dont-trigger" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "dummy-dont-trigger" ]
 
   workflow_dispatch:
 
