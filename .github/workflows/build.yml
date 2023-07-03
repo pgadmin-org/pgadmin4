@@ -4,14 +4,10 @@ on:
   push:
     branches:
       - master
-      - sb1-github-workflow
-    tags:
-      - '*'
   pull_request:
     branches:
-      - '*'
-    tags:
-      - '*'
+      - 'master'
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -52,20 +48,30 @@ jobs:
         run: |
           echo "datetime=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
       
-      - name: Build and Push Versioned Docker Image
+      - name: Build and Push Pull Request
         id: build-and-push
         uses: docker/build-push-action@v2
-        if: ${{ github.ref != 'refs/heads/main' }}
+        if: ${{ github.event_name == 'pull request' }}
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.base_ref }}_${{ env.datetime }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref }}_${{ env.datetime }}
           labels: ${{ steps.meta.outputs.labels }}
-      
-      - name: Build and Push Latest Docker Image
+
+      - name: Build and Push Branch Not Master
+        id: build-and-push
+        uses: docker/build-push-action@v2
+        if: ${{ github.event_name == 'push' && github.ref != 'refs/heads/master' }}
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}_${{ env.datetime }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and Push Master (latest image)
         id: build-and-push-latest
         uses: docker/build-push-action@v2
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/master' }}
         with:
           context: .
           push: true
