@@ -364,6 +364,8 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS):
             self.limit = 100
 
+        self.thread_native_id = None
+
     def get_primary_keys(self, *args, **kwargs):
         return None, None
 
@@ -440,6 +442,12 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             return 'desc'
         else:
             return 'asc'
+
+    def get_thread_native_id(self):
+        return self.thread_native_id
+
+    def set_thread_native_id(self, thread_native_id):
+        self.thread_native_id = thread_native_id
 
 
 class TableCommand(GridCommand):
@@ -892,6 +900,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         self.pk_names = None
         self.table_has_oids = False
         self.columns_types = None
+        self.thread_native_id = None
 
     def get_sql(self, default_conn=None):
         return None
@@ -1014,3 +1023,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
             self.object_name = result['rows'][0]['relname']
         else:
             raise InternalServerError(SERVER_CONNECTION_CLOSED)
+
+    def get_thread_native_id(self):
+        return self.thread_native_id
+
+    def set_thread_native_id(self, thread_native_id):
+        self.thread_native_id = thread_native_id

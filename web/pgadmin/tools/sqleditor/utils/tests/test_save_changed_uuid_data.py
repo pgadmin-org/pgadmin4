@@ -15,8 +15,8 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
-from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
-    import execute_query
+from pgadmin.tools.sqleditor.tests.execute_query_test_utils import\
+    execute_query
 
 
 class TestSaveChangedDataUUID(BaseTestGenerator):

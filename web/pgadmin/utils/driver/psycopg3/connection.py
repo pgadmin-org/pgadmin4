@@ -1301,7 +1301,7 @@ WHERE db.datname = current_database()""")
         ] or []
 
         rows = []
-        self.row_count = cur.get_rowcount()
+        self.row_count = cur.rowcount
 
         if cur.get_rowcount() > 0:
             rows = cur.fetchall()
@@ -1325,6 +1325,12 @@ WHERE db.datname = current_database()""")
         if not cur:
             return False, self.CURSOR_NOT_FOUND
 
+        if not self.conn:
+            raise ConnectionLost(
+                self.manager.sid,
+                self.db,
+                None if self.conn_id[0:3] == 'DB:' else self.conn_id[5:]
+            )
         if self.conn.pgconn.is_busy():
             return False, gettext(
                 "Asynchronous query execution/operation underway."
@@ -1355,11 +1361,6 @@ WHERE db.datname = current_database()""")
             if not self.conn.closed:
                 return True
             self.conn = None
-        return False
-
-    def async_cursor_initialised(self):
-        if self.__async_cursor:
-            return True
         return False
 
     def _decrypt_password(self, manager):
@@ -1463,10 +1464,12 @@ Failed to reset the connection to the server due to following error:
     def poll(self, formatted_exception_msg=False, no_result=False):
         cur = self.__async_cursor
 
-        if self.conn and self.conn.pgconn.is_busy():
+        if self.conn and self.conn.info.transaction_status == 1:
             status = 3
         elif self.__async_query_error:
             return False, self.__async_query_error
+        elif self.conn and self.conn.pgconn.error_message:
+            return False, self.conn.pgconn.error_message
         else:
             status = 1
 
@@ -1485,7 +1488,7 @@ Failed to reset the connection to the server due to following error:
         )
         more_result = True
         while more_result:
-            if not self.conn.pgconn.is_busy():
+            if self.conn:
                 if cur.description is not None:
                     self.column_info = [desc.to_dict() for
                                         desc in cur.ordered_description()]

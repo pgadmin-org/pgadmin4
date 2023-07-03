@@ -14,6 +14,7 @@ import re
 import secrets
 from urllib.parse import unquote
 from threading import Lock
+import threading
 
 import json
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD, SHARED_STORAGE
@@ -904,7 +905,6 @@ def poll(trans_id):
     data_obj = {}
     on_demand_record_count = Preferences.module(MODULE_NAME).\
         preference('on_demand_record_count').get()
-
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
@@ -917,10 +917,17 @@ def poll(trans_id):
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
-    if conn and conn.connected() and not conn.async_cursor_initialised():
-        return make_json_response(data={'status': 'NotInitialised'})
+    is_thread_alive = False
+    if trans_obj.get_thread_native_id():
+        for thread in threading.enumerate():
+            if thread.native_id == trans_obj.get_thread_native_id() and\
+                    thread.is_alive():
+                is_thread_alive = True
+                break
 
-    if status and conn is not None and session_obj is not None:
+    if is_thread_alive:
+        status = 'Busy'
+    elif status and conn is not None and session_obj is not None:
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)
         if not status:

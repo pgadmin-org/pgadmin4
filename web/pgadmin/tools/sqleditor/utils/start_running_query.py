@@ -11,7 +11,7 @@
 
 import pickle
 import secrets
-
+from threading import Thread
 from flask import Response, current_app, copy_current_request_context
 from flask_babel import gettext
 
@@ -28,8 +28,6 @@ from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost,\
     CryptKeyMissing
 from pgadmin.utils.constants import ERROR_MSG_TRANS_ID_NOT_FOUND
-
-from threading import Thread
 
 
 class StartRunningQuery:
@@ -144,7 +142,8 @@ class StartRunningQuery:
             conn)
 
         @copy_current_request_context
-        def asyn_exec_query(conn, sql, trans_obj, is_rollback_req, app):
+        def asyn_exec_query(conn, sql, trans_obj, is_rollback_req,
+                            app):
             # Execute sql asynchronously with params is None
             # and formatted_error is True.
             with app.app_context():
@@ -158,11 +157,14 @@ class StartRunningQuery:
                     self.logger.error(e)
                     return internal_server_error(errormsg=str(e))
 
-        pgAdminThread(target=asyn_exec_query,
-                      args=(conn, sql, trans_obj,
-                            is_rollback_req,
-                            current_app._get_current_object())
-                      ).start()
+        _thread = pgAdminThread(target=asyn_exec_query,
+                                args=(conn, sql, trans_obj, is_rollback_req,
+                                      current_app._get_current_object())
+                                )
+        _thread.start()
+        trans_obj.set_thread_native_id(_thread.native_id)
+        StartRunningQuery.save_transaction_in_session(session_obj,
+                                                      trans_id, trans_obj)
 
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
