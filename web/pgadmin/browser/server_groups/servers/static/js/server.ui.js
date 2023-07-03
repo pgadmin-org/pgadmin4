@@ -36,7 +36,7 @@ export default class ServerSchema extends BaseUISchema {
       passexec: undefined,
       passexec_expiration: undefined,
       service: undefined,
-      use_ssh_tunnel: 0,
+      use_ssh_tunnel: false,
       tunnel_host: undefined,
       tunnel_port: 22,
       tunnel_username: undefined,

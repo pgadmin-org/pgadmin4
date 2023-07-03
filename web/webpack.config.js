@@ -46,7 +46,7 @@ const providePlugin = new webpack.ProvidePlugin({
   'moment': 'moment',
   'window.moment':'moment',
   process: 'process/browser',
-  Buffer: ['buffer', 'Buffer'],
+  Buffer: ['buffer', 'Buffer']
 });
 
 // Helps in debugging each single file, it extracts the module files
@@ -361,6 +361,7 @@ module.exports = [{
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
+    'security.pages': 'security.pages',
     sqleditor: './pgadmin/tools/sqleditor/static/js/index.js',
     schema_diff: './pgadmin/tools/schema_diff/static/js/index.js',
     erd_tool: './pgadmin/tools/erd/static/js/index.js',

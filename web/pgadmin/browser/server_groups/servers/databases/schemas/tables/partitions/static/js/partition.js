@@ -96,7 +96,17 @@ function(
         },{
           name: 'detach_partition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'detach_partition',
-          priority: 2, label: gettext('Detach Partition'),
+          category: gettext('Detach Partition'), priority: 2, label: gettext('Detach'),
+        },{
+          name: 'detach_partition_concurrently', node: 'partition', module: this,
+          applies: ['object', 'context'], callback: 'detach_partition_concurrently',
+          category: gettext('Detach Partition'), priority: 2, label: gettext('Concurrently'),
+          enable: 'canDetach'
+        },{
+          name: 'detach_partition_finalize', node: 'partition', module: this,
+          applies: ['object', 'context'], callback: 'detach_partition_finalize',
+          category: gettext('Detach Partition'), priority: 2, label: gettext('Finalize'),
+          enable: 'canDetach'
         },{
           name: 'count_table_rows', node: 'partition', module: pgBrowser.Nodes['table'],
           applies: ['object', 'context'], callback: 'count_table_rows',
@@ -236,7 +246,7 @@ function(
             function() {/*This is intentional (SonarQube)*/}
           );
         },
-        detach_partition: function(args) {
+        detach: function(args, params) {
           let input = args || {},
             obj = this,
             t = pgBrowser.tree,
@@ -246,11 +256,19 @@ function(
           if (!d)
             return false;
 
+          let title = gettext('Detach Partition');
+
+          if (params['mode'] === 'concurrently') {
+            title = gettext('Detach Partition Concurrently');
+          } else if (params['mode'] === 'finalize') {
+            title = gettext('Detach Partition Finalize');
+          }
+
           Notify.confirm(
-            gettext('Detach Partition'),
+            title,
             gettext('Are you sure you want to detach the partition %s?', d._label),
             function () {
-              getApiInstance().put(obj.generate_url(i, 'detach' , d, true))
+              getApiInstance().put(obj.generate_url(i, 'detach' , d, true), params)
                 .then(({data: res})=>{
                   if (res.success == 1) {
                     Notify.success(res.info);
@@ -274,6 +292,18 @@ function(
             function() {/*This is intentional (SonarQube)*/}
           );
         },
+        detach_partition: function(args) {
+          let params = {'mode': 'detach' };
+          this.callbacks.detach.apply(this, [args, params]);
+        },
+        detach_partition_concurrently: function(args) {
+          let params = {'mode': 'concurrently' };
+          this.callbacks.detach.apply(this, [args, params]);
+        },
+        detach_partition_finalize: function(args) {
+          let params = {'mode': 'finalize' };
+          this.callbacks.detach.apply(this, [args, params]);
+        },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {
         return getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowser);
@@ -292,6 +322,12 @@ function(
           // We are here means we can create menu, now let's check condition
           return (itemData.tigger_count > 0 && itemData.has_enable_triggers > 0);
         }
+      },
+      canDetach: function(itemData, item) {
+        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+          server = treeData['server'];
+
+        return (server && server.version >= 140000);
       },
     });
   }

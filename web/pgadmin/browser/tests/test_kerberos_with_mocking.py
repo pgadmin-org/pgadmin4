@@ -67,6 +67,10 @@ class KerberosLoginMockTestCase(BaseTestGenerator):
     def runTest(self):
         """This function checks spnego/kerberos login functionality."""
         if self.flag == 1:
+            if app_config.SERVER_MODE is False:
+                self.skipTest(
+                    "Can not run Kerberos Authentication in the Desktop mode."
+                )
             self.test_unauthorized()
         elif self.flag == 2:
             if app_config.SERVER_MODE is False:

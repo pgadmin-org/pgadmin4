@@ -154,6 +154,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
 
       const [panelUrl, panelCloseUrl, db_label] = this.getPanelUrls(transId, panelTitle, parentData, gen);
 
+      const escapedTitle = _.escape(panelTitle);
       let psqlToolForm = `
         <form id="psqlToolForm" action="${panelUrl}" method="post">
           <input id="title" name="title" hidden />
@@ -161,7 +162,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
           <input name="close_url" value="${panelCloseUrl}" hidden />
         </form>
         <script>
-          document.getElementById("title").value = "${_.escape(panelTitle)}";
+          document.getElementById("title").value = "${escapedTitle}";
           document.getElementById("psqlToolForm").submit();
         </script>
       `;
@@ -178,7 +179,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         registerDetachEvent(psqlToolPanel);
 
         // Set panel title and icon
-        setPanelTitle(psqlToolPanel, panelTitle);
+        setPanelTitle(psqlToolPanel, escapedTitle);
         psqlToolPanel.icon('fas fa-terminal psql-tab-style');
         psqlToolPanel.focus();
 

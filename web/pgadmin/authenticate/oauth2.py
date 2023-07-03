@@ -21,7 +21,7 @@ from flask_security.utils import get_post_logout_redirect, logout_user
 from pgadmin.authenticate.internal import BaseAuthentication
 from pgadmin.model import User
 from pgadmin.tools.user_management import create_user
-from pgadmin.utils.constants import OAUTH2
+from pgadmin.utils.constants import OAUTH2, MessageType
 from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.model import db
@@ -61,7 +61,7 @@ def init_app(app):
         if 'auth_obj' in session:
             session.pop('auth_obj')
         logout_user()
-        flash(msg, 'danger')
+        flash(msg, MessageType.ERROR)
         return redirect(get_safe_post_login_redirect())
 
     @blueprint.route('/logout', endpoint="logout",

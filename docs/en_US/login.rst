@@ -1,16 +1,16 @@
 .. _login:
 
 *********************
-`Login Dialog`:index:
+`Login Page`:index:
 *********************
 
-Use the *Login* dialog to log in to pgAdmin:
+Use the *Login* page to log in to pgAdmin:
 
 .. image:: images/login.png
-    :alt: pgAdmin login dialog
+    :alt: pgAdmin login page
     :align: center
 
-Use the fields in the *Login* dialog to authenticate your connection. There are
+Use the fields in the *Login* page to authenticate your connection. There are
 two ways to authenticate your connection:
 
 - From pgAdmin version 4.21 onwards, support for LDAP authentication
@@ -52,7 +52,7 @@ to launch a password recovery utility.
 If you have forgotten the email associated with your account, please contact
 your administrator.
 
-Please note that your LDAP password cannot be recovered using this dialog. If
+Please note that your LDAP password cannot be recovered using this page. If
 you enter your LDAP username in the *Email Address/Username* field, and then
 enter your email to recover your password, an error message will be displayed
 asking you to contact the LDAP administrator to recover your LDAP password.
