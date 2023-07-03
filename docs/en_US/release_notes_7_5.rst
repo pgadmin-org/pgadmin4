@@ -26,7 +26,7 @@ Housekeeping
 ************
 
   | `Issue #6295 <https://github.com/pgadmin-org/pgadmin4/issues/6295>`_ -  Remove Bootstrap and jQuery from authentication pages and rewrite them in ReactJS.
-  | `Issue #6423 <https://github.com/pgadmin-org/pgadmin4/issues/6423>`_ -  Clarify the LICENSE file to indicate the it is the PostgreSQL Licence.
+  | `Issue #6423 <https://github.com/pgadmin-org/pgadmin4/issues/6423>`_ -  Clarify the LICENSE file to indicate that it is the PostgreSQL Licence.
 
 Bug fixes
 *********
