@@ -14,6 +14,7 @@ import re
 import secrets
 from urllib.parse import unquote
 from threading import Lock
+import threading
 
 import json
 from config import PG_DEFAULT_DRIVER, ALLOW_SAVE_PASSWORD, SHARED_STORAGE
@@ -34,7 +35,7 @@ from pgadmin.tools.sqleditor.utils.update_session_grid_transaction import \
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils import get_storage_directory
 from pgadmin.utils.ajax import make_json_response, bad_request, \
-    success_return, internal_server_error
+    success_return, internal_server_error, service_unavailable
 from pgadmin.utils.driver import get_driver
 from pgadmin.utils.exception import ConnectionLost, SSHTunnelConnectionLost, \
     CryptKeyMissing, ObjectGone
@@ -415,6 +416,7 @@ def _connect(conn, **kwargs):
 def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
     # Create asynchronous connection using random connection id.
     conn_id = str(secrets.choice(range(1, 9999999)))
+    conn_id_ac = str(secrets.choice(range(1, 9999999)))
 
     manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
 
@@ -422,7 +424,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
         did = manager.did
     try:
         command_obj = ObjectRegistry.get_object(
-            'query_tool', conn_id=conn_id, sgid=sgid, sid=sid, did=did
+            'query_tool', conn_id=conn_id, sgid=sgid, sid=sid, did=did,
+            conn_id_ac=conn_id_ac
         )
     except Exception as e:
         current_app.logger.error(e)
@@ -433,8 +436,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
                                   array_to_string=True)
-
         pref = Preferences.module('sqleditor')
+
         if connect:
             kwargs['auto_commit'] = pref.preference('auto_commit').get()
             kwargs['auto_rollback'] = pref.preference('auto_rollback').get()
@@ -461,6 +464,15 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
                 else:
                     return True, internal_server_error(
                         errormsg=str(msg)), '', ''
+
+            if pref.preference('autocomplete_on_key_press').get():
+                conn_ac = manager.connection(did=did, conn_id=conn_id_ac,
+                                             auto_reconnect=False,
+                                             use_binary_placeholder=True,
+                                             array_to_string=True)
+                status, msg, is_ask_password, user, role, password = _connect(
+                    conn_ac, **kwargs)
+
     except (ConnectionLost, SSHTunnelConnectionLost) as e:
         current_app.logger.error(e)
         raise
@@ -659,15 +671,30 @@ def close_sqleditor_session(trans_id):
                     conn.cancel_transaction(cmd_obj.conn_id, cmd_obj.did)
                     manager.release(did=cmd_obj.did, conn_id=cmd_obj.conn_id)
 
+        # Close the auto complete connection
+        if cmd_obj.conn_id_ac is not None:
+            manager = get_driver(
+                PG_DEFAULT_DRIVER).connection_manager(cmd_obj.sid)
+            if manager is not None:
+                conn = manager.connection(
+                    did=cmd_obj.did, conn_id=cmd_obj.conn_id_ac)
 
-def check_transaction_status(trans_id):
+                # Release the connection
+                if conn.connected():
+                    conn.cancel_transaction(cmd_obj.conn_id_ac, cmd_obj.did)
+                    manager.release(did=cmd_obj.did,
+                                    conn_id=cmd_obj.conn_id_ac)
+
+
+def check_transaction_status(trans_id, auto_comp=False):
     """
     This function is used to check the transaction id
     is available in the session object and connection
     status.
 
     Args:
-        trans_id:
+        trans_id: Transaction Id
+        auto_comp: Auto complete flag
 
     Returns: status and connection object
 
@@ -687,12 +714,19 @@ def check_transaction_status(trans_id):
     session_obj = grid_data[str(trans_id)]
     trans_obj = pickle.loads(session_obj['command_obj'])
 
+    if auto_comp:
+        conn_id = trans_obj.conn_id_ac
+        connect = True
+    else:
+        conn_id = trans_obj.conn_id
+        connect = True if 'connect' in request.args and \
+                          request.args['connect'] == '1' else False
     try:
         manager = get_driver(
             PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
         conn = manager.connection(
             did=trans_obj.did,
-            conn_id=trans_obj.conn_id,
+            conn_id=conn_id,
             auto_reconnect=False,
             use_binary_placeholder=True,
             array_to_string=True
@@ -703,10 +737,7 @@ def check_transaction_status(trans_id):
         current_app.logger.error(e)
         return False, internal_server_error(errormsg=str(e)), None, None, None
 
-    connect = True if 'connect' in request.args and \
-                      request.args['connect'] == '1' else False
-
-    if connect:
+    if connect and conn and not conn.connected():
         conn.connect()
 
     return True, None, conn, trans_obj, session_obj
@@ -874,23 +905,38 @@ def poll(trans_id):
     data_obj = {}
     on_demand_record_count = Preferences.module(MODULE_NAME).\
         preference('on_demand_record_count').get()
-
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
         check_transaction_status(trans_id)
+
+    if type(error_msg) is Response:
+        return error_msg
 
     if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
                                   info='DATAGRID_TRANSACTION_REQUIRED',
                                   status=404)
 
-    if not conn.async_cursor_initialised():
-        return make_json_response(data={'status': 'NotInitialised'})
+    is_thread_alive = False
+    if trans_obj.get_thread_native_id():
+        for thread in threading.enumerate():
+            if thread.native_id == trans_obj.get_thread_native_id() and\
+                    thread.is_alive():
+                is_thread_alive = True
+                break
 
-    if status and conn is not None and session_obj is not None:
+    if is_thread_alive:
+        status = 'Busy'
+    elif status and conn is not None and session_obj is not None:
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)
         if not status:
+            if not conn.connected():
+                return service_unavailable(
+                    gettext("Connection to the server has been lost."),
+                    info="CONNECTION_LOST",
+                )
+
             messages = conn.messages()
             if messages and len(messages) > 0:
                 additional_messages = ''.join(messages)
@@ -1029,8 +1075,9 @@ def poll(trans_id):
         status = 'NotConnected'
         result = error_msg
 
-    transaction_status = conn.transaction_status()
-    data_obj['db_name'] = conn.db
+    transaction_status = conn.transaction_status() if conn else 0
+    data_obj['db_name'] = conn.db if conn else None
+
     data_obj['db_id'] = trans_obj.did \
         if trans_obj is not None and hasattr(trans_obj, 'did') else 0
 
@@ -1760,7 +1807,7 @@ def auto_complete(trans_id):
 
     # Check the transaction and connection status
     status, error_msg, conn, trans_obj, session_obj = \
-        check_transaction_status(trans_id)
+        check_transaction_status(trans_id, auto_comp=True)
 
     if error_msg == ERROR_MSG_TRANS_ID_NOT_FOUND:
         return make_json_response(success=0, errormsg=error_msg,
@@ -1770,15 +1817,18 @@ def auto_complete(trans_id):
     if status and conn is not None and \
             trans_obj is not None and session_obj is not None:
 
-        if trans_id not in auto_complete_objects:
-            # Create object of SQLAutoComplete class and pass connection object
-            auto_complete_objects[trans_id] = \
-                SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
-                                conn=conn)
+        with sqleditor_close_session_lock:
+            if trans_id not in auto_complete_objects:
+                # Create object of SQLAutoComplete class and pass
+                # connection object
+                auto_complete_objects[trans_id] = \
+                    SQLAutoComplete(sid=trans_obj.sid, did=trans_obj.did,
+                                    conn=conn)
 
-        auto_complete_obj = auto_complete_objects[trans_id]
-        # Get the auto completion suggestions.
-        res = auto_complete_obj.get_completions(full_sql, text_before_cursor)
+            auto_complete_obj = auto_complete_objects[trans_id]
+            # # Get the auto completion suggestions.
+            res = auto_complete_obj.get_completions(full_sql,
+                                                    text_before_cursor)
     else:
         status = False
         res = error_msg
@@ -2455,6 +2505,12 @@ def add_query_history(trans_id):
     status, error_msg, conn, trans_obj, session_ob = \
         check_transaction_status(trans_id)
 
+    if not trans_obj:
+        return make_json_response(
+            data={
+                'status': False,
+            }
+        )
     return QueryHistory.save(current_user.id, trans_obj.sid, conn.db,
                              request=request)
 

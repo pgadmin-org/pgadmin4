@@ -44,4 +44,3 @@ Bug fixes
   | `Issue #6420 <https://github.com/pgadmin-org/pgadmin4/issues/6420>`_ -  Fix raise notice from func/proc or code blocks are no longer displayed live.
   | `Issue #6431 <https://github.com/pgadmin-org/pgadmin4/issues/6431>`_ -  Fix an issue where PSQL is not working if the database name have quotes or double quotes.
   | `Issue #6435 <https://github.com/pgadmin-org/pgadmin4/issues/6435>`_ -  Fix an issue where all the menus are enabled when pgAdmin is opened and no object is selected in the object explorer.
-

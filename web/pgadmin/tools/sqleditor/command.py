@@ -364,6 +364,8 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
         if self.cmd_type in (VIEW_FIRST_100_ROWS, VIEW_LAST_100_ROWS):
             self.limit = 100
 
+        self.thread_native_id = None
+
     def get_primary_keys(self, *args, **kwargs):
         return None, None
 
@@ -440,6 +442,12 @@ class GridCommand(BaseCommand, SQLFilter, FetchedRowTracker):
             return 'desc'
         else:
             return 'asc'
+
+    def get_thread_native_id(self):
+        return self.thread_native_id
+
+    def set_thread_native_id(self, thread_native_id):
+        self.thread_native_id = thread_native_id
 
 
 class TableCommand(GridCommand):
@@ -881,6 +889,8 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         FetchedRowTracker.__init__(self, **kwargs)
 
         self.conn_id = kwargs['conn_id'] if 'conn_id' in kwargs else None
+        self.conn_id_ac = kwargs['conn_id_ac'] if 'conn_id_ac' in kwargs\
+            else None
         self.auto_rollback = False
         self.auto_commit = True
 
@@ -890,6 +900,7 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
         self.pk_names = None
         self.table_has_oids = False
         self.columns_types = None
+        self.thread_native_id = None
 
     def get_sql(self, default_conn=None):
         return None
@@ -982,6 +993,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
     def set_connection_id(self, conn_id):
         self.conn_id = conn_id
 
+    def set_connection_id_ac(self, conn_id):
+        self.conn_id_ac = conn_id
+
     def set_auto_rollback(self, auto_rollback):
         self.auto_rollback = auto_rollback
 
@@ -1009,3 +1023,9 @@ class QueryToolCommand(BaseCommand, FetchedRowTracker):
             self.object_name = result['rows'][0]['relname']
         else:
             raise InternalServerError(SERVER_CONNECTION_CLOSED)
+
+    def get_thread_native_id(self):
+        return self.thread_native_id
+
+    def set_thread_native_id(self, thread_native_id):
+        self.thread_native_id = thread_native_id

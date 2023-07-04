@@ -31,6 +31,9 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #6163 <https://github.com/pgadmin-org/pgadmin4/issues/6163>`_ -  Fix an issue where queries can't complete execution.
   | `Issue #6165 <https://github.com/pgadmin-org/pgadmin4/issues/6165>`_ -  Fixed an issue where Import Export not working when using pgpassfile.
+  | `Issue #6317 <https://github.com/pgadmin-org/pgadmin4/issues/6317>`_ -  Fix an issue where queries longer than 1 minute get stuck - Container 7.1
+  | `Issue #6356 <https://github.com/pgadmin-org/pgadmin4/issues/6356>`_ -  Fix an issue where queries get stuck with auto-completion enabled.
   | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
   | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
