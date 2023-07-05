@@ -307,7 +307,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                 parent_schema_id=scid,
                 schema_id=row['schema_id'],
                 schema_name=row['schema_name'],
-                description=row['description']
+                description=row['description'],
+                is_detach_pending=row['inhdetachpending']
             )
 
         if ptid is not None:

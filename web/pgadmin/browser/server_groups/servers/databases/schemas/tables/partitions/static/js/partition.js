@@ -101,12 +101,24 @@ function(
           name: 'detach_partition_concurrently', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'detach_partition_concurrently',
           category: gettext('Detach Partition'), priority: 2, label: gettext('Concurrently'),
-          enable: 'canDetach'
+          enable: function(itemData, item) {
+            let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+              server = treeData['server'],
+              partition = treeData['partition'];
+
+            return (server && server.version >= 140000 && !partition.is_detach_pending);
+          }
         },{
           name: 'detach_partition_finalize', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'detach_partition_finalize',
           category: gettext('Detach Partition'), priority: 2, label: gettext('Finalize'),
-          enable: 'canDetach'
+          enable: function(itemData, item) {
+            let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+              server = treeData['server'],
+              partition = treeData['partition'];
+
+            return (server && server.version >= 140000 && partition.is_detach_pending);
+          }
         },{
           name: 'count_table_rows', node: 'partition', module: pgBrowser.Nodes['table'],
           applies: ['object', 'context'], callback: 'count_table_rows',
@@ -322,12 +334,6 @@ function(
           // We are here means we can create menu, now let's check condition
           return (itemData.tigger_count > 0 && itemData.has_enable_triggers > 0);
         }
-      },
-      canDetach: function(itemData, item) {
-        let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
-          server = treeData['server'];
-
-        return (server && server.version >= 140000);
       },
     });
   }
