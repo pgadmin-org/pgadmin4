@@ -36,7 +36,7 @@ SELECT rel.oid, rel.relname AS name,
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_max_age=([0-9]*)') AS toast_autovacuum_freeze_max_age,
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
 	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype, typ.typname,
-	typ.typrelid AS typoid, des.description, pg_catalog.pg_get_userbyid(rel.relowner) AS relowner, inh.inhdetachpending
+	typ.typrelid AS typoid, des.description, pg_catalog.pg_get_userbyid(rel.relowner) AS relowner
 FROM
     (SELECT * FROM pg_catalog.pg_inherits WHERE inhparent = {{ tid }}::oid) inh
     LEFT JOIN pg_catalog.pg_class rel ON inh.inhrelid = rel.oid
