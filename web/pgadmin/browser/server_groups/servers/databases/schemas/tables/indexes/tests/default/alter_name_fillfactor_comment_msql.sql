@@ -2,7 +2,8 @@ ALTER INDEX IF EXISTS public."Idx_$%{}[]()&*^!@""'`\/#"
     RENAME TO "Idx1_$%{}[]()&*^!@""'`\/#";
 
 ALTER INDEX IF EXISTS public."Idx1_$%{}[]()&*^!@""'`\/#"
-    SET (FILLFACTOR=10);
+    SET (fillfactor=10);
+
 
 ALTER TABLE IF EXISTS public.test_table_for_indexes
     CLUSTER ON "Idx1_$%{}[]()&*^!@""'`\/#";

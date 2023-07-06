@@ -136,7 +136,8 @@ define('pgadmin.node.index', [
             node_info: treeNodeInfo
           },
           {
-            amname: 'btree'
+            amname: 'btree',
+            deduplicate_items: treeNodeInfo.server.version >= 130000 ? true : undefined,
           }
         );
       }
