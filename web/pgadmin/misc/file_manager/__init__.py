@@ -947,6 +947,8 @@ class Filemanager():
         new_name = name
         count = 0
         while True:
+            if not (path.endswith("/") or name.startswith("/")):
+                path = path + "/"
             file_path = "{}{}/".format(path, new_name)
             create_path = file_path
             if in_dir != "":
