@@ -105,6 +105,7 @@ export class TypeObjSchema extends BaseUISchema {
            state.only_tablespaces ||
            state.only_roles;
       },
+      inlineNext: true,
     }, {
       id: 'only_schema',
       label: gettext('Only schemas'),
@@ -120,6 +121,7 @@ export class TypeObjSchema extends BaseUISchema {
            state.only_tablespaces ||
            state.only_roles;
       },
+      inlineNext: true,
     },  {
       id: 'only_tablespaces',
       label: gettext('Only tablespaces'),
@@ -135,7 +137,8 @@ export class TypeObjSchema extends BaseUISchema {
            state.only_schema ||
            state.only_roles;
       },
-      visible: isVisibleForObjectBackup(obj?._top?.backupType)
+      visible: isVisibleForObjectBackup(obj?._top?.backupType),
+      inlineNext: true,
     }, {
       id: 'only_roles',
       label: gettext('Only roles'),
@@ -197,6 +200,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
     }, {
       id: 'dns_no_role_passwords',
       label: gettext('Role passwords'),
@@ -204,30 +208,35 @@ export class SaveOptSchema extends BaseUISchema {
       disabled: false,
       group: gettext('Do not save'),
       visible: isVisibleForObjectBackup(obj?._top?.backupType),
+      inlineNext: true,
     }, {
       id: 'dns_privilege',
       label: gettext('Privileges'),
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
     }, {
       id: 'dns_tablespace',
       label: gettext('Tablespaces'),
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
     }, {
       id: 'dns_unlogged_tbl_data',
       label: gettext('Unlogged table data'),
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
     }, {
       id: 'dns_comments',
       label: gettext('Comments'),
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
       min_version: 110000
     }, {
       id: 'dns_publications',
@@ -235,6 +244,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
       min_version: 110000
     }, {
       id: 'dns_subscriptions',
@@ -242,6 +252,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
       min_version: 110000
     }, {
       id: 'dns_security_labels',
@@ -249,6 +260,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
       min_version: 110000
     }, {
       id: 'dns_toast_compression',
@@ -256,6 +268,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
       min_version: 140000
     }, {
       id: 'dns_table_access_method',
@@ -263,6 +276,7 @@ export class SaveOptSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Do not save'),
+      inlineNext: true,
       min_version: 150000
     }];
   }
@@ -308,6 +322,7 @@ export class DisabledOptionSchema extends BaseUISchema {
       disabled: function(state) {
         return !(state.only_data);
       },
+      inlineNext: true,
     }, {
       id: 'disable_quoting',
       label: gettext('$ quoting'),
@@ -349,18 +364,21 @@ export class MiscellaneousSchema extends BaseUISchema {
       type: 'switch',
       disabled: false,
       group: gettext('Miscellaneous'),
+      inlineNext: true,
     }, {
       id: 'dqoute',
       label: gettext('Force double quote on identifiers'),
       type: 'switch',
       disabled: false,
       group: gettext('Miscellaneous'),
+      inlineNext: true,
     }, {
       id: 'use_set_session_auth',
       label: gettext('Use SET SESSION AUTHORIZATION'),
       type: 'switch',
       disabled: false,
       group: gettext('Miscellaneous'),
+      inlineNext: true,
     }, {
       id: 'extra_float_digits',
       label: gettext('Extra float digits'),
@@ -551,6 +569,7 @@ export default class BackupSchema extends BaseUISchema {
         state.on_conflict_do_nothing = false;
         return true;
       },
+      inlineNext: true,
     }, {
       id: 'include_create_database',
       label: gettext('Include CREATE DATABASE statement'),
@@ -558,6 +577,7 @@ export default class BackupSchema extends BaseUISchema {
       disabled: false,
       group: gettext('Query Options'),
       visible: isVisibleForServerBackup(obj.backupType),
+      inlineNext: true,
     }, {
       id: 'include_drop_database',
       label: gettext('Include DROP DATABASE statement'),
@@ -571,6 +591,7 @@ export default class BackupSchema extends BaseUISchema {
         }
         return false;
       },
+      inlineNext: true,
     }, {
       id: 'if_exists',
       label: gettext('Include IF EXISTS clause'),
