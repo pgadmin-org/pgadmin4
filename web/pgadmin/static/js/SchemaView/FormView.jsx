@@ -212,6 +212,8 @@ export default function FormView({
   }, [stateUtils.formResetKey]);
 
   let fullTabs = [];
+  let inlineComponents = [];
+  let inlineCompGroup = null;
 
   /* Prepare the array of components based on the types */
   for(const field of schemaRef.current.fields) {
@@ -304,47 +306,73 @@ export default function FormView({
           firstEleID.current = field.id;
         }
 
-        tabs[group].push(
-          <MappedFormControl
-            inputRef={(ele)=>{
-              if(firstEleRef && firstEleID.current === field.id) {
-                firstEleRef.current = ele;
-              }
-            }}
-            state={value}
-            key={id}
-            viewHelperProps={viewHelperProps}
-            name={id}
-            value={value[id]}
-            {...field}
-            id={id}
-            readonly={readonly}
-            disabled={disabled}
-            visible={visible}
-            onChange={(changeValue)=>{
-              /* Get the changes on dependent fields as well */
-              dataDispatch({
-                type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-                path: accessPath.concat(id),
-                value: changeValue,
-              });
-            }}
-            hasError={hasError}
-            className={classes.controlRow}
-            noLabel={field.isFullTab}
-            memoDeps={[
-              value[id],
-              readonly,
-              disabled,
-              visible,
-              hasError,
-              classes.controlRow,
-              ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-            ]}
-          />
-        );
+        const currentControl = <MappedFormControl
+          inputRef={(ele)=>{
+            if(firstEleRef && firstEleID.current === field.id) {
+              firstEleRef.current = ele;
+            }
+          }}
+          state={value}
+          key={id}
+          viewHelperProps={viewHelperProps}
+          name={id}
+          value={value[id]}
+          {...field}
+          id={id}
+          readonly={readonly}
+          disabled={disabled}
+          visible={visible}
+          onChange={(changeValue)=>{
+            /* Get the changes on dependent fields as well */
+            dataDispatch({
+              type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+              path: accessPath.concat(id),
+              value: changeValue,
+            });
+          }}
+          hasError={hasError}
+          className={classes.controlRow}
+          noLabel={field.isFullTab}
+          memoDeps={[
+            value[id],
+            readonly,
+            disabled,
+            visible,
+            hasError,
+            classes.controlRow,
+            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
+          ]}
+        />;
+
+        if(field.inlineNext) {
+          inlineComponents.push(React.cloneElement(currentControl, {
+            withContainer: false, controlGridBasis: 3
+          }));
+          inlineCompGroup = group;
+        } else if(inlineComponents?.length > 0) {
+          inlineComponents.push(React.cloneElement(currentControl, {
+            withContainer: false, controlGridBasis: 3
+          }));
+          tabs[group].push(
+            <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={classes.controlRow} gridRowGap="8px" flexWrap="wrap">
+              {inlineComponents}
+            </Box>
+          );
+          inlineComponents = [];
+          inlineCompGroup = null;
+        } else {
+          tabs[group].push(currentControl);
+        }
       }
     }
+  }
+
+  if(inlineComponents?.length > 0) {
+    tabs[inlineCompGroup].push(
+      <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={classes.controlRow} gridRowGap="8px" flexWrap="wrap">
+        {inlineComponents}
+      </Box>
+    );
   }
 
   let finalTabs = _.pickBy(tabs, (v, tabName)=>schemaRef.current.filterGroups.indexOf(tabName) <= -1);
