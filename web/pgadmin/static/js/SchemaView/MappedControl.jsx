@@ -12,7 +12,7 @@ import _ from 'lodash';
 import {
   FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
   FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, InputSQL, FormNote, FormInputDateTimePicker, PlainString,
-  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio, FormButton
+  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio, FormButton, FormTree
 } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -89,6 +89,8 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
     return <FormInputSelectThemes name={name} value={value} onChange={onTextChange} {...props}/>;
   case 'button':
     return <FormButton name={name} value={value} className={className} onClick={onClick}  {...props} />;
+  case 'tree':
+      return <FormTree/>;
   default:
     return <PlainString value={value} {...props} />;
   }

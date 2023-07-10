@@ -43,6 +43,7 @@ import SelectThemes from './SelectThemes';
 import { showFileManager } from '../helpers/showFileManager';
 import { withColorPicker } from '../helpers/withColorPicker';
 import { useWindowSize } from '../custom_hooks';
+import { SelectedObjectSchema } from '../../../tools/backup/static/selectedObjectSchema';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -1275,3 +1276,7 @@ FormButton.propTypes = {
   disabled: PropTypes.bool,
   btnName: PropTypes.string
 };
+
+export function FormTree(){
+  return <SelectedObjectSchema data></SelectedObjectSchema>
+}
