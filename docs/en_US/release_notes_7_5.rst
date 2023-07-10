@@ -21,6 +21,8 @@ New features
 ************
 
   | `Issue #6369 <https://github.com/pgadmin-org/pgadmin4/issues/6369>`_ -  Added support to detach partitions using concurrently and finalize.
+  | `Issue #6416 <https://github.com/pgadmin-org/pgadmin4/issues/6416>`_ -  Added new/missing parameters to pg_dumpall (Backup Server).
+  | `Issue #6417 <https://github.com/pgadmin-org/pgadmin4/issues/6417>`_ -  Added new/missing parameters to pg_dump (Backup Objects).
 
 Housekeeping
 ************
@@ -39,7 +41,6 @@ Bug fixes
   | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
   | `Issue #6501 <https://github.com/pgadmin-org/pgadmin4/issues/6501>`_ -  Fix the query tool auto-complete issue on the server reconnection.
   | `Issue #6502 <https://github.com/pgadmin-org/pgadmin4/issues/6502>`_ -  Fix the query tool restore connection issue.
-  | `Issue #6508 <https://github.com/pgadmin-org/pgadmin4/issues/6508>`_ -  Fix the crash issue if the query is running and the server is disconnected.
   | `Issue #6509 <https://github.com/pgadmin-org/pgadmin4/issues/6509>`_ -  Fix the reconnecton issue if the PostgreSQL server is restarted from the backend.
   | `Issue #6514 <https://github.com/pgadmin-org/pgadmin4/issues/6514>`_ -  Fix the connection and stability issues since v7, possibly related to background schema changes.
   | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
