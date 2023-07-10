@@ -270,6 +270,7 @@ export class StorageSchema extends BaseUISchema {
         id: 'storage_type', label: gettext('Storage type'), type: 'select',
         mode: ['create'],
         options: [
+          {'label': gettext('General Purpose SSD (gp3)'), 'value': 'gp3'},
           {'label': gettext('General Purpose SSD (gp2)'), 'value': 'gp2'},
           {'label': gettext('Provisioned IOPS SSD (io1)'), 'value': 'io1'},
           {'label': gettext('Magnetic'), 'value': 'standard'}
@@ -281,7 +282,7 @@ export class StorageSchema extends BaseUISchema {
           if (source[0] !== 'storage_size')
             if(state.storage_type === 'io1') {
               return {storage_size: 100};
-            } else if(state.storage_type === 'gp2') {
+            } else if(state.storage_type === 'gp2' || state.storage_type === 'gp3') {
               return {storage_size: 20};
             } else {
               return {storage_size: 5};
@@ -303,6 +304,22 @@ export class StorageSchema extends BaseUISchema {
         },
       },
     ];
+  }
+
+  validate(data, setErrMsg) {
+    if(!isEmptyString(data.storage_type) && (data.storage_type === 'gp2' || data.storage_type === 'gp3') && !isEmptyString(data.storage_size) && (data.storage_size < 4 || data.storage_size > 65536)) {
+      setErrMsg('storage_size', gettext('Allocated storage should be between 20 - 65536 GiB.'));
+      return true;
+    }
+    if(!isEmptyString(data.storage_type) && data.storage_type === 'io1' && !isEmptyString(data.storage_size) && (data.storage_size < 100 || data.storage_size > 65536)) {
+      setErrMsg('storage_size', gettext('Allocated storage should be between 100 - 65536 GiB.'));
+      return true;
+    }
+    if(!isEmptyString(data.storage_type) && data.storage_type === 'standard' && !isEmptyString(data.storage_size) && (data.storage_size < 5 || data.storage_size > 3072)) {
+      setErrMsg('storage_size', gettext('Allocated storage should be between 5 - 3072 GiB.'));
+      return true;
+    }
+    return false;
   }
 }
 

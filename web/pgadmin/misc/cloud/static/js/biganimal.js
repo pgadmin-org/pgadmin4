@@ -242,9 +242,12 @@ export function getBigAnimalSummary(cloud, bigAnimalClusterTypeData, bigAnimalIn
 
   const rows4 = [
     createData(gettext('Volume type'), bigAnimalInstanceData.volume_type),
-    createData(gettext('Volume size'), bigAnimalInstanceData.volume_size),
-    createData(gettext('Volume IOPS'), bigAnimalInstanceData.volume_IOPS),
+    createData(gettext('Volume size'), bigAnimalInstanceData.volume_size)
   ];
+  if(bigAnimalClusterTypeData.provider.includes('aws')){
+    rows4.push(createData(gettext('Volume IOPS'), bigAnimalInstanceData.volume_IOPS));
+    rows4.push(createData(gettext('Disk Throuhgput'), bigAnimalInstanceData.disk_throughput));
+  }
 
   const rows5 = [
     createData(gettext('Password'), 'xxxxxxx'),
@@ -271,20 +274,9 @@ export function validateBigAnimalStep3(cloudDetails) {
   if (isEmptyString(cloudDetails.name) ||
   isEmptyString(cloudDetails.region) || isEmptyString(cloudDetails.instance_type) ||
   isEmptyString(cloudDetails.instance_series)|| isEmptyString(cloudDetails.instance_size) ||
-  isEmptyString(cloudDetails.volume_type) || (cloudDetails.provider != 'aws' && isEmptyString(cloudDetails.volume_properties)) ) {
+  isEmptyString(cloudDetails.volume_type) || (!cloudDetails.provider.includes('aws') && isEmptyString(cloudDetails.volume_properties)) ) {
     isError = true;
   }
-
-  if (cloudDetails.provider == 'aws') {
-    if (isEmptyString(cloudDetails.volume_IOPS) || (cloudDetails.volume_IOPS != 'io2' &&
-     (cloudDetails.volume_size < 1 ||  cloudDetails.volume_size > 16384)) ||
-     (cloudDetails.volume_IOPS == 'io2' && (cloudDetails.volume_size < 4 ||  cloudDetails.volume_size > 16384)) ||
-     (cloudDetails.volume_IOPS != 'io2' && cloudDetails.volume_IOPS != 3000) ||
-     (cloudDetails.volume_IOPS == 'io2' && (cloudDetails.volume_IOPS < 100 ||  cloudDetails.volume_IOPS > 2000))) {
-      isError = true;
-    }
-  }
-
   return isError;
 }
 
