@@ -40,10 +40,7 @@ export class DomainConstSchema extends BaseUISchema {
         type: 'checkbox',
         readonly: function(state) {
           let currCon = _.find(obj.top.origData.constraints, (con)=>con.conoid == state.conoid);
-          if (!obj.isNew(state) && currCon.convalidated) {
-            return true;
-          }
-          return false;
+          return !obj.isNew(state) && currCon.convalidated ? true : false;
         },
       }
     ];
