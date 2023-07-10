@@ -1052,6 +1052,31 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When backup the server with option - Exclude database',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 verbose=True,
+                 exclude_database="db*"
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--exclude-database', 'db*'],
+             not_expected_cmd_opts=[],
+             server_min_version=160000,
+             expected_exit_code=[0, None],
+             message='Backup server with --exclude-database are not '
+                     'supported by EPAS/PG server less than 16.0'
+         )),
         ('When backup the server with encoding',
          dict(
              class_params=dict(

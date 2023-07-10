@@ -253,7 +253,7 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
 
         # --blobs is deprecated from v16
         if manager.version >= 160000:
-            set_param('blobs', 'large-objects',
+            set_param('blobs', '--large-objects',
                       data['format'] in ['custom', 'tar'])
         else:
             set_param('blobs', '--blobs', data['format'] in ['custom', 'tar'])
@@ -334,6 +334,8 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_value('extra_float_digits', '--extra-float-digits', None,
               manager.version >= 120000)
     set_value('lock_wait_timeout', '--lock-wait-timeout')
+    set_value('exclude_database', '--exclude-database', None,
+              manager.version >= 160000)
 
     args.extend(
         functools.reduce(operator.iconcat, map(

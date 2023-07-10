@@ -178,6 +178,9 @@ tab to provide other backup options.
      table locks at the beginning of the dump. Instead, fail if unable to lock a
      table within the specified timeout.
 
+   * Use the *Exclude database* field to not dump databases whose name matches
+     pattern.
+
 When you’ve specified the details that will be incorporated into the pg_dumpall
 command:
 

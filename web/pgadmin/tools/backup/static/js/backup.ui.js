@@ -341,6 +341,7 @@ export class MiscellaneousSchema extends BaseUISchema {
 
 
   get baseFields() {
+    let obj = this;
     return [{
       id: 'verbose',
       label: gettext('Verbose messages'),
@@ -372,6 +373,14 @@ export class MiscellaneousSchema extends BaseUISchema {
       type: 'int',
       disabled: false,
       group: gettext('Miscellaneous')
+    }, {
+      id: 'exclude_database',
+      label: gettext('Exclude database'),
+      type: 'text',
+      disabled: false,
+      min_version: 160000,
+      group: gettext('Miscellaneous'),
+      visible: isVisibleForObjectBackup(obj.backupType)
     }];
   }
 }
