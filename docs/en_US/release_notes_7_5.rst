@@ -46,3 +46,4 @@ Bug fixes
   | `Issue #6514 <https://github.com/pgadmin-org/pgadmin4/issues/6514>`_ -  Fix the connection and stability issues since v7, possibly related to background schema changes.
   | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
   | `Issue #6524 <https://github.com/pgadmin-org/pgadmin4/issues/6524>`_ -  Fix the lost connection error in v7.4.
+  | `Issue #6544 <https://github.com/pgadmin-org/pgadmin4/issues/6544>`_ -  Fix an issue where adding a sub-folder inside a folder is not working as expected in File Manager.
