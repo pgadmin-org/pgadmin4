@@ -40,6 +40,7 @@ export class SectionSchema extends BaseUISchema {
            state.only_tablespaces ||
            state.only_roles;
         },
+        inlineNext: true,
       }, {
         id: 'data',
         label: gettext('Data'),
