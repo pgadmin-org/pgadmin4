@@ -169,6 +169,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         gettext("Could not find the publication information.")
     node_type = blueprint.node_type
     BASE_TEMPLATE_PATH = 'publications/{0}/#{1}#/sql'
+    GET_PUB_SCHEMAS_SQL = 'get_pub_schemas.sql'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -380,7 +381,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
         if not res['rows'][0]['all_table']:
             if self.manager.version >= 150000:
                 schema_name_sql = render_template(
-                    "/".join([self.template_path, 'get_pub_schemas.sql']),
+                    "/".join([self.template_path, self.GET_PUB_SCHEMAS_SQL]),
                     pbid=pbid
                 )
                 status, snames_list_res = self.conn.execute_dict(
@@ -736,7 +737,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
             if self.manager.version >= 150000:
                 schema_name_sql = render_template(
-                    "/".join([self.template_path, 'get_pub_schemas.sql']),
+                    "/".join([self.template_path, self.GET_PUB_SCHEMAS_SQL]),
                     pbid=pbid
                 )
                 status, snames_list_res = self.conn.execute_dict(
@@ -949,7 +950,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if self.manager.version >= 150000:
             schema_name_sql = render_template(
-                "/".join([self.template_path, 'get_pub_schemas.sql']),
+                "/".join([self.template_path, self.GET_PUB_SCHEMAS_SQL]),
                 pbid=pbid
             )
             status, snames_list_res = self.conn.execute_dict(
