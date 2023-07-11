@@ -40,10 +40,12 @@ Bug fixes
   | `Issue #6317 <https://github.com/pgadmin-org/pgadmin4/issues/6317>`_ -  Fix an issue where queries longer than 1 minute get stuck - Container 7.1
   | `Issue #6356 <https://github.com/pgadmin-org/pgadmin4/issues/6356>`_ -  Fix an issue where queries get stuck with auto-completion enabled.
   | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
+  | `Issue #6499 <https://github.com/pgadmin-org/pgadmin4/issues/6499>`_ -  Ensure that Backup, Restore, and Maintenance should work properly when pgpass file is used.
   | `Issue #6501 <https://github.com/pgadmin-org/pgadmin4/issues/6501>`_ -  Fix the query tool auto-complete issue on the server reconnection.
   | `Issue #6502 <https://github.com/pgadmin-org/pgadmin4/issues/6502>`_ -  Fix the query tool restore connection issue.
   | `Issue #6509 <https://github.com/pgadmin-org/pgadmin4/issues/6509>`_ -  Fix the reconnecton issue if the PostgreSQL server is restarted from the backend.
   | `Issue #6514 <https://github.com/pgadmin-org/pgadmin4/issues/6514>`_ -  Fix the connection and stability issues since v7, possibly related to background schema changes.
   | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
   | `Issue #6524 <https://github.com/pgadmin-org/pgadmin4/issues/6524>`_ -  Fix the lost connection error in v7.4.
+  | `Issue #6537 <https://github.com/pgadmin-org/pgadmin4/issues/6537>`_ -  Fixed an issue where filters are not working and query history shows empty queries.
   | `Issue #6544 <https://github.com/pgadmin-org/pgadmin4/issues/6544>`_ -  Fix an issue where adding a sub-folder inside a folder is not working as expected in File Manager.
