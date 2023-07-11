@@ -1,5 +1,5 @@
 SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, indisclustered,
-    indisvalid, indisunique, indisprimary, n.nspname,indnatts,cls.reltablespace AS spcoid, indnullsnotdistinct,
+    indisvalid, indisunique, indisprimary, n.nspname,indnatts,cls.reltablespace AS spcoid,
     CASE WHEN (length(spcname::text) > 0 OR cls.relkind = 'I') THEN spcname ELSE
         (SELECT sp.spcname FROM pg_catalog.pg_database dtb
         JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid

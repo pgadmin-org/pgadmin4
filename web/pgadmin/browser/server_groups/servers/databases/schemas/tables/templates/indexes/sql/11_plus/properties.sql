@@ -1,5 +1,5 @@
 SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, indisclustered,
-    indisvalid, indisunique, indisprimary, n.nspname,indnatts,cls.reltablespace AS spcoid, indnullsnotdistinct,
+    indisvalid, indisunique, indisprimary, n.nspname,indnatts,cls.reltablespace AS spcoid,
     CASE WHEN (length(spcname::text) > 0 OR cls.relkind = 'I') THEN spcname ELSE
         (SELECT sp.spcname FROM pg_catalog.pg_database dtb
         JOIN pg_catalog.pg_tablespace sp ON dtb.dattablespace=sp.oid
@@ -11,7 +11,6 @@ SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, 
     pg_catalog.pg_get_expr(indpred, indrelid, true) as indconstraint, contype, condeferrable, condeferred, amname,
     (SELECT (CASE WHEN count(i.inhrelid) > 0 THEN true ELSE false END) FROM pg_inherits i WHERE i.inhrelid = cls.oid) as is_inherited,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'fillfactor=([0-9]*)') AS fillfactor,
-    substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'deduplicate_items=([a-z]*)')::boolean AS deduplicate_items,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'gin_pending_list_limit=([0-9]*)') AS gin_pending_list_limit,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'pages_per_range=([0-9]*)') AS pages_per_range,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'buffering=([a-z]*)') AS buffering,
