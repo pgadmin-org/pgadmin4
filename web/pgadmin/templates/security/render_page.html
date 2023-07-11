@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block title %}{{ config.APP_NAME }}{% endblock %}
 {% set other_props = {
     'messages': get_flashed_messages(with_categories=true)
 } %}

@@ -325,7 +325,9 @@ export function showChangeUserPassword(url) {
               url: url,
               data: formData,
             }).then((res)=>{
-              resolve(res);
+              resolve(res.data.info);
+              onClose();
+              Notify.success(res.data.info);
             }).catch((err)=>{
               reject(err);
             });

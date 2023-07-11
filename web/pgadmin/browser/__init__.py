@@ -18,7 +18,8 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
 from socket import error as SOCKETErrorException
 from urllib.request import urlopen
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
-    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER, KEY_RING_TUNNEL_FORMAT
+    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER, KEY_RING_TUNNEL_FORMAT, \
+    MessageType
 
 import time
 
@@ -46,7 +47,8 @@ from pgadmin.authenticate import get_logout_url
 from pgadmin.authenticate.mfa.utils import mfa_required, is_mfa_enabled
 from pgadmin.settings import get_setting, store_setting
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    bad_request
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.menu import MenuItem
@@ -1103,11 +1105,14 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
 
                     return redirect(get_url(_security.post_change_view) or
                                     get_url(_security.post_login_view))
-                else:
+                elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
                 return bad_request(list(form.errors.values())[0][0])
-
+        return make_json_response(
+            success=1,
+            info=gettext('pgAdmin user password changed successfully')
+        )
 
 # Only register route if SECURITY_RECOVERABLE is set to True
 if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
@@ -1193,6 +1198,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
         if request.get_json(silent=True) and not has_error:
             return default_render_json(form, include_user=False)
+
+        for errors in form.errors.values():
+            for error in errors:
+                flash(error, MessageType.WARNING)
 
         return _security.render_template(
             config_value('FORGOT_PASSWORD_TEMPLATE'),
