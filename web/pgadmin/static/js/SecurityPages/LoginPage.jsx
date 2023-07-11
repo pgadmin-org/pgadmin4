@@ -36,7 +36,7 @@ export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csr
               <a style={{color: 'inherit'}} href={forgotPassUrl}>{gettext('Forgotten your password?')}</a>
             </Box>
             <InputSelectNonSearch name="language" options={langOptions} value={form.language} onChange={(v)=>onTextChange('language', v.target.value)} />
-            <SecurityButton name="internal_button" value="Login">{gettext('Login')}</SecurityButton>
+            <SecurityButton name="internal_button" value="Login" disabled={!(form.email && form.password)}>{gettext('Login')}</SecurityButton>
           </>
           }
           {authSources?.includes?.(authSourcesEnum.OAUTH2) &&
