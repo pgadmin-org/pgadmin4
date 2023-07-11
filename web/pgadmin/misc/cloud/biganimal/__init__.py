@@ -19,8 +19,7 @@ from werkzeug.datastructures import Headers
 from pgadmin.utils import PgAdminModule
 from pgadmin.misc.cloud.utils import _create_server, CloudProcessDesc
 from pgadmin.misc.bgprocess.processes import BatchProcess
-from pgadmin.utils.ajax import make_json_response,\
-    internal_server_error, bad_request, success_return
+from pgadmin.utils.ajax import make_json_response
 from config import root
 from pgadmin.utils.constants import MIMETYPE_APP_JSON
 
@@ -495,6 +494,8 @@ def deploy_on_biganimal(data):
             str(data['instance_details'].get('volume_size', None)),
             '--volume-IOPS',
             str(data['instance_details'].get('volume_IOPS', None)),
+            '--throughput',
+            str(data['instance_details'].get('disk_throughput', None)),
             '--instance-type',
             str(_instance_size),
             '--private-network',

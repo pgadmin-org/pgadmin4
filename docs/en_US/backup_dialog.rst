@@ -67,7 +67,7 @@ Use the fields in the *General* tab to specify parameters for the backup:
 * Use the dropdown listbox next to *Rolename* to specify the role that owns the
   backup.
 
-Click the *Data/Objects* tab to continue. Use the fields in the *Data/Objects*
+Click the *Data Options* tab to continue. Use the fields in the *Data Options*
 tab to provide options related to data or pgAdmin objects that correspond to *pg_dump*.
 
 .. image:: images/backup_sections.png
@@ -97,7 +97,7 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
    * Move the switch next to *Only data* towards right position to limit the back
      up to data.
 
-   * Move the switch next to *Only schema* to limit the back up to schema-level
+   * Move the switch next to *Only schemas* to limit the back up to schema-level
      database objects.
 
    * Move the switch next to *Blobs* towards left position to exclude large
@@ -113,10 +113,10 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
    * Move the switch next to *Owner* towards right position to exclude commands
      that set object ownership.
 
-   * Move the switch next to *Privilege* towards right position to exclude
+   * Move the switch next to *Privileges* towards right position to exclude
      commands that create access privileges.
 
-   * Move the switch next to *Tablespace* towards right position to exclude
+   * Move the switch next to *Tablespaces* towards right position to exclude
      tablespaces.
 
    * Move the switch next to *Unlogged table data* towards right position to
@@ -126,24 +126,44 @@ tab to provide options related to data or pgAdmin objects that correspond to *pg
      commands that set the comments. **Note:** This option is visible only for
      database server greater than or equal to 11.
 
-Click the *Options* tab to continue. Use these additional fields to specify
-options like including ddl statements, verbose message or using set session
-authorization corresponding to *pg_dump* options.
+   * Move the switch next to *Publications* towards right position to exclude
+     publications.
+
+   * Move the switch next to *Subscriptions* towards right position to exclude
+     subscriptions.
+
+   * Move the switch next to *Security labels* towards right position to exclude
+     Security labels.
+
+   * Move the switch next to *Toast compressions* towards right position to exclude
+     Toast compressions. **Note:** This option is visible only for
+     database server greater than or equal to 14.
+
+   * Move the switch next to *Table access methods* towards right position to exclude
+     Table access methods. **Note:** This option is visible only for
+     database server greater than or equal to 15.
 
 .. image:: images/backup_queries.png
     :alt: Queries option on backup dialog
     :align: center
 
-* Move switches in the **Queries** field box to specify the type of statements
-  that should be included in the backup.
+Click the *Query Options* tab to continue. Use these additional fields to specify
+the type of statements that should be included in the backup.
 
-   * Move the switch next to *Use Column Inserts* towards right position to dump
-     the data in the form of INSERT statements and include explicit column
-     names.  Please note: this may make restoration from backup slow.
-
-   * Move the switch next to *Use Insert commands* towards right position to
+   * Move the switch next to *Use INSERT commands* towards right position to
      dump the data in the form of INSERT statements rather than using a COPY
      command.  Please note: this may make restoration from backup slow.
+
+   * Use the *Maximum rows per INSERT command* field to controls the maximum
+     number of rows per INSERT command. **Note:** This option is visible only for
+     database server greater than or equal to 12.
+
+   * Move the switch next to *On conflict do nothing to INSERT command* towards
+     right position to add ON CONFLICT DO NOTHING to INSERT command.
+     This option is not valid unless *Use INSERT commands*, *Use Column INSERTS*
+     or *Maximum rows per INSERT command* is also specified.
+     **Note:** This option is visible only for database server greater than or
+     equal to 12.
 
    * Move the switch next to *Include CREATE DATABASE statement* towards right
      position to include a command in the backup that creates a new database
@@ -154,11 +174,37 @@ authorization corresponding to *pg_dump* options.
      database object with the same name before recreating the object during a
      backup.
 
-   * Move the switch next to *Load Via Partition Root* towards right position,
+   * Move the switch next to *Include IF EXISTS clause* towards right
+     position to add an IF EXISTS clause to drop databases and other objects.
+     This option is not valid unless *Include DROP DATABASE statement* is also set.
+
+
+Click the *Table Options* tab to continue. Use the fields in the *Table Options*
+tab related to tables that should be included in the backup.
+
+   * Move the switch next to *Use Column INSERTS* towards right position to dump
+     the data in the form of INSERT statements and include explicit column
+     names. Please note: this may make restoration from backup slow.
+
+   * Move the switch next to *Load via partition root* towards right position,
      so when dumping a COPY or INSERT statement for a partitioned table, target
      the root of the partitioning hierarchy which contains it rather than the
      partition itself. **Note:** This option is visible only for database server
      greater than or equal to 11.
+
+   * Move the switch next to *Enable row security* towards right position to
+     set row_security to on instead, allowing the user to dump the parts of the
+     contents of the table that they have access to. This option is relevant
+     only when dumping the contents of a table which has row security.
+
+   * Move the switch next to *With OIDs* towards right position to include object
+     identifiers as part of the table data for each table.
+
+   * Use the *Exclude table data* field to not dump data for any tables
+     matching the table pattern.
+
+Click the *Options* tab to continue. Use the fields in the *Options*
+tab to provide other backup options.
 
 .. image:: images/backup_disable.png
     :alt: Disable option on backup dialog
@@ -182,9 +228,6 @@ authorization corresponding to *pg_dump* options.
 * Move switches in the **Miscellaneous** field box to specify miscellaneous
   backup options.
 
-   * Move the switch next to *With OIDs* towards right position to include object
-     identifiers as part of the table data for each table.
-
    * Move the switch next to *Verbose messages* towards left position to instruct
      *pg_dump* to exclude verbose messages.
 
@@ -194,6 +237,13 @@ authorization corresponding to *pg_dump* options.
    * Move the switch next to *Use SET SESSION AUTHORIZATION* towards right
      position to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
+
+   * Use the *Extra float digits* field to use the specified value when dumping
+     floating-point data, instead of the maximum available precision.
+
+   * Use the *Lock wait timeout* field to do not wait forever to acquire shared
+     table locks at the beginning of the dump. Instead, fail if unable to lock a
+     table within the specified timeout.
 
 When you’ve specified the details that will be incorporated into the pg_dump
 command:

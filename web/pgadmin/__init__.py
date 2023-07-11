@@ -68,6 +68,8 @@ socketio = SocketIO(manage_session=False, async_mode='threading',
                     logger=False, engineio_logger=False, debug=False,
                     ping_interval=25, ping_timeout=120)
 
+_INDEX_PATH = 'browser.index'
+
 
 class PgAdmin(Flask):
     def __init__(self, *args, **kwargs):
@@ -126,8 +128,8 @@ class PgAdmin(Flask):
         # into endpoints
         #############################################################
         wsgi_root_path = ''
-        if url_for('browser.index') != '/browser/':
-            wsgi_root_path = url_for('browser.index').replace(
+        if url_for(_INDEX_PATH) != '/browser/':
+            wsgi_root_path = url_for(_INDEX_PATH).replace(
                 '/browser/', ''
             )
 
@@ -540,7 +542,7 @@ def create_app(app_name=None):
     # Make the Session more secure against XSS & CSRF when running in web mode
     if config.SERVER_MODE and config.ENHANCED_COOKIE_PROTECTION:
         paranoid = Paranoid(app)
-        paranoid.redirect_view = 'browser.index'
+        paranoid.redirect_view = _INDEX_PATH
 
     ##########################################################################
     # Load all available server drivers
@@ -717,7 +719,6 @@ def create_app(app_name=None):
         except Exception as e:
             print(str(e))
             db.session.rollback()
-            pass
 
     @user_logged_in.connect_via(app)
     @user_logged_out.connect_via(app)

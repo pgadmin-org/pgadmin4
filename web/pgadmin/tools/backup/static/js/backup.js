@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import {getUtilityView, removeNodeView} from '../../../../browser/static/js/utility_view';
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
-import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
+import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
 import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSchema} from './backupGlobal.ui';
 import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
@@ -254,9 +254,8 @@ define([
       let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
       return new BackupSchema(
         ()=> getSectionSchema(),
-        ()=> getTypeObjSchema({backupType: backupType}),
+        ()=> getTypeObjSchema(),
         ()=> getSaveOptSchema({nodeInfo: treeNodeInfo}),
-        ()=> getQueryOptionSchema({nodeInfo: treeNodeInfo, backupType: backupType}),
         ()=> getDisabledOptionSchema({nodeInfo: treeNodeInfo}),
         ()=> getMiscellaneousSchema({nodeInfo: treeNodeInfo}),
         {

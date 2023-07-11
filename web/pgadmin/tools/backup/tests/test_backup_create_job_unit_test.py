@@ -18,6 +18,15 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from unittest.mock import patch, MagicMock
 from config import PG_DEFAULT_DRIVER
 
+BACKUP_OBJECT_URL = '/backup/job/{0}/object'
+BACKUP_SERVER_URL = '/backup/job/{0}'
+VERBOSE = '--verbose'
+FORMAT_C = '--format=c'
+FORMAT_P = '--format=p'
+BLOBS = '--blobs'
+DATA_ONLY = '--data-only'
+SCHEMA_ONLY = '--schema-only'
+
 
 class BackupCreateJobTest(BaseTestGenerator):
     """Test the BackupCreateJob class"""
@@ -42,8 +51,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  tables=[],
                  database='postgres'
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=c', '--blobs'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C, BLOBS],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -67,8 +76,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  tables=[],
                  database='postgres'
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=d'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, '--format=d'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -94,8 +103,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  pre_data=True,
                  post_data=True
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=c',
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C,
                                 '--section=pre-data', '--section=data',
                                 '--section=post-data'],
              not_expected_cmd_opts=[],
@@ -122,8 +131,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  only_data=True,
                  only_schema=False
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=p', '--data-only'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_P, DATA_ONLY],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -149,9 +158,9 @@ class BackupCreateJobTest(BaseTestGenerator):
                  only_schema=True,
                  dns_owner=True
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=p', '--data-only'],
-             not_expected_cmd_opts=['--schema-only'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_P, DATA_ONLY],
+             not_expected_cmd_opts=[SCHEMA_ONLY],
              expected_exit_code=[0, None]
          )),
         ('When backup the object with option only_schema',
@@ -175,8 +184,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  only_data=False,
                  only_schema=True
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=p', '--schema-only'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_P, SCHEMA_ONLY],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -200,8 +209,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  database='postgres',
                  dns_owner=True
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=p', '--no-owner'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_P, '--no-owner'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -228,14 +237,15 @@ class BackupCreateJobTest(BaseTestGenerator):
                  dns_unlogged_tbl_data=True,
                  dns_tablespace=True
              ),
-             url='/backup/job/{0}/object',
+             url=BACKUP_OBJECT_URL,
              expected_cmd_opts=['--no-privileges',
                                 '--no-tablespaces',
                                 '--no-unlogged-table-data'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
-        ('When backup the object with option - Do not save comments,',
+        ('When backup the object with option - Do not save Comments,'
+         'Publications, Subscriptions, Security Labels',
          dict(
              class_params=dict(
                  sid=1,
@@ -253,15 +263,77 @@ class BackupCreateJobTest(BaseTestGenerator):
                  schemas=[],
                  tables=[],
                  database='postgres',
-                 no_comments=True,
+                 dns_comments=True,
+                 dns_publications=True,
+                 dns_subscriptions=True,
+                 dns_security_labels=True,
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--no-comments'],
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--no-comments', '--no-publications',
+                                '--no-subscriptions', '--no-security-labels'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Backup object with --no-comments is not supported '
-                     'by EPAS/PG server less than 11.0'
+             message='Backup object with --no-comments, --no-publications,'
+                     '--no-subscriptions, --no-security-labels is not '
+                     'supported by EPAS/PG server less than 11.0'
+         )),
+        ('When backup the object with option - Do not save Toast Compression',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 dns_toast_compression=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--no-toast-compression'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=140000,
+             message='Backup object with --no-toast-compression is not'
+                     'supported by EPAS/PG server less than 14.0'
+         )),
+        ('When backup the object with option - Do not save Table Access '
+         'Method,',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 dns_table_access_method=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--no-table-access-method'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=150000,
+             message='Backup object with --no-table-access-method is not '
+                     'supported by EPAS/PG server less than 15.0'
          )),
         ('When backup the object with option - all queries',
          dict(
@@ -284,13 +356,46 @@ class BackupCreateJobTest(BaseTestGenerator):
                  use_column_inserts=True,
                  include_create_database=True,
                  use_insert_commands=True,
-                 include_drop_database=True
+                 include_drop_database=True,
+                 if_exists=True
              ),
-             url='/backup/job/{0}/object',
+             url=BACKUP_OBJECT_URL,
              expected_cmd_opts=['--create', '--clean', '--inserts',
-                                '--column-inserts'],
+                                '--column-inserts', '--if-exists'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
+         )),
+        ('When backup the object with option - Rows per insert and '
+         'On conflict do nothing',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 max_rows_per_insert="200",
+                 on_conflict_do_nothing=True
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--rows-per-insert', '200',
+                                '--on-conflict-do-nothing'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=120000,
+             message='Backup object with --rows-per-insert and '
+                     '--on-conflict-do-nothing are not supported by EPAS/PG '
+                     'server less than 12.0'
          )),
         ('When backup the object with option - load via partition root',
          dict(
@@ -312,12 +417,65 @@ class BackupCreateJobTest(BaseTestGenerator):
                  database='postgres',
                  load_via_partition_root=True,
              ),
-             url='/backup/job/{0}/object',
+             url=BACKUP_OBJECT_URL,
              expected_cmd_opts=['--load-via-partition-root'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
              message='Backup object with --load-via-partition-root are not '
+                     'supported by EPAS/PG server less than 11.0'
+         )),
+        ('When backup the object with option - enable row security',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 enable_row_security=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--enable-row-security'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the object with option - exclude table data',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='plain',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 exclude_table_data='table1',
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=['--exclude-table-data', 'table1'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=110000,
+             message='Backup object with --exclude-table-data are not '
                      'supported by EPAS/PG server less than 11.0'
          )),
         ('When backup the object with option - all queries and format custom',
@@ -341,11 +499,12 @@ class BackupCreateJobTest(BaseTestGenerator):
                  use_column_inserts=True,
                  include_create_database=True,
                  use_insert_commands=True,
-                 include_drop_database=True
+                 include_drop_database=True,
+                 if_exists=True
              ),
-             url='/backup/job/{0}/object',
+             url=BACKUP_OBJECT_URL,
              expected_cmd_opts=['--inserts', '--clean',
-                                '--column-inserts', '--create'],
+                                '--column-inserts', '--create', '--if-exists'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -372,10 +531,63 @@ class BackupCreateJobTest(BaseTestGenerator):
                  with_oids=True,
                  dqoute=True
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--quote-all-identifiers',
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, '--quote-all-identifiers',
                                 '--disable-dollar-quoting', '--oids',
                                 '--use-set-session-authorization'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the object with option - Extra float digits',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 extra_float_digits="5"
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, '--extra-float-digits', '5'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=120000,
+             message='Backup object with --extra-float-digits are not '
+                     'supported by EPAS/PG server less than 12.0'
+         )),
+        ('When backup the object with option - Lock wait timeout',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 lock_wait_timeout="1000"
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, '--lock-wait-timeout', '1000'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -399,9 +611,9 @@ class BackupCreateJobTest(BaseTestGenerator):
                  database='postgres',
                  blobs=True,
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose',
-                                '--blobs',
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE,
+                                BLOBS,
                                 '--format=t'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -426,8 +638,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  tables=[],
                  database='postgres'
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=c', '--blobs',
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C, BLOBS,
                                 '--schema', 'schema1'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -452,8 +664,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  tables=[['public', 'table1']],
                  database='postgres'
              ),
-             url='/backup/job/{0}/object',
-             expected_cmd_opts=['--verbose', '--format=c', '--blobs',
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C, BLOBS,
                                 '--table', 'public.table1'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -475,8 +687,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  verbose=True,
                  type='server'
              ),
-             url='/backup/job/{0}',
-             expected_cmd_opts=['--verbose'],
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -498,8 +710,8 @@ class BackupCreateJobTest(BaseTestGenerator):
                  only_data=True,
                  only_schema=False
              ),
-             url='/backup/job/{0}',
-             expected_cmd_opts=['--verbose', '--data-only'],
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, DATA_ONLY],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -522,8 +734,54 @@ class BackupCreateJobTest(BaseTestGenerator):
                  only_data=False,
                  only_schema=True
              ),
-             url='/backup/job/{0}',
-             expected_cmd_opts=['--verbose', '--schema-only'],
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, SCHEMA_ONLY],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the server with option only_tablespaces',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 only_tablespaces=True
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--tablespaces-only'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the server with option only_roles',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 only_roles=True
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--roles-only'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -548,14 +806,15 @@ class BackupCreateJobTest(BaseTestGenerator):
                  dns_unlogged_tbl_data=True,
                  dns_tablespace=True
              ),
-             url='/backup/job/{0}',
+             url=BACKUP_SERVER_URL,
              expected_cmd_opts=['--no-privileges',
                                 '--no-tablespaces',
                                 '--no-unlogged-table-data'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
-        ('When backup the server with option - Do not save comments,',
+        ('When backup the server with option - Do not save Comments, '
+         'Publications, Subscriptions, Security Labels',
          dict(
              class_params=dict(
                  sid=1,
@@ -571,15 +830,96 @@ class BackupCreateJobTest(BaseTestGenerator):
                  type='server',
                  format='plain',
                  verbose=True,
-                 no_comments=True,
+                 dns_comments=True,
+                 dns_publications=True,
+                 dns_subscriptions=True,
+                 dns_security_labels=True,
              ),
-             url='/backup/job/{0}',
-             expected_cmd_opts=['--no-comments'],
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--no-comments', '--no-publications',
+                                '--no-subscriptions', '--no-security-labels'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Backup server with --no-comments is not supported '
-                     'by EPAS/PG server less than 11.0'
+             message='Backup server with --no-comments, --no-publications,'
+                     '--no-subscriptions, --no-security-labels is not '
+                     'supported by EPAS/PG server less than 11.0'
+         )),
+        ('When backup the server with option - Do not save Toast Compression',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 dns_toast_compression=True,
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--no-toast-compression'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=140000,
+             message='Backup server with --no-toast-compression is not'
+                     'supported by EPAS/PG server less than 14.0'
+         )),
+        ('When backup the server with option - Do not save Table Access '
+         'Method,',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 dns_table_access_method=True,
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--no-table-access-method'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=150000,
+             message='Backup server with --no-table-access-method is not '
+                     'supported by EPAS/PG server less than 15.0'
+         )),
+        ('When backup the server with option - Do not save Role passwords ',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 dns_no_role_passwords=True,
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--no-role-passwords'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
          )),
         ('When backup the server with option - all queries',
          dict(
@@ -599,13 +939,44 @@ class BackupCreateJobTest(BaseTestGenerator):
                  verbose=True,
                  use_column_inserts=True,
                  use_insert_commands=True,
-                 include_drop_database=True
+                 include_drop_database=True,
+                 if_exists=True
              ),
-             url='/backup/job/{0}',
+             url=BACKUP_SERVER_URL,
              expected_cmd_opts=['--clean', '--inserts',
-                                '--column-inserts'],
+                                '--column-inserts', '--if-exists'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
+         )),
+        ('When backup the server with option - Rows per insert and '
+         'On conflict do nothing',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 format='plain',
+                 verbose=True,
+                 max_rows_per_insert="200",
+                 on_conflict_do_nothing=True
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=['--rows-per-insert', '200',
+                                '--on-conflict-do-nothing'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=120000,
+             message='Backup object with --rows-per-insert and '
+                     '--on-conflict-do-nothing are not supported by EPAS/PG '
+                     'server less than 12.0'
          )),
         ('When backup the server with option - miscellaneous',
          dict(
@@ -627,12 +998,84 @@ class BackupCreateJobTest(BaseTestGenerator):
                  with_oids=True,
                  dqoute=True
              ),
-             url='/backup/job/{0}',
-             expected_cmd_opts=['--verbose', '--quote-all-identifiers',
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--quote-all-identifiers',
                                 '--disable-dollar-quoting', '--oids',
                                 '--use-set-session-authorization'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
+         )),
+        ('When backup the server with option - Extra float digits',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 verbose=True,
+                 extra_float_digits="5"
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--extra-float-digits', '5'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=120000,
+             message='Backup server with --extra-float-digits are not '
+                     'supported by EPAS/PG server less than 12.0'
+         )),
+        ('When backup the server with option - Lock wait timeout',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 verbose=True,
+                 lock_wait_timeout="1000"
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--lock-wait-timeout', '1000'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When backup the server with option - Exclude database',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_server_file',
+                 type='server',
+                 verbose=True,
+                 exclude_database="db*"
+             ),
+             url=BACKUP_SERVER_URL,
+             expected_cmd_opts=[VERBOSE, '--exclude-database', 'db*'],
+             not_expected_cmd_opts=[],
+             server_min_version=160000,
+             expected_exit_code=[0, None],
+             message='Backup server with --exclude-database are not '
+                     'supported by EPAS/PG server less than 16.0'
          )),
         ('When backup the server with encoding',
          dict(
@@ -652,7 +1095,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                  type='server',
                  encoding='UTF-8'
              ),
-             url='/backup/job/{0}',
+             url=BACKUP_SERVER_URL,
              expected_cmd_opts=['--encoding'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
@@ -677,7 +1120,7 @@ class BackupCreateJobTest(BaseTestGenerator):
                  verbose=True,
                  type='globals'
              ),
-             url='/backup/job/{0}',
+             url=BACKUP_SERVER_URL,
              expected_cmd_opts=['--globals-only'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -702,9 +1145,9 @@ class BackupCreateJobTest(BaseTestGenerator):
         if os.name == 'nt':
             binary_path = binary_path + '.exe'
 
-        retVal = does_utility_exist(binary_path)
-        if retVal is not None:
-            self.skipTest(retVal)
+        ret_val = does_utility_exist(binary_path)
+        if ret_val is not None:
+            self.skipTest(ret_val)
 
     @patch('pgadmin.tools.backup.Server')
     @patch('pgadmin.tools.backup.BackupMessage')

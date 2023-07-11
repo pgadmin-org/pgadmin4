@@ -26,7 +26,6 @@ define([], function() {
           _t = i;
         }
         _t = 'fontSize' === _r ? +t.parentNode || _t : _t;
-        // _t = _f ? _t : 'rem' === _c ? i : 'fontSize' === _r ? +t.parentNode || _t : _t;
         _f = _f || parseFloat(a(_t, 'fontSize'));
         _m = parseFloat(_e) * _f;
       }

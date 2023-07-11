@@ -77,6 +77,9 @@ class BigAnimalProvider(AbsProvider):
         parser_create_instance.add_argument('--volume-IOPS',
                                             required=True,
                                             help='storage IOPS')
+        parser_create_instance.add_argument('--throughput',
+                                            required=False,
+                                            help='Disk throughput')
         parser_create_instance.add_argument('--private-network', required=True,
                                             help='Private or Public Network')
         parser_create_instance.add_argument('--public-ip', default='',
@@ -128,7 +131,8 @@ class BigAnimalProvider(AbsProvider):
                     'volumePropertiesId': args.volume_properties,
                     'volumeTypeId': args.volume_type,
                     'iops': args.volume_IOPS,
-                    'size': args.volume_size + ' Gi'
+                    'size': args.volume_size + ' Gi',
+                    'throughput': args.throughput
                 },
                 'clusterArchitecture': {
                     'clusterArchitectureId': args.cluster_arch,
