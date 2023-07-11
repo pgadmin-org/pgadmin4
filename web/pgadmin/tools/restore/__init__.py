@@ -377,19 +377,9 @@ def create_restore_job(sid):
                 *args,
                 database=data['database']
             ),
-            cmd=utility, args=args
+            cmd=utility, args=args, manager_obj=manager
         )
-        manager.export_password_env(p.id)
-        # Check for connection timeout and if it is greater than 0 then
-        # set the environment variable PGCONNECT_TIMEOUT.
-        timeout = manager.get_connection_param_value('connect_timeout')
-        if timeout and int(timeout) > 0:
-            env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(timeout)
-            p.set_env_variables(server, env=env)
-        else:
-            p.set_env_variables(server)
-
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:

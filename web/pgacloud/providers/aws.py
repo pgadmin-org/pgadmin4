@@ -207,7 +207,6 @@ class RdsProvider(AbsProvider):
                                    EngineVersion=args.db_version,
                                    StorageType=args.storage_type,
                                    StorageEncrypted=True,
-                                   Iops=args.storage_iops,
                                    AutoMinorVersionUpgrade=True,
                                    MultiAZ=bool(args.high_availability),
                                    MasterUsername=args.db_username,
@@ -215,7 +214,8 @@ class RdsProvider(AbsProvider):
                                    DBInstanceClass=args.instance_type,
                                    VpcSecurityGroupIds=[
                                        security_group,
-                                   ])
+                                   ], **({"Iops": args.storage_iops}
+                                         if args.storage_iops else {}))
 
         except rds.exceptions.DBInstanceAlreadyExistsFault as e:
             try:

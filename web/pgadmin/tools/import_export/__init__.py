@@ -328,15 +328,10 @@ def create_import_export_job(sid):
                 *args,
                 **io_params
             ),
-            cmd=utility, args=args
+            cmd=utility, args=args, manager_obj=manager
         )
-        manager.export_password_env(p.id)
 
         env = dict()
-
-        if manager.service:
-            env['PGSERVICE'] = manager.service
-
         env['PGHOST'] = \
             manager.local_bind_host if manager.use_ssh_tunnel else server.host
         env['PGPORT'] = \
@@ -349,14 +344,6 @@ def create_import_export_job(sid):
         for key, value in dict(env).items():
             if value is None:
                 del env[key]
-
-        # Export PGPASSFILE to work with PGPASSFILE authenthification
-        if manager.connection_params \
-                and isinstance(manager.connection_params, dict):
-            if 'passfile' in manager.connection_params \
-                    and manager.connection_params['passfile']:
-                env['PGPASSFILE'] = get_complete_file_path(
-                    manager.connection_params['passfile'])
 
         p.set_env_variables(server, env=env)
         p.start()

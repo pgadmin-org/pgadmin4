@@ -27,11 +27,11 @@ pytz==2023.*
 speaklater3==1.*
 sqlparse==0.*
 psutil==5.9.*
-psycopg[c]==3.1.8
+psycopg[c]==3.1.9
 python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.0.*
-cryptography==40.0.*
+cryptography==41.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
@@ -43,8 +43,8 @@ Authlib==1.2.*
 pyotp==2.*
 qrcode==7.*
 Pillow==9.*
-boto3==1.26.*
-botocore==1.29.*
+boto3==1.28.*
+botocore==1.31.*
 urllib3==1.26.*
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.0.1

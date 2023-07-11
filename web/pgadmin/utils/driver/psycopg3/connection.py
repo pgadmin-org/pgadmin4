@@ -14,7 +14,7 @@ object.
 """
 
 import os
-import random
+import secrets
 import datetime
 import asyncio
 from collections import deque
@@ -961,7 +961,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = str(secrets.choice(range(1, 9999999)))
 
         current_app.logger.log(
             25,
@@ -1039,7 +1039,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = str(secrets.choice(range(1, 9999999)))
 
         encoding = self.python_encoding
 
@@ -1107,7 +1107,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = str(secrets.choice(range(1, 9999999)))
 
         current_app.logger.log(
             25,
@@ -1194,7 +1194,7 @@ WHERE db.datname = current_database()""")
         if not status:
             return False, str(cur)
 
-        query_id = random.randint(1, 9999999)
+        query_id = str(secrets.choice(range(1, 9999999)))
         current_app.logger.log(
             25,
             "Execute (2darray) by {pga_user} on "
@@ -1251,7 +1251,7 @@ WHERE db.datname = current_database()""")
 
         if not status:
             return False, str(cur)
-        query_id = random.randint(1, 9999999)
+        query_id = str(secrets.choice(range(1, 9999999)))
         current_app.logger.log(
             25,
             "Execute (dict) by {pga_user} on "

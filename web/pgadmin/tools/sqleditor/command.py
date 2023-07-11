@@ -693,7 +693,6 @@ class TableCommand(GridCommand):
     def get_columns_types(self, conn):
         columns_info = conn.get_column_info()
         has_oids = self.has_oids()
-        # table_oid = self.obj_id
         table_name = None
         table_nspname = None
         table_oid = _check_single_table(columns_info)
