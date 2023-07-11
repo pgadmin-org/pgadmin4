@@ -1864,9 +1864,18 @@ def load_file():
 
     file_path = unquote(file_data['file_name'])
 
+    # get the current storage from request if available
+    # or get it from last_storage preference.
+    storage_folder = ''
+    if 'storage' in file_data:
+        storage_folder = file_data['storage']
+    else:
+        storage_folder = Preferences.module('file_manager').preference(
+            'last_storage').get()
+
     # retrieve storage directory path
     storage_manager_path = get_storage_directory(
-        shared_storage=file_data['storage'] if 'storage' in file_data else '')
+        shared_storage=storage_folder)
 
     try:
         Filemanager.check_access_permission(storage_manager_path, file_path)
