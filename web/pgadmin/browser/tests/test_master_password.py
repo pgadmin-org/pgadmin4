@@ -80,6 +80,9 @@ class MasterPasswordTestCase(BaseTestGenerator):
                 )
                 self.assertEqual(response.status_code, 200)
 
+                if not config.SERVER_MODE:
+                    self.skipTest(
+                        "This test is skipped on Desktop mode.")
                 if hasattr(self, 'check_if_set'):
                     response = self.tester.get(
                         '/browser/master_password'

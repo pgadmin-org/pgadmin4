@@ -23,7 +23,7 @@ from flask_security import login_required
 import config
 from pgadmin.model import User
 from pgadmin.tools.user_management import create_user
-from pgadmin.utils.constants import KERBEROS
+from pgadmin.utils.constants import KERBEROS, MessageType
 from pgadmin.utils import PgAdminModule
 from pgadmin.utils.ajax import make_json_response, internal_server_error
 
@@ -199,7 +199,7 @@ class KerberosAuthentication(BaseAuthentication):
                         retval = self.__auto_create_user(
                             str(negotiate.initiator_name))
                     elif isinstance(negotiate, Exception):
-                        flash(gettext(negotiate), 'danger')
+                        flash(gettext(negotiate), MessageType.ERROR)
                         retval = [status,
                                   Response(render_template(
                                       "security/login_user.html",
@@ -209,8 +209,8 @@ class KerberosAuthentication(BaseAuthentication):
                                     str(base64.b64encode(negotiate), 'utf-8'))
                         return False, Response("Success", 200, headers)
             else:
-                flash(gettext("Kerberos authentication failed."
-                              " Couldn't find kerberos ticket."), 'danger')
+                flash(gettext("Kerberos authentication failed. Couldn't find "
+                              "kerberos ticket."), MessageType.ERROR)
                 headers.add('WWW-Authenticate', 'Negotiate')
                 retval = [False,
                           Response(render_template(

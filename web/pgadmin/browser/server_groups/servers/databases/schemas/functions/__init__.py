@@ -81,7 +81,9 @@ class FunctionModule(SchemaChildModule):
         """
         Generate Functions collection node.
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(sid, did, scid=scid,
+                          base_template_path=FunctionView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def node_inode(self):
@@ -185,7 +187,7 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
-
+    BASE_TEMPLATE_PATH = 'functions/{0}/sql/#{1}#'
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
@@ -351,21 +353,9 @@ class FunctionView(PGChildNodeView, DataTypeReader, SchemaDiffObjectCompare):
             self.qtIdent = driver.qtIdent
             self.qtLiteral = driver.qtLiteral
 
-            template_initial = None
-            if self.node_type == 'function':
-                template_initial = 'functions'
-            elif self.node_type == 'procedure':
-                template_initial = 'procedures'
-            elif self.node_type == 'trigger_function':
-                template_initial = 'trigger_functions'
-
             # Set the template path for the SQL scripts
-            self.sql_template_path = "/".join([
-                template_initial,
-                self.manager.server_type,
-                'sql',
-                '#{0}#'
-            ]).format(self.manager.version)
+            self.sql_template_path = self.BASE_TEMPLATE_PATH.format(
+                self.manager.server_type, self.manager.version)
 
             return f(*args, **kwargs)
 
@@ -2074,7 +2064,9 @@ class ProcedureModule(SchemaChildModule):
         """
         Generate Procedures collection node.
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(sid, did, scid=scid,
+                          base_template_path=ProcedureView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def node_inode(self):
@@ -2099,6 +2091,7 @@ procedure_blueprint = ProcedureModule(__name__)
 
 class ProcedureView(FunctionView):
     node_type = procedure_blueprint.node_type
+    BASE_TEMPLATE_PATH = 'procedures/{0}/sql/#{1}#'
 
     def __init__(self, *args, **kwargs):
         """
@@ -2172,7 +2165,10 @@ class TriggerFunctionModule(SchemaChildModule):
         """
         Generate Trigger function collection node.
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(
+            sid, did, scid,
+                base_template_path=TriggerFunctionView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def node_inode(self):
@@ -2197,6 +2193,7 @@ trigger_function_blueprint = TriggerFunctionModule(__name__)
 
 class TriggerFunctionView(FunctionView):
     node_type = trigger_function_blueprint.node_type
+    BASE_TEMPLATE_PATH = 'trigger_functions/{0}/sql/#{1}#'
 
     def __init__(self, *args, **kwargs):
         """

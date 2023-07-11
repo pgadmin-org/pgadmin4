@@ -190,6 +190,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
         self._create_enum_type()
         for batch in config_data:
             query = self.construct_select_query(batch)
+            if not query:
+                continue
             self.page.execute_query(query)
             wait = WebDriverWait(self.page.driver, 5)
 
@@ -225,7 +227,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
                     cnt += 1
                     continue
 
-                if datatype in ('tstzrange', 'tstzrange[]'):
+                if datatype in ('tstzrange', 'tstzrange[]', 'tstzmultirange',
+                                'tstzmultirange[]'):
                     expected_output = expected_output.format(
                         **dict([('tz', self.timezone_hh_mm)]))
                 try:
@@ -256,7 +259,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             else:
                 dataformatter = '{}'
 
-            if datatype in ('tstzrange', 'tstzrange[]'):
+            if datatype in ('tstzrange', 'tstzrange[]', 'tstzmultirange',
+                            'tstzmultirange[]'):
                 inputdata = inputdata.format(
                     **dict([('tz', self.timezone_hh_mm)]))
             if first:
@@ -264,7 +268,8 @@ class PGDataypeFeatureTest(BaseFeatureTest):
             else:
                 query += ',' + dataformatter.format(inputdata, datatype)
             first = False
-        return query + ';'
+        query = '' if query == 'SELECT ' else query + ';'
+        return query
 
     @staticmethod
     def check_result(datatype, source_code, string_to_find):

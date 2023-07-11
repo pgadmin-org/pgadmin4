@@ -20,7 +20,7 @@ JOIN
 LEFT OUTER JOIN
     pg_catalog.pg_foreign_server fs ON ft.ftserver=fs.oid
 LEFT OUTER JOIN
-    pg_catalog.pg_description des ON (des.objoid=c.oid AND des.classoid='pg_class'::regclass)
+    pg_catalog.pg_description des ON (des.objoid=c.oid AND des.classoid='pg_class'::regclass AND des.objsubid = 0)
 LEFT OUTER JOIN
     pg_catalog.pg_namespace nsp ON (nsp.oid=c.relnamespace)
 WHERE

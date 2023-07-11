@@ -30,6 +30,9 @@ from pgadmin.utils.master_password import get_crypt_key
 from pgadmin.utils.exception import ObjectGone
 from pgadmin.utils.passexec import PasswordExec
 from psycopg.conninfo import make_conninfo
+import keyring
+from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
+    KEY_RING_USERNAME_FORMAT, KEY_RING_TUNNEL_FORMAT
 
 if config.SUPPORT_SSH_TUNNEL:
     from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError
@@ -78,6 +81,7 @@ class ServerManager(object):
         self.db_info = dict()
         self.server_types = None
         self.db_res = server.db_res
+        self.name = server.name
         self.passexec = \
             PasswordExec(server.passexec_cmd, server.passexec_expiration) \
             if server.passexec_cmd else None
@@ -232,7 +236,8 @@ WHERE db.oid = {0}""".format(did))
                                 "Could not find the specified database."
                             ))
 
-        if not get_crypt_key()[0]:
+        if not get_crypt_key()[0] and (
+                config.SERVER_MODE or config.DISABLED_LOCAL_PASSWORD_STORAGE):
             # the reason its not connected might be missing key
             raise CryptKeyMissing()
 
@@ -384,7 +389,7 @@ WHERE db.oid = {0}""".format(did))
             conn = self.connections[conn_id]
             # only try to reconnect if connection was connected previously
             # and auto_reconnect is true.
-            wasConnected = conn.wasConnected
+            was_connected = conn.wasConnected
             auto_reconnect = conn.auto_reconnect
             if conn.wasConnected and conn.auto_reconnect:
                 try:
@@ -404,7 +409,7 @@ WHERE db.oid = {0}""".format(did))
                 except CryptKeyMissing:
                     # maintain the status as this will help to restore once
                     # the key is available
-                    conn.wasConnected = wasConnected
+                    conn.wasConnected = was_connected
                     conn.auto_reconnect = auto_reconnect
                 except Exception as e:
                     self.connections.pop(conn_id)
@@ -529,11 +534,17 @@ WHERE db.oid = {0}""".format(did))
 
     def export_password_env(self, env):
         if self.password:
-            crypt_key_present, crypt_key = get_crypt_key()
-            if not crypt_key_present:
-                return False, crypt_key
+            if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    return False, crypt_key
+                password = decrypt(self.password, crypt_key).decode()
+            else:
+                password = self.password
 
-            password = decrypt(self.password, crypt_key).decode()
+            os.environ[str(env)] = password
+        elif self.passexec:
+            password = self.passexec.get()
             os.environ[str(env)] = password
 
     def create_ssh_tunnel(self, tunnel_password):
@@ -549,15 +560,17 @@ WHERE db.oid = {0}""".format(did))
             return False, gettext("Unauthorized request.")
 
         if tunnel_password is not None and tunnel_password != '':
-            crypt_key_present, crypt_key = get_crypt_key()
-            if not crypt_key_present:
-                raise CryptKeyMissing()
+            if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                crypt_key_present, crypt_key = get_crypt_key()
+                if not crypt_key_present:
+                    raise CryptKeyMissing()
 
             try:
-                tunnel_password = decrypt(tunnel_password, crypt_key)
-                # password is in bytes, for python3 we need it in string
-                if isinstance(tunnel_password, bytes):
-                    tunnel_password = tunnel_password.decode()
+                if config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                    tunnel_password = decrypt(tunnel_password, crypt_key)
+                    # password is in bytes, for python3 we need it in string
+                    if isinstance(tunnel_password, bytes):
+                        tunnel_password = tunnel_password.decode()
 
             except Exception as e:
                 current_app.logger.exception(e)

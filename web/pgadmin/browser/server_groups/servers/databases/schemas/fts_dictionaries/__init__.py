@@ -66,7 +66,10 @@ class FtsDictionaryModule(SchemaChildModule):
         :param did: database id
         :param scid: schema id
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(
+            sid, did, scid,
+                base_template_path=FtsDictionaryView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def node_inode(self):
@@ -161,6 +164,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    BASE_TEMPLATE_PATH = 'fts_dictionaries/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -225,7 +229,7 @@ class FtsDictionaryView(PGChildNodeView, SchemaDiffObjectCompare):
                     kwargs['did']]['datistemplate']
 
             # Set the template path for the SQL scripts
-            self.template_path = 'fts_dictionaries/sql/#{0}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version)
 
             return f(*args, **kwargs)

@@ -267,7 +267,8 @@ def filename_with_file_manager_path(_file, create_file=False,
     """
     Args:
         file: File name returned from client file manager
-        create_file: Set flag to False when file creation doesn't required
+        create_file: Set flag to False when file creation doesn't require
+        skip_permission_check:
     Returns:
         Filename to use for backup with full path taken from preference
     """
@@ -275,22 +276,21 @@ def filename_with_file_manager_path(_file, create_file=False,
     try:
         last_storage = Preferences.module('file_manager').preference(
             'last_storage').get()
-    except Exception as e:
+    except Exception:
         last_storage = MY_STORAGE
 
     if last_storage != MY_STORAGE:
-        selDirList = [sdir for sdir in current_app.config['SHARED_STORAGE']
-                      if sdir['name'] == last_storage]
-        selectedDir = selDirList[0] if len(
-            selDirList) == 1 else None
+        sel_dir_list = [sdir for sdir in current_app.config['SHARED_STORAGE']
+                        if sdir['name'] == last_storage]
+        selected_dir = sel_dir_list[0] if len(
+            sel_dir_list) == 1 else None
 
-        if selectedDir:
-            if selectedDir['restricted_access'] and \
-                    not current_user.has_role("Administrator"):
-                return make_json_response(success=0,
-                                          errormsg=ACCESS_DENIED_MESSAGE,
-                                          info='ACCESS_DENIED',
-                                          status=403)
+        if selected_dir and selected_dir['restricted_access'] and \
+                not current_user.has_role("Administrator"):
+            return make_json_response(success=0,
+                                      errormsg=ACCESS_DENIED_MESSAGE,
+                                      info='ACCESS_DENIED',
+                                      status=403)
         storage_dir = get_storage_directory(
             shared_storage=last_storage)
     else:
@@ -485,6 +485,13 @@ def dump_database_servers(output_file, selected_servers,
                       server.kerberos_conn),
             add_value(attr_dict, "ConnectionParameters",
                       server.connection_params)
+
+            # if desktop mode
+            if not current_app.config['SERVER_MODE']:
+                add_value(attr_dict, "PasswordExecCommand",
+                          server.passexec_cmd)
+                add_value(attr_dict, "PasswordExecExpiration",
+                          server.passexec_expiration)
 
             servers_dumped = servers_dumped + 1
 
@@ -710,6 +717,12 @@ def load_database_servers(input_file, selected_servers,
             new_server.shared = obj.get("Shared", None)
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
+
+            # if desktop mode
+            if not current_app.config['SERVER_MODE']:
+                new_server.passexec_cmd = obj.get("PasswordExecCommand", None)
+                new_server.passexec_expiration = obj.get(
+                    "PasswordExecExpiration", None)
 
             db.session.add(new_server)
 

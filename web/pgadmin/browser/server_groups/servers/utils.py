@@ -137,9 +137,11 @@ def parse_priv_to_db(str_privileges, allowed_acls=[]):
 
         acltype = priv['acltype'] if 'acltype' in priv else 'defaultacls'
 
+        grantor = driver.qtIdent(None, priv['grantor'])
+
         # Appending and returning all ACL
         privileges.append({
-            'grantor': priv['grantor'],
+            'grantor': grantor,
             'grantee': grantee,
             'with_grant': priv_with_grant,
             'without_grant': priv_without_grant,

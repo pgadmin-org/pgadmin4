@@ -17,7 +17,7 @@
 # Add all the development dependencies here
 ###########################################
 extras==1.0.0
-fixtures==4.0.1
+fixtures==4.1.0
 linecache2==1.0.0
 pbr==5.11.1
 pycodestyle>=2.5.0
@@ -25,5 +25,5 @@ python-mimeparse==1.6.0
 testscenarios==0.5.0
 testtools==2.6.0
 traceback2==1.4.0
-selenium==4.8.3
-coverage==7.2.3
+selenium==4.10.0
+coverage==7.2.7

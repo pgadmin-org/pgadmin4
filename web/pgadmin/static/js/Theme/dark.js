@@ -8,11 +8,11 @@
 //////////////////////////////////////////////////////////////
 
 /* The dark theme */
-import { createMuiTheme } from '@material-ui/core/styles';
+import { createTheme } from '@material-ui/core/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
 
 export default function(basicSettings) {
-  return createMuiTheme(basicSettings, {
+  return createTheme(basicSettings, {
     palette: {
       default: {
         main: '#6b6b6b',
@@ -85,6 +85,7 @@ export default function(basicSettings) {
       borderColor: '#4a4a4a',
       inputBorderColor: '#6b6b6b',
       inputDisabledBg: 'inherit',
+      errorColor: '#DA6758',
       headerBg: '#424242',
       activeBorder: '#d4d4d4',
       activeColor: '#d4d4d4',

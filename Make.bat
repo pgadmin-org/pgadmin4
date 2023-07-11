@@ -217,6 +217,7 @@ REM Main build sequence Ends
     ECHO Installing javascript dependencies...
     CD "%BUILDROOT%\web"
     CALL yarn install || EXIT /B 1
+    CALL npm rebuild || EXIT /B 1
 
     ECHO Bundling javascript...
     CALL yarn run bundle || EXIT /B 1
@@ -274,15 +275,10 @@ REM Main build sequence Ends
     REM YARN END
 
     REM WGET
-    REM FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
-    REM :GET_NW
-    REM     wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
-    REM     IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
-
-    REM Remove the above commented code once below issue is fixed
-    REM Pining NWjs because of https://github.com/nwjs/nw.js/issues/8039 in 0.74.0
-    SET "NW_VERSION=0.72.0"
-    wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
+    FOR /f "tokens=2 delims='" %%i IN ('yarn info nw ^| findstr "latest: "') DO SET "NW_VERSION=%%i"
+    :GET_NW
+        wget https://dl.nwjs.io/v%NW_VERSION%/nwjs-v%NW_VERSION%-win-x64.zip -O "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip"
+        IF %ERRORLEVEL% NEQ 0 GOTO GET_NW
 
     tar -C "%TMPDIR%" -xvf "%TMPDIR%\nwjs-v%NW_VERSION%-win-x64.zip" || EXIT /B 1
     REM WGET END

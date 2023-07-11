@@ -104,7 +104,7 @@ export function FinalSummary(props) {
 
   return summary.map((item, index) => {
     return (
-      <Table key={index} className={clsx(tableClasses.table)}>
+      <Table key={summaryHeader[index]} className={clsx(tableClasses.table)}>
         <TableHead>
           <TableRow>
             <TableCell colSpan={2}>{gettext(summaryHeader[index])}</TableCell>

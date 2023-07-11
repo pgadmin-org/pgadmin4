@@ -22,6 +22,7 @@ from pgadmin.utils.ajax import bad_request
 from .utils import user_supported_mfa_methods, mfa_user_registered, \
     mfa_suppored_methods, ValidationException, mfa_delete, is_mfa_enabled, \
     is_mfa_session_authenticated
+from pgadmin.utils.constants import MessageType
 
 
 _INDEX_URL = "browser.index"
@@ -118,11 +119,11 @@ def validate_view() -> Response:
                 "MFA validation failed for the user '{}' with an error: "
                 "{}"
             ).format(current_user.username, str(ve)))
-            flash(str(ve), "danger")
+            flash(str(ve), MessageType.ERROR)
             return_code = 401
         except Exception as ex:
             current_app.logger.exception(ex)
-            flash(str(ex), "danger")
+            flash(str(ex), MessageType.ERROR)
             return_code = 500
 
     mfa_views = {
@@ -166,7 +167,8 @@ def _mfa_registration_view(
 
     if form_data[mfa.name] == 'SETUP':
         if supported_mfa['registered'] is True:
-            flash(_("'{}' is already registerd'").format(mfa.label), "success")
+            flash(_("'{}' is already registerd'").format(mfa.label),
+                  MessageType.SUCCESS)
             return None
 
         return mfa.registration_view(form_data)
@@ -174,13 +176,13 @@ def _mfa_registration_view(
     if mfa_delete(mfa.name) is True:
         flash(_(
             "'{}' unregistered from the authentication list."
-        ).format(mfa.label), "success")
+        ).format(mfa.label), MessageType.SUCCESS)
 
         return None
 
     flash(_(
         "'{}' is not found in the authentication list."
-    ).format(mfa.label), "warning")
+    ).format(mfa.label), MessageType.WARNING)
 
     return None
 
@@ -255,7 +257,7 @@ def __handle_registration_view_for_post_method(
         if view is False:
             if next_url != 'internal':
                 return None, redirect(next_url), None
-            flash(_("Please close the dialog."), "info")
+            flash(_("Please close the dialog."), MessageType.INFO)
 
         if view is not None:
             return None, Response(
@@ -336,7 +338,8 @@ def registration_view() -> Response:
             )
         elif is_mfa_session_authenticated() is False and \
                 found_one_mfa is True:
-            flash(_("Complete the authentication process first"), "danger")
+            flash(_("Complete the authentication process first"),
+                  MessageType.ERROR)
             return redirect(login_url("mfa.validate", next_url=next_url))
 
     return Response(render_template(

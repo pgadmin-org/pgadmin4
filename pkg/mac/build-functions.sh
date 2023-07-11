@@ -11,7 +11,7 @@ _setup_env() {
         APP_LONG_VERSION=${APP_LONG_VERSION}-${APP_SUFFIX}
     fi
     BUNDLE_DIR="${BUILD_ROOT}/${APP_NAME}.app"
-    DMG_NAME="${DIST_ROOT}"/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-"${APP_LONG_VERSION}.dmg"
+    DMG_NAME="${DIST_ROOT}"/$(echo "${APP_NAME}" | sed 's/ //g' | awk '{print tolower($0)}')-"${APP_LONG_VERSION}-$(uname -m).dmg"
     PYTHON_OS_VERSION="11"
 }
 
@@ -30,22 +30,25 @@ _build_runtime() {
     # NOTE: The nw download servers seem to be very unreliable, so at the moment we're using wget
     #       in a retry loop as Yarn/Npm don't seem to like that.
 
+    # uname -m returns "x86_64" on Intel, but we need "x64"
+    NW_ARCH="x64"
+    if [ "$(uname -m)" == "arm64" ]; then
+      NW_ARCH="arm64"
+    fi
+
     # YARN:
     # yarn add --cwd "${BUILDROOT}" nw
     # YARN END
 
     # WGET:
-    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
-    # Remove the above commented code once below issue is fixed
-    # Pining NWjs because of https://github.com/nwjs/nw.js/issues/8039 in 0.74.0
-    NW_VERSION="0.72.0"
+    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
 
     pushd "${BUILD_ROOT}" > /dev/null || exit
         while true;do
-            wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-x64.zip" && break
-            rm "nwjs-v${NW_VERSION}-osx-x64.zip"
+            wget "https://dl.nwjs.io/v${NW_VERSION}/nwjs-v${NW_VERSION}-osx-${NW_ARCH}.zip" && break
+            rm "nwjs-v${NW_VERSION}-osx-${NW_ARCH}.zip"
         done
-        unzip "nwjs-v${NW_VERSION}-osx-x64.zip"
+        unzip "nwjs-v${NW_VERSION}-osx-${NW_ARCH}.zip"
     popd > /dev/null || exit
     # WGET END
 
@@ -54,7 +57,7 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    cp -R "${BUILD_ROOT}/nwjs-v${NW_VERSION}-osx-x64"/nwjs.app "${BUILD_ROOT}/"
+    cp -R "${BUILD_ROOT}/nwjs-v${NW_VERSION}-osx-${NW_ARCH}"/nwjs.app "${BUILD_ROOT}/"
     # WGET END
 
     mv "${BUILD_ROOT}/nwjs.app" "${BUNDLE_DIR}"
@@ -83,13 +86,14 @@ _create_python_env() {
     fi
 
     git clone https://github.com/gregneagle/relocatable-python.git "${BUILD_ROOT}/relocatable_python"
-    PATH=$PATH:/usr/local/pgsql/bin "${SYSTEM_PYTHON_EXE}" \
+    "${SYSTEM_PYTHON_EXE}" \
         "${BUILD_ROOT}/relocatable_python/make_relocatable_python_framework.py" \
-        --upgrade-pip \
         --python-version "${PGADMIN_PYTHON_VERSION}" \
         --os-version "${PYTHON_OS_VERSION}" \
-        --pip-requirements "${SOURCE_DIR}/requirements.txt" \
         --destination "${BUNDLE_DIR}/Contents/Frameworks/"
+
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/python3" -m ensurepip --upgrade || exit 1
+    "${BUNDLE_DIR}/Contents/Frameworks/Python.framework/Versions/Current/bin/pip3" install -r "${SOURCE_DIR}/requirements.txt" || exit 1
 
     # Make sure all the .so's in the Python env have the executable bit set
     # so they get properly signed later
@@ -138,7 +142,7 @@ _build_docs() {
     source "${BUILD_ROOT}/venv/bin/activate"
     pip3 install --upgrade pip
     pip3 install -r "${SOURCE_DIR}/requirements.txt"
-    pip3 install sphinx
+    pip3 install sphinx==6.1.3
     pip3 install sphinxcontrib-youtube
 
     cd "${SOURCE_DIR}" || exit

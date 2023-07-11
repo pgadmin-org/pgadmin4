@@ -44,7 +44,6 @@ export default function ObjectBreadcrumbs({pgAdmin}) {
     description: null,
   });
   const onItemHover = (item, _data)=>{
-    // if(!checkIsMounted) return;
     if(item && !_data?._type.startsWith('coll-')) {
       setObjectData({
         path: pgAdmin.Browser.tree.getNodeDisplayPath(item, false),

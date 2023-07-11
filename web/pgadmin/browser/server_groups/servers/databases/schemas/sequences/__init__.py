@@ -64,7 +64,9 @@ class SequenceModule(SchemaChildModule):
         """
         Generate the sequence node
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(sid, did, scid=scid,
+                          base_template_path=SequenceView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def script_load(self):
@@ -91,6 +93,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
     node_label = "Sequence"
     node_icon = "icon-%s" % node_type
+    BASE_TEMPLATE_PATH = 'sequences/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -148,7 +151,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     self.datistemplate = self.manager.db_info[
                         kwargs['did']]['datistemplate']
 
-                self.template_path = 'sequences/sql/#{0}#'.format(
+                self.template_path = self.BASE_TEMPLATE_PATH.format(
                     self.manager.version
                 )
                 self.acl = ['r', 'w', 'U']
@@ -243,7 +246,7 @@ class SequenceView(PGChildNodeView, SchemaDiffObjectCompare):
                     scid,
                     row['name'],
                     icon=self.node_icon,
-                    description=row['description']
+                    description=row['comment']
                 ))
 
         return make_json_response(

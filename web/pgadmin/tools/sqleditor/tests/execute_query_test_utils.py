@@ -39,3 +39,21 @@ def poll_for_query_results(tester, poll_url):
             return True, response_data
         elif status == 'NotConnected' or status == 'Cancel':
             return False, None
+
+
+def async_poll(tester, poll_url):
+    while True:
+        response = tester.get(poll_url)
+        if response.data:
+            response_data = json.loads(response.data.decode('utf-8'))
+
+            if response_data['success'] == 1 and 'data' in response_data\
+                and (
+                response_data['data']['status'] == 'NotInitialised' or
+                response_data['data']['status'] == 'Busy'
+            ):
+                pass
+            else:
+                return response
+        else:
+            return response

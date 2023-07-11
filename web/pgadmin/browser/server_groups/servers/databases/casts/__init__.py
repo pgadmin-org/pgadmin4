@@ -60,7 +60,9 @@ class CastModule(CollectionNodeModule):
         :param sid: server id
         :param did: database id
         """
-        yield self.generate_browser_collection_node(did)
+        if self.has_nodes(sid, did,
+                          base_template_path=CastView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(did)
 
     @property
     def node_inode(self):
@@ -148,6 +150,7 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    BASE_TEMPLATE_PATH = 'casts/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -208,7 +211,8 @@ class CastView(PGChildNodeView, SchemaDiffObjectCompare):
             ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
             # Set template path for the SQL scripts
-            self.template_path = 'casts/sql/#{0}#'.format(self.manager.version)
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
+                self.manager.version)
 
             self.datistemplate = False
             if (

@@ -18,6 +18,7 @@ import CustomPropTypes from '../custom_prop_types';
 import { DepListenerContext } from './DepListener';
 import { getFieldMetaData } from './FormView';
 import FieldSet from '../components/FieldSet';
+import { Box } from '@material-ui/core';
 
 export default function FieldSetView({
   value, schema={}, viewHelperProps, accessPath, dataDispatch, controlClassName, isDataGridForm=false, label, visible}) {
@@ -46,6 +47,8 @@ export default function FieldSetView({
   }, []);
 
   let viewFields = [];
+  let inlineComponents = [];
+
   /* Prepare the array of components based on the types */
   for(const field of schema.fields) {
     let {visible, disabled, readonly, modeSupported} =
@@ -58,39 +61,62 @@ export default function FieldSetView({
         * lets pass the new changes to dependent and get the new values
         * from there as well.
         */
-      viewFields.push(
-        <MappedFormControl
-          state={value}
-          key={field.id}
-          viewHelperProps={viewHelperProps}
-          name={field.id}
-          value={value[field.id]}
-          {...field}
-          readonly={readonly}
-          disabled={disabled}
-          visible={visible}
-          onChange={(changeValue)=>{
-            /* Get the changes on dependent fields as well */
-            dataDispatch({
-              type: SCHEMA_STATE_ACTIONS.SET_VALUE,
-              path: accessPath.concat(field.id),
-              value: changeValue,
-            });
-          }}
-          hasError={hasError}
-          className={controlClassName}
-          memoDeps={[
-            value[field.id],
-            readonly,
-            disabled,
-            visible,
-            hasError,
-            controlClassName,
-            ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
-          ]}
-        />
-      );
+      const currentControl = <MappedFormControl
+        state={value}
+        key={field.id}
+        viewHelperProps={viewHelperProps}
+        name={field.id}
+        value={value[field.id]}
+        {...field}
+        readonly={readonly}
+        disabled={disabled}
+        visible={visible}
+        onChange={(changeValue)=>{
+          /* Get the changes on dependent fields as well */
+          dataDispatch({
+            type: SCHEMA_STATE_ACTIONS.SET_VALUE,
+            path: accessPath.concat(field.id),
+            value: changeValue,
+          });
+        }}
+        hasError={hasError}
+        className={controlClassName}
+        memoDeps={[
+          value[field.id],
+          readonly,
+          disabled,
+          visible,
+          hasError,
+          controlClassName,
+          ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
+        ]}
+      />;
+
+      if(field.inlineNext) {
+        inlineComponents.push(React.cloneElement(currentControl, {
+          withContainer: false, controlGridBasis: 3
+        }));
+      } else if(inlineComponents?.length > 0) {
+        inlineComponents.push(React.cloneElement(currentControl, {
+          withContainer: false, controlGridBasis: 3
+        }));
+        viewFields.push(
+          <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={controlClassName} gridRowGap="8px" flexWrap="wrap">
+            {inlineComponents}
+          </Box>
+        );
+        inlineComponents = [];
+      } else {
+        viewFields.push(currentControl);
+      }
     }
+  }
+  if(inlineComponents?.length > 0) {
+    viewFields.push(
+      <Box key={`ic-${inlineComponents[0].key}`} display="flex" className={controlClassName} gridRowGap="8px" flexWrap="wrap">
+        {inlineComponents}
+      </Box>
+    );
   }
 
   if(!visible) {

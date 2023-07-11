@@ -37,6 +37,7 @@ let webpackShimConfig = {
     'sources/utils': path.join(__dirname, './pgadmin/static/js/utils'),
     'tools': path.join(__dirname, './pgadmin/tools/'),
     'pgbrowser': path.join(__dirname, './pgadmin/browser/static/js/'),
+    'security.pages': path.join(__dirname, './pgadmin/static/js/SecurityPages/index.jsx'),
 
     // Vendor JS
     'wcdocker': path.join(__dirname, './node_modules/webcabin-docker/Build/wcDocker.min'),

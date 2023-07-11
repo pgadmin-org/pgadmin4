@@ -91,7 +91,10 @@ class ViewModule(SchemaChildModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(
+            sid, did, scid, base_template_path=ViewNode.BASE_TEMPLATE_PATH +
+                '/' + ViewNode._SQL_PREFIX):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def script_load(self):
@@ -216,6 +219,15 @@ class MViewModule(ViewModule):
         self.min_ver = 90300
         self.max_ver = None
 
+    def get_nodes(self, gid, sid, did, scid):
+        """
+        Generate the collection node
+        """
+        if self.has_nodes(
+            sid, did, scid, base_template_path=MViewNode.BASE_TEMPLATE_PATH +
+                '/' + MViewNode._SQL_PREFIX):
+            yield self.generate_browser_collection_node(scid)
+
 
 view_blueprint = ViewModule(__name__)
 mview_blueprint = MViewModule(__name__)
@@ -242,12 +254,8 @@ def check_precondition(f):
             kwargs['sid']
         )
         self.conn = self.manager.connection(did=kwargs['did'])
-        # Set template path for sql scripts
-        if self.manager.server_type == 'ppas':
-            _temp = self.ppas_template_path(self.manager.version)
-        else:
-            _temp = self.pg_template_path(self.manager.version)
-        self.template_path = self.template_initial + '/' + _temp
+        self.template_path = self.BASE_TEMPLATE_PATH.format(
+            self.manager.server_type, self.manager.version)
 
         self.column_template_path = 'columns/sql/#{0}#'.format(
             self.manager.version)
@@ -327,6 +335,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
     _SQL_PREFIX = 'sql/'
     _ALLOWED_PRIVS_JSON = 'sql/allowed_privs.json'
     PROPERTIES_PATH = 'sql/{0}/#{1}#/properties.sql'
+    BASE_TEMPLATE_PATH = 'views/{0}/#{1}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -377,22 +386,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         self.manager = None
         self.conn = None
         self.template_path = None
-        self.template_initial = 'views'
         self.allowed_acls = []
-
-    @staticmethod
-    def ppas_template_path(ver):
-        """
-        Returns the template path for PPAS servers.
-        """
-        return 'ppas/#{0}#'.format(ver)
-
-    @staticmethod
-    def pg_template_path(ver):
-        """
-        Returns the template path for PostgreSQL servers.
-        """
-        return 'pg/#{0}#'.format(ver)
 
     @check_precondition
     def list(self, gid, sid, did, scid):
@@ -431,7 +425,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             scid,
             rset['rows'][0]['name'],
             icon="icon-view" if self.node_type == 'view'
-            else "icon-mview"
+            else "icon-mview",
+            description=rset['rows'][0]['comment']
         )
 
         return make_json_response(
@@ -459,7 +454,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                     scid,
                     row['name'],
                     icon="icon-view" if self.node_type == 'view'
-                    else "icon-mview"
+                    else "icon-mview",
+                    description=row['comment']
                 ))
 
         return make_json_response(
@@ -583,13 +579,18 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=new_scid)
 
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
                     new_scid,
                     data['name'],
                     icon="icon-view" if self.node_type == 'view'
-                    else "icon-mview"
+                    else "icon-mview",
+                    **other_node_info
                 )
             )
         except Exception as e:
@@ -631,13 +632,18 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             if not status:
                 return internal_server_error(errormsg=new_scid)
 
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     view_id,
                     new_scid,
                     new_view_name,
                     icon="icon-view" if self.node_type == 'view'
-                    else "icon-mview"
+                    else "icon-mview",
+                    **other_node_info
                 )
             )
         except Exception as e:
@@ -1355,7 +1361,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             SQL = render_template("/".join(
                 [self.column_template_path,
                     self._UPDATE_SQL.format(self.manager.version)]),
-                o_data=o_data, data=res, is_view_only=True)
+                o_data=o_data, data=res, is_view_only=True,
+                conn=self.conn)
             sql_data += SQL
 
         # Get Column Grant SQL
@@ -1382,11 +1389,15 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
                         'acl' in self.allowed_acls['datacl']:
                     allowed_acls = self.allowed_acls['datacl']['acl']
 
+                deftypes = set()
                 for row in acl['rows']:
                     priv = parse_priv_from_db(row)
                     res.setdefault(row['deftype'], []).append(priv)
-                    res[row['deftype']] = \
-                        parse_priv_to_db(res[row['deftype']], allowed_acls)
+                    deftypes.add(row['deftype'])
+
+                for deftype in deftypes:
+                    res[deftype] = \
+                        parse_priv_to_db(res[deftype], allowed_acls)
 
                 grant_sql = render_template("/".join(
                     [self.template_path, self._SQL_PREFIX + self._GRANT_SQL]),
@@ -1781,6 +1792,7 @@ class MViewNode(ViewNode, VacuumSettings):
     node_type = mview_blueprint.node_type
     operations = mview_operations
     TOAST_STR = 'toast.'
+    BASE_TEMPLATE_PATH = 'mviews/{0}/#{1}#'
 
     def __init__(self, *args, **kwargs):
         """
@@ -1789,7 +1801,6 @@ class MViewNode(ViewNode, VacuumSettings):
 
         super().__init__(*args, **kwargs)
 
-        self.template_initial = 'mviews'
         self.allowed_acls = []
 
     @staticmethod

@@ -13,7 +13,13 @@ FROM pg_catalog.pg_attribute att
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=att.attrelid AND des.objsubid=att.attnum AND des.classoid='pg_class'::regclass)
     LEFT OUTER JOIN pg_catalog.pg_sequence seq ON cs.oid=seq.seqrelid
 WHERE
+
+{% if tid %}
     att.attrelid = {{ tid|qtLiteral(conn) }}::oid
+{% endif %}
+{% if table_name and table_nspname %}
+    cl.relname= {{table_name |qtLiteral(conn)}} and na.nspname={{table_nspname|qtLiteral(conn)}}
+{% endif %}
 {% if clid %}
     AND att.attnum = {{ clid|qtLiteral(conn) }}
 {% endif %}

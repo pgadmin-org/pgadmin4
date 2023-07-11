@@ -23,6 +23,7 @@ import threading
 import time
 import unittest
 import asyncio
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -283,13 +284,14 @@ def setup_webdriver_specification(arguments):
             'default_browser'].lower()
 
     if default_browser == 'firefox':
+        options = FirefoxOptions()
         cap = DesiredCapabilities.FIREFOX
         cap['requireWindowFocus'] = True
         cap['enablePersistentHover'] = False
         profile = webdriver.FirefoxProfile()
         profile.set_preference("dom.disable_beforeunload", True)
-        driver_local = webdriver.Firefox(capabilities=cap,
-                                         firefox_profile=profile)
+        options.profile = profile
+        driver_local = webdriver.Firefox(options=options)
         driver_local.implicitly_wait(1)
     else:
         options = Options()

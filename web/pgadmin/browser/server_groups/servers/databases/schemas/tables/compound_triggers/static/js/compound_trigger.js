@@ -122,17 +122,11 @@ define('pgadmin.node.compound_trigger', [
               t.removeIcon(i);
               data.icon = 'icon-compound_trigger';
               t.addIcon(i, {icon: data.icon});
-              t.unload(i);
-              t.setInode(false);
-              t.deselect(i);
-              // Fetch updated data from server
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
+              t.updateAndReselectNode(i, data);
             }
           }).catch(function(error) {
             Notify.pgRespErrorNotify(error);
-            t.unload(i);
+            t.refresh(i);
           });
         },
         /* Disable compound trigger */
@@ -156,17 +150,11 @@ define('pgadmin.node.compound_trigger', [
               t.removeIcon(i);
               data.icon = 'icon-compound_trigger-bad';
               t.addIcon(i, {icon: data.icon});
-              t.unload(i);
-              t.setInode(false);
-              t.deselect(i);
-              // Fetch updated data from server
-              setTimeout(function() {
-                t.select(i);
-              }, 10);
+              t.updateAndReselectNode(i, data);
             }
           }).catch(function(error) {
             Notify.pgRespErrorNotify(error);
-            t.unload(i);
+            t.refresh(i);
           });
         },
       },

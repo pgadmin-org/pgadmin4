@@ -482,7 +482,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     tid,
                     row['name'],
                     icon=icon,
-                    valid=valid
+                    valid=valid,
+                    description=row['comment']
                 ))
         return res
 
@@ -605,13 +606,18 @@ class ForeignKeyConstraintView(PGChildNodeView):
             if is_error:
                 return errmsg
 
+            other_node_info = {}
+            if 'comment' in data:
+                other_node_info['description'] = data['comment']
+
             return jsonify(
                 node=self.blueprint.generate_browser_node(
                     res['rows'][0]['oid'],
                     tid,
                     data['name'],
                     valid=valid,
-                    icon=icon
+                    icon=icon,
+                    **other_node_info
                 )
             )
 
@@ -713,7 +719,8 @@ class ForeignKeyConstraintView(PGChildNodeView):
                     tid,
                     name,
                     icon=icon,
-                    valid=valid
+                    valid=valid,
+                    **other_node_info
                 )
             )
         except Exception as e:

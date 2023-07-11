@@ -68,7 +68,10 @@ class ForeignTableModule(SchemaChildModule):
         """
         Generate the Foreign Table collection node.
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(
+            sid, did, scid,
+                base_template_path=ForeignTableView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def node_inode(self):
@@ -178,6 +181,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
     node_type = blueprint.node_type
     node_label = "Foreign Table"
+    BASE_TEMPLATE_PATH = 'foreign_tables/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -390,10 +394,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
             # Set template path for sql scripts depending
             # on the server version.
-            self.template_path = compile_template_path(
-                'foreign_tables/sql/',
-                self.manager.version
-            )
+            self.template_path = \
+                self.BASE_TEMPLATE_PATH.format(self.manager.version)
 
             return f(*args, **kwargs)
 

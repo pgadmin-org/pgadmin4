@@ -101,9 +101,12 @@ class TriggerModule(CollectionNodeModule):
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(sid, did, scid=scid,
+                          tid=kwargs.get('tid', kwargs.get('vid', None)),
+                          base_template_path=TriggerView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def script_load(self):
@@ -213,6 +216,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
     node_type = blueprint.node_type
     node_label = "Trigger"
+    BASE_TEMPLATE_PATH = 'triggers/sql/{0}/#{1}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -266,7 +270,7 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 'tables/sql',
                 self.manager.version
             )
-            self.template_path = 'triggers/sql/{0}/#{1}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.server_type, self.manager.version)
 
             self.trigger_function_template_path = \
@@ -355,7 +359,6 @@ class TriggerView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         res = [{'label': '', 'value': ''}]
 
-        # TODO: REMOVE True Condition , it's just for testing
         # If server type is EDB-PPAS then we also need to add
         # inline edb-spl along with options fetched by below sql
 

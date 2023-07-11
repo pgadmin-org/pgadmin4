@@ -373,6 +373,7 @@ class PGChildNodeView(NodeView):
 
     _NODE_SQL = 'node.sql'
     _NODES_SQL = 'nodes.sql'
+    _COUNT_SQL = 'count.sql'
     _CREATE_SQL = 'create.sql'
     _UPDATE_SQL = 'update.sql'
     _ALTER_SQL = 'alter.sql'

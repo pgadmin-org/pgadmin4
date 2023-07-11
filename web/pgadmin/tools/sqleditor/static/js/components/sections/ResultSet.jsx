@@ -278,7 +278,7 @@ export class ResultSetUtils {
     });
   }
 
-  handlePollError(error) {
+  handlePollError(error, explainObject, flags) {
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_END);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.FOCUS_PANEL, PANELS.MESSAGES);
     this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_CONNECTION_STATUS, CONNECTION_STATUS.TRANSACTION_STATUS_INERROR);
@@ -292,16 +292,22 @@ export class ResultSetUtils {
       query_source: this.historyQuerySource,
       is_pgadmin_query: false,
     });
-    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error);
+    this.eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR, error, {
+      connectionLostCallback: ()=>{
+        this.eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, this.query, explainObject, flags.external, true);
+      },
+      checkTransaction: true,
+    });
   }
 
-  async pollForResult(onResultsAvailable, onExplain, onPollError) {
+  async pollForResult(onResultsAvailable, onExplain, onPollError, explainObject, flags) {
     try {
       let httpMessage = await this.poll();
       let msg = '';
       if(httpMessage.data.data.notifies) {
         this.eventBus.fireEvent(QUERY_TOOL_EVENTS.PUSH_NOTICE, httpMessage.data.data.notifies);
       }
+
       if (ResultSetUtils.isQueryFinished(httpMessage)) {
         this.setEndTime(new Date());
         msg = this.queryFinished(httpMessage, onResultsAvailable, onExplain);
@@ -310,7 +316,7 @@ export class ResultSetUtils {
         if(httpMessage.data.data.result) {
           this.eventBus.fireEvent(QUERY_TOOL_EVENTS.SET_MESSAGE, httpMessage.data.data.result, true);
         }
-        return Promise.resolve(this.pollForResult(onResultsAvailable, onExplain, onPollError));
+        return Promise.resolve(this.pollForResult(onResultsAvailable, onExplain, onPollError, explainObject, flags));
       } else if (ResultSetUtils.isConnectionToServerLostWhilePolling(httpMessage)) {
         this.setEndTime(new Date());
         msg = httpMessage.data.data.result;
@@ -341,7 +347,7 @@ export class ResultSetUtils {
       }
     } catch (error) {
       onPollError();
-      this.handlePollError(error);
+      this.handlePollError(error, explainObject, flags);
     }
   }
 
@@ -492,9 +498,9 @@ export class ResultSetUtils {
     case '"char"[]':
     case 'character varying':
     case 'character varying[]':
-      if (c.internal_size && c.internal_size >= 0 && c.internal_size != 65535) {
+      if (c.display_size && c.display_size >= 0 && c.display_size != 65535) {
         // Update column type to display length on column header
-        columnType += ' (' + c.internal_size + ')';
+        columnType += ' (' + c.display_size + ')';
       }
       cellType = 'string';
       break;
@@ -823,13 +829,15 @@ export function ResultSet() {
         ()=>{
           setColumns([]);
           setRows([]);
-        }
+        },
+        explainObject,
+        {isQueryTool: queryToolCtx.params.is_query_tool, external: external, reconnect: reconnect}
       );
     };
 
     const executeAndPoll = async ()=>{
-      let goForPoll = await yesCallback();
-      if (goForPoll) pollCallback();
+      await yesCallback();
+      pollCallback();
     };
 
     if(isDataChanged()) {
@@ -949,16 +957,30 @@ export function ResultSet() {
 
   const fetchMoreRows = async (all=false, callback=undefined)=>{
     if(queryData.has_more_rows) {
+      let res = [];
       setIsLoadingMore(true);
-      const res = await rsu.current.getMoreRows(all);
-      const newRows = rsu.current.processRows(res.data.data.result, columns);
-      setRows((prevRows)=>[...prevRows, ...newRows]);
-      setQueryData((prev)=>({
-        ...prev,
-        has_more_rows: res.data.data.has_more_rows,
-        rows_fetched_to: res.data.data.rows_fetched_to!=0 ? res.data.data.rows_fetched_to : prev.rows_fetched_to,
-      }));
-      setIsLoadingMore(false);
+      try {
+        res = await rsu.current.getMoreRows(all);
+        const newRows = rsu.current.processRows(res.data.data.result, columns);
+        setRows((prevRows)=>[...prevRows, ...newRows]);
+        setQueryData((prev)=>({
+          ...prev,
+          has_more_rows: res.data.data.has_more_rows,
+          rows_fetched_to: res.data.data.rows_fetched_to!=0 ? res.data.data.rows_fetched_to : prev.rows_fetched_to,
+        }));
+      } catch (e) {
+        eventBus.fireEvent(QUERY_TOOL_EVENTS.HANDLE_API_ERROR,
+          e,
+          {
+            connectionLostCallback: ()=>{
+              eventBus.fireEvent(QUERY_TOOL_EVENTS.EXECUTION_START, rsu.current.query, null, false, true);
+            },
+            checkTransaction: true,
+          }
+        );
+      } finally {
+        setIsLoadingMore(false);
+      }
     }
     callback?.();
   };

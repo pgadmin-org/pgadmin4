@@ -39,8 +39,6 @@ _.extend(pgBrowser.keyboardNavigation, {
         'sub_menu_refresh': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'sub_menu_refresh').value),
         'context_menu': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'context_menu').value),
         'direct_debugging': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'direct_debugging').value),
-        'drop_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_multiple').value),
-        'drop_cascade_multiple_objects': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'grid_menu_drop_cascade_multiple').value),
         'add_grid_row': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'add_grid_row').value),
         'open_quick_search': commonUtils.parseShortcutValue(pgBrowser.get_preference('browser', 'open_quick_search').value),
 
@@ -62,8 +60,6 @@ _.extend(pgBrowser.keyboardNavigation, {
         'bindSubMenuRefresh': {'shortcuts': this.keyboardShortcut.sub_menu_refresh, 'bindElem': '#tree'}, // Sub menu - Refresh object,
         'bindContextMenu': {'shortcuts': this.keyboardShortcut.context_menu}, // Sub menu - Open context menu,
         'bindDirectDebugging': {'shortcuts': this.keyboardShortcut.direct_debugging}, // Sub menu - Direct Debugging
-        'bindDropMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_multiple_objects}, // Grid Menu Drop Multiple
-        'bindDropCascadeMultipleObjects': {'shortcuts': this.keyboardShortcut.drop_cascade_multiple_objects}, // Grid Menu Drop Cascade Multiple
         'bindAddGridRow': {'shortcuts': this.keyboardShortcut.add_grid_row}, // Subnode Grid Add Row
         'bindOpenQuickSearch': {'shortcuts': this.keyboardShortcut.open_quick_search}, // Subnode Grid Refresh Row
       };

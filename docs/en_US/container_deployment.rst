@@ -26,9 +26,9 @@ where *<tag name>* is one of the following:
    +==========+===============================================================================+
    | latest   | The most recent release.                                                      |
    +----------+-------------------------------------------------------------------------------+
-   | 6.14     | A specific version (6.14 in this case).                                       |
+   | 7.4      | A specific version (7.4 in this case).                                        |
    +----------+-------------------------------------------------------------------------------+
-   | 6        | the latest release of a specific major version (major version 6 in this case).|
+   | 7        | the latest release of a specific major version (major version 7 in this case).|
    +----------+-------------------------------------------------------------------------------+
    | snapshot | The latest nightly test build.                                                |
    +----------+-------------------------------------------------------------------------------+
@@ -42,11 +42,11 @@ maintenance functions to be executed. Multiple versions are included in the
 following directories to allow use with different versions of the database
 server:
 
-* PostgreSQL 10: */usr/local/pgsql-10*
 * PostgreSQL 11: */usr/local/pgsql-11*
 * PostgreSQL 12: */usr/local/pgsql-12*
 * PostgreSQL 13: */usr/local/pgsql-13*
 * PostgreSQL 14: */usr/local/pgsql-14*
+* PostgreSQL 15: */usr/local/pgsql-15*
 
 The default binary paths set in the container are as follows:
 
@@ -57,8 +57,7 @@ The default binary paths set in the container are as follows:
         'pg-14': '/usr/local/pgsql-14',
         'pg-13': '/usr/local/pgsql-13',
         'pg-12': '/usr/local/pgsql-12',
-        'pg-11': '/usr/local/pgsql-11',
-        'pg-10': '/usr/local/pgsql-10'
+        'pg-11': '/usr/local/pgsql-11'
     }
 
 this may be changed in the :ref:`preferences`.

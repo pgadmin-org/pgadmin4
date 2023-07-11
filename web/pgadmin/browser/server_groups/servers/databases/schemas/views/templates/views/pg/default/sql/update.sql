@@ -19,7 +19,7 @@ DROP VIEW {{ conn|qtIdent(view_schema, view_name) }};
 
 {% endif %}
 CREATE OR REPLACE VIEW {{ conn|qtIdent(view_schema, view_name) }}
-{% if ((data.check_option and data.check_option.lower() != 'no') or data.security_barrier) %}
+{% if ((data.check_option and data.check_option.lower() != 'no') or (o_data.check_option and o_data.check_option.lower() != 'no') or data.security_barrier or o_data.security_barrier) %}
     WITH ({% if (data.check_option or o_data.check_option) %}check_option={{ data.check_option if data.check_option else o_data.check_option }}{{', ' }}{% endif %}security_barrier={{ data.security_barrier|lower if data.security_barrier is defined else o_data.security_barrier|default('false', 'true')|lower }})
 {% endif %}
     AS

@@ -125,19 +125,37 @@ FormIcon.propTypes = {
 };
 
 /* Wrapper on any form component to add label, error indicator and help message */
-export function FormInput({ children, error, className, label, helpMessage, required, testcid }) {
+export function FormInput({ children, error, className, label, helpMessage, required, testcid, withContainer=true, labelGridBasis=3, controlGridBasis=9 }) {
   const classes = useStyles();
   const cid = testcid || _.uniqueId('c');
   const helpid = `h${cid}`;
+  if(!withContainer) {
+    return (
+      <>
+        <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
+          <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
+            {label}
+            <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
+          </InputLabel>
+        </Grid>
+        <Grid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
+          <FormControl error={Boolean(error)} fullWidth>
+            {React.cloneElement(children, { cid, helpid })}
+          </FormControl>
+          <FormHelperText id={helpid} variant="outlined">{HTMLReactParse(helpMessage || '')}</FormHelperText>
+        </Grid>
+      </>
+    );
+  }
   return (
     <Grid container spacing={0} className={className}>
-      <Grid item lg={3} md={3} sm={3} xs={12}>
+      <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
         <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
           {label}
           <FormIcon type={MESSAGE_TYPE.ERROR} style={{ marginLeft: 'auto', visibility: error ? 'unset' : 'hidden' }} />
         </InputLabel>
       </Grid>
-      <Grid item lg={9} md={9} sm={9} xs={12}>
+      <Grid item lg={controlGridBasis} md={controlGridBasis} sm={12} xs={12}>
         <FormControl error={Boolean(error)} fullWidth>
           {React.cloneElement(children, { cid, helpid })}
         </FormControl>
@@ -154,6 +172,9 @@ FormInput.propTypes = {
   helpMessage: PropTypes.string,
   required: PropTypes.bool,
   testcid: PropTypes.any,
+  withContainer: PropTypes.bool,
+  labelGridBasis: PropTypes.number,
+  controlGridBasis: PropTypes.number,
 };
 
 export function InputSQL({ value, options, onChange, className, controlProps, inputRef, ...props }) {
@@ -512,10 +533,10 @@ InputSwitch.propTypes = {
   controlProps: PropTypes.object,
 };
 
-export function FormInputSwitch({ hasError, required, label, className, helpMessage, testcid, ...props }) {
-
+export function FormInputSwitch({ hasError, required, label, className, helpMessage, testcid, withContainer, controlGridBasis, ...props }) {
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className}
+      helpMessage={helpMessage} testcid={testcid} withContainer={withContainer} controlGridBasis={controlGridBasis}>
       <InputSwitch {...props} />
     </FormInput>
   );
@@ -527,6 +548,8 @@ FormInputSwitch.propTypes = {
   className: CustomPropTypes.className,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  withContainer: PropTypes.bool,
+  controlGridBasis: PropTypes.number,
 };
 
 export function InputCheckbox({ cid, helpid, value, onChange, controlProps, readonly, ...props }) {
@@ -760,17 +783,19 @@ const customReactSelectStyles = (theme, readonly) => ({
   }),
 });
 
-function OptionView({ image, label }) {
+function OptionView({ image, imageUrl, label }) {
   const classes = useStyles();
   return (
     <>
       {image && <span className={clsx(classes.optionIcon, image)}></span>}
+      {imageUrl && <img style={{height: '20px', marginRight: '4px'}} src={imageUrl} />}
       <span>{label}</span>
     </>
   );
 }
 OptionView.propTypes = {
   image: PropTypes.string,
+  imageUrl: PropTypes.string,
   label: PropTypes.string,
 };
 
@@ -787,7 +812,7 @@ CustomSelectInput.propTypes = {
 function CustomSelectOption(props) {
   return (
     <RSComponents.Option {...props}>
-      <OptionView image={props.data.image} label={props.data.label} />
+      <OptionView image={props.data.image} imageUrl={props.data.imageUrl} label={props.data.label} />
     </RSComponents.Option>
   );
 }
@@ -798,7 +823,7 @@ CustomSelectOption.propTypes = {
 function CustomSelectSingleValue(props) {
   return (
     <RSComponents.SingleValue {...props}>
-      <OptionView image={props.data.image} label={props.data.label} />
+      <OptionView image={props.data.image} imageUrl={props.data.imageUrl} label={props.data.label} />
     </RSComponents.SingleValue>
   );
 }
@@ -1017,10 +1042,11 @@ InputColor.propTypes = {
 };
 
 export function FormInputColor({
-  hasError, required, className, label, helpMessage, testcid, ...props }) {
+  hasError, required, className, label, helpMessage, testcid, withContainer, controlGridBasis, ...props }) {
 
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}
+      withContainer={withContainer} controlGridBasis={controlGridBasis}>
       <InputColor {...props} />
     </FormInput>
   );
@@ -1032,6 +1058,8 @@ FormInputColor.propTypes = {
   label: PropTypes.string,
   helpMessage: PropTypes.string,
   testcid: PropTypes.string,
+  withContainer: PropTypes.bool,
+  controlGridBasis: PropTypes.number,
 };
 
 export function PlainString({ controlProps, value }) {
@@ -1111,9 +1139,11 @@ const useStylesFormFooter = makeStyles((theme) => ({
     color: theme.palette.warning.main,
   },
   message: {
+    color: theme.palette.text.primary,
     marginLeft: theme.spacing(0.5),
   },
   messageCenter: {
+    color: theme.palette.text.primary,
     margin: 'auto',
   },
   closeButton: {

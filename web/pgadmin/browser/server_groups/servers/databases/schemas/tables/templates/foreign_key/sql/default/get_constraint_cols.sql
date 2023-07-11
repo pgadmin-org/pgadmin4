@@ -1,6 +1,6 @@
 {% for keypair in keys %}
 {% if loop.index != 1 %}
-UNION
+UNION ALL
 {% endif %}
 SELECT a1.attname as conattname,
     a2.attname as confattname

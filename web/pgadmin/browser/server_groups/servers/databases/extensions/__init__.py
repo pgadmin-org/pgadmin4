@@ -48,7 +48,9 @@ class ExtensionModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(did)
+        if self.has_nodes(sid, did,
+                          base_template_path=ExtensionView.EXT_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(did)
 
     @property
     def node_inode(self):

@@ -175,11 +175,12 @@ export default function ProcessDetails({data}) {
         {logs == null && <span data-test="loading-logs">{gettext('Loading process logs...')}</span>}
         {logs?.length == 0 && gettext('No logs available.')}
         {logs?.map((log, i)=>{
+          let id = logs.length-i;
           return <div ref={(el)=>{
             if(i==logs.length-1) {
               el?.scrollIntoView();
             }
-          }} key={i} className={errRe.test(log) ? classes.logErr : ''}>{log}</div>;
+          }} key={id} className={errRe.test(log) ? classes.logErr : ''}>{log}</div>;
         })}
       </Box>
       <Box display="flex" alignItems="center">

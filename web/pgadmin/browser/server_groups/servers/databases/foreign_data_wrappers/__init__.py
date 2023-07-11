@@ -75,7 +75,10 @@ class ForeignDataWrapperModule(CollectionNodeModule):
             sid: Server ID
             did: Database Id
         """
-        yield self.generate_browser_collection_node(did)
+        if self.has_nodes(
+            sid, did,
+                base_template_path=ForeignDataWrapperView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(did)
 
     @property
     def script_load(self):
@@ -179,6 +182,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
     """
 
     node_type = blueprint.node_type
+    BASE_TEMPLATE_PATH = 'foreign_data_wrappers/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -235,7 +239,7 @@ class ForeignDataWrapperView(PGChildNodeView, SchemaDiffObjectCompare):
                     kwargs['did']]['datistemplate']
 
             # Set the template path for the SQL scripts
-            self.template_path = 'foreign_data_wrappers/sql/#{0}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version
             )
 

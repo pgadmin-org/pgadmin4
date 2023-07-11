@@ -110,13 +110,21 @@ PSYCOPG_SUPPORTED_IPADDRESS_ARRAY_TYPES = (1041, 651)
 # OID reference psycopg/lib/extras.py
 PSYCOPG_SUPPORTED_IPADDRESS_ARRAY_TYPES = (2951, 2950)
 
-# int4range, int8range, numrange, daterange tsrange, tstzrange[]
+# int4range, int8range, numrange, daterange tsrange, tstzrange
 # OID reference psycopg/lib/_range.py
 PSYCOPG_SUPPORTED_RANGE_TYPES = (3904, 3926, 3906, 3912, 3908, 3910)
+
+# int4multirange, int8multirange, nummultirange, datemultirange tsmultirange,
+# tstzmultirange[]
+PSYCOPG_SUPPORTED_MULTIRANGE_TYPES = (4535, 4451, 4536, 4532, 4533, 4534)
 
 # int4range[], int8range[], numrange[], daterange[] tsrange[], tstzrange[]
 # OID reference psycopg/lib/_range.py
 PSYCOPG_SUPPORTED_RANGE_ARRAY_TYPES = (3905, 3927, 3907, 3913, 3909, 3911)
+
+# int4multirange[], int8multirange[], nummultirange[],
+# datemultirange[] tsmultirange[], tstzmultirange[]
+PSYCOPG_SUPPORTED_MULTIRANGE_ARRAY_TYPES = (6155, 6150, 6157, 6151, 6152, 6153)
 
 
 def register_global_typecasters():
@@ -128,7 +136,7 @@ def register_global_typecasters():
         2287, TextLoaderpgAdmin)
 
     for typ in TO_STRING_DATATYPES + TO_STRING_NUMERIC_DATATYPES +\
-            PSYCOPG_SUPPORTED_RANGE_TYPES:
+            PSYCOPG_SUPPORTED_RANGE_TYPES + PSYCOPG_SUPPORTED_MULTIRANGE_TYPES:
         psycopg.adapters.register_loader(typ,
                                          TextLoaderpgAdmin)
 
@@ -176,7 +184,8 @@ def register_array_to_string_typecasters(connection=None):
     type_array = PSYCOPG_SUPPORTED_BUILTIN_ARRAY_DATATYPES +\
         PSYCOPG_SUPPORTED_JSON_ARRAY_TYPES +\
         PSYCOPG_SUPPORTED_IPADDRESS_ARRAY_TYPES +\
-        PSYCOPG_SUPPORTED_RANGE_ARRAY_TYPES +\
+        PSYCOPG_SUPPORTED_RANGE_ARRAY_TYPES + \
+        PSYCOPG_SUPPORTED_MULTIRANGE_ARRAY_TYPES + \
         TO_ARRAY_OF_STRING_DATATYPES
 
     for typ in type_array:

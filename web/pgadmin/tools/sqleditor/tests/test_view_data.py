@@ -16,6 +16,8 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils
 from unittest.mock import patch
+from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
+    import async_poll
 
 
 class TestViewData(BaseTestGenerator):
@@ -116,9 +118,9 @@ class TestViewData(BaseTestGenerator):
         response = self.tester.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # Check the query result
-        url = '/sqleditor/poll/{0}'.format(self.trans_id)
-        response = self.tester.get(url)
+        response = async_poll(tester=self.tester,
+                              poll_url='/sqleditor/poll/{0}'.format(
+                                  self.trans_id))
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data.decode('utf-8'))
 

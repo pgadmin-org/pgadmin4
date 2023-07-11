@@ -196,8 +196,8 @@ function NodeDetails({plan, download=false}) {
         return `${key}: ${plan[key]}\n`;
       } else {
         return (<tr key={key}>
-          <td>{_.escape(key)}</td>
-          <td>{_.escape(plan[key])}</td>
+          <td>{key}</td>
+          <td>{plan[key]}</td>
         </tr>);
       }
     })}

@@ -21,8 +21,10 @@ import PropTypes from 'prop-types';
 import { PgIconButton } from '../../static/js/components/Buttons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
+import { evalFunc } from '../../static/js/utils';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -139,7 +141,7 @@ export function CollectionNodeView({
 
     if (selRows.length === 0) {
       Notify.alert(
-        gettext('Drop Multiple'),
+        gettext('Delete Multiple'),
         gettext('Please select at least one object to delete.')
       );
       return;
@@ -150,23 +152,31 @@ export function CollectionNodeView({
     if (type === 'dropCascade') {
       url = selNode.generate_url(selItem, 'delete');
       msg = gettext(
-        'Are you sure you want to drop all the selected objects and all the objects that depend on them?'
+        'Are you sure you want to delete all the selected objects and all the objects that depend on them?'
       );
-      title = gettext('DROP CASCADE multiple objects?');
+      title = gettext('Delete CASCADE multiple objects?');
+    } else if (type === 'dropForce') {
+      url = selNode.generate_url(selItem, 'delete');
+      msg = gettext(
+        'Delete databases with the force option will attempt to terminate all the existing connections to the selected databases. Are you sure you want to proceed?'
+      );
+      title = gettext('Delete FORCE multiple objects?');
     } else {
       url = selNode.generate_url(selItem, 'drop');
-      msg = gettext('Are you sure you want to drop all the selected objects?');
-      title = gettext('DROP multiple objects?');
+      msg = gettext('Are you sure you want to delete all the selected objects?');
+      title = gettext('Delete multiple objects?');
     }
 
     const api = getApiInstance();
     let dropNodeProperties = function () {
+      setLoaderText(gettext('Deleting Objects...'));
       api
         .delete(url, {
           data: JSON.stringify({ ids: selRows }),
           contentType: 'application/json; charset=utf-8',
         })
         .then(function (res) {
+          setLoaderText('');
           if (res.success == 0) {
             Notify.alert(res.errormsg, res.info);
           }
@@ -174,8 +184,9 @@ export function CollectionNodeView({
           setReload(!reload);
         })
         .catch(function (error) {
+          setLoaderText('');
           Notify.alert(
-            gettext('Error dropping %s', selectedItemData._label.toLowerCase()),
+            gettext('Error deleting %s', selectedItemData._label.toLowerCase()),
             _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );
         });
@@ -200,7 +211,7 @@ export function CollectionNodeView({
 
       let tableColumns = [];
       let column = {};
-      setLoaderText('Loading...');
+      setLoaderText(gettext('Loading...'));
 
       if (itemNodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
         schemaRef.current = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, itemNodeData);
@@ -269,41 +280,59 @@ export function CollectionNodeView({
   }, [itemNodeData, node, item, reload]);
 
   const CustomHeader = () => {
+    const canDrop = evalFunc(node, node.canDrop, itemNodeData, item, treeNodeInfo);
+    const canDropCascade = evalFunc(node, node.canDropCascade, itemNodeData, item, treeNodeInfo);
+    const canDropForce = evalFunc(node, node.canDropForce, itemNodeData, item, treeNodeInfo);
     return (
       <Box >
         <PgIconButton
           className={classes.dropButton}
           icon={<DeleteIcon/>}
-          aria-label="Delete/Drop"
-          title={gettext('Delete/Drop')}
+          aria-label="Delete"
+          title={gettext('Delete')}
           onClick={() => {
             onDrop('drop');
           }}
           disabled={
             (selectedObject.length > 0)
-              ? !node.canDrop
+              ? !canDrop
               : true
           }
         ></PgIconButton>
-        <PgIconButton
+        {node.type !== 'coll-database' ? <PgIconButton
           className={classes.dropButton}
           icon={<DeleteSweepIcon />}
-          aria-label="Drop Cascade"
-          title={gettext('Drop Cascade')}
+          aria-label="Delete Cascade"
+          title={gettext('Delete (Cascade)')}
           onClick={() => {
             onDrop('dropCascade');
           }}
           disabled={
             (selectedObject.length > 0)
-              ? !node.canDropCascade
+              ? !canDropCascade
               : true
           }
-        ></PgIconButton>
+        ></PgIconButton> :
+          <PgIconButton
+            className={classes.dropButton}
+            icon={<DeleteForeverIcon />}
+            aria-label="Delete Force"
+            title={gettext('Delete (Force)')}
+            onClick={() => {
+              onDrop('dropForce');
+            }}
+            disabled={
+              (selectedObject.length > 0)
+                ? !canDropForce
+                : true
+            }
+          ></PgIconButton>}
       </Box>);
   };
 
   return (
     <Theme className='obj_properties'>
+      <Loader message={loaderText}/>
       <Box className={classes.propertiesPanel}>
         {data.length > 0 ?
           (

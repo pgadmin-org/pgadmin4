@@ -296,7 +296,7 @@ def register_query_tool_preferences(self):
     self.on_demand_record_count = self.preference.register(
         'Results_grid', 'on_demand_record_count',
         gettext("On demand record count"), 'integer', ON_DEMAND_RECORD_COUNT,
-        min_val=100,
+        min_val=1,
         category_label=PREF_LABEL_RESULTS_GRID,
         help_str=gettext('Specify the number of records to fetch in one batch '
                          'in query tool when query result set is large. '
@@ -629,21 +629,8 @@ def register_query_tool_preferences(self):
     )
 
     self.preference.register(
-        'keyboard_shortcuts', 'btn_conn_status',
-        gettext('Accesskey (Connection status)'), 'keyboardshortcut',
-        {
-            'key': {
-                'key_code': 84,
-                'char': 't'
-            }
-        },
-        category_label=PREF_LABEL_KEYBOARD_SHORTCUTS,
-        fields=accesskey_fields
-    )
-
-    self.preference.register(
-        'keyboard_shortcuts', 'btn_find_options',
-        gettext('Accesskey (Find options)'), 'keyboardshortcut',
+        'keyboard_shortcuts', 'btn_edit_options',
+        gettext('Accesskey (Edit options)'), 'keyboardshortcut',
         {
             'key': {
                 'key_code': 78,

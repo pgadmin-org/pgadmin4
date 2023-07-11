@@ -70,9 +70,10 @@ class BaseFeatureTest(BaseTestGenerator):
         self.after()
 
     def any_step_failed(self):
-        for step in self._outcome.errors:
-            if step[1] is not None:
-                return True
+        if hasattr(self._outcome, 'errors'):
+            for step in self._outcome.errors:
+                if step[1] is not None:
+                    return True
         return False
 
     def current_test_failed(self):

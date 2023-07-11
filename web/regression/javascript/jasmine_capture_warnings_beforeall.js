@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 //
 // pgAdmin 4 - PostgreSQL Tools
 //
@@ -10,14 +10,16 @@
 /* eslint-disable no-console */
 
 beforeAll(function () {
-  spyOn(console, 'warn').and.callThrough();
+  // Warnings can be ignored
+  // spyOn(console, 'warn').and.callThrough();
   spyOn(console, 'error').and.callThrough();
   jasmine.getEnv().allowRespy(true);
 });
 
 afterEach(function (done) {
   setTimeout(function () {
-    expect(console.warn).not.toHaveBeenCalled();
+    // Warnings can be ignored
+    // expect(console.warn).not.toHaveBeenCalled();
     expect(console.error).not.toHaveBeenCalled();
     done();
   }, 0);

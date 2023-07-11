@@ -24,10 +24,12 @@ from pgadmin.model import UserMFA
 
 from .registry import BaseMFAuth
 from .utils import ValidationException, fetch_auth_option, mfa_add
+from pgadmin.utils.constants import MessageType
 
 
 _TOTP_AUTH_METHOD = "authenticator"
 _TOTP_AUTHENTICATOR = _("Authenticator App")
+_OTP_PLACEHOLDER = _("Enter code")
 
 
 class TOTPAuthenticator(BaseMFAuth):
@@ -112,29 +114,22 @@ class TOTPAuthenticator(BaseMFAuth):
         if totp.verify(code) is False:
             raise ValidationException("Invalid Code")
 
-    def validation_view(self) -> str:
+    def validation_view(self) -> dict:
         """
         Generate the portion of the view to render on the authentication page
 
         Returns:
             str: Authentication view as a string
         """
-        return (
-            "<div class='form-group'>{auth_description}</div>"
-            "<div class='form-group'>"
-            "  <input class='form-control' placeholder='{otp_placeholder}'"
-            "    name='code' type='password' autofocus='' pattern='\\d*'"
-            "    autocomplete='one-time-code' require/>"
-            "</div>"
-        ).format(
+        return dict(
             auth_description=_(
                 "Enter the code shown in your authenticator application for "
                 "TOTP (Time-based One-Time Password)"
             ),
-            otp_placeholder=_("Enter code"),
+            otp_placeholder=_OTP_PLACEHOLDER,
         )
 
-    def _registration_view(self) -> str:
+    def _registration_view(self) -> dict:
         """
         Internal function to generate a view for the registration page.
 
@@ -162,20 +157,7 @@ class TOTPAuthenticator(BaseMFAuth):
         img.save(buffered, format="JPEG")
         img_base64 = base64.b64encode(buffered.getvalue())
 
-        return "".join([
-            "<h5 class='form-group text-center'>{auth_title}</h5>",
-            "<input type='hidden' name='{auth_method}' value='SETUP'/>",
-            "<input type='hidden' name='VALIDATE' value='validate'/>",
-            "<img src='data:image/jpeg;base64,{image}'" +
-            " alt='{qrcode_alt_text}' class='w-100'/>",
-            "<div class='form-group pt-3'>{auth_description}</div>",
-            "<div class='form-group'>",
-            "<input class='form-control' " +
-            " placeholder='{otp_placeholder}' name='code'" +
-            " type='password' autofocus='' autocomplete='one-time-code'" +
-            " pattern='\\d*' require>",
-            "</div>",
-        ]).format(
+        return dict(
             auth_title=_(_TOTP_AUTHENTICATOR),
             auth_method=_TOTP_AUTH_METHOD,
             image=img_base64.decode("utf-8"),
@@ -183,7 +165,7 @@ class TOTPAuthenticator(BaseMFAuth):
             auth_description=_(
                 "Scan the QR code and the enter the code from the "
                 "TOTP Authenticator application"
-            ), otp_placeholder=_("Enter code")
+            ), otp_placeholder=_OTP_PLACEHOLDER
         )
 
     def registration_view(self, form_data) -> Union[str, None]:
@@ -210,13 +192,13 @@ class TOTPAuthenticator(BaseMFAuth):
         authenticator_opt = session.get('mfa_authenticator_opt', None)
         if authenticator_opt is None or \
                 pyotp.TOTP(authenticator_opt).verify(code) is False:
-            flash(_("Failed to validate the code"), "danger")
+            flash(_("Failed to validate the code"), MessageType.ERROR)
             return self._registration_view()
 
         mfa_add(_TOTP_AUTH_METHOD, authenticator_opt)
         flash(_(
             "TOTP Authenticator registered successfully for authentication."
-        ), "success")
+        ), MessageType.SUCCESS)
         session.pop('mfa_authenticator_opt', None)
 
         return None

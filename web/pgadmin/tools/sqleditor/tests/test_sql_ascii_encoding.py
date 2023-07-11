@@ -16,6 +16,8 @@ from pgadmin.utils import server_utils
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
 import config
+from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
+    import async_poll
 
 
 class TestSQLASCIIEncoding(BaseTestGenerator):
@@ -105,8 +107,9 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
         response = self.tester.post(url, data=json.dumps({"sql": sql}),
                                     content_type='html/json')
         self.assertEqual(response.status_code, 200)
-        url = '/sqleditor/poll/{0}'.format(self.trans_id)
-        response = self.tester.get(url)
+        response = async_poll(tester=self.tester,
+                              poll_url='/sqleditor/poll/{0}'.format(
+                                  self.trans_id))
         self.assertEqual(response.status_code, 200)
         response_data = json.loads(response.data)
         self.assertEqual(response_data['data']['rows_fetched_to'], 1)

@@ -16,7 +16,9 @@ describe('PublicationSchema', ()=>{
   let mount;
   let schemaObj = new PublicationSchema(
     {
-      publicationTable: ()=>[],
+      allTables: ()=>[],
+      allSchemas:()=>[],
+      getColumns: ()=>[],
       role: ()=>[],
     },
     {
@@ -69,5 +71,11 @@ describe('PublicationSchema', ()=>{
     expect(status).toBe(true);
   });
 
+  it('pubschema disabled', ()=>{
+    let disabled = _.find(schemaObj.fields, (f)=>f.id=='pubschema').disabled;
+    let status = disabled({pubtable: [],all_table: true});
+    expect(status).toBe(true);
+  });
+  
 });
 

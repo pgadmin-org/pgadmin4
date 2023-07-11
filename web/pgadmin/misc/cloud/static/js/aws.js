@@ -252,7 +252,8 @@ const getStorageType = (cloudInstanceDetails) => {
   let _storage_type = 'General Purpose SSD (gp2)',
     _io1 = undefined;
 
-  if(cloudInstanceDetails.storage_type == 'gp2') _storage_type = 'General Purpose SSD (gp2)';
+  if(cloudInstanceDetails.storage_type == 'gp2'){ _storage_type = 'General Purpose SSD (gp2)';}
+  else if (cloudInstanceDetails.storage_type == 'gp3'){ _storage_type = 'General Purpose SSD (gp3)';}
   else if(cloudInstanceDetails.storage_type == 'io1') {
     _storage_type = 'Provisioned IOPS SSD (io1)';
     _io1 = cloudInstanceDetails.storage_IOPS;

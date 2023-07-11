@@ -627,7 +627,7 @@ def directory_diff(source_dict, target_dict, ignore_keys=[], difference=None):
                 for index in range(len(source_dict[key])):
                     source = copy.deepcopy(source_dict[key][index])
                     if isinstance(source, list):
-                        # TODO
+                        # This block is empty will figure out some scenario
                         pass
                     elif isinstance(source, dict):
                         # Check the above keys are exist in the dictionary

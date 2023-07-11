@@ -48,4 +48,7 @@ Bug fixes
   | `Issue #6158 <https://github.com/pgadmin-org/pgadmin4/issues/6158>`_ -  Fixed an issue with the properties tab not getting updated if the user updates the selected node.
   | `Issue #6159 <https://github.com/pgadmin-org/pgadmin4/issues/6159>`_ -  Ensure that the ERD tool should work with the external database after moving to psycopg3.
   | `Issue #6180 <https://github.com/pgadmin-org/pgadmin4/issues/6180>`_ -  Fixed an issue where PSQL is not working if the PGUSER env variable is set and service file is used for server connection details.
+  | `Issue #6183 <https://github.com/pgadmin-org/pgadmin4/issues/6183>`_ -  Mac crash when you press Command-Shift-C.
+  | `Issue #6189 <https://github.com/pgadmin-org/pgadmin4/issues/6189>`_ -  Fix an issue in View SQL when column level privileges are set with multiple roles.
   | `Issue #6191 <https://github.com/pgadmin-org/pgadmin4/issues/6191>`_ -  Fixed an issue where Reset Password is not working after upgrading to latest flask-security-too.
+  | `Issue #6234 <https://github.com/pgadmin-org/pgadmin4/issues/6234>`_ -  Usernames/roles with special character are not double quoted when assigning privileges.

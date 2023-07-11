@@ -543,6 +543,9 @@ export default function PreferencesComponent({ ...props }) {
       method: 'PUT',
       data: save_data,
     }).then(() => {
+      let requiresTreeRefresh = save_data.some((s)=>{
+        return s.name=='show_system_objects'||s.name=='show_empty_coll_nodes'||s.name.startsWith('show_node_')||s.name=='hide_shared_server'||s.name=='show_user_defined_templates';
+      });
       let requires_refresh = false;
       /* Find the modules changed */
       let modulesChanged = {};
@@ -559,25 +562,6 @@ export default function PreferencesComponent({ ...props }) {
 
         requires_refresh = checkRefreshRequired(pref, requires_refresh);
 
-        if (pref.name == 'hide_shared_server') {
-          Notify.confirm(
-            gettext('Object explorer tree refresh required'),
-            gettext('The object explorer tree refresh is required. Do you wish to refresh the tree?'),
-            function () {
-              pgAdmin.Browser.tree.destroy({
-                success: function () {
-                  pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
-                  return true;
-                },
-              });
-            },
-            function () {
-              return true;
-            },
-            gettext('Refresh'),
-            gettext('Later')
-          );
-        }
         // Sync the lock layout menu with preferences
         if (pref.name == 'lock_layout') {
           let fileMenu = pgAdmin.Browser.MainMenus.find((menu) => menu.name == 'file');
@@ -591,6 +575,26 @@ export default function PreferencesComponent({ ...props }) {
           });
           pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', 'lock_layout');
         }
+      }
+
+      if (requiresTreeRefresh) {
+        Notify.confirm(
+          gettext('Object explorer refresh required'),
+          gettext('An object explorer refresh is required. Do you wish to refresh it now?'),
+          function () {
+            pgAdmin.Browser.tree.destroy({
+              success: function () {
+                pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
+                return true;
+              },
+            });
+          },
+          function () {
+            return true;
+          },
+          gettext('Refresh'),
+          gettext('Later')
+        );
       }
 
       if (requires_refresh) {

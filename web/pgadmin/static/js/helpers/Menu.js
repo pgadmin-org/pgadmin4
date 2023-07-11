@@ -176,7 +176,7 @@ export class MenuItem {
     * Checks this menu enable/disable state based on the selection.
     */
   disabled(node, item) {
-    if (this.enable == undefined || !node) {
+    if (this.enable == undefined) {
       return false;
     }
 
@@ -192,11 +192,14 @@ export class MenuItem {
     }
 
     if (_.isBoolean(this.enable)) return !this.enable;
-    if (_.isFunction(this.enable)) {
+    if (_.isFunction(this.enable) && node) {
       return !this.enable.apply(this.module, [node, item, this.data]);
     }
     if (this.module && _.isBoolean(this.module[this.enable])) {
       return !this.module[this.enable];
+    }
+    if(!node) {
+      return true;
     }
     if (this.module && _.isFunction(this.module[this.enable])) {
       return !(this.module[this.enable]).apply(this.module, [node, item, this.data]);
