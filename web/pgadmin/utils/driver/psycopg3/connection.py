@@ -22,7 +22,7 @@ import psycopg
 from flask import g, current_app
 from flask_babel import gettext
 from flask_security import current_user
-from pgadmin.utils.crypto import decrypt, encrypt
+from pgadmin.utils.crypto import decrypt
 from psycopg._encodings import py_codecs as encodings
 
 import config
@@ -39,6 +39,7 @@ from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
+from pgadmin.utils.driver import get_driver
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -184,6 +185,8 @@ class Connection(BaseConnection):
         self.reconnecting = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
+        self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
+
         super(Connection, self).__init__()
 
     def as_dict(self):
@@ -442,12 +445,13 @@ class Connection(BaseConnection):
             role = manager.role
 
         if is_set_role:
-            _query = "SELECT rolname from pg_roles WHERE rolname = '{0}'" \
-                     "".format(role)
+            _query = "SELECT rolname from pg_roles WHERE rolname = {0}" \
+                     "".format(self.qtLiteral(role, self.conn))
             _status, res = self.execute_scalar(_query)
 
             if res:
-                status = self._execute(cur, "SET ROLE TO {0}".format(role))
+                status = self._execute(cur, "SET ROLE TO {0}".format(
+                    self.qtLiteral(role, self.conn)))
             else:
                 # If role is not found then set the status to role
                 # for showing the proper error message

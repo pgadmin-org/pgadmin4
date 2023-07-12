@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #6369 <https://github.com/pgadmin-org/pgadmin4/issues/6369>`_ -  Added support to detach partitions using concurrently and finalize.
+  | `Issue #6374 <https://github.com/pgadmin-org/pgadmin4/issues/6374>`_ -  Added all supported index storage parameters while creating an index.
   | `Issue #6416 <https://github.com/pgadmin-org/pgadmin4/issues/6416>`_ -  Added new/missing parameters to pg_dumpall (Backup Server).
   | `Issue #6417 <https://github.com/pgadmin-org/pgadmin4/issues/6417>`_ -  Added new/missing parameters to pg_dump (Backup Objects).
 
@@ -47,5 +48,6 @@ Bug fixes
   | `Issue #6514 <https://github.com/pgadmin-org/pgadmin4/issues/6514>`_ -  Fix the connection and stability issues since v7, possibly related to background schema changes.
   | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
   | `Issue #6524 <https://github.com/pgadmin-org/pgadmin4/issues/6524>`_ -  Fix the lost connection error in v7.4.
+  | `Issue #6531 <https://github.com/pgadmin-org/pgadmin4/issues/6531>`_ -  Fixed an issue where pgAdmin failed to setup role with hyphens in name.
   | `Issue #6537 <https://github.com/pgadmin-org/pgadmin4/issues/6537>`_ -  Fixed an issue where filters are not working and query history shows empty queries.
   | `Issue #6544 <https://github.com/pgadmin-org/pgadmin4/issues/6544>`_ -  Fix an issue where adding a sub-folder inside a folder is not working as expected in File Manager.
