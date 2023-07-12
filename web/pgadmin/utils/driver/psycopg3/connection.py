@@ -495,8 +495,6 @@ class Connection(BaseConnection):
 
         register_string_typecasters(self.conn)
 
-        status, cur = self.__cursor()
-
         manager = self.manager
 
         # autocommit flag does not work with asynchronous connections.
@@ -513,6 +511,8 @@ class Connection(BaseConnection):
         #
         postgres_encoding, self.python_encoding = \
             get_encoding(self.conn.info.encoding)
+
+        status, cur = self.__cursor()
 
         # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
         # convenience hack for those running on old, unsupported versions of

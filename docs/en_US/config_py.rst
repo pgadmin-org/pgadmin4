@@ -27,8 +27,8 @@ The configuration files are as follows:
   needed.
 
 * ``config_local.py``: This file is read after ``config_distro.py`` and is intended
-  for end users to change any default or packaging specific settings that they may
-  wish to adjust to meet local preferences or standards.This file is optional,
+  for the owner of the installation to change any default or packaging specific settings
+  that they may wish to adjust to meet local preferences or standards.This file is optional,
   and may be created by users in the same directory as ``config.py`` if
   needed.
 
