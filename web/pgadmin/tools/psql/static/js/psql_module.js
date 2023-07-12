@@ -153,8 +153,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       panelTitle = generateTitle(tab_title_placeholder, title_data);
 
       const [panelUrl, panelCloseUrl, db_label] = this.getPanelUrls(transId, panelTitle, parentData, gen);
-
-      const escapedTitle = _.escape(panelTitle);
+      const escapedTitle = _.unescape(panelTitle);
       let psqlToolForm = `
         <form id="psqlToolForm" action="${panelUrl}" method="post">
           <input id="title" name="title" hidden />
