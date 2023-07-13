@@ -1,7 +1,4 @@
-name: Run feature tests on PostgreSQL
-
-# Note: we use a custom port for PostgreSQL as the runners may already have
-#       a version installed.
+name: Run feature tests on EPAS
 
 on:
   push:
