@@ -10,7 +10,7 @@
 import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
-import RestoreSchema, {getRestoreSaveOptSchema, getRestoreQueryOptionSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from '../../../pgadmin/tools/restore/static/js/restore.ui';
+import RestoreSchema, {getRestoreSaveOptSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from '../../../pgadmin/tools/restore/static/js/restore.ui';
 import {getCreateView} from '../genericFunctions';
 
 describe('RestoreSchema', ()=>{
@@ -26,7 +26,6 @@ describe('RestoreSchema', ()=>{
     ()=>getRestoreSectionSchema({selectedNodeType: 'table'}),
     ()=>getRestoreTypeObjSchema({selectedNodeType: 'table'}),
     ()=>getRestoreSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
-    ()=>getRestoreQueryOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=>getRestoreDisableOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=>getRestoreMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
     {

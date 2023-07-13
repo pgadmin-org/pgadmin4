@@ -1866,7 +1866,6 @@ def load_file():
 
     # get the current storage from request if available
     # or get it from last_storage preference.
-    storage_folder = ''
     if 'storage' in file_data:
         storage_folder = file_data['storage']
     else:

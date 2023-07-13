@@ -24,6 +24,7 @@ New features
   | `Issue #6374 <https://github.com/pgadmin-org/pgadmin4/issues/6374>`_ -  Added all supported index storage parameters while creating an index.
   | `Issue #6416 <https://github.com/pgadmin-org/pgadmin4/issues/6416>`_ -  Added new/missing parameters to pg_dumpall (Backup Server).
   | `Issue #6417 <https://github.com/pgadmin-org/pgadmin4/issues/6417>`_ -  Added new/missing parameters to pg_dump (Backup Objects).
+  | `Issue #6562 <https://github.com/pgadmin-org/pgadmin4/issues/6562>`_ -  Added new/missing parameters to pg_restore.
 
 Housekeeping
 ************
@@ -51,3 +52,5 @@ Bug fixes
   | `Issue #6531 <https://github.com/pgadmin-org/pgadmin4/issues/6531>`_ -  Fixed an issue where pgAdmin failed to setup role with hyphens in name.
   | `Issue #6537 <https://github.com/pgadmin-org/pgadmin4/issues/6537>`_ -  Fixed an issue where filters are not working and query history shows empty queries.
   | `Issue #6544 <https://github.com/pgadmin-org/pgadmin4/issues/6544>`_ -  Fix an issue where adding a sub-folder inside a folder is not working as expected in File Manager.
+  | `Issue #6556 <https://github.com/pgadmin-org/pgadmin4/issues/6556>`_ -  Fix an error 'list' object has no attribute 'strip' while attempting to populate auto-complete manually the first time.
+  | `Issue #6558 <https://github.com/pgadmin-org/pgadmin4/issues/6558>`_ -  Fixed an issue where ERD Tool can't load the saved pgerd file from Shared Storage.

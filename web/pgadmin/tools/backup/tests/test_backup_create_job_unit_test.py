@@ -538,6 +538,31 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When backup the object with option - Exclude schema',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 exclude_schema="sch*"
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, '--exclude-schema', 'sch*'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When backup the object with option - Extra float digits',
          dict(
              class_params=dict(

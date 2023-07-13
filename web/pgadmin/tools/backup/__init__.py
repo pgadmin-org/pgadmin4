@@ -331,6 +331,7 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
     set_param('verbose', '--verbose')
     set_param('dqoute', '--quote-all-identifiers')
     set_param('use_set_session_auth', '--use-set-session-authorization')
+    set_value('exclude_schema', '--exclude-schema')
     set_value('extra_float_digits', '--extra-float-digits', None,
               manager.version >= 120000)
     set_value('lock_wait_timeout', '--lock-wait-timeout')

@@ -178,6 +178,9 @@ the type of statements that should be included in the backup.
      position to add an IF EXISTS clause to drop databases and other objects.
      This option is not valid unless *Include DROP DATABASE statement* is also set.
 
+.. image:: images/backup_table.png
+    :alt: Backup dialog tables section
+    :align: center
 
 Click the *Table Options* tab to continue. Use the fields in the *Table Options*
 tab related to tables that should be included in the backup.
@@ -213,7 +216,7 @@ tab to provide other backup options.
 * Move switches in the **Disable** field box to specify the type of statements
   that should be excluded from the backup.
 
-   * Move the switch next to *Trigger* (active when creating a data-only backup)
+   * Move the switch next to *Triggers* (active when creating a data-only backup)
      towards right position to include commands that will disable triggers on the
      target table while the data is being loaded.
 
@@ -237,6 +240,9 @@ tab to provide other backup options.
    * Move the switch next to *Use SET SESSION AUTHORIZATION* towards right
      position to include a statement that will use a SET SESSION AUTHORIZATION
      command to determine object ownership (instead of an ALTER OWNER command).
+
+   * Use the *Exclude schema* field to not dump schemas whose name matches
+     pattern.
 
    * Use the *Extra float digits* field to use the specified value when dumping
      floating-point data, instead of the maximum available precision.

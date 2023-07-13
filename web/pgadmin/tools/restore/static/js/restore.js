@@ -12,7 +12,7 @@ import {getUtilityView} from '../../../../browser/static/js/utility_view';
 import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
-import RestoreSchema, {getRestoreSaveOptSchema, getRestoreQueryOptionSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from './restore.ui';
+import RestoreSchema, {getRestoreSaveOptSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from './restore.ui';
 
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
@@ -79,7 +79,6 @@ define('tools.restore', [
         ()=>getRestoreSectionSchema({selectedNodeType: itemNodeData._type}),
         ()=>getRestoreTypeObjSchema({selectedNodeType: itemNodeData._type}),
         ()=>getRestoreSaveOptSchema({nodeInfo: treeNodeInfo}),
-        ()=>getRestoreQueryOptionSchema({selectedNodeType: itemNodeData._type, nodeInfo: treeNodeInfo}),
         ()=>getRestoreDisableOptionSchema({nodeInfo: treeNodeInfo}),
         ()=>getRestoreMiscellaneousSchema({nodeInfo: treeNodeInfo}),
         {

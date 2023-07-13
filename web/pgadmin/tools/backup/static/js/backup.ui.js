@@ -380,6 +380,21 @@ export class MiscellaneousSchema extends BaseUISchema {
       group: gettext('Miscellaneous'),
       inlineNext: true,
     }, {
+      id: 'exclude_schema',
+      label: gettext('Exclude schema'),
+      type: 'text',
+      disabled: false,
+      group: gettext('Miscellaneous'),
+      visible: isVisibleForServerBackup(obj?._top?.backupType)
+    }, {
+      id: 'exclude_database',
+      label: gettext('Exclude database'),
+      type: 'text',
+      disabled: false,
+      min_version: 160000,
+      group: gettext('Miscellaneous'),
+      visible: isVisibleForObjectBackup(obj?._top?.backupType)
+    }, {
       id: 'extra_float_digits',
       label: gettext('Extra float digits'),
       type: 'int',
@@ -392,14 +407,6 @@ export class MiscellaneousSchema extends BaseUISchema {
       type: 'int',
       disabled: false,
       group: gettext('Miscellaneous')
-    }, {
-      id: 'exclude_database',
-      label: gettext('Exclude database'),
-      type: 'text',
-      disabled: false,
-      min_version: 160000,
-      group: gettext('Miscellaneous'),
-      visible: isVisibleForObjectBackup(obj.backupType)
     }];
   }
 }
@@ -569,7 +576,7 @@ export default class BackupSchema extends BaseUISchema {
         state.on_conflict_do_nothing = false;
         return true;
       },
-      inlineNext: true,
+      inlineNext: obj.backupType == 'server'? false : true,
     }, {
       id: 'include_create_database',
       label: gettext('Include CREATE DATABASE statement'),
@@ -691,6 +698,15 @@ export default class BackupSchema extends BaseUISchema {
       label: gettext('Miscellaneous'),
       group: gettext('Options'),
       schema: obj.getMiscellaneousSchema(),
+    }, {
+      id: 'objects',
+      label: gettext('objects'),
+      group: gettext('Objects'),
+      type: 'tree',
+      visible: () => {
+        return isVisibleForServerBackup(obj?.backupType);
+      },
+      tree_type: 'checkbox'
     }];
   }
 
