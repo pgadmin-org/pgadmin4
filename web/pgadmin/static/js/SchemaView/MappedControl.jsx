@@ -21,7 +21,7 @@ import CustomPropTypes from '../custom_prop_types';
 import { SelectRefresh } from '../components/SelectRefresh';
 
 /* Control mapping for form view */
-function MappedFormControlBase({ type, value, id, onChange, className, visible, inputRef, noLabel, onClick, ...props }) {
+function MappedFormControlBase({ type, value, id, onChange, className, visible, inputRef, noLabel, onClick, withContainer, controlGridBasis, ...props }) {
   const name = id;
   const onTextChange = useCallback((e) => {
     let val = e;
@@ -61,6 +61,7 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   case 'switch':
     return <FormInputSwitch name={name} value={value}
       onChange={(e) => onTextChange(e.target.checked, e.target.name)} className={className}
+      withContainer={withContainer} controlGridBasis={controlGridBasis}
       {...props} />;
   case 'checkbox':
     return <FormInputCheckbox name={name} value={value}
@@ -106,7 +107,9 @@ MappedFormControlBase.propTypes = {
   visible: PropTypes.bool,
   inputRef: CustomPropTypes.ref,
   noLabel: PropTypes.bool,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  withContainer: PropTypes.bool,
+  controlGridBasis: PropTypes.number
 };
 
 /* Control mapping for grid cell view */

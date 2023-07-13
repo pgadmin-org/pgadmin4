@@ -1042,11 +1042,10 @@ InputColor.propTypes = {
 };
 
 export function FormInputColor({
-  hasError, required, className, label, helpMessage, testcid, withContainer, controlGridBasis, ...props }) {
+  hasError, required, className, label, helpMessage, testcid, ...props }) {
 
   return (
-    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}
-      withContainer={withContainer} controlGridBasis={controlGridBasis}>
+    <FormInput required={required} label={label} error={hasError} className={className} helpMessage={helpMessage} testcid={testcid}>
       <InputColor {...props} />
     </FormInput>
   );
@@ -1057,9 +1056,7 @@ FormInputColor.propTypes = {
   className: CustomPropTypes.className,
   label: PropTypes.string,
   helpMessage: PropTypes.string,
-  testcid: PropTypes.string,
-  withContainer: PropTypes.bool,
-  controlGridBasis: PropTypes.number,
+  testcid: PropTypes.string
 };
 
 export function PlainString({ controlProps, value }) {

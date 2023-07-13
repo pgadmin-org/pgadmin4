@@ -95,6 +95,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     connection_status_msg: '',
     params: {
       ...params,
+      title: _.unescape(params.title),
       is_query_tool: params.is_query_tool == 'true' ? true : false,
       node_name: retrieveNodeName(selectedNodeInfo),
     },
@@ -684,6 +685,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       database: {
         _id: selectedConn.did,
         label: selectedConn.database_name,
+        _label: selectedConn.database_name,
       },
     };
 
