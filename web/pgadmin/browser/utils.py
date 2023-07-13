@@ -37,7 +37,6 @@ def underscore_escape(text):
         '<': "&lt;",
         '>': "&gt;",
         '"': "&quot;",
-        '`': "&#96;",
         "'": "&#39;"
     }
 
@@ -62,7 +61,6 @@ def underscore_unescape(text):
         "&lt;": '<',
         "&gt;": '>',
         "&quot;": '"',
-        "&#96;": '`',
         "&#39;": "'"
     }
 

@@ -101,13 +101,12 @@ def panel(trans_id):
     if request.args:
         params.update({k: v for k, v in request.args.items()})
 
-    o_db_name = _get_database(params['sid'], params['did'])
+    o_db_name = underscore_escape(_get_database(params['sid'], params['did']))
 
     set_env_variables(is_win=_platform == 'win32')
     return render_template('editor_template.html',
                            sid=params['sid'],
-                           db=underscore_unescape(
-                               o_db_name) if o_db_name else 'postgres',
+                           db=o_db_name,
                            server_type=params['server_type'],
                            is_enable=config.ENABLE_PSQL,
                            title=underscore_unescape(params['title']),
@@ -543,7 +542,7 @@ def _get_database(sid, did):
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(int(sid))
         conn = manager.connection()
-        db_name = None
+        db_name = 'postgres'
 
         is_connected = get_connection_status(conn)
 

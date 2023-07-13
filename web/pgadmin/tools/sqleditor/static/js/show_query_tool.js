@@ -28,11 +28,11 @@ export function generateUrl(trans_id, parentData, sqlId) {
 
   if (hasDatabaseInformation(parentData)) {
     url_endpoint += `&did=${parentData.database._id}`;
-    if(parentData.database.label) {
-      url_endpoint += `&database_name=${parentData.database.label}`;
+    if(parentData.database._label) {
+      url_endpoint += `&database_name=${encodeURIComponent(parentData.database._label)}`;
     }
     if(!parentData.server.username && parentData.server.user?.name) {
-      url_endpoint += `&user=${parentData.server.user?.name}`;
+      url_endpoint += `&user=${encodeURIComponent(parentData.server.user?.name)}`;
     }
   }
 
