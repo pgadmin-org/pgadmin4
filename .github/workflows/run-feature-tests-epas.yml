@@ -123,8 +123,8 @@ jobs:
                 "tablespace_path": "/var/lib/edb-as/tablespaces/${{ matrix.pgver }}",
                 "enabled": true,
                 "default_binary_paths": {
-                  "pg": "/usr/lib/edb-as/${{ matrix.pgver }}/bin",
-                  "ppas": ""
+                  "pg": "",
+                  "ppas": "/usr/lib/edb-as/${{ matrix.pgver }}/bin"
                 }
               }
             ],
