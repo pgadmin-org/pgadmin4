@@ -1,47 +1,70 @@
-import { Box, Checkbox } from '@material-ui/core';
+import { Box, Checkbox, makeStyles } from '@material-ui/core';
+import clsx from 'clsx';
+import { icon } from 'leaflet';
 import React from 'react';
 import { NodeRendererProps, Tree } from 'react-arborist';
 
-export function PgTree(){
-    const data = [
-        {
-          id: "3",
-          name: "Public",
-          children: [
-            { id: "p1", name: "Sample Table 1" },
-            { id: "p2", name: "Sample Table 2" },
-            { id: "p3", name: "Sample Table 3" },
-          ],
-        },
-        // {
-        //   id: "4",
-        //   name: "Test Schema",
-        //   children: [
-        //     { id: "t1", name: "Test Table 1" },
-        //     { id: "t2", name: "Test Table 1" },
-        //     { id: "t3", name: "Test Table 1" },
-        //   ],
-        // },
-      ];
+
+const useStyles = makeStyles((theme) => ({
+  node: {
+    display: 'inline-block',
+    paddingLeft: '1.5rem',
+    height: '1.5rem'
+  },
+  nodeIcon: {
+
+  },
+  checkboxStyle: {
+    fill: theme.palette.primary.main
+  }
+}));
+
+const treeNodeType = {
+  'normal': Node,
+  'checkbox': CheckboxNode
+}
+
+export function PgTree({data=[], type='normal'}){
+    let treeData = data;
+    console.log('Data:::::', data)
+    treeData = []
+
+    let treeType = type in treeNodeType ? type: 'normal';
+
 
     return (
         <>
             <Tree
-            initialData={data}
+            data={treeData}
             >
-              {Node}
+              {treeNodeType[treeType]}
             </Tree>
         </>
     )
 }
 
 function Node({node, style, dragHandle}) {
+  const classes = useStyles();
   /* This node instance can do many things. See the API reference. */
   return (
-    <div style={style} ref={dragHandle} onClick={() => node.toggle()}>
+    <div style={style} ref={dragHandle}>
+      <span className={clsx(node.data.icon, classes.nodeIcon)}></span>
+      <div className={classes.node}>{node.data.name}</div>
+    </div>
+  );
+}
 
-      {<Checkbox style={{ padding: 0 }} checked={node.state.isSelected} onClick={() => tree.selectMulti(node.id)} />}
-      <div className={node.isLeaf ? 'file-icon icon-table' : 'file-icon icon-schema'} style={{paddingLeft: '25px', height: '25px', display: 'inline-block'}}>{node.data.name}</div>
+
+function CheckboxNode({node, style, dragHandle}) {
+  const classes = useStyles();
+  const nodeSelection = (node) => {
+    node.selectContiguous(node.id)
+  }
+  /* This node instance can do many things. See the API reference. */
+  return (
+    <div style={style}  ref={dragHandle} onClick={() => node.toggle()}>
+      <Checkbox style={{ padding: 0 }} color="primary" className={classes.checkboxStyle} checked={node.state.isSelected} onClick={(node) => nodeSelection(node)} />
+      <div className={clsx(node.data.icon, classes.node)}>{node.data.name}</div>
     </div>
   );
 }

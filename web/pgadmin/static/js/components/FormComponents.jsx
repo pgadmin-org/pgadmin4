@@ -44,6 +44,7 @@ import { showFileManager } from '../helpers/showFileManager';
 import { withColorPicker } from '../helpers/withColorPicker';
 import { useWindowSize } from '../custom_hooks';
 import { SelectedObjectSchema } from '../../../tools/backup/static/selectedObjectSchema';
+import { PgTree } from '../pgTree/tree';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -1277,6 +1278,12 @@ FormButton.propTypes = {
   btnName: PropTypes.string
 };
 
-export function FormTree(){
-  return <SelectedObjectSchema data></SelectedObjectSchema>
+export function FormTree({tree_type, value, ...props}){
+  // return <SelectedObjectSchema></SelectedObjectSchema>
+  return <PgTree data={value} type={tree_type} {...props}></PgTree>
 }
+
+FormTree.propTypes = {
+  tree_type: PropTypes.string,
+  data: PropTypes.object,
+};

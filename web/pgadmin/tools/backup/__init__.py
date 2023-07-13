@@ -56,7 +56,8 @@ class BackupModule(PgAdminModule):
             list: URL endpoints for backup module
         """
         return ['backup.create_server_job', 'backup.create_object_job',
-                'backup.utility_exists']
+                'backup.utility_exists', 'backup.objects',
+                'backup.schema_objects']
 
 
 # Create blueprint for BackupModule class
@@ -505,3 +506,36 @@ def check_utility_exists(sid, backup_obj_type):
         )
 
     return make_json_response(success=1)
+
+
+@blueprint.route(
+    '/objects/<int:sid>/<int:did>', endpoint='objects'
+)
+@blueprint.route(
+    '/objects/<int:sid>/<int:did>/<int:scid>', endpoint='schema_objects'
+)
+@login_required
+def objects(sid, did, scid=None):
+    """
+    This function returns backup objects
+
+    Args:
+        sid: Server ID
+        did: database ID
+        scid: schema ID
+    Returns:
+        list of objects
+    """
+    server = get_server(sid)
+
+    if server is None:
+        return make_json_response(
+            success=0,
+            errormsg=_("Could not find the specified server.")
+        )
+    data = {'tables': [], 'views': []}
+
+    return make_json_response(
+        data=data,
+        success=200
+    )

@@ -244,18 +244,53 @@ define([
         let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
           j = panel.$container.find('.obj_properties').first();
 
-        let schema = that.getUISchema(treeItem,  'backup_objects');
-        panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
-        panel.focus();
+        let backup_obj_url = '';
+        if (data._type == 'database') {
+          let endpoint = 'backup.objects'
+          let did = data._id;
+          backup_obj_url = url_for(endpoint, {
+            'sid': sid,
+            'did': did
+          })
+        } else if(data._type == 'schema') {
+          let endpoint = 'backup.schema_objects'
+          let did = data._pid;
+          let scid = data._id;
+          backup_obj_url = url_for(endpoint, {
+            'sid': sid,
+            'did': did,
+            'scid': scid
+          })
+        }
 
-        let typeOfDialog = 'backup_objects',
-          serverIdentifier = that.retrieveServerIdentifier(),
-          extraData = that.setExtraParameters(typeOfDialog);
-        // that.showSelectedObjeBackup();
-        that.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
+
+        api({
+          url: backup_obj_url,
+          method: 'GET'
+        }).then((response)=> {
+          let objects = response.data;
+          let schema = that.getUISchema(treeItem,  'backup_objects', objects);
+          panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
+          panel.focus();
+
+          let typeOfDialog = 'backup_objects',
+            serverIdentifier = that.retrieveServerIdentifier(),
+            extraData = that.setExtraParameters(typeOfDialog);
+
+          that.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
+        })
+
       });
     },
-    getUISchema: function(treeItem, backupType) {
+    // getObjects: function(treeNodeInfo, itemNodeData) {
+
+    //   let tables = getNodeListByName('table', treeNodeInfo, itemNodeData).then((data)=> {
+    //     console.log('DATA', data);
+    //     return data
+    //   });
+    //   return tables
+    // },
+    getUISchema: function(treeItem, backupType, objects) {
       let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
       const selectedNode = pgBrowser.tree.selected();
       let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
@@ -274,7 +309,8 @@ define([
         },
         treeNodeInfo,
         pgBrowser,
-        backupType
+        backupType,
+        objects
       );
     },
     getGlobalUISchema: function(treeItem) {

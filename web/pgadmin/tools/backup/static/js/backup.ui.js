@@ -416,13 +416,14 @@ export function getMiscellaneousSchema(fieldOptions) {
 }
 
 export default class BackupSchema extends BaseUISchema {
-  constructor(sectionSchema, typeObjSchema, saveOptSchema, disabledOptionSchema, miscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server') {
+  constructor(sectionSchema, typeObjSchema, saveOptSchema, disabledOptionSchema, miscellaneousSchema, fieldOptions = {}, treeNodeInfo=[], pgBrowser=null, backupType='server', objects={}) {
     super({
       file: undefined,
       format: 'custom',
       id: null,
       blobs: true,
       verbose: true,
+      objects: objects
     });
 
     this.fieldOptions = {
@@ -448,6 +449,16 @@ export default class BackupSchema extends BaseUISchema {
   get baseFields() {
     let obj = this;
     return [{
+        id: 'objects',
+        label: gettext('objects'),
+        group: gettext('Objects'),
+        type: 'tree',
+        visible: () => {
+          return isVisibleForServerBackup(obj?.backupType)
+        },
+        tree_type: 'checkbox'
+      },
+      {
       id: 'file',
       label: gettext('Filename'),
       type: 'file',

@@ -90,7 +90,7 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   case 'button':
     return <FormButton name={name} value={value} className={className} onClick={onClick}  {...props} />;
   case 'tree':
-      return <FormTree/>;
+      return <FormTree name={name} value={value} {...props}/>;
   default:
     return <PlainString value={value} {...props} />;
   }
@@ -207,7 +207,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
   'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
   'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton', 'btnName', 'hidden',
-  'withContainer', 'controlGridBasis',
+  'withContainer', 'controlGridBasis', 'tree_type'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [
