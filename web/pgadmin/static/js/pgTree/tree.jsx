@@ -27,7 +27,7 @@ const treeNodeType = {
 export function PgTree({data=[], type='normal'}){
     let treeData = data;
     console.log('Data:::::', data)
-    treeData = []
+    // treeData = []
 
     let treeType = type in treeNodeType ? type: 'normal';
 

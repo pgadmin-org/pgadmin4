@@ -268,7 +268,7 @@ define([
           url: backup_obj_url,
           method: 'GET'
         }).then((response)=> {
-          let objects = response.data;
+          let objects = response.data.data;
           let schema = that.getUISchema(treeItem,  'backup_objects', objects);
           panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
           panel.focus();

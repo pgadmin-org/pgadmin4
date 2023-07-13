@@ -27,6 +27,7 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.browser.server_groups.servers.databases.schemas.views import ViewNode, MViewNode
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'
@@ -526,6 +527,7 @@ def objects(sid, did, scid=None):
     Returns:
         list of objects
     """
+    from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
     server = get_server(sid)
 
     if server is None:
@@ -533,7 +535,65 @@ def objects(sid, did, scid=None):
             success=0,
             errormsg=_("Could not find the specified server.")
         )
-    data = {'tables': [], 'views': []}
+    all_nodes = SchemaDiffRegistry.get_registered_nodes()
+    # view = ViewNode()
+    # mview = MViewNode()
+    for node_name, node_view in all_nodes.items():
+        if node_name in ['table', 'view', 'mview', 'foreign_table', 'sequence']:
+            print(node_name)
+    data = [
+        {
+          'id': "1",
+          'name': "Public",
+          'children': [
+            {
+                'id': "2",
+                'name': "Tables",
+                'children': [
+                    {
+                        'id': "21",
+                        'name': "Table 1",
+                    },
+                    {
+                        'id': "22",
+                        'name': 'Table 2'
+                    }
+                ]
+            },
+            {
+                'id': "3",
+                'name': "Views",
+                'children': [
+                    {
+                        'id': "31",
+                        'name': "View 1",
+                    },
+                    {
+                        'id': "32",
+                        'name': 'View 2'
+                    }
+                ]
+            },
+            {
+                'id': "4",
+                'name': "Sequences",
+                'children': [
+                    {
+                        'id': "41",
+                        'name': "Sequence 1",
+                    },
+                    {
+                        'id': "42",
+                        'name': 'Sequence 2'
+                    }
+                ]
+            },
+          ],
+        },
+      ]
+
+
+    # data = {'tables': [], 'views': []}
 
     return make_json_response(
         data=data,
