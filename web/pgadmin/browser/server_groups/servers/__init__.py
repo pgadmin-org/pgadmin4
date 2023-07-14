@@ -868,7 +868,8 @@ class ServerNode(PGChildNodeView):
 
         try:
             if len(old_server_name) and old_server_name != server.name and \
-                    not config.DISABLED_LOCAL_PASSWORD_STORAGE:
+                    not config.DISABLED_LOCAL_PASSWORD_STORAGE and \
+                    server.save_password:
                 # If server name is changed then update keyring with
                 # new server name
                 password = keyring.get_password(
