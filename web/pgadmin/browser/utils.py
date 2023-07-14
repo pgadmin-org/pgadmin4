@@ -41,9 +41,10 @@ def underscore_escape(text):
     }
 
     # always replace & first
-    for c, r in sorted(html_map.items(),
-                       key=lambda x: 0 if x[0] == '&' else 1):
-        text = text.replace(c, r)
+    if text:
+        for c, r in sorted(html_map.items(),
+                           key=lambda x: 0 if x[0] == '&' else 1):
+            text = text.replace(c, r)
 
     return text
 
@@ -65,8 +66,9 @@ def underscore_unescape(text):
     }
 
     # always replace & first
-    for c, r in html_map.items():
-        text = text.replace(c, r)
+    if text:
+        for c, r in html_map.items():
+            text = text.replace(c, r)
 
     return text
 
