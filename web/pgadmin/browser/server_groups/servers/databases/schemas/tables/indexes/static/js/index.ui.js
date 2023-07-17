@@ -264,7 +264,8 @@ export class WithSchema extends BaseUISchema {
         depChange: (state, source) => {
           if (state.amname !== 'btree') {
             return {deduplicate_items:undefined};
-          } else if (state.amname === 'btree' && source[0] !== 'deduplicate_items') {
+          } else if (state.amname === 'btree' && source[0] !== 'deduplicate_items' && 
+            withSchemaObj.node_info.server.version >= 130000) {
             return {deduplicate_items: true};
           }
         }, min_version: 130000,
