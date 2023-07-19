@@ -263,7 +263,6 @@ define([
           })
         }
 
-
         api({
           url: backup_obj_url,
           method: 'GET'
@@ -282,14 +281,7 @@ define([
 
       });
     },
-    // getObjects: function(treeNodeInfo, itemNodeData) {
 
-    //   let tables = getNodeListByName('table', treeNodeInfo, itemNodeData).then((data)=> {
-    //     console.log('DATA', data);
-    //     return data
-    //   });
-    //   return tables
-    // },
     getUISchema: function(treeItem, backupType, objects) {
       let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
       const selectedNode = pgBrowser.tree.selected();

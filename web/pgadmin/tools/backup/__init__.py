@@ -28,6 +28,7 @@ from pgadmin.model import Server, SharedServer
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 from pgadmin.browser.server_groups.servers.databases.schemas.views import ViewNode, MViewNode
+from pgadmin.tools.grant_wizard import _get_rows_for_type, get_node_sql_with_type, properties, get_data
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'
@@ -535,12 +536,65 @@ def objects(sid, did, scid=None):
             success=0,
             errormsg=_("Could not find the specified server.")
         )
-    all_nodes = SchemaDiffRegistry.get_registered_nodes()
-    # view = ViewNode()
-    # mview = MViewNode()
-    for node_name, node_view in all_nodes.items():
-        if node_name in ['table', 'view', 'mview', 'foreign_table', 'sequence']:
-            print(node_name)
+
+    from pgadmin.utils.driver import get_driver
+    from flask_babel import gettext
+    from pgadmin.utils.ajax import precondition_required
+
+    server_info = {}
+    server_info['manager'] = get_driver(PG_DEFAULT_DRIVER) \
+        .connection_manager(sid)
+    server_info['conn'] = server_info['manager'].connection(
+        did=did)
+    # If DB not connected then return error to browser
+    if not server_info['conn'].connected():
+        return precondition_required(
+            gettext("Connection to the server has been lost.")
+        )
+
+    # Set template path for sql scripts
+    server_info['server_type'] = server_info['manager'].server_type
+    server_info['version'] = server_info['manager'].version
+    if server_info['server_type'] == 'pg':
+        server_info['template_path'] = 'grant_wizard/pg/#{0}#'.format(
+            server_info['version'])
+    elif server_info['server_type'] == 'ppas':
+        server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(
+            server_info['version'])
+
+    res, msg = get_data(sid, did, scid, 'schema' if scid else 'database', server_info)
+    print(f'DATA::: {res} and msg is {msg}')
+
+    #
+    #
+    #
+    #
+    #
+    # manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
+    #
+    #
+    #
+    # conn = manager.connection(did=did)
+    #
+    #
+    # sql, ntype = get_node_sql_with_type(node_id, node_type, server_prop,
+    #                                     get_schema_sql_url, show_sysobj)
+    # get_node_sql_with_type
+    #
+    #
+    # _get_rows_for_type(conn, 'table', server_info, node_id)
+
+
+
+
+    # all_nodes = SchemaDiffRegistry.get_registered_nodes()
+    # # view = ViewNode()
+    # # mview = MViewNode()
+    # for node_name, node_view in all_nodes.items():
+    #     if node_name in ['table', 'view', 'mview', 'foreign_table', 'sequence']:
+    #         print(node_name)
+
+
     data = [
         {
           'id': "1",
