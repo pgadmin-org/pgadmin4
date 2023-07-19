@@ -235,7 +235,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       let closeUrl = url_for('psql.close', {
         trans_id: transId,
       });
-      return [openUrl, closeUrl, pData.database._label];
+      return [openUrl, closeUrl, _.escape(pData.database._label)];
     },
     psql_terminal: function() {
       // theme colors

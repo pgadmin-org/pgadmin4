@@ -638,7 +638,8 @@ export default class BackupSchema extends BaseUISchema {
         state.enable_row_security = false;
         return true;
       },
-      visible: isVisibleForServerBackup(obj.backupType)
+      visible: isVisibleForServerBackup(obj.backupType),
+      helpMessage: gettext('This option is enabled only when Use INSERT Commands is enabled.')
     }, {
       id: 'with_oids',
       label: gettext('With OID(s)'),
@@ -646,7 +647,7 @@ export default class BackupSchema extends BaseUISchema {
       deps: ['use_column_inserts', 'use_insert_commands'],
       group: gettext('Table Options'),
       disabled: function(state) {
-        let serverInfo = _.isUndefined(obj.fieldOptions.nodeInfo) ? undefined : obj.fieldOptions.nodeInfo.server;
+        let serverInfo = _.isUndefined(obj.treeNodeInfo) ? undefined : obj.treeNodeInfo.server;
 
         if (!_.isUndefined(serverInfo) && serverInfo.version >= 120000)
           return true;
