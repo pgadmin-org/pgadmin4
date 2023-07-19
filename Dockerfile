@@ -189,7 +189,7 @@ RUN apk add \
         libedit \
         libldap \
         libcap && \
-    /venv/bin/python3 -m pip install --no-cache-dir gunicorn && \
+    /venv/bin/python3 -m pip install --no-cache-dir gunicorn==20.0.1 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /var/lib/pgadmin && \
