@@ -567,7 +567,7 @@ module.exports = [{
   optimization: {
     minimizer: PRODUCTION ? [
       new TerserPlugin({
-        parallel: true,
+        parallel: false,
         extractComments: true,
         terserOptions: {
           compress: true,
