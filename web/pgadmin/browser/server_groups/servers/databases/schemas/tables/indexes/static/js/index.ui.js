@@ -9,65 +9,79 @@
 
 import gettext from 'sources/gettext';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
-import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../static/js/node_ajax';
+import DataGridViewWithHeaderForm from '../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
 import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 
-export function getColumnSchema(nodeObj, treeNodeInfo, itemNodeData) {
-  return new ColumnSchema(
-    {
-      columnList: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, {}),
-      collationList: ()=>getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
-      opClassList: ()=>getNodeAjaxOptions('get_op_class', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'})
-    }, {
-      node_info: treeNodeInfo
-    }
-  );
+
+function inSchema(node_info) {
+  return node_info && 'catalog' in node_info;
 }
 
-export class ColumnSchema extends BaseUISchema {
-  constructor(fieldOptions = {}, nodeData = [], initValues={}) {
+class IndexColHeaderSchema extends BaseUISchema {
+  constructor(columns) {
     super({
-      name: null,
-      oid: undefined,
-      description: '',
-      is_sys_obj: false,
+      is_exp: true,
       colname: undefined,
-      collspcname: undefined,
+      expression: undefined,
+    });
+
+    this.columns = columns;
+  }
+
+  changeColumnOptions(columns) {
+    this.columns = columns;
+  }
+
+  addDisabled(state) {
+    return !(state.is_exp ? state.expression : state.colname);
+  }
+
+  /* Data to IndexColumnSchema will be added using the header form */
+  getNewData(data) {
+    return this.indexColumnSchema.getNewData({
+      is_exp: data.is_exp,
+      colname: data.is_exp ? data.expression : data.colname,
+    });
+  }
+
+  get baseFields() {
+    return [{
+      id: 'is_exp', label: gettext('Is expression'), type:'switch', editable: false,
+    },{
+      id: 'colname', label: gettext('Column'), type: 'select', editable: false,
+      options: this.columns, deps: ['is_exp'],
+      optionsReloadBasis: this.columns?.map ? _.join(this.columns.map((c)=>c.label), ',') : null,
+      optionsLoaded: (res)=>this.columnOptions=res,
+      disabled: (state)=>state.is_exp, node: 'column',
+    },{
+      id: 'expression', label: gettext('Expression'), editable: false, deps: ['is_exp'],
+      type: 'sql', disabled: (state)=>!state.is_exp,
+    }];
+  }
+}
+
+class IndexColumnSchema extends BaseUISchema {
+  constructor(nodeData = {}) {
+    super({
+      colname: undefined,
+      is_exp: false,
       op_class: undefined,
       sort_order: false,
       nulls: false,
-      is_sort_nulls_applicable: true,
-      ...initValues
+      is_sort_nulls_applicable: false,
+      collspcname:undefined
     });
-    this.fieldOptions = {
-      columnList: [],
-      collationList: [],
-      opClassList: [],
-      ...fieldOptions
-    };
     this.node_info = {
-      ...nodeData.node_info
+      ...nodeData
     };
+    this.operClassOptions = [];
+    this.collationOptions = [];
     this.op_class_types = [];
   }
 
-  get idAttribute() {
-    return 'oid';
-  }
-
-  // We will check if we are under schema node & in 'create' mode
-  inSchemaWithModelCheck(state) {
-    if(this.node_info &&  'schema' in this.node_info) {
-      // We will disable control if it's in 'edit' mode
-      return !this.isNew(state);
-    }
-    return true;
-  }
-
   setOpClassTypes(options) {
-
     if(!options || (_.isArray(options) && options.length == 0))
       return this.op_class_types;
 
@@ -88,37 +102,52 @@ export class ColumnSchema extends BaseUISchema {
     return false;
   }
 
+  setOperClassOptions(options) {
+    this.operClassOptions = options;
+  }
+
+  setCollationOptions(options) {
+    this.collationOptions = options;
+  }
+
+  getNewData(data) {
+    return {
+      ...super.getNewData(data),
+    };
+  }
+
+  // We will check if we are under schema node & in 'create' mode
+  inSchemaWithModelCheck(state) {
+    if(this.node_info &&  'schema' in this.node_info) {
+      // We will disable control if it's in 'edit' mode
+      return !this.isNew(state);
+    }
+    return true;
+  }
+
   get baseFields() {
-    let columnSchemaObj = this;
+    let obj = this;
     return [
       {
-        id: 'colname', label: gettext('Column'),
-        type: 'select', cell: 'select', noEmpty: true,
-        disabled: () => inSchema(columnSchemaObj.node_info),
-        editable: function (state) {
-          return !columnSchemaObj.inSchemaWithModelCheck(state);
-        },
-        options: columnSchemaObj.fieldOptions.columnList,
-        node: 'column',
+        id: 'is_exp', label: '', type:'', cell: '', editable: false, width: 20,
+        disableResizing: true,
+        controlProps: {
+          formatter: {
+            fromRaw: function (rawValue) {
+              return rawValue ? 'E' : 'C';
+            },
+          }
+        }, visible: false,
       },{
-        id: 'collspcname', label: gettext('Collation'),
-        type: 'select',
-        cell: 'select',
-        disabled: () => inSchema(columnSchemaObj.node_info),
-        editable: function (state) {
-          return !columnSchemaObj.inSchemaWithModelCheck(state);
-        },
-        options: columnSchemaObj.fieldOptions.collationList,
-        node: 'index',
-        url_jump_after_node: 'schema',
+        id: 'colname', label: gettext('Col/Exp'), type:'', editable: false,
+        cell:'', width: 100,
       },{
-        id: 'op_class', label: gettext('Operator class'),
-        tags: true, type: 'select',
+        id: 'op_class', label: gettext('Operator class'), tags: true, type: 'select',
         cell: () => {
           return {
             cell: 'select',
-            options: columnSchemaObj.fieldOptions.opClassList,
-            optionsLoaded: (options)=>{columnSchemaObj.setOpClassTypes(options);},
+            options: obj.operClassOptions,
+            optionsLoaded: (options)=>{obj.setOpClassTypes(options);},
             controlProps: {
               allowClear: true,
               filter: (options) => {
@@ -126,12 +155,12 @@ export class ColumnSchema extends BaseUISchema {
                   * to access method selected by user if not selected
                   * send btree related op_class options
                   */
-                let amname = columnSchemaObj._top?._sessData ? columnSchemaObj._top?._sessData.amname : columnSchemaObj._top?._origData.amname;
+                let amname = obj._top?._sessData ? obj._top?._sessData.amname : obj._top?._origData.amname;
 
                 if(_.isUndefined(amname))
                   return options;
 
-                _.each(this.op_class_types, function(v, k) {
+                _.each(obj.op_class_types, function(v, k) {
                   if(amname === k) {
                     options = v;
                   }
@@ -142,14 +171,13 @@ export class ColumnSchema extends BaseUISchema {
           };
         },
         editable: function (state) {
-          return !columnSchemaObj.inSchemaWithModelCheck(state);
+          return !obj.inSchemaWithModelCheck(state);
         },
         node: 'index',
         url_jump_after_node: 'schema',
         deps: ['amname'],
       },{
-        id: 'sort_order', label: gettext('Sort order'),
-        type: 'select', cell: 'select',
+        id: 'sort_order', label: gettext('Sort order'), type: 'select', cell: 'select',
         options: [
           {label: 'ASC', value: false},
           {label: 'DESC', value: true},
@@ -174,22 +202,38 @@ export class ColumnSchema extends BaseUISchema {
           }
         },
         editable: function(state) {
-          return columnSchemaObj.isEditable(state);
+          return obj.isEditable(state);
         },
         deps: ['amname'],
       },{
-        id: 'nulls', label: gettext('NULLs'),
-        editable: function(state) {
-          return columnSchemaObj.isEditable(state);
-        },
-        deps: ['amname', 'sort_order'],
-        type:'select', cell: 'select',
+        id: 'nulls', label: gettext('NULLs'), type:'select', cell: 'select',
         options: [
           {label: 'FIRST', value: true},
           {label: 'LAST', value: false},
         ], controlProps: {allowClear: false},
         width: 110, disableResizing: true,
-      },
+        editable: function(state) {
+          return obj.isEditable(state);
+        },
+        deps: ['amname', 'sort_order'],
+      },{
+        id: 'collspcname', label: gettext('Collation'),
+        type: 'select',
+        cell: 'select',
+        disabled: () => inSchema(obj.node_info),
+        editable: function (state) {
+          return !obj.inSchemaWithModelCheck(state);
+        },
+        options: obj.collationOptions,
+        node: 'index',
+        url_jump_after_node: 'schema',
+      },{
+        id: 'statistics', label: gettext('Statistics'),
+        type: 'int', cell: 'int', disabled: (state)=> {
+          return (!state.is_exp || obj.node_info.server.version < 110000);
+        },
+        min: -1, max: 10000, mode: ['edit','properties'],
+      }
     ];
   }
 }
@@ -298,12 +342,8 @@ export class WithSchema extends BaseUISchema {
   }
 }
 
-function inSchema(node_info) {
-  return node_info && 'catalog' in node_info;
-}
-
 export default class IndexSchema extends BaseUISchema {
-  constructor(columnSchema, fieldOptions = {}, nodeData = [], initValues={}) {
+  constructor(fieldOptions = {}, nodeData = {}, initValues={}) {
     super({
       name: undefined,
       oid: undefined,
@@ -322,17 +362,31 @@ export default class IndexSchema extends BaseUISchema {
       tablespaceList: [],
       amnameList: [],
       columnList: [],
+      opClassList: [],
+      collationList: [],
       ...fieldOptions
     };
     this.node_info = {
       ...nodeData.node_info
     };
-    this.getColumnSchema = columnSchema;
+    this.indexHeaderSchema = new IndexColHeaderSchema(this.fieldOptions.columnList);
+    this.indexColumnSchema = new IndexColumnSchema(this.node_info);
+    this.indexHeaderSchema.indexColumnSchema = this.indexColumnSchema;
     this.withSchema = new WithSchema(this.node_info);
   }
 
   get idAttribute() {
     return 'oid';
+  }
+
+  initialise() {
+    this.indexColumnSchema.setOperClassOptions(this.fieldOptions.opClassList);
+    this.indexColumnSchema.setCollationOptions(this.fieldOptions.collationList);
+  }
+
+  changeColumnOptions(columns) {
+    this.indexHeaderSchema.changeColumnOptions(columns);
+    this.fieldOptions.columns = columns;
   }
 
   getColumns() {
@@ -412,16 +466,15 @@ export default class IndexSchema extends BaseUISchema {
           };
         },
         deferredDepChange: (state, source, topState, actionObj) => {
-
           const setColumns = (resolve)=>{
             resolve(()=>{
-              state.columns.splice(0, state.columns.length);
+              state.columns.splice(0, state.columns?.length);
               return {
                 columns: state.columns,
               };
             });
           };
-          if((state.amname != actionObj.oldState.amname) && state.columns.length > 0) {
+          if((state.amname != actionObj?.oldState.amname) && state.columns?.length > 0) {
             return new Promise((resolve)=>{
               Notify.confirm(
                 gettext('Warning'),
@@ -431,7 +484,7 @@ export default class IndexSchema extends BaseUISchema {
                 },
                 function() {
                   resolve(()=>{
-                    state.amname = actionObj.oldState.amname;
+                    state.amname = actionObj?.oldState.amname;
                     return {
                       amname: state.amname,
                     };
@@ -443,22 +496,6 @@ export default class IndexSchema extends BaseUISchema {
             return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
           }
         },
-      },
-      {
-        id: 'include', label: gettext('Include columns'),
-        group: gettext('Definition'),
-        editable: false, canDelete: true, canAdd: true, mode: ['properties'],
-        disabled: () => inSchema(indexSchemaObj.node_info),
-        readonly: function (state) {
-          return !indexSchemaObj.isNew(state);
-        },
-        type: () => {
-          return indexSchemaObj.getColumns();
-        },
-        visible: function() {
-          return indexSchemaObj.isVisible();
-        },
-        node:'column',
       },{
         type: 'nested-fieldset', label: gettext('With'), group: gettext('Definition'),
         schema: this.withSchema,
@@ -529,29 +566,36 @@ export default class IndexSchema extends BaseUISchema {
         },
         mode: ['create', 'edit'],
         control: 'sql-field', visible: true, group: gettext('Definition'),
-      }, {
-        id: 'columns', label: gettext('Columns'), type: 'collection', deps: ['amname'],
-        group: gettext('Definition'), schema: indexSchemaObj.getColumnSchema(),
-        mode: ['edit', 'create', 'properties'],
-        canAdd: function(state) {
-          // We will disable it if it's in 'edit' mode
+      },{
+        id: 'columns', label: gettext('Columns/Expressions'),
+        group: gettext('Columns'), type: 'collection',
+        mode: ['create', 'edit', 'properties'],
+        editable: false, schema: this.indexColumnSchema,
+        headerSchema: this.indexHeaderSchema, headerVisible: (state)=>indexSchemaObj.isNew(state),
+        CustomControl: DataGridViewWithHeaderForm,
+        uniqueCol: ['colname'],
+        canAdd: false, canDelete: function(state) {
+          // We can't update columns of existing
           return indexSchemaObj.isNew(state);
-        },
-        canEdit: false,
-        canDelete: function(state) {
-          // We will disable it if it's in 'edit' mode
-          return indexSchemaObj.isNew(state);
-        },
-        uniqueCol : ['colname'],
-        columns: ['colname', 'op_class', 'sort_order', 'nulls', 'collspcname']
-      }, {
+        }, cell: ()=>({
+          cell: '',
+          controlProps: {
+            formatter: {
+              fromRaw: (rawValue)=>{
+                return _.map(rawValue || [], 'colname').join(', ');
+              },
+            }
+          },
+          width: 245,
+        })
+      },{
         id: 'include', label: gettext('Include columns'),
         type: () => {
           return indexSchemaObj.getColumns();
         },
-        group: gettext('Definition'),
+        group: gettext('Columns'),
         editable: false,
-        canDelete: true, canAdd: true, mode: ['edit', 'create'],
+        canDelete: true, canAdd: true, mode: ['edit', 'create', 'properties'],
         disabled: () => inSchema(indexSchemaObj.node_info),
         readonly: function (state) {
           return !indexSchemaObj.isNew(state);
@@ -590,7 +634,7 @@ export default class IndexSchema extends BaseUISchema {
     // Checks if columns is empty
     let cols = state.columns;
     if(_.isArray(cols) && cols.length == 0){
-      msg = gettext('You must specify at least one column.');
+      msg = gettext('You must specify at least one column/expression.');
       setError('columns', msg);
       return true;
     }

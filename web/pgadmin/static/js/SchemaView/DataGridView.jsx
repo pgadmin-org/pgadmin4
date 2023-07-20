@@ -133,8 +133,12 @@ const useStyles = makeStyles((theme)=>({
   }
 }));
 
-function DataTableHeader({headerGroups}) {
+function DataTableHeader({headerGroups, viewHelperProps, schema}) {
   const classes = useStyles();
+
+  /* Using ref so that schema variable is not frozen in columns closure */
+  const schemaRef = useRef(schema);
+
   const sortIcon = (isDesc) => {
     return isDesc ? ' 🔽' : ' 🔼';
   };
@@ -142,21 +146,24 @@ function DataTableHeader({headerGroups}) {
     <div className={classes.tableContentWidth}>
       {headerGroups.map((headerGroup, hi) => (
         <div key={hi} {...headerGroup.getHeaderGroupProps()}>
-          {headerGroup.headers.map((column, ci) => (
-            <div key={ci} {...column.getHeaderProps()}>
-              <div {...(column.sortable ? column.getSortByToggleProps() : {})} className={clsx(classes.tableCell, classes.tableCellHeader)}>
-                {column.render('Header')}
-                <span>
-                  {column.isSorted ? sortIcon(column.isSortedDesc) : ''}
-                </span>
+          {headerGroup.headers.map((column, ci) => {
+            let {modeSupported} = column.field ? getFieldMetaData(column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+            return( modeSupported &&
+              <div key={ci} {...column.getHeaderProps()}>
+                <div {...(column.sortable ? column.getSortByToggleProps() : {})} className={clsx(classes.tableCell, classes.tableCellHeader)}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? sortIcon(column.isSortedDesc) : ''}
+                  </span>
+                </div>
+                {!column.disableResizing &&
+                  <div
+                    {...column.getResizerProps()}
+                    className={classes.resizer}
+                  />}
               </div>
-              {!column.disableResizing &&
-                <div
-                  {...column.getResizerProps()}
-                  className={classes.resizer}
-                />}
-            </div>
-          ))}
+            );
+          })}
         </div>
       ))}
     </div>
@@ -165,9 +172,11 @@ function DataTableHeader({headerGroups}) {
 
 DataTableHeader.propTypes = {
   headerGroups: PropTypes.array.isRequired,
+  viewHelperProps: PropTypes.object.isRequired,
+  schema: CustomPropTypes.schemaUI.isRequired,
 };
 
-function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex}) {
+function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, schemaRef, accessPath, moveRow, setHoverIndex, viewHelperProps}) {
   const classes = useStyles();
   const [key, setKey] = useState(false);
   const depListener = useContext(DepListenerContext);
@@ -282,13 +291,16 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
       >
         {row.cells.map((cell, ci) => {
           let classNames = [classes.tableCell];
+
+          let {modeSupported} = cell.column.field? getFieldMetaData(cell.column.field, schemaRef.current, {}, viewHelperProps) : {modeSupported: true};
+
           if(typeof(cell.column.id) == 'string' && cell.column.id.startsWith('btn-')) {
             classNames.push(classes.btnCell);
           }
           if(cell.column.id == 'btn-edit' && row.isExpanded) {
             classNames.push(classes.expandedIconCell);
           }
-          return (
+          return (modeSupported &&
             <div ref={cell.column.id == 'btn-reorder' ? dragHandleRef : null} key={ci} {...cell.getCellProps()} className={clsx(classNames)}>
               {cell.render('Cell', {
                 reRenderRow: ()=>{setKey((currKey)=>!currKey);}
@@ -490,13 +502,13 @@ export default function DataGridView({
               /* Make sure to take the latest field info from schema */
               field = _.find(schemaRef.current.fields, (f)=>f.id==field.id) || field;
 
-              let {editable, disabled} = getFieldMetaData(field, schemaRef.current, row.original || {}, viewHelperProps);
+              let {editable, disabled, modeSupported} = getFieldMetaData(field, schemaRef.current, row.original || {}, viewHelperProps);
 
               if(_.isUndefined(field.cell)) {
                 console.error('cell is required ', field);
               }
 
-              return <MappedCellControl rowIndex={row.index} value={value}
+              return modeSupported && <MappedCellControl rowIndex={row.index} value={value}
                 row={row.original} {...field}
                 readonly={!editable}
                 disabled={disabled}
@@ -631,14 +643,14 @@ export default function DataGridView({
         />}
         <DndProvider backend={HTML5Backend}>
           <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table}>
-            <DataTableHeader headerGroups={headerGroups} />
+            <DataTableHeader headerGroups={headerGroups} viewHelperProps={viewHelperProps} schema={schema} />
             <div {...getTableBodyProps()} className={classes.tableContentWidth}>
               {rows.map((row, i) => {
                 prepareRow(row);
                 return <React.Fragment key={row.index}>
                   <DataTableRow index={i} row={row} totalRows={rows.length} isResizing={isResizing}
                     schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])}
-                    moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} />
+                    moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} viewHelperProps={viewHelperProps}/>
                   {props.canEdit && row.isExpanded &&
                     <FormView value={row.original} viewHelperProps={viewHelperProps} dataDispatch={dataDispatch}
                       schema={schemaRef.current} accessPath={accessPath.concat([row.index])} isNested={true} className={classes.expandedForm}

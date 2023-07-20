@@ -57,6 +57,8 @@ class IndexesUpdateTestCase(BaseTestGenerator):
                                                      self.schema_name,
                                                      self.table_name,
                                                      self.column_name)
+        if hasattr(self, "update_statistics"):
+            self.column_name = "lower(%s)" % self.column_name
         self.index_name = "test_index_delete_%s" % (str(uuid.uuid4())[1:8])
         self.index_id = indexes_utils.create_index(self.server, self.db_name,
                                                    self.schema_name,
@@ -70,6 +72,15 @@ class IndexesUpdateTestCase(BaseTestGenerator):
                                                     self.index_name)
         if not index_response:
             raise Exception("Could not find the index to update.")
+
+        if hasattr(self, "update_statistics"):
+            index_details = indexes_utils.api_get_index(self, self.index_id)
+            self.test_data['columns'] = {'changed': [
+                {"is_exp": True, "col_num":
+                    index_details.json['columns'][0]['col_num'],
+                 "colname": self.column_name,
+                 "nulls": False, "sort_order": False,
+                 "statistics": "1000"}]}
         self.data = self.test_data
         self.data['oid'] = self.index_id
 
