@@ -42,6 +42,7 @@ Bug fixes
   | `Issue #6317 <https://github.com/pgadmin-org/pgadmin4/issues/6317>`_ -  Fix an issue where queries longer than 1 minute get stuck - Container 7.1
   | `Issue #6356 <https://github.com/pgadmin-org/pgadmin4/issues/6356>`_ -  Fix an issue where queries get stuck with auto-completion enabled.
   | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
+  | `Issue #6406 <https://github.com/pgadmin-org/pgadmin4/issues/6406>`_ -  Ensure user gets proper error if incorrect credentials are entered while authenticating AWS.
   | `Issue #6489 <https://github.com/pgadmin-org/pgadmin4/issues/6489>`_ -  Fix an issue where the edit server fails in desktop mode if the server password is not stored.
   | `Issue #6499 <https://github.com/pgadmin-org/pgadmin4/issues/6499>`_ -  Ensure that Backup, Restore, and Maintenance should work properly when pgpass file is used.
   | `Issue #6501 <https://github.com/pgadmin-org/pgadmin4/issues/6501>`_ -  Fix the query tool auto-complete issue on the server reconnection.
