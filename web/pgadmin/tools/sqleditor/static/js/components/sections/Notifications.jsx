@@ -45,8 +45,8 @@ export function Notifications() {
       </tr>
     </thead>
     <tbody>
-      {notices.map((notice, i)=>{
-        return <tr key={i}>
+      {notices.map((notice)=>{
+        return <tr key={notice.pid}>
           <td data-label="recorded_time">{notice.recorded_time}</td>
           <td data-label="channel">{notice.channel}</td>
           <td data-label="pid">{notice.pid}</td>

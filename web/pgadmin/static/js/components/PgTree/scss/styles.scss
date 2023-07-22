@@ -38,8 +38,8 @@
     align-items: center;
     white-space: nowrap;
     padding: 2px 0;
-    cursor: pointer !important;
-    color: $tree-text-fg !important;
+    padding-left: 2px;
+    cursor: default;
 
     &:before {
         content: '';
@@ -86,6 +86,31 @@
             -560px 0 0 0 $color-gray-light;
     }
 
+    &.red {
+        filter: saturate(.5);
+
+        .file-icon:after {
+            content: '';
+            height: 8px;
+            width: 8px;
+            font-weight: bold;
+            display: inline-block;
+            background: #da2d38;
+            position: relative;
+            border-radius: 4px;
+            left: -7px;
+            box-sizing: border-box;
+        }
+    }
+
+    &.magenta span.file-name {
+        color: magenta;
+    }
+
+    &.big {
+        font-family: monospace;
+    }
+
     &:hover,
     &.pseudo-active {
         background-color: $tree-bg-hover !important;
@@ -112,8 +137,17 @@
         }
     }
 
+    &.dragging {
+        background: #2a2a2a;
+    }
+
+    &.dragover {
+        background-color: #313131;
+    }
+
     i {
         display: inline-block;
+        font: normal normal normal 18px/1 $font-family-icon;
         font-size: 18px;
         text-align: center;
         height: 21px !important;
@@ -225,157 +259,6 @@
 
         &:hover {
             background: #424242;
-        }
-    }
-}
-
-.file-tree {
-    font-family: 'Segoe UI';
-    font-size: 15px;
-    color: #c1c1c1;
-    background-color: #1f1f1f;
-    display: inline-block;
-
-    &,
-    & * {
-        box-sizing: border-box;
-    }
-}
-
-.file-entry {
-    font: inherit;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
-    padding: 2px 0;
-    padding-left: 2px;
-    cursor: default;
-
-    &.red {
-        filter: saturate(.5);
-
-        .file-icon:after {
-            content: '';
-            height: 8px;
-            width: 8px;
-            font-weight: bold;
-            display: inline-block;
-            background: #da2d38;
-            position: relative;
-            border-radius: 4px;
-            left: -7px;
-            box-sizing: border-box;
-        }
-    }
-
-    &.magenta span.file-name {
-        color: magenta;
-    }
-
-    &.big {
-        font-family: monospace;
-    }
-
-    &:hover,
-    &.pseudo-active {
-        background-color: #2d2d2d;
-    }
-
-    &.active,
-    &.prompt {
-        background-color: #333333;
-    }
-
-    &.dragging {
-        background: #2a2a2a;
-    }
-
-    &.dragover {
-        background-color: #313131;
-    }
-
-    i {
-        display: inline-block;
-        font: normal normal normal 18px/1 "default-icons";
-        font-size: 18px;
-        text-align: center;
-        height: 18px;
-        width: 18px;
-
-        &:before {
-            height: inherit;
-            width: inherit;
-            display: inline-block;
-        }
-    }
-
-    span.file-label {
-        display: flex;
-        align-items: center;
-    }
-
-    &.prompt.new .file-label,
-    &.file .file-label {
-        margin-left: 18px;
-    }
-
-    span.file-name {
-        font: inherit;
-        flex-grow: 1;
-        user-select: none;
-        cursor: default;
-        color: $color-fg;
-        margin-left: 3px;
-
-        & input[type='text'] {
-            display: block;
-            width: 94%;
-            margin: 0;
-            font: inherit;
-            border-radius: 3px;
-            padding: 1px 2px;
-            border: 0;
-            background: #2d2d2d;
-            color: inherit;
-            outline: none;
-            position: relative;
-            z-index: 1;
-            margin-top: -2px;
-            top: 1px;
-            left: -2px;
-
-            &:focus {
-                box-shadow: 0px 0px 1px 1px #1ead7f;
-            }
-
-            &.invalid {
-                box-shadow: 0px 0px 1px 1px #a51c15;
-
-                &+span.prompt-err-msg {
-                    position: relative;
-                    display: block;
-
-                    &:after {
-                        content: 'Invalid filename';
-                        position: absolute;
-                        background: rgb(105, 30, 30);
-                        width: 94%;
-                        padding: 1px 2px;
-                        box-sizing: border-box;
-                        border-radius: 0px 0px 4px 4px;
-                        box-shadow: 0px 0px 0px 1px #a51c15;
-                        font-size: 14px;
-                        z-index: 2;
-                    }
-                }
-            }
-
-            &.invalid-input-pulse {
-                &+span.prompt-err-msg {
-                    animation: pulsate-err-msg .3s ease-in-out 2;
-                }
-            }
         }
     }
 }

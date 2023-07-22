@@ -65,7 +65,10 @@ class EventTriggerModule(CollectionNodeModule):
         """
         Generate the event_trigger node
         """
-        yield self.generate_browser_collection_node(sid)
+        if self.has_nodes(
+            sid, did,
+                base_template_path=EventTriggerView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(sid)
 
     @property
     def node_inode(self):
@@ -149,6 +152,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
 
     node_type = blueprint.node_type
     node_icon = "icon-%s" % blueprint.node_type
+    BASE_TEMPLATE_PATH = 'event_triggers/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -194,7 +198,7 @@ class EventTriggerView(PGChildNodeView, SchemaDiffObjectCompare):
                 PG_DEFAULT_DRIVER
             ).connection_manager(kwargs['sid'])
             self.conn = self.manager.connection(did=kwargs['did'])
-            self.template_path = 'event_triggers/sql/#{0}#'.format(
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version)
 
             self.datistemplate = False

@@ -4,5 +4,5 @@ SELECT db.datname as name FROM pg_catalog.pg_database as db WHERE db.oid = {{did
 {% endif %}
 {# Using name from above query we will drop the database #}
 {% if datname %}
-DROP DATABASE IF EXISTS {{ conn|qtIdent(datname) }};
+DROP DATABASE IF EXISTS {{ conn|qtIdent(datname) }}{% if with_force %} WITH (FORCE){%endif%};
 {% endif %}

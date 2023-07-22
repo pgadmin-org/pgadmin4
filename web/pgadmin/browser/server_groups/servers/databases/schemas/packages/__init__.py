@@ -66,7 +66,9 @@ class PackageModule(SchemaChildModule):
         """
         Generate the package node
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(sid, did, scid=scid,
+                          base_template_path=PackageView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def script_load(self):
@@ -99,6 +101,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
     node_label = "Package"
     node_icon = "icon-%s" % node_type
+    BASE_TEMPLATE_PATH = 'packages/ppas/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -153,7 +156,7 @@ class PackageView(PGChildNodeView, SchemaDiffObjectCompare):
                             "Connection to the server has been lost."
                         )
                     )
-                self.template_path = 'packages/ppas/#{0}#'.format(
+                self.template_path = self.BASE_TEMPLATE_PATH.format(
                     self.manager.version)
 
                 sql = render_template(

@@ -260,13 +260,16 @@ export const useModalStyles = makeStyles((theme) => ({
   iconButtonStyle: {
     marginLeft: 'auto',
     marginRight: '4px'
-  }
+  },
 }));
 
 function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose, fullScreen = false, isFullWidth = false, showFullScreen = false, isResizeable = false, minHeight = MIN_HEIGHT, minWidth = MIN_WIDTH, showTitle=true }) {
   let useModalRef = useModal();
   const classes = useModalStyles();
   let closeModal = (_e, reason) => {
+    if(reason == 'backdropClick' && showTitle) {
+      return;
+    }
     useModalRef.closeModal(id);
     if(reason == 'escapeKeyDown') {
       onClose?.();
@@ -282,7 +285,6 @@ function ModalContainer({ id, title, content, dialogHeight, dialogWidth, onClose
       PaperProps={{ 'isfullscreen': isfullScreen.toString(), 'isresizeable': isResizeable.toString(), width: dialogWidth, height: dialogHeight, minHeight: minHeight, minWidth: minWidth }}
       fullScreen={isfullScreen}
       fullWidth={isFullWidth}
-      disableBackdropClick={showTitle}
       disablePortal
     >
       { showTitle && <>

@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../static/js/node_ajax';
+import { getNodeAjaxOptions,getNodeListByName } from '../../../../../../static/js/node_ajax';
 import PublicationSchema from './publication.ui';
 
 define('pgadmin.node.publication', [
@@ -23,7 +23,6 @@ define('pgadmin.node.publication', [
         label: gettext('Publications'),
         type: 'coll-publication',
         columns: ['name', 'pubowner', 'pubtable', 'all_table'],
-
       });
   }
 
@@ -40,6 +39,7 @@ define('pgadmin.node.publication', [
       canDrop: true,
       canDropCascade: true,
       hasDepends: true,
+      width: pgBrowser.stdW.md + 'px',
 
       Init: function() {
 
@@ -69,12 +69,13 @@ define('pgadmin.node.publication', [
           data: {action: 'create'},
         }]);
       },
-
-
+      
       getSchema: function(treeNodeInfo, itemNodeData){
         return new PublicationSchema(
           {
-            publicationTable: ()=>getNodeAjaxOptions('get_tables', this, treeNodeInfo, itemNodeData),
+            allTables: ()=>getNodeAjaxOptions('get_tables', this, treeNodeInfo, itemNodeData),
+            allSchemas:()=>getNodeAjaxOptions('get_schemas', this, treeNodeInfo, itemNodeData),
+            getColumns: (params)=>getNodeAjaxOptions('get_all_columns', this, treeNodeInfo, itemNodeData,{urlParams: params, useCache:false}),
             role:()=>getNodeListByName('role', treeNodeInfo, itemNodeData),
           },{
             node_info: treeNodeInfo.server,

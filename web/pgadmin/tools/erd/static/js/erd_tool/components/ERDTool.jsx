@@ -961,7 +961,7 @@ class ERDTool extends React.Component {
     return (
       <Box ref={this.containerRef} height="100%">
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
-          fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
+          fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
           notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange}

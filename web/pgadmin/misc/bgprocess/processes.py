@@ -15,7 +15,7 @@ import csv
 import os
 import sys
 import psutil
-from abc import ABCMeta, abstractproperty, abstractmethod
+from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
 from pickle import dumps, loads
 from subprocess import Popen, PIPE
@@ -70,16 +70,16 @@ class IProcessDesc(metaclass=ABCMeta):
 
         if config.SERVER_MODE:
 
-            file = self.bfile
+            process_file = self.bfile
             try:
                 # check if file name is encoded with UTF-8
-                file = self.bfile.decode('utf-8')
+                process_file = self.bfile.decode('utf-8')
             except Exception:
                 # do nothing if bfile is not encoded.
                 pass
 
-            path = get_complete_file_path(file)
-            path = file if path is None else path
+            path = get_complete_file_path(process_file)
+            path = process_file if path is None else path
 
             if IS_WIN:
                 path = os.path.realpath(path)
@@ -91,7 +91,7 @@ class IProcessDesc(metaclass=ABCMeta):
                 end = start + (len(storage_directory))
                 last_dir = os.path.dirname(path[end:])
             else:
-                last_dir = file
+                last_dir = process_file
 
             last_dir = replace_path_for_win(last_dir)
 
@@ -111,12 +111,12 @@ def replace_path_for_win(last_dir=None):
     return last_dir
 
 
-class BatchProcess():
+class BatchProcess:
     def __init__(self, **kwargs):
 
         self.id = self.desc = self.cmd = self.args = self.log_dir = \
             self.stdout = self.stderr = self.stime = self.etime = \
-            self.ecode = None
+            self.ecode = self.manager_obj = None
         self.env = dict()
 
         if 'id' in kwargs:
@@ -130,6 +130,9 @@ class BatchProcess():
             self._create_process(
                 kwargs['desc'], _cmd, kwargs['args']
             )
+
+        if 'manager_obj' in kwargs:
+            self.manager_obj = kwargs['manager_obj']
 
     def _retrieve_process(self, _id):
         p = Process.query.filter_by(pid=_id, user_id=current_user.id).first()
@@ -832,6 +835,25 @@ class BatchProcess():
             # Set service name related ENV variable
             if server.service:
                 self.env['PGSERVICE'] = server.service
+
+        if self.manager_obj:
+            # Set the PGPASSFILE environment variable
+            if self.manager_obj.connection_params and \
+                isinstance(self.manager_obj.connection_params, dict) and \
+                'passfile' in self.manager_obj.connection_params and \
+                    self.manager_obj.connection_params['passfile']:
+                self.env['PGPASSFILE'] = get_complete_file_path(
+                    self.manager_obj.connection_params['passfile'])
+
+            # Check for connection timeout and if it is greater than 0 then
+            # set the environment variable PGCONNECT_TIMEOUT.
+            timeout = self.manager_obj.get_connection_param_value(
+                'connect_timeout')
+            if timeout and int(timeout) > 0:
+                self.env['PGCONNECT_TIMEOUT'] = str(timeout)
+
+            # export password environment
+            self.manager_obj.export_password_env(self.id)
 
         if 'env' in kwargs:
             self.env.update(kwargs['env'])

@@ -12,7 +12,7 @@ import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
-import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getQueryOptionSchema, getDisabledOptionSchema, getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
+import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
 import Theme from '../../../pgadmin/static/js/Theme';
 
 
@@ -29,7 +29,6 @@ describe('BackupSchema', ()=>{
     ()=> getSectionSchema(),
     ()=> getTypeObjSchema(),
     ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
-    ()=> getQueryOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
     {
@@ -66,7 +65,6 @@ describe('BackupSchema', ()=>{
     ()=> getSectionSchema(),
     ()=> getTypeObjSchema(),
     ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
-    ()=> getQueryOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
     ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
     {

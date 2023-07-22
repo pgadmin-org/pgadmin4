@@ -18,7 +18,7 @@ from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
 from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
     fs_short_path, document_dir, IS_WIN, does_utility_exist, \
-    filename_with_file_manager_path
+    filename_with_file_manager_path, get_complete_file_path
 from pgadmin.utils.ajax import make_json_response, bad_request, unauthorized
 
 from config import PG_DEFAULT_DRIVER
@@ -56,6 +56,7 @@ class IEMessage(IProcessDesc):
 
     Defines the message shown for the import/export operation.
     """
+
     def __init__(self, *_args, **io_params):
         self.sid = io_params['sid']
         self.schema = io_params['schema']
@@ -99,11 +100,10 @@ class IEMessage(IProcessDesc):
 
         if s is None:
             return _("Not available")
-        server_str = '{0}'.format(s.name)
         host_port_str = ''
         if s.host:
             host_port_str = '({0}:{1})'.format(
-                            s.host, s.port)if s.port else '{0}'.format(s.host)
+                s.host, s.port) if s.port else '{0}'.format(s.host)
 
         return "{0} {1}".format(s.name, host_port_str)
 
@@ -328,15 +328,10 @@ def create_import_export_job(sid):
                 *args,
                 **io_params
             ),
-            cmd=utility, args=args
+            cmd=utility, args=args, manager_obj=manager
         )
-        manager.export_password_env(p.id)
 
         env = dict()
-
-        if manager.service:
-            env['PGSERVICE'] = manager.service
-
         env['PGHOST'] = \
             manager.local_bind_host if manager.use_ssh_tunnel else server.host
         env['PGPORT'] = \

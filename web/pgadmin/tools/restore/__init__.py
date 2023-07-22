@@ -10,21 +10,17 @@
 """Implements Restore Utility"""
 
 import json
-import os
 
-from flask import render_template, request, current_app, \
-    url_for, Response
+from flask import render_template, request, current_app, Response
 from flask_babel import gettext as _
 from flask_security import login_required, current_user
 from pgadmin.misc.bgprocess.processes import BatchProcess, IProcessDesc
-from pgadmin.utils import PgAdminModule, get_storage_directory, html, \
-    fs_short_path, document_dir, does_utility_exist, get_server, \
-    filename_with_file_manager_path
+from pgadmin.utils import PgAdminModule, fs_short_path, does_utility_exist, \
+    get_server, filename_with_file_manager_path
 from pgadmin.utils.ajax import make_json_response, bad_request, \
     internal_server_error
 
 from config import PG_DEFAULT_DRIVER
-from pgadmin.model import Server, SharedServer
 from pgadmin.utils.constants import MIMETYPE_APP_JS
 
 # set template path for sql scripts
@@ -253,7 +249,7 @@ def set_multiple(key, param, data, args, driver, conn, with_schema=True):
     if key in data and \
             len(data[key]) > 0:
         if with_schema:
-            # TODO:// This is temporary
+            # This is temporary
             # Once object tree is implemented then we will use
             # list of tuples 'else' part
             _set_value_with_schema(data, key, args, param, driver, conn)
@@ -294,33 +290,50 @@ def _set_args_param_values(data, manager, server, driver, conn, _file):
 
         if data['format'] == 'directory':
             args.extend(['--format=d'])
+        set_value('no_of_jobs', '--jobs', data, args)
 
+        # Sections
         set_param('pre_data', '--section=pre-data', data, args)
         set_param('data', '--section=data', data, args)
         set_param('post_data', '--section=post-data', data, args)
 
+        # Do not Save
         if not set_param('only_data', '--data-only', data, args):
             set_param('dns_owner', '--no-owner', data, args)
             set_param('dns_privilege', '--no-privileges', data, args)
             set_param('dns_tablespace', '--no-tablespaces', data, args)
+            if manager.version >= 110000:
+                set_param('dns_comments', '--no-comments', data, args)
+                set_param('dns_publications', '--no-publications', data, args)
+                set_param('dns_subscriptions', '--no-subscriptions', data,
+                          args)
+                set_param('dns_security_labels', '--no-security-labels', data,
+                          args)
+            if manager.version >= 150000:
+                set_param('dns_table_access_method',
+                          '--no-table-access-method', data, args)
 
+        # Query Options
+        set_param('include_create_database', '--create', data, args)
+        set_param('clean', '--clean', data, args)
+        set_param('if_exists', '--if-exists', data, args)
+        set_param('single_transaction', '--single-transaction', data, args)
+
+        # Table options
+        set_param('enable_row_security', '--enable-row-security', data, args)
+        set_param('no_data_fail_table', '--no-data-for-failed-tables', data,
+                  args)
+
+        # Disable options
         if not set_param('only_schema', '--schema-only', data, args):
             set_param('disable_trigger', '--disable-triggers', data, args)
 
-        set_param('include_create_database', '--create', data, args)
-        set_param('clean', '--clean', data, args)
-        set_param('single_transaction', '--single-transaction', data, args)
-        set_param('no_data_fail_table', '--no-data-for-failed-tables', data,
-                  args)
+        # Misc Options
+        set_param('verbose', '--verbose', data, args)
         set_param('use_set_session_auth', '--use-set-session-authorization',
                   data, args)
         set_param('exit_on_error', '--exit-on-error', data, args)
-
-        if manager.version >= 110000:
-            set_param('no_comments', '--no-comments', data, args)
-
-        set_value('no_of_jobs', '--jobs', data, args)
-        set_param('verbose', '--verbose', data, args)
+        set_value('exclude_schema', '--exclude-schema', data, args)
 
         set_multiple('schemas', '--schema', data, args, driver, conn, False)
         set_multiple('tables', '--table', data, args, driver, conn, False)
@@ -377,19 +390,9 @@ def create_restore_job(sid):
                 *args,
                 database=data['database']
             ),
-            cmd=utility, args=args
+            cmd=utility, args=args, manager_obj=manager
         )
-        manager.export_password_env(p.id)
-        # Check for connection timeout and if it is greater than 0 then
-        # set the environment variable PGCONNECT_TIMEOUT.
-        timeout = manager.get_connection_param_value('connect_timeout')
-        if timeout and int(timeout) > 0:
-            env = dict()
-            env['PGCONNECT_TIMEOUT'] = str(timeout)
-            p.set_env_variables(server, env=env)
-        else:
-            p.set_env_variables(server)
-
+        p.set_env_variables(server)
         p.start()
         jid = p.id
     except Exception as e:

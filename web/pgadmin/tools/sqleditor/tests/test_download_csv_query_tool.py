@@ -17,6 +17,8 @@ import json
 from pgadmin.utils import server_utils
 import secrets
 import config
+from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
+    import async_poll
 
 
 class TestDownloadCSV(BaseTestGenerator):
@@ -120,10 +122,8 @@ class TestDownloadCSV(BaseTestGenerator):
 
         self.assertEqual(response.status_code, 200)
 
-        # Query tool polling
-        url = '/sqleditor/poll/{0}'.format(trans_id)
-        response = self.tester.get(url)
-        return response
+        return async_poll(tester=self.tester,
+                          poll_url='/sqleditor/poll/{0}'.format(trans_id))
 
     def runTest(self):
 
@@ -152,8 +152,8 @@ class TestDownloadCSV(BaseTestGenerator):
         # Disable the console logging from Flask logger
         self.app.logger.disabled = True
         if not self.is_valid and self.is_valid_tx:
-            # The result will be null but status code will be 200
-            self.assertEqual(res.status_code, 200)
+            # The result will be null and status code will be 500
+            self.assertEqual(res.status_code, 500)
         elif self.filename is None:
             if self.download_as_txt:
                 with patch('pgadmin.tools.sqleditor.blueprint.'

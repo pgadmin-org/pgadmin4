@@ -73,8 +73,8 @@ export default function ShortcutTitle({title, shortcut, accesskey}) {
     <>
       <div className={classes.shortcutTitle}>{title}</div>
       <div className={classes.shortcut}>
-        {keys.map((key, i)=>{
-          return <div key={i} className={classes.key}>{key}</div>;
+        {keys.map((key)=>{
+          return <div key={key} className={classes.key}>{key}</div>;
         })}
       </div>
     </>

@@ -17,6 +17,8 @@ from werkzeug.exceptions import InternalServerError
 from pgadmin.utils.constants import MY_STORAGE
 from pgadmin.model import User
 
+PGADMIN_PATH = '~/.pgadmin/'
+
 
 def preprocess_username(un):
     ret_un = un
@@ -40,18 +42,18 @@ def get_storage_directory(user=current_user, shared_storage=''):
     is_shared_storage = False
     if shared_storage != MY_STORAGE and shared_storage:
         is_shared_storage = True
-        selectedDir = [sdir for sdir in config.SHARED_STORAGE if
-                       sdir['name'] == shared_storage]
+        selected_dir = [sdir for sdir in config.SHARED_STORAGE if
+                        sdir['name'] == shared_storage]
         storage_dir = None
-        if len(selectedDir) > 0:
-            the_dir = selectedDir[0]['path']
+        if len(selected_dir) > 0:
+            the_dir = selected_dir[0]['path']
             storage_dir = the_dir
     else:
         storage_dir = getattr(
             config, 'STORAGE_DIR',
             os.path.join(
                 os.path.realpath(
-                    os.path.expanduser('~/.pgadmin/')
+                    os.path.expanduser(PGADMIN_PATH)
                 ), 'storage'
             )
         )
@@ -109,7 +111,7 @@ def init_app():
         config, 'STORAGE_DIR',
         os.path.join(
             os.path.realpath(
-                os.path.expanduser('~/.pgadmin/')
+                os.path.expanduser(PGADMIN_PATH)
             ), 'storage'
         )
     )
@@ -159,7 +161,7 @@ def create_users_storage_directory():
             config, 'STORAGE_DIR',
             os.path.join(
                 os.path.realpath(
-                    os.path.expanduser('~/.pgadmin/')
+                    os.path.expanduser(PGADMIN_PATH)
                 ), 'storage'
             )
         )

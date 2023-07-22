@@ -43,7 +43,7 @@ APP_ICON = 'pg-icon'
 
 # Application version number components
 APP_RELEASE = 7
-APP_REVISION = 1
+APP_REVISION = 4
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -52,7 +52,7 @@ APP_SUFFIX = ''
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 70100
+APP_VERSION_INT = 70400
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
@@ -577,6 +577,24 @@ ALLOW_SAVE_TUNNEL_PASSWORD = False
 MASTER_PASSWORD_REQUIRED = True
 
 ##########################################################################
+
+# pgAdmin encrypts the database connection and ssh tunnel password using a
+# master password or pgAdmin login password (for other authentication sources)
+# before storing it in the pgAdmin configuration database.
+#
+# Below setting is used to allow the user to specify the path to a script
+# or program that will return an encryption key which will be used to
+# encrypt the passwords. This setting is used only in server mode when
+# auth sources are oauth, Kerberos, and webserver.
+#
+# You can pass the current username as an argument to the external script
+# by specifying %u in config value.
+# E.g. - MASTER_PASSWORD_HOOK = '<PATH>/passwdgen_script.sh %u'
+##########################################################################
+MASTER_PASSWORD_HOOK = None
+
+##########################################################################
+
 # Allows pgAdmin4 to create session cookies based on IP address, so even
 # if a cookie is stolen, the attacker will not be able to connect to the
 # server using that stolen cookie.

@@ -96,7 +96,29 @@ function(
         },{
           name: 'detach_partition', node: 'partition', module: this,
           applies: ['object', 'context'], callback: 'detach_partition',
-          priority: 2, label: gettext('Detach Partition'),
+          category: gettext('Detach Partition'), priority: 2, label: gettext('Detach'),
+        },{
+          name: 'detach_partition_concurrently', node: 'partition', module: this,
+          applies: ['object', 'context'], callback: 'detach_partition_concurrently',
+          category: gettext('Detach Partition'), priority: 2, label: gettext('Concurrently'),
+          enable: function(itemData, item) {
+            let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+              server = treeData['server'],
+              partition = treeData['partition'];
+
+            return (server && server.version >= 140000 && !partition.is_detach_pending);
+          }
+        },{
+          name: 'detach_partition_finalize', node: 'partition', module: this,
+          applies: ['object', 'context'], callback: 'detach_partition_finalize',
+          category: gettext('Detach Partition'), priority: 2, label: gettext('Finalize'),
+          enable: function(itemData, item) {
+            let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
+              server = treeData['server'],
+              partition = treeData['partition'];
+
+            return (server && server.version >= 140000 && partition.is_detach_pending);
+          }
         },{
           name: 'count_table_rows', node: 'partition', module: pgBrowser.Nodes['table'],
           applies: ['object', 'context'], callback: 'count_table_rows',
@@ -133,13 +155,7 @@ function(
           t.removeIcon(i);
           data.icon = 'icon-partition';
           t.addIcon(i, {icon: data.icon});
-          t.unload(i);
-          t.setInode(i);
-          t.deselect(i);
-          // Fetch updated data from server
-          setTimeout(function() {
-            t.select(i);
-          }, 10);
+          t.updateAndReselectNode(i, data);
         }
       },
       canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
@@ -171,17 +187,12 @@ function(
             .then(({data: res})=>{
               if (res.success == 1) {
                 Notify.success(res.info);
-                t.unload(i);
-                t.setInode(i);
-                t.deselect(i);
-                setTimeout(function() {
-                  t.select(i);
-                }, 10);
+                t.updateAndReselectNode(i, d);
               }
             })
             .catch((error)=>{
               Notify.pgRespErrorNotify(error);
-              t.unload(i);
+              t.refresh(i);
             });
         },
         /* Truncate table */
@@ -247,7 +258,7 @@ function(
             function() {/*This is intentional (SonarQube)*/}
           );
         },
-        detach_partition: function(args) {
+        detach: function(args, params) {
           let input = args || {},
             obj = this,
             t = pgBrowser.tree,
@@ -257,11 +268,19 @@ function(
           if (!d)
             return false;
 
+          let title = gettext('Detach Partition');
+
+          if (params['mode'] === 'concurrently') {
+            title = gettext('Detach Partition Concurrently');
+          } else if (params['mode'] === 'finalize') {
+            title = gettext('Detach Partition Finalize');
+          }
+
           Notify.confirm(
-            gettext('Detach Partition'),
+            title,
             gettext('Are you sure you want to detach the partition %s?', d._label),
             function () {
-              getApiInstance().put(obj.generate_url(i, 'detach' , d, true))
+              getApiInstance().put(obj.generate_url(i, 'detach' , d, true), params)
                 .then(({data: res})=>{
                   if (res.success == 1) {
                     Notify.success(res.info);
@@ -284,6 +303,18 @@ function(
             },
             function() {/*This is intentional (SonarQube)*/}
           );
+        },
+        detach_partition: function(args) {
+          let params = {'mode': 'detach' };
+          this.callbacks.detach.apply(this, [args, params]);
+        },
+        detach_partition_concurrently: function(args) {
+          let params = {'mode': 'concurrently' };
+          this.callbacks.detach.apply(this, [args, params]);
+        },
+        detach_partition_finalize: function(args) {
+          let params = {'mode': 'finalize' };
+          this.callbacks.detach.apply(this, [args, params]);
         },
       },
       getSchema: function(treeNodeInfo, itemNodeData) {

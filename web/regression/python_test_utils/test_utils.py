@@ -26,7 +26,7 @@ from selenium.common.exceptions import WebDriverException
 from urllib.request import urlopen
 import json
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support import expected_conditions as ec
 import selenium.common.exceptions
 
@@ -35,7 +35,7 @@ import regression
 from regression import test_setup
 
 from pgadmin.utils.preferences import Preferences
-from pgadmin.utils.constants import BINARY_PATHS, PSYCOPG3
+from pgadmin.utils.constants import BINARY_PATHS
 from pgadmin.utils import set_binary_path
 
 from functools import wraps
@@ -564,7 +564,11 @@ def drop_database(connection, database_name):
         if pg_cursor.fetchall():
             old_isolation_level = connection.isolation_level
             set_isolation_level(connection, 0)
-            pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
+            if connection.info.server_version >= 130000:
+                pg_cursor.execute(
+                    '''DROP DATABASE "%s" WITH (FORCE)''' % database_name)
+            else:
+                pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
             set_isolation_level(connection, old_isolation_level)
             connection.commit()
             connection.close()
@@ -594,7 +598,11 @@ def drop_database_multiple(connection, database_names):
             if pg_cursor.fetchall():
                 old_isolation_level = connection.isolation_level
                 set_isolation_level(connection, 0)
-                pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
+                if connection.info.server_version >= 130000:
+                    pg_cursor.execute(
+                        '''DROP DATABASE "%s" WITH (FORCE)''' % database_name)
+                else:
+                    pg_cursor.execute('''DROP DATABASE "%s"''' % database_name)
                 set_isolation_level(connection, old_isolation_level)
                 connection.commit()
     connection.close()
@@ -1410,43 +1418,40 @@ def get_remote_webdriver(hub_url, browser, browser_ver, test_name, url_client):
     test_name = time.strftime("%m_%d_%y_%H_%M_%S_", time.localtime()) + \
         test_name.replace(' ', '_') + '_' + browser + browser_ver
     driver_local = None
-    desired_capabilities = {
-        "browserVersion": browser_ver,
-        "selenoid:options": {
-            "enableVNC": True,
-            "enableVideo": True,
-            "enableLog": True,
-            "videoName": test_name + ".mp4",
-            "logName": test_name + ".log",
-            "name": test_name,
-            "timeZone": "Asia/Kolkata",
-            "sessionTimeout": "180s"
-        }
+    selenoid_options = {
+        "enableVNC": True,
+        "enableVideo": True,
+        "enableLog": True,
+        "videoName": test_name + ".mp4",
+        "logName": test_name + ".log",
+        "name": test_name,
+        "timeZone": "Asia/Kolkata",
+        "sessionTimeout": "180s"
     }
 
     if browser == 'firefox':
+        options = FirefoxOptions()
+        options.browser_version = browser_ver
         profile = webdriver.FirefoxProfile()
         profile.set_preference("dom.disable_beforeunload", True)
-        desired_capabilities["browserName"] = "firefox"
-        desired_capabilities["requireWindowFocus"] = True
-        desired_capabilities["enablePersistentHover"] = False
+        options.profile = profile
         driver_local = webdriver.Remote(
-            command_executor=hub_url,
-            desired_capabilities=desired_capabilities, browser_profile=profile)
+            command_executor=hub_url, options=options)
     elif browser == 'chrome':
-        options = Options()
+        options = webdriver.ChromeOptions()
         options.add_argument("--window-size=1280,1024")
         options.add_argument(
             '--unsafely-treat-insecure-origin-as-secure=' + url_client)
-        desired_capabilities["browserName"] = "chrome"
+        options.browser_version = browser_ver
+        options.set_capability("selenoid:options", selenoid_options)
         driver_local = webdriver.Remote(
-            command_executor=hub_url,
-            desired_capabilities=desired_capabilities, options=options)
+            command_executor=hub_url, options=options)
     else:
         print("Specified browser does not exist.")
 
     # maximize browser window
-    driver_local.maximize_window()
+    if driver_local:
+        driver_local.maximize_window()
 
     # driver_local.implicitly_wait(2)
     return driver_local

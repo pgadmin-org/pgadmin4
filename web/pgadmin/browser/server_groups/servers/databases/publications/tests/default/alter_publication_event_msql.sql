@@ -1,2 +1,2 @@
-ALTER PUBLICATION alterd_publication_event SET
-(publish = 'insert, update');
+ALTER PUBLICATION alterd_publication SET
+    (publish = 'insert, update, delete');

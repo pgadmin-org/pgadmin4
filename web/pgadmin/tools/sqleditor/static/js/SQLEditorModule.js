@@ -331,7 +331,7 @@ export default class SQLEditor {
     queryToolForm +=`
       </form>
         <script>
-          document.getElementById("title").value = "${_.escape(panel_title.replace('\\', '\\\\'))}";
+          document.getElementById("title").value = "${_.escape(panel_title)}";
           document.getElementById("queryToolForm").submit();
         </script>
       `;

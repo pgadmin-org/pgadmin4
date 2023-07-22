@@ -91,7 +91,10 @@ class ViewModule(SchemaChildModule):
         """
         Generate the collection node
         """
-        yield self.generate_browser_collection_node(scid)
+        if self.has_nodes(
+            sid, did, scid, base_template_path=ViewNode.BASE_TEMPLATE_PATH +
+                '/' + ViewNode._SQL_PREFIX):
+            yield self.generate_browser_collection_node(scid)
 
     @property
     def script_load(self):
@@ -216,6 +219,15 @@ class MViewModule(ViewModule):
         self.min_ver = 90300
         self.max_ver = None
 
+    def get_nodes(self, gid, sid, did, scid):
+        """
+        Generate the collection node
+        """
+        if self.has_nodes(
+            sid, did, scid, base_template_path=MViewNode.BASE_TEMPLATE_PATH +
+                '/' + MViewNode._SQL_PREFIX):
+            yield self.generate_browser_collection_node(scid)
+
 
 view_blueprint = ViewModule(__name__)
 mview_blueprint = MViewModule(__name__)
@@ -242,12 +254,8 @@ def check_precondition(f):
             kwargs['sid']
         )
         self.conn = self.manager.connection(did=kwargs['did'])
-        # Set template path for sql scripts
-        if self.manager.server_type == 'ppas':
-            _temp = self.ppas_template_path(self.manager.version)
-        else:
-            _temp = self.pg_template_path(self.manager.version)
-        self.template_path = self.template_initial + '/' + _temp
+        self.template_path = self.BASE_TEMPLATE_PATH.format(
+            self.manager.server_type, self.manager.version)
 
         self.column_template_path = 'columns/sql/#{0}#'.format(
             self.manager.version)
@@ -327,6 +335,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
     _SQL_PREFIX = 'sql/'
     _ALLOWED_PRIVS_JSON = 'sql/allowed_privs.json'
     PROPERTIES_PATH = 'sql/{0}/#{1}#/properties.sql'
+    BASE_TEMPLATE_PATH = 'views/{0}/#{1}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -377,22 +386,7 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
         self.manager = None
         self.conn = None
         self.template_path = None
-        self.template_initial = 'views'
         self.allowed_acls = []
-
-    @staticmethod
-    def ppas_template_path(ver):
-        """
-        Returns the template path for PPAS servers.
-        """
-        return 'ppas/#{0}#'.format(ver)
-
-    @staticmethod
-    def pg_template_path(ver):
-        """
-        Returns the template path for PostgreSQL servers.
-        """
-        return 'pg/#{0}#'.format(ver)
 
     @check_precondition
     def list(self, gid, sid, did, scid):
@@ -1367,7 +1361,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
             SQL = render_template("/".join(
                 [self.column_template_path,
                     self._UPDATE_SQL.format(self.manager.version)]),
-                o_data=o_data, data=res, is_view_only=True)
+                o_data=o_data, data=res, is_view_only=True,
+                conn=self.conn)
             sql_data += SQL
 
         # Get Column Grant SQL
@@ -1797,6 +1792,7 @@ class MViewNode(ViewNode, VacuumSettings):
     node_type = mview_blueprint.node_type
     operations = mview_operations
     TOAST_STR = 'toast.'
+    BASE_TEMPLATE_PATH = 'mviews/{0}/#{1}#'
 
     def __init__(self, *args, **kwargs):
         """
@@ -1805,7 +1801,6 @@ class MViewNode(ViewNode, VacuumSettings):
 
         super().__init__(*args, **kwargs)
 
-        self.template_initial = 'mviews'
         self.allowed_acls = []
 
     @staticmethod
@@ -2261,19 +2256,9 @@ class MViewNode(ViewNode, VacuumSettings):
             try:
                 p = BatchProcess(
                     desc=Message(sid, data, SQL),
-                    cmd=utility, args=args
+                    cmd=utility, args=args, manager_obj=manager
                 )
-                manager.export_password_env(p.id)
-                # Check for connection timeout and if it is greater than 0
-                # then set the environment variable PGCONNECT_TIMEOUT.
-                timeout = manager.get_connection_param_value('connect_timeout')
-                if timeout and int(timeout) > 0:
-                    env = dict()
-                    env['PGCONNECT_TIMEOUT'] = str(timeout)
-                    p.set_env_variables(server, env=env)
-                else:
-                    p.set_env_variables(server)
-
+                p.set_env_variables(server)
                 p.start()
                 jid = p.id
             except Exception as e:

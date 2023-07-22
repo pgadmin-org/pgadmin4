@@ -17,6 +17,7 @@ import Notify from '../../../static/js/helpers/Notifier';
 import gettext from 'sources/gettext';
 
 import { unix } from 'path-fx';
+import getApiInstance, { parseApiError } from '../api_instance';
 
 export class ManageTreeNodes {
   constructor() {
@@ -34,6 +35,7 @@ export class ManageTreeNodes {
   public updateNode = (_path, _data)  => new Promise((res) => {
     const item = this.findNode(_path);
     if (item) {
+      item.data = {...item.data, ..._data};
       item.name = _data.label;
       item.metadata.data = _data;
     }
@@ -73,94 +75,78 @@ export class ManageTreeNodes {
     res(treeNode);
   });
 
-  public readNode = (_path: string) => new Promise<string[]>((res, rej) => {
+  public readNode = async (_path: string) => {
     let temp_tree_path = _path;
     const node = this.findNode(_path);
     const base_url = pgAdmin.Browser.URL;
+    const api = getApiInstance();
 
     if (node && node.children.length > 0) {
-      if (!node.type === FileType.File) {
-        rej('It\'s a leaf node');
+      if (node.type !== FileType.File) {
+        console.error(node, 'It\'s a leaf node');
+        return [];
       }
       else {
-        if (node.children.length != 0) res(node.children);
+        if (node.children.length != 0) return node.children;
       }
     }
 
     const self = this;
-
-    async function loadData() {
-      let url = '';
-      if (_path == '/browser') {
-        url = url_for('browser.nodes');
-      } else {
-        const _parent_url = self.generate_url(_path);
-        if (node.metadata.data._pid == null ) {
-          url = node.metadata.data._type + '/children/' + node.metadata.data._id;
+    let url = '';
+    if (_path == '/browser') {
+      url = url_for('browser.nodes');
+    } else {
+      const _parent_url = self.generate_url(_path);
+      if (node.metadata.data._pid == null ) {
+        url = node.metadata.data._type + '/children/' + node.metadata.data._id;
+      }
+      else {
+        if (node.metadata.data._type.includes('coll-')) {
+          const _type = node.metadata.data._type.replace('coll-', '');
+          url = _type + '/nodes/' + _parent_url + '/';
         }
         else {
-          if (node.metadata.data._type.includes('coll-')) {
-            const _type = node.metadata.data._type.replace('coll-', '');
-            url = _type + '/nodes/' + _parent_url + '/';
-          }
-          else {
-            url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;
-          }
-        }
-
-        url = base_url + url;
-
-        temp_tree_path = node.path;
-
-        if (node.metadata.data._type == 'server' && !node.metadata.data.connected) {
-          url = null;
+          url = node.metadata.data._type + '/children/' + _parent_url + '/' + node.metadata.data._id;
         }
       }
 
-      async function jsonData(fetch_url) {
-        const result = await fetch(fetch_url, {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-pgA-CSRFToken': pgAdmin.csrf_token
-          },
-        });
+      url = base_url + url;
 
-        if (result.status == 200) {
-          try {
-            const json = await result.json();
-            return json.data;
-          } catch (e) {
-            console.warn(e);
-          }
-        }
-        throw new Error('Node Load Error...');
+      temp_tree_path = node.path;
+
+      if (node.metadata.data._type == 'server' && !node.metadata.data.connected) {
+        url = null;
       }
-
-      let treeData = null;
-      if (url) treeData = await jsonData(url);
-
-      const Path = BrowserFS.BFSRequire('path');
-      const fill = async (tree) => {
-        for (const idx in tree) {
-          const _node = tree[idx];
-          const _pathl = Path.join(_path, _node.id);
-          await self.addNode(temp_tree_path, _pathl, _node);
-        }
-      };
-
-      await fill(treeData);
-      if (node.children.length > 0) res(node.children);
-      else {
-        res(null);
-        if (node.data && node.data._type == 'server' && node.data.connected) {
-          Notify.info(gettext('Server children are not available.'
-          +' Please check these nodes are not hidden through the preferences setting `Browser > Nodes`.'));
-        }
-      }
-
     }
-    loadData();
-  });
+
+    let treeData = [];
+    if (url) {
+      try {
+        const res = await api.get(url);
+        treeData = res.data.data;
+      } catch (error) {
+        /* react-aspen does not handle reject case */
+        console.error(error);
+        Notify.error(parseApiError(error)||'Node Load Error...');
+        return [];
+      }
+    }
+
+    const Path = BrowserFS.BFSRequire('path');
+    for (const idx in treeData) {
+      const _node: any = treeData[idx];
+      const _pathl = Path.join(_path, _node.id);
+      await self.addNode(temp_tree_path, _pathl, _node);
+    }
+    if (node.children.length > 0) return node.children;
+    else {
+      if (node.data && node.data._type == 'server' && node.data.connected) {
+        Notify.info(gettext('Server children are not available.'
+        +' Please check these nodes are not hidden through the preferences setting `Browser > Nodes`.'), null);
+      }
+      return [];
+    }
+  };
 
   public generate_url = (path: string) => {
     let _path = path;

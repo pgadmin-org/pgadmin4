@@ -36,7 +36,7 @@ export default class ServerSchema extends BaseUISchema {
       passexec: undefined,
       passexec_expiration: undefined,
       service: undefined,
-      use_ssh_tunnel: 0,
+      use_ssh_tunnel: false,
       tunnel_host: undefined,
       tunnel_port: 22,
       tunnel_username: undefined,
@@ -309,6 +309,7 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_cmd', label: gettext('Password exec command'), type: 'text',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
+        disabled: pgAdmin.server_mode == 'True',
       },
       {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',

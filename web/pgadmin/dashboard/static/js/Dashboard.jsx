@@ -861,7 +861,7 @@ export default function Dashboard({
         controlProps={CustomActiveOnlyHeaderLabel}
       ></InputCheckbox>);
   };
-    
+
   return (
     <>
       {sid && props.serverConnected ? (
@@ -890,8 +890,8 @@ export default function Dashboard({
                       value={tabVal}
                       onChange={tabChanged}
                     >
-                      {tabs.map((tabValue, i) => {
-                        return <Tab key={i} label={tabValue} />;
+                      {tabs.map((tabValue) => {
+                        return <Tab key={tabValue} label={tabValue} />;
                       })}
                       <RefreshButton/>
                     </Tabs>
@@ -961,8 +961,8 @@ export function ChartContainer(props) {
         <div id={props.id}>{props.title}</div>
         <div className={classes.chartLegend}>
           <div className="d-flex">
-            {props.datasets?.map((datum, i)=>(
-              <div className="legend-value" key={i}>
+            {props.datasets?.map((datum)=>(
+              <div className="legend-value" key={datum.label}>
                 <span style={{backgroundColor: datum.borderColor}}>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <span className="legend-label">{datum.label}</span>
               </div>

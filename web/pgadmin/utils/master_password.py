@@ -1,9 +1,8 @@
 import config
-from flask import current_app, session
+from flask import current_app, session, current_app
 from flask_login import current_user
 from pgadmin.model import db, User, Server
 from pgadmin.utils.crypto import encrypt, decrypt
-from pgadmin.utils.constants import KERBEROS
 
 
 MASTERPASS_CHECK_TEXT = 'ideas are bulletproof'
@@ -30,12 +29,19 @@ def get_crypt_key():
             and not config.SERVER_MODE:
         return True, current_user.password
     # if desktop mode and master pass enabled
-    elif config.MASTER_PASSWORD_REQUIRED \
+    elif config.MASTER_PASSWORD_REQUIRED and \
+        config.MASTER_PASSWORD_HOOK is None\
             and enc_key is None:
         return False, None
     elif not config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
             'pass_enc_key' in session:
         return True, session['pass_enc_key']
+    elif config.MASTER_PASSWORD_REQUIRED and config.SERVER_MODE and \
+            config.MASTER_PASSWORD_HOOK and current_user.password is None:
+        cmd = config.MASTER_PASSWORD_HOOK
+        command = cmd.replace('%u', current_user.username) \
+            if '%u' in cmd else cmd
+        return get_master_password_from_master_hook(command)
     else:
         return True, enc_key
 
@@ -121,3 +127,30 @@ def process_masterpass_disabled():
         return True
 
     return False
+
+
+def get_master_password_from_master_hook(command):
+    """
+    This method executes specified command & returns output.
+    :param command: Shell command with absolute path
+    :return: Output of command.
+    """
+    import subprocess
+    try:
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+        out, err = p.communicate()
+        if p.returncode == 0:
+            output = out.decode() if hasattr(out, 'decode') else out
+            output = output.strip()
+            return True, output
+        else:
+            error = "Command '{0}' failed, exit-code={1} error = {2}".format(
+                command, p.returncode, str(err))
+            current_app.logger.error(error)
+            return False, None
+    except Exception as e:
+        current_app.logger.exception(
+            'Failed to retrieve master password from the master password hook'
+            ' utility.Error: {0}'.format(e)
+        )
+        return False, None

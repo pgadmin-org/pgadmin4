@@ -1,43 +1,21 @@
-{% extends "security/panel.html" %}
-{% block panel_image %}
-<div class="pr-4">
- <img src="{{ url_for('static', filename='img/login.svg') }}" alt="{{ _('Login') }}">
-</div>
-{% endblock %}
-{% block panel_title %}{{ _('Login') }}{% endblock %}
-{% block panel_body %}
-{% if config.SERVER_MODE %}
-<form action="{{ url_for('authenticate.login') }}" method="POST" name="login_user_form">
-    {{ login_user_form.hidden_tag() }}
-    {% set user_language = request.cookies.get('PGADMIN_LANGUAGE') or 'en' %}
-    {% set show_login_form = not ((config.OAUTH2 in config.AUTHENTICATION_SOURCES or config.KERBEROS in config.AUTHENTICATION_SOURCES) and config.AUTHENTICATION_SOURCES | length == 1
-            or (config.OAUTH2 in config.AUTHENTICATION_SOURCES and config.KERBEROS in config.AUTHENTICATION_SOURCES) and config.AUTHENTICATION_SOURCES | length == 2) %}
-    {% if show_login_form %}
-        {{ render_username_with_errors(login_user_form.email, "text") }}
-        {{ render_field_with_errors(login_user_form.password, "password") }}
-        <button name="internal_button" class="btn btn-primary btn-block btn-login" type="submit" value="{{ _('Login') }}">{{ _('Login') }}</button>
-    {% endif %}
-    <div class="form-group row mb-3 c user-language">
-        {% if show_login_form %}
-            <div class="col-7">
-                <span class="help-block">{{ _('<a href="%(url)s" class="text-white">Forgotten your password</a>?', url=url_for('browser.forgot_password')) }}</span>
-            </div>
-         {% endif %}
-        <div class="{{'col-5' if show_login_form else 'col-12'}}">
-            <select class="form-control" name="language" value="{{user_language}}">
-                {% for key, lang in config.LANGUAGES.items() %}
-                <option value="{{key}}" {% if user_language == key %}selected{% endif %}>{{lang}}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
-{% if config.OAUTH2 in config.AUTHENTICATION_SOURCES and config.AUTHENTICATION_SOURCES %}
-    {% for oauth_config in config.OAUTH2_CONFIG %}
-        <button name="oauth2_button" class="btn btn-primary btn-block btn-oauth" style="background-color: {{oauth_config['OAUTH2_BUTTON_COLOR']}}" value="{{ oauth_config['OAUTH2_NAME'] }}" type="submit">
-            <i class="fab {{ oauth_config['OAUTH2_ICON'] }} fa-lg mr-2" aria-hidden="true" role="image"></i>
-            {{ _('Login with %(oauth_name)s', oauth_name=oauth_config['OAUTH2_DISPLAY_NAME']) }}</button>
-    {% endfor %}
-{% endif %}
-</form>
-{% endif %}
-{% endblock %}
+{% set page_name = 'login_user' %}
+{% set user_language = request.cookies.get('PGADMIN_LANGUAGE') or 'en' %}
+{% set ns = namespace(langOptions=[]) %}
+{% for key, lang in config.LANGUAGES.items() %}
+{% set _ = ns.langOptions.append({'value': key, 'label': lang}) %}
+{% endfor %}
+{% set page_props = {
+    'userLanguage': user_language,
+    'langOptions': ns.langOptions,
+    'forgotPassUrl': url_for('browser.forgot_password'),
+    'loginUrl': url_for('authenticate.login'),
+    'csrfToken': csrf_token(),
+    'authSources': config.AUTHENTICATION_SOURCES,
+    'authSourcesEnum': {
+        'OAUTH2': config.OAUTH2,
+        'KERBEROS': config.KERBEROS,
+    },
+    'oauth2Config': config.OAUTH2_CONFIG,
+    'loginBanner': config.LOGIN_BANNER|safe
+} %}
+{% extends "security/render_page.html" %}

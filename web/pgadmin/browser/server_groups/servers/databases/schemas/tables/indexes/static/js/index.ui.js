@@ -194,6 +194,110 @@ export class ColumnSchema extends BaseUISchema {
   }
 }
 
+export class WithSchema extends BaseUISchema {
+  constructor(node_info) {
+    super({});
+    this.node_info = node_info;
+  }
+  
+  get baseFields() {
+    let withSchemaObj = this;
+    return [
+      {
+        id: 'fillfactor', label: gettext('Fill factor'), deps: ['amname'], cell: 'string',
+        type: 'int', disabled: (state) => {
+          return !_.includes(['btree', 'hash', 'gist', 'spgist'], state.amname) || inSchema(withSchemaObj.node_info);
+        },
+        mode: ['create', 'edit', 'properties'],
+        min: 10, max:100, group: gettext('Definition'),
+        depChange: state => {
+          if (!_.includes(['btree', 'hash', 'gist', 'spgist'], state.amname)) {
+            return {fillfactor: ''};
+          }
+        }
+      },{
+        id: 'gin_pending_list_limit', label: gettext('Gin pending list limit'), cell: 'string',
+        type: 'int', deps: ['amname'], disabled: state => state.amname !== 'gin' || inSchema(withSchemaObj.node_info),
+        mode: ['create', 'edit', 'properties'],
+        group: gettext('Definition'), min: 64, max: 2147483647,
+        depChange: state => {
+          if (state.amname !== 'gin') {
+            return {gin_pending_list_limit: ''};
+          }
+        }, helpMessage: gettext('This value is specified in kilobytes.')
+      },{
+        id: 'pages_per_range', label: gettext('Pages per range'), cell: 'string',
+        type: 'int', deps: ['amname'], disabled: state => state.amname !== 'brin' || inSchema(withSchemaObj.node_info),
+        mode: ['create', 'edit', 'properties'],
+        group: gettext('Definition'), depChange: state => {
+          if (state.amname !== 'brin') {
+            return {pages_per_range: ''};
+          }
+        }, helpMessage: gettext('Number of table blocks that make up one block range for each entry of a BRIN index.')
+      },{
+        id: 'buffering', label: gettext('Buffering'), cell: 'string', group: gettext('Definition'),
+        type: 'select', deps: ['amname'], mode: ['create', 'edit', 'properties'], options: [
+          {
+            label: gettext('Auto'),
+            value: 'auto',
+          },
+          {
+            label: gettext('On'),
+            value: 'on',
+          },
+          {
+            label: gettext('Off'),
+            value: 'off',
+          }], disabled: state => state.amname !== 'gist' || inSchema(withSchemaObj.node_info),
+        depChange: (state, source) => {
+          if (state.amname !== 'gist') {
+            return {buffering: ''};
+          } else if (state.amname === 'gist' && source[0] !== 'buffering') {
+            return {buffering: 'auto'};
+          }
+        }
+      },{
+        id: 'deduplicate_items', label: gettext('Deduplicate items?'), cell: 'string',
+        type: 'switch', deps:['amname'], mode: ['create', 'edit', 'properties'], disabled: (state) => {
+          return state.amname !== 'btree' || inSchema(withSchemaObj.node_info);
+        },
+        depChange: (state, source) => {
+          if (state.amname !== 'btree') {
+            return {deduplicate_items:undefined};
+          } else if (state.amname === 'btree' && source[0] !== 'deduplicate_items' && 
+            withSchemaObj.node_info.server.version >= 130000) {
+            return {deduplicate_items: true};
+          }
+        }, min_version: 130000,
+        group: gettext('Definition'),
+      },{
+        id: 'fastupdate', label: gettext('Fast update?'), cell: 'string',
+        type: 'switch', deps:['amname'], mode: ['create', 'edit', 'properties'], disabled: (state) => {
+          return state.amname !== 'gin' || inSchema(withSchemaObj.node_info);
+        },
+        depChange: (state, source) => {
+          if (state.amname !== 'gin') {
+            return {fastupdate:undefined};
+          } else if (state.amname === 'gin' && source[0] !== 'fastupdate') {
+            return {fastupdate: true};
+          }
+        },
+        group: gettext('Definition'),
+      },{
+        id: 'autosummarize', label: gettext('Autosummarize?'), cell: 'string',
+        type: 'switch', deps:['amname'], mode: ['create', 'edit', 'properties'], disabled: state => {
+          return state.amname !== 'brin' || inSchema(withSchemaObj.node_info);
+        }, group: gettext('Definition'),
+        depChange: (state) => {
+          if (state.amname !== 'brin') {
+            return {autosummarize:undefined};
+          }
+        }
+      }
+    ];
+  }
+}
+
 function inSchema(node_info) {
   return node_info && 'catalog' in node_info;
 }
@@ -209,6 +313,8 @@ export default class IndexSchema extends BaseUISchema {
       tabname: undefined,
       spcname: undefined,
       amname: undefined,
+      fastupdate: false,
+      autosummarize: false,
       columns: [],
       ...initValues
     });
@@ -222,6 +328,7 @@ export default class IndexSchema extends BaseUISchema {
       ...nodeData.node_info
     };
     this.getColumnSchema = columnSchema;
+    this.withSchema = new WithSchema(this.node_info);
   }
 
   get idAttribute() {
@@ -353,16 +460,36 @@ export default class IndexSchema extends BaseUISchema {
         },
         node:'column',
       },{
-        id: 'fillfactor', label: gettext('Fill factor'), cell: 'string',
-        type: 'int', disabled: () => inSchema(indexSchemaObj.node_info),
-        mode: ['create', 'edit', 'properties'],
-        min: 10, max:100, group: gettext('Definition'),
+        type: 'nested-fieldset', label: gettext('With'), group: gettext('Definition'),
+        schema: this.withSchema,
       },{
         id: 'indisunique', label: gettext('Unique?'), cell: 'string',
-        type: 'switch', disabled: () => inSchema(indexSchemaObj.node_info),
+        type: 'switch', deps:['amname'], disabled: (state) => {
+          return state.amname !== 'btree' || inSchema(indexSchemaObj.node_info);
+        },
         readonly: function (state) {
           return !indexSchemaObj.isNew(state);
         },
+        depChange: (state) => {
+          if (state.amname !== 'btree') {
+            return {indisunique:false};
+          }
+        },
+        group: gettext('Definition'),
+      },{
+        id: 'indnullsnotdistinct', label: gettext('NULLs not distinct?'), cell: 'string',
+        type: 'switch', deps:['indisunique', 'amname'], disabled: (state) => {
+          return !state.indisunique || inSchema(indexSchemaObj.node_info);
+        },
+        readonly: function (state) {
+          return !indexSchemaObj.isNew(state);
+        },
+        depChange: (state) => {
+          if (!state.indisunique) {
+            return {indnullsnotdistinct:false};
+          }
+        },
+        min_version: 150000,
         group: gettext('Definition'),
       },{
         id: 'indisclustered', label: gettext('Clustered?'), cell: 'string',

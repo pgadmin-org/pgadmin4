@@ -15,7 +15,7 @@ import Notify from '../../../../static/js/helpers/Notifier';
 const pgAdmin = pgWindow.pgAdmin;
 
 export function getDatabaseLabel(parentData) {
-  return parentData.database ? parentData.database.label
+  return parentData.database ? parentData.database._label
     : parentData.server?.db;
 }
 

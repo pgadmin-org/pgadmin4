@@ -101,20 +101,17 @@ def panel(trans_id):
     if request.args:
         params.update({k: v for k, v in request.args.items()})
 
-    o_db_name = _get_database(params['sid'], params['did'])
+    o_db_name = underscore_escape(_get_database(params['sid'], params['did']))
 
     set_env_variables(is_win=_platform == 'win32')
     return render_template('editor_template.html',
                            sid=params['sid'],
-                           db=underscore_unescape(
-                               o_db_name) if o_db_name else 'postgres',
+                           db=o_db_name,
                            server_type=params['server_type'],
                            is_enable=config.ENABLE_PSQL,
                            title=underscore_unescape(params['title']),
                            theme=params['theme'],
                            o_db_name=o_db_name,
-                           requirejs=True,
-                           basejs=True,
                            platform=_platform
                            )
 
@@ -296,7 +293,7 @@ def start_process(data):
         try:
             db = ''
             if data['db']:
-                db = underscore_unescape(data['db']).replace('\\', "\\\\")
+                db = underscore_unescape(data['db'])
 
             data['db'] = db
 
@@ -378,8 +375,6 @@ def get_connection_str(psql_utility, db, manager):
     :return: connection attribute list for PSQL connection.
     """
     manager.export_password_env('PGPASSWORD')
-    db = db.replace('"', '\\"')
-    db = db.replace("'", "\\'")
     database = db if db != '' else 'postgres'
     user = underscore_unescape(manager.user) if manager.user else None
     conn_attr = manager.create_connection_string(database, user)
@@ -547,7 +542,7 @@ def _get_database(sid, did):
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(int(sid))
         conn = manager.connection()
-        db_name = None
+        db_name = 'postgres'
 
         is_connected = get_connection_status(conn)
 

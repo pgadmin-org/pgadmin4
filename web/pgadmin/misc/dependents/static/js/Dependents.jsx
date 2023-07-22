@@ -115,7 +115,7 @@ export default function Dependents({ nodeData, item, node, ...props }) {
         'dependent'
       );
       message = gettext(
-        'No dependant information is available for the selected object.'
+        'No dependent information is available for the selected object.'
       );
       if (node.hasDepends && !nodeData.is_collection) {
         const api = getApiInstance();

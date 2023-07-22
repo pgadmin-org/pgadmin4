@@ -46,7 +46,7 @@ const providePlugin = new webpack.ProvidePlugin({
   'moment': 'moment',
   'window.moment':'moment',
   process: 'process/browser',
-  Buffer: ['buffer', 'Buffer'],
+  Buffer: ['buffer', 'Buffer']
 });
 
 // Helps in debugging each single file, it extracts the module files
@@ -69,22 +69,9 @@ const copyFiles = new CopyPlugin({
     pgadminThemesJson,
     {
       from: './pgadmin/static/scss/resources/**/*.png',
-      to: 'img/[name].[ext]',
+      to: 'img/[name][ext]',
     },
   ],
-});
-
-const imageMinimizer = new ImageMinimizerPlugin({
-  test: /\.(jpe?g|png|gif)$/i,
-  minimizerOptions: {
-    // Lossless optimization with custom option
-    // Feel free to experiment with options for better result for you
-    plugins: [
-      ['mozjpeg', { progressive: true }],
-      ['optipng', { optimizationLevel: 7 }],
-      ['pngquant', {quality: [0.75, .9], speed: 3}],
-    ],
-  },
 });
 
 function cssToBeSkiped(curr_path) {
@@ -374,6 +361,7 @@ module.exports = [{
   entry: {
     'app.bundle': sourceDir + '/bundle/app.js',
     codemirror: sourceDir + '/bundle/codemirror.js',
+    'security.pages': 'security.pages',
     sqleditor: './pgadmin/tools/sqleditor/static/js/index.js',
     schema_diff: './pgadmin/tools/schema_diff/static/js/index.js',
     erd_tool: './pgadmin/tools/erd/static/js/index.js',
@@ -577,15 +565,28 @@ module.exports = [{
     ignored: /node_modules/,
   },
   optimization: {
-    minimizer: [
+    minimizer: PRODUCTION ? [
       new TerserPlugin({
-        parallel: true,
+        parallel: false,
         extractComments: true,
         terserOptions: {
           compress: true,
         },
       }),
-    ],
+      new ImageMinimizerPlugin({
+        test: /\.(jpe?g|png|gif)$/i,
+        minimizer: {
+          implementation: ImageMinimizerPlugin.imageminMinify,
+          options: {
+            plugins: [
+              ['mozjpeg', { progressive: true }],
+              ['optipng', { optimizationLevel: 7 }],
+              ['pngquant', {quality: [0.75, .9], speed: 3}],
+            ],
+          },
+        },
+      }),
+    ] : [],
     splitChunks: {
       cacheGroups: {
         vendor_main: {
@@ -645,7 +646,6 @@ module.exports = [{
     sourceMapDevToolPlugin,
     bundleAnalyzer,
     copyFiles,
-    imageMinimizer,
   ]: [
     extractStyle,
     providePlugin,

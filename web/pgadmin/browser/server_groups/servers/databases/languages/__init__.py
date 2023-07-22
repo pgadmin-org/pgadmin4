@@ -74,7 +74,10 @@ class LanguageModule(CollectionNodeModule):
             sid: Server ID
             did: Database Id
         """
-        yield self.generate_browser_collection_node(did)
+        if self.has_nodes(
+            sid, did,
+                base_template_path=LanguageView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(did)
 
     @property
     def node_inode(self):
@@ -175,6 +178,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
     _NOT_FOUND_LANG_INFORMATION = \
         gettext("Could not find the language information.")
     node_type = blueprint.node_type
+    BASE_TEMPLATE_PATH = "languages/sql/#{0}#"
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -241,7 +245,7 @@ class LanguageView(PGChildNodeView, SchemaDiffObjectCompare):
 
             # Set the template path for the SQL scripts
             self.template_path = (
-                "languages/sql/#{0}#".format(self.manager.version)
+                self.BASE_TEMPLATE_PATH.format(self.manager.version)
             )
 
             return f(*args, **kwargs)

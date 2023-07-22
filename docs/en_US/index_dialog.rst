@@ -51,9 +51,22 @@ Use the fields in the *Definition* tab to define the index:
 * Use the *Fill Factor* field to specify a fill factor for the index. The fill
   factor specifies how full the selected method will try to fill each index
   page.
-* Move the *Unique?* switch to the *Yes* position to check for duplicate values
-  in the table when the index is created and when data is added. The default is
-  *No*.
+* Use the *Gin pending list limit* field to specify the maximum size of a GIN index's pending list, which is used 
+  when fastupdate is enabled. This value is specified in kilobytes.
+* Use the *Pages per range* field to specify the number of table blocks that make up one block range 
+  for each entry of a BRIN index.
+* Select *Buffering* to specify whether the buffering build technique is used to build the index. The default is
+  *Auto*
+* Move the switch next to *Deduplicate items?* towards the *right position* to control usage of the B-tree 
+  deduplication technique. The default is *Yes*. This option is available only on PostgreSQL 13 and above.
+* Move the switch next to *Fast update?* towards the *right position* to control usage of the fast update technique. 
+  The default is *Yes*.
+* Move the switch next to *Autosummarize* towards the *right position* to define whether a summarization run is 
+  queued for the previous page range whenever an insertion is detected on the next one. The default is *No*
+* Move the switch next to *Unique?* towards the *right position* to check for duplicate values
+  in the table when the index is created and when data is added. The default is *No*.
+* Move the switch next to *NULLs not distinct?* towards the *right position* to treat null values as not distinct. 
+  The default is*No*. This option is available only on PostgreSQL 15 and above.
 * Move the *Clustered?* switch to the *Yes* position to instruct the server to
   cluster the table.
 * Move the *Concurrent build?* switch to the *Yes* position to build the index

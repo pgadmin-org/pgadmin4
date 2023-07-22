@@ -368,7 +368,7 @@ function addCommonMenus(menu) {
   let _menu = new gui.Menu();
 
   menu.menuItems.forEach((menuItem) => {
-    var submenu = getSubMenu(menuItem);
+    let submenu = getSubMenu(menuItem);
 
     let _menuItem = new gui.MenuItem({
       label: menuItem.label,
@@ -417,8 +417,6 @@ function addCommonMenus(menu) {
 }
 
 function getRuntimeMenu() {
-  let controlKey = platform() === 'darwin' ? 'cmd' : 'ctrl';
-  let fullScreenKey =  platform() === 'darwin' ? 'F' : 'F10';
   let subMenus = new gui.Menu();
   let rtmenudt = pgAdminMainScreen.window.pgAdmin.Browser.RUNTIME_MENUS_OPTIONS['runtime']
   let runtimeSubMenus = pgAdminMainScreen.window.pgAdmin.Browser.RUNTIME_MENUS_OPTIONS['runtime']['submenus']
@@ -558,7 +556,7 @@ function getSubMenu(menuItem) {
 
 function addMacMenu(menu) {
   if (menu.name == 'file' && platform() === 'darwin') {
-    var rootMenu = nativeMenu.items[0].submenu;
+    let rootMenu = nativeMenu.items[0].submenu;
     let indx = 0;
     menu.menuItems.forEach((menuItem) => {
       let submenu = getSubMenu(menuItem);
@@ -652,7 +650,7 @@ function refreshMenuItems(menu) {
       }
       menu.menuItems.forEach((item) => {
 
-        var submenu = new gui.Menu();
+        let submenu = new gui.Menu();
         if (item.menu_items) {
           item.menu_items.forEach((subItem) => {
             submenu.append(new gui.MenuItem({

@@ -103,9 +103,12 @@ class IndexesModule(CollectionNodeModule):
         Generate the collection node
         """
         assert ('tid' in kwargs or 'vid' in kwargs)
-        yield self.generate_browser_collection_node(
-            kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
-        )
+        if self.has_nodes(sid, did, scid=scid,
+                          tid=kwargs.get('tid', kwargs.get('vid', None)),
+                          base_template_path=IndexesView.BASE_TEMPLATE_PATH):
+            yield self.generate_browser_collection_node(
+                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+            )
 
     @property
     def script_load(self):
@@ -194,6 +197,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
 
     node_type = blueprint.node_type
     node_label = "Index"
+    BASE_TEMPLATE_PATH = 'indexes/sql/#{0}#'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -252,8 +256,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
             )
 
             # we will set template path for sql scripts
-            self.template_path = compile_template_path(
-                'indexes/sql/',
+            self.template_path = self.BASE_TEMPLATE_PATH.format(
                 self.manager.version
             )
 
@@ -274,7 +277,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will return list of collation available
         via AJAX response
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template(
                 "/".join([self.template_path, 'get_collations.sql'])
@@ -302,7 +305,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         This function will return list of access methods available
         via AJAX response
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         try:
             SQL = render_template("/".join([self.template_path, 'get_am.sql']))
             status, rset = self.conn.execute_2darray(SQL)
@@ -346,7 +349,7 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
                 if not status:
                     return internal_server_error(errormsg=res)
 
-                op_class_list = [{'label': '', 'value': ''}]
+                op_class_list = []
 
                 for r in result['rows']:
                     op_class_list.append({'label': r['opcname'],
@@ -601,6 +604,14 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
         data['table'] = self.table
+        data["storage_parameters"] = {}
+
+        storage_params = index_utils.get_storage_params(data['amname'])
+
+        for param in storage_params:
+            if param in data and data[param] != '':
+                data["storage_parameters"].update({param: data[param]})
+
         if len(data['table']) == 0:
             return gone(gettext(self.not_found_error_msg('Table')))
 
@@ -815,6 +826,15 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
         data['table'] = self.table
+
+        if data.get('amname', None):
+            data["storage_parameters"] = {}
+
+            storage_params = index_utils.get_storage_params(data['amname'])
+
+            for param in storage_params:
+                if param in data and data[param] != '':
+                    data["storage_parameters"].update({param: data[param]})
 
         try:
             sql, name = index_utils.get_sql(

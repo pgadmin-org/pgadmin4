@@ -27,7 +27,8 @@ from flask_socketio import disconnect, ConnectionRefusedError
 
 from pgadmin.model import db, User
 from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
-from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP
+from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP,\
+    MessageType
 from pgadmin.authenticate.registry import AuthSourceRegistry
 
 MODULE_NAME = 'authenticate'
@@ -132,7 +133,7 @@ def _login():
         if user.login_attempts >= config.MAX_LOGIN_ATTEMPTS > 0:
             flash(gettext('Your account is locked. Please contact the '
                           'Administrator.'),
-                  'warning')
+                  MessageType.WARNING)
             logout_user()
             return redirect(get_post_logout_redirect())
 
@@ -158,7 +159,7 @@ def _login():
                 if flash_login_attempt_error:
                     error = error + flash_login_attempt_error
                     flash_login_attempt_error = None
-                flash(error, 'warning')
+                flash(error, MessageType.WARNING)
 
         return redirect(get_post_logout_redirect())
 
@@ -175,7 +176,7 @@ def _login():
                 return redirect('{0}?next={1}'.format(url_for(
                     'authenticate.kerberos_login'), url_for('browser.index')))
 
-            flash(msg, 'danger')
+            flash(msg, MessageType.ERROR)
             return redirect(get_post_logout_redirect())
 
         session['auth_source_manager'] = current_auth_obj
@@ -194,7 +195,7 @@ def _login():
         return msg
     if 'auth_obj' in session:
         session.pop('auth_obj')
-    flash(msg, 'danger')
+    flash(msg, MessageType.ERROR)
     form_class = _security.forms.get('login_form').cls
     form = form_class()
 
@@ -268,7 +269,7 @@ class AuthSourceManager:
             if status:
                 return True
         if err_msg:
-            flash(err_msg, 'warning')
+            flash(err_msg, MessageType.WARNING)
         return False
 
     def authenticate(self):

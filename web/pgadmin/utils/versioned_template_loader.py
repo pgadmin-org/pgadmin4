@@ -81,12 +81,4 @@ def get_version_mapping_directories():
             {'name': "13_plus", 'number': 130000},
             {'name': "12_plus", 'number': 120000},
             {'name': "11_plus", 'number': 110000},
-            {'name': "10_plus", 'number': 100000},
-            {'name': "9.6_plus", 'number': 90600},
-            {'name': "9.5_plus", 'number': 90500},
-            {'name': "9.4_plus", 'number': 90400},
-            {'name': "9.3_plus", 'number': 90300},
-            {'name': "9.2_plus", 'number': 90200},
-            {'name': "9.1_plus", 'number': 90100},
-            {'name': "9.0_plus", 'number': 90000},
             {'name': "default", 'number': 0})

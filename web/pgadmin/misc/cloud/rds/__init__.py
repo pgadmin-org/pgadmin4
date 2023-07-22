@@ -78,9 +78,9 @@ def verify_credentials():
         if status:
             session['aws']['secret'] = data['secret']
             session['aws']['aws_rds_obj'] = pickle.dumps(_rds, -1)
-
-    if status:
-        msg = 'verified'
+            msg = 'verified'
+        else:
+            msg = identity
 
     return make_json_response(success=status, info=msg)
 
@@ -102,7 +102,7 @@ def get_db_instances():
         )
 
     if not eng_version or eng_version == '' or eng_version == 'undefined':
-        eng_version = '10.17'
+        eng_version = '11.16'
 
     rds_obj = pickle.loads(session['aws']['aws_rds_obj'])
     res = rds_obj.get_available_db_instance_class(

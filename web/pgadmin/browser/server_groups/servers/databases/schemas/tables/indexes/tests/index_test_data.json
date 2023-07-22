@@ -192,6 +192,129 @@
         "error_msg": "table_id",
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create index: Unique index",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: Unique index With nulls not distinct.",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 150000,
+        "skip_msg": "Nulls not distinct is not supported by PPAS/PG 15.0 and below."
+      },
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: Create btree index with storage parameters",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 130000,
+        "skip_msg": "Storage parameter deduplicate_items is not supported below PG 13.0."
+      },
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "fillfactor":"10",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },{
+      "name": "Create index: Create btree index with storage parameters (fillfactor)",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "fillfactor":"10",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
     }
   ],
   "index_get": [

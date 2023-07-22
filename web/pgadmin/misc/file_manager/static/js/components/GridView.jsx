@@ -81,7 +81,7 @@ export function ItemView({idx, row, selected, onItemSelect, onItemEnter, onEditC
       onEditComplete(row);
     }
   };
-  
+
   let icon = <DescriptionIcon style={{fontSize: '2.5rem'}} />;
   if(row.file_type == 'dir') {
     icon = <FolderIcon style={{fontSize: '2.5rem'}} />;
@@ -133,7 +133,7 @@ export default function GridView({items, operation, onItemSelect, onItemEnter}) 
     <Box flexGrow={1} overflow="hidden auto">
       <ul ref={gridRef} className={classes.grid}>
         {items.map((item, i)=>(
-          <ItemView key={i} idx={i} row={item} selected={selectedIdx==i} onItemSelect={setSelectedIdx}
+          <ItemView key={item.Filename} idx={i} row={item} selected={selectedIdx==i} onItemSelect={setSelectedIdx}
             onItemEnter={onItemEnter} onEditComplete={operation.idx==i ? onEditComplete : null} />)
         )}
       </ul>

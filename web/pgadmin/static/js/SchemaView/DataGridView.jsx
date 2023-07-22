@@ -635,7 +635,7 @@ export default function DataGridView({
             <div {...getTableBodyProps()} className={classes.tableContentWidth}>
               {rows.map((row, i) => {
                 prepareRow(row);
-                return <React.Fragment key={i}>
+                return <React.Fragment key={row.index}>
                   <DataTableRow index={i} row={row} totalRows={rows.length} isResizing={isResizing}
                     schema={schemaRef.current} schemaRef={schemaRef} accessPath={accessPath.concat([row.index])}
                     moveRow={moveRow} isHovered={i == hoverIndex} setHoverIndex={setHoverIndex} />

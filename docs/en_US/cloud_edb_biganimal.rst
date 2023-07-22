@@ -66,6 +66,8 @@ details.
 
 * Use the *Volume IOPS* field to specify the storage IOPS. This field is specific to AWS.
 
+* Use the *Disk throughput* field to specify the disk throughput. This field is specific to AWS.
+
 
 .. image:: images/cloud_biganimal_database.png
     :alt: Cloud Deployment Provider

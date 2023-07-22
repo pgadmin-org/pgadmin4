@@ -62,7 +62,7 @@ RUN export CPPFLAGS="-DPNG_ARM_NEON_OPT=0" && \
 # Next, create the base environment for Python
 #########################################################################
 
-FROM alpine:latest as env-builder
+FROM alpine:latest AS env-builder
 
 # Install dependencies
 COPY requirements.txt /
@@ -90,7 +90,7 @@ RUN     apk add --no-cache \
 # Now, create a documentation build container for the Sphinx docs
 #########################################################################
 
-FROM env-builder as docs-builder
+FROM env-builder AS docs-builder
 
 # Install Sphinx
 RUN /venv/bin/python3 -m pip install --no-cache-dir sphinx
@@ -114,21 +114,15 @@ RUN rm -rf /pgadmin4/docs/en_US/_build/html/_static/*.png
 # Create additional builders to get all of the PostgreSQL utilities
 #########################################################################
 
-FROM postgres:10-alpine as pg10-builder
-FROM postgres:11-alpine as pg11-builder
-FROM postgres:12-alpine as pg12-builder
-FROM postgres:13-alpine as pg13-builder
-FROM postgres:14-alpine as pg14-builder
-FROM postgres:15-alpine as pg15-builder
+FROM postgres:11-alpine AS pg11-builder
+FROM postgres:12-alpine AS pg12-builder
+FROM postgres:13-alpine AS pg13-builder
+FROM postgres:14-alpine AS pg14-builder
+FROM postgres:15-alpine AS pg15-builder
 
-FROM alpine:latest as tool-builder
+FROM alpine:latest AS tool-builder
 
 # Copy the PG binaries
-COPY --from=pg10-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-10/
-COPY --from=pg10-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-10/
-COPY --from=pg10-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-10/
-COPY --from=pg10-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-10/
-
 COPY --from=pg11-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-11/
 COPY --from=pg11-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-11/
 COPY --from=pg11-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-11/
@@ -195,7 +189,7 @@ RUN apk add \
         libedit \
         libldap \
         libcap && \
-    /venv/bin/python3 -m pip install --no-cache-dir gunicorn && \
+    /venv/bin/python3 -m pip install --no-cache-dir gunicorn==20.1.0 && \
     find / -type d -name '__pycache__' -exec rm -rf {} + && \
     useradd -r -u 5050 -g root -s /sbin/nologin pgadmin && \
     mkdir -p /var/lib/pgadmin && \

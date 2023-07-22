@@ -76,7 +76,7 @@ export function initializeModalProvider(modalContainer) {
   );
 }
 
-const FinalNotifyContent = React.forwardRef(({children}, ref) => {
+export const FinalNotifyContent = React.forwardRef(({children}, ref) => {
   return <SnackbarContent style= {{justifyContent:'end', maxWidth: '700px'}} ref={ref}>{children}</SnackbarContent>;
 });
 FinalNotifyContent.displayName = 'FinalNotifyContent';

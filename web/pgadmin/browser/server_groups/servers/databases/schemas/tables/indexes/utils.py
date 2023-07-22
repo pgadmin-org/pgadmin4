@@ -306,6 +306,13 @@ def get_reverse_engineered_sql(conn, **kwargs):
     # Adding parent into data dict, will be using it while creating sql
     data['schema'] = schema
     data['table'] = table
+    data["storage_parameters"] = {}
+
+    storage_params = get_storage_params(data['amname'])
+
+    for param in storage_params:
+        if (param in data) and (data[param] is not None):
+            data["storage_parameters"].update({param: data[param]})
 
     # Add column details for current index
     data = get_column_details(conn, idx, data, 'create')
@@ -327,3 +334,22 @@ def get_reverse_engineered_sql(conn, **kwargs):
         SQL = sql_header + '\n\n' + SQL
 
     return SQL
+
+
+def get_storage_params(amname):
+    """
+    This function will return storage parameters according to index type.
+
+    :param amname: access method name
+    :return:
+    """
+    storage_parameters = {
+        "btree": ["fillfactor", "deduplicate_items"],
+        "hash": ["fillfactor"],
+        "gist": ["fillfactor", "buffering"],
+        "gin": ["fastupdate", "gin_pending_list_limit"],
+        "spgist": ["fillfactor"],
+        "brin": ["pages_per_range", "autosummarize"],
+        "heap": []
+    }
+    return storage_parameters[amname]

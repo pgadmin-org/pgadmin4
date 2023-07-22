@@ -212,11 +212,11 @@ export default function Graphs({preferences, sid, did, pageVisible, enablePoll=t
       <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <GraphsWrapper
-          sessionStats={transformData(sessionStats, preferences['session_stats_refresh'], preferences['use_diff_point_style'])}
-          tpsStats={transformData(tpsStats, preferences['tps_stats_refresh'], preferences['use_diff_point_style'])}
-          tiStats={transformData(tiStats, preferences['ti_stats_refresh'], preferences['use_diff_point_style'])}
-          toStats={transformData(toStats, preferences['to_stats_refresh'], preferences['use_diff_point_style'])}
-          bioStats={transformData(bioStats, preferences['bio_stats_refresh'], preferences['use_diff_point_style'])}
+          sessionStats={transformData(sessionStats, preferences['session_stats_refresh'])}
+          tpsStats={transformData(tpsStats, preferences['tps_stats_refresh'])}
+          tiStats={transformData(tiStats, preferences['ti_stats_refresh'])}
+          toStats={transformData(toStats, preferences['to_stats_refresh'])}
+          bioStats={transformData(bioStats, preferences['bio_stats_refresh'])}
           errorMsg={errorMsg}
           showTooltip={preferences['graph_mouse_track']}
           showDataPoints={preferences['graph_data_points']}

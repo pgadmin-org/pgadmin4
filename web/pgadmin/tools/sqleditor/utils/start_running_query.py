@@ -11,8 +11,8 @@
 
 import pickle
 import secrets
-
-from flask import Response
+from threading import Thread
+from flask import Response, current_app, copy_current_request_context
 from flask_babel import gettext
 
 from config import PG_DEFAULT_DRIVER
@@ -55,6 +55,8 @@ class StartRunningQuery:
         can_filter = False
         notifies = None
         trans_status = None
+        status = -1
+        result = None
         if transaction_object is not None and session_obj is not None:
             # set fetched row count to 0 as we are executing query again.
             transaction_object.update_fetched_row_cnt(0)
@@ -85,7 +87,7 @@ class StartRunningQuery:
             effective_sql_statement = apply_explain_plan_wrapper_if_needed(
                 manager, sql)
 
-            result, status = self.__execute_query(
+            self.__execute_query(
                 conn,
                 session_obj,
                 effective_sql_statement,
@@ -99,6 +101,7 @@ class StartRunningQuery:
             # Get the notifies
             notifies = conn.get_notifies()
             trans_status = conn.transaction_status()
+
         else:
             status = False
             result = gettext(
@@ -134,17 +137,34 @@ class StartRunningQuery:
                                                              conn, sql):
             conn.execute_void("BEGIN;")
 
-        # Execute sql asynchronously with params is None
-        # and formatted_error is True.
-        status, result = conn.execute_async(sql)
+        is_rollback_req = StartRunningQuery.is_rollback_statement_required(
+            trans_obj,
+            conn)
 
-        # If the transaction aborted for some reason and
-        # Auto RollBack is True then issue a rollback to cleanup.
-        if StartRunningQuery.is_rollback_statement_required(trans_obj,
-                                                            conn):
-            conn.execute_void("ROLLBACK;")
+        @copy_current_request_context
+        def asyn_exec_query(conn, sql, trans_obj, is_rollback_req,
+                            app):
+            # Execute sql asynchronously with params is None
+            # and formatted_error is True.
+            with app.app_context():
+                try:
+                    status, result = conn.execute_async(sql)
+                    # # If the transaction aborted for some reason and
+                    # # Auto RollBack is True then issue a rollback to cleanup.
+                    if is_rollback_req:
+                        conn.execute_void("ROLLBACK;")
+                except Exception as e:
+                    self.logger.error(e)
+                    return internal_server_error(errormsg=str(e))
 
-        return result, status
+        _thread = pgAdminThread(target=asyn_exec_query,
+                                args=(conn, sql, trans_obj, is_rollback_req,
+                                      current_app._get_current_object())
+                                )
+        _thread.start()
+        trans_obj.set_thread_native_id(_thread.native_id)
+        StartRunningQuery.save_transaction_in_session(session_obj,
+                                                      trans_id, trans_obj)
 
     @staticmethod
     def is_begin_required_for_sql_query(trans_obj, conn, sql):
@@ -187,3 +207,13 @@ class StartRunningQuery:
         # Fetch the object for the specified transaction id.
         # Use pickle.loads function to get the command object
         return grid_data[str(transaction_id)]
+
+
+class pgAdminThread(Thread):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.app = current_app._get_current_object()
+
+    def run(self):
+        with self.app.app_context():
+            super().run()

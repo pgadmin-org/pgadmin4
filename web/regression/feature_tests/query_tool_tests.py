@@ -45,7 +45,6 @@ class QueryToolFeatureTest(BaseFeatureTest):
 
     def runTest(self):
         self._reset_options()
-        skip_warning = "Skipped."
         # on demand result set on scrolling.
         print("\nOn demand query result... ",
               file=sys.stderr, end="")
@@ -564,7 +563,7 @@ SELECT 1, pg_sleep(300)"""
             QueryToolLocators.btn_commit)
         if not commit_button.get_attribute('disabled'):
             commit_button.click()
-            time.sleep(0.5)
+            time.sleep(2)
 
         # enable auto-commit and disable auto-rollback
         self.page.check_execute_option('auto_commit')
