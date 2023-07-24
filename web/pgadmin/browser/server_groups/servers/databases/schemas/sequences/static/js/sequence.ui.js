@@ -89,6 +89,7 @@ export default class SequenceSchema extends BaseUISchema {
       maximum: undefined,
       cache: undefined,
       cycled: undefined,
+      relpersistence: undefined,
       relacl: [],
       securities: [],
       ...initValues,
@@ -154,6 +155,10 @@ export default class SequenceSchema extends BaseUISchema {
       }, {
         id: 'cycled', label: gettext('Cycled'), type: 'switch',
         mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
+      }, {
+        id: 'relpersistence', label: gettext('Unlogged?'), type: 'switch',
+        mode: ['properties', 'create', 'edit'], group: gettext('Definition'),
+        min_version: 150000,
       }, {
         type: 'nested-fieldset', label: gettext('Owned By'), group: gettext('Definition'),
         schema: this.ownedSchemaObj,
