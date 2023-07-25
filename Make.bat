@@ -292,6 +292,15 @@ REM Main build sequence Ends
     REM WGET END
 
     MOVE "%BUILDROOT%\runtime\nw.exe" "%BUILDROOT%\runtime\pgAdmin4.exe"
+    ECHO Attempting to sign the pgAdmin4.exe...
+    CALL "%PGADMIN_SIGNTOOL_DIR%\signtool.exe" sign /tr http://timestamp.digicert.com "%BUILDROOT%\runtime\pgAdmin4.exe"
+    IF %ERRORLEVEL% NEQ 0 (
+        ECHO.
+        ECHO ************************************************************
+        ECHO * Failed to sign the pgAdmin4.exe
+        ECHO ************************************************************
+        PAUSE
+    )
 
     ECHO Replacing executable icon...
     CALL yarn --cwd "%TMPDIR%" add winresourcer || EXIT /B
