@@ -1342,7 +1342,7 @@ WHERE db.datname = current_database()""")
 
         more_results = True
         while more_results:
-            if self.row_count > 0:
+            if cur.get_rowcount() > 0:
                 result = []
                 try:
                     if records == -1:
