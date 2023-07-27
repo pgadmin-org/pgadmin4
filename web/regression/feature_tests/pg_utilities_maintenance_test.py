@@ -133,8 +133,10 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         if self.test_level == 'database':
             vacuum_details = \
                 "VACUUM on database '{0}' of server " \
-                "{1} ({2}:{3})".format(self.database_name, self.server['name'],
-                                       self.server['host'], self.server['port'])
+                "{1} ({2}:{3})".format(self.database_name,
+                                       self.server['name'],
+                                       self.server['host'],
+                                       self.server['port'])
             self.assertEqual(message, vacuum_details)
             self.assertEqual(command, "VACUUM (VERBOSE);")
         elif self.is_xss_check and self.test_level == 'table':
@@ -150,9 +152,11 @@ class PGUtilitiesMaintenanceFeatureTest(BaseFeatureTest):
         else:
             vacuum_details = \
                 "VACUUM on table '{0}/public/{1}' of server " \
-                "{2} ({3}:{4})".format(self.database_name, self.table_name,
+                "{2} ({3}:{4})".format(self.database_name,
+                                       self.table_name,
                                        self.server['name'],
-                                       self.server['host'], self.server['port'])
+                                       self.server['host'],
+                                       self.server['port'])
             self.assertEqual(message, vacuum_details)
             self.assertEqual(command, "VACUUM (VERBOSE)"
                                       " public." + self.table_name + ";")
