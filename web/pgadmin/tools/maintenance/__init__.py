@@ -75,58 +75,49 @@ class Message(IProcessDesc):
 
         return "{0} ({1}:{2})".format(s.name, host, port)
 
-    def get_op(self):
-        op = self._check_for_vacuum()
-
-        if self.data['op'] == "ANALYZE":
-            op = _('ANALYZE')
-            if self.data['verbose']:
-                op += '(' + _('VERBOSE') + ')'
-
-        if self.data['op'] == "REINDEX":
-            if 'schema' in self.data and self.data['schema']:
-                if 'primary_key' in self.data or \
-                    'unique_constraint' in self.data or \
-                        'index' in self.data:
-                    return _('REINDEX INDEX')
-                else:
-                    return _('REINDEX TABLE')
-            op = _('REINDEX')
-
-        if self.data['op'] == "CLUSTER":
-            op = _('CLUSTER')
-
-        return op
+    def get_object_msg(self):
+        msg = _("on database '{0}'").format(self.data['database'])
+        if 'primary_key' in self.data or 'unique_constraint' in self.data:
+            msg = _("on constraint '{0}/{1}/{2}/{3}'").format(
+                self.data['database'], self.data['schema'], self.data['table'],
+                self.data['primary_key'] if 'primary_key' in self.data else
+                self.data['unique_constraint'])
+        elif 'index' in self.data:
+            msg = _("on index '{0}/{1}/{2}/{3}'").format(
+                self.data['database'], self.data['schema'],
+                self.data['table'], self.data['index'])
+        elif 'table' in self.data:
+            msg = _("on table '{0}/{1}/{2}'").format(
+                self.data['database'], self.data['schema'], self.data['table'])
+        elif 'schema' in self.data:
+            msg = _("on schema '{0}/{1}'").format(self.data['database'],
+                                                  self.data['schema'])
+        return msg
 
     @property
     def message(self):
-        res = _("{0} on database '{1}' of server {2}")
-        return res.format(
-            self.get_op(), self.data['database'], self.get_server_name())
+        op = _('VACUUM')
+        if self.data['op'] == "ANALYZE":
+            op = _('ANALYZE')
+        elif self.data['op'] == "REINDEX" and 'schema' not in self.data:
+            op = _('REINDEX')
+        elif self.data['op'] == "REINDEX" and 'schema' in self.data:
+            if 'primary_key' in self.data or 'unique_constraint' in self.data\
+                    or 'index' in self.data:
+                op = _('REINDEX INDEX')
+            elif 'table' in self.data:
+                op = _('REINDEX TABLE')
+            else:
+                op = _('REINDEX SCHEMA')
+        elif self.data['op'] == "CLUSTER":
+            op = _('CLUSTER')
+
+        res = _("{0} {1} of server {2}")
+        return res.format(op, self.get_object_msg(), self.get_server_name())
 
     @property
     def type_desc(self):
         return _("Maintenance")
-
-    def _check_for_vacuum(self):
-        """
-        Check for VACUUM in data and return format response.
-        :return: response.
-        """
-        res = None
-        if self.data['op'] == "VACUUM":
-            res = _('VACUUM ({0})')
-
-            opts = []
-            if 'vacuum_full' in self.data and self.data['vacuum_full']:
-                opts.append(_('FULL'))
-            if 'vacuum_freeze' in self.data and self.data['vacuum_freeze']:
-                opts.append(_('FREEZE'))
-            if self.data['verbose']:
-                opts.append(_('VERBOSE'))
-
-            res = res.format(', '.join(str(x) for x in opts))
-        return res
 
     def details(self, cmd, args):
         return {

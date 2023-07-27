@@ -11,6 +11,7 @@ import Notify from '../../../../static/js/helpers/Notifier';
 import {getUtilityView} from '../../../../browser/static/js/utility_view';
 import getApiInstance from 'sources/api_instance';
 import MaintenanceSchema, {getVacuumSchema} from './maintenance.ui';
+import { getNodeListByName } from '../../../../browser/static/js/node_ajax';
 
 define([
   'sources/gettext', 'sources/url_for', 'sources/pgadmin', 'pgadmin.browser',
@@ -76,9 +77,15 @@ define([
     },
     getUISchema: function(treeItem) {
       let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
+      const selectedNode = pgBrowser.tree.selected();
+      let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
 
       return new MaintenanceSchema(
-        ()=>getVacuumSchema(),
+        ()=>getVacuumSchema({
+          tablespace: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
+            return (m.label != 'pg_global');
+          })
+        }),
         {
           nodeInfo: treeNodeInfo
         }
@@ -105,6 +112,15 @@ define([
       }
       if(treeInfo?.mview) {
         extraData['table'] = treeInfo?.mview._label;
+      }
+      if(treeInfo?.primary_key) {
+        extraData['primary_key'] = treeInfo?.primary_key._label;
+      }
+      if(treeInfo?.unique_constraint) {
+        extraData['unique_constraint'] = treeInfo?.unique_constraint._label;
+      }
+      if(treeInfo?.index) {
+        extraData['index'] = treeInfo?.index._label;
       }
       extraData['save_btn_icon'] = 'done';
       return extraData;
@@ -174,7 +190,7 @@ define([
           } else{
 
             pgBrowser.Node.registerUtilityPanel();
-            let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
+            let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
               j = panel.$container.find('.obj_properties').first();
 
             let schema = that.getUISchema(item);
@@ -194,7 +210,7 @@ define([
               });
 
             getUtilityView(
-              schema, treeInfo, 'select', 'dialog', j[0], panel, that.saveCallBack, extraData, 'OK', jobUrl, sqlHelpUrl, helpUrl);
+              schema, treeInfo, 'create', 'dialog', j[0], panel, that.saveCallBack, extraData, 'OK', jobUrl, sqlHelpUrl, helpUrl);
           }
         })
         .catch(function() {

@@ -34,7 +34,7 @@ class MaintenanceJobTest(BaseTestGenerator):
                  cmd="VACUUM VERBOSE;\n"
              ),
              url='/maintenance/job/{0}/{1}',
-             expected_cmd='VACUUM VERBOSE',
+             expected_cmd='VACUUM (VERBOSE)',
              expected_exit_code=[0, None]
          ))
     ]
