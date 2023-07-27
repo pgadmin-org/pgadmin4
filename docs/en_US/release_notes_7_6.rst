@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #6376 <https://github.com/pgadmin-org/pgadmin4/issues/6376>`_ -  Added unlogged option while creating a sequence.
   | `Issue #6381 <https://github.com/pgadmin-org/pgadmin4/issues/6381>`_ -  Added support for SYSTEM, CONCURRENTLY and TABLESPACE options in REINDEX.
   | `Issue #6397 <https://github.com/pgadmin-org/pgadmin4/issues/6397>`_ -  Added new/missing options to the VACUUM command.
   | `Issue #6415 <https://github.com/pgadmin-org/pgadmin4/issues/6415>`_ -  Added SKIP_LOCKED and BUFFER_USAGE_LIMIT option to Analyze command.
