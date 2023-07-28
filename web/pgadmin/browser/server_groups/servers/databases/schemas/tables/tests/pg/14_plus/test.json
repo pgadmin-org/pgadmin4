@@ -1,5 +1,5 @@
 {
-  "scenarios": [    
+  "scenarios": [
     {
       "type": "create",
       "name": "Create Table without primary key",
@@ -8,7 +8,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "simple_table_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "test comment",
         "coll_inherits": "[]",
@@ -171,7 +171,11 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_without_primary_key.sql",
@@ -285,7 +289,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "test comment",
         "coll_inherits": "[]",
@@ -397,7 +401,11 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk.sql",
@@ -513,7 +521,7 @@
       "data": {
         "name": "simple_table_with_pk$%{}[]()&*^!@\"'`\\/#"
       }
-    },  
+    },
     {
       "type": "create",
       "name": "Create Table with pk & check constraint",
@@ -522,7 +530,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_pk_chk_constraints$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "create table comment",
         "coll_inherits": "[]",
@@ -652,13 +660,14 @@
         "like_storage": false,
         "like_comments": false,
         "like_identity": false,
-        "like_statistics": false
+        "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk_chk.sql",
       "expected_msql_file": "create_table_with_pk_chk_msql.sql"
-    },
-    {
+    },    {
       "type": "alter",
       "name": "Alter Table add unique constraint",
       "endpoint": "NODE-table.obj_id",
@@ -791,7 +800,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_fk_constraints$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "test comment",
         "coll_inherits": "[]",
@@ -1015,7 +1024,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_custom_autovaccum_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "custom auto vacuum",
         "coll_inherits": "[]",
@@ -1202,7 +1211,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "relhasoids": true,
         "description": "test comment",
@@ -1355,8 +1364,7 @@
       "data": {
         "name": "table_with_advanced_options_$%{}[]()&*^!@\"'`\\/#"
       }
-    },
-    {
+    },{
       "type": "create",
       "name": "Create Table for like table",
       "endpoint": "NODE-table.obj",
@@ -1400,8 +1408,7 @@
         "spcname": "pg_default"
       },
       "store_object_id": true
-    },
-    {
+    },{
       "type": "create",
       "name": "Create Table using like table",
       "endpoint": "NODE-table.obj",
@@ -1409,7 +1416,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "test ",
         "coll_inherits": "[]",
@@ -1488,22 +1495,22 @@
         "like_comments": true,
         "like_identity": true,
         "like_statistics": true,
+        "like_generated": true,
+        "like_compression": true,
         "like_relation": "public.like_tbl"
       },
       "store_object_id": true,
       "preprocess_data": true,
       "expected_sql_file": "create_table_with_lik_tbl.sql",
       "expected_msql_file": "create_table_with_lik_tbl_msql.sql"
-    },
-    {
+    },{
       "type": "delete",
       "name": "Delete Table with advanced options",
       "endpoint": "NODE-table.obj_id",
       "data": {
         "name": "table_like_tbl$%{}[]()&*^!@\"'`\\/#"
       }
-    },
-    {
+    },{
       "type": "create",
       "name": "Create Table with list partition",
       "endpoint": "NODE-table.obj",
@@ -1511,7 +1518,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_patition_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "partition table",
         "coll_inherits": "[]",
@@ -1648,6 +1655,8 @@
         "like_comments": false,
         "like_identity": false,
         "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
@@ -1662,7 +1671,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "table_with_range_patition_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "coll_inherits": "[]",
         "hastoasttable": true,
@@ -1799,11 +1808,163 @@
         "like_comments": false,
         "like_identity": false,
         "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_range_partition.sql",
       "expected_msql_file": "create_table_with_range_partition_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create Table with hash partition",
+      "endpoint": "NODE-table.obj",
+      "sql_endpoint": "NODE-table.sql_id",
+      "msql_endpoint": "NODE-table.msql",
+      "data": {
+        "name": "table_with_hash_patition_$%{}[]()&*^!@\\\"'`\\\\/#",
+        "relowner": "postgres",
+        "relacl": [],
+        "description": "hash partition",
+        "coll_inherits": "[]",
+        "hastoasttable": true,
+        "toast_autovacuum_enabled": "x",
+        "autovacuum_enabled": "x",
+        "primary_key": [],
+        "partitions": [
+          {
+            "is_attach": false,
+            "partition_name": "cust_part11",
+            "values_modulus": "2",
+            "values_remainder": "1",
+            "is_sub_partitioned": false,
+            "sub_partition_type": "range",
+            "sub_partition_keys": []
+          }
+        ],
+        "partition_type": "hash",
+        "is_partitioned": true,
+        "schema": "public",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "bigint",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "name",
+            "cltype": "text",
+            "attacl": [],
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          },
+          {
+            "name": "arr",
+            "cltype": "numeric",
+            "attacl": [],
+            "min_val_attlen": 1,
+            "min_val_attprecision": 0,
+            "max_val_attlen": 1000,
+            "max_val_attprecision": 1000,
+            "is_primary_key": false,
+            "attnotnull": false,
+            "attlen": null,
+            "attprecision": null,
+            "attidentity": "a",
+            "colconstype": "n",
+            "attoptions": [],
+            "seclabels": []
+          }
+        ],
+        "foreign_key": [],
+        "check_constraint": [],
+        "unique_constraint": [],
+        "exclude_constraint": [],
+        "partition_keys": [
+          {
+            "key_type": "column",
+            "pt_column": "id"
+          }
+        ],
+        "vacuum_table": [
+          {
+            "name": "autovacuum_analyze_scale_factor"
+          },
+          {
+            "name": "autovacuum_analyze_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "vacuum_toast": [
+          {
+            "name": "autovacuum_freeze_max_age"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_delay"
+          },
+          {
+            "name": "autovacuum_vacuum_cost_limit"
+          },
+          {
+            "name": "autovacuum_vacuum_scale_factor"
+          },
+          {
+            "name": "autovacuum_vacuum_threshold"
+          },
+          {
+            "name": "autovacuum_freeze_min_age"
+          },
+          {
+            "name": "autovacuum_freeze_table_age"
+          }
+        ],
+        "seclabels": [],
+        "forcerlspolicy": false,
+        "like_default_value": false,
+        "like_constraints": false,
+        "like_indexes": false,
+        "like_storage": false,
+        "like_comments": false,
+        "autovacuum_custom": false
+      },
+      "store_object_id": true,
+      "expected_sql_file": "create_table_with_hash_partition.sql",
+      "expected_msql_file": "create_table_with_hash_partition_msql.sql"
     },
     {
       "type": "create",
@@ -1813,7 +1974,7 @@
       "msql_endpoint": "NODE-table.msql",
       "data": {
         "name": "partition_table_with_collate_$%{}[]()&*^!@\"'`\\/#",
-        "relowner": "enterprisedb",
+        "relowner": "postgres",
         "relacl": [],
         "description": "partition table",
         "coll_inherits": "[]",
@@ -1953,6 +2114,8 @@
         "like_comments": false,
         "like_identity": false,
         "like_statistics": false,
+        "like_generated": false,
+        "like_compression": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,

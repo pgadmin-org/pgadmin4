@@ -418,13 +418,21 @@ not-null constraints;  after saving the new or modified table, any changes to
 the original table will not be applied to the new table.
 
 * Use the drop-down listbox next to *Relation* to select a reference table.
-* Move the *With default values?* switch to the *Yes* position to copy default
+* Move the switch next to *With default values?* towards the *right position* to copy default
   values.
-* Move the *With constraints?* switch to the *Yes* position to copy table and
+* Move the switch next to *With constraints?* towards the *right position* to copy table and
   column constraints.
-* Move the *With indexes?* switch to the *Yes* position to copy indexes.
-* Move the *With storage?* switch to the *Yes* position to copy storage settings.
-* Move the *With comments?* switch to the *Yes* position to copy comments.
+* Move the switch next to *With indexes?* towards the *right position* to copy indexes.
+* Move the switch next to *With storage?* towards the *right position* to copy storage settings.
+* Move the switch next to *With comments?* towards the *right position* to copy comments.
+* Move the switch next to *With compression?* towards the *right position* to copy
+  compression method. This option is available only on PostgreSQL 14 and above.
+* Move the switch next to *With generated?* towards the *right position* to copy
+  generation expressions of copied column. This option is available only on PostgreSQL 12 and above.
+* Move the switch next to *With identity?* towards the *right position* to copy
+  any identity specifications of copied column.
+* Move the switch next to *With statistics?* towards the *right position* to copy
+  extended statistics.
 
 With PostgreSQL 10 forward, the *Partition* tab will be visible.
 

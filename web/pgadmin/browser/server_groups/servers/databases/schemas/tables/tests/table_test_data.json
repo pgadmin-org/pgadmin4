@@ -608,6 +608,131 @@
         "error_msg": "Mocked Internal Server Error",
         "test_result_data": {}
       }
+    },
+    {
+      "name": "Create: Add Table for like table",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "like_tbl",
+        "columns": [
+          {
+            "name": "id",
+            "cltype": "integer",
+            "is_primary_key": true
+          },
+          {
+            "name": "name",
+            "cltype": "text"
+          }
+        ],
+        "primary_key": [
+          {
+            "columns": [
+              {
+                "column": "id"
+              }
+            ],
+            "include": []
+          }
+        ],
+        "unique_constraint": [
+          {
+            "name": "",
+            "columns": [
+              {
+                "column": "name"
+              }
+            ],
+            "include": []
+          }
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table with like option",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "columns": [],
+        "like_default_value": true,
+        "like_constraints": true,
+        "like_indexes": true,
+        "like_storage": true,
+        "like_comments": true,
+        "like_identity": true,
+        "like_statistics": true,
+        "like_relation": "public.like_tbl"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table with like option 12 plus",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 120000,
+        "skip_msg": "Like generated is not supported by PPAS/PG 11.0 and below"
+      },
+      "test_data": {
+        "columns": [],
+        "like_default_value": true,
+        "like_constraints": true,
+        "like_indexes": true,
+        "like_storage": true,
+        "like_comments": true,
+        "like_identity": true,
+        "like_statistics": true,
+        "like_generated": true,
+        "like_relation": "public.like_tbl"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create: Add Table with like option 14 plus",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 140000,
+        "skip_msg": "Like compression is not supported by PPAS/PG 14.0 and below"
+      },
+      "test_data": {
+        "columns": [],
+        "like_default_value": true,
+        "like_constraints": true,
+        "like_indexes": true,
+        "like_storage": true,
+        "like_comments": true,
+        "like_identity": true,
+        "like_statistics": true,
+        "like_generated": true,
+        "like_compression": true,
+        "like_relation": "public.like_tbl"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
     }
   ],
   "table_delete": [
