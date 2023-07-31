@@ -467,7 +467,7 @@ def validate_user(data):
     if 'auth_source' in data and data['auth_source'] != "":
         new_data['auth_source'] = data['auth_source']
 
-    if 'locked' in data and type(data['locked']) == bool:
+    if 'locked' in data and isinstance(data['locked'], bool):
         new_data['locked'] = data['locked']
         if data['locked']:
             new_data['login_attempts'] = config.MAX_LOGIN_ATTEMPTS
