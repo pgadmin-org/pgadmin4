@@ -212,7 +212,7 @@ def init_filemanager():
         data = Filemanager.get_trasaction_selection(trans_id)
         pref = Preferences.module('file_manager')
         file_dialog_view = pref.preference('file_dialog_view').get()
-        if type(file_dialog_view) == list:
+        if isinstance(file_dialog_view, list):
             file_dialog_view = file_dialog_view[0]
 
         last_selected_format = get_file_type_setting(data['supported_types'])
@@ -1157,6 +1157,6 @@ def file_manager(trans_id):
     except PermissionError as e:
         return unauthorized(str(e))
 
-    if type(res) == Response:
+    if isinstance(res, Response):
         return res
     return make_json_response(data={'result': res, 'status': True})

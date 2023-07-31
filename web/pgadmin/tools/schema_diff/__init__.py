@@ -446,8 +446,8 @@ def compare_database(params):
                                params['target_sid'])
     if not status:
         socketio.emit('compare_database_failed',
-                      error_msg.json if type(
-                          error_msg) == Response else error_msg,
+                      error_msg.json if isinstance(
+                          error_msg, Response) else error_msg,
                       namespace=SOCKETIO_NAMESPACE, to=request.sid)
         return error_msg
 
@@ -585,8 +585,8 @@ def compare_schema(params):
                                params['target_sid'])
     if not status:
         socketio.emit('compare_schema_failed',
-                      error_msg.json if type(
-                          error_msg) == Response else error_msg,
+                      error_msg.json if isinstance(
+                          error_msg, Response) else error_msg,
                       namespace=SOCKETIO_NAMESPACE, to=request.sid)
         return error_msg
 
