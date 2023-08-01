@@ -13252,7 +13252,7 @@ __metadata:
     valid-filename: ^2.0.1
     webcabin-docker: "https://github.com/pgadmin-org/wcdocker#460fc6d90ba170bb177faaa8277f5fbb8279522a"
     webfonts-loader: ^8.0.1
-    webpack: ^5.76.3
+    webpack: ^5.88.2
     webpack-bundle-analyzer: ^4.8.0
     webpack-cli: ^4.5.0
     wkx: ^0.5.0
@@ -15281,9 +15281,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.76.3":
-  version: 5.88.0
-  resolution: "webpack@npm:5.88.0"
+"webpack@npm:^5.88.2":
+  version: 5.88.2
+  resolution: "webpack@npm:5.88.2"
   dependencies:
     "@types/eslint-scope": ^3.7.3
     "@types/estree": ^1.0.0
@@ -15314,7 +15314,7 @@ __metadata:
       optional: true
   bin:
     webpack: bin/webpack.js
-  checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
+  checksum: 79476a782da31a21f6dd38fbbd06b68da93baf6a62f0d08ca99222367f3b8668f5a1f2086b7bb78e23172e31fa6df6fa7ab09b25e827866c4fc4dc2b30443ce2
   languageName: node
   linkType: hard
 
