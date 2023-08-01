@@ -31,3 +31,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #6500 <https://github.com/pgadmin-org/pgadmin4/issues/6500>`_ -  Fix the issue where query tool window turns blank if the user tries to generate a graph on the result.
