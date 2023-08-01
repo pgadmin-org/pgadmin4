@@ -85,3 +85,12 @@ ALTER TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.description is defined and o_data.description != data.description %}
 COMMENT ON INDEX {{conn|qtIdent(data.schema, data.name)}}
     IS {{data.description|qtLiteral(conn)}};{% endif %}
+
+{## Alter column statistics##}
+{% if update_column %}
+{% for col in update_column_data %}
+ALTER INDEX IF EXISTS {{conn|qtIdent(data.schema, data.name)}}
+    ALTER COLUMN {{col.col_num}} SET STATISTICS {{col.statistics}};
+
+{% endfor %}
+{% endif %}

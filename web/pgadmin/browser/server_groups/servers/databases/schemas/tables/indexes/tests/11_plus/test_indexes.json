@@ -23,7 +23,7 @@
     },
     {
       "type": "create",
-      "name": "Create btree index with ASC and NULLS LAST -- 15 Plus",
+      "name": "Create btree index with ASC and NULLS LAST -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -50,7 +50,6 @@
         "description":"Test Comment",
         "fillfactor":"10",
         "indisunique":true,
-        "indnullsnotdistinct":true,
         "indisclustered":false,
         "isconcurrent":false,
         "indconstraint":"id < 100"
@@ -60,7 +59,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop index",
+      "name": "Drop index -- 11 Plus",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -68,7 +67,7 @@
     },
     {
       "type": "create",
-      "name": "Create btree index with ASC and NULLS FIRST -- 15 Plus",
+      "name": "Create btree index with ASC and NULLS FIRST -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -95,7 +94,6 @@
         "description":"Test Comment",
         "fillfactor":"10",
         "indisunique":true,
-        "indnullsnotdistinct":true,
         "indisclustered":false,
         "isconcurrent":false,
         "indconstraint":"id < 100"
@@ -105,7 +103,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop index -- 15 Plus",
+      "name": "Drop index -- 11 Plus",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -113,7 +111,7 @@
     },
     {
       "type": "create",
-      "name": "Create btree index with DESC and NULLS LAST -- 15 Plus",
+      "name": "Create btree index with DESC and NULLS LAST -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -140,7 +138,6 @@
         "description":"Test Comment",
         "fillfactor":"10",
         "indisunique":true,
-        "indnullsnotdistinct":true,
         "indisclustered":false,
         "isconcurrent":false,
         "indconstraint":"id < 100"
@@ -150,7 +147,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop index -- 15 Plus",
+      "name": "Drop index -- 11 Plus",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -158,7 +155,7 @@
     },
     {
       "type": "create",
-      "name": "Create btree index with DESC and NULLS FIRST -- 15 Plus",
+      "name": "Create btree index with DESC and NULLS FIRST -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -183,7 +180,6 @@
           "is_sort_nulls_applicable":true
         }],
         "indisunique":true,
-        "indnullsnotdistinct":true,
         "indisclustered":false,
         "isconcurrent":false
       },
@@ -192,7 +188,7 @@
     },
     {
       "type": "alter",
-      "name": "Alter index name, fill factor, comment and clustered -- 15 Plus",
+      "name": "Alter index name, fill factor, comment and clustered -- 11 Plus",
       "endpoint": "NODE-index.obj_id",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql_id",
@@ -207,7 +203,7 @@
     },
     {
       "type": "alter",
-      "name": "Alter reset fill factor and cluster -- 15 Plus",
+      "name": "Alter reset fill factor and cluster -- 11 Plus",
       "endpoint": "NODE-index.obj_id",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql_id",
@@ -220,7 +216,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop index -- 15 Plus",
+      "name": "Drop index -- 11 Plus",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx1_$%{}[]()&*^!@\"'`\\/#"
@@ -228,7 +224,7 @@
     },
     {
       "type": "create",
-      "name": "Create btree index with expression and ASC and NULLS LAST -- 15 Plus",
+      "name": "Create btree index with expression and ASC and NULLS LAST -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -265,7 +261,7 @@
     },
     {
       "type": "alter",
-      "name": "Alter index statistics of expression -- 15 Plus",
+      "name": "Alter index statistics of expression -- 11 Plus",
       "endpoint": "NODE-index.obj_id",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql_id",
@@ -290,7 +286,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop index -- 15 Plus",
+      "name": "Drop index -- 11 Plus",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx3_$%{}[]()&*^!@\"'`\\/#"
@@ -298,7 +294,7 @@
     },
     {
       "type": "create",
-      "name": "Create hash index -- 15 Plus",
+      "name": "Create hash index -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -323,7 +319,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop hash index -- 15 Plus",
+      "name": "Drop hash index -- 11 Plus",
       "endpoint": "NODE-index.delete_id",
       "data": {
         "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -339,7 +335,7 @@
     },
     {
       "type": "create",
-      "name": "Create unnamed hash index -- 15 Plus",
+      "name": "Create unnamed hash index -- 11 Plus",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",
       "msql_endpoint": "NODE-index.msql",
@@ -361,7 +357,7 @@
     },
     {
       "type": "delete",
-      "name": "Drop hash index -- 15 Plus",
+      "name": "Drop hash index -- 11 Plus",
       "endpoint": "NODE-index.delete_id"
     }
   ]
