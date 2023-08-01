@@ -13,7 +13,7 @@ import '../helper/enzyme.helper';
 import { createMount } from '@material-ui/core/test-utils';
 import Theme from '../../../pgadmin/static/js/Theme';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
+import axios from 'axios';
 import ProcessDetails from '../../../pgadmin/misc/bgprocess/static/js/ProcessDetails';
 import BgProcessManager, { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
 import pgAdmin from 'sources/pgadmin';
