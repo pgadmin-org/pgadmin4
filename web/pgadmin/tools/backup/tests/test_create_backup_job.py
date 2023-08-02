@@ -18,7 +18,7 @@ import pgadmin.tools.backup.tests.test_backup_utils as backup_utils
 class BackupJobTest(BaseTestGenerator):
     """Backup api test cases"""
     scenarios = [
-        ('When backup the object with the default options',
+        ('When backup the object with the default options (< v16)',
          dict(
              params=dict(
                  file='test_backup',
@@ -34,11 +34,46 @@ class BackupJobTest(BaseTestGenerator):
                  expected_cmd_opts=['--verbose', '--format=c', '--blobs'],
                  not_expected_cmd_opts=[],
                  expected_exit_code=[0, None]
-             )
+             ),
+             server_max_version=159999,
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
+         )),
+        ('When backup the object with the default options (>= v16)',
+         dict(
+             params=dict(
+                 file='test_backup',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres'
+             ),
+             url='/backup/job/{0}/object',
+             expected_params=dict(
+                 expected_cmd_opts=['--verbose', '--format=c',
+                                    '--large-objects'],
+                 not_expected_cmd_opts=[],
+                 expected_exit_code=[0, None]
+             ),
+             server_min_version=160000,
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
          ))
     ]
 
     def setUp(self):
+        if hasattr(self, 'server_min_version') and \
+            self.server_information['server_version'] < \
+                self.server_min_version:
+            self.skipTest(self.message)
+
+        if hasattr(self, 'server_max_version') and \
+            self.server_information['server_version'] > \
+                self.server_max_version:
+            self.skipTest(self.message)
+
         if 'default_binary_paths' not in self.server or \
             self.server['default_binary_paths'] is None or \
             self.server['type'] not in self.server['default_binary_paths'] or\
@@ -56,9 +91,9 @@ class BackupJobTest(BaseTestGenerator):
         if os.name == 'nt':
             binary_path = binary_path + '.exe'
 
-        retVal = does_utility_exist(binary_path)
-        if retVal is not None:
-            self.skipTest(retVal)
+        ret_val = does_utility_exist(binary_path)
+        if ret_val is not None:
+            self.skipTest(ret_val)
 
     def runTest(self):
         self.server_id = parent_node_dict["server"][-1]["server_id"]
@@ -75,6 +110,5 @@ class BackupJobTest(BaseTestGenerator):
                                                   self.assertEqual
                                                   )
 
-        if backup_file is not None:
-            if os.path.isfile(backup_file):
-                os.remove(backup_file)
+        if backup_file is not None and os.path.isfile(backup_file):
+            os.remove(backup_file)

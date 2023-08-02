@@ -43,6 +43,21 @@ class ViewsGetTestCase(BaseTestGenerator):
         if not db_con['data']["connected"]:
             raise Exception("Could not connect to database to fetch the view.")
 
+        # Check DB version
+        if "server_min_version" in self.data:
+            server_con = server_utils.connect_server(self, self.server_id)
+            if server_con["info"] != "Server connected.":
+                raise Exception("Could not connect to server to check version")
+            if server_con["data"]["version"] < self.data["server_min_version"]:
+                self.skipTest(self.data["skip_msg"])
+
+        if "server_max_version" in self.data:
+            server_con = server_utils.connect_server(self, self.server_id)
+            if server_con["info"] != "Server connected.":
+                raise Exception("Could not connect to server to check version")
+            if server_con["data"]["version"] > self.data["server_max_version"]:
+                self.skipTest(self.data["skip_msg"])
+
         # Create schema
         self.schema_id = schema_info["schema_id"]
         self.schema_name = schema_info["schema_name"]
