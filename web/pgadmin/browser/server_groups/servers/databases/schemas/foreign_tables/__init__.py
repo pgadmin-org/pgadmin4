@@ -74,19 +74,21 @@ class ForeignTableModule(SchemaChildModule):
             yield self.generate_browser_collection_node(scid)
 
     @property
-    def node_inode(self):
-        """
-        Make the node as leaf node.
-        """
-        return False
-
-    @property
     def script_load(self):
         """
         Load the module script for foreign table, when the
         schema node is initialized.
         """
         return databases.DatabaseModule.node_type
+
+    def register(self, app, options):
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.triggers import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+            constraints import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = ForeignTableModule(__name__)

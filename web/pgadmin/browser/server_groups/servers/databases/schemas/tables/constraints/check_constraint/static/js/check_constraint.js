@@ -30,7 +30,7 @@ define('pgadmin.node.check_constraint', [
       dialogHelp: url_for('help.static', {'filename': 'check_dialog.html'}),
       hasSQL: true,
       hasDepends: true,
-      parent_type: ['table','partition'],
+      parent_type: ['table','partition','foreign_table'],
       url_jump_after_node: 'schema',
       Init: function() {
         // Avoid mulitple registration of menus
