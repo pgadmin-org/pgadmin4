@@ -26,6 +26,7 @@ New features
   | `Issue #6381 <https://github.com/pgadmin-org/pgadmin4/issues/6381>`_ -  Added support for SYSTEM, CONCURRENTLY and TABLESPACE options in REINDEX.
   | `Issue #6397 <https://github.com/pgadmin-org/pgadmin4/issues/6397>`_ -  Added new/missing options to the VACUUM command.
   | `Issue #6415 <https://github.com/pgadmin-org/pgadmin4/issues/6415>`_ -  Added SKIP_LOCKED and BUFFER_USAGE_LIMIT option to Analyze command.
+  | `Issue #6448 <https://github.com/pgadmin-org/pgadmin4/issues/6448>`_ -  Add support for TRUNCATE trigger in foreign table.
 
 Housekeeping
 ************
@@ -35,5 +36,6 @@ Housekeeping
 Bug fixes
 *********
 
+  | `Issue #5454 <https://github.com/pgadmin-org/pgadmin4/issues/5454>`_ -  Fix incorrect redirection URL after authentication by removing fixed value set to SCRIPT_NAME environment variable in pgAdmin4.wsgi file.
   | `Issue #6500 <https://github.com/pgadmin-org/pgadmin4/issues/6500>`_ -  Fix the issue where query tool window turns blank if the user tries to generate a graph on the result.
   | `Issue #6624 <https://github.com/pgadmin-org/pgadmin4/issues/6624>`_ -  Fix an issue where changing MFA_SUPPORTED_METHODS breaks the MFA validation.
