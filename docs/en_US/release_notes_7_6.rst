@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #2595 <https://github.com/pgadmin-org/pgadmin4/issues/2595>`_ -  Added Expression to CREATE INDEX.
+  | `Issue #3942 <https://github.com/pgadmin-org/pgadmin4/issues/3942>`_ -  Added cascade option while creating an extension.
   | `Issue #6375 <https://github.com/pgadmin-org/pgadmin4/issues/6375>`_ -  Added support for ALTER INDEX column statistics.
   | `Issue #6376 <https://github.com/pgadmin-org/pgadmin4/issues/6376>`_ -  Added unlogged option while creating a sequence.
   | `Issue #6381 <https://github.com/pgadmin-org/pgadmin4/issues/6381>`_ -  Added support for SYSTEM, CONCURRENTLY and TABLESPACE options in REINDEX.
@@ -32,8 +33,8 @@ New features
 Housekeeping
 ************
 
-  | `Issue #6588 <https://github.com/pgadmin-org/pgadmin4/issues/6588>`_ -  Added support for PostgreSQL and EPAS 16 to ensure it works without any errors.
   | `Issue #3702 <https://github.com/pgadmin-org/pgadmin4/issues/3702>`_ -  Generate software bill of materials as part of the package builds.
+  | `Issue #6588 <https://github.com/pgadmin-org/pgadmin4/issues/6588>`_ -  Added support for PostgreSQL and EPAS 16 to ensure it works without any errors.
 
 Bug fixes
 *********
