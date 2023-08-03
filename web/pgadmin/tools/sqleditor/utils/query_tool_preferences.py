@@ -55,6 +55,12 @@ def register_query_tool_preferences(self):
         category_label=PREF_LABEL_EXPLAIN
     )
 
+    self.explain_wal = self.preference.register(
+        'Explain', 'explain_wal',
+        gettext("Show wal?"), 'boolean', False,
+        category_label=PREF_LABEL_EXPLAIN
+    )
+
     self.auto_commit = self.preference.register(
         'Options', 'auto_commit',
         gettext("Auto commit?"), 'boolean', True,
