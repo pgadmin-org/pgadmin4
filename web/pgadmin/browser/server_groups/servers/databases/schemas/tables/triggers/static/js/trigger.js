@@ -35,8 +35,8 @@ define('pgadmin.node.trigger', [
 
   if (!pgBrowser.Nodes['trigger']) {
     pgAdmin.Browser.Nodes['trigger'] = pgBrowser.Node.extend({
-      parent_type: ['table', 'view', 'partition'],
-      collection_type: ['coll-table', 'coll-view'],
+      parent_type: ['table', 'view', 'partition', 'foreign_table'],
+      collection_type: ['coll-table', 'coll-view','coll-foreign_table'],
       type: 'trigger',
       label: gettext('Trigger'),
       hasSQL:  true,
@@ -93,7 +93,13 @@ define('pgadmin.node.trigger', [
           category: 'create', priority: 4, label: gettext('Trigger...'),
           data: {action: 'create', check: true},
           enable: 'canCreate',
-        },
+        },{
+          name: 'create_trigger_onForeignTable', node: 'foreign_table', module: this,
+          applies: ['object', 'context'], callback: 'show_obj_properties',
+          category: 'create', priority: 3, label: gettext('Trigger...'),
+          data: {action: 'create', check: true},
+          enable: 'canCreate',
+        }
         ]);
       },
       callbacks: {

@@ -100,12 +100,13 @@ class TriggerModule(CollectionNodeModule):
         """
         Generate the collection node
         """
-        assert ('tid' in kwargs or 'vid' in kwargs)
+        assert ('tid' in kwargs or 'vid' in kwargs or 'foid' in kwargs)
+        tid = kwargs.get('tid', kwargs.get('vid', kwargs.get('foid', None)))
         if self.has_nodes(sid, did, scid=scid,
-                          tid=kwargs.get('tid', kwargs.get('vid', None)),
+                          tid=tid,
                           base_template_path=TriggerView.BASE_TEMPLATE_PATH):
             yield self.generate_browser_collection_node(
-                kwargs['tid'] if 'tid' in kwargs else kwargs['vid']
+                tid
             )
 
     @property
