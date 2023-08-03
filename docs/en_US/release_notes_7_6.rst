@@ -33,6 +33,7 @@ Housekeeping
 ************
 
   | `Issue #6588 <https://github.com/pgadmin-org/pgadmin4/issues/6588>`_ -  Added support for PostgreSQL and EPAS 16 to ensure it works without any errors.
+  | `Issue #3702 <https://github.com/pgadmin-org/pgadmin4/issues/3702>`_ -  Generate software bill of materials as part of the package builds.
 
 Bug fixes
 *********

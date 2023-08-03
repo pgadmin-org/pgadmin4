@@ -26,6 +26,7 @@ _create_python_virtualenv "redhat"
 _build_runtime
 _build_docs "redhat"
 _copy_code
+_generate_sbom
 
 # Get an RPM-compatible version number
 RPM_VERSION=${APP_RELEASE}.${APP_REVISION}

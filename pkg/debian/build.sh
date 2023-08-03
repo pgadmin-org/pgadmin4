@@ -22,6 +22,7 @@ _create_python_virtualenv "debian"
 _build_runtime
 _build_docs "debian"
 _copy_code
+_generate_sbom
 
 #
 # Server package

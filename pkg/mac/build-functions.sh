@@ -320,6 +320,11 @@ _complete_bundle() {
     chmod -R og-w "${BUNDLE_DIR}"
 }
 
+_generate_sbom() {
+   echo "Generating SBOM..."
+   syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/cyclonedx.json"
+}
+
 _codesign_binaries() {
     if [ "${CODESIGN}" -eq 0 ]; then
         return
