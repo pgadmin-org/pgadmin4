@@ -128,6 +128,7 @@ cp -rfa %{pga_build_root}/desktop/* \${RPM_BUILD_ROOT}
 /usr/share/icons/hicolor/32x32/apps/*
 /usr/share/icons/hicolor/16x16/apps/*
 /usr/share/applications/*
+/usr/pgadmin4/sbom-desktop.json
 EOF
 
 # Build the Redhat package for the server
