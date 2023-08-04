@@ -927,6 +927,9 @@ def poll(trans_id):
 
     if is_thread_alive:
         status = 'Busy'
+        messages = conn.messages()
+        if messages and len(messages) > 0:
+            result = ''.join(messages)
     elif status and conn is not None and session_obj is not None:
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)
