@@ -170,6 +170,7 @@ cp -rfa %{pga_build_root}/web/* \${RPM_BUILD_ROOT}
 %files
 /usr/pgadmin4/bin/*
 %config(noreplace) /etc/httpd/conf.d/*
+/usr/pgadmin4/sbom-web.json
 EOF
 
 mkdir -p "${WEBROOT}/etc/httpd/conf.d"
