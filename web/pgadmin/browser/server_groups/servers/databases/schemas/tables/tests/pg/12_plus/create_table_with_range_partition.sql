@@ -15,7 +15,8 @@ ALTER TABLE IF EXISTS public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
 -- Partitions SQL
 
 CREATE TABLE public."cust_arr_small PARTITION" PARTITION OF public."table_with_range_patition_$%{}[]()&*^!@""'`\/#"
-    FOR VALUES FROM ('20') TO ('25');
+    FOR VALUES FROM ('20') TO ('25')
+TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public."cust_arr_small PARTITION"
     OWNER to postgres;

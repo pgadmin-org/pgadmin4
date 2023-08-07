@@ -6,6 +6,7 @@ CREATE TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
         INCLUDING INDEXES
         INCLUDING STORAGE
         INCLUDING COMMENTS
+        INCLUDING COMPRESSION
         INCLUDING GENERATED
         INCLUDING IDENTITY
         INCLUDING STATISTICS
@@ -13,7 +14,7 @@ CREATE TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
 );
 
 ALTER TABLE IF EXISTS public."table_like_tbl$%{}[]()&*^!@""'`\/#"
-    OWNER to postgres;
+    OWNER to enterprisedb;
 
 COMMENT ON TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
     IS 'test ';
