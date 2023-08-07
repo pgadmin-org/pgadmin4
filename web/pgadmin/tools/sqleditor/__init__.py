@@ -920,7 +920,9 @@ def poll(trans_id):
     is_thread_alive = False
     if trans_obj.get_thread_native_id():
         for thread in threading.enumerate():
-            if thread.native_id == trans_obj.get_thread_native_id() and\
+            _native_id = thread.native_id if hasattr(thread, 'native_id'
+                                                     ) else thread.ident
+            if _native_id == trans_obj.get_thread_native_id() and\
                     thread.is_alive():
                 is_thread_alive = True
                 break
