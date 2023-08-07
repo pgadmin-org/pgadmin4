@@ -231,6 +231,10 @@ export class LikeSchema extends BaseUISchema {
         like_indexes: false,
         like_storage: false,
         like_comments: false,
+        like_compression: false,
+        like_generated: false,
+        like_identity: false,
+        like_statistics: false
       };
     }
   }
@@ -256,20 +260,44 @@ export class LikeSchema extends BaseUISchema {
         id: 'like_default_value', label: gettext('With default values?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_constraints', label: gettext('With constraints?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_indexes', label: gettext('With indexes?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_storage', label: gettext('With storage?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_comments', label: gettext('With comments?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
+      },{
+        id: 'like_compression', label: gettext('With compression?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        min_version: 140000, inlineNext: true,
+      },{
+        id: 'like_generated', label: gettext('With generated?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        min_version: 120000, inlineNext: true,
+      },{
+        id: 'like_identity', label: gettext('With identity?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
+      },{
+        id: 'like_statistics', label: gettext('With statistics?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
       }

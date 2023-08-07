@@ -244,3 +244,11 @@ _copy_code() {
     rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
 }
 
+
+_generate_sbom() {
+   echo "Generating SBOMs..."
+   # Note that we don't generate an SBOM for the Meta package as it doesn't contain any files.
+   syft "${SERVERROOT}/" -o cyclonedx-json > "${SERVERROOT}/usr/${APP_NAME}/sbom-server.json"
+   syft "${DESKTOPROOT}/" -o cyclonedx-json > "${DESKTOPROOT}/usr/${APP_NAME}/sbom-desktop.json"
+   syft "${WEBROOT}/" -o cyclonedx-json > "${WEBROOT}/usr/${APP_NAME}/sbom-web.json"
+}

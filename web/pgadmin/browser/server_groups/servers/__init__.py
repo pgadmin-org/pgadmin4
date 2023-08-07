@@ -412,14 +412,14 @@ class ServerModule(sg.ServerGroupPluginModule):
         """
         shared_server = SharedServer.query.filter_by(
             name=server.name, user_id=current_user.id,
-            servergroup_id=gid, osid=server.id).first()
+            servergroup_id=int(gid), osid=server.id).first()
 
         if shared_server is None:
-            ServerModule.create_shared_server(server, gid)
+            ServerModule.create_shared_server(server, int(gid))
 
             shared_server = SharedServer.query.filter_by(
                 name=server.name, user_id=current_user.id,
-                servergroup_id=gid, osid=server.id).first()
+                servergroup_id=int(gid), osid=server.id).first()
 
         return shared_server
 
