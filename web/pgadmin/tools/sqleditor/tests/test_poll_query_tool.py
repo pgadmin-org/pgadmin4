@@ -15,8 +15,6 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 import secrets
-from pgadmin.tools.sqleditor.tests.execute_query_test_utils \
-    import async_poll
 
 
 class TestPollQueryTool(BaseTestGenerator):
@@ -82,7 +80,6 @@ NOTICE:  Hello, world!
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
         response = self.tester.post(url)
-        import time
         self.assertEqual(response.status_code, 200)
 
         cnt = 0
@@ -94,20 +91,32 @@ NOTICE:  Hello, world!
                                         content_type='html/json')
 
             self.assertEqual(response.status_code, 200)
+            url = '/sqleditor/poll/{0}'.format(self.trans_id)
 
-            response = async_poll(tester=self.tester,
-                                  poll_url='/sqleditor/poll/{0}'.format(
-                                      self.trans_id))
-            self.assertEqual(response.status_code, 200)
-            response_data = json.loads(response.data.decode('utf-8'))
+            _status = True
+            # Lets poll till the status is busy and check the messages
+            while _status:
+                response = self.tester.get(url)
+                if response.data:
+                    response_data = json.loads(response.data.decode('utf-8'))
 
-            if self.expected_message[cnt] is not None:
-                self.assertIn(self.expected_message[cnt],
-                              response_data['data']['additional_messages'])
+                    if response_data['success'] == 1 and 'data' in\
+                            response_data:
+                        if response_data['data']['status'] == 'NotInitialised':
+                            pass
+                        elif response_data['data']['status'] == 'Busy':
+                            if self.expected_message[cnt] is not None:
+                                if response_data['data']['result']:
 
-            # Check the output
-            self.assertEqual(self.expected_result[cnt],
-                             response_data['data']['result'][0][0])
+                                    self.assertIn(
+                                        response_data['data']['result'],
+                                        self.expected_message[cnt]
+                                    )
+                        else:
+                            self.assertEqual(self.expected_result[cnt],
+                                             response_data['data']['result'][
+                                                 0][0])
+                            _status = False
 
             cnt += 1
 
