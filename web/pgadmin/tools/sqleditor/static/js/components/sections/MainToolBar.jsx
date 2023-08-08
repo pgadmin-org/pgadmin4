@@ -393,19 +393,19 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     {
       shortcut: queryToolPref.execute_query,
       options: {
-        callback: ()=>{executeQuery();}
+        callback: ()=>{!buttonsDisabled['execute']?executeQuery():null;}
       }
     },
     {
       shortcut: queryToolPref.explain_query,
       options: {
-        callback: (e)=>{e.preventDefault();explain();}
+        callback: (e)=>{e.preventDefault(); !buttonsDisabled['explain']?explain():null;}
       }
     },
     {
       shortcut: queryToolPref.explain_analyze_query,
       options: {
-        callback: ()=>{explainAnalyse();}
+        callback: ()=>{!buttonsDisabled['explain_analyse']?explainAnalyse():null;}
       }
     },
     {
