@@ -162,7 +162,9 @@ class StartRunningQuery:
                                       current_app._get_current_object())
                                 )
         _thread.start()
-        trans_obj.set_thread_native_id(_thread.native_id)
+        _native_id = _thread.native_id if hasattr(_thread, 'native_id'
+                                                  ) else _thread.ident
+        trans_obj.set_thread_native_id(_native_id)
         StartRunningQuery.save_transaction_in_session(session_obj,
                                                       trans_id, trans_obj)
 
