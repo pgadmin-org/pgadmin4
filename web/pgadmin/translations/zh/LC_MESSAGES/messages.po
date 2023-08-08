@@ -5,18 +5,19 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version:  PgAdmin4\n"
+"Project-Id-Version: PgAdmin4\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-07-20 18:21+0530\n"
-"PO-Revision-Date: 2023-06-24 23:52+0800\n"
+"PO-Revision-Date: 2023-08-01 20:47+0800\n"
 "Last-Translator: maikebing <mysticboy@live.com>\n"
-"Language: zh\n"
 "Language-Team: zh\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: zh\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.12.1\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #: pgadmin/__init__.py:353 pgadmin/authenticate/internal.py:26
 msgid "Incorrect username or password."
@@ -148,7 +149,8 @@ msgid "kerberos"
 msgstr "kerberos"
 
 #: pgadmin/authenticate/kerberos.py:171
-msgid "Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
+msgid ""
+"Kerberos authentication can't be used as GSSAPI module couldn't be loaded."
 msgstr "GSSAPI模块未加载无法使用Kerberos认证."
 
 #: pgadmin/authenticate/kerberos.py:212
@@ -243,8 +245,8 @@ msgstr "用户没有有效的哈希来生成 OTP。"
 
 #: pgadmin/authenticate/mfa/authenticator.py:125
 msgid ""
-"Enter the code shown in your authenticator application for TOTP (Time-"
-"based One-Time Password)"
+"Enter the code shown in your authenticator application for TOTP (Time-based "
+"One-Time Password)"
 msgstr "输入你TOTP认证应用中显示的认证码"
 
 #: pgadmin/authenticate/mfa/authenticator.py:164
@@ -282,7 +284,8 @@ msgid "Failed to send the code to email."
 msgstr "发送验证码到邮箱失败。"
 
 #: pgadmin/authenticate/mfa/email.py:94
-msgid "A verification code was sent to {}. Check your email and enter the code."
+msgid ""
+"A verification code was sent to {}. Check your email and enter the code."
 msgstr "验证码已发送到 {}。检查您的电子邮件并输入代码。"
 
 #: pgadmin/authenticate/mfa/email.py:149
@@ -303,7 +306,7 @@ msgstr "发送验证码"
 
 #: pgadmin/authenticate/mfa/email.py:208
 msgid "Sending Code..."
-msgstr ""
+msgstr "正在发送代码..."
 
 #: pgadmin/authenticate/mfa/email.py:216
 msgid "Enter the email address to send a code"
@@ -323,9 +326,10 @@ msgstr "注意"
 
 #: pgadmin/authenticate/mfa/email.py:220
 msgid ""
-"This email address will only be used for two factor authentication "
-"purposes. The email address for the user account will not be changed."
-msgstr "这个电子邮件地址将只用于双因素认证目的。用户账户的电子邮件地址将不会被改变。"
+"This email address will only be used for two factor authentication purposes. "
+"The email address for the user account will not be changed."
+msgstr ""
+"这个电子邮件地址将只用于双因素认证目的。用户账户的电子邮件地址将不会被改变。"
 
 #: pgadmin/authenticate/mfa/email.py:242
 msgid "Enter code here"
@@ -437,7 +441,9 @@ msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
 "utility specified {0}.Please check that the hook utility is configured "
 "correctly."
-msgstr "无法使用MASTER_PASSWORD_HOOK指定实用程序{0}接收到主密码，请检查挂钩实用程序的配置项是否正确。"
+msgstr ""
+"无法使用MASTER_PASSWORD_HOOK指定实用程序{0}接收到主密码，请检查挂钩实用程序的"
+"配置项是否正确。"
 
 #: pgadmin/browser/__init__.py:1010
 msgid "Master password cannot be empty"
@@ -445,13 +451,15 @@ msgstr "主密码不能为空"
 
 #: pgadmin/browser/__init__.py:1114
 msgid "pgAdmin user password changed successfully"
-msgstr ""
+msgstr "pgAdmin用户密码已成功更改"
 
 #: pgadmin/browser/__init__.py:1161
 msgid ""
-"Your account is authenticated using an external {} source. Please contact"
-" the administrators of this service if you need to reset your password."
-msgstr "您的帐户使用外部  {} 源进行身份验证。如果您需要重置密码，请与此服务的管理员联系。"
+"Your account is authenticated using an external {} source. Please contact "
+"the administrators of this service if you need to reset your password."
+msgstr ""
+"您的帐户使用外部  {} 源进行身份验证。如果您需要重置密码，请与此服务的管理员联"
+"系。"
 
 #: pgadmin/browser/__init__.py:1271
 msgid ""
@@ -469,8 +477,8 @@ msgstr "显示空对象集合？"
 
 #: pgadmin/browser/register_browser_preferences.py:36
 msgid ""
-"If turned off, then all object collections which are empty will be hidden"
-" from browser tree."
+"If turned off, then all object collections which are empty will be hidden "
+"from browser tree."
 msgstr "如果关闭，则所有空的对象集合将从浏览器树中隐藏。"
 
 #: pgadmin/browser/register_browser_preferences.py:44
@@ -487,7 +495,8 @@ msgid "Display"
 msgstr "显示"
 
 #: pgadmin/browser/register_browser_preferences.py:53
-msgid "If set to True, then all shared servers will be hidden from browser tree"
+msgid ""
+"If set to True, then all shared servers will be hidden from browser tree"
 msgstr "如果设置为 True，则所有共享服务器都将隐藏在浏览器树中"
 
 #: pgadmin/browser/register_browser_preferences.py:61
@@ -496,8 +505,8 @@ msgstr "对象浏览器树状态保存间隔"
 
 #: pgadmin/browser/register_browser_preferences.py:63
 msgid ""
-"Object explorer state saving interval in seconds. Use -1 to disable the "
-"tree saving mechanism."
+"Object explorer state saving interval in seconds. Use -1 to disable the tree "
+"saving mechanism."
 msgstr "对象浏览器状态保存间隔单位秒，使用-1禁用特性。"
 
 #: pgadmin/browser/register_browser_preferences.py:71
@@ -506,8 +515,8 @@ msgstr "在关闭或刷新时确认？"
 
 #: pgadmin/browser/register_browser_preferences.py:73
 msgid ""
-"Confirm closure or refresh of the browser or browser tab is intended "
-"before proceeding."
+"Confirm closure or refresh of the browser or browser tab is intended before "
+"proceeding."
 msgstr "在继续之前, 请确认关闭或刷新浏览器或浏览器选项卡。"
 
 #: pgadmin/browser/register_browser_preferences.py:81
@@ -516,8 +525,8 @@ msgstr "在对象属性对话框中关闭/重置之前确认？"
 
 #: pgadmin/browser/register_browser_preferences.py:84
 msgid ""
-"Confirm before closing or resetting the changes in the properties dialog "
-"for an object if the changes are not saved."
+"Confirm before closing or resetting the changes in the properties dialog for "
+"an object if the changes are not saved."
 msgstr "如果未保存更改，请先在属性对话框中确认对象的更改。"
 
 #: pgadmin/browser/register_browser_preferences.py:92
@@ -526,8 +535,8 @@ msgstr "自动展开唯一下级"
 
 #: pgadmin/browser/register_browser_preferences.py:94
 msgid ""
-"If a treeview node is expanded and has only a single child, automatically"
-" expand the child node as well."
+"If a treeview node is expanded and has only a single child, automatically "
+"expand the child node as well."
 msgstr "如果树视图节点已展开且只有一个子节点, 则也会自动展开子节点。"
 
 #: pgadmin/browser/register_browser_preferences.py:110
@@ -550,8 +559,8 @@ msgstr "最大作业历史记录行数"
 
 #: pgadmin/browser/register_browser_preferences.py:126
 msgid ""
-"The maximum number of history rows to show on the Statistics tab for "
-"pgAgent jobs"
+"The maximum number of history rows to show on the Statistics tab for pgAgent "
+"jobs"
 msgstr "要在 pgAgent 作业的 \"统计\" 选项卡上显示的历史记录行的最大数量"
 
 #: pgadmin/browser/register_browser_preferences.py:134
@@ -688,8 +697,8 @@ msgstr "动态选项卡尺寸"
 
 #: pgadmin/browser/register_browser_preferences.py:453
 msgid ""
-"If set to True, the tabs will take full size as per the title, it will "
-"also applicable for already opened tabs"
+"If set to True, the tabs will take full size as per the title, it will also "
+"applicable for already opened tabs"
 msgstr "如果设置为真则选项卡最大化且适用于所有已打开的选项卡"
 
 #: pgadmin/browser/register_browser_preferences.py:460
@@ -699,10 +708,12 @@ msgstr "查询工具选项卡标题"
 #: pgadmin/browser/register_browser_preferences.py:463
 #: pgadmin/browser/register_browser_preferences.py:534
 msgid ""
-"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users "
-"can provide any string with or without placeholders of their choice. The "
-"blank title will be revert back to the default title with placeholders."
-msgstr "支持的占位符是%DATABASE%、%USERNAME%和%SERVER%。用户可以提供任何带或不带占位符的字符串，由他们自己选择。空白的标题将被恢复为带有占位符的默认标题。"
+"Supported placeholders are %DATABASE%, %USERNAME%, and %SERVER%. Users can "
+"provide any string with or without placeholders of their choice. The blank "
+"title will be revert back to the default title with placeholders."
+msgstr ""
+"支持的占位符是%DATABASE%、%USERNAME%和%SERVER%。用户可以提供任何带或不带占位"
+"符的字符串，由他们自己选择。空白的标题将被恢复为带有占位符的默认标题。"
 
 #: pgadmin/browser/register_browser_preferences.py:473
 msgid "View/Edit data tab title"
@@ -710,11 +721,14 @@ msgstr "查看/编辑数据选项卡标题"
 
 #: pgadmin/browser/register_browser_preferences.py:476
 msgid ""
-"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and"
-" %SERVER%. Users can provide any string with or without placeholders of "
-"their choice. The blank title will be revert back to the default title "
-"with placeholders."
-msgstr "支持的占位符是%SCHEMA%、%TABLE%、%DATABASE%、%USERNAME%和%SERVER%。用户可以提供任何带或不带占位符的字符串，由他们自己选择。空白的标题将被恢复为带有占位符的默认标题。"
+"Supported placeholders are %SCHEMA%, %TABLE%, %DATABASE%, %USERNAME%, and "
+"%SERVER%. Users can provide any string with or without placeholders of their "
+"choice. The blank title will be revert back to the default title with "
+"placeholders."
+msgstr ""
+"支持的占位符是%SCHEMA%、%TABLE%、%DATABASE%、%USERNAME%和%SERVER%。用户可以提"
+"供任何带或不带占位符的字符串，由他们自己选择。空白的标题将被恢复为带有占位符"
+"的默认标题。"
 
 #: pgadmin/browser/register_browser_preferences.py:486
 msgid "Debugger tab title"
@@ -724,10 +738,11 @@ msgstr "调试器选项卡标题"
 #, python-format
 msgid ""
 "Supported placeholders are %FUNCTION%, %ARGS%, %SCHEMA% and %DATABASE%. "
-"Users can provide any string with or without placeholders of their "
-"choice. The blank title will be revert back to the default title with "
-"placeholders."
-msgstr "支持的占位符是%FUNCTION%、%ARGS%、%SCHEMA%和%DATABASE%。用户可以根据自己的选择提供任何带或不带占位符的字符串。空白的标题将被恢复为带有占位符的默认标题。"
+"Users can provide any string with or without placeholders of their choice. "
+"The blank title will be revert back to the default title with placeholders."
+msgstr ""
+"支持的占位符是%FUNCTION%、%ARGS%、%SCHEMA%和%DATABASE%。用户可以根据自己的选"
+"择提供任何带或不带占位符的字符串。空白的标题将被恢复为带有占位符的默认标题。"
 
 #: pgadmin/browser/register_browser_preferences.py:498
 #: pgadmin/browser/static/js/collection.js:76
@@ -786,7 +801,9 @@ msgstr "在新浏览器选项卡中打开"
 msgid ""
 "Select Query Tool, Debugger, Schema Diff, ERD Tool or PSQL Tool from the "
 "drop-down to set open in new browser tab for that particular module."
-msgstr "从下拉菜单中选择查询工具、调试器、架构差异、ERD工具或PSQL工具来为该特定模块设置在新浏览器标签中打开。"
+msgstr ""
+"从下拉菜单中选择查询工具、调试器、架构差异、ERD工具或PSQL工具来为该特定模块设"
+"置在新浏览器标签中打开。"
 
 #: pgadmin/browser/register_browser_preferences.py:523
 msgid "Select open new tab..."
@@ -804,7 +821,9 @@ msgstr "启用对象面包屑？"
 msgid ""
 "Enable breadcrumbs to show the complete path of an object in the object "
 "explorer. The breadcrumbs are displayed on object mouse hover."
-msgstr "启用面包屑，在对象资源管理器中显示一个对象的完整路径。面包屑会在对象的鼠标悬停处显示。"
+msgstr ""
+"启用面包屑，在对象资源管理器中显示一个对象的完整路径。面包屑会在对象的鼠标悬"
+"停处显示。"
 
 #: pgadmin/browser/register_browser_preferences.py:556
 msgid "Show comment with object breadcrumbs?"
@@ -1090,8 +1109,8 @@ msgstr "EDB 高级服务器二进制路径"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:16
 msgid ""
-"Path to the directory containing the EDB Advanced Server utility programs"
-" (pg_dump, pg_restore etc)."
+"Path to the directory containing the EDB Advanced Server utility programs "
+"(pg_dump, pg_restore etc)."
 msgstr "包含 EDB 高级服务器实用程序 (pg_dump, pg_restore 等)的目录的路径。"
 
 #: pgadmin/browser/server_groups/servers/ppas.py:26
@@ -1105,8 +1124,8 @@ msgstr "PostgreSQL 二进制路径"
 
 #: pgadmin/browser/server_groups/servers/types.py:34
 msgid ""
-"Path to the directory containing the PostgreSQL utility programs "
-"(pg_dump, pg_restore etc)."
+"Path to the directory containing the PostgreSQL utility programs (pg_dump, "
+"pg_restore etc)."
 msgstr "包含 PostgreSQL 实用程序的目录的路径(pg_dump, pg_restore 等)."
 
 #: pgadmin/browser/server_groups/servers/types.py:62
@@ -2471,10 +2490,12 @@ msgstr "仅有表？"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:285
 msgid ""
-"If ONLY is specified before the table name, only that table is added to "
-"the publication. If ONLY is not specified, the table and all its "
-"descendant tables (if any) are added."
-msgstr "如果表名前设置了ONLY则只有这个表将被添加到发布。如果没有指定ONLY则改表以及他的子表（如果有的话）都将被添加"
+"If ONLY is specified before the table name, only that table is added to the "
+"publication. If ONLY is not specified, the table and all its descendant "
+"tables (if any) are added."
+msgstr ""
+"如果表名前设置了ONLY则只有这个表将被添加到发布。如果没有指定ONLY则改表以及他"
+"的子表（如果有的话）都将被添加"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:287
 msgid "Tables in Schema"
@@ -2718,8 +2739,8 @@ msgstr "排序规则"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:475
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.ui.js:170
 msgid ""
-"Definition incomplete. Please provide Locale OR Copy Collation OR "
-"LC_TYPE/LC_COLLATE."
+"Definition incomplete. Please provide Locale OR Copy Collation OR LC_TYPE/"
+"LC_COLLATE."
 msgstr "定义不完整。请提供区域设置或复制排序规则或LC_TYPE/LC_COLLATE."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/__init__.py:568
@@ -2984,7 +3005,8 @@ msgstr ""
 "{0}"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/__init__.py:952
-msgid "Could not generate reversed engineered query for FTS Configuration node."
+msgid ""
+"Could not generate reversed engineered query for FTS Configuration node."
 msgstr "无法为 FTS 配置节点生成反向工程查询。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_configurations/static/js/fts_configuration.js:51
@@ -3725,10 +3747,12 @@ msgstr "所有者"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:173
 msgid ""
 "The OWNED BY option causes the sequence to be associated with a specific "
-"table column, such that if that column (or its whole table) is dropped, "
-"the sequence will be automatically dropped as well. The specified table "
-"must have the same owner and be in the same schema as the sequence."
-msgstr "所有者选项会使其分配到指定的数据表的列之上，当列或者表被删除时序列也将自动删除，指定的表必须和序列为同一所有者且在同一个架构中"
+"table column, such that if that column (or its whole table) is dropped, the "
+"sequence will be automatically dropped as well. The specified table must "
+"have the same owner and be in the same schema as the sequence."
+msgstr ""
+"所有者选项会使其分配到指定的数据表的列之上，当列或者表被删除时序列也将自动删"
+"除，指定的表必须和序列为同一所有者且在同一个架构中"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:261
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:651
@@ -3883,8 +3907,8 @@ msgstr "表被截断"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2058
 msgid ""
-"The table is currently locked and the operation cannot be completed. "
-"Please try again later. \r\n"
+"The table is currently locked and the operation cannot be completed. Please "
+"try again later. \r\n"
 "Blocking Process ID : {0} Application Name : {1}"
 msgstr ""
 "表已锁定，操作无法完成，请稍后重试\r\n"
@@ -4628,49 +4652,49 @@ msgstr "空值"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:232
 msgid "Gin pending list limit"
-msgstr ""
+msgstr "Gin挂起列表限制"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:240
 msgid "This value is specified in kilobytes."
-msgstr ""
+msgstr "此值以 KB 为单位。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:242
 msgid "Pages per range"
-msgstr ""
+msgstr "每个范围的页数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:249
 msgid ""
-"Number of table blocks that make up one block range for each entry of a "
-"BRIN index."
-msgstr ""
+"Number of table blocks that make up one block range for each entry of a BRIN "
+"index."
+msgstr "构成 BRIN 索引每个条目的一个块范围的表块数。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:251
 msgid "Buffering"
-msgstr ""
+msgstr "正在缓冲"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:254
 msgid "Auto"
-msgstr ""
+msgstr "自动"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:258
 msgid "On"
-msgstr ""
+msgstr "开启"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:262
 msgid "Off"
-msgstr ""
+msgstr "关闭"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:273
 msgid "Deduplicate items?"
-msgstr ""
+msgstr "删除重复项？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:287
 msgid "Fast update?"
-msgstr ""
+msgstr "快速更新？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:300
 msgid "Autosummarize?"
-msgstr ""
+msgstr "自动汇总？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:359
 msgid "Select the column(s)"
@@ -4868,15 +4892,15 @@ msgstr "分离分区"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:108
 msgid "Detach"
-msgstr ""
+msgstr "分离"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:112
 msgid "Concurrently"
-msgstr ""
+msgstr "并行"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:123
 msgid "Finalize"
-msgstr ""
+msgstr "完成"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:134
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:131
@@ -4907,11 +4931,11 @@ msgstr "确实要重置表 \" %s\" 的统计信息吗？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:285
 msgid "Detach Partition Concurrently"
-msgstr ""
+msgstr "并发分离分区"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:287
 msgid "Detach Partition Finalize"
-msgstr ""
+msgstr "分离分区完成"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:292
 #, python-format
@@ -5042,12 +5066,13 @@ msgstr "示例: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:365
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:904
 msgid ""
-"Let's say, we want to create a partition table based per year for the "
-"column 'saledate', having datatype 'date/timestamp', then we need to "
-"specify the expression as 'extract(YEAR from saledate)' as partition key."
+"Let's say, we want to create a partition table based per year for the column "
+"'saledate', having datatype 'date/timestamp', then we need to specify the "
+"expression as 'extract(YEAR from saledate)' as partition key."
 msgstr ""
-"假设我们要为 \"saledate\" 列创建一个基于每年的分区表,其数据类型为\"date/timestamp\", 然后我们需要将表达式指定为"
-" \"extract(YEAR from saledate)\" 作为分区键。"
+"假设我们要为 \"saledate\" 列创建一个基于每年的分区表,其数据类型为\"date/"
+"timestamp\", 然后我们需要将表达式指定为 \"extract(YEAR from saledate)\" 作为"
+"分区键。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:383
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:922
@@ -5062,8 +5087,8 @@ msgstr "创建表: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:396
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:935
 msgid ""
-"User can create multiple partitions while creating new partitioned table."
-" Operation switch is disabled in this scenario."
+"User can create multiple partitions while creating new partitioned table. "
+"Operation switch is disabled in this scenario."
 msgstr "用户可以在创建新的分区表时创建多个分区。在这种情况下禁用操作开关。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:398
@@ -5074,9 +5099,11 @@ msgstr "编辑现有表: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:399
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:938
 msgid ""
-"User can create/attach/detach multiple partitions. In attach operation "
-"user can select table from the list of suitable tables to be attached."
-msgstr "用户可以创建分离多个分区。在附加操作中, 用户可以从要附加的合适表列表中选择表。"
+"User can create/attach/detach multiple partitions. In attach operation user "
+"can select table from the list of suitable tables to be attached."
+msgstr ""
+"用户可以创建分离多个分区。在附加操作中, 用户可以从要附加的合适表列表中选择"
+"表。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:401
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:940
@@ -5098,9 +5125,11 @@ msgstr "From/To/In 输入: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:405
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:944
 msgid ""
-"From/To/In input: Values for these fields must be quoted with single "
-"quote. For more than one partition key values must be comma(,) separated."
-msgstr "From/To/In 输入: 这些字段的值必须用单引号引用。对于多个分区键值必须用逗号 (,) 分隔。"
+"From/To/In input: Values for these fields must be quoted with single quote. "
+"For more than one partition key values must be comma(,) separated."
+msgstr ""
+"From/To/In 输入: 这些字段的值必须用单引号引用。对于多个分区键值必须用逗号 "
+"(,) 分隔。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:407
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:946
@@ -5110,9 +5139,11 @@ msgstr "示例:  From/To: "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:408
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:947
 msgid ""
-"Enabled for range partition. Consider partitioned table with multiple "
-"keys of type Integer, then values should be specified like '100','200'."
-msgstr "针对范围分区启用。考虑具有整数类型的多个键的分区表, 然后应指定类似 \"100\"、\"200\"这样的值。"
+"Enabled for range partition. Consider partitioned table with multiple keys "
+"of type Integer, then values should be specified like '100','200'."
+msgstr ""
+"针对范围分区启用。考虑具有整数类型的多个键的分区表, 然后应指定类似 "
+"\"100\"、\"200\"这样的值。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:410
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:949
@@ -5200,14 +5231,15 @@ msgstr "使用： "
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:106
 msgid ""
 "This expression will be added to queries that refer to the table if row "
-"level security is enabled. Rows for which the expression returns true "
-"will be visible. Any rows for which the expression returns false or null "
-"will not be visible to the user (in a SELECT), and will not be available "
-"for modification (in an UPDATE or DELETE). Such rows are silently "
-"suppressed; no error is reported."
+"level security is enabled. Rows for which the expression returns true will "
+"be visible. Any rows for which the expression returns false or null will not "
+"be visible to the user (in a SELECT), and will not be available for "
+"modification (in an UPDATE or DELETE). Such rows are silently suppressed; no "
+"error is reported."
 msgstr ""
-"如果启用行级安全性，此表达式将添加到引用表的查询中。表达式返回 true 的行将可见。表达式返回 false 或 null 的任何行（在 "
-"SELECT 中）将不可见，并且不能用于修改（在UPDATE 或 DELETE）。这样的行被默默的抑制;未报告错误。"
+"如果启用行级安全性，此表达式将添加到引用表的查询中。表达式返回 true 的行将可"
+"见。表达式返回 false 或 null 的任何行（在 SELECT 中）将不可见，并且不能用于修"
+"改（在UPDATE 或 DELETE）。这样的行被默默的抑制;未报告错误。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:108
 msgid "With check: "
@@ -5215,14 +5247,15 @@ msgstr "检查: "
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:109
 msgid ""
-"This expression will be used in INSERT and UPDATE queries against the "
-"table if row level security is enabled. Only rows for which the "
-"expression evaluates to true will be allowed. An error will be thrown if "
-"the expression evaluates to false or null for any of the records inserted"
-" or any of the records that result from the update."
+"This expression will be used in INSERT and UPDATE queries against the table "
+"if row level security is enabled. Only rows for which the expression "
+"evaluates to true will be allowed. An error will be thrown if the expression "
+"evaluates to false or null for any of the records inserted or any of the "
+"records that result from the update."
 msgstr ""
-"如果启用行级安全性，则此表达式将用于针对表的 INSERT 和 UPDATE 查询。仅允许表达式计算为 true "
-"的行。如果表达式对插入的任何记录或更新导致的任何记录计算为 false 或 null，则将引发错误。"
+"如果启用行级安全性，则此表达式将用于针对表的 INSERT 和 UPDATE 查询。仅允许表"
+"达式计算为 true 的行。如果表达式对插入的任何记录或更新导致的任何记录计算为 "
+"false 或 null，则将引发错误。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:45
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.js:39
@@ -5393,7 +5426,9 @@ msgid ""
 "Please check if any policy exists. If no policy exists for the table, a "
 "default-deny policy is used, meaning that no rows are visible or can be "
 "modified by other users"
-msgstr "请检查已存在的策略，如果数据表没有已存在的策略则使用默认策略，意味着其他用户将不可见也不能修改任何数据"
+msgstr ""
+"请检查已存在的策略，如果数据表没有已存在的策略则使用默认策略，意味着其他用户"
+"将不可见也不能修改任何数据"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:612
 msgid "Force RLS Policy?"
@@ -6263,9 +6298,10 @@ msgstr "请输入视图定义。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:150
 msgid ""
-"Updating the definition will drop and re-create the materialized view. It"
-" may result in loss of information about its dependent objects."
-msgstr "更新定义将删除并重新创建物化视图。它可能会导致有关其依赖对象的信息丢失。"
+"Updating the definition will drop and re-create the materialized view. It "
+"may result in loss of information about its dependent objects."
+msgstr ""
+"更新定义将删除并重新创建物化视图。它可能会导致有关其依赖对象的信息丢失。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:87
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.js:93
@@ -6308,11 +6344,13 @@ msgstr "请进入代码视图。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:176
 msgid ""
-"Changing the columns in a view requires dropping and re-creating the "
-"view. This may fail if other objects are dependent upon this view, or may"
-" cause procedural functions to fail if they are not modified to take "
-"account of the changes."
-msgstr "更改视图中的列需要删除和重新创建视图。如果其他对象依赖于此视图，则可能会失败;如果未修改过程函数以考虑更改，则可能会失败。"
+"Changing the columns in a view requires dropping and re-creating the view. "
+"This may fail if other objects are dependent upon this view, or may cause "
+"procedural functions to fail if they are not modified to take account of the "
+"changes."
+msgstr ""
+"更改视图中的列需要删除和重新创建视图。如果其他对象依赖于此视图，则可能会失败;"
+"如果未修改过程函数以考虑更改，则可能会失败。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:178
 msgid "Do you wish to continue?"
@@ -6430,7 +6468,8 @@ msgstr "是否为模板？"
 msgid ""
 "Note: When the preferences setting 'show template databases' is set to "
 "false, then template databases won't be displayed in the object explorer."
-msgstr "提示：当设置中'显示模板数据库'为假时，模板数据库将不会在对象浏览器中显示"
+msgstr ""
+"提示：当设置中'显示模板数据库'为假时，模板数据库将不会在对象浏览器中显示"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:157
 msgid "Allow connections?"
@@ -6446,14 +6485,14 @@ msgstr "架构限制"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:208
 msgid ""
-"Note: Changes to the schema restriction will require the Schemas node in "
-"the browser to be refreshed before they will be shown."
+"Note: Changes to the schema restriction will require the Schemas node in the "
+"browser to be refreshed before they will be shown."
 msgstr "注意：对架构限制的更改将要求在显示之前刷新浏览器中的架构节点。"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:218
 msgid ""
-"Please refresh the Schemas node to make changes to the schema restriction"
-" take effect."
+"Please refresh the Schemas node to make changes to the schema restriction "
+"take effect."
 msgstr "请刷新架构节点以使对架构限制的更改生效。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:53
@@ -6531,8 +6570,8 @@ msgstr "连接"
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:157
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:173
 msgid ""
-"To apply changes to the connection configuration, please disconnect from "
-"the server and then reconnect."
+"To apply changes to the connection configuration, please disconnect from the "
+"server and then reconnect."
 msgstr "若要对连接配置应用更改，请断开与服务器的连接，然后重新连接。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:159
@@ -6654,9 +6693,10 @@ msgstr "创建插槽？"
 msgid ""
 "Specifies whether the command should create the replication slot on the "
 "publisher.This field will be disabled and set to false if subscription "
-"connects to same database.Otherwise, the CREATE SUBSCRIPTION call will "
-"hang."
-msgstr "指定命令是否在发布任务中创建复制槽，当连接到同一个数据库时将被禁用，否则创建发布命令将会挂起"
+"connects to same database.Otherwise, the CREATE SUBSCRIPTION call will hang."
+msgstr ""
+"指定命令是否在发布任务中创建复制槽，当连接到同一个数据库时将被禁用，否则创建"
+"发布命令将会挂起"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:317
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:297
@@ -6677,7 +6717,7 @@ msgstr "刷新发布？"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:328
 msgid "Fetch missing table information from publisher."
-msgstr "从发布者获取缺失的表信息"
+msgstr "从发布者获取缺失的表信息。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:337
 msgid "Connect?"
@@ -6685,10 +6725,10 @@ msgstr "连接？"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:341
 msgid ""
-"Specifies whether the CREATE SUBSCRIPTION should connect to the publisher"
-" at all. Setting this to false will change default values of enabled, "
+"Specifies whether the CREATE SUBSCRIPTION should connect to the publisher at "
+"all. Setting this to false will change default values of enabled, "
 "create_slot and copy_data to false."
-msgstr "指定创建订阅命令是否可以连接到发布任务"
+msgstr "指定创建订阅命令是否可以连接到发布任务。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:345
 msgid "Slot name"
@@ -6696,8 +6736,8 @@ msgstr "插槽名称"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:348
 msgid ""
-"Name of the replication slot to use. The default behavior is to use the "
-"name of the subscription for the slot name."
+"Name of the replication slot to use. The default behavior is to use the name "
+"of the subscription for the slot name."
 msgstr "使用的复制槽名称，默认将使用订阅名称作为复制槽名称"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:352
@@ -6706,9 +6746,9 @@ msgstr "同步提交"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:354
 msgid ""
-"The value of this parameter overrides the synchronous_commit setting. The"
-" default value is off."
-msgstr "此值覆盖'同步提交'设置，默认值为off"
+"The value of this parameter overrides the synchronous_commit setting. The "
+"default value is off."
+msgstr "此值覆盖'同步提交'设置，默认值为关闭。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:373
 msgid "Either Host name, Address must be specified."
@@ -7417,26 +7457,30 @@ msgstr "每一个指定的时间或日期任务都会执行。"
 msgid ""
 "e.g. To execute at 5 minutes past every hour, simply select ‘05’ in the "
 "Minutes list box."
-msgstr "例如：要在每小时的5分钟后执行，只需要在分钟的列表框中选择05即可"
+msgstr "例如：要在每小时的5分钟后执行，只需要在分钟的列表框中选择‘05’即可。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:322
 msgid ""
-"Values from more than one field may be specified in order to further "
-"control the schedule."
-msgstr "多个字段的值可以用来指定定时任务的执行"
+"Values from more than one field may be specified in order to further control "
+"the schedule."
+msgstr "多个字段的值可以用来指定定时任务的执行。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:324
 msgid ""
 "e.g. To execute at 12:05 and 14:05 every Monday and Thursday, you would "
 "click minute 05, hours 12 and 14, and weekdays Monday and Thursday."
-msgstr "例如：要在每个周一和周三的12:05和14:05你可以点击分钟05 消失12和14以及工作日周一和周三"
+msgstr ""
+"例如：要在每个周一和周三的12:05和14:05你可以点击分钟05 消失12和14以及工作日周"
+"一和周三。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:326
 msgid ""
-"For additional flexibility, the Month Days check list includes an extra "
-"Last Day option. This matches the last day of the month, whether it "
-"happens to be the 28th, 29th, 30th or 31st."
-msgstr "额外的特性：月份第几天列表包含一个额外的最后一天选项，这将匹配该月最后一天，无论当月最后一天是28日、20日、30日、31日"
+"For additional flexibility, the Month Days check list includes an extra Last "
+"Day option. This matches the last day of the month, whether it happens to be "
+"the 28th, 29th, 30th or 31st."
+msgstr ""
+"额外的特性：月份第几天列表包含一个额外的最后一天选项，这将匹配该月最后一天，"
+"无论当月最后一天是28日、20日、30日、31日。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:330
 msgid "Week days"
@@ -7483,8 +7527,8 @@ msgstr "作业类"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:72
 msgid ""
-"Please select a class to categorize the job. This option will not affect "
-"the way the job runs."
+"Please select a class to categorize the job. This option will not affect the "
+"way the job runs."
 msgstr "请选择一个类对作业进行分类。此选项不会影响作业的运行方式。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:75
@@ -7494,10 +7538,11 @@ msgstr "主机代理"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:80
 msgid ""
-"Enter the hostname of a machine running pgAgent if you wish to ensure "
-"only that machine will run this job. Leave blank if any host may run the "
-"job."
-msgstr "如果您希望确保只有该计算机将运行此作业，请输入运行pgAgent的计算机的主机名。 如果任何主机可以运行作业，请留空。"
+"Enter the hostname of a machine running pgAgent if you wish to ensure only "
+"that machine will run this job. Leave blank if any host may run the job."
+msgstr ""
+"如果您希望确保只有该计算机将运行此作业，请输入运行pgAgent的计算机的主机名。 "
+"如果任何主机可以运行作业，请留空。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:84
 msgid "Created"
@@ -7584,7 +7629,9 @@ msgid ""
 "Select <strong>Local</strong> if the job step will execute on the local "
 "database server, or <strong>Remote</strong> to specify a remote database "
 "server."
-msgstr "如果任务步骤将在本地数据库服务器上执行请选择<strong>Local</strong>，或选择<strong>Remote</strong>以指定远程数据库服务器。"
+msgstr ""
+"如果任务步骤将在本地数据库服务器上执行请选择<strong>Local</strong>，或选择"
+"<strong>Remote</strong>以指定远程数据库服务器。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:138
 msgid "Please select the database on which the job step will run."
@@ -7596,21 +7643,21 @@ msgstr "连接字符串"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:144
 msgid ""
-"Please specify the connection string for the remote database server. Each"
-" parameter setting is in the form keyword = value. Spaces around the "
-"equal sign are optional. To write an empty value, or a value containing "
-"spaces, surround it with single quotes, e.g., keyword = 'a value'. Single"
-" quotes and backslashes within the value must be escaped with a "
-"backslash, i.e., ' and \\.<br>For more information, please see the "
-"documentation on <a href=\"https://www.postgresql.org/docs/current/libpq-"
-"connect.html#LIBPQ-CONNSTRING\" target=\"_blank\">libpq connection "
-"strings</a>."
-msgstr ""
-"请为远程数据库服务器指定连接字符串。每个参数的设置都是“关键字 = "
-"值”的形式。等号周围的空格是可选的。要写入空值，或包含空格的值，请用单引号括起来，例如：关键字 "
-"='值'。值中的单引号和反斜杠必须用反斜杠转义，也就是说 '和 \\。<br>更多详细信息，请参阅文档 <a "
+"Please specify the connection string for the remote database server. Each "
+"parameter setting is in the form keyword = value. Spaces around the equal "
+"sign are optional. To write an empty value, or a value containing spaces, "
+"surround it with single quotes, e.g., keyword = 'a value'. Single quotes and "
+"backslashes within the value must be escaped with a backslash, i.e., ' and "
+"\\.<br>For more information, please see the documentation on <a "
 "href=\"https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-"
-"CONNSTRING\" target=\"_blank\">libpq connection strings</a>。"
+"CONNSTRING\" target=\"_blank\">libpq connection strings</a>."
+msgstr ""
+"请为远程数据库服务器指定连接字符串。每个参数的设置都是“关键字 = 值”的形式。等"
+"号周围的空格是可选的。要写入空值，或包含空格的值，请用单引号括起来，例如：关"
+"键字 ='值'。值中的单引号和反斜杠必须用反斜杠转义，也就是说 '和 \\。<br>更多详"
+"细信息，请参阅文档 <a href=\"https://www.postgresql.org/docs/current/libpq-"
+"connect.html#LIBPQ-CONNSTRING\" target=\"_blank\">libpq connection strings</"
+"a>。"
 
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:147
 msgid "On error"
@@ -7756,8 +7803,7 @@ msgstr "连接限制必须是一个整数值，或者等于-1。"
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:295
 msgid ""
 "\n"
-"Role members information must be passed as an array of JSON objects in "
-"the\n"
+"Role members information must be passed as an array of JSON objects in the\n"
 "following format:\n"
 "\n"
 "rolmembers:[{\n"
@@ -7780,8 +7826,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:313
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an "
-"array of\n"
+"Role membership information must be passed as a string representing an array "
+"of\n"
 "JSON objects in the following format:\n"
 "rolmembers:{\n"
 "    'added': [{\n"
@@ -7828,8 +7874,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:354
 msgid ""
 "\n"
-"Role membership information must be passed as an array of JSON objects in"
-" the\n"
+"Role membership information must be passed as an array of JSON objects in "
+"the\n"
 "following format:\n"
 "\n"
 "rolmembership:[{\n"
@@ -7852,8 +7898,8 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:372
 msgid ""
 "\n"
-"Role membership information must be passed as a string representing an "
-"array of\n"
+"Role membership information must be passed as a string representing an array "
+"of\n"
 "JSON objects in the following format:\n"
 "rolmembership:{\n"
 "    'added': [{\n"
@@ -7901,8 +7947,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:412
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the "
-"following\n"
+"Security Label must be passed as an array of JSON objects in the following\n"
 "format:\n"
 "seclabels:[{\n"
 "    provider: <provider>,\n"
@@ -7924,8 +7969,7 @@ msgstr ""
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:427
 msgid ""
 "\n"
-"Security Label must be passed as an array of JSON objects in the "
-"following\n"
+"Security Label must be passed as an array of JSON objects in the following\n"
 "format:\n"
 "seclabels:{\n"
 "    'added': [{\n"
@@ -8271,8 +8315,8 @@ msgstr "串联？"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:142
 msgid ""
-"Note: CASCADE will automatically drop objects that depend on the affected"
-" objects, and in turn all objects that depend on those objects"
+"Note: CASCADE will automatically drop objects that depend on the affected "
+"objects, and in turn all objects that depend on those objects"
 msgstr "提示：串联 选项会自动删除所有依赖受影响对象的对象"
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:146
@@ -8426,9 +8470,9 @@ msgstr "重新加载配置"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:90
 msgid ""
-"Please select a server from the object explorer to reload the "
-"configuration files."
-msgstr "请从对象浏览器中选择一个服务器来重载配置文件"
+"Please select a server from the object explorer to reload the configuration "
+"files."
+msgstr "请从对象浏览器中选择一个服务器来重载配置文件。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:95
 msgid "Add Named Restore Point..."
@@ -8436,9 +8480,8 @@ msgstr "添加命名还原点..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:97
 msgid ""
-"Please select any server from the object explorer to Add Named Restore "
-"Point."
-msgstr "请从对象浏览器中选择一个服务来添加命名还原点"
+"Please select any server from the object explorer to Add Named Restore Point."
+msgstr "请从对象浏览器中选择一个服务来添加命名还原点。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:102
 msgid "Change Password..."
@@ -8446,7 +8489,7 @@ msgstr "更改密码..."
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:104
 msgid "Please connect server to enable change password."
-msgstr "请连接服务器来启用修改密码功能"
+msgstr "请连接服务器来启用修改密码功能。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:109
 msgid "Pause Replay of WAL"
@@ -8454,9 +8497,9 @@ msgstr "暂停WAL重放"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:111
 msgid ""
-"Please select a connected database as a Super user and run in Recovery "
-"mode to Pause Replay of WAL."
-msgstr "请选择一个已用管理员连接的数据库运行恢复模式来暂停Wal重放"
+"Please select a connected database as a Super user and run in Recovery mode "
+"to Pause Replay of WAL."
+msgstr "请选择一个已用管理员连接的数据库运行恢复模式来暂停Wal重放。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:116
 msgid "Resume Replay of WAL"
@@ -8464,9 +8507,9 @@ msgstr "继续WAL重放"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:118
 msgid ""
-"Please select a connected database as a Super user and run in Recovery "
-"mode to Resume Replay of WAL."
-msgstr "请选择一个已用管理员连接的数据库运行恢复模式来继续Wal重放"
+"Please select a connected database as a Super user and run in Recovery mode "
+"to Resume Replay of WAL."
+msgstr "请选择一个已用管理员连接的数据库运行恢复模式来继续Wal重放。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:123
 msgid "Clear Saved Password"
@@ -8519,18 +8562,18 @@ msgstr "清除 SSH 隧道密码"
 #: pgadmin/browser/server_groups/servers/static/js/server.js:481
 #, python-format
 msgid ""
-"Are you sure you want to clear the saved password of SSH Tunnel for "
-"server %s?"
+"Are you sure you want to clear the saved password of SSH Tunnel for server "
+"%s?"
 msgstr "确实要清除服务器 %s 的 SSH 隧道的保存密码吗？"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:589
 msgid ""
-"You have connected to a server version that is older than is supported by"
-" pgAdmin. This may cause pgAdmin to break in strange and unpredictable "
-"ways. Or a plague of frogs. Either way, you have been warned!"
+"You have connected to a server version that is older than is supported by "
+"pgAdmin. This may cause pgAdmin to break in strange and unpredictable ways. "
+"Or a plague of frogs. Either way, you have been warned!"
 msgstr ""
-"您已连接到比 pgAdmin 支持的更旧的服务器版本。这可能会导致 pgAdmin "
-"以异常和不可预知的方式中断。或青蛙的瘟疫。无论如何，你都会被警告！"
+"您已连接到比 pgAdmin 支持的更旧的服务器版本。这可能会导致 pgAdmin 以异常和不"
+"可预知的方式中断。或青蛙的瘟疫。无论如何，你都会被警告！"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:592
 msgid "Server connected"
@@ -8936,8 +8979,7 @@ msgstr "'位置'不能为空。"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:5
 msgid ""
-"Please enter the password for the user '{0}' to connect the server - "
-"\"{1}\""
+"Please enter the password for the user '{0}' to connect the server - \"{1}\""
 msgstr "请输入用户'{0}'的密码以连接服务器 - '{1}'"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/password.html:8
@@ -8954,8 +8996,7 @@ msgstr "保存密码"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:5
 msgid ""
-"SSH Tunnel password for the identity file '{0}' to connect the server "
-"\"{1}\""
+"SSH Tunnel password for the identity file '{0}' to connect the server \"{1}\""
 msgstr "用于连接服务器 \"{1}\" 的标识文件 \"{0}\" 的 SSH 隧道密码"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:7
@@ -8967,7 +9008,8 @@ msgid "Database server password for the user to connect the server \"{0}\""
 msgstr "用户连接服务器\"{0}\"的数据库服务器密码"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/tunnel_password.html:30
-msgid "Database server password for the user '{0}' to connect the server \"{1}\""
+msgid ""
+"Database server password for the user '{0}' to connect the server \"{1}\""
 msgstr "用于用户 \"{0}\" 连接服务器 \"{1}\" 的数据库服务器密码"
 
 #: pgadmin/browser/server_groups/servers/templates/servers/sql/default/stats.sql:5
@@ -9163,20 +9205,21 @@ msgstr "搜索对象..."
 
 #: pgadmin/browser/static/js/heartbeat.js:40
 msgid ""
-"pgAdmin server not responding, try to login again: ${error.message || "
-"error.response.data.errormsg}"
-msgstr "pgAdmin服务器无响应，请重新登录：${error.message || error.response.data.errormsg}"
+"pgAdmin server not responding, try to login again: ${error.message || error."
+"response.data.errormsg}"
+msgstr ""
+"pgAdmin服务器无响应，请重新登录：${error.message || error.response.data."
+"errormsg}"
 
 #: pgadmin/browser/static/js/heartbeat.js:42
 msgid ""
-"Server heartbeat logging error: ${error.message || "
-"error.response.data.errormsg}"
+"Server heartbeat logging error: ${error.message || error.response.data."
+"errormsg}"
 msgstr "服务器心跳记录错误：${error.message || error.response.data.errormsg}"
 
 #: pgadmin/browser/static/js/layout.js:80
 msgid ""
-"pgAdmin has reset the layout because the previously saved layout is "
-"invalid."
+"pgAdmin has reset the layout because the previously saved layout is invalid."
 msgstr "因上次保存的布局信息失效，pgAdmin已重置布局。"
 
 #: pgadmin/browser/static/js/layout.js:162
@@ -9234,8 +9277,8 @@ msgstr "您确定要停止编辑%s\"%s\"的属性吗?"
 #: pgadmin/browser/static/js/node.js:682
 #, python-format
 msgid ""
-"Are you sure want to reset the current changes and re-open the panel for "
-"%s \"%s\"?"
+"Are you sure want to reset the current changes and re-open the panel for %s "
+"\"%s\"?"
 msgstr "您确定要重置当前更改并重新打开%s\"%s\"的面板吗？"
 
 #: pgadmin/browser/static/js/node.js:686
@@ -9245,9 +9288,8 @@ msgstr "正在编辑？"
 #: pgadmin/browser/static/js/node.js:739
 #, python-format
 msgid ""
-"Delete database with the force option will attempt to terminate all "
-"existing connections to the \"%s\" database. Are you sure you want to "
-"proceed?"
+"Delete database with the force option will attempt to terminate all existing "
+"connections to the \"%s\" database. Are you sure you want to proceed?"
 msgstr "强制删除数据库将终止与“%s”数据库的所有现有连接。您确定要继续吗？"
 
 #: pgadmin/browser/static/js/node.js:740
@@ -9258,8 +9300,8 @@ msgstr "删除强制%s？"
 #: pgadmin/browser/static/js/node.js:744
 #, python-format
 msgid ""
-"Are you sure you want to delete %s \"%s\" and all the objects that depend"
-" on it?"
+"Are you sure you want to delete %s \"%s\" and all the objects that depend on "
+"it?"
 msgstr "是否确实要删除%s“%s”以及依赖于它的所有对象？"
 
 #: pgadmin/browser/static/js/node.js:745
@@ -9356,10 +9398,10 @@ msgstr ""
 #: pgadmin/browser/templates/browser/browser.html:6
 msgid ""
 "Your browser was detected as <strong>{0}</strong> version\n"
-"    <strong>{1}</strong>, which pgAdmin has not been tested with. pgAdmin"
-" may\n"
-"    not work as expected, and any issues reported when using this browser"
-" may\n"
+"    <strong>{1}</strong>, which pgAdmin has not been tested with. pgAdmin "
+"may\n"
+"    not work as expected, and any issues reported when using this browser "
+"may\n"
 "    not be fixed."
 msgstr ""
 "你的浏览器被检测为 <strong>{0}</strong> 版本\n"
@@ -9370,12 +9412,13 @@ msgstr ""
 #: pgadmin/browser/templates/browser/browser.html:11
 msgid ""
 "Please visit the <a class=\"alert-link\"\n"
-"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a> to "
-"see the\n"
+"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a> to see "
+"the\n"
 "    supported browsers."
 msgstr ""
 "请访问 <a class=\"alert-link\"\n"
-"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a>，以查看\n"
+"    href=\"https://www.pgadmin.org/faq/#11\" target=\"_new\">FAQ</a>，以查"
+"看\n"
 "    支持的浏览器。"
 
 #: pgadmin/browser/templates/browser/index.html:92
@@ -9409,15 +9452,17 @@ msgstr "关闭"
 
 #: pgadmin/browser/templates/browser/upgrade.html:1
 msgid ""
-"You are currently running version {0} of {1}, however the current version"
-" is {2}."
+"You are currently running version {0} of {1}, however the current version is "
+"{2}."
 msgstr "您当前正在运行 {1} 的版本 {0}, 但当前版本为 {2}。"
 
 #: pgadmin/browser/templates/browser/upgrade.html:3
 msgid ""
-"Please click <a class=\"alert-link\" href=\"{0}\" "
-"target=\"_new\">here</a> for more information."
-msgstr "请点击 <a class=\"alert-link\" href=\"{0}\" target=\"_new\">这里</a> 了解更多信息."
+"Please click <a class=\"alert-link\" href=\"{0}\" target=\"_new\">here</a> "
+"for more information."
+msgstr ""
+"请点击 <a class=\"alert-link\" href=\"{0}\" target=\"_new\">这里</a> 了解更多"
+"信息."
 
 #: pgadmin/browser/templates/browser/js/messages.js:30
 msgid "Click here for details."
@@ -9592,9 +9637,10 @@ msgstr "显示鼠标悬停工具提示？"
 
 #: pgadmin/dashboard/__init__.py:165
 msgid ""
-"If set to True, tooltip will appear on mouse hover on the graph lines "
-"giving the data point details"
-msgstr "如果设置为 True, 则工具提示将显示在提供数据点详细信息的图形线上的鼠标悬停上"
+"If set to True, tooltip will appear on mouse hover on the graph lines giving "
+"the data point details"
+msgstr ""
+"如果设置为 True, 则工具提示将显示在提供数据点详细信息的图形线上的鼠标悬停上"
 
 #: pgadmin/dashboard/__init__.py:172
 msgid "Chart line width"
@@ -9841,8 +9887,7 @@ msgstr "渲染图形时出错。"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:201
 msgid ""
-"Not connected to the server or the connection to the server has been "
-"closed."
+"Not connected to the server or the connection to the server has been closed."
 msgstr "未连接到服务器或与服务器的连接已关闭。"
 
 #: pgadmin/dashboard/static/js/Graphs.jsx:258
@@ -9888,13 +9933,13 @@ msgstr "开源"
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:144
 msgid ""
 "pgAdmin is an Open Source administration and management tool for the "
-"PostgreSQL database. It includes a graphical administration interface, an"
-" SQL query tool, a procedural code debugger and much more. The tool is "
-"designed to answer the needs of developers, DBAs and system "
-"administrators alike."
+"PostgreSQL database. It includes a graphical administration interface, an "
+"SQL query tool, a procedural code debugger and much more. The tool is "
+"designed to answer the needs of developers, DBAs and system administrators "
+"alike."
 msgstr ""
-"pgAdmin 是 PostgreSQL 数据库的开源管理和管理工具。它包括图形管理界面、SQL "
-"查询工具、过程代码调试器等等。该工具旨在满足开发人员、DBA 和系统管理员的需求。"
+"pgAdmin 是 PostgreSQL 数据库的开源管理和管理工具。它包括图形管理界面、SQL 查"
+"询工具、过程代码调试器等等。该工具旨在满足开发人员、DBA 和系统管理员的需求。"
 
 #: pgadmin/dashboard/static/js/WelcomeDashboard.jsx:155
 msgid "Quick Links"
@@ -9996,8 +10041,8 @@ msgstr "PostgreSQL 帮助路径"
 
 #: pgadmin/help/__init__.py:66
 msgid ""
-"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the"
-" major.minor version number."
+"Path to the PostgreSQL documentation. $VERSION$ will be replaced with the "
+"major.minor version number."
 msgstr "PostgreSQL文档的路径。$VERSION$将替换为major.minor版本号。"
 
 #: pgadmin/misc/__init__.py:33 pgadmin/tools/backup/static/js/backup.ui.js:374
@@ -10028,8 +10073,7 @@ msgstr "主题"
 
 #: pgadmin/misc/__init__.py:86
 msgid ""
-"A refresh is required to apply the theme. Above is the preview of the "
-"theme"
+"A refresh is required to apply the theme. Above is the preview of the theme"
 msgstr "应用主题将会刷新页面，上面是主题的预览"
 
 #: pgadmin/misc/__init__.py:287
@@ -10296,7 +10340,8 @@ msgstr "EDB BigAnimal认证过程进行中……"
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:383
 #: pgadmin/misc/cloud/static/js/azure.js:61
 #: pgadmin/misc/cloud/static/js/google.js:87
-msgid "Authentication completed successfully. Click the Next button to proceed."
+msgid ""
+"Authentication completed successfully. Click the Next button to proceed."
 msgstr "认证成功完成，点击下一步继续"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:387
@@ -10332,9 +10377,10 @@ msgstr "EDB BigAnimal的pgAdmin验证码为："
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:454
 msgid ""
-"By clicking the below button, you will be redirected to the EDB BigAnimal"
-" authentication page in a new tab."
-msgstr "通过单击下面的按钮，您将被重定向到新选项卡中的EDB BigAnimal身份验证页面。"
+"By clicking the below button, you will be redirected to the EDB BigAnimal "
+"authentication page in a new tab."
+msgstr ""
+"通过单击下面的按钮，您将被重定向到新选项卡中的EDB BigAnimal身份验证页面。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:458
 msgid "Click here to authenticate yourself to EDB BigAnimal"
@@ -10342,7 +10388,7 @@ msgstr "点击这里进行EDB BigAnimal的认证"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:549
 msgid "Please review the details before creating the cloud instance."
-msgstr "创建云实例前请确认详情"
+msgstr "创建云实例前请确认详情。"
 
 #: pgadmin/misc/cloud/static/js/aws.js:228
 #: pgadmin/misc/cloud/static/js/azure.js:323
@@ -10415,9 +10461,11 @@ msgstr "外部IP范围"
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:51
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:290
 msgid ""
-"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
-"Add multiple IP addresses/ranges separated with commas."
-msgstr "允许的入站流量的 IP 地址范围，例如：127.0.0.1/32。添加多个以逗号分隔的 IP 地址/范围。"
+"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add "
+"multiple IP addresses/ranges separated with commas."
+msgstr ""
+"允许的入站流量的 IP 地址范围，例如：127.0.0.1/32。添加多个以逗号分隔的 IP 地"
+"址/范围。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:53
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:660
@@ -10441,7 +10489,7 @@ msgstr "区域"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:102
 msgid "The cloud instance will be deployed in the selected region."
-msgstr "云实例将部署于选择的区域"
+msgstr "云实例将部署于选择的区域。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:104
 msgid "AWS access key"
@@ -10478,7 +10526,9 @@ msgstr "pgAdmin服务器组"
 msgid ""
 "At least 8 printable ASCII characters. Cannot contain any of the "
 "following: / (slash), '(single quote), \"(double quote) and @ (at sign)."
-msgstr "至少有8个可打印的ASCII字符。不能包含以下任何内容：/（斜线）、'（单引号）、\"（双引号）和@（at符号）。"
+msgstr ""
+"至少有8个可打印的ASCII字符。不能包含以下任何内容：/（斜线）、'（单引"
+"号）、\"（双引号）和@（at符号）。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:179
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:508
@@ -10516,7 +10566,7 @@ msgstr "突发类型（包括t类型）"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:281
 msgid "General Purpose SSD (gp3)"
-msgstr ""
+msgstr "通用固态硬盘 （gp3）"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:282
 msgid "General Purpose SSD (gp2)"
@@ -10536,22 +10586,24 @@ msgstr "容量(GB）。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:319
 msgid "Allocated storage should be between 20 - 65536 GiB."
-msgstr ""
+msgstr "分配的存储应介于 20 - 65536 GiB 之间。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:323
 msgid "Allocated storage should be between 100 - 65536 GiB."
-msgstr ""
+msgstr "分配的存储应介于 100 - 65536 GiB 之间。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:327
 msgid "Allocated storage should be between 5 - 3072 GiB."
-msgstr ""
+msgstr "分配的存储应介于 5 - 3072 GiB 之间。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:347
 msgid ""
 "Creates a standby in a different Availability Zone (AZ) to provide data "
-"redundancy, eliminate I/O freezes, and minimize latency spikes during "
-"system backups."
-msgstr "在不同的可用性区域（AZ）创建一个备用，以提供数据冗余，消除I/O冻结，并在系统备份期间尽量减少延迟峰值。"
+"redundancy, eliminate I/O freezes, and minimize latency spikes during system "
+"backups."
+msgstr ""
+"在不同的可用性区域（AZ）创建一个备用，以提供数据冗余，消除I/O冻结，并在系统备"
+"份期间尽量减少延迟峰值。"
 
 #: pgadmin/misc/cloud/static/js/azure.js:72
 msgid "Error while verifying Microsoft Azure: ${error}"
@@ -10559,9 +10611,11 @@ msgstr "验证微软Azure时发烧错误：${error}"
 
 #: pgadmin/misc/cloud/static/js/azure.js:305
 msgid ""
-"Error while checking server name availability with Microsoft Azure: "
-"${error.response.data.errormsg}"
-msgstr "通过微软Azure检查服务器名称是否有效时发生错误：${error.response.data.errormsg}"
+"Error while checking server name availability with Microsoft Azure: ${error."
+"response.data.errormsg}"
+msgstr ""
+"通过微软Azure检查服务器名称是否有效时发生错误：${error.response.data."
+"errormsg}"
 
 #: pgadmin/misc/cloud/static/js/azure.js:325
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:244
@@ -10593,10 +10647,12 @@ msgstr "Azure命令行工具"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:79
 msgid ""
-"Azure CLI will use the currently logged in identity through the Azure CLI"
-" on the local machine. Interactive Browser will open a browser window to "
+"Azure CLI will use the currently logged in identity through the Azure CLI on "
+"the local machine. Interactive Browser will open a browser window to "
 "authenticate a user interactively."
-msgstr "Azure命令行工具将在本地计算机使用当前登录信息。浏览器交互将打开一个浏览器窗口来进行交互式认证"
+msgstr ""
+"Azure命令行工具将在本地计算机使用当前登录信息。浏览器交互将打开一个浏览器窗口"
+"来进行交互式认证"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:85
 msgid "Azure tenant id"
@@ -10613,17 +10669,17 @@ msgstr "点这里通过微软Azure进行认证"
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:111
 msgid ""
 "After clicking the button above you will be redirected to the Microsoft "
-"Azure authentication page in a new browser tab if the Interactive Browser"
-" option is selected."
+"Azure authentication page in a new browser tab if the Interactive Browser "
+"option is selected."
 msgstr "点击上面按钮后将在新浏览器窗口跳转到微软的Azure认证页面"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:337
 msgid "Burstable (1-2 vCores) "
-msgstr "Burstable (1-2 vCores) "
+msgstr "高并发（1-2个vCores） "
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:340
 msgid "General Purpose (2-64 vCores)"
-msgstr "普通（2-64核心）"
+msgstr "常规用途（2-64 个 vCore）"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:344
 msgid "Memory Optimized (2-64 vCores)"
@@ -10645,10 +10701,10 @@ msgstr "不允许指定的管理员用户名。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:462
 msgid ""
-"The password must be 8-128 characters long and must contain characters "
-"from three of the following categories - English uppercase letters, "
-"English lowercase letters, numbers (0-9), and non-alphanumeric characters"
-" (!, $, #, %, etc.)"
+"The password must be 8-128 characters long and must contain characters from "
+"three of the following categories - English uppercase letters, English "
+"lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, "
+"%, etc.)"
 msgstr "密码长度必须在8-128位且只能包含大小写英文字母、数字，不能包含!$#%等"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:488
@@ -10663,17 +10719,20 @@ msgid ""
 "\"azure_superuser\", \"azure_pg_admin\", \"admin\", \"administrator\", "
 "\"root\", \"guest\", \"public\", or start with \"pg_\"."
 msgstr ""
-"管理员的用户名必须是1-63个字符的长度，并且只能包含字符、数字和下划线字符。用户名不能是 "
-"\"azure_superuser\"、\"azure_pg_admin\"、\"admin\"、\"administrator\"、\"root\"、\"guest\"、\"public\"，或者以"
-" \"pg_\"开头。"
+"管理员的用户名必须是1-63个字符的长度，并且只能包含字符、数字和下划线字符。用"
+"户名不能是 "
+"\"azure_superuser\"、\"azure_pg_admin\"、\"admin\"、\"administrator\"、\"root\"、\"guest\"、\"public\"，"
+"或者以 \"pg_\"开头。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:502
 msgid ""
-"The password must be 8-128 characters long and must contain characters "
-"from three of the following categories - English uppercase letters, "
-"English lowercase letters, numbers (0-9), and non-alphanumeric characters"
-" (!, $, #, %, etc.), and cannot contain all or part of the login name"
-msgstr "密码长度必须在8-128位且只能包含大小写英文字母、数字，不能包含!$#%以及不能包含登录名的部分或者全部"
+"The password must be 8-128 characters long and must contain characters from "
+"three of the following categories - English uppercase letters, English "
+"lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, "
+"%, etc.), and cannot contain all or part of the login name"
+msgstr ""
+"密码长度必须在8-128位且只能包含大小写英文字母、数字，不能包含!$#%以及不能包含"
+"登录名的部分或者全部"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:529
 msgid ""
@@ -10682,8 +10741,8 @@ msgid ""
 "addresses/ranges separated with commas, for example: \"192.168.0.50, "
 "192.168.0.100 -  192.168.0.200\""
 msgstr ""
-"允许的入栈IP地址列表或IP地址范围（开始IP-结束IP），多个以逗号分隔，例如：192.168.0.50,192.168.0.100 - "
-"192.168.0.200"
+"允许的入栈IP地址列表或IP地址范围（开始IP-结束IP），多个以逗号分隔，例如："
+"192.168.0.50,192.168.0.100 - 192.168.0.200"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:559
 msgid "Zone redundant high availability"
@@ -10691,9 +10750,11 @@ msgstr "高可用冗余区域"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:585
 msgid ""
-"Zone redundant high availability deploys a standby replica in a different"
-" zone. The Burstable instance type does not support high availability."
-msgstr "区域冗余高可用性在不同的区域部署了一个备用的副本。Burstable实例类型不支持高可用性。"
+"Zone redundant high availability deploys a standby replica in a different "
+"zone. The Burstable instance type does not support high availability."
+msgstr ""
+"区域冗余高可用性在不同的区域部署了一个备用的副本。Burstable实例类型不支持高可"
+"用性。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:647
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:476
@@ -10749,8 +10810,8 @@ msgstr "公共 IP 范围不能为空。"
 
 #: pgadmin/misc/cloud/static/js/azure_schema.ui.js:732
 msgid ""
-"Name must be more than 2 characters and must only contain lowercase "
-"letters, numbers, and hyphens"
+"Name must be more than 2 characters and must only contain lowercase letters, "
+"numbers, and hyphens"
 msgstr "名称必须大于2个字符且只能包含小写字母、数字、连接符"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:236
@@ -10792,7 +10853,7 @@ msgstr "卷IOPS"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:260
 msgid "Disk Throuhgput"
-msgstr ""
+msgstr "磁盘吞吐"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:265
 msgid "Database Type"
@@ -10831,8 +10892,8 @@ msgstr "复制从节点数量"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:83
 msgid ""
-"Adding standby replicas will increase your number of CPUs, as well as "
-"your cost."
+"Adding standby replicas will increase your number of CPUs, as well as your "
+"cost."
 msgstr "添加复制从节点将增加CPU核心数并且会增加你的花费。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:85
@@ -10849,19 +10910,19 @@ msgstr "集群提供者"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:242
 msgid "Please select volume properties."
-msgstr "请选择卷属性"
+msgstr "请选择卷属性。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:248
 msgid "Please enter the volume size in the range between 1 to 16384."
-msgstr ""
+msgstr "请输入 1 到 16384 之间的卷大小。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:252
 msgid "Please enter the volume size in the range between 4 to 16384."
-msgstr ""
+msgstr "请输入 4 到 16384 之间的卷大小。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:257
 msgid "Please enter volume IOPS."
-msgstr ""
+msgstr "请输入卷 IOPS。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:304
 msgid "Volume properties"
@@ -10881,7 +10942,7 @@ msgstr "IOPS"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:354
 msgid "Disk throughput"
-msgstr ""
+msgstr "磁盘吞吐量"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:393
 msgid "Password must be 12 characters or more."
@@ -10897,10 +10958,11 @@ msgstr "数据库密码"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:493
 msgid ""
-"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. "
-"Add multiple IP addresses/ranges separated with commas. Leave blank for "
-"0.0.0.0/0"
-msgstr "允许入栈的IP地址范围，例如127.0.0.1/32，添加多个ip地址或范围以逗号分隔，留空则代表0.0.0.0/0"
+"IP address range for allowed inbound traffic, for example: 127.0.0.1/32. Add "
+"multiple IP addresses/ranges separated with commas. Leave blank for 0.0.0.0/0"
+msgstr ""
+"允许入栈的IP地址范围，例如127.0.0.1/32，添加多个ip地址或范围以逗号分隔，留空"
+"则代表0.0.0.0/0"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:495
 msgid "Instance Type"
@@ -10909,7 +10971,7 @@ msgstr "实例类型"
 #: pgadmin/misc/cloud/static/js/cloud.js:58
 #: pgadmin/misc/cloud/static/js/cloud.js:70
 msgid "Deploy Cloud Instance..."
-msgstr "部署云实例。"
+msgstr "部署云实例..."
 
 #: pgadmin/misc/cloud/static/js/cloud.js:103
 msgid "Error while clearing cloud wizard data: ${error.response.data.errormsg}"
@@ -10930,15 +10992,15 @@ msgstr "客户端密钥文件"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:49
 msgid ""
-"Select a client secrets file containing the client ID, client secret, and"
-" other OAuth 2.0 parameters for google authentication. Refer <a "
-"href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
-"=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"Select a client secrets file containing the client ID, client secret, and "
+"other OAuth 2.0 parameters for google authentication. Refer <a "
+"href=\"https://support.google.com/cloud/answer/6158849?"
+"hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications\" "
 "target=\"_blank\">link</a> for creating client secret."
 msgstr ""
 "选择一个包含客户端密钥、客户端ID和其他OAuth2参数的密钥文件。来源 <a "
-"href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
-"=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"href=\"https://support.google.com/cloud/answer/6158849?"
+"hl=en#userconsent&zippy=%2Cuser-consent%2Cpublic-and-internal-applications\" "
 "target=\"_blank\">link</a>"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:61
@@ -11001,8 +11063,8 @@ msgstr "给默认管理员用户'postgres'设置密码"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:521
 msgid ""
-"Name must only contain lowercase letters, numbers, and hyphens.Should "
-"start with a letter and must be 97 characters or less"
+"Name must only contain lowercase letters, numbers, and hyphens.Should start "
+"with a letter and must be 97 characters or less"
 msgstr "名字只能包含小写字母、数字和连接符，应该以字母开头且长度小于97位"
 
 #: pgadmin/misc/cloud/utils/__init__.py:80
@@ -11226,11 +11288,13 @@ msgstr "配置"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:253
 msgid ""
-"Enter the directory in which the psql, pg_dump, pg_dumpall, and "
-"pg_restore utilities can be found for the corresponding database server "
-"version.  The default path will be used for server versions that do not "
-"have a  path specified."
-msgstr "输入兼容指定数据库服务器的psql、pg_dump\\pg_dumpall和pg_restore工具的所在文件夹，如果没有指定将使用默认值"
+"Enter the directory in which the psql, pg_dump, pg_dumpall, and pg_restore "
+"utilities can be found for the corresponding database server version.  The "
+"default path will be used for server versions that do not have a  path "
+"specified."
+msgstr ""
+"输入兼容指定数据库服务器的psql、pg_dump\\pg_dumpall和pg_restore工具的所在文件"
+"夹，如果没有指定将使用默认值"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:281
 #: pgadmin/utils/constants.py:26
@@ -11266,8 +11330,8 @@ msgstr "需要刷新"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:622
 msgid ""
-"A page refresh is required to apply the theme. Do you wish to refresh the"
-" page now?"
+"A page refresh is required to apply the theme. Do you wish to refresh the "
+"page now?"
 msgstr "应用主题需要页面刷新。是否要立即刷新页面？"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:670
@@ -11295,7 +11359,9 @@ msgstr "重置布局"
 msgid ""
 "Are you sure you want to reset the current layout? This will cause the "
 "application to reload and any un-saved data will be lost."
-msgstr "确实要重置当前布局吗？这将导致应用程序重新加载, 并且任何未保存的数据都将丢失。"
+msgstr ""
+"确实要重置当前布局吗？这将导致应用程序重新加载, 并且任何未保存的数据都将丢"
+"失。"
 
 #: pgadmin/static/js/api_instance.js:52 pgadmin/static/js/socket_instance.js:56
 msgid "Connection to pgAdmin server has been lost"
@@ -11335,18 +11401,22 @@ msgstr "未能加载的到偏好%s 模块 %s"
 #: pgadmin/static/js/utils.js:461
 msgid ""
 "The file opened contains bidirectional Unicode characters which could be "
-"interpreted differently than what is displayed. If this is unexpected it "
-"is recommended that you review the text in an application that can "
-"display hidden Unicode characters before proceeding."
-msgstr "打开的文件中包含特殊Unicode字符可能会影响后续显示，如果不是预期内的，请审查应用中的内容，可以在处理前设置显示隐藏Unicode字符"
+"interpreted differently than what is displayed. If this is unexpected it is "
+"recommended that you review the text in an application that can display "
+"hidden Unicode characters before proceeding."
+msgstr ""
+"打开的文件中包含特殊Unicode字符可能会影响后续显示，如果不是预期内的，请审查应"
+"用中的内容，可以在处理前设置显示隐藏Unicode字符"
 
 #: pgadmin/static/js/utils.js:463
 msgid ""
 "The pasted text contains bidirectional Unicode characters which could be "
-"interpreted differently than what is displayed. If this is unexpected it "
-"is recommended that you review the text in an application that can "
-"display hidden Unicode characters before proceeding."
-msgstr "粘贴的内容中包含特殊Unicode字符可能会影响后续显示，如果不是预期内的，请审查应用中的内容，可以在处理前设置显示隐藏Unicode字符"
+"interpreted differently than what is displayed. If this is unexpected it is "
+"recommended that you review the text in an application that can display "
+"hidden Unicode characters before proceeding."
+msgstr ""
+"粘贴的内容中包含特殊Unicode字符可能会影响后续显示，如果不是预期内的，请审查应"
+"用中的内容，可以在处理前设置显示隐藏Unicode字符"
 
 #: pgadmin/static/js/utils.js:465
 msgid "Trojan Source Warning"
@@ -11358,17 +11428,16 @@ msgstr "初始化工具出错：${error.response.data}"
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:41
 msgid ""
-"Select the user that will take ownership of the shared servers created by"
-" <b></b>. <b></b> shared servers are currently owned by this user. "
-"</br></br> Clicking on the “Change” button will either change ownership "
-"if a user is selected or delete any shared servers if no user is "
-"selected. There is no way to reverse this action."
+"Select the user that will take ownership of the shared servers created by "
+"<b></b>. <b></b> shared servers are currently owned by this user. </br></br> "
+"Clicking on the “Change” button will either change ownership if a user is "
+"selected or delete any shared servers if no user is selected. There is no "
+"way to reverse this action."
 msgstr "。此操作不可逆"
 
 #: pgadmin/static/js/Dialogs/ChangeOwnershipContent.jsx:54
 msgid ""
-"The shared servers owned by <b></b> will be deleted. Do you wish to "
-"continue?"
+"The shared servers owned by <b></b> will be deleted. Do you wish to continue?"
 msgstr "<b></b>所有的共享服务器将被删除，你希望继续吗？"
 
 #: pgadmin/static/js/Dialogs/ChangePasswordContent.jsx:44
@@ -11390,20 +11459,21 @@ msgstr "不要保存"
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:77
 #, python-format
 msgid ""
-"Please enter the SSH Tunnel password for the identity file '%s' to "
-"connect the server \"%s\""
+"Please enter the SSH Tunnel password for the identity file '%s' to connect "
+"the server \"%s\""
 msgstr "请输入指定标识文件%s 的SSH隧道密码用以连接服务器'%s'"
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:78
 #, python-format
 msgid ""
-"Please enter the SSH Tunnel password for the user '%s' to connect the "
-"server \"%s\""
+"Please enter the SSH Tunnel password for the user '%s' to connect the server "
+"\"%s\""
 msgstr "请输入用户%s的SSH隧道密码以连接服务器%s"
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:95
 #, python-format
-msgid "Please enter the password for the user '%s' to connect the server - \"%s\""
+msgid ""
+"Please enter the password for the user '%s' to connect the server - \"%s\""
 msgstr "请输入用户'%s'的密码以连接服务器%s"
 
 #: pgadmin/static/js/Dialogs/ConnectServerContent.jsx:96
@@ -11432,12 +11502,12 @@ msgstr "请输入您的主密码。"
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:80
 msgid ""
-"pgAdmin now stores any saved passwords in ${keyringName}. Enter the "
-"master password for your existing pgAdmin saved passwords and they will "
-"be migrated to the operating system store when you click OK."
+"pgAdmin now stores any saved passwords in ${keyringName}. Enter the master "
+"password for your existing pgAdmin saved passwords and they will be migrated "
+"to the operating system store when you click OK."
 msgstr ""
-"pgAdmin 现在将任何保存的密码存储在 ${keyringName} 中。输入现有 pgAdmin "
-"保存的密码的主密码，当您单击“确定”时，这些密码将迁移到操作系统存储中。"
+"pgAdmin 现在将任何保存的密码存储在 ${keyringName} 中。输入现有 pgAdmin 保存的"
+"密码的主密码，当您单击“确定”时，这些密码将迁移到操作系统存储中。"
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:94
 msgid "Please set a master password for pgAdmin."
@@ -11481,8 +11551,8 @@ msgstr "是否要重置主密码以匹配？"
 
 #: pgadmin/static/js/Dialogs/index.jsx:183
 msgid ""
-"Note that this will close all open database connections and remove all "
-"saved passwords."
+"Note that this will close all open database connections and remove all saved "
+"passwords."
 msgstr "请注意，这将关闭所有打开的数据库连接并删除所有已保存的密码。"
 
 #: pgadmin/static/js/Dialogs/index.jsx:205
@@ -11493,7 +11563,9 @@ msgstr "迁移成功"
 msgid ""
 "Passwords previously saved by pgAdmin have been successfully migrated to "
 "${res.data.data.keyring_name} and removed from the pgAdmin store."
-msgstr "以前由 pgAdmin 保存的密码已成功迁移到 ${res.data.data.keyring_name} 并从 pgAdmin 存储中删除。"
+msgstr ""
+"以前由 pgAdmin 保存的密码已成功迁移到 ${res.data.data.keyring_name} 并从 "
+"pgAdmin 存储中删除。"
 
 #: pgadmin/static/js/Dialogs/index.jsx:218
 msgid "Migrate Saved Passwords"
@@ -11509,20 +11581,23 @@ msgstr "设置主密码"
 
 #: pgadmin/static/js/Dialogs/index.jsx:231
 msgid ""
-"This will remove all the saved passwords. This will also remove "
-"established connections to the server and you may need to reconnect "
-"again. Do you wish to continue?"
-msgstr "这将删除所有保存的密码。这还将删除与服务器的已建立连接，您可能需要重新连接。是否要继续？"
+"This will remove all the saved passwords. This will also remove established "
+"connections to the server and you may need to reconnect again. Do you wish "
+"to continue?"
+msgstr ""
+"这将删除所有保存的密码。这还将删除与服务器的已建立连接，您可能需要重新连接。"
+"是否要继续？"
 
 #: pgadmin/static/js/Dialogs/index.jsx:290
 msgid ""
-"Please make sure to disconnect the server and update the new password in "
-"the pgpass file before performing any other operation"
-msgstr "在执行任何其他操作之前, 请确保断开服务器的连接并更新 pgpass 文件中的新密码"
+"Please make sure to disconnect the server and update the new password in the "
+"pgpass file before performing any other operation"
+msgstr ""
+"在执行任何其他操作之前, 请确保断开服务器的连接并更新 pgpass 文件中的新密码"
 
 #: pgadmin/static/js/Dialogs/index.jsx:312
 msgid "Change pgAdmin User Password"
-msgstr ""
+msgstr "更改pgAdmin用户密码"
 
 #: pgadmin/static/js/Dialogs/index.jsx:458
 msgid "Rename Panel ${_.escape(title)}"
@@ -11664,7 +11739,9 @@ msgstr "堆块集"
 msgid ""
 "Use Explain/Explain analyze button to generate the plan for a query. "
 "Alternatively, you can also execute \"EXPLAIN (FORMAT JSON) [QUERY]\"."
-msgstr "使用解释/解释分析按钮生成查询计划。或者，您也可以执行\"解释（格式化JSON） [查询]\"。"
+msgstr ""
+"使用解释/解释分析按钮生成查询计划。或者，您也可以执行\"解释（格式化JSON） [查"
+"询]\"。"
 
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:325
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:167
@@ -11690,12 +11767,12 @@ msgstr "确实要删除此行吗？"
 #: pgadmin/static/js/SchemaView/index.jsx:284
 #, python-format
 msgid "%s must be unique."
-msgstr "%s 必须唯一"
+msgstr "%s 必须唯一。"
 
 #: pgadmin/static/js/SchemaView/index.jsx:286
 #, python-format
 msgid "%s in %s must be unique."
-msgstr "%s 于 %s 必须唯一"
+msgstr "%s 于 %s 必须唯一。"
 
 #: pgadmin/static/js/SchemaView/index.jsx:309
 #, python-format
@@ -11720,7 +11797,7 @@ msgstr "编辑对象……"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:16
 msgid "Forget Password"
-msgstr ""
+msgstr "忘记密码"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:19
 msgid ""
@@ -11730,7 +11807,7 @@ msgstr "输入您要恢复密码的用户帐户的电子邮件地址："
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:20
 msgid "Email Address"
-msgstr ""
+msgstr "邮箱地址"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:21
 msgid "Recover Password"
@@ -11743,20 +11820,20 @@ msgstr "登录"
 
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:33
 msgid "Email Address / Username"
-msgstr ""
+msgstr "邮箱/用户名"
 
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:36
 msgid "Forgotten your password?"
-msgstr ""
+msgstr "忘记了你的密码？"
 
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:46
 #, python-format
 msgid "Login with %s"
-msgstr ""
+msgstr "使用 %s 登录"
 
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:72
 msgid "Authentication Registration"
-msgstr ""
+msgstr "认证注册"
 
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:78
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:98
@@ -11793,7 +11870,7 @@ msgstr "重置密码"
 
 #: pgadmin/static/js/SecurityPages/PasswordResetPage.jsx:20
 msgid "Retype Password"
-msgstr ""
+msgstr "重新输入密码"
 
 #: pgadmin/static/js/components/CodeMirror.jsx:288
 msgid "Previous"
@@ -11902,8 +11979,8 @@ msgstr "重置树保存状态时出错。”"
 
 #: pgadmin/static/js/tree/tree_utils.js:44
 msgid ""
-"Databases with = symbols in the name cannot be backed up or restored "
-"using this utility."
+"Databases with = symbols in the name cannot be backed up or restored using "
+"this utility."
 msgstr "不能使用此实用程序备份或还原名称中包含 = 符号的数据库。"
 
 #: pgadmin/static/js/tree/tree_utils.js:61
@@ -11971,8 +12048,8 @@ msgstr "备份全局..."
 
 #: pgadmin/tools/backup/static/js/backup.js:68
 msgid ""
-"Please select any server from the object explorer to take Backup of "
-"global objects."
+"Please select any server from the object explorer to take Backup of global "
+"objects."
 msgstr "请从对象浏览器中选择任意服务器以备份全局对象"
 
 #: pgadmin/tools/backup/static/js/backup.js:76
@@ -11982,14 +12059,15 @@ msgstr "备份服务器..."
 
 #: pgadmin/tools/backup/static/js/backup.js:80
 #: pgadmin/tools/backup/static/js/backup.js:106
-msgid "Please select any server from the object explorer to take Server Backup."
+msgid ""
+"Please select any server from the object explorer to take Server Backup."
 msgstr "请从对象浏览器中选择一个服务器来创建服务器备份"
 
 #: pgadmin/tools/backup/static/js/backup.js:93
 #: pgadmin/tools/backup/static/js/backup.js:120
 msgid ""
-"Please select any database or schema or table from the object explorer to"
-" take Backup."
+"Please select any database or schema or table from the object explorer to "
+"take Backup."
 msgstr "请从对象浏览器中选择任意服务器、模式或表来创建备份"
 
 #: pgadmin/tools/backup/static/js/backup.js:114
@@ -12051,15 +12129,15 @@ msgstr "对象类型"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:119
 msgid "Only schemas"
-msgstr ""
+msgstr "仅架构"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:135
 msgid "Only tablespaces"
-msgstr ""
+msgstr "仅表空间"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:152
 msgid "Only roles"
-msgstr ""
+msgstr "仅角色"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:168
 msgid "Blobs"
@@ -12091,7 +12169,7 @@ msgstr "不要保存"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:214
 msgid "Role passwords"
-msgstr ""
+msgstr "角色密码"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:236
 msgid "Unlogged table data"
@@ -12099,12 +12177,12 @@ msgstr "未记录日志的表数据"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:275
 msgid "Toast compressions"
-msgstr ""
+msgstr "Toast 压缩"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:283
 #: pgadmin/tools/restore/static/js/restore.ui.js:212
 msgid "Table access methods"
-msgstr ""
+msgstr "表访问方法"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:336
 msgid "$ quoting"
@@ -12129,19 +12207,19 @@ msgstr "使用设置会话授权"
 #: pgadmin/tools/backup/static/js/backup.ui.js:392
 #: pgadmin/tools/restore/static/js/restore.ui.js:298
 msgid "Exclude schema"
-msgstr ""
+msgstr "排除架构"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:399
 msgid "Exclude database"
-msgstr ""
+msgstr "排除数据库"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:407
 msgid "Extra float digits"
-msgstr ""
+msgstr "额外的浮点数"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:414
 msgid "Lock wait timeout"
-msgstr ""
+msgstr "锁等待超时"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:460
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:79
@@ -12200,11 +12278,11 @@ msgstr "备份格式为PLAIN"
 #: pgadmin/tools/restore/static/js/restore.ui.js:402
 #: pgadmin/tools/restore/static/js/restore.ui.js:408
 msgid "Data Options"
-msgstr ""
+msgstr "数据选项"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:562
 msgid "Use INSERT Commands"
-msgstr ""
+msgstr "使用 INSERT命令"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:565
 #: pgadmin/tools/backup/static/js/backup.ui.js:571
@@ -12217,15 +12295,15 @@ msgstr ""
 #: pgadmin/tools/restore/static/js/restore.ui.js:433
 #: pgadmin/tools/restore/static/js/restore.ui.js:447
 msgid "Query Options"
-msgstr ""
+msgstr "查询选项"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:568
 msgid "Maximum rows per INSERT command"
-msgstr ""
+msgstr "每个INSERT 命令的最大行数"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:575
 msgid "On conflict do nothing to INSERT command"
-msgstr ""
+msgstr "发生冲突时不对INSERT 命令执行任何操作"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:590
 #: pgadmin/tools/restore/static/js/restore.ui.js:413
@@ -12239,11 +12317,11 @@ msgstr "包括删除数据库语句"
 #: pgadmin/tools/backup/static/js/backup.ui.js:612
 #: pgadmin/tools/restore/static/js/restore.ui.js:431
 msgid "Include IF EXISTS clause"
-msgstr ""
+msgstr "包含IF EXISTS 子句"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:625
 msgid "Use Column INSERTS"
-msgstr ""
+msgstr "使用列 INSERTS"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:628
 #: pgadmin/tools/backup/static/js/backup.ui.js:634
@@ -12256,20 +12334,20 @@ msgstr ""
 #: pgadmin/tools/restore/static/js/restore.ui.js:453
 #: pgadmin/tools/restore/static/js/restore.ui.js:459
 msgid "Table Options"
-msgstr ""
+msgstr "表选项"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:631
 msgid "Load via partition root"
-msgstr ""
+msgstr "通过分区根目录加载"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:638
 #: pgadmin/tools/restore/static/js/restore.ui.js:450
 msgid "Enable row security"
-msgstr ""
+msgstr "启用行加密"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:650
 msgid "This option is enabled only when Use INSERT Commands is enabled."
-msgstr ""
+msgstr "仅当启用了“使用 INSERT 命令”时，才会启用此选项。"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:653
 msgid "With OID(s)"
@@ -12277,27 +12355,27 @@ msgstr "包含OID(s)"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:671
 msgid "Exclude table data"
-msgstr ""
+msgstr "排除表数据"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:678
 msgid "Table and Children"
-msgstr ""
+msgstr "表和子项"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:686
 msgid "Exclude table and children"
-msgstr ""
+msgstr "排除表和子项"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:694
 msgid "Exclude table data and children"
-msgstr ""
+msgstr "排除表数据和子项"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:712
 msgid "objects"
-msgstr ""
+msgstr "对象"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:713
 msgid "Objects"
-msgstr ""
+msgstr "对象"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:727
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:114
@@ -12309,8 +12387,7 @@ msgstr "请提供一个文件名。"
 
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:104
 msgid ""
-"Only objects global to the entire database will be backed up, in PLAIN "
-"format"
+"Only objects global to the entire database will be backed up, in PLAIN format"
 msgstr "只有全局到整个数据库的对象才会以 纯文本格式进行备份"
 
 #: pgadmin/tools/debugger/__init__.py:61
@@ -12375,8 +12452,8 @@ msgstr "EDB Adcanced Server封装的函数无法调试。"
 
 #: pgadmin/tools/debugger/__init__.py:428
 msgid ""
-"An 'edbspl' target with a variadic argument is not supported and cannot "
-"be debugged."
+"An 'edbspl' target with a variadic argument is not supported and cannot be "
+"debugged."
 msgstr "不支持具有可变参数的 \"edbspl\" 目标, 并且无法进行调试。"
 
 #: pgadmin/tools/debugger/__init__.py:504
@@ -12386,8 +12463,8 @@ msgstr "未能在此数据库中找到 pldbgapi 扩展。"
 
 #: pgadmin/tools/debugger/__init__.py:525
 msgid ""
-"The debugger plugin is not enabled. Please create the pldbgapi extension "
-"in this database."
+"The debugger plugin is not enabled. Please create the pldbgapi extension in "
+"this database."
 msgstr "调试器插件未启用。 请在此数据库中创建pldbgapi扩展。"
 
 #: pgadmin/tools/debugger/__init__.py:704
@@ -12403,11 +12480,11 @@ msgstr "无法获取调试器插件信息。"
 #: pgadmin/tools/debugger/__init__.py:720
 msgid ""
 "The debugger plugin is not enabled. Please add the plugin to the "
-"shared_preload_libraries setting in the postgresql.conf file and restart "
-"the database server for indirect debugging."
+"shared_preload_libraries setting in the postgresql.conf file and restart the "
+"database server for indirect debugging."
 msgstr ""
-"未启用调试器插件。请将插件添加到 shared_preload_libraries 并postgresql.conf文件中设置, "
-"然后重新启动数据库服务器进行间接调试。"
+"未启用调试器插件。请将插件添加到 shared_preload_libraries 并postgresql.conf文"
+"件中设置, 然后重新启动数据库服务器进行间接调试。"
 
 #: pgadmin/tools/debugger/__init__.py:740
 msgid "Please upgrade the pldbgapi extension to 1.1 or above and try again."
@@ -12508,8 +12585,8 @@ msgstr "调试器错误"
 
 #: pgadmin/tools/debugger/static/js/DebuggerModule.js:557
 msgid ""
-"Current database has been moved or renamed to ${db_label}. Click on the "
-"OK button to refresh the database name."
+"Current database has been moved or renamed to ${db_label}. Click on the OK "
+"button to refresh the database name."
 msgstr "当前数据库已被移除或重命名为${db_label}，点击OK按钮刷新数据库名"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:55
@@ -12559,8 +12636,8 @@ msgstr "调试器放弃"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:170
 msgid ""
-"Debugger has been aborted. On clicking the ok button, debugger panel will"
-" be closed."
+"Debugger has been aborted. On clicking the ok button, debugger panel will be "
+"closed."
 msgstr "调试器已放弃，点击ok按钮将关闭调试器面板"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:184
@@ -12784,8 +12861,8 @@ msgstr "删除数据表的SQL"
 
 #: pgadmin/tools/erd/__init__.py:383 pgadmin/tools/erd/__init__.py:422
 msgid ""
-"If enabled, the SQL generated by the ERD Tool will add DROP table DDL "
-"before each CREATE table DDL."
+"If enabled, the SQL generated by the ERD Tool will add DROP table DDL before "
+"each CREATE table DDL."
 msgstr "如果启用，ERD工具生成的SQL将在每个创建表语句前添加删除表语句"
 
 #: pgadmin/tools/erd/__init__.py:392
@@ -12909,12 +12986,11 @@ msgstr "-- 此脚本由pgAdmin4的ERD工具生成\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:689
 msgid ""
-"-- Please log an issue at "
-"https://redmine.postgresql.org/projects/pgadmin4/issues/new if you find "
-"any bugs, including reproduction steps.\n"
+"-- Please log an issue at https://redmine.postgresql.org/projects/pgadmin4/"
+"issues/new if you find any bugs, including reproduction steps.\n"
 msgstr ""
-"如果你发现任何问题或缺陷，请在 "
-"https://redmine.postgresql.org/projects/pgadmin4/issues/new 提交\n"
+"如果你发现任何问题或缺陷，请在 https://redmine.postgresql.org/projects/"
+"pgadmin4/issues/new 提交\n"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:702
 msgid "Preparing the SQL..."
@@ -12934,8 +13010,8 @@ msgstr "最大图片尺寸限制"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:847
 msgid ""
-"The downloaded image has exceeded the maximum size of 32767 x 32767 "
-"pixels, and has been cropped to that size."
+"The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, "
+"and has been cropped to that size."
 msgstr "下载的图片触及最大尺寸限制32767*32767像素，已被裁剪。"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:856
@@ -13115,9 +13191,10 @@ msgstr "授权向导"
 
 #: pgadmin/tools/grant_wizard/static/js/GrantWizard.jsx:355
 msgid ""
-"The SQL below will be executed on the database server to grant the "
-"selected privileges. Please click on Finish to complete the process."
-msgstr "下面的SQL将在数据库服务器上执行来授权选中的特权。请点击完成按钮完成过程"
+"The SQL below will be executed on the database server to grant the selected "
+"privileges. Please click on Finish to complete the process."
+msgstr ""
+"下面的SQL将在数据库服务器上执行来授权选中的特权。请点击完成按钮完成过程"
 
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:57
 #: pgadmin/tools/grant_wizard/static/js/grant_wizard.js:77
@@ -13207,11 +13284,13 @@ msgstr "text"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:158
 msgid ""
-"Specifies the character that separates columns within each row (line) of "
-"the file. The default is a tab character in text format, a comma in CSV "
-"format. This must be a single one-byte character. This option is not "
-"allowed when using binary format."
-msgstr "指定用于分隔文件每行（行）中的列的字符。默认值为文本格式的制表符，CSV格式的逗号。它必须是一个单字节字符。使用二进制格式时，不允许使用此选项。"
+"Specifies the character that separates columns within each row (line) of the "
+"file. The default is a tab character in text format, a comma in CSV format. "
+"This must be a single one-byte character. This option is not allowed when "
+"using binary format."
+msgstr ""
+"指定用于分隔文件每行（行）中的列的字符。默认值为文本格式的制表符，CSV格式的逗"
+"号。它必须是一个单字节字符。使用二进制格式时，不允许使用此选项。"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:162
 msgid "Quote"
@@ -13219,10 +13298,12 @@ msgstr "引号"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:176
 msgid ""
-"Specifies the quoting character to be used when a data value is quoted. "
-"The default is double-quote. This must be a single one-byte character. "
-"This option is allowed only when using CSV format."
-msgstr "指定在引用数据值时要使用的引号字符。默认值为双引号。 它必须是一个单字节字符。 此选项仅在使用CSV格式时允许。"
+"Specifies the quoting character to be used when a data value is quoted. The "
+"default is double-quote. This must be a single one-byte character. This "
+"option is allowed only when using CSV format."
+msgstr ""
+"指定在引用数据值时要使用的引号字符。默认值为双引号。 它必须是一个单字节字"
+"符。 此选项仅在使用CSV格式时允许。"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:180
 msgid "Escape"
@@ -13231,13 +13312,13 @@ msgstr "转义"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:194
 msgid ""
 "Specifies the character that should appear before a data character that "
-"matches the QUOTE value. The default is the same as the QUOTE value (so "
-"that the quoting character is doubled if it appears in the data). This "
-"must be a single one-byte character. This option is allowed only when "
-"using CSV format."
+"matches the QUOTE value. The default is the same as the QUOTE value (so that "
+"the quoting character is doubled if it appears in the data). This must be a "
+"single one-byte character. This option is allowed only when using CSV format."
 msgstr ""
-"指定应在与QUOTE值匹配的数据字符之前出现的字符。默认值与QUOTE值相同（以便在数据中出现时，引号字符加倍）。它必须是一个单字节字符。 "
-"仅当使用CSV格式时，才允许使用此选项。"
+"指定应在与QUOTE值匹配的数据字符之前出现的字符。默认值与QUOTE值相同（以便在数"
+"据中出现时，引号字符加倍）。它必须是一个单字节字符。 仅当使用CSV格式时，才允"
+"许使用此选项。"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:198
 msgid "NULL Strings"
@@ -13246,14 +13327,14 @@ msgstr "NULL 字符串"
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:205
 msgid ""
 "Specifies the string that represents a null value. The default is \\N "
-"(backslash-N) in text format, and an unquoted empty string in CSV format."
-" You might prefer an empty string even in text format for cases where you"
-" don't want to distinguish nulls from empty strings. This option is not "
+"(backslash-N) in text format, and an unquoted empty string in CSV format. "
+"You might prefer an empty string even in text format for cases where you "
+"don't want to distinguish nulls from empty strings. This option is not "
 "allowed when using binary format."
 msgstr ""
-"指定表示空值的字符串。默认值为文本格式的 \\N (backslash-N), 以及 CSV "
-"格式中不带引号的空字符串。对于不想区分空字符串和空字符串的情况, 即使是文本格式的字符串, 也可能更喜欢空字符串。使用二进制格式时, "
-"不允许使用此选项。"
+"指定表示空值的字符串。默认值为文本格式的 \\N (backslash-N), 以及 CSV 格式中不"
+"带引号的空字符串。对于不想区分空字符串和空字符串的情况, 即使是文本格式的字符"
+"串, 也可能更喜欢空字符串。使用二进制格式时, 不允许使用此选项。"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:219
 msgid "Columns for importing..."
@@ -13265,8 +13346,8 @@ msgstr "用于导出的列..."
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:225
 msgid ""
-"An optional list of columns to be copied. If no column list is specified,"
-" all columns of the table will be copied."
+"An optional list of columns to be copied. If no column list is specified, "
+"all columns of the table will be copied."
 msgstr "要复制的列的可选列表。 如果未指定列列表，则将复制表的所有列。"
 
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:229
@@ -13280,13 +13361,14 @@ msgstr "非空列..."
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:241
 msgid ""
 "Do not match the specified column values against the null string. In the "
-"default case where the null string is empty, this means that empty values"
-" will be read as zero-length strings rather than nulls, even when they "
-"are not quoted. This option is allowed only in import, and only when "
-"using CSV format."
+"default case where the null string is empty, this means that empty values "
+"will be read as zero-length strings rather than nulls, even when they are "
+"not quoted. This option is allowed only in import, and only when using CSV "
+"format."
 msgstr ""
-"不要将指定的列值与空字符串匹配。在空字符串为空的默认情况下, 这意味着空值将被读取为零长度字符串而不是 null, "
-"即使它们没有被引用。此选项仅允许在导入中使用, 并且仅在使用 CSV 格式时允许。"
+"不要将指定的列值与空字符串匹配。在空字符串为空的默认情况下, 这意味着空值将被"
+"读取为零长度字符串而不是 null, 即使它们没有被引用。此选项仅允许在导入中使用, "
+"并且仅在使用 CSV 格式时允许。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:41
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:218
@@ -13296,15 +13378,15 @@ msgstr "导入/导出 服务器"
 
 #: pgadmin/tools/import_export_servers/__init__.py:155
 msgid "The specified file is not in the correct format."
-msgstr "选定的文件格式不正确"
+msgstr "选定的文件格式不正确。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:161
 msgid "Unable to load the specified file."
-msgstr "无法加载指定文件"
+msgstr "无法加载指定文件。"
 
 #: pgadmin/tools/import_export_servers/__init__.py:163
 msgid "The specified file does not exist."
-msgstr "指定文件不存在"
+msgstr "指定文件不存在。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:68
 msgid "Database Servers"
@@ -13321,7 +13403,7 @@ msgstr "导出服务器"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:88
 msgid "The selected servers were exported successfully."
-msgstr "选中的服务器导出成功"
+msgstr "选中的服务器导出成功。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:91
 msgid "Export Error"
@@ -13329,7 +13411,7 @@ msgstr "导出错误"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:109
 msgid "The selected servers were imported successfully."
-msgstr "选中的服务器导入成功"
+msgstr "选中的服务器导入成功。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:111
 msgid ""
@@ -13347,16 +13429,17 @@ msgstr "导入错误"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:162
 msgid ""
-"The following servers will be imported. Click the Finish button to "
-"complete the import process."
+"The following servers will be imported. Click the Finish button to complete "
+"the import process."
 msgstr "以下服务器将被导入，点击完成按钮结束导入过程"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:164
 msgid ""
-"All existing server groups and servers will be removed before the servers"
-" above are imported. On a successful import process, the object explorer "
-"will be refreshed."
-msgstr "以上将被导入的服务器组合服务器如果存在将被删除，导入成功后对象浏览器将被刷新"
+"All existing server groups and servers will be removed before the servers "
+"above are imported. On a successful import process, the object explorer will "
+"be refreshed."
+msgstr ""
+"以上将被导入的服务器组合服务器如果存在将被删除，导入成功后对象浏览器将被刷新"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:166
 msgid "On a successful import process, the object explorer will be refreshed."
@@ -13383,7 +13466,9 @@ msgid ""
 "If this option is turned on then pgAdmin will remove all the existing "
 "database servers and then import the selected servers. This setting is "
 "applicable only while importing the servers."
-msgstr "如果此项已选择则pgAdmin将移除已存在的数据库服务器再导入选择服务器，此项只对导入服务器生效"
+msgstr ""
+"如果此项已选择则pgAdmin将移除已存在的数据库服务器再导入选择服务器，此项只对导"
+"入服务器生效"
 
 #: pgadmin/tools/import_export_servers/static/js/import_export_servers.js:49
 msgid "Import/Export Servers..."
@@ -13462,8 +13547,8 @@ msgstr "维护错误"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:163
 msgid ""
-"Maintenance job creation failed. Databases with = symbols in the name "
-"cannot be maintained using this utility."
+"Maintenance job creation failed. Databases with = symbols in the name cannot "
+"be maintained using this utility."
 msgstr "维护作业创建失败。不能使用此实用程序维护名称中包含 = 符号的数据库。"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:47
@@ -13543,8 +13628,7 @@ msgstr "还原中..."
 
 #: pgadmin/tools/restore/static/js/restore.js:51
 msgid ""
-"Please select any schema or table from the object explorer to Restore "
-"data."
+"Please select any schema or table from the object explorer to Restore data."
 msgstr "请在对象浏览器中选择模式和数据表来还原数据"
 
 #: pgadmin/tools/restore/static/js/restore.js:131
@@ -13585,7 +13669,7 @@ msgstr "单个事务"
 
 #: pgadmin/tools/restore/static/js/restore.ui.js:456
 msgid "No data for failed tables"
-msgstr ""
+msgstr "失败表中没有数据"
 
 #: pgadmin/tools/schema_diff/__init__.py:35
 msgid "Comparing objects..."
@@ -13598,8 +13682,8 @@ msgstr "忽略空白"
 
 #: pgadmin/tools/schema_diff/__init__.py:78
 msgid ""
-"Set ignore whitespace on or off by default in the drop-down menu near the"
-" Compare button in the Schema Diff tab."
+"Set ignore whitespace on or off by default in the drop-down menu near the "
+"Compare button in the Schema Diff tab."
 msgstr "在模式比对选项卡的比对按钮旁的下拉框中设置忽略空白与否"
 
 #: pgadmin/tools/schema_diff/__init__.py:85
@@ -13609,8 +13693,8 @@ msgstr "忽略所有者"
 
 #: pgadmin/tools/schema_diff/__init__.py:87
 msgid ""
-"Set ignore owner on or off by default in the drop-down menu near the "
-"Compare button in the Schema Diff tab."
+"Set ignore owner on or off by default in the drop-down menu near the Compare "
+"button in the Schema Diff tab."
 msgstr "在模式比对选项卡的比对按钮旁的下拉框中设置忽略空白与否"
 
 #: pgadmin/tools/schema_diff/__init__.py:613
@@ -13627,8 +13711,8 @@ msgstr "服务器已断开连接。"
 
 #: pgadmin/tools/schema_diff/__init__.py:698
 msgid ""
-"Schema diff does not support the comparison between Postgres Server and "
-"EDB Postgres Advanced Server."
+"Schema diff does not support the comparison between Postgres Server and EDB "
+"Postgres Advanced Server."
 msgstr "模式差异不支持 Postgres 服务器和 EDB Postgres 高级服务器之间的比较。"
 
 #: pgadmin/tools/schema_diff/__init__.py:712
@@ -13726,13 +13810,14 @@ msgid "Generating script..."
 msgstr "生成脚本中……"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:336
-msgid "-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
+msgid ""
+"-- This script was generated by the Schema Diff utility in pgAdmin 4. \n"
 msgstr "-- 此脚本由pgAdmin4的模式异同工具生成\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:337
 msgid ""
-"-- For the circular dependencies, the order in which Schema Diff writes "
-"the objects is not very sophisticated \n"
+"-- For the circular dependencies, the order in which Schema Diff writes the "
+"objects is not very sophisticated \n"
 msgstr "-- 对于循环依赖关系，架构差异写入对象的顺序不是非常复杂\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:338
@@ -13742,7 +13827,8 @@ msgid ""
 msgstr "-- 可能需要手动更改脚本，以确保按正确的顺序应用更改。\n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:339
-msgid "-- Please report an issue for any failure with the reproduction steps. \n"
+msgid ""
+"-- Please report an issue for any failure with the reproduction steps. \n"
 msgstr "-- 报告任何故障问题请附带复现步骤。 \n"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:387
@@ -13794,8 +13880,7 @@ msgstr "模式对比："
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:796
 msgid ""
-" Select the server, database and schema for the source and target and "
-"Click"
+" Select the server, database and schema for the source and target and Click"
 msgstr "请为来源和目标选择服务器、数据库和模式"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:798
@@ -13939,7 +14024,9 @@ msgid ""
 "Please allow pop-ups for this site to perform the desired action. If the "
 "main window of pgAdmin is closed then close this window and open a new "
 "pgAdmin session."
-msgstr "请允许此站点的弹出窗口，如果pgAdmin的主窗口已关闭，请关闭此窗口并打开一个新的pgAdmin会话"
+msgstr ""
+"请允许此站点的弹出窗口，如果pgAdmin的主窗口已关闭，请关闭此窗口并打开一个新的"
+"pgAdmin会话"
 
 #: pgadmin/tools/sqleditor/static/js/show_view_data.js:40
 msgid "Data Filter"
@@ -13975,7 +14062,8 @@ msgid "Database moved/renamed"
 msgstr "数据库已 移除/重命名"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:160
-msgid "An unexpected error occurred - ensure you are logged into the application."
+msgid ""
+"An unexpected error occurred - ensure you are logged into the application."
 msgstr "出现意外错误-确保您已登录到应用程序。"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolComponent.jsx:186
@@ -14470,8 +14558,8 @@ msgstr "是否确实要清除历史记录？"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:460
 msgid ""
-"This will remove all of your query history from this and other sessions "
-"for this database."
+"This will remove all of your query history from this and other sessions for "
+"this database."
 msgstr "这将从此数据库的此会话和其他会话中删除所有查询历史记录。"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/QueryHistory.jsx:462
@@ -14550,8 +14638,8 @@ msgstr "%s 行受影响。"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:866
 msgid ""
-"The data has been modified, but not saved. Are you sure you wish to "
-"discard the changes?"
+"The data has been modified, but not saved. Are you sure you wish to discard "
+"the changes?"
 msgstr "数据已修改，但未保存。 确定要放弃更改吗?"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:881
@@ -14583,14 +14671,16 @@ msgid "Saving data..."
 msgstr "保存数据中……"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1080
-msgid "This query was generated by pgAdmin as part of a \"Save Data\" operation"
+msgid ""
+"This query was generated by pgAdmin as part of a \"Save Data\" operation"
 msgstr "此查询由 pgAdmin 生成，作为\"保存数据\"操作的一部分"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1094
 msgid ""
 "Saving data changes was rolled back but the current transaction is still "
 "active; previous queries are unaffected."
-msgstr "正在保存的数据更改已经回滚但是当前事务依然处于活动状态；之前的请求不受影响。"
+msgstr ""
+"正在保存的数据更改已经回滚但是当前事务依然处于活动状态；之前的请求不受影响。"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSet.jsx:1139
 msgid "Data saved successfully."
@@ -14751,8 +14841,8 @@ msgstr "提示保存未保存的查询更改？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:78
 msgid ""
-"Specifies whether or not to prompt user to save unsaved query on query "
-"tool exit."
+"Specifies whether or not to prompt user to save unsaved query on query tool "
+"exit."
 msgstr "指定是否提示用户在查询工具退出时保存未保存的查询。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:86
@@ -14762,11 +14852,11 @@ msgstr "按主键列对查看数据结果进行排序？"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:89
 msgid ""
 "If set to True, data returned when using the View/Edit Data - All Rows "
-"option will be sorted by the Primary Key columns by default. When using "
-"the First/Last 100 Rows options, data is always sorted."
+"option will be sorted by the Primary Key columns by default. When using the "
+"First/Last 100 Rows options, data is always sorted."
 msgstr ""
-"如果设置为 True，则使用\"查看/编辑数据 - 所有行\"选项时返回的数据将默认按主键列排序。使用\"第一/最后 100 "
-"行\"选项时，始终对数据进行排序。"
+"如果设置为 True，则使用\"查看/编辑数据 - 所有行\"选项时返回的数据将默认按主键"
+"列排序。使用\"第一/最后 100 行\"选项时，始终对数据进行排序。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:97
 msgid "Prompt to save unsaved data changes?"
@@ -14774,8 +14864,8 @@ msgstr "提示保存未保存的数据更改？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:99
 msgid ""
-"Specifies whether or not to prompt user to save unsaved data on data grid"
-" exit."
+"Specifies whether or not to prompt user to save unsaved data on data grid "
+"exit."
 msgstr "指定是否提示用户在数据表格退出时保存未保存的数据。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:107
@@ -14803,9 +14893,10 @@ msgstr "纯文本模式？"
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:131
 msgid ""
 "When set to True, keywords won't be highlighted and code folding will be "
-"disabled. Plain text mode will improve editor performance with large "
-"files."
-msgstr "设置为 True 时，不会突出显示关键字，并且将禁用代码折叠。纯文本模式将提高大型文件的编辑器性能。"
+"disabled. Plain text mode will improve editor performance with large files."
+msgstr ""
+"设置为 True 时，不会突出显示关键字，并且将禁用代码折叠。纯文本模式将提高大型"
+"文件的编辑器性能。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:140
 msgid "Code folding?"
@@ -14813,10 +14904,12 @@ msgstr "代码折叠？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:142
 msgid ""
-"Enable or disable code folding. In plain text mode, this will have no "
-"effect as code folding is always disabled in that mode. Disabling will "
-"improve editor performance with large files."
-msgstr "启用或禁用代码折叠。在纯文本模式下，这不起作用，因为代码折叠始终在该模式下禁用。禁用将提高大型文件的编辑器性能。"
+"Enable or disable code folding. In plain text mode, this will have no effect "
+"as code folding is always disabled in that mode. Disabling will improve "
+"editor performance with large files."
+msgstr ""
+"启用或禁用代码折叠。在纯文本模式下，这不起作用，因为代码折叠始终在该模式下禁"
+"用。禁用将提高大型文件的编辑器性能。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:151
 msgid "Line wrapping?"
@@ -14875,10 +14968,12 @@ msgstr "将空值替换为"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:225
 msgid ""
-"Specifies the string that represents a null value while downloading query"
-" results as CSV. You can specify any arbitrary string to represent a null"
-" value, with quotes if desired."
-msgstr "指定在以 CSV 形式下载查询结果时表示空值的字符串。您可以指定任何任意字符串来表示空值, 并在需要时使用引号。"
+"Specifies the string that represents a null value while downloading query "
+"results as CSV. You can specify any arbitrary string to represent a null "
+"value, with quotes if desired."
+msgstr ""
+"指定在以 CSV 形式下载查询结果时表示空值的字符串。您可以指定任何任意字符串来表"
+"示空值, 并在需要时使用引号。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:234
 msgid "Result copy quoting"
@@ -14906,11 +15001,12 @@ msgstr "列名称"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:277
 msgid ""
-"If set to 'Column data' columns will auto-size to the maximum width of "
-"the data in the column as loaded in the first batch. If set to 'Column "
-"name', the column will be sized to the widest of the data type or column "
-"name."
-msgstr "如果设置了'列数据'，则列的最大宽度将由初次加载的一批数据自动适应数据。如果设置为'列名称'则列的尺寸将根据列名决定列宽度"
+"If set to 'Column data' columns will auto-size to the maximum width of the "
+"data in the column as loaded in the first batch. If set to 'Column name', "
+"the column will be sized to the widest of the data type or column name."
+msgstr ""
+"如果设置了'列数据'，则列的最大宽度将由初次加载的一批数据自动适应数据。如果设"
+"置为'列名称'则列的尺寸将根据列名决定列宽度"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:288
 msgid "Maximum column width"
@@ -14918,8 +15014,8 @@ msgstr "最大列宽"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:290
 msgid ""
-"Specify the maximum width of the column in pixels when 'Columns sized by "
-"' is set to 'Column data'."
+"Specify the maximum width of the column in pixels when 'Columns sized by ' "
+"is set to 'Column data'."
 msgstr "当列尺寸被设置为'列数据'时，以像素为单位指定最大宽度"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:298
@@ -14928,10 +15024,12 @@ msgstr "要求记录数"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:301
 msgid ""
-"Specify the number of records to fetch in one batch in query tool when "
-"query result set is large. Changing this value will override "
+"Specify the number of records to fetch in one batch in query tool when query "
+"result set is large. Changing this value will override "
 "ON_DEMAND_RECORD_COUNT setting from config file."
-msgstr "当查询结果集较大时，在查询工具中指定一次检索的记录数，更改此值将覆盖配置文件中的ON_DEMAND_RECORD_COUNT"
+msgstr ""
+"当查询结果集较大时，在查询工具中指定一次检索的记录数，更改此值将覆盖配置文件"
+"中的ON_DEMAND_RECORD_COUNT"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:309
 msgid "Font size"
@@ -14939,15 +15037,14 @@ msgstr "字体大小"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:313
 msgid ""
-"The font size to use for the SQL text boxes and editors. The value "
-"specified is in \"em\" units, in which 1 is the default relative font "
-"size. For example, to increase the font size by 20 percent use a value of"
-" 1.2, or to reduce by 20 percent, use a value of 0.8. Minimum 0.1, "
-"maximum 10."
+"The font size to use for the SQL text boxes and editors. The value specified "
+"is in \"em\" units, in which 1 is the default relative font size. For "
+"example, to increase the font size by 20 percent use a value of 1.2, or to "
+"reduce by 20 percent, use a value of 0.8. Minimum 0.1, maximum 10."
 msgstr ""
-"要用于 SQL 文本框和编辑器的字体大小。指定的值为 \"em\" 单位, "
-"其中1是默认的相对字体大小。例如:若要将字体大小增加百分之二十请使用1.2 的值或将减少百分之二十, 请使用0.8 的值。最小 0.1, "
-"最大10。"
+"要用于 SQL 文本框和编辑器的字体大小。指定的值为 \"em\" 单位, 其中1是默认的相"
+"对字体大小。例如:若要将字体大小增加百分之二十请使用1.2 的值或将减少百分之二"
+"十, 请使用0.8 的值。最小 0.1, 最大10。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:324
 msgid "Connection status"
@@ -14955,8 +15052,8 @@ msgstr "连接状态"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:326
 msgid ""
-"If set to True, the Query Tool will monitor and display the connection "
-"and transaction status."
+"If set to True, the Query Tool will monitor and display the connection and "
+"transaction status."
 msgstr "如果设置为 True, 查询工具将监视并显示连接和事务状态。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:333
@@ -14973,8 +15070,8 @@ msgstr "显示查询成功提示？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:346
 msgid ""
-"If set to True, the Query Tool will show notifications on successful "
-"query execution."
+"If set to True, the Query Tool will show notifications on successful query "
+"execution."
 msgstr "如果设置为True，查询窗口将显示查询执行成功的提示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:354
@@ -15056,8 +15153,7 @@ msgstr "自动完成"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:666
 msgid ""
-"If set to True, Keywords will be displayed in upper case for auto "
-"completion."
+"If set to True, Keywords will be displayed in upper case for auto completion."
 msgstr "如果设置为 True, 关键字针对自动完成将以大写形式显示。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:672
@@ -15066,10 +15162,12 @@ msgstr "按键自动完成"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:674
 msgid ""
-"If set to True, autocomplete will be available on key press along with "
-"CTRL/CMD + Space. If set to False, autocomplete is only activated when "
-"CTRL/CMD + Space is pressed."
-msgstr "如果设置为True，按键按下将提供自动完成，如果设置为False则只在CTRL/CMD+Space按下时才提供自动完成"
+"If set to True, autocomplete will be available on key press along with CTRL/"
+"CMD + Space. If set to False, autocomplete is only activated when CTRL/CMD + "
+"Space is pressed."
+msgstr ""
+"如果设置为True，按键按下将提供自动完成，如果设置为False则只在CTRL/CMD+Space按"
+"下时才提供自动完成"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:718
 msgid "Keyword case"
@@ -15152,7 +15250,9 @@ msgstr "N 个字符后换行"
 msgid ""
 "The column limit (in characters) for wrapping comma-separated lists. If "
 "zero, it puts every item in the list on its own line."
-msgstr "换行逗号分隔列表的列限制（以字符表示）。如果为零，它将列表中的每个项目放在自己的行上。"
+msgstr ""
+"换行逗号分隔列表的列限制（以字符表示）。如果为零，它将列表中的每个项目放在自"
+"己的行上。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:791
 msgid "Tab size"
@@ -15168,8 +15268,8 @@ msgstr "使用空间吗？"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:804
 msgid ""
-"Specifies whether or not to insert spaces instead of tabs when the tab "
-"key or auto-indent are used."
+"Specifies whether or not to insert spaces instead of tabs when the tab key "
+"or auto-indent are used."
 msgstr "指定在使用Tab键或自动缩进时是否插入空格而不是Tab。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:812
@@ -15178,10 +15278,12 @@ msgstr "行数限制"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:814
 msgid ""
-"This setting specifies the maximum number of rows that will be plotted on"
-" a chart. Increasing this limit may impact performance if charts are "
-"plotted with very high numbers of rows."
-msgstr "这个设置指定图表上将绘制的最大行数。如果要绘制具有很高行数的图表，则增加此限制可能会影响性能。"
+"This setting specifies the maximum number of rows that will be plotted on a "
+"chart. Increasing this limit may impact performance if charts are plotted "
+"with very high numbers of rows."
+msgstr ""
+"这个设置指定图表上将绘制的最大行数。如果要绘制具有很高行数的图表，则增加此限"
+"制可能会影响性能。"
 
 #: pgadmin/tools/user_management/__init__.py:46
 msgid "Users"
@@ -15297,7 +15399,9 @@ msgid ""
 "The ownership of the shared server was changed or the shared server was "
 "deleted, so the object explorer tree refresh is required. Do you wish to "
 "refresh the tree?"
-msgstr "共享服务器已发生变化或者共享服务器已删除，所以对象浏览器需要刷新，你要刷新对象树吗？"
+msgstr ""
+"共享服务器已发生变化或者共享服务器已删除，所以对象浏览器需要刷新，你要刷新对"
+"象树吗？"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:419
 msgid "User Management"
@@ -15305,15 +15409,14 @@ msgstr "用户管理"
 
 #: pgadmin/utils/__init__.py:333
 msgid ""
-"Utility file not found. Please correct the Binary Path in the Preferences"
-" dialog"
+"Utility file not found. Please correct the Binary Path in the Preferences "
+"dialog"
 msgstr "未找到实用程序文件。请更正\"\"对话框中的\"二进制路径\""
 
 #: pgadmin/utils/__init__.py:338
 #, python-format
 msgid ""
-"'%s' file not found. Please correct the Binary Path in the Preferences "
-"dialog"
+"'%s' file not found. Please correct the Binary Path in the Preferences dialog"
 msgstr "找不到 \" %s\" 文件。请更正 \"配置\" 对话框中的二进制路径"
 
 #: pgadmin/utils/__init__.py:524
@@ -15399,7 +15502,7 @@ msgstr "选项卡设置"
 
 #: pgadmin/utils/constants.py:29
 msgid "Refresh rates"
-msgstr "刷新评论"
+msgstr "刷新率"
 
 #: pgadmin/utils/constants.py:50
 msgid "Transaction ID not found in the session."
@@ -15470,14 +15573,14 @@ msgstr "找不到指定的用户 ID（%s）。"
 
 #: pgadmin/utils/constants.py:126
 msgid ""
-"Access denied: You’re having limited access. You’re not allowed to "
-"Rename, Delete or Create any files/folders"
+"Access denied: You’re having limited access. You’re not allowed to Rename, "
+"Delete or Create any files/folders"
 msgstr "访问被禁止：你的访问受限，你无权执行重命名、删除或创建任何文件或目录"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
-"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to "
-"the database server."
+"Connection to the SSH Tunnel for host '{0}' has been lost. Reconnect to the "
+"database server."
 msgstr "与主机 \"{0}\" 的 SSH 隧道的连接已丢失。重新连接到数据库服务器。"
 
 #: pgadmin/utils/heartbeat.py:34
@@ -15539,8 +15642,8 @@ msgstr ""
 
 #: pgadmin/utils/driver/psycopg3/connection.py:730
 msgid ""
-"Failed to create cursor for psycopg3 connection with error message for "
-"the server#{1}:{2}:\n"
+"Failed to create cursor for psycopg3 connection with error message for the "
+"server#{1}:{2}:\n"
 "{0}"
 msgstr ""
 "无法为psycopg3创建游标，服务器连接出错#{1}：{2}：\n"
@@ -15578,14 +15681,13 @@ msgstr "未连接到数据库服务器。"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1639
 msgid ""
-"Asynchronous notification \"{0}\" with payload \"{1}\" received from "
-"server process with PID {2}\n"
+"Asynchronous notification \"{0}\" with payload \"{1}\" received from server "
+"process with PID {2}\n"
 msgstr "从具有 PID {2} 的服务器进程接收的有效负载 \"{1}\" 异步通知 \"{0}\"\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1645
 msgid ""
-"Asynchronous notification \"{0}\" received from server process with PID "
-"{1}\n"
+"Asynchronous notification \"{0}\" received from server process with PID {1}\n"
 msgstr "从具有 PID {1} 的服务器进程接收到的异步通知 \"{0}\"\n"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1683
@@ -15675,7 +15777,8 @@ msgstr ""
 #~ msgid "Forget Password Form"
 #~ msgstr "忘记密码表单"
 
-#~ msgid "<a href=\"%(url)s\" class=\"text-white\">Forgotten your password</a>?"
+#~ msgid ""
+#~ "<a href=\"%(url)s\" class=\"text-white\">Forgotten your password</a>?"
 #~ msgstr "<a href=\"%(url)s\" class=\"text-white\">你忘记密码了吗</a>?"
 
 #~ msgid "Login with %(oauth_name)s"
@@ -15710,4 +15813,3 @@ msgstr ""
 
 #~ msgid "No data for Failed Tables"
 #~ msgstr "失败表中没有数据"
-
