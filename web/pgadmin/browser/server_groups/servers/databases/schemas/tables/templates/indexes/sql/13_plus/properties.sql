@@ -16,7 +16,8 @@ SELECT DISTINCT ON(cls.relname) cls.oid, cls.relname as name, indrelid, indkey, 
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'pages_per_range=([0-9]*)') AS pages_per_range,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'buffering=([a-z]*)') AS buffering,
     substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'fastupdate=([a-z]*)')::boolean AS fastupdate,
-    substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'autosummarize=([a-z]*)')::boolean AS autosummarize
+    substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'autosummarize=([a-z]*)')::boolean AS autosummarize,
+    substring(pg_catalog.array_to_string(cls.reloptions, ',') from 'lists=([0-9]*)') AS lists
     {% if datlastsysoid %}, (CASE WHEN cls.oid <= {{ datlastsysoid}}::oid THEN true ElSE false END) AS is_sys_idx {% endif %}
 FROM pg_catalog.pg_index idx
     JOIN pg_catalog.pg_class cls ON cls.oid=indexrelid
