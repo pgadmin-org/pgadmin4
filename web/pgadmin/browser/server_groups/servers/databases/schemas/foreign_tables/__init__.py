@@ -74,19 +74,21 @@ class ForeignTableModule(SchemaChildModule):
             yield self.generate_browser_collection_node(scid)
 
     @property
-    def node_inode(self):
-        """
-        Make the node as leaf node.
-        """
-        return False
-
-    @property
     def script_load(self):
         """
         Load the module script for foreign table, when the
         schema node is initialized.
         """
         return databases.DatabaseModule.node_type
+
+    def register(self, app, options):
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.triggers import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+            constraints import blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = ForeignTableModule(__name__)
@@ -222,8 +224,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
-    keys_to_ignore = ['oid', 'basensp', 'oid-2', 'attnum', 'strftoptions',
-                      'relacl']
+    keys_to_ignore = ['oid', 'basensp', 'oid-2', 'attnum', 'strftoptions']
 
     def validate_request(f):
         """
@@ -887,9 +888,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data['basensp'] = target_schema
 
         # Parse Privileges
-        if 'acl' in data:
-            data['acl'] = parse_priv_to_db(data['acl'],
-                                           ["a", "r", "w", "x"])
+        if 'relacl' in data:
+            data['relacl'] = parse_priv_to_db(data['relacl'],
+                                              ["a", "r", "w", "x"])
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -930,9 +931,22 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         Returns:
             SQL statements to create/update the Foreign Table.
         """
+        data = {}
+        for k, v in self.request.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('description',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v)
+            except ValueError:
+                data[k] = v
+            except TypeError:
+                data[k] = v
         try:
             SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=self.request, foid=foid)
+                                     data=data, foid=foid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -954,15 +968,15 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         :param data: Data.
         :return:
         """
-        if 'acl' in data and 'added' in data['acl']:
-            data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
-                                                    ["a", "r", "w", "x"])
-        if 'acl' in data and 'changed' in data['acl']:
-            data['acl']['changed'] = parse_priv_to_db(
-                data['acl']['changed'], ["a", "r", "w", "x"])
-        if 'acl' in data and 'deleted' in data['acl']:
-            data['acl']['deleted'] = parse_priv_to_db(
-                data['acl']['deleted'], ["a", "r", "w", "x"])
+        if 'relacl' in data and 'added' in data['relacl']:
+            data['relacl']['added'] = parse_priv_to_db(
+                data['relacl']['added'], ["a", "r", "w", "x"])
+        if 'relacl' in data and 'changed' in data['relacl']:
+            data['relacl']['changed'] = parse_priv_to_db(
+                data['relacl']['changed'], ["a", "r", "w", "x"])
+        if 'relacl' in data and 'deleted' in data['relacl']:
+            data['relacl']['deleted'] = parse_priv_to_db(
+                data['relacl']['deleted'], ["a", "r", "w", "x"])
 
     @staticmethod
     def _check_old_col_ops(old_col_frmt_options, option, col):
@@ -1093,9 +1107,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data['columns'] = self._format_columns(data['columns'])
 
             # Parse Privileges
-            if 'acl' in data:
-                data['acl'] = parse_priv_to_db(data['acl'],
-                                               ["a", "r", "w", "x"])
+            if 'relacl' in data:
+                data['relacl'] = parse_priv_to_db(data['relacl'],
+                                                  ["a", "r", "w", "x"])
 
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]), data=data,
@@ -1318,7 +1332,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             priv = parse_priv_from_db(row)
             privileges.append(priv)
 
-        return {"acl": privileges}
+        return {"relacl": privileges}
 
     def _parse_variables_from_db(self, db_variables):
         """

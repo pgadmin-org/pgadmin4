@@ -55,7 +55,7 @@
           "option":"table_name",
           "value":"test_table"
         }],
-        "acl":[{
+        "relacl":[{
           "grantee":"PUBLIC",
           "grantor":"enterprisedb",
           "privileges":[{
@@ -153,7 +153,7 @@
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "acl":{
+        "relacl":{
           "added": [{
             "grantee":"PUBLIC",
             "grantor":"enterprisedb",
@@ -205,7 +205,7 @@
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "acl":{
+        "relacl":{
           "deleted": [{
             "grantee":"PUBLIC",
             "grantor":"enterprisedb",

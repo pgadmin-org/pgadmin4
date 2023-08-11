@@ -920,13 +920,18 @@ def poll(trans_id):
     is_thread_alive = False
     if trans_obj.get_thread_native_id():
         for thread in threading.enumerate():
-            if thread.native_id == trans_obj.get_thread_native_id() and\
+            _native_id = thread.native_id if hasattr(thread, 'native_id'
+                                                     ) else thread.ident
+            if _native_id == trans_obj.get_thread_native_id() and\
                     thread.is_alive():
                 is_thread_alive = True
                 break
 
     if is_thread_alive:
         status = 'Busy'
+        messages = conn.messages()
+        if messages and len(messages) > 0:
+            result = ''.join(messages)
     elif status and conn is not None and session_obj is not None:
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)

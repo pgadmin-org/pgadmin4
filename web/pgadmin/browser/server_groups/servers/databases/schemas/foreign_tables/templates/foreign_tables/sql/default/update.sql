@@ -187,23 +187,23 @@ COMMENT ON FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     IS {{ data.description|qtLiteral(conn) }};
 
 {% endif -%}
-{% if data.acl %}
-{% if 'deleted' in data.acl %}
-{% for priv in data.acl.deleted %}
+{% if data.relacl %}
+{% if 'deleted' in data.relacl %}
+{% for priv in data.relacl.deleted %}
 {{ PRIVILEGE.UNSETALL(conn, 'TABLE', priv.grantee, name, o_data.basensp) }}
 
 {% endfor %}
 {% endif -%}
-{% if 'changed' in data.acl %}
-{% for priv in data.acl.changed %}
+{% if 'changed' in data.relacl %}
+{% for priv in data.relacl.changed %}
 {{ PRIVILEGE.UNSETALL(conn, 'TABLE', priv.grantee, name, o_data.basensp) }}
 
 {{ PRIVILEGE.SET(conn, 'TABLE', priv.grantee, name, priv.without_grant, priv.with_grant, o_data.basensp) }}
 
 {% endfor %}
 {% endif -%}
-{% if 'added' in data.acl %}
-{% for priv in data.acl.added %}
+{% if 'added' in data.relacl %}
+{% for priv in data.relacl.added %}
 {{ PRIVILEGE.SET(conn, 'TABLE', priv.grantee, name, priv.without_grant, priv.with_grant, o_data.basensp) }}
 
 {% endfor %}

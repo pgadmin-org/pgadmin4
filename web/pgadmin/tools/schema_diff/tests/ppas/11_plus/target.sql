@@ -1213,7 +1213,7 @@ CREATE USER MAPPING FOR public SERVER test_fs_for_user_mapping
 
 CREATE USER MAPPING FOR enterprisedb SERVER test_fs_for_user_mapping;
 
--- Publication script
+-- Publication scripts
 
 CREATE TABLE test_schema_diff.table_for_publication (
     col1 integer NOT NULL,

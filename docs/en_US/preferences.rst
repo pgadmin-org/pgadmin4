@@ -396,15 +396,24 @@ Use the fields on the *Editor* panel to change settings of the query editor.
 Use the fields on the *Explain* panel to specify the level of detail included in
 a graphical EXPLAIN.
 
-* When the *Show Buffers?* switch is set to *True*, graphical explain details
+* When the *Show buffers?* switch is set to *True*, graphical explain details
   will include information about buffer usage.
 
-* When the *Show Costs?* switch is set to *True*, graphical explain details will
+* When the *Show costs?* switch is set to *True*, graphical explain details will
   include information about the estimated startup and total cost of each plan,
   as well as the estimated number of rows and the estimated width of each row.
 
-* When the *Show Timing?* switch is set to *True*, graphical explain details
+* When the *Show settings?* switch is set to *True*, graphical explain details
+  will include the information on the configuration parameters.
+
+* When the *Show summary?* switch is set to *True*, graphical explain details
+  will include the summary information about the query plan.
+
+* When the *Show timing?* switch is set to *True*, graphical explain details
   will include the startup time and time spent in each node in the output.
+
+* When the *Show wal?* switch is set to *True*, graphical explain details
+  will include the information on WAL record generation.
 
 * When the *Verbose output?* switch is set to *True*, graphical explain details
   will include extended information about the query execution plan.
@@ -520,9 +529,13 @@ Expand the *Schema Diff* node to specify your display preferences.
     :alt: Preferences schema diff
     :align: center
 
-Use the *Ignore owner* switch to ignores the owner while comparing the objects.
+Use the *Ignore Grant/Revoke* switch to ignores the grant and revoke command while comparing the objects.
 
-Use the *Ignore whitespace* switch to ignores the whitespace while comparing
+Use the *Ignore Owner* switch to ignores the owner while comparing the objects.
+
+Use the *Ignore Tablespace* switch to ignores the tablespace while comparing the objects.
+
+Use the *Ignore Whitespace* switch to ignores the whitespace while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
 
 

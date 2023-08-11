@@ -55,10 +55,12 @@ class ConstraintsModule(CollectionNodeModule):
         self.max_ver = None
         super().__init__(*args, **kwargs)
 
-    def get_nodes(self, gid, sid, did, scid, tid):
+    def get_nodes(self, gid, sid, did, scid, **kwargs):
         """
         Generate the collection node
         """
+        assert ('tid' in kwargs or 'vid' in kwargs or 'foid' in kwargs)
+        tid = kwargs.get('tid', kwargs.get('vid', kwargs.get('foid', None)))
         nodes = []
         for name in ConstraintRegistry.registry:
             view = (ConstraintRegistry.registry[name])['nodeview']

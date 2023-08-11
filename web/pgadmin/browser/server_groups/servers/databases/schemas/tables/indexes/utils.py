@@ -360,7 +360,8 @@ def get_storage_params(amname):
         "gin": ["fastupdate", "gin_pending_list_limit"],
         "spgist": ["fillfactor"],
         "brin": ["pages_per_range", "autosummarize"],
-        "heap": []
+        "heap": [],
+        "ivfflat": ['lists']
     }
     return storage_parameters[amname]
 

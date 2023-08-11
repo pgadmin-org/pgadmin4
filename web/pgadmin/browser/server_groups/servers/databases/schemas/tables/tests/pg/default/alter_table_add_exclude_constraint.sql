@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS public."table_with_fk_constraints$%{}[]()&*^!@""'`\/#
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         DEFERRABLE,
-    CONSTRAINT ex_constr EXCLUDE USING gist (
-        col1 WITH <>)
+    CONSTRAINT ex_constr EXCLUDE USING btree (
+        col1 WITH =)
 
 )
 WITH (

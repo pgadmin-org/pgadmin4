@@ -75,7 +75,10 @@ define('pgadmin.node.exclusion_constraint', [
 
           // If it is schema then allow user to create table
           if (_.indexOf(['schema'], d._type) > -1)
-            return !is_immediate_parent_table_partitioned;
+          {return !is_immediate_parent_table_partitioned;}
+          else if (_.indexOf(['foreign_table', 'coll-foreign_table'], d._type) > -1) {
+            return false;
+          }
           parents.push(d._type);
           i = t.hasParent(i) ? t.parent(i) : null;
           d = i ? t.itemData(i) : null;

@@ -23,7 +23,7 @@ import pgadmin.tools.backup.tests.test_backup_utils as backup_utils
 class RestoreJobTest(BaseTestGenerator):
     """Backup api test cases"""
     scenarios = [
-        ('When restore the object with the default options',
+        ('When restore the object with the default options (< v16)',
          dict(
              params=dict(
                  file='test_restore_file',
@@ -56,11 +56,63 @@ class RestoreJobTest(BaseTestGenerator):
                      expected_exit_code=[0, None]
                  )
 
-             )
+             ),
+             server_max_version=159999,
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
+         )),
+        ('When restore the object with the default options (>= v16)',
+         dict(
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 custom=False,
+                 verbose=True,
+                 blobs=True,
+                 schemas=[],
+                 tables=[],
+                 database='test_restore_database'
+             ),
+             url='/restore/job/{0}',
+             expected_cmd_opts=['--verbose'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             backup_options=dict(
+                 params=dict(
+                     file='test_restore_file',
+                     format='custom',
+                     verbose=True,
+                     blobs=True,
+                     schemas=[],
+                     tables=[],
+                     database='test_restore_database'
+                 ),
+                 url='/backup/job/{0}/object',
+                 expected_params=dict(
+                     expected_cmd_opts=['--verbose', '--format=c',
+                                        '--large-objects'],
+                     not_expected_cmd_opts=[],
+                     expected_exit_code=[0, None]
+                 )
+
+             ),
+             server_min_version=160000,
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
          ))
     ]
 
     def setUp(self):
+        if hasattr(self, 'server_min_version') and \
+            self.server_information['server_version'] < \
+                self.server_min_version:
+            self.skipTest(self.message)
+
+        if hasattr(self, 'server_max_version') and \
+            self.server_information['server_version'] > \
+                self.server_max_version:
+            self.skipTest(self.message)
+
         if 'default_binary_paths' not in self.server or \
             self.server['default_binary_paths'] is None or \
             self.server['type'] not in self.server['default_binary_paths'] or\
@@ -78,9 +130,9 @@ class RestoreJobTest(BaseTestGenerator):
         if os.name == 'nt':
             binary_path = binary_path + '.exe'
 
-        retVal = does_utility_exist(binary_path)
-        if retVal is not None:
-            self.skipTest(retVal)
+        ret_val = does_utility_exist(binary_path)
+        if ret_val is not None:
+            self.skipTest(ret_val)
 
     def create_backup(self):
         url = self.backup_options['url'].format(self.server_id)
@@ -187,9 +239,8 @@ class RestoreJobTest(BaseTestGenerator):
 
         self.assertEqual(restore_ack_res['success'], 1)
 
-        if self.backup_file is not None:
-            if os.path.isfile(self.backup_file):
-                os.remove(self.backup_file)
+        if self.backup_file is not None and os.path.isfile(self.backup_file):
+            os.remove(self.backup_file)
 
     @staticmethod
     def get_params(data):

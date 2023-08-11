@@ -185,6 +185,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       timing: analyze ? Boolean(checkedMenuItems['explain_timing']) : false,
       summary: Boolean(checkedMenuItems['explain_summary']),
       settings: Boolean(checkedMenuItems['explain_settings']),
+      wal: analyze ? Boolean(checkedMenuItems['explain_wal']) : false,
     });
   }, [checkedMenuItems]);
 
@@ -381,6 +382,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           explain_timing: queryToolPref.explain_timing,
           explain_summary: queryToolPref.explain_summary,
           explain_settings: queryToolPref.explain_settings,
+          explain_wal: queryToolPref.explain_wal,
         });
       }
     }
@@ -391,19 +393,19 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
     {
       shortcut: queryToolPref.execute_query,
       options: {
-        callback: ()=>{executeQuery();}
+        callback: ()=>{!buttonsDisabled['execute']?executeQuery():null;}
       }
     },
     {
       shortcut: queryToolPref.explain_query,
       options: {
-        callback: (e)=>{e.preventDefault();explain();}
+        callback: (e)=>{e.preventDefault(); !buttonsDisabled['explain']?explain():null;}
       }
     },
     {
       shortcut: queryToolPref.explain_analyze_query,
       options: {
-        callback: ()=>{explainAnalyse();}
+        callback: ()=>{!buttonsDisabled['explain_analyse']?explainAnalyse():null;}
       }
     },
     {
@@ -623,6 +625,8 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
           onClick={checkMenuClick}>{gettext('Summary')}</PgMenuItem>
         <PgMenuItem hasCheck value="explain_settings" checked={checkedMenuItems['explain_settings']}
           onClick={checkMenuClick}>{gettext('Settings')}</PgMenuItem>
+        <PgMenuItem hasCheck value="explain_wal" checked={checkedMenuItems['explain_wal']}
+          onClick={checkMenuClick}>{gettext('Wal')}</PgMenuItem>
       </PgMenu>
       <PgMenu
         anchorRef={macrosMenuRef}
