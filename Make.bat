@@ -358,7 +358,7 @@ REM Main build sequence Ends
 
 :GENERATE_SBOM
     ECHO Generating SBOM...
-    syft "%DISTROOT%\" -o cyclonedx-json > "%DISTROOT%\cyclonedx.json"
+    syft "%BUILDROOT%\" -o cyclonedx-json > "%BUILDROOT%\sbom.json"
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...

@@ -323,7 +323,7 @@ _complete_bundle() {
 
 _generate_sbom() {
    echo "Generating SBOM..."
-   syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/cyclonedx.json"
+   syft "${BUNDLE_DIR}/Contents/" -o cyclonedx-json > "${BUNDLE_DIR}/Contents/sbom.json"
 }
 
 _codesign_binaries() {
