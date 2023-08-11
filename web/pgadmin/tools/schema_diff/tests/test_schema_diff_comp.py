@@ -117,7 +117,9 @@ class SchemaDiffTestCase(BaseSocketTestGenerator):
             'target_sid': self.server_id,
             'target_did': self.tar_db_id,
             'ignore_owner': 0,
-            'ignore_whitespaces': 0
+            'ignore_whitespaces': 0,
+            'ignore_tablespace': 0,
+            'ignore_grants': 0
         }
         self.socket_client.emit('compare_database', data,
                                 namespace=self.SOCKET_NAMESPACE)

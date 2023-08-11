@@ -413,7 +413,7 @@ CREATE VIEW test_schema_diff."test view" AS
     pg_class.relacl,
     pg_class.reloptions,
     pg_class.relpartbound
-   FROM pg_class
+   FROM pg_catalog.pg_class
  LIMIT 10;
 
 
@@ -1117,7 +1117,7 @@ CREATE USER MAPPING FOR public SERVER test_fs_for_user_mapping;
 CREATE USER MAPPING FOR postgres SERVER test_fs_for_user_mapping
     OPTIONS (password 'admin123');
 
--- Publication Script
+-- Publication scripts
 
 CREATE TABLE test_schema_diff.table_for_publication (
     col1 integer NOT NULL,
@@ -1158,4 +1158,3 @@ ALTER SUBSCRIPTION subscription_test1
     RENAME TO subscription_test;
 
 DROP SUBSCRIPTION subscription_test;
-

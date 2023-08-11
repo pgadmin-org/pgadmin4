@@ -371,13 +371,17 @@ function prepareRows(rows, gridData, filterParams) {
 
   let adedIds = [];
   gridData.map((record) => {
-    let childrens = getChildrenRows(record);
+    let children = getChildrenRows(record);
+    // Sort the children using label
+    children.sort((a, b) => (a.label > b.label) ? 1 : -1);
 
-    if (childrens.length > 0) {
-      childrens.map((child) => {
-        let subChildrens = getChildrenRows(child);
+    if (children.length > 0) {
+      children.map((child) => {
+        let subChildren = getChildrenRows(child);
+        // Sort the sub children using label
+        subChildren.sort((a, b) => (a.label > b.label) ? 1 : -1);
         let tempChildList = [];
-        subChildrens.map((subChild) => {
+        subChildren.map((subChild) => {
           if (filterParams.includes(subChild.status)) {
             tempChildList.push(subChild);
             adedIds.push(subChild.id);
