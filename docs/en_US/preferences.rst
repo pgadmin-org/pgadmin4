@@ -529,9 +529,13 @@ Expand the *Schema Diff* node to specify your display preferences.
     :alt: Preferences schema diff
     :align: center
 
-Use the *Ignore owner* switch to ignores the owner while comparing the objects.
+Use the *Ignore Grant/Revoke* switch to ignores the grant and revoke command while comparing the objects.
 
-Use the *Ignore whitespace* switch to ignores the whitespace while comparing
+Use the *Ignore Owner* switch to ignores the owner while comparing the objects.
+
+Use the *Ignore Tablespace* switch to ignores the tablespace while comparing the objects.
+
+Use the *Ignore Whitespace* switch to ignores the whitespace while comparing
 the string objects. Whitespace includes space, tabs, and CRLF.
 
 

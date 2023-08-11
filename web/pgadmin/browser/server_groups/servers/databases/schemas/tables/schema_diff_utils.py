@@ -57,6 +57,8 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                          'scid': kwargs.get('target_scid')}
         ignore_owner = kwargs.get('ignore_owner')
         ignore_whitespaces = kwargs.get('ignore_whitespaces')
+        ignore_tablespace = kwargs.get('ignore_tablespace')
+        ignore_grants = kwargs.get('ignore_grants')
 
         group_name = kwargs.get('group_name')
         source_schema_name = kwargs.get('source_schema_name', None)
@@ -90,7 +92,9 @@ class SchemaDiffTableCompare(SchemaDiffObjectCompare):
                                     ignore_keys=self.keys_to_ignore,
                                     source_schema_name=source_schema_name,
                                     ignore_owner=ignore_owner,
-                                    ignore_whitespaces=ignore_whitespaces)
+                                    ignore_whitespaces=ignore_whitespaces,
+                                    ignore_tablespace=ignore_tablespace,
+                                    ignore_grants=ignore_grants)
 
     def ddl_compare(self, **kwargs):
         """
