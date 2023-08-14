@@ -272,7 +272,8 @@ export function SchemaDiffCompare({ params }) {
     setIsInit(false);
 
     let raiseSelectionError = false;
-    if (!_.isEmpty(sourceData.scid) && !_.isEmpty(targetData.scid)) {
+    if (!_.isUndefined(sourceData.scid) && !_.isNull(sourceData.scid) &&
+        !_.isUndefined(targetData.scid) && !_.isNull(targetData.scid)) {
       if (sourceData.sid === targetData.sid  && sourceData.did === targetData.did && sourceData.scid === targetData.scid) {
         raiseSelectionError = true;
       }
