@@ -48,7 +48,12 @@ for index, req in enumerate(all_requires):
         requires.append(req)
 
 # Get the version
-config = load_source('APP_VERSION', '../web/config.py')
+path = '../web/'
+if not os.path.exists(path):
+    print("ERROR: Could not find %s" % path)
+    sys.exit(1)
+sys.path.append(path)
+import config
 
 setup(
     name='pgadmin4',

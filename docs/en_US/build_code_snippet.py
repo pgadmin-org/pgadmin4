@@ -14,7 +14,7 @@ root = os.path.realpath(
 
 if sys.path[0] != root:
     sys.path.insert(0, root)
-
+import config
 from pgadmin.utils import PgAdminModule
 
 target = open('code_snippets.rst', 'w')
