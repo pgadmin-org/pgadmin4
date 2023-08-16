@@ -29,7 +29,7 @@ function tooltipPlugin(refreshRate) {
       document.body.appendChild(tooltip);
     }
   }
-
+  
   function hideTooltip() {
     tooltip?.remove();
     tooltip = null;

@@ -1,11 +1,3 @@
-/////////////////////////////////////////////////////////////
-//
-// pgAdmin 4 - PostgreSQL Tools
-//
-// Copyright (C) 2013 - 2023, The pgAdmin Development Team
-// This software is released under the PostgreSQL Licence
-//
-//////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -28,17 +20,25 @@ const useStyles = makeStyles((theme) => ({
   container: {
     height: 'auto',
     padding: '8px',
-    marginBottom: '4px',
+    marginBottom: '6px',
+  },
+  driveContainer: {
+    width: '100%',
   },
   diskInfoContainer: {
     height: 'auto',
-    padding: '8px',
-    marginBottom: '4px',
+    padding: '8px 8px 0px 8px',
+    marginBottom: '0px',
   },
   diskInfoSummary: {
     height: 'auto',
-    padding: '0px',
-    marginBottom: '4px',
+    padding: '0px 0px 4px 0px',
+    marginBottom: '0px',
+  },
+  diskInfoCharts: {
+    height: 'auto',
+    padding: '0px 0px 2px 0px',
+    marginBottom: '0px',
   },
   containerHeaderText: {
     fontWeight: 'bold',
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid '+theme.otherVars.borderColor,
     borderCollapse: 'collapse',
     borderRadius: '4px',
-    overflow: 'hidden',
+    overflow: 'auto',
     width: '100%',
     margin: '4px 4px 4px 4px',
   },
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     height: 'auto',
     padding: '5px 0px 0px 0px',
     background: theme.otherVars.tableBg,
-    marginBottom: '4px',
+    marginBottom: '5px',
     borderRadius: '4px 4px 0px 0px',
   },
   driveContainerBody: {
@@ -261,8 +261,8 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
             let di_info_list = [];
             const di_info_obj = data['di_stats'];
             for (const key in di_info_obj) {
-              di_info_list.push({
-                icon: '',
+              di_info_list.push({ 
+                icon: '', 
                 file_system: di_info_obj[key]['file_system']?gettext(di_info_obj[key]['file_system']):'',
                 file_system_type: di_info_obj[key]['file_system_type']?gettext(di_info_obj[key]['file_system_type']):'',
                 mount_point: di_info_obj[key]['mount_point']?gettext(di_info_obj[key]['mount_point']):'',
@@ -418,19 +418,19 @@ export function StorageWrapper(props) {
             <DiskStatsTable tableHeader={props.tableHeader} data={props.diskStats} />
           </div>
         </Grid>
-        <Grid container spacing={1} className={classes.diskInfoSummary}>
+        <Grid container spacing={1} className={classes.diskInfoCharts}>
           <Grid item md={6} sm={12}>
-            <ChartContainer
-              id='t-space-graph'
-              title={gettext('')}
+            <ChartContainer 
+              id='t-space-graph' 
+              title={gettext('')} 
               datasets={props.diskStats.map((item, index) => ({
                 borderColor: colors[(index + 2) % colors.length],
-                label: item.mount_point !== 'null' ? item.mount_point : item.drive_letter !== 'null' ? item.drive_letter : 'disk' + index,
+                label: item.mount_point !== '' ? item.mount_point : item.drive_letter !== '' ? item.drive_letter : 'disk' + index,
               }))}
-              errorMsg={props.errorMsg}
+              errorMsg={props.errorMsg} 
               isTest={props.isTest}>
               <PieChart data={{
-                labels: props.diskStats.map((item, index) => item.mount_point!='null'?item.mount_point:item.drive_letter!='null'?item.drive_letter:'disk'+index),
+                labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
                 datasets: [
                   {
                     data: props.diskStats.map((item) => item.total_space_actual?item.total_space_actual:0),
@@ -464,7 +464,7 @@ export function StorageWrapper(props) {
           <Grid item md={6} sm={12}>
             <ChartContainer id='ua-space-graph' title={gettext('')} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
               <BarChart data={{
-                labels: props.diskStats.map((item, index) => item.mount_point!='null'?item.mount_point:item.drive_letter!='null'?item.drive_letter:'disk'+index),
+                labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
                 datasets: [
                   {
                     label: 'Used space',
@@ -483,7 +483,7 @@ export function StorageWrapper(props) {
                 ],
               }}
               options={
-                {
+                { 
                   scales: {
                     x: {
                       display: true,

@@ -48,9 +48,11 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   containerHeader: {
-    fontSize: '16px',
+    fontSize: '15px',
     fontWeight: 'bold',
-    marginBottom: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
   },
 }));
 
@@ -91,7 +93,7 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
       disableGlobalFilter: false,
     },
     {
-      Header: gettext('CPU Usage'),
+      Header: gettext('CPU usage'),
       accessor: 'cpu_usage',
       sortable: true,
       resizable: true,
@@ -278,6 +280,9 @@ export function CPUWrapper(props) {
         <div className={classes.tableContainer}>
           <PgTable
             className={classes.autoResizer}
+            CustomHeader={() => {
+              return <div className={classes.containerHeader}>{gettext('Process CPU usage')}</div>;
+            }}
             columns={props.tableHeader}
             data={props.processCpuUsageStats}
             msg={props.errorMsg}

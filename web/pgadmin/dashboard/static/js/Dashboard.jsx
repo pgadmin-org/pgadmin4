@@ -127,6 +127,7 @@ const useStyles = makeStyles((theme) => ({
     '& > div': {
       display: 'flex',
       fontWeight: 'normal',
+      flexWrap: 'wrap',
 
       '& .legend-value': {
         marginLeft: '4px',
