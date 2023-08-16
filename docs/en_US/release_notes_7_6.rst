@@ -44,6 +44,7 @@ Bug fixes
 *********
 
   | `Issue #5454 <https://github.com/pgadmin-org/pgadmin4/issues/5454>`_ -  Fix incorrect redirection URL after authentication by removing fixed value set to SCRIPT_NAME environment variable in pgAdmin4.wsgi file.
+  | `Issue #6208 <https://github.com/pgadmin-org/pgadmin4/issues/6208>`_ -  Allow changing the POOL_SIZE and MAX_OVERFLOW config values of the pgAdmin config DB connection pool.
   | `Issue #6252 <https://github.com/pgadmin-org/pgadmin4/issues/6252>`_ -  Fix an issue where query tool on shared server is throwing error if the pgAdmin config DB is external.
   | `Issue #6420 <https://github.com/pgadmin-org/pgadmin4/issues/6420>`_ -  Fix the query tool issue where raise Notice from func/proc or code blocks are no longer displayed live.
   | `Issue #6500 <https://github.com/pgadmin-org/pgadmin4/issues/6500>`_ -  Fix the issue where query tool window turns blank if the user tries to generate a graph on the result.
