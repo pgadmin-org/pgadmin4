@@ -23,7 +23,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 import sqlalchemy.types as types
 import uuid
-import json
+import config
 
 ##########################################################################
 #
@@ -41,7 +41,12 @@ SCHEMA_VERSION = 35
 #
 ##########################################################################
 
-db = SQLAlchemy()
+db = SQLAlchemy(
+    engine_options={
+        'pool_size': config.CONFIG_DATABASE_CONNECTION_POOL_SIZE,
+        'max_overflow': config.CONFIG_DATABASE_CONNECTION_MAX_OVERFLOW})
+
+
 USER_ID = 'user.id'
 SERVER_ID = 'server.id'
 

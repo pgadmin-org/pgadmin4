@@ -22,6 +22,13 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
+# The config database connection pool size.
+# Setting this to 0 will remove any limit.
+CONFIG_DATABASE_CONNECTION_POOL_SIZE = 5
+# The number of connections allowed to overflow beyond
+# the connection pool size.
+CONFIG_DATABASE_CONNECTION_MAX_OVERFLOW = 100
+
 from pgadmin.utils import env, IS_WIN, fs_short_path
 
 ##########################################################################
