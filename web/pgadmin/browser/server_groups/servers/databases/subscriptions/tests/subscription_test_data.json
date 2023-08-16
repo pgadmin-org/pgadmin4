@@ -1,7 +1,7 @@
 {
   "add_subscription": [
     {
-      "name": "Create subscription with insert and update",
+      "name": "Create subscription along with few publications",
       "url": "/browser/subscription/obj/",
       "is_positive_test": true,
       "test_data": {
@@ -19,34 +19,13 @@
           "port": 5432,
           "password": "",
           "sync": "off",
-          "pub": ["sample__1"]
-      },
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
-      "name": "Create subscription for few tables",
-      "url": "/browser/subscription/obj/",
-      "is_positive_test": true,
-      "get_publication": true,
-      "test_data": {
-          "username": "postgres",
-          "name": "PLACEHOLDER",
-          "connect": false,
-          "copy_data": false,
-          "create_slot": false,
-          "db": "postgres",
-          "subowner": "postgres",
-          "enabled": false,
-          "host": "localhost",
-          "slot_name": "None",
-          "service": "",
-          "port": 5432,
-          "password": "",
-          "sync": "off",
+          "binary":false,
+          "two_phase":false,
+          "disable_on_error":false,
+          "streaming":false,
+          "password_required":true,
+          "run_as_owner":false,
+          "origin":"any",
           "pub": ["sample__1"]
       },
       "mocking_required": false,
@@ -75,6 +54,13 @@
           "port": 5432,
           "password": "",
           "sync": "off",
+          "binary":false,
+          "two_phase":false,
+          "disable_on_error":false,
+          "streaming":false,
+          "password_required":true,
+          "run_as_owner":false,
+          "origin":"any",
           "pub": ["sample__1"]
       },
       "mocking_required": false,
@@ -103,6 +89,13 @@
           "port": 5432,
           "password": "",
           "sync": "off",
+          "binary":false,
+          "two_phase":false,
+          "disable_on_error":false,
+          "streaming":false,
+          "password_required":true,
+          "run_as_owner":false,
+          "origin":"any",
           "pub": ["sample__1"]
       },
       "mocking_required": true,
@@ -133,6 +126,13 @@
           "port": 5432,
           "password": "",
           "sync": "off",
+          "binary":false,
+          "two_phase":false,
+          "disable_on_error":false,
+          "streaming":false,
+          "password_required":true,
+          "run_as_owner":false,
+          "origin":"any",
           "pub": ["sample__1"]
       },
       "mocking_required": true,
@@ -249,18 +249,6 @@
       }
     },
     {
-      "name": "Get all the subscription under the database nodes using wrong database id",
-      "url": "/browser/subscription/nodes/",
-      "is_positive_test": true,
-      "incorrect_database_id": true,
-      "database_nodes": true,
-      "mocking_required": false,
-      "mock_data": {},
-      "expected_data": {
-        "status_code": 200
-      }
-    },
-    {
       "name": "Error while fetching all the subscription under the database nodes using wrong database id",
       "url": "/browser/subscription/nodes/",
       "is_positive_test": false,
@@ -320,7 +308,6 @@
       "name": "update a port in connection details of subscription",
       "url": "/browser/subscription/obj/",
       "is_positive_test": true,
-      "owner_subscription": true,
       "test_data": {
         "id": "PLACE_HOLDER",
         "port": "5444"
@@ -335,7 +322,6 @@
       "name": "update a username in connection details of subscription",
       "url": "/browser/subscription/obj/",
       "is_positive_test": true,
-      "owner_subscription": true,
       "test_data": {
         "id": "PLACE_HOLDER",
         "username": "sample_username"

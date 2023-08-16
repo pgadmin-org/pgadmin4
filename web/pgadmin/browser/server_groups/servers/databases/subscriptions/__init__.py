@@ -181,6 +181,13 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
     node_type = blueprint.node_type
     BASE_TEMPLATE_PATH = "subscriptions/sql/#{0}#"
 
+    # This mapping will be used PostgresSQL 16 above
+    streaming_mapping = {
+        'p': 'parallel',
+        't': True,
+        'f': False
+    }
+
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
         {'type': 'int', 'id': 'sid'},
@@ -369,6 +376,10 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
 
         if len(res['rows']) == 0:
             return False, gone(self._NOT_FOUND_PUB_INFORMATION)
+
+        if self.manager.version >= 160000:
+            res['rows'][0]['streaming'] = \
+                self.streaming_mapping[res['rows'][0]['streaming']]
 
         return True, res['rows'][0]
 
@@ -633,6 +644,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
                 return gone(self._NOT_FOUND_PUB_INFORMATION)
 
             old_data = res['rows'][0]
+
             data, old_data = self.get_required_details(data, old_data)
 
             if 'slot_name' in data and data['slot_name'] == '':
@@ -774,6 +786,10 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
             old_data['connect'] = True
         else:
             old_data['connect'] = False
+
+        if self.manager.version >= 160000:
+            old_data['streaming'] = \
+                self.streaming_mapping[old_data['streaming']]
 
         sql = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),

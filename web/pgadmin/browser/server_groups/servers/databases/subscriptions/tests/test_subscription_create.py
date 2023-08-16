@@ -47,15 +47,6 @@ class SubscriptionAddTestCase(BaseTestGenerator):
             raise Exception(
                 "Could not connect to database to add a subscription.")
 
-        if self.is_positive_test and hasattr(self, 'few_tables_11'):
-            self.table_name = "table_column_%s" % (str(uuid.uuid4())[1:8])
-            self.table_id = tables_utils.create_table(self.server,
-                                                      self.db_name,
-                                                      self.schema_name,
-                                                      self.table_name)
-
-            self.test_data['pubtable'] = subscription_utils.get_tables(self)
-
     def runTest(self):
         """This function will subscription."""
         self.test_data['name'] = \
