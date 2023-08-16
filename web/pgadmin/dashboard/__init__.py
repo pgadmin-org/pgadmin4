@@ -112,6 +112,72 @@ class DashboardModule(PgAdminModule):
             help_str=help_string
         )
 
+        self.hpc_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'hpc_stats_refresh',
+            gettext("Handle & Process count statistics refresh rate"),
+            'integer', 5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.cpu_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'cpu_stats_refresh',
+            gettext(
+                "Percentage of CPU time used by different process \
+                modes statistics refresh rate"
+            ), 'integer', 5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.la_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'la_stats_refresh',
+            gettext("Average load statistics refresh rate"), 'integer',
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.pcpu_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'pcpu_stats_refresh',
+            gettext("CPU usage per process statistics refresh rate"),
+            'integer', 5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.m_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'm_stats_refresh',
+            gettext("Memory usage statistics refresh rate"), 'integer',
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.sm_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'sm_stats_refresh',
+            gettext("Swap memory usage statistics refresh rate"), 'integer',
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.pmu_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'pmu_stats_refresh',
+            gettext("Memory usage per process statistics refresh rate"),
+            'integer', 5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
+        self.io_stats_refresh = self.dashboard_preference.register(
+            'dashboards', 'io_stats_refresh',
+            gettext("I/O analysis statistics refresh rate"), 'integer',
+            5, min_val=1, max_val=999999,
+            category_label=PREF_LABEL_REFRESH_RATES,
+            help_str=help_string
+        )
+
         self.display_graphs = self.dashboard_preference.register(
             'display', 'show_graphs',
             gettext("Show graphs?"), 'boolean', True,
@@ -197,6 +263,12 @@ class DashboardModule(PgAdminModule):
             'dashboard.get_prepared_by_database_id',
             'dashboard.config',
             'dashboard.get_config_by_server_id',
+            'dashboard.check_system_statistics',
+            'dashboard.check_system_statistics_sid',
+            'dashboard.check_system_statistics_did',
+            'dashboard.system_statistics',
+            'dashboard.system_statistics_sid',
+            'dashboard.system_statistics_did',
         ]
 
 
@@ -534,5 +606,64 @@ def terminate_session(sid=None, did=None, pid=None):
 
     return ajax_response(
         response=gettext("Success") if res else gettext("Failed"),
+        status=200
+    )
+
+
+# To check whether system stats extesion is present or not
+@blueprint.route('check_extension/system_statistics',
+                 endpoint='check_system_statistics', methods=['GET'])
+@blueprint.route('check_extension/system_statistics/<int:sid>',
+                 endpoint='check_system_statistics_sid', methods=['GET'])
+@blueprint.route('check_extension/system_statistics/<int:sid>/<int:did>',
+                 endpoint='check_system_statistics_did', methods=['GET'])
+@login_required
+@check_precondition
+def check_system_statistics(sid=None, did=None):
+    sql = "SELECT * FROM pg_extension WHERE extname = 'system_stats';"
+    status, res = g.conn.execute_scalar(sql)
+    if not status:
+        return internal_server_error(errormsg=res)
+    data = {}
+    if res is not None:
+        data['ss_present'] = True
+    else:
+        data['ss_present'] = False
+    return ajax_response(
+        response=data,
+        status=200
+    )
+
+
+# System Statistics Backend
+@blueprint.route('/system_statistics',
+                 endpoint='system_statistics', methods=['GET'])
+@blueprint.route('/system_statistics/<int:sid>',
+                 endpoint='system_statistics_sid', methods=['GET'])
+@blueprint.route('/system_statistics/<int:sid>/<int:did>',
+                 endpoint='system_statistics_did', methods=['GET'])
+@login_required
+@check_precondition
+def system_statistics(sid=None, did=None):
+    resp_data = {}
+
+    if request.args['chart_names'] != '':
+        chart_names = request.args['chart_names'].split(',')
+
+        if not sid:
+            return internal_server_error(errormsg='Server ID not specified.')
+
+        sql = render_template(
+            "/".join([g.template_path, 'system_statistics.sql']), did=did,
+            chart_names=chart_names,
+        )
+        status, res = g.conn.execute_dict(sql)
+
+        for chart_row in res['rows']:
+            resp_data[chart_row['chart_name']] = json.loads(
+                chart_row['chart_data'])
+
+    return ajax_response(
+        response=resp_data,
         status=200
     )
