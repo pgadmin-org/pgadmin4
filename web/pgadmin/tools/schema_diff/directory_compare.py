@@ -329,7 +329,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                 temp_tgt_params = copy.deepcopy(target_params)
                 diff_dict = directory_diff(
                     dict1[key], dict2[key],
-                    ignore_keys=view_object.keys_to_ignore, difference={}
+                    ignore_keys=ignore_keys, difference={}
                 )
 
                 # No need to parse acl if ignore_grants is set to True.
