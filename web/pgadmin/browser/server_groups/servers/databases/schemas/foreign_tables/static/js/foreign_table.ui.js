@@ -33,7 +33,6 @@ export default class ForeignTableSchema extends BaseUISchema {
       columns: [],
       ftoptions: [],
       relacl: [],
-      stracl: [],
       seclabels: [],
       ...initValues
     });
@@ -198,12 +197,11 @@ export default class ForeignTableSchema extends BaseUISchema {
         canAdd: true, canDelete: true, uniqueCol : ['option'],
       },
       {
-        id: 'relacl', label: gettext('Privileges'), cell: 'text',
-        type: 'text', group: gettext('Security'),
-        mode: ['properties'], min_version: 90200,
+        id: 'acl', label: gettext('Privileges'), type: 'text',
+        group: gettext('Security'), mode: ['properties'], min_version: 90200,
       },
       {
-        id: 'acl', label: gettext('Privileges'), type: 'collection',
+        id: 'relacl', label: gettext('Privileges'), type: 'collection',
         schema: this.getPrivilegeRoleSchema(['a','r','w','x']),
         uniqueCol : ['grantee', 'grantor'],
         editable: false,

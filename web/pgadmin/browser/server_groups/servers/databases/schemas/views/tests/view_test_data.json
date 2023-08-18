@@ -152,13 +152,16 @@
       "is_list": false
     },
     {
-      "name": "Get view: With existing view having brackets.",
+      "name": "Get view: With existing view having brackets (<v16).",
       "url": "/browser/view/obj/",
       "is_positive_test": true,
       "inventory_data": {
         "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
       },
-      "test_data": {},
+      "test_data": {
+        "server_max_version": 159999,
+        "skip_msg": "Definition is different from v16 onwards."
+      },
       "mocking_required": false,
       "mock_data": {},
       "expected_data": {
@@ -167,6 +170,29 @@
         "test_result_data": {
           "definition": " SELECT\n        CASE\n            WHEN ((pg_db.datistemplate = false) AND (pg_db.datallowconn = true) AND ((pg_db.datconnlimit = '-1'::integer) OR (pg_db.datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;",
           "pg_definition": " SELECT\n        CASE\n            WHEN pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = '-1'::integer OR pg_db.datacl IS NULL) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
+        }
+      },
+      "is_list": false
+    },
+    {
+      "name": "Get view: With existing view having brackets (>=16).",
+      "url": "/browser/view/obj/",
+      "is_positive_test": true,
+      "inventory_data": {
+        "query": "\"CREATE OR REPLACE VIEW %s.%s AS SELECT CASE WHEN (pg_db.datistemplate = false AND pg_db.datallowconn = true AND (pg_db.datconnlimit = -1 OR pg_db.datacl is null)) then true else false end as res FROM pg_database pg_db; ALTER TABLE %s.%s OWNER TO %s\" % (schema_name, view_name, schema_name, view_name, server['username'])"
+      },
+      "test_data": {
+        "server_min_version": 160000,
+        "skip_msg": "Definition is different from v16 onwards."
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {
+          "definition": " SELECT\n        CASE\n            WHEN ((datistemplate = false) AND (datallowconn = true) AND ((datconnlimit = '-1'::integer) OR (datacl IS NULL))) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;",
+          "pg_definition": " SELECT\n        CASE\n            WHEN datistemplate = false AND datallowconn = true AND (datconnlimit = '-1'::integer OR datacl IS NULL) THEN true\n            ELSE false\n        END AS res\n   FROM pg_database pg_db;"
         }
       },
       "is_list": false

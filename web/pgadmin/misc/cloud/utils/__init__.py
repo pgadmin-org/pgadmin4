@@ -28,7 +28,7 @@ def get_my_ip():
         except Exception:
             external_ip = '127.0.0.1'
 
-    if type(external_ip) == bytes:
+    if isinstance(external_ip, bytes):
         external_ip = external_ip.decode('utf-8')
 
     ip = ipaddress.ip_address(external_ip)

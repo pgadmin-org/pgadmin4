@@ -974,14 +974,14 @@
           "added": [
             {
               "name": "ex_constr",
-              "amname": "gist",
+              "amname": "btree",
               "columns": [
                 {
                   "column": "col1",
                   "is_exp": false,
                   "order": false,
                   "nulls_order": false,
-                  "operator": "<>",
+                  "operator": "=",
                   "is_sort_nulls_applicable": false
                 }
               ],
@@ -1478,6 +1478,8 @@
         "like_indexes": true,
         "like_storage": true,
         "like_comments": true,
+        "like_identity": true,
+        "like_statistics": true,
         "like_relation": "public.like_tbl"
       },
       "store_object_id": true,

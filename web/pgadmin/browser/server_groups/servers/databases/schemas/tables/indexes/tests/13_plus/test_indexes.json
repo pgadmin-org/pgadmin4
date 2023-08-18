@@ -23,7 +23,7 @@
       },
       {
         "type": "create",
-        "name": "Create btree index with ASC and NULLS LAST -- 15 Plus",
+        "name": "Create btree index with ASC and NULLS LAST -- 13 Plus",
         "endpoint": "NODE-index.obj",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql",
@@ -31,6 +31,7 @@
           "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
           "spcname":"pg_default",
           "amname":"btree",
+          "include": ["name", "id"],
           "columns":[{
             "colname":"id",
             "collspcname":"",
@@ -60,7 +61,7 @@
       },
       {
         "type": "delete",
-        "name": "Drop index",
+        "name": "Drop index -- 13 Plus",
         "endpoint": "NODE-index.delete_id",
         "data": {
           "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -76,6 +77,7 @@
           "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
           "spcname":"pg_default",
           "amname":"btree",
+          "include": ["name", "id"],
           "columns":[{
             "colname":"id",
             "collspcname":"",
@@ -105,7 +107,7 @@
       },
       {
         "type": "delete",
-        "name": "Drop index -- 15 Plus",
+        "name": "Drop index -- 13 Plus",
         "endpoint": "NODE-index.delete_id",
         "data": {
           "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -113,7 +115,7 @@
       },
       {
         "type": "create",
-        "name": "Create btree index with DESC and NULLS LAST -- 15 Plus",
+        "name": "Create btree index with DESC and NULLS LAST -- 13 Plus",
         "endpoint": "NODE-index.obj",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql",
@@ -121,6 +123,7 @@
           "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
           "spcname":"pg_default",
           "amname":"btree",
+          "include": ["name", "id"],
           "columns":[{
             "colname":"id",
             "collspcname":"",
@@ -150,7 +153,7 @@
       },
       {
         "type": "delete",
-        "name": "Drop index -- 15 Plus",
+        "name": "Drop index -- 13 Plus",
         "endpoint": "NODE-index.delete_id",
         "data": {
           "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -158,7 +161,7 @@
       },
       {
         "type": "create",
-        "name": "Create btree index with DESC and NULLS FIRST -- 15 Plus",
+        "name": "Create btree index with DESC and NULLS FIRST -- 13 Plus",
         "endpoint": "NODE-index.obj",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql",
@@ -166,6 +169,7 @@
           "name":"Idx_$%{}[]()&*^!@\"'`\\/#",
           "spcname":"pg_default",
           "amname":"btree",
+          "include": ["name", "id"],
           "columns":[{
             "colname":"id",
             "collspcname":"",
@@ -191,7 +195,7 @@
       },
       {
         "type": "alter",
-        "name": "Alter index name, fill factor, comment and clustered -- 15 Plus",
+        "name": "Alter index name, fill factor, comment and clustered -- 13 Plus",
         "endpoint": "NODE-index.obj_id",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql_id",
@@ -206,7 +210,7 @@
       },
       {
         "type": "alter",
-        "name": "Alter reset fill factor and cluster -- 15 Plus",
+        "name": "Alter reset fill factor and cluster -- 13 Plus",
         "endpoint": "NODE-index.obj_id",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql_id",
@@ -219,15 +223,85 @@
       },
       {
         "type": "delete",
-        "name": "Drop index -- 15 Plus",
+        "name": "Drop index -- 13 Plus",
         "endpoint": "NODE-index.delete_id",
         "data": {
           "name": "Idx1_$%{}[]()&*^!@\"'`\\/#"
         }
       },
       {
+      "type": "create",
+      "name": "Create btree index with expression and ASC and NULLS LAST -- 13 Plus",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx3_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "include": ["name", "id"],
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }, {
+          "is_exp": true,
+          "colname":"lower(name)",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }],
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisunique":true,
+        "indisclustered":false,
+        "isconcurrent":false,
+        "indconstraint":"id < 100"
+      },
+      "expected_sql_file": "create_btree_expr_asc_null_last.sql",
+      "expected_msql_file": "create_btree_expr_asc_null_last_msql.sql"
+    },
+      {
+        "type": "alter",
+        "name": "Alter index statistics of expression -- 13 Plus",
+        "endpoint": "NODE-index.obj_id",
+        "sql_endpoint": "NODE-index.sql_id",
+        "msql_endpoint": "NODE-index.msql_id",
+        "data": {
+          "name": "Idx3_$%{}[]()&*^!@\"'`\\/#",
+          "columns":{
+            "changed": [{
+            "is_exp": true,
+              "col_num": 2,
+            "colname":"lower(name)",
+            "collspcname":"pg_catalog.\"POSIX\"",
+            "op_class":"text_pattern_ops",
+            "sort_order":false,
+            "nulls":false,
+            "is_sort_nulls_applicable":true,
+              "statistics": 1000
+            }]
+          }
+        },
+        "expected_sql_file": "alter_expr_statistics.sql",
+        "expected_msql_file": "alter_expr_statistics_msql.sql"
+      },
+      {
+        "type": "delete",
+        "name": "Drop index -- 13 Plus",
+        "endpoint": "NODE-index.delete_id",
+        "data": {
+          "name": "Idx3_$%{}[]()&*^!@\"'`\\/#"
+        }
+      },
+      {
         "type": "create",
-        "name": "Create hash index -- 15 Plus",
+        "name": "Create hash index -- 13 Plus",
         "endpoint": "NODE-index.obj",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql",
@@ -252,7 +326,7 @@
       },
       {
         "type": "delete",
-        "name": "Drop hash index -- 15 Plus",
+        "name": "Drop hash index -- 13 Plus",
         "endpoint": "NODE-index.delete_id",
         "data": {
           "name": "Idx_$%{}[]()&*^!@\"'`\\/#"
@@ -268,7 +342,7 @@
       },
       {
         "type": "create",
-        "name": "Create unnamed hash index -- 15 Plus",
+        "name": "Create unnamed hash index -- 13 Plus",
         "endpoint": "NODE-index.obj",
         "sql_endpoint": "NODE-index.sql_id",
         "msql_endpoint": "NODE-index.msql",
@@ -290,9 +364,8 @@
       },
       {
         "type": "delete",
-        "name": "Drop hash index -- 15 Plus",
+        "name": "Drop hash index -- 13 Plus",
         "endpoint": "NODE-index.delete_id"
       }
     ]
   }
-  

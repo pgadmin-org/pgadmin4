@@ -19,6 +19,8 @@ from unittest.mock import patch, MagicMock
 
 from config import PG_DEFAULT_DRIVER
 
+MAINTENANCE_URL = '/maintenance/job/{0}/{1}'
+
 
 class MaintenanceCreateJobTest(BaseTestGenerator):
     """Test the BackupCreateJob class"""
@@ -40,10 +42,11 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
                  vacuum_full=False,
                  verbose=True
              ),
-             url='/maintenance/job/{0}/{1}',
-             expected_cmd_opts=['VACUUM VERBOSE;\n'],
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE);\n'],
          )),
-        ('When maintaining object with VACUUM FULL',
+        ('When maintaining object with VACUUM FULL, FREEZE, ANALYZE, '
+         'DISABLE_PAGE_SKIPPING',
          dict(
              class_params=dict(
                  sid=1,
@@ -55,13 +58,130 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              params=dict(
                  database='postgres',
                  op='VACUUM',
-                 vacuum_analyze=False,
-                 vacuum_freeze=False,
+                 vacuum_analyze=True,
+                 vacuum_freeze=True,
                  vacuum_full=True,
+                 vacuum_disable_page_skipping=True,
                  verbose=True
              ),
-             url='/maintenance/job/{0}/{1}',
-             expected_cmd_opts=['VACUUM FULL VERBOSE;\n'],
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, FULL, FREEZE, ANALYZE, '
+                                'DISABLE_PAGE_SKIPPING);\n'],
+         )),
+        ('When maintaining object with VACUUM SKIP LOCKED, TRUNCATE, '
+         'INDEX CLEANUP',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 skip_locked=True,
+                 vacuum_truncate=True,
+                 vacuum_index_cleanup='OFF',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, SKIP_LOCKED, TRUNCATE, '
+                                'INDEX_CLEANUP OFF);\n'],
+             server_min_version=120000,
+             message='VACUUM SKIP_LOCKED, TRUNCATE and INDEX_CLEANUP is not '
+                     'supported by EPAS/PG server less than 12.0'
+         )),
+        ('When maintaining object with VACUUM PARALLEL',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 vacuum_parallel='15',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, PARALLEL 15);\n'],
+             server_min_version=130000,
+             message='VACUUM PARALLEL is not supported by EPAS/PG server '
+                     'less than 13.0'
+         )),
+        ('When maintaining object with VACUUM PROCESS TOAST',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 vacuum_process_toast=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, PROCESS_TOAST);\n'],
+             server_min_version=140000,
+             message='VACUUM PROCESS TOAST is not supported by EPAS/PG server '
+                     'less than 14.0'
+         )),
+        ('When maintaining object with VACUUM SKIP DATABASE STATS, '
+         'PROCESS MAIN, BUFFER USAGE LIMIT',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 vacuum_process_main=True,
+                 vacuum_skip_database_stats=True,
+                 buffer_usage_limit='1MB',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, PROCESS_MAIN, '
+                                'SKIP_DATABASE_STATS, BUFFER_USAGE_LIMIT "1MB"'
+                                ');\n'],
+             server_min_version=160000,
+             message='VACUUM SKIP_DATABASE_STATS, PROCESS_MAIN and '
+                     'BUFFER_USAGE_LIMIT is not supported by EPAS/PG server '
+                     'less than 16.0'
+         )),
+        ('When maintaining object with VACUUM ONLY DATABASE STATS',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 vacuum_only_database_stats=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, ONLY_DATABASE_STATS);\n'],
+             server_min_version=160000,
+             message='VACUUM ONLY DATABASE STATS is not supported by EPAS/PG '
+                     'server less than 16.0'
          )),
         ('When maintaining object with ANALYZE',
          dict(
@@ -75,13 +195,314 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              params=dict(
                  database='postgres',
                  op='ANALYZE',
-                 vacuum_analyze=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE);\n'],
+         )),
+        ('When maintaining object with ANALYZE SKIP LOCKED',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='ANALYZE',
+                 skip_locked=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE, SKIP_LOCKED);\n'],
+             server_min_version=120000,
+             message='ANALYZE SKIP_LOCKED is not supported by EPAS/PG server '
+                     'less than 12.0'
+         )),
+        ('When maintaining object with ANALYZE BUFFER USAGE LIMIT',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='ANALYZE',
+                 buffer_usage_limit='1MB',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE, BUFFER_USAGE_LIMIT "1MB"'
+                                ');\n'],
+             server_min_version=160000,
+             message='ANALYZE BUFFER_USAGE_LIMIT is not supported by '
+                     'EPAS/PG server less than 16.0'
+         )),
+        ('When maintaining object with default options on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 vacuum_analyze=False,
                  vacuum_freeze=False,
                  vacuum_full=False,
                  verbose=True
              ),
-             url='/maintenance/job/{0}/{1}',
-             expected_cmd_opts=['ANALYZE VERBOSE;\n'],
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE) my_schema.my_table;\n'],
+         )),
+        ('When maintaining object with VACUUM FULL, FREEZE, ANALYZE, '
+         'DISABLE_PAGE_SKIPPING on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 vacuum_analyze=True,
+                 vacuum_freeze=True,
+                 vacuum_full=True,
+                 vacuum_disable_page_skipping=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, FULL, FREEZE, ANALYZE, '
+                                'DISABLE_PAGE_SKIPPING) my_schema.my_table'
+                                ';\n'],
+         )),
+        ('When maintaining object with VACUUM SKIP LOCKED, TRUNCATE, '
+         'INDEX CLEANUP on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 skip_locked=True,
+                 vacuum_truncate=True,
+                 vacuum_index_cleanup='OFF',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, SKIP_LOCKED, TRUNCATE, '
+                                'INDEX_CLEANUP OFF) my_schema.my_table;\n'],
+             server_min_version=120000,
+             message='VACUUM SKIP_LOCKED, TRUNCATE and INDEX_CLEANUP is not '
+                     'supported by EPAS/PG server less than 12.0'
+         )),
+        ('When maintaining object with VACUUM PARALLEL on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 vacuum_parallel='15',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, PARALLEL 15) '
+                                'my_schema.my_table;\n'],
+             server_min_version=130000,
+             message='VACUUM PARALLEL is not supported by EPAS/PG server '
+                     'less than 13.0'
+         )),
+        ('When maintaining object with VACUUM PROCESS TOAST on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 vacuum_process_toast=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, PROCESS_TOAST) '
+                                'my_schema.my_table;\n'],
+             server_min_version=140000,
+             message='VACUUM PROCESS TOAST is not supported by EPAS/PG server '
+                     'less than 14.0'
+         )),
+        ('When maintaining object with VACUUM SKIP DATABASE STATS, '
+         'PROCESS MAIN, BUFFER USAGE LIMIT on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 vacuum_process_main=True,
+                 vacuum_skip_database_stats=True,
+                 buffer_usage_limit='1MB',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, PROCESS_MAIN, '
+                                'SKIP_DATABASE_STATS, BUFFER_USAGE_LIMIT "1MB"'
+                                ') my_schema.my_table;\n'],
+             server_min_version=160000,
+             message='VACUUM SKIP_DATABASE_STATS, PROCESS_MAIN and '
+                     'BUFFER_USAGE_LIMIT is not supported by EPAS/PG server '
+                     'less than 16.0'
+         )),
+        ('When maintaining object with VACUUM ONLY DATABASE STATS on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='VACUUM',
+                 schema='my_schema',
+                 table='my_table',
+                 vacuum_only_database_stats=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['VACUUM (VERBOSE, ONLY_DATABASE_STATS) '
+                                'my_schema.my_table;\n'],
+             server_min_version=160000,
+             message='VACUUM ONLY DATABASE STATS is not supported by EPAS/PG '
+                     'server less than 16.0'
+         )),
+        ('When maintaining object with ANALYZE on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='ANALYZE',
+                 schema='my_schema',
+                 table='my_table',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE) my_schema.my_table;\n'],
+         )),
+        ('When maintaining object with ANALYZE SKIP LOCKED on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='ANALYZE',
+                 schema='my_schema',
+                 table='my_table',
+                 skip_locked=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE, SKIP_LOCKED) '
+                                'my_schema.my_table;\n'],
+             server_min_version=120000,
+             message='ANALYZE SKIP_LOCKED is not supported by EPAS/PG server '
+                     'less than 12.0'
+         )),
+        ('When maintaining object with ANALYZE BUFFER USAGE LIMIT on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='ANALYZE',
+                 schema='my_schema',
+                 table='my_table',
+                 buffer_usage_limit='1MB',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['ANALYZE (VERBOSE, BUFFER_USAGE_LIMIT "1MB"'
+                                ') my_schema.my_table;\n'],
+             server_min_version=160000,
+             message='ANALYZE BUFFER_USAGE_LIMIT is not supported by '
+                     'EPAS/PG server less than 16.0'
+         )),
+        ('When maintenance the object with the REINDEX SYSTEM',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='REINDEX',
+                 reindex_system=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE) SYSTEM postgres;\n'],
          )),
         ('When maintenance the object with the REINDEX',
          dict(
@@ -95,13 +516,206 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              params=dict(
                  database='postgres',
                  op='REINDEX',
-                 vacuum_analyze=False,
-                 vacuum_freeze=False,
-                 vacuum_full=False,
                  verbose=False
              ),
-             url='/maintenance/job/{0}/{1}',
+             url=MAINTENANCE_URL,
              expected_cmd_opts=['REINDEX DATABASE postgres;\n'],
+         )),
+        ('When maintenance the object with the REINDEX CONCURRENTLY',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='REINDEX',
+                 reindex_concurrently=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, CONCURRENTLY) DATABASE '
+                                'postgres;\n'],
+             server_min_version=120000,
+             message='REINDEX CONCURRENTLY is not supported by EPAS/PG server '
+                     'less than 12.0'
+         )),
+        ('When maintenance the object with the REINDEX TABLESPACE',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 op='REINDEX',
+                 reindex_tablespace='pg_default',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE "pg_default") '
+                                'DATABASE postgres;\n'],
+             server_min_version=140000,
+             message='REINDEX TABLESPACE is not supported by EPAS/PG server '
+                     'less than 14.0'
+         )),
+        ('When maintenance the object with the REINDEX SCHEMA',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 op='REINDEX',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE) SCHEMA my_schema;\n'],
+         )),
+        ('When maintenance the object with the REINDEX TABLE',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 table='my_table',
+                 op='REINDEX',
+                 verbose=False
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX TABLE my_schema.my_table;\n'],
+         )),
+        ('When maintenance the object with the REINDEX CONCURRENTLY TABLE',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 table='my_table',
+                 op='REINDEX',
+                 reindex_concurrently=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, CONCURRENTLY) TABLE '
+                                'my_schema.my_table;\n'],
+             server_min_version=120000,
+             message='REINDEX CONCURRENTLY TABLE is not supported by '
+                     'EPAS/PG server less than 12.0'
+         )),
+        ('When maintenance the object with the REINDEX TABLESPACE TABLE',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 table='my_table',
+                 op='REINDEX',
+                 reindex_tablespace='pg_default',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE "pg_default") '
+                                'TABLE my_schema.my_table;\n'],
+             server_min_version=140000,
+             message='REINDEX TABLESPACE TABLE is not supported by '
+                     'EPAS/PG server less than 14.0'
+         )),
+        ('When maintenance the object with the REINDEX INDEX',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 index='my_index',
+                 op='REINDEX',
+                 verbose=False
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX INDEX my_schema.my_index;\n'],
+         )),
+        ('When maintenance the object with the REINDEX CONCURRENTLY INDEX',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 index='my_index',
+                 op='REINDEX',
+                 reindex_concurrently=True,
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, CONCURRENTLY) INDEX '
+                                'my_schema.my_index;\n'],
+             server_min_version=120000,
+             message='REINDEX CONCURRENTLY is not supported by EPAS/PG server '
+                     'less than 12.0'
+         )),
+        ('When maintenance the object with the REINDEX TABLESPACE INDEX',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 index='my_index',
+                 op='REINDEX',
+                 reindex_tablespace='pg_default',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['REINDEX (VERBOSE, TABLESPACE "pg_default") '
+                                'INDEX my_schema.my_index;\n'],
+             server_min_version=140000,
+             message='REINDEX TABLESPACE is not supported by EPAS/PG server '
+                     'less than 14.0'
          )),
         ('When maintenance the object with the CLUSTER',
          dict(
@@ -115,13 +729,50 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
              params=dict(
                  database='postgres',
                  op='CLUSTER',
-                 vacuum_analyze=False,
-                 vacuum_freeze=False,
-                 vacuum_full=False,
-                 verbose=False
+                 verbose=True
              ),
-             url='/maintenance/job/{0}/{1}',
-             expected_cmd_opts=['CLUSTER;\n'],
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['CLUSTER VERBOSE;\n'],
+         )),
+        ('When maintenance the object with the CLUSTER on table',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 table='my_table',
+                 op='CLUSTER',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['CLUSTER VERBOSE my_schema.my_table;\n'],
+         )),
+        ('When maintenance the object with the CLUSTER on table using index',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_maintenance_server',
+                 port=5444,
+                 host='localhost',
+                 username='postgres'
+             ),
+             params=dict(
+                 database='postgres',
+                 schema='my_schema',
+                 table='my_table',
+                 index='my_index',
+                 op='CLUSTER',
+                 verbose=True
+             ),
+             url=MAINTENANCE_URL,
+             expected_cmd_opts=['CLUSTER VERBOSE my_schema.my_table '
+                                'USING my_index;\n'],
          ))
     ]
 
@@ -142,9 +793,9 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
         if os.name == 'nt':
             binary_path = binary_path + '.exe'
 
-        retVal = does_utility_exist(binary_path)
-        if retVal is not None:
-            self.skipTest(retVal)
+        ret_val = does_utility_exist(binary_path)
+        if ret_val is not None:
+            self.skipTest(ret_val)
 
     @patch('pgadmin.tools.maintenance.Server')
     @patch('pgadmin.tools.maintenance.Message')
@@ -188,6 +839,11 @@ class MaintenanceCreateJobTest(BaseTestGenerator):
             db_owner = server_response['data']['user']['name']
             self.data = database_utils.get_db_data(db_owner)
             self.db_name = self.data['name']
+
+            if hasattr(self, 'server_min_version') and \
+                    server_response["data"]["version"] < \
+                    self.server_min_version:
+                self.skipTest(self.message)
 
         # Create the backup job
         response = self.tester.post(url,

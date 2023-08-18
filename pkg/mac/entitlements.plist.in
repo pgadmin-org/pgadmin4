@@ -22,10 +22,11 @@
     <string>%TEAMID%.org.pgadmin.pgadmin4</string>
 
     <!--
-        We have no need for JIT.
+        We have no need for JIT on x86_64, but NWJS won't start without it
+        on Apple Silicon.
     -->
     <key>com.apple.security.cs.allow-jit</key>
-    <false/>
+    <true/>
 
     <!--
         Explicitly disallow executable code overwriting/patching.

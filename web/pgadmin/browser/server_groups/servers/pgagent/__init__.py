@@ -598,7 +598,7 @@ SELECT EXISTS(
         """
         # Format the schedule data. Convert the boolean array
         jschedules = data.get('jschedules', {})
-        if type(jschedules) == dict:
+        if isinstance(jschedules, dict):
             for schedule in jschedules.get('added', []):
                 format_schedule_data(schedule)
             for schedule in jschedules.get('changed', []):
@@ -606,7 +606,7 @@ SELECT EXISTS(
 
         has_connection_str = self.manager.db_info['pgAgent']['has_connstr']
         jssteps = data.get('jsteps', {})
-        if type(jssteps) == dict:
+        if isinstance(jssteps, dict):
             for changed_step in jssteps.get('changed', []):
                 status, res = format_step_data(
                     data['jobid'], changed_step, has_connection_str,

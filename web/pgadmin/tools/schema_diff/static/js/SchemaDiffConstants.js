@@ -34,7 +34,9 @@ export const STYLE_CONSTANT = {
 
 export const MENUS_COMPARE_CONSTANT = {
   COMPARE_IGNORE_OWNER: 1,
-  COMPARE_IGNORE_WHITESPACE: 2
+  COMPARE_IGNORE_WHITESPACE: 2,
+  COMPARE_IGNORE_TABLESPACE: 3,
+  COMPARE_IGNORE_GRANTS: 4
 };
 
 export const MENUS_FILTER_CONSTANT = {
@@ -62,4 +64,11 @@ export const FILTER_NAME = {
   DIFFERENT : gettext('Different'),
   SOURCE_ONLY: gettext('Source Only'),
   TARGET_ONLY: gettext('Target Only')
+};
+
+export const IGNORE_OPTION = {
+  OWNER : gettext('Ignore Owner'),
+  WHITESPACE : gettext('Ignore Whitespace'),
+  TABLESPACE: gettext('Ignore Tablespace'),
+  GRANTS: gettext('Ignore Grant/Revoke')
 };

@@ -53,8 +53,8 @@ class BatchProcessTest(BaseTestGenerator):
                  },
                  cmd="VACUUM VERBOSE;\n"
              ),
-             expected_msg="VACUUM (VERBOSE) on database "
-                          "'postgres' of server " + SERVER_NAME,
+             expected_msg="VACUUM on database 'postgres' of server " +
+                          SERVER_NAME,
              expected_details_cmd='VACUUM VERBOSE;'
          ))
     ]

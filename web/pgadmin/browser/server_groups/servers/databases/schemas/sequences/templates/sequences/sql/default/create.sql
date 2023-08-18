@@ -1,4 +1,4 @@
-CREATE SEQUENCE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}{% if data.increment is defined and data.cycled %}
+CREATE SEQUENCE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ conn|qtIdent(data.schema, data.name) }}{% if data.cycled %}
 
     CYCLE{% endif %}{% if data.increment is defined %}
 

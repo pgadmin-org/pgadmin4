@@ -22,6 +22,13 @@ root = os.path.dirname(os.path.realpath(__file__))
 if sys.path[0] != root:
     sys.path.insert(0, root)
 
+# The config database connection pool size.
+# Setting this to 0 will remove any limit.
+CONFIG_DATABASE_CONNECTION_POOL_SIZE = 5
+# The number of connections allowed to overflow beyond
+# the connection pool size.
+CONFIG_DATABASE_CONNECTION_MAX_OVERFLOW = 100
+
 from pgadmin.utils import env, IS_WIN, fs_short_path
 
 ##########################################################################
@@ -43,7 +50,7 @@ APP_ICON = 'pg-icon'
 
 # Application version number components
 APP_RELEASE = 7
-APP_REVISION = 4
+APP_REVISION = 5
 
 # Application version suffix, e.g. 'beta1', 'dev'. Usually an empty string
 # for GA releases.
@@ -52,7 +59,7 @@ APP_SUFFIX = ''
 # Numeric application version for upgrade checks. Should be in the format:
 # [X]XYYZZ, where X is the release version, Y is the revision, with a leading
 # zero if needed, and Z represents the suffix, with a leading zero if needed
-APP_VERSION_INT = 70400
+APP_VERSION_INT = 70500
 
 # DO NOT CHANGE!
 # The application version string, constructed from the components
@@ -470,19 +477,19 @@ STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
 ##########################################################################
 DEFAULT_BINARY_PATHS = {
     "pg": "",
-    "pg-10": "",
     "pg-11": "",
     "pg-12": "",
     "pg-13": "",
     "pg-14": "",
     "pg-15": "",
+    "pg-16": "",
     "ppas": "",
-    "ppas-10": "",
     "ppas-11": "",
     "ppas-12": "",
     "ppas-13": "",
     "ppas-14": "",
-    "ppas-15": ""
+    "ppas-15": "",
+    "ppas-16": ""
 }
 
 ##########################################################################

@@ -3,7 +3,7 @@
     'actionUrl': url_for('mfa.validate'),
     'views': views,
     'logoutUrl': logout_url,
-    'sendEmailUrl': url_for("mfa.send_email_code"),
+    'sendEmailUrl': send_email_url,
     'csrfHeader': current_app.config.get("WTF_CSRF_HEADERS")[0],
     'csrfToken': csrf_token()
 } %}

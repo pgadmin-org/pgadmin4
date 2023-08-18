@@ -914,7 +914,7 @@ class SubscriptionView(PGChildNodeView, SchemaDiffObjectCompare):
         drop_sql = kwargs.get('drop_sql', False)
 
         if data:
-            if 'pub' in data and type(data['pub']) == str:
+            if 'pub' in data and isinstance(data['pub'], str):
                 # Convert publication details to list
                 data['pub'] = data['pub'].split(',,')
             sql, name = self.get_sql(data=data, subid=oid)

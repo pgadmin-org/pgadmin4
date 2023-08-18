@@ -699,15 +699,6 @@ export default class BackupSchema extends BaseUISchema {
       label: gettext('Miscellaneous'),
       group: gettext('Options'),
       schema: obj.getMiscellaneousSchema(),
-    }, {
-      id: 'objects',
-      label: gettext('objects'),
-      group: gettext('Objects'),
-      type: 'tree',
-      visible: () => {
-        return isVisibleForServerBackup(obj?.backupType);
-      },
-      tree_type: 'checkbox'
     }];
   }
 

@@ -86,6 +86,8 @@ define('pgadmin.node.primary_key', [
               }
             });
             return !primary_key_found;
+          }else if (_.indexOf(['foreign_table', 'coll-foreign_table'], d._type) > -1) {
+            return false;
           }
           parents.push(d._type);
           i = t.hasParent(i) ? t.parent(i) : null;

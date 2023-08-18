@@ -56,9 +56,9 @@ COMMENT ON COLUMN {{conn|qtIdent(data.basensp, data.name, c.attname)}}
 {% endif %}
 {% endfor %}
 {% endif %}
-{% if data.acl %}
+{% if data.relacl %}
 
-{% for priv in data.acl %}
+{% for priv in data.relacl %}
 {{ PRIVILEGE.SET(conn, 'TABLE', priv.grantee, data.name, priv.without_grant, priv.with_grant, data.basensp) }}
 {% endfor -%}
 {% endif -%}

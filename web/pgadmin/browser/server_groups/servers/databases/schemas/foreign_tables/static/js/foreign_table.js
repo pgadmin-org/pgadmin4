@@ -16,7 +16,8 @@ import _ from 'lodash';
 define('pgadmin.node.foreign_table', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child', 'pgadmin.node.schema.dir/schema_child_tree_node',
-  'pgadmin.browser.collection',
+  'pgadmin.browser.collection','pgadmin.node.column',
+  'pgadmin.node.constraints'
 ], function(
   gettext, url_for, pgBrowser, schemaChild, schemaChildTreeNode
 ) {

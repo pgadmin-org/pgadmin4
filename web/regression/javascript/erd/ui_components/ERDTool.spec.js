@@ -2,7 +2,7 @@ import React from 'react';
 import {mount} from 'enzyme';
 import '../../helper/enzyme.helper';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
+import axios from 'axios';
 
 import ERDCore from 'pgadmin.tools.erd/erd_tool/ERDCore';
 import * as erdModule from 'pgadmin.tools.erd/ERDModule';

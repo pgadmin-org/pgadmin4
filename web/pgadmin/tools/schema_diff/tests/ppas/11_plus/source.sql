@@ -32,7 +32,7 @@ SET default_tablespace = '';
 
 
 CREATE EXTENSION btree_gist
-    SCHEMA test_schema_diff;
+   SCHEMA test_schema_diff;
 
 --
 -- TOC entry 12272 (class 1259 OID 149205)
@@ -937,6 +937,7 @@ TABLESPACE pg_default;
 ALTER TABLE public.test_table_for_foreign_table
     OWNER to enterprisedb;
 
+-- Foreign Table scripts
 CREATE FOREIGN TABLE test_schema_diff.ft_src(
     fid bigint NULL,
     fname text NULL COLLATE pg_catalog."default"

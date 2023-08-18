@@ -17,7 +17,7 @@ import React from 'react';
 import { createMount } from '@material-ui/core/test-utils';
 import jasmineEnzyme from 'jasmine-enzyme';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
+import axios from 'axios';
 
 import pgWindow from 'sources/window';
 import url_for from 'sources/url_for';

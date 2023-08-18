@@ -66,6 +66,7 @@ _build_runtime
 _create_python_env
 _build_docs
 _complete_bundle
+_generate_sbom
 _codesign_binaries
 _codesign_bundle
 _create_dmg

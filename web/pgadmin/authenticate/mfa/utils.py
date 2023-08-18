@@ -160,7 +160,7 @@ def mfa_enabled(execute_if_enabled, execute_if_disabled) -> None:
     supported_methods = getattr(config, "MFA_SUPPORTED_METHODS", [])
 
     if is_server_mode is True and enabled is True and \
-            type(supported_methods) == list:
+            isinstance(supported_methods, list):
         supported_methods, _ = segregate_valid_and_invalid_mfa_methods(
             supported_methods
         )

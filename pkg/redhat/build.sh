@@ -26,6 +26,7 @@ _create_python_virtualenv "redhat"
 _build_runtime
 _build_docs "redhat"
 _copy_code
+_generate_sbom
 
 # Get an RPM-compatible version number
 RPM_VERSION=${APP_RELEASE}.${APP_REVISION}
@@ -127,6 +128,7 @@ cp -rfa %{pga_build_root}/desktop/* \${RPM_BUILD_ROOT}
 /usr/share/icons/hicolor/32x32/apps/*
 /usr/share/icons/hicolor/16x16/apps/*
 /usr/share/applications/*
+/usr/pgadmin4/sbom-desktop.json
 EOF
 
 # Build the Redhat package for the server
@@ -168,6 +170,7 @@ cp -rfa %{pga_build_root}/web/* \${RPM_BUILD_ROOT}
 %files
 /usr/pgadmin4/bin/*
 %config(noreplace) /etc/httpd/conf.d/*
+/usr/pgadmin4/sbom-web.json
 EOF
 
 mkdir -p "${WEBROOT}/etc/httpd/conf.d"

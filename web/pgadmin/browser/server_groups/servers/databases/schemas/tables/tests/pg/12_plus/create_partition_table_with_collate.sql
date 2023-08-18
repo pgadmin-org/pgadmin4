@@ -18,7 +18,8 @@ COMMENT ON TABLE public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
 -- Partitions SQL
 
 CREATE TABLE public.cust_arr_small PARTITION OF public."partition_table_with_collate_$%{}[]()&*^!@""'`\/#"
-    FOR VALUES FROM ('20') TO ('25');
+    FOR VALUES FROM ('20') TO ('25')
+TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.cust_arr_small
     OWNER to postgres;

@@ -146,6 +146,10 @@ Query Execution
    |                      |    spent in each node of the query.                                                               |                |
    |                      |                                                                                                   |                |
    |                      |  * Select *Summary* to include the summary information about the query plan.                      |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Settings* to include the information on the configuration parameters.                  |                |
+   |                      |                                                                                                   |                |
+   |                      |  * Select *Wal* to include the information on WAL record generation.                              |                |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+
    | *Commit*             | Click the *Commit* icon to commit the transaction.                                                | Shift+CTRL+M   |
    +----------------------+---------------------------------------------------------------------------------------------------+----------------+

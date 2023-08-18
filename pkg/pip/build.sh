@@ -92,6 +92,12 @@ do
     tar cf - ${FILE} | (cd pip-build/pgadmin4; tar xf -)
 done
 
+# Generating SBOM
+echo Generating SBOM...
+cp requirements.txt pip-build/pgadmin4
+syft pip-build/pgadmin4 -o cyclonedx-json > pip-build/pgadmin4/sbom.json
+rm pip-build/pgadmin4/requirements.txt
+
 # Create the distro config
 echo Creating distro config...
 echo HELP_PATH = \'../../docs/en_US/_build/html/\' > pip-build/pgadmin4/config_distro.py

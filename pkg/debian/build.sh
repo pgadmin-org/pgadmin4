@@ -22,6 +22,7 @@ _create_python_virtualenv "debian"
 _build_runtime
 _build_docs "debian"
 _copy_code
+_generate_sbom
 
 #
 # Server package
@@ -77,7 +78,7 @@ Maintainer: pgAdmin Development Team <pgadmin-hackers@postgresql.org>
 Description: The desktop user interface for pgAdmin. pgAdmin is the most popular and feature rich Open Source administration and development platform for PostgreSQL, the most advanced Open Source database in the world.
 EOF
 
-# Build the Debian package for the server
+# Build the Debian package for the desktop
 fakeroot dpkg-deb --build "${DESKTOPROOT}" "${DISTROOT}/${APP_NAME}-desktop_${APP_LONG_VERSION}_${OS_ARCH}.deb"
 
 #

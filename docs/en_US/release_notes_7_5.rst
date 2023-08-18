@@ -56,3 +56,4 @@ Bug fixes
   | `Issue #6544 <https://github.com/pgadmin-org/pgadmin4/issues/6544>`_ -  Fix an issue where adding a sub-folder inside a folder is not working as expected in File Manager.
   | `Issue #6556 <https://github.com/pgadmin-org/pgadmin4/issues/6556>`_ -  Fix an error 'list' object has no attribute 'strip' while attempting to populate auto-complete manually the first time.
   | `Issue #6558 <https://github.com/pgadmin-org/pgadmin4/issues/6558>`_ -  Fixed an issue where ERD Tool can't load the saved pgerd file from Shared Storage.
+  | `Issue #6582 <https://github.com/pgadmin-org/pgadmin4/issues/6582>`_ -  Fix an issue where inserting more than 10 rows does not work correctly in View Data; only parts end up in the table.

@@ -14,7 +14,7 @@ import { createMount } from '@material-ui/core/test-utils';
 import Theme from '../../../pgadmin/static/js/Theme';
 import FileManager, { FileManagerUtils, getComparator } from '../../../pgadmin/misc/file_manager/static/js/components/FileManager';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
+import axios from 'axios';
 import getApiInstance from '../../../pgadmin/static/js/api_instance';
 import * as pgUtils from '../../../pgadmin/static/js/utils';
 

@@ -19,7 +19,8 @@ def get_extension_data(schema_name):
     data = {
         "name": "cube",
         "relocatable": "true",
-        "schema": schema_name
+        "schema": schema_name,
+        "cascade": "true"
     }
     return data
 

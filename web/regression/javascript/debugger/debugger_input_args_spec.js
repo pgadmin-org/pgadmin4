@@ -15,7 +15,7 @@ import '../helper/enzyme.helper';
 
 import jasmineEnzyme from 'jasmine-enzyme';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
+import axios from 'axios';
 
 import url_for from 'sources/url_for';
 import pgAdmin from 'sources/pgadmin';

@@ -702,7 +702,7 @@ function dataChangeReducer(state, action) {
     action.remove = action.remove || [];
     dataChange.added = _.pickBy(dataChange.added, (_v, k)=>(action.remove.indexOf(k) == -1));
     dataChange.added_index = _.pickBy(dataChange.added_index, (v)=>(action.remove.indexOf(v) == -1));
-    count = _.max(Object.keys(dataChange.added_index))||0;
+    count = _.max(Object.keys(dataChange.added_index).map(k=>+k))||0;
     Object.keys(action.add).forEach((k)=>{
       dataChange.added_index[++count] = k;
     });

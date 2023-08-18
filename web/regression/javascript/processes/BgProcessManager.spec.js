@@ -1,5 +1,5 @@
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
+import axios from 'axios';
 import BgProcessManager, { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
 import * as BgProcessNotify from '../../../pgadmin/misc/bgprocess/static/js/BgProcessNotify';
 
