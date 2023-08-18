@@ -45,7 +45,7 @@ and modify the values for the following parameters:
     Please note that password is not stored in the pgAdmin database."
     "OAUTH2_ADDITIONAL_CLAIMS", "The additional claims to check on the openid ID token. 
     If the value is provided, and the user ID Token has any of the given values, the login flow will continue.
-    In case the ID token does not have any match, it will get an authorization error.
+    In case the ID token does not have any match, the user will receive an authorization error.
     Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
 
 Redirect URL

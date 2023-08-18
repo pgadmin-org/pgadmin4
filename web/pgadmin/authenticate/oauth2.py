@@ -155,11 +155,13 @@ class OAuth2Authentication(BaseAuthentication):
             ]['OAUTH2_ADDITIONAL_CLAIMS']:
             allowed = self.__is_authorized_based_on_additional_claims(profile)
             if not allowed:
-                error_msg = "Your user it's not authorized to access" \
+                return_msg = "Your user it's not authorized to access" \
                     " PgAdmin based on your claims in your ID Token. " \
                     " Please contact your administrator."
-                current_app.logger.exception(error_msg)
-                return False, gettext(error_msg)
+                audit_msg = f"The authenticated user {username} is not" \
+                    " authorized to access pgAdmin based on OAUTH2 config."
+                current_app.logger.warning(audit_msg)
+                return False, gettext(return_msg)
 
         user, msg = self.__auto_create_user(username, email)
         if user:
