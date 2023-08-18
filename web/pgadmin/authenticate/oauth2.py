@@ -152,36 +152,12 @@ class OAuth2Authentication(BaseAuthentication):
 
         if self.oauth2_config[
                 self.oauth2_current_client
-            ]['OAUTH_GITLAB_AUTHZ_ENABLED']:
-
-            allowed = False
-
-            if 'https://gitlab.org/claims/groups/owner' in profile:
-                for role in self.oauth2_config[
-                        self.oauth2_current_client
-                    ]['OAUTH_GITLAB_GROUPS_OWNER_ROLE'].split(' '):
-                    if role in profile['https://gitlab.org/claims/groups/owner']:
-                        allowed = True
-                        break
-
-            if 'https://gitlab.org/claims/groups/maintainer' in profile:
-                for role in self.oauth2_config[
-                        self.oauth2_current_client
-                    ]['OAUTH_GITLAB_GROUPS_MAINTAINER_ROLE'].split(' '):
-                    if role in profile['https://gitlab.org/claims/groups/maintainer']:
-                        allowed = True
-                        break
-
-            if 'https://gitlab.org/claims/groups/developer' in profile:
-                for role in self.oauth2_config[
-                        self.oauth2_current_client
-                    ]['OAUTH_GITLAB_GROUPS_DEVELOPER_ROLE'].split(' '):
-                    if role in profile['https://gitlab.org/claims/groups/developer']:
-                        allowed = True
-                        break
-
+            ]['OAUTH2_ADDITIONAL_CLAIMS']:
+            allowed = self.__is_authorized_based_on_additional_claims(profile)
             if not allowed:
-                error_msg = "Your user it's not authorized to access PgAdmin based on your access on GitLab."
+                error_msg = "Your user it's not authorized to access" \
+                    " PgAdmin based on your claims in your ID Token. " \
+                    " Please contact your administrator."
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
 
@@ -238,3 +214,10 @@ class OAuth2Authentication(BaseAuthentication):
                 })
 
         return True, {'username': username}
+
+    def __is_authorized_based_on_additional_claims(self, profile: dict) -> bool:
+        for key in self.oauth2_config[self.oauth2_current_client]['OAUTH2_ADDITIONAL_CLAIMS'].keys():
+            value = profile.get(key)
+            if value is not None:
+                return True
+        return False
