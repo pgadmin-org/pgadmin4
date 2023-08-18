@@ -5,9 +5,9 @@ name: Run feature tests on PostgreSQL
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "dummy-dont-trigger" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "dummy-dont-trigger" ]
 
   workflow_dispatch:
 
