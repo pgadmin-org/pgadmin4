@@ -12,6 +12,10 @@ installed in Server mode. You can copy these settings from *config.py* file
 and modify the values for the following parameters:
 
 
+.. _AzureAD: https://learn.microsoft.com/en-us/security/zero-trust/develop/configure-tokens-group-claims-app-roles
+.. _GitLab: https://docs.gitlab.com/ee/integration/openid_connect_provider.html#shared-information
+
+
 .. csv-table::
    :header: "**Parameter**", "**Description**"
    :class: longtable
@@ -39,6 +43,9 @@ and modify the values for the following parameters:
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Oauth2 user.
     Please note that password is not stored in the pgAdmin database."
+    "OAUTH2_ADDITIONAL_CLAIMS", "The additional claims to check on the openid ID token. 
+    If the value is provided, and the user ID token does not have any match, it will get an authoziation error.
+    Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
 
 Redirect URL
 ============
