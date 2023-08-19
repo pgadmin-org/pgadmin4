@@ -153,7 +153,9 @@ class OAuth2Authentication(BaseAuthentication):
         if self.oauth2_config[
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']:
-            allowed = self.__is_authorized_based_on_additional_claims(profile)
+            allowed = self.__is_authorized_additional_claims(profile,
+                self.oauth2_config[self.oauth2_current_client]
+                ['OAUTH2_ADDITIONAL_CLAIMS'])
             if not allowed:
                 return_msg = "Your user it's not authorized to access" \
                     " PgAdmin based on your claims in your ID Token. " \
@@ -217,9 +219,10 @@ class OAuth2Authentication(BaseAuthentication):
 
         return True, {'username': username}
 
-    def __is_authorized_based_on_additional_claims(self, profile: dict) -> bool:
-        for key in self.oauth2_config[self.oauth2_current_client]['OAUTH2_ADDITIONAL_CLAIMS'].keys():
-            value = profile.get(key)
-            if value is not None:
+    def __is_authorized_additional_claims(self, profile, additional_claims):
+        for key in additional_claims.keys():
+            claim = profile.get(key)
+            authorized_claims = additional_claims[key]
+            if any(item in authorized_claims for item in claim):
                 return True
         return False
