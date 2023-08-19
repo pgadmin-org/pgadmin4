@@ -222,7 +222,7 @@ class OAuth2Authentication(BaseAuthentication):
     def __is_authorized_additional_claims(self, profile, additional_claims):
         for key in additional_claims.keys():
             claim = profile.get(key)
-            authorized_claims = additional_claims[key]
+            authorized_claims = additional_claims.get(key)
             if any(item in authorized_claims for item in claim):
                 return True
         return False
