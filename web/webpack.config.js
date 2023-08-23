@@ -581,7 +581,6 @@ module.exports = [{
             plugins: [
               ['mozjpeg', { progressive: true }],
               ['optipng', { optimizationLevel: 7 }],
-              ['pngquant', {quality: [0.75, .9], speed: 3}],
             ],
           },
         },
