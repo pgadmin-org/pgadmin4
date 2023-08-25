@@ -20,6 +20,7 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #4805 <https://github.com/pgadmin-org/pgadmin4/issues/4805>`_ -  Added all the new options of the 'WITH' clause in the subscription dialog.
 
 Housekeeping
 ************
