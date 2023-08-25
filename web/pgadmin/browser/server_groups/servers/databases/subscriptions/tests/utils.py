@@ -20,16 +20,6 @@ with open(CURRENT_PATH + "/subscription_test_data.json") as data_file:
     test_cases = json.load(data_file)
 
 
-def get_tables(self):
-    tables = self.tester.get(
-        '/browser/subscription/get_tables/' + str(
-            utils.SERVER_GROUP) + '/' + str(
-            self.server_id) + '/' +
-        str(self.db_id) + '/',
-        content_type='html/json')
-    return [tables.json['data'][1]['value']]
-
-
 def create_subscription_api(self):
     return self.tester.post(
         self.url + str(utils.SERVER_GROUP) + '/' +
