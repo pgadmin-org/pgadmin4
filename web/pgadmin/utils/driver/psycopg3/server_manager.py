@@ -539,6 +539,8 @@ WHERE db.oid = {0}""".format(did))
                 if not crypt_key_present:
                     return False, crypt_key
                 password = decrypt(self.password, crypt_key).decode()
+            elif hasattr(self.password, 'decode'):
+                password = self.password.decode('utf-8')
             else:
                 password = self.password
 

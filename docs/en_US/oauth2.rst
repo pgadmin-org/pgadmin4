@@ -51,7 +51,9 @@ and modify the values for the following parameters:
 Redirect URL
 ============
 
-The redirect url to configure Oauth2 server is *http://<pgAdmin Server URL>/oauth2/authorize*
+The redirect url to configure Oauth2 server is *<http/https>://<pgAdmin Server URL>/oauth2/authorize*
+After successful application authorization, the authorization server will redirect the user back to the pgAdmin url
+specified here. Select https scheme if your pgAdmin server serves over https protocol otherwise select http.
 
 Master Password
 ===============

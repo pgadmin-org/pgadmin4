@@ -43,7 +43,6 @@
     "imagemin": "^8.0.1",
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-optipng": "^8.0.0",
-    "imagemin-pngquant": "^9.0.2",
     "imports-loader": "^4.0.1",
     "is-docker": "^2.1.1",
     "istanbul-instrumenter-loader": "^3.0.1",

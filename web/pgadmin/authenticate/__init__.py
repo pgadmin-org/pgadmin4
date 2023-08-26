@@ -18,15 +18,15 @@ from flask import current_app, flash, Response, request, url_for, \
     session, redirect, render_template
 from flask_babel import gettext
 from flask_security.views import _security, _ctx
-from flask_security.utils import get_post_logout_redirect, logout_user,\
-    config_value
+from flask_security.utils import logout_user, config_value
 
 from flask_login import current_user
 from flask_socketio import disconnect, ConnectionRefusedError
 
 
 from pgadmin.model import db, User
-from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
+from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
+    get_safe_post_logout_redirect
 from pgadmin.utils.constants import KERBEROS, INTERNAL, OAUTH2, LDAP,\
     MessageType
 from pgadmin.authenticate.registry import AuthSourceRegistry
@@ -135,7 +135,7 @@ def _login():
                           'Administrator.'),
                   MessageType.WARNING)
             logout_user()
-            return redirect(get_post_logout_redirect())
+            return redirect(get_safe_post_logout_redirect())
 
     # Validate the user
     if not auth_obj.validate():
@@ -161,7 +161,7 @@ def _login():
                     flash_login_attempt_error = None
                 flash(error, MessageType.WARNING)
 
-        return redirect(get_post_logout_redirect())
+        return redirect(get_safe_post_logout_redirect())
 
     # Authenticate the user
     status, msg = auth_obj.authenticate()
@@ -177,7 +177,7 @@ def _login():
                     'authenticate.kerberos_login'), url_for('browser.index')))
 
             flash(msg, MessageType.ERROR)
-            return redirect(get_post_logout_redirect())
+            return redirect(get_safe_post_logout_redirect())
 
         session['auth_source_manager'] = current_auth_obj
 

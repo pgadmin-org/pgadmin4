@@ -16,13 +16,14 @@ from flask import current_app, url_for, session, request,\
     redirect, Flask, flash
 from flask_babel import gettext
 from flask_security import login_user, current_user
-from flask_security.utils import get_post_logout_redirect, logout_user
+from flask_security.utils import logout_user
 
 from pgadmin.authenticate.internal import BaseAuthentication
 from pgadmin.model import User
 from pgadmin.tools.user_management import create_user
 from pgadmin.utils.constants import OAUTH2, MessageType
-from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect
+from pgadmin.utils import PgAdminModule, get_safe_post_login_redirect, \
+    get_safe_post_logout_redirect
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.model import db
 
@@ -69,11 +70,11 @@ def init_app(app):
     @pgCSRFProtect.exempt
     def oauth_logout():
         if not current_user.is_authenticated:
-            return redirect(get_post_logout_redirect())
+            return redirect(get_safe_post_logout_redirect())
         for key in list(session.keys()):
             session.pop(key)
         logout_user()
-        return redirect(get_post_logout_redirect())
+        return redirect(get_safe_post_logout_redirect())
 
     app.register_blueprint(blueprint)
     app.login_manager.logout_view = OAUTH2_LOGOUT
