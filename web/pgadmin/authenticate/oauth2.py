@@ -150,12 +150,13 @@ class OAuth2Authentication(BaseAuthentication):
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
 
-        if self.oauth2_config[
+        if self.oauth2_config[self.oauth2_current_client][
+           'OAUTH2_ADDITIONAL_CLAIMS']:
+            additinal_claims = self.oauth2_config[
                 self.oauth2_current_client
-            ]['OAUTH2_ADDITIONAL_CLAIMS']:
+            ]['OAUTH2_ADDITIONAL_CLAIMS']
             allowed = self.__is_authorized_additional_claims(profile,
-                self.oauth2_config[self.oauth2_current_client]
-                ['OAUTH2_ADDITIONAL_CLAIMS'])
+                                                             additinal_claims)
             if not allowed:
                 return_msg = "Your user it's not authorized to access" \
                     " PgAdmin based on your claims in your ID Token. " \
