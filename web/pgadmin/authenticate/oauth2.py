@@ -151,21 +151,25 @@ class OAuth2Authentication(BaseAuthentication):
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
 
-        if self.oauth2_config[self.oauth2_current_client][
-           'OAUTH2_ADDITIONAL_CLAIMS']:
+        additinal_claims = None
+        if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
+                self.oauth2_current_client]:
             additinal_claims = self.oauth2_config[
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
-            allowed = self.__is_authorized_additional_claims(profile,
-                                                             additinal_claims)
-            if not allowed:
-                return_msg = "Your user it's not authorized to access" \
-                    " PgAdmin based on your claims in your ID Token. " \
-                    " Please contact your administrator."
-                audit_msg = f"The authenticated user {username} is not" \
-                    " authorized to access pgAdmin based on OAUTH2 config."
-                current_app.logger.warning(audit_msg)
-                return False, gettext(return_msg)
+
+        (valid, reason) = self.__is_additional_claims_valid(profile,
+                                                            additinal_claims)
+
+        if not valid:
+            return_msg = "Your user it's not authorized to access" \
+                " PgAdmin based on your claims in your profile. " \
+                " Please contact your administrator."
+            audit_msg = f"The authenticated user {username} is not" \
+                " authorized to access pgAdmin based on OAUTH2 config. " \
+                f"Reason: {reason}"
+            current_app.logger.warning(audit_msg)
+            return False, return_msg
 
         user, msg = self.__auto_create_user(username, email)
         if user:
@@ -221,10 +225,23 @@ class OAuth2Authentication(BaseAuthentication):
 
         return True, {'username': username}
 
-    def __is_authorized_additional_claims(self, profile, additional_claims):
+    def __is_additional_claims_valid(self, profile, additional_claims):
+        if additional_claims is None:
+            reason = "Additional claim config is None, no check to do."
+            return (True, reason)
+        if not isinstance(additional_claims, dict):
+            reason = "Additional claim check config is not a dict."
+            return (False, reason)
+        if additional_claims.keys() is None:
+            reason = "Additional claim check config dict is empty."
+            return (False, reason)
         for key in additional_claims.keys():
             claim = profile.get(key)
+            if claim is None:
+                continue
             authorized_claims = additional_claims.get(key)
             if any(item in authorized_claims for item in claim):
-                return True
-        return False
+                reason = "Claim match found. Authorizing"
+                return (True, reason)
+        reason = f"Profile does not have any of given additional claims."
+        return (False, reason)
