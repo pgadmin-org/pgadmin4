@@ -43,8 +43,7 @@ and modify the values for the following parameters:
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Oauth2 user.
     Please note that password is not stored in the pgAdmin database."
-    "OAUTH2_ADDITIONAL_CLAIMS", "The additional claims to check on the openid ID token. 
-    If the value is provided, and the user ID Token has any of the given values, the login flow will continue.
+    "OAUTH2_ADDITIONAL_CLAIMS", "If a dictonary is provided, pgAdmin will check for a matching key and value on the user ID Token.
     In case the ID token does not have any match, the user will receive an authorization error.
     Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
 
