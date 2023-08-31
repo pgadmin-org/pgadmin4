@@ -26,8 +26,8 @@ CALL :CLEAN || EXIT /B 1
 CALL :CREATE_VIRTUAL_ENV || EXIT /B 1
 CALL :CREATE_PYTHON_ENV || EXIT /B 1
 CALL :CREATE_RUNTIME_ENV || EXIT /B 1
-CALL :CREATE_INSTALLER || EXIT /B 1
 CALL :GENERATE_SBOM || EXIT /B 1
+CALL :CREATE_INSTALLER || EXIT /B 1
 CALL :SIGN_INSTALLER || EXIT /B 1
 
 EXIT /B %ERRORLEVEL%
@@ -364,7 +364,7 @@ REM Main build sequence Ends
 
 :GENERATE_SBOM
     ECHO Generating SBOM...
-    syft "%BUILDROOT%\" -o cyclonedx-json > "%BUILDROOT%\sbom.json"
+    CALL syft "%BUILDROOT%" -o cyclonedx-json > "%BUILDROOT%\sbom.json"
 
 :SIGN_INSTALLER
     ECHO Attempting to sign the installer...
