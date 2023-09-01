@@ -7,6 +7,7 @@
       "sql_endpoint": "NODE-database.sql_id",
       "msql_endpoint": "NODE-database.msql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
       "data": {
         "deffuncacl": {
           "deleted": [
@@ -34,6 +35,7 @@
       "endpoint": "NODE-database.obj_id",
       "sql_endpoint": "NODE-database.sql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
       "data": {
         "deftblacl": {
           "deleted": [
@@ -71,6 +73,7 @@
       "sql_endpoint": "NODE-database.sql_id",
       "msql_endpoint": "NODE-database.msql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
       "data": {
         "defseqacl": {
           "deleted": [
@@ -102,6 +105,7 @@
       "endpoint": "NODE-database.obj_id",
       "sql_endpoint": "NODE-database.sql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
       "data": {
         "deftypeacl": {
           "deleted": [
@@ -129,6 +133,7 @@
       "endpoint": "NODE-database.obj_id",
       "sql_endpoint": "NODE-database.sql_id",
       "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
       "data": {
         "deffuncacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
         "deftypeacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}]},

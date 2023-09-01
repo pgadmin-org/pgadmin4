@@ -61,6 +61,7 @@ export default class DatabaseSchema extends BaseUISchema {
       char_type: undefined,
       datconnlimit: -1,
       datallowconn: undefined,
+      datlocaleprovider: 'libc',
       variables: [],
       privileges: [],
       securities: [],
@@ -82,6 +83,7 @@ export default class DatabaseSchema extends BaseUISchema {
       spcname: [],
       datcollate: [],
       datctype: [],
+      daticulocale: [],
       ...fieldOptions,
     };
   }
@@ -100,6 +102,9 @@ export default class DatabaseSchema extends BaseUISchema {
         id: 'did', label: gettext('OID'), cell: 'text', mode: ['properties'],
         editable: false, type: 'text',
       },{
+        id: 'datoid', label: gettext('OID'), mode: ['create'], type: 'int',
+        min: 16384, min_version: 150000
+      }, {
         id: 'datowner', label: gettext('Owner'),
         editable: false, type: 'select', options: this.fieldOptions.role,
         controlProps: { allowClear: false }, isCollectionProperty: true,
@@ -126,16 +131,89 @@ export default class DatabaseSchema extends BaseUISchema {
         options: this.fieldOptions.spcname,
         controlProps: { allowClear: false },
       },{
+        id: 'datstrategy', label: gettext('Strategy'),
+        editable: false, type: 'select', group: gettext('Definition'),
+        readonly: function(state) {return !obj.isNew(state); },
+        mode: ['create'],
+        options: [{
+          label: gettext('WAL Log'),
+          value: 'wal_log',
+        }, {
+          label: gettext('File Copy'),
+          value: 'file_copy',
+        }],
+        min_version: 150000
+      }, {
+        id: 'datlocaleprovider', label: gettext('Locale Provider'),
+        editable: false, type: 'select', group: gettext('Definition'),
+        readonly: function(state) {return !obj.isNew(state); },
+        controlProps: { allowClear: false },
+        options: [{
+          label: gettext('icu'),
+          value: 'icu',
+        }, {
+          label: gettext('libc'),
+          value: 'libc',
+        }],
+        min_version: 150000
+      },{
         id: 'datcollate', label: gettext('Collation'),
         editable: false, type: 'select', group: gettext('Definition'),
         readonly: function(state) {return !obj.isNew(state); },
         options: this.fieldOptions.datcollate,
+        deps: ['datlocaleprovider'],
+        depChange: (state)=>{
+          if (state.datlocaleprovider !== 'libc')
+            return { datcollate: '' };
+        },
+        disabled: function(state) {
+          return state.datlocaleprovider !== 'libc';
+        },
       },{
         id: 'datctype', label: gettext('Character type'),
         editable: false, type: 'select', group: gettext('Definition'),
         readonly: function(state) {return !obj.isNew(state); },
         options: this.fieldOptions.datctype,
+        deps: ['datlocaleprovider'],
+        depChange: (state)=>{
+          if (state.datlocaleprovider !== 'libc')
+            return { datctype: '' };
+        },
+        disabled: function(state) {
+          return state.datlocaleprovider !== 'libc';
+        },
       },{
+        id: 'daticulocale', label: gettext('ICU Locale'),
+        editable: false, type: 'select', group: gettext('Definition'),
+        readonly: function(state) {return !obj.isNew(state); },
+        options: this.fieldOptions.daticulocale,
+        deps: ['datlocaleprovider'],
+        depChange: (state)=>{
+          if (state.datlocaleprovider !== 'icu')
+            return { daticulocale: '' };
+        },
+        disabled: function(state) {
+          return state.datlocaleprovider !== 'icu';
+        },
+        min_version: 150000
+      }, {
+        id: 'datcollversion', label: gettext('Collation Version'),
+        editable: false, type: 'text', group: gettext('Definition'),
+        mode: ['properties'], min_version: 150000
+      }, {
+        id: 'daticurules', label: gettext('ICU Rules'),
+        editable: false, type: 'text', group: gettext('Definition'),
+        readonly: function(state) {return !obj.isNew(state); },
+        deps: ['datlocaleprovider'],
+        depChange: (state)=>{
+          if (state.datlocaleprovider !== 'icu')
+            return { daticurules: '' };
+        },
+        disabled: function(state) {
+          return state.datlocaleprovider !== 'icu';
+        },
+        min_version: 160000
+      }, {
         id: 'datconnlimit', label: gettext('Connection limit'),
         editable: false, type: 'int', group: gettext('Definition'),
         min: -1,

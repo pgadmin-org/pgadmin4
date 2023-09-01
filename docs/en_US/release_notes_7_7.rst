@@ -21,10 +21,12 @@ New features
 ************
 
   | `Issue #4805 <https://github.com/pgadmin-org/pgadmin4/issues/4805>`_ -  Added all the new options of the 'WITH' clause in the subscription dialog.
+  | `Issue #6383 <https://github.com/pgadmin-org/pgadmin4/issues/6383>`_ -  Added Strategy, Locale Provider, ICU Locale, ICU Rules, and OID options while creating a database.
 
 Housekeeping
 ************
 
+  | `Issue #2411 <https://github.com/pgadmin-org/pgadmin4/issues/2411>`_ -  Added the 'data type' column in the properties tab of the Columns collection node.
 
 Bug fixes
 *********
