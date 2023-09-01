@@ -14,12 +14,17 @@ import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
 import Theme from '../../../pgadmin/static/js/Theme';
+// import MockAdapter from 'axios-mock-adapter';
+// import axios from 'axios/index';
 
 
 describe('BackupSchema', ()=>{
   let mount;
   beforeAll(()=>{
     mount = createMount();
+    // networkMock = new MockAdapter(axios);
+    // networkMock.onPost(`backup/objects/1/2`).reply(200, {data: {
+    //   "success": 200, "errormsg": "", "info": "", "result": null,"data": [{"id": "public","name": "public","icon": "icon-schema", "children": [{"id": "public_table","name": "table","icon": "icon-coll-table","children": [{"id": "public_test","name": "test","icon": "icon-table","schema": "public","type": "table","_name": "public.test"}],"type": "table","is_collection": true}],"is_schema": true}]}});
   });
 
   afterAll(() => {
@@ -37,7 +42,8 @@ describe('BackupSchema', ()=>{
     },
     {server: {version: 11000}},
     pgAdmin.pgBrowser,
-    'backup_objects'
+    'backup_objects',
+    []
   );
 
   it('create object backup', ()=>{
@@ -45,6 +51,43 @@ describe('BackupSchema', ()=>{
       <SchemaView
         formType='dialog'
         schema={backupSchemaObj}
+        viewHelperProps={{
+          mode: 'create',
+        }}
+        onSave={()=>{/*This is intentional (SonarQube)*/}}
+        onClose={()=>{/*This is intentional (SonarQube)*/}}
+        onHelp={()=>{/*This is intentional (SonarQube)*/}}
+        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+        confirmOnCloseReset={false}
+        hasSQL={false}
+        disableSqlHelp={false}
+        disableDialogHelp={false}
+      />
+    </Theme>);
+  });
+
+
+  let backupSelectedSchemaObj = new BackupSchema(
+    ()=> getSectionSchema(),
+    ()=> getTypeObjSchema(),
+    ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
+    ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
+    ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
+    {
+      role: ()=>[],
+      encoding: ()=>[],
+    },
+    {server: {version: 11000}},
+    pgAdmin.pgBrowser,
+    'backup_objects',
+    [{'id': 'public','name': 'public','icon': 'icon-schema', 'children': [{'id': 'public_table','name': 'table','icon': 'icon-coll-table','children': [{'id': 'public_test','name': 'test','icon': 'icon-table','schema': 'public','type': 'table','_name': 'public.test'}],'type': 'table','is_collection': true}],'is_schema': true}]
+  );
+
+  it('create selected object backup', ()=>{
+    mount(<Theme>
+      <SchemaView
+        formType='dialog'
+        schema={backupSelectedSchemaObj}
         viewHelperProps={{
           mode: 'create',
         }}
@@ -73,7 +116,8 @@ describe('BackupSchema', ()=>{
     },
     {server: {version: 11000}},
     {serverInfo: {}},
-    'server'
+    'server',
+    []
   );
 
   it('create server backup', ()=>{

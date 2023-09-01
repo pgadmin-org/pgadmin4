@@ -854,7 +854,6 @@ def start_query_tool(trans_id):
     Args:
         trans_id: unique transaction id
     """
-
     sql = extract_sql_from_network_parameters(
         request.data, request.args, request.form
     )

@@ -46,7 +46,6 @@ db = SQLAlchemy(
         'pool_size': config.CONFIG_DATABASE_CONNECTION_POOL_SIZE,
         'max_overflow': config.CONFIG_DATABASE_CONNECTION_MAX_OVERFLOW})
 
-
 USER_ID = 'user.id'
 SERVER_ID = 'server.id'
 

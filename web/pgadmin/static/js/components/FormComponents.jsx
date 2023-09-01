@@ -43,8 +43,7 @@ import SelectThemes from './SelectThemes';
 import { showFileManager } from '../helpers/showFileManager';
 import { withColorPicker } from '../helpers/withColorPicker';
 import { useWindowSize } from '../custom_hooks';
-import { SelectedObjectSchema } from '../../../tools/backup/static/selectedObjectSchema';
-import { PgTree } from '../pgTree/tree';
+import { PgTreeView } from './TreeView';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -1278,12 +1277,15 @@ FormButton.propTypes = {
   btnName: PropTypes.string
 };
 
-export function FormTree({tree_type, value, ...props}){
-  // return <SelectedObjectSchema></SelectedObjectSchema>
-  return <PgTree data={value} type={tree_type} {...props}></PgTree>
+export function FormInputTree({hasCheckbox, treeData, onChange, ...props}){
+  return <PgTreeView data={treeData} hasCheckbox={hasCheckbox} selectionChange={onChange} isResetSelection={!('objects' in props.state)} {...props}></PgTreeView>;
 }
 
-FormTree.propTypes = {
-  tree_type: PropTypes.string,
-  data: PropTypes.object,
+FormInputTree.propTypes = {
+  hasCheckbox: PropTypes.bool,
+  treeData: PropTypes.array,
+  onChange: PropTypes.func,
+  selectionChange: PropTypes.func,
+  isResetSelection: PropTypes.bool,
+  state: PropTypes.object
 };

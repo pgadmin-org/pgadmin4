@@ -1,0 +1,3 @@
+export const TREE_EVENTS = {
+  GET_SELECTED_NODES: 'GET_SELECTED_NODES',
+};

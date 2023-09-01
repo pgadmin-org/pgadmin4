@@ -12,7 +12,7 @@ import _ from 'lodash';
 import {
   FormInputText, FormInputSelect, FormInputSwitch, FormInputCheckbox, FormInputColor,
   FormInputFileSelect, FormInputToggle, InputSwitch, FormInputSQL, InputSQL, FormNote, FormInputDateTimePicker, PlainString,
-  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio, FormButton, FormTree
+  InputSelect, InputText, InputCheckbox, InputDateTimePicker, InputFileSelect, FormInputKeyboardShortcut, FormInputQueryThreshold, FormInputSelectThemes, InputRadio, FormButton, FormInputTree
 } from '../components/FormComponents';
 import Privilege from '../components/Privilege';
 import { evalFunc } from 'sources/utils';
@@ -34,6 +34,10 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   const onSqlChange = useCallback((changedValue) => {
     onChange && onChange(changedValue);
   }, []);
+
+  const onTreeSelection = useCallback((selectedValues)=> {
+    onChange && onChange(selectedValues);
+  });
 
   if (!visible) {
     return <></>;
@@ -90,7 +94,7 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   case 'button':
     return <FormButton name={name} value={value} className={className} onClick={onClick}  {...props} />;
   case 'tree':
-      return <FormTree name={name} value={value} {...props}/>;
+    return <FormInputTree name={name} treeData={props.treeData} onChange={onTreeSelection} {...props}/>;
   default:
     return <PlainString value={value} {...props} />;
   }
@@ -111,7 +115,8 @@ MappedFormControlBase.propTypes = {
   noLabel: PropTypes.bool,
   onClick: PropTypes.func,
   withContainer: PropTypes.bool,
-  controlGridBasis: PropTypes.number
+  controlGridBasis: PropTypes.number,
+  treeData: PropTypes.object,
 };
 
 /* Control mapping for grid cell view */
@@ -207,7 +212,7 @@ const ALLOWED_PROPS_FIELD_COMMON = [
   'label', 'options', 'optionsLoaded', 'controlProps', 'schema', 'inputRef',
   'visible', 'autoFocus', 'helpMessage', 'className', 'optionsReloadBasis',
   'orientation', 'isvalidate', 'fields', 'radioType', 'hideBrowseButton', 'btnName', 'hidden',
-  'withContainer', 'controlGridBasis', 'tree_type'
+  'withContainer', 'controlGridBasis', 'hasCheckbox', 'treeData'
 ];
 
 const ALLOWED_PROPS_FIELD_FORM = [

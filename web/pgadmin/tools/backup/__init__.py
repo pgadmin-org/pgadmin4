@@ -10,6 +10,7 @@
 
 import json
 import os
+import copy
 import functools
 import operator
 
@@ -357,6 +358,19 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             data.get('tables', [])), []
         )
     )
+    b = []
+    if 'objects' in data:
+        selectedObjects = data.get('objects', {})
+        for _key in selectedObjects:
+            param = 'schema' if _key == 'schema' else 'table'
+            args.extend(
+                functools.reduce(operator.iconcat, map(
+                    lambda s: [f'--{param}',
+                               r'{0}'.format(s['_name']if type(s) is dict else s)],
+                    selectedObjects[_key] or []), [])
+            )
+
+    print(b)
 
     return args
 
@@ -563,93 +577,57 @@ def objects(sid, did, scid=None):
             server_info['version'])
 
     res, msg = get_data(sid, did, scid, 'schema' if scid else 'database', server_info)
-    print(f'DATA::: {res} and msg is {msg}')
 
-    #
-    #
-    #
-    #
-    #
-    # manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
-    #
-    #
-    #
-    # conn = manager.connection(did=did)
-    #
-    #
-    # sql, ntype = get_node_sql_with_type(node_id, node_type, server_prop,
-    #                                     get_schema_sql_url, show_sysobj)
-    # get_node_sql_with_type
-    #
-    #
-    # _get_rows_for_type(conn, 'table', server_info, node_id)
+    tree_data = {
+        'table': [],
+        'view': [],
+        'mview': [],
+        'foreign_table': [],
+        'sequence': []
+    }
 
+    schema_group = {}
 
+    for data in res:
+        obj_type = data['object_type'].lower()
+        if obj_type in ['table', 'view', 'mview', 'foreign_table', 'sequence']:
 
+            if data['nspname'] not in schema_group:
+                schema_group[data['nspname']] = {
+                    'id': data['nspname'],
+                    'name': data['nspname'],
+                    'icon': 'icon-schema',
+                    'children': copy.deepcopy(tree_data),
+                    'is_schema': True,
+                }
 
-    # all_nodes = SchemaDiffRegistry.get_registered_nodes()
-    # # view = ViewNode()
-    # # mview = MViewNode()
-    # for node_name, node_view in all_nodes.items():
-    #     if node_name in ['table', 'view', 'mview', 'foreign_table', 'sequence']:
-    #         print(node_name)
+            schema_group[data['nspname']]['children'][obj_type].append({
+                'id': f'{data["nspname"]}_{data["name"]}',
+                'name': data['name'],
+                'icon': data['icon'],
+                'schema': data['nspname'],
+                'type': obj_type,
+                '_name': '{0}.{1}'.format(data['nspname'], data['name'])
+                })
 
+    schema_group = [dt for k, dt in schema_group.items()]
+    for ch in schema_group:
+        children = []
+        for obj_type, data in ch['children'].items():
+            if data:
+                children.append({
+                    'id': f'{ch["id"]}_{obj_type}',
+                    'name': obj_type,
+                    'icon': 'icon-coll-'+obj_type.lower(),
+                    'children': data,
+                    'type': obj_type,
+                    'is_collection': True,
+                })
 
-    data = [
-        {
-          'id': "1",
-          'name': "Public",
-          'children': [
-            {
-                'id': "2",
-                'name': "Tables",
-                'children': [
-                    {
-                        'id': "21",
-                        'name': "Table 1",
-                    },
-                    {
-                        'id': "22",
-                        'name': 'Table 2'
-                    }
-                ]
-            },
-            {
-                'id': "3",
-                'name': "Views",
-                'children': [
-                    {
-                        'id': "31",
-                        'name': "View 1",
-                    },
-                    {
-                        'id': "32",
-                        'name': 'View 2'
-                    }
-                ]
-            },
-            {
-                'id': "4",
-                'name': "Sequences",
-                'children': [
-                    {
-                        'id': "41",
-                        'name': "Sequence 1",
-                    },
-                    {
-                        'id': "42",
-                        'name': 'Sequence 2'
-                    }
-                ]
-            },
-          ],
-        },
-      ]
+        ch['children'] = children
 
-
-    # data = {'tables': [], 'views': []}
-
+    print("schema_group", schema_group)
     return make_json_response(
-        data=data,
+        data=schema_group,
         success=200
     )

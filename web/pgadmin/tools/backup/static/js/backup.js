@@ -182,6 +182,7 @@ define([
           gettext(data.errormsg)
         );
       } else {
+
         pgBrowser.BgProcessManager.startProcess(data.data.job_id, data.data.desc);
       }
     },
@@ -212,8 +213,8 @@ define([
       }
     },
     showSelectedObjeBackup: function() {
-      Notify.showModal(gettext('Backup selected objects'), (closeModal) => {
-          return <SelectedObjectSchema />
+      Notify.showModal(gettext('Backup selected objects'), () => {
+        return <SelectedObjectSchema />;
       }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: 550, dialogHeight: 550 });
     },
     // Callback to draw Backup Dialog for objects
@@ -246,21 +247,21 @@ define([
 
         let backup_obj_url = '';
         if (data._type == 'database') {
-          let endpoint = 'backup.objects'
+          let endpoint = 'backup.objects';
           let did = data._id;
           backup_obj_url = url_for(endpoint, {
             'sid': sid,
             'did': did
-          })
+          });
         } else if(data._type == 'schema') {
-          let endpoint = 'backup.schema_objects'
+          let endpoint = 'backup.schema_objects';
           let did = data._pid;
           let scid = data._id;
           backup_obj_url = url_for(endpoint, {
             'sid': sid,
             'did': did,
             'scid': scid
-          })
+          });
         }
 
         api({
@@ -277,7 +278,7 @@ define([
             extraData = that.setExtraParameters(typeOfDialog);
 
           that.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
-        })
+        });
 
       });
     },
