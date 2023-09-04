@@ -193,6 +193,10 @@ class DatabaseView(PGChildNodeView):
             {'get': 'get_ctypes'},
             {'get': 'get_ctypes'}
         ],
+        'get_icu_locale': [
+            {'get': 'get_icu_locale'},
+            {'get': 'get_icu_locale'}
+        ],
         'vopts': [
             {}, {'get': 'variable_options'}
         ],
@@ -634,7 +638,7 @@ class DatabaseView(PGChildNodeView):
         """
         This function to return list of available collation/character types
         """
-        res = [{'label': '', 'value': ''}]
+        res = []
         default_list = ['C', 'POSIX']
         for val in default_list:
             res.append(
@@ -650,6 +654,28 @@ class DatabaseView(PGChildNodeView):
         for row in rset['rows']:
             if row['cname'] not in default_list:
                 res.append({'label': row['cname'], 'value': row['cname']})
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition(action="get_icu_locale")
+    def get_icu_locale(self, gid, sid, did=None):
+        """
+        This function is used to get the list of icu locale
+        """
+        res = []
+        SQL = render_template(
+            "/".join([self.template_path, 'get_icu_locale.sql'])
+        )
+        status, rset = self.conn.execute_dict(SQL)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        for row in rset['rows']:
+            res.append(
+                {'label': row['colliculocale'], 'value': row['colliculocale']})
 
         return make_json_response(
             data=res,
@@ -1230,6 +1256,12 @@ class DatabaseView(PGChildNodeView):
             did=did, conn=conn, last_system_oid=0,
             show_system_objects=False,
         )
+
+        # try to connect the db if not connected
+        # don't delete the below code as it is needed for Database RESQL tests.
+        if not conn.connected():
+            conn.connect()
+
         status, res = conn.execute_dict(SQL)
 
         if not status:

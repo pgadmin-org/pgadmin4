@@ -6,8 +6,8 @@ CREATE DATABASE <TEST_DB_NAME>
     WITH
     OWNER = enterprisedb
     ENCODING = 'UTF8'
-    LC_COLLATE = 'C'
-    LC_CTYPE = 'C'
+    LC_COLLATE = '<LC_COLLATE>'
+    LC_CTYPE = '<LC_CTYPE>'
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1
     IS_TEMPLATE = False;
