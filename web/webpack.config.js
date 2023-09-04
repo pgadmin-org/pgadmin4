@@ -480,6 +480,7 @@ module.exports = [{
             'pure|pgadmin.node.user_mapping',
             'pure|pgadmin.node.schema',
             'pure|pgadmin.node.catalog',
+            'pure|pgadmin.node.foreign_table_column',
             'pure|pgadmin.node.catalog_object',
             'pure|pgadmin.node.collation',
             'pure|pgadmin.node.domain',

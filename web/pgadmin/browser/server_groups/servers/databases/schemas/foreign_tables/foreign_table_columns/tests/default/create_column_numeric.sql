@@ -1,0 +1,9 @@
+-- Column: public."foreign_table_2_$%{}[]()&*^!@""'`\/#"."col_1_$%{}[]()&*^!@""'`\/#"
+
+-- ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#" DROP COLUMN IF EXISTS "col_1_$%{}[]()&*^!@""'`\/#";
+
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN "col_1_$%{}[]()&*^!@""'`\/#" numeric(10,5) NOT NULL DEFAULT 1;
+
+COMMENT ON COLUMN public."foreign_table_2_$%{}[]()&*^!@""'`\/#"."col_1_$%{}[]()&*^!@""'`\/#"
+    IS 'Comment for create';

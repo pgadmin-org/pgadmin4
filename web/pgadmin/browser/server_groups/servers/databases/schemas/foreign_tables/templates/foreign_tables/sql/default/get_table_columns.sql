@@ -1,6 +1,6 @@
 {% if attrelid  %}
 SELECT
-    a.attname, pg_catalog.format_type(a.atttypid, NULL) AS datatype,
+    a.attname as name, pg_catalog.format_type(a.atttypid, NULL) AS cltype,
     pg_catalog.quote_ident(n.nspname)||'.'||quote_ident(c.relname) as inheritedfrom,
     c.oid as inheritedid
 FROM

@@ -10,11 +10,10 @@
 """Implements the Foreign Table Module."""
 
 import sys
-import traceback
 from functools import wraps
 
 import json
-from flask import render_template, make_response, request, jsonify, \
+from flask import render_template, request, jsonify, \
     current_app
 from flask_babel import gettext
 
@@ -29,10 +28,11 @@ from pgadmin.browser.server_groups.servers.utils import parse_priv_from_db, \
 from pgadmin.browser.utils import PGChildNodeView
 from pgadmin.utils.ajax import make_json_response, internal_server_error, \
     make_response as ajax_response, gone
-from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    columns import utils as column_utils
 
 
 class ForeignTableModule(SchemaChildModule):
@@ -87,6 +87,10 @@ class ForeignTableModule(SchemaChildModule):
         self.submodules.append(module)
         from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
             constraints import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas. \
+            foreign_tables.foreign_table_columns import \
+            foreign_table_column_blueprint as module
         self.submodules.append(module)
         super().register(app, options)
 
@@ -216,6 +220,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         'get_foreign_servers': [{'get': 'get_foreign_servers'},
                                 {'get': 'get_foreign_servers'}],
         'get_tables': [{'get': 'get_tables'}, {'get': 'get_tables'}],
+        'set_trigger': [{'put': 'enable_disable_triggers'}],
         'get_columns': [{'get': 'get_columns'}, {'get': 'get_columns'}],
         'select_sql': [{'get': 'select_sql'}],
         'insert_sql': [{'get': 'insert_sql'}],
@@ -451,7 +456,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     scid,
                     row['name'],
                     icon="icon-foreign_table",
-                    description=row['description']
+                    description=row['description'],
+                    tigger_count=row['triggercount'],
+                    has_enable_triggers=row['has_enable_triggers'],
                 ))
 
         return make_json_response(
@@ -1160,15 +1167,14 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         cols = []
         for c in columns:
-            if len(c) > 0:
-                if '[]' in c['datatype']:
-                    c['datatype'] = c['datatype'].replace('[]', '')
+            if len(c) > 0 and 'cltype' in c:
+                if '[]' in c['cltype']:
+                    c['cltype'] = c['cltype'].replace('[]', '')
                     c['isArrayType'] = True
                 else:
                     c['isArrayType'] = False
                 cols.append(c)
-
-        return cols
+        return cols if cols else columns
 
     def _fetch_properties(self, gid, sid, did, scid, foid, inherits=False, ):
         """
@@ -1238,17 +1244,43 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return False, internal_server_error(errormsg=cols)
 
-        self._get_datatype_precision(cols)
+        # Fetch length and precision data
+        for col in cols['rows']:
+            column_utils.fetch_length_precision(col)
+
+        self._get_edit_types(cols['rows'])
 
         if cols and 'rows' in cols:
             data['columns'] = cols['rows']
 
         # Get Inherited table names from their OID
         is_error, errmsg = self._get_inherited_table_name(data, inherits)
+
         if is_error:
             return False, internal_server_error(errormsg=errmsg)
 
         return True, data
+
+    def _get_edit_types(self, cols):
+        edit_types = {}
+        for col in cols:
+            edit_types[col['atttypid']] = []
+
+        if len(cols) > 0:
+            SQL = render_template("/".join([self.template_path,
+                                            'edit_mode_types_multi.sql']),
+                                  type_ids=",".join(map(lambda x: str(x),
+                                                        edit_types.keys())))
+            status, res = self.conn.execute_2darray(SQL)
+            for row in res['rows']:
+                edit_types[row['main_oid']] = sorted(row['edit_types'])
+
+            for column in cols:
+                edit_type_list = edit_types[column['atttypid']]
+                edit_type_list.append(column['fulltype'])
+                column['edit_types'] = sorted(edit_type_list)
+                column['cltype'] = \
+                    DataTypeReader.parse_type_name(column['cltype'])
 
     def _get_datatype_precision(self, cols):
         """
@@ -1262,11 +1294,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 substr = self.extract_type_length_precision(c)
                 typlen = substr.split(",")
                 if len(typlen) > 1:
-                    c['typlen'] = self.convert_typlen_to_int(typlen)
-                    c['precision'] = self.convert_precision_to_int(typlen)
+                    c['attlen'] = self.convert_typlen_to_int(typlen)
+                    c['attprecision'] = self.convert_precision_to_int(typlen)
                 else:
-                    c['typlen'] = self.convert_typlen_to_int(typlen)
-                    c['precision'] = None
+                    c['attlen'] = self.convert_typlen_to_int(typlen)
+                    c['attprecision'] = None
 
             # Get formatted Column Options
             if 'attfdwoptions' in c and c['attfdwoptions'] != '':
@@ -1393,7 +1425,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         columns = []
         for c in data['columns']:
-            columns.append(self.qtIdent(self.conn, c['attname']))
+            columns.append(self.qtIdent(self.conn, c['name']))
 
         if len(columns) > 0:
             columns = ", ".join(columns)
@@ -1434,7 +1466,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
                 values.append('?')
 
         if len(columns) > 0:
@@ -1475,7 +1507,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
 
         if len(columns) > 0:
             if len(columns) == 1:
@@ -1675,6 +1707,66 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             ForeignTableView._modify_options_data(data, tmp_ftoptions)
 
         data['ftoptions'] = tmp_ftoptions
+
+    @check_precondition
+    def enable_disable_triggers(self, gid, sid, did, scid, foid):
+        """
+        This function will enable/disable trigger(s) on the table object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           scid: Schema ID
+           tid: Table ID
+        """
+        # Below will decide if it's simple drop or drop with cascade call
+        data = request.form if request.form else json.loads(
+            request.data
+        )
+        # Convert str 'true' to boolean type
+        is_enable_trigger = data['is_enable_trigger']
+
+        try:
+            if foid is not None:
+                status, data = self._fetch_properties(
+                    gid, sid, did, scid, foid, inherits=True)
+                if not status:
+                    return data
+                elif not data:
+                    return gone(self.not_found_error_msg())
+
+            SQL = render_template(
+                "/".join([self.template_path, 'enable_disable_trigger.sql']),
+                data=data, is_enable_trigger=is_enable_trigger
+            )
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            SQL = render_template(
+                "/".join([self.template_path, 'get_enabled_triggers.sql']),
+                tid=foid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Trigger(s) have been disabled")
+                if is_enable_trigger == 'D'
+                else gettext("Trigger(s) have been enabled"),
+                data={
+                    'id': foid,
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
+                }
+            )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
 
 
 SchemaDiffRegistry(blueprint.node_type, ForeignTableView)

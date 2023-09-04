@@ -1,6 +1,8 @@
 SELECT
     c.oid, c.relname AS name, pg_catalog.pg_get_userbyid(relowner) AS owner,
-    ftoptions, nspname as basensp, description
+    ftoptions, nspname as basensp, description,
+    (SELECT count(*) FROM pg_catalog.pg_trigger WHERE tgrelid=c.oid AND tgisinternal = FALSE) AS triggercount,
+    (SELECT count(*) FROM pg_catalog.pg_trigger WHERE tgrelid=c.oid AND tgisinternal = FALSE AND tgenabled = 'O') AS has_enable_triggers
 FROM
     pg_catalog.pg_class c
 JOIN
