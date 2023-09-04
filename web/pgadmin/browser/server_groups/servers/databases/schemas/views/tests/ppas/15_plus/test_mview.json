@@ -254,6 +254,25 @@
       },
       "expected_sql_file": "alter_mview_remove_table_parameter.sql",
       "expected_msql_file": "alter_mview_remove_table_parameter_msql.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create Materialised Views with access method",
+      "endpoint": "NODE-mview.obj",
+      "sql_endpoint": "NODE-mview.sql_id",
+      "msql_endpoint": "NODE-mview.msql",
+      "data": {
+        "spcname": "pg_default",
+        "schema": "public",
+        "owner": "postgres",
+        "datacl": [],
+        "seclabels": [],
+        "name": "testmview_am_$%{}[]()&*^!/@`#",
+        "comment": "comment1",
+        "definition": "SELECT 1 AS col1",
+        "amname": "heap"
+      },
+      "expected_msql_file": "create_mview_with_am_msql.sql"
     }
   ]
 }

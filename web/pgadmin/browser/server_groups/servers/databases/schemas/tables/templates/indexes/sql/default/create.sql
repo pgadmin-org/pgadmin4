@@ -13,7 +13,7 @@ FIRST{% else %}LAST{% endif %}{% endif %}{% endif %}{% endfor %})
 FIRST{% else %}LAST{% endif %}{% endif %}{% endfor %})
 {% endif %}
 {% if data.fillfactor %}
-    WITH (FILLFACTOR={{data.fillfactor}})
+    WITH (fillfactor={{data.fillfactor}})
 {% endif %}{% if data.spcname %}
     TABLESPACE {{conn|qtIdent(data.spcname)}}{% endif %}{% if data.indconstraint %}
 

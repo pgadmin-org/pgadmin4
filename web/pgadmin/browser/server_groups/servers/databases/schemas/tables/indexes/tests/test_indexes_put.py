@@ -23,6 +23,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as indexes_utils
+from pgadmin.utils import server_utils
 
 
 class IndexesUpdateTestCase(BaseTestGenerator):
@@ -36,6 +37,16 @@ class IndexesUpdateTestCase(BaseTestGenerator):
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
         self.db_id = schema_info["db_id"]
+
+        if "server_min_version" in self.inventory_data:
+            server_con = server_utils.connect_server(self, self.server_id)
+            if not server_con["info"] == "Server connected.":
+                raise Exception("Could not connect to server to add "
+                                "partitioned table.")
+            if server_con["data"]["version"] < \
+                    self.inventory_data["server_min_version"]:
+                self.skipTest(self.inventory_data["skip_msg"])
+
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
         if not db_con['data']["connected"]:

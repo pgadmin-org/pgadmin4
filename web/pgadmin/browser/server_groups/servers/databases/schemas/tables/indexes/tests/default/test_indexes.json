@@ -187,31 +187,6 @@
       "expected_msql_file": "create_btree_expr_asc_null_last_msql.sql"
     },
     {
-      "type": "alter",
-      "name": "Alter index statistics of expression",
-      "endpoint": "NODE-index.obj_id",
-      "sql_endpoint": "NODE-index.sql_id",
-      "msql_endpoint": "NODE-index.msql_id",
-      "data": {
-        "name": "Idx3_$%{}[]()&*^!@\"'`\\/#",
-        "columns":{
-          "changed": [{
-          "is_exp": true,
-            "col_num": 2,
-          "colname":"lower(name)",
-          "collspcname":"pg_catalog.\"POSIX\"",
-          "op_class":"text_pattern_ops",
-          "sort_order":false,
-          "nulls":false,
-          "is_sort_nulls_applicable":true,
-            "statistics": 1000
-          }]
-        }
-      },
-      "expected_sql_file": "alter_expr_statistics.sql",
-      "expected_msql_file": "alter_expr_statistics_msql.sql"
-    },
-    {
       "type": "delete",
       "name": "Drop index",
       "endpoint": "NODE-index.delete_id",
