@@ -162,8 +162,8 @@ class OAuth2Authentication(BaseAuthentication):
                                                             additinal_claims)
 
         if not valid:
-            return_msg = "Your user it's not authorized to access" \
-                " PgAdmin based on your claims in your profile. " \
+            return_msg = "The user is not authorized to login" \
+                " based on the claims in the profile." \
                 " Please contact your administrator."
             audit_msg = f"The authenticated user {username} is not" \
                 " authorized to access pgAdmin based on OAUTH2 config. " \

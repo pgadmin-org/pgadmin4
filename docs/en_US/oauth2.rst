@@ -43,8 +43,8 @@ and modify the values for the following parameters:
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Oauth2 user.
     Please note that password is not stored in the pgAdmin database."
-    "OAUTH2_ADDITIONAL_CLAIMS", "If a dictonary is provided, pgAdmin will check for a matching key and value on the user profile.
-    In case the profile does not have any match with provided config, the user will receive an authorization error.
+    "OAUTH2_ADDITIONAL_CLAIMS", "If a dictionary is provided, pgAdmin will check for a matching key and value on the user profile.
+    In case the profile does not have any match with the provided config, the user will receive an authorization error.
     Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
 
 Redirect URL
