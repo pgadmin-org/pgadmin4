@@ -1,0 +1,363 @@
+{
+  "scenarios": [
+    {
+      "type": "alter",
+      "name": "Alert default priviliges for functions",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deffuncacl": {
+          "deleted": [
+            {
+              "grantor": "postgres",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "X",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_default_db_privileges_function.sql",
+      "expected_msql_file": "alter_default_db_privileges_function_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges for tables",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deftblacl": {
+          "deleted": [
+            {
+              "grantor": "postgres",
+              "grantee": "postgres",
+              "privileges": [
+                {"privilege_type":"D","privilege":true,"with_grant":false},
+                {"privilege_type":"w","privilege":true,"with_grant":false}
+              ],
+              "acltype": "deftblacl"
+            }
+          ],
+          "added": [
+            {
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "r",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "grantor": "postgres"
+            }
+          ]
+        }
+      },
+      "expected_sql_file": "alter_default_db_privileges_tables.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges for sequences",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "defseqacl": {
+          "deleted": [
+            {
+              "grantor": "postgres",
+              "grantee": "postgres",
+              "privileges": [
+                {
+                  "privilege_type": "w",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ],
+          "added":[
+            {"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false},
+                                                      {"privilege_type":"r","privilege":true,"with_grant":false}],"grantor":"postgres"}]
+        },
+        "deftblacl": {"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+      },
+      "expected_sql_file": "alter_default_db_privileges_sequences.sql",
+      "expected_msql_file": "alter_default_db_privileges_sequences_msql.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges for types",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deftypeacl": {
+          "deleted": [
+            {
+              "grantor": "postgres",
+              "grantee": "PUBLIC",
+              "privileges": [
+                {
+                  "privilege_type": "U",
+                  "privilege": true,
+                  "with_grant": false
+                }
+              ],
+              "acltype": "defaultacls"
+            }
+          ]
+        }
+
+      },
+      "expected_sql_file": "alter_default_db_privileges_types.sql"
+    },
+    {
+      "type": "alter",
+      "name": "Alert default privileges reset all",
+      "endpoint": "NODE-database.obj_id",
+      "sql_endpoint": "NODE-database.sql_id",
+      "TEST_DB_NAME": "<TEST_DB_NAME>",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "deffuncacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"X","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
+        "deftypeacl": {"added":[{"grantee":"PUBLIC","privileges":[{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}]},
+        "deftblacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false},{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"a","privilege":true,"with_grant":false,"cid":"nn626"},{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn627"},{"privilege_type":"w","privilege":true,"with_grant":false,"cid":"nn628"},{"privilege_type":"d","privilege":true,"with_grant":false},{"privilege_type":"D","privilege":true,"with_grant":false},{"privilege_type":"x","privilege":true,"with_grant":false},{"privilege_type":"t","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]},
+        "defseqacl":{"added":[{"grantee":"postgres","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false},{"privilege_type":"w","privilege":true,"with_grant":false},{"privilege_type":"U","privilege":true,"with_grant":false}],"grantor":"postgres"}],"deleted":[{"grantor":"postgres","grantee":"PUBLIC","privileges":[{"privilege_type":"r","privilege":true,"with_grant":false,"cid":"nn673"},{"privilege_type":"U","privilege":true,"with_grant":false}],"acltype":"defaultacls"}]}
+        },
+      "expected_sql_file": "alter_default_db_privileges_reset_all.sql"
+    },
+    {
+      "type": "create",
+      "name": "Create Database with new options and libc",
+      "endpoint": "NODE-database.obj",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "name": "test_database_$%{}[]()&*^!@\"\"\"\"'`\\/#",
+        "description": "This is a test comment",
+        "is_template": false,
+        "encoding": "UTF8",
+        "schema_res": [],
+        "nspacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "C",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "seclabels": [],
+        "deftblacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "a",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "w",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "d",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "D",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "x",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "t",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "defseqacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "w",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "deffuncacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "X",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "deftypeacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }]
+      },
+      "expected_sql_file": "create_database_new_options_libc.sql",
+      "expected_msql_file": "create_database_new_options_libc_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Database",
+      "endpoint": "NODE-database.delete_id",
+      "data": {
+        "name": "test_database_$%{}[]()&*^!@\"\"\"\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create Database with icu options",
+      "endpoint": "NODE-database.obj",
+      "sql_endpoint": "NODE-database.sql_id",
+      "msql_endpoint": "NODE-database.msql",
+      "REPLACE_LOCALE": true,
+      "data": {
+        "name": "test_database_icu_$%{}[]()&*^!@\"\"\"\"'`\\/#",
+        "description": "This is a test comment",
+        "is_template": false,
+        "template": "template0",
+        "encoding": "UTF8",
+        "schema_res": [],
+        "datlocaleprovider": "icu",
+        "daticulocale": "en-US",
+        "nspacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "C",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "seclabels": [],
+        "deftblacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "a",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "w",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "d",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "D",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "x",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "t",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "defseqacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "r",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "w",
+              "privilege": true,
+              "with_grant": false
+          }, {
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "deffuncacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "X",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }],
+        "deftypeacl": [{
+          "grantee": "PUBLIC",
+          "grantor": "postgres",
+          "privileges": [{
+              "privilege_type": "U",
+              "privilege": true,
+              "with_grant": false
+          }]
+        }]
+      },
+      "expected_sql_file": "create_database_icu.sql",
+      "expected_msql_file": "create_database_icu_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop Database",
+      "endpoint": "NODE-database.delete_id",
+      "data": {
+        "name": "test_database_icu_$%{}[]()&*^!@\"\"\"\"'`\\/#"
+      }
+    }
+  ]
+}

@@ -9,6 +9,7 @@
 
 import json
 import uuid
+import secrets
 
 from pgadmin.utils import server_utils
 from regression.python_test_utils import test_utils as utils
@@ -16,7 +17,7 @@ from regression.python_test_utils import test_utils as utils
 DATABASE_CONNECT_URL = '/browser/database/connect/'
 
 
-def get_db_data(db_owner):
+def get_db_data(db_owner, version=None):
     """This function returns the database details in dict format"""
     data = {
         "datconnlimit": -1,
@@ -77,6 +78,17 @@ def get_db_data(db_owner):
         'is_template': False,
         "schema_res": ["public", "sample"]
     }
+
+    if version is not None and version >= 150000:
+        data['datstrategy'] = 'wal_log'
+        data['datlocaleprovider'] = 'icu'
+        data['daticulocale'] = 'und'
+        data['datoid'] = secrets.choice(range(17000, 999999))
+
+    if version is not None and version >= 160000:
+        data['daticurules'] = '&V << w <<< W'
+        data['datoid'] = secrets.choice(range(17000, 999999))
+
     return data
 
 

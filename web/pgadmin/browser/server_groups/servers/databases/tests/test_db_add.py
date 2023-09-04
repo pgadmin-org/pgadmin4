@@ -33,7 +33,8 @@ class DatabaseAddTestCase(BaseTestGenerator):
         server_response = server_utils.connect_server(self, self.server_id)
         if server_response["info"] == "Server connected.":
             db_owner = server_response['data']['user']['name']
-            self.data = database_utils.get_db_data(db_owner)
+            server_version = server_response['data']['version']
+            self.data = database_utils.get_db_data(db_owner, server_version)
             self.data['template'] = 'template0'
             self.db_name = self.data['name']
             response = self.tester.post(self.url + str(utils.SERVER_GROUP) +

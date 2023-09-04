@@ -109,7 +109,9 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                                   'pga_job_id': '<PGA_JOB_ID>',
                                   'timestamptz_2': '<TIMESTAMPTZ_2>',
                                   'db_name': '<TEST_DB_NAME>',
-                                  'db_driver': '<DB_DRIVER>'}
+                                  'db_driver': '<DB_DRIVER>',
+                                  'LC_COLLATE': '<LC_COLLATE>',
+                                  'LC_CTYPE': '<LC_CTYPE>'}
 
         resql_module_list = create_resql_module_list(
             BaseTestGenerator.re_sql_module_list,
@@ -189,7 +191,12 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
                 elif arg == 'sid':
                     options['sid'] = int(self.server_information['server_id'])
                 elif arg == 'did':
-                    options['did'] = int(self.server_information['db_id'])
+                    # For database node object_id is the actual database id.
+                    if endpoint.__contains__('NODE-database') and \
+                            object_id is not None:
+                        options['did'] = int(object_id)
+                    else:
+                        options['did'] = int(self.server_information['db_id'])
                 elif arg == 'scid':
                     # For schema node object_id is the actual schema id.
                     if endpoint.__contains__('NODE-schema') and \
@@ -778,6 +785,31 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
         if 'TEST_DB_NAME' in scenario:
             sql = sql.replace(self.JSON_PLACEHOLDERS['db_name'],
                               self.server_information['test_db_name'])
+
+        # get the database connection
+        if 'REPLACE_LOCALE' in scenario:
+            self.get_db_connection()
+            pg_cursor = self.connection.cursor()
+
+            db_name = self.server_information['test_db_name']
+            # Database name if specify in scenario
+            if 'data' in scenario and 'name' in scenario['data'] and \
+                    'db' in self.server:
+                db_name = self.server['db']
+
+            # Fetch the lc_collate and lc_ctype
+            pg_cursor.execute(
+                "SELECT datcollate as cname FROM pg_database WHERE datname = "
+                "'{0}'".format(db_name))
+            lc_collate = ''.join(pg_cursor.fetchone())
+            pg_cursor.execute(
+                "SELECT datctype as cname FROM pg_database WHERE datname = "
+                "'{0}'".format(db_name))
+            lc_ctype = ''.join(pg_cursor.fetchone())
+            pg_cursor.close()
+
+            sql = sql.replace(self.JSON_PLACEHOLDERS['LC_COLLATE'], lc_collate)
+            sql = sql.replace(self.JSON_PLACEHOLDERS['LC_CTYPE'], lc_ctype)
 
         return sql
 
