@@ -793,6 +793,30 @@ OAUTH2_CONFIG = [
         'OAUTH2_ICON': None,
         # UI button colour, ex: #0000ff
         'OAUTH2_BUTTON_COLOR': None,
+        # The additional claims to check on user ID Token. This is useful to
+        # provide additional authorization checks before allowing access.
+        # Example for GitLab: allowing all maintainers teams, and a specific
+        # developers group to access pgadmin:
+        # 'OAUTH2_ADDITIONAL_CLAIMS': {
+        #     'https://gitlab.org/claims/groups/maintainer': [
+        #           'kuberheads/applications',
+        #           'kuberheads/dba',
+        #           'kuberheads/support'
+        #      ],
+        #     'https://gitlab.org/claims/groups/developer': [
+        #           'kuberheads/applications/team01'
+        #      ],
+        # }
+        # Example for AzureAD:
+        # 'OAUTH2_ADDITIONAL_CLAIMS': {
+        #     'groups': ["0760b6cf-170e-4a14-91b3-4b78e0739963"],
+        #     'wids': ["cf1c38e5-3621-4004-a7cb-879624dced7c"],
+        # }
+        # Example for any key value string check:
+        # 'OAUTH2_ADDITIONAL_CLAIMS': {
+        #     'group': "0760b6cf-170e-4a14-91b3-4b78e0739963",
+        # }
+        'OAUTH2_ADDITIONAL_CLAIMS': None,
     }
 ]
 

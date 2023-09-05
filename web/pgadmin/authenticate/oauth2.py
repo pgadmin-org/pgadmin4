@@ -151,6 +151,26 @@ class OAuth2Authentication(BaseAuthentication):
                 current_app.logger.exception(error_msg)
                 return False, gettext(error_msg)
 
+        additinal_claims = None
+        if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
+                self.oauth2_current_client]:
+            additinal_claims = self.oauth2_config[
+                self.oauth2_current_client
+            ]['OAUTH2_ADDITIONAL_CLAIMS']
+
+        (valid, reason) = self.__is_additional_claims_valid(profile,
+                                                            additinal_claims)
+
+        if not valid:
+            return_msg = "The user is not authorized to login" \
+                " based on the claims in the profile." \
+                " Please contact your administrator."
+            audit_msg = f"The authenticated user {username} is not" \
+                " authorized to access pgAdmin based on OAUTH2 config. " \
+                f"Reason: {reason}"
+            current_app.logger.warning(audit_msg)
+            return False, return_msg
+
         user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
@@ -204,3 +224,24 @@ class OAuth2Authentication(BaseAuthentication):
                 })
 
         return True, {'username': username}
+
+    def __is_additional_claims_valid(self, profile, additional_claims):
+        if additional_claims is None:
+            reason = "Additional claim config is None, no check to do."
+            return (True, reason)
+        if not isinstance(additional_claims, dict):
+            reason = "Additional claim check config is not a dict."
+            return (False, reason)
+        if additional_claims.keys() is None:
+            reason = "Additional claim check config dict is empty."
+            return (False, reason)
+        for key in additional_claims.keys():
+            claim = profile.get(key)
+            if claim is None:
+                continue
+            authorized_claims = additional_claims.get(key)
+            if any(item in authorized_claims for item in claim):
+                reason = "Claim match found. Authorizing"
+                return (True, reason)
+        reason = f"Profile does not have any of given additional claims."
+        return (False, reason)
