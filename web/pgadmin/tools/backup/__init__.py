@@ -358,7 +358,7 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             data.get('tables', [])), []
         )
     )
-    b = []
+
     if 'objects' in data:
         selectedObjects = data.get('objects', {})
         for _key in selectedObjects:
@@ -366,11 +366,10 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
             args.extend(
                 functools.reduce(operator.iconcat, map(
                     lambda s: [f'--{param}',
-                               r'{0}'.format(s['_name']if type(s) is dict else s)],
+                               r'{0}'.format(
+                                   s['_name'] if type(s) is dict else s)],
                     selectedObjects[_key] or []), [])
             )
-
-    print(b)
 
     return args
 

@@ -6,7 +6,6 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import React from 'react';
 import {getUtilityView, removeNodeView} from '../../../../browser/static/js/utility_view';
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
 import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from './backup.ui';
@@ -14,7 +13,6 @@ import BackupGlobalSchema, {getMiscellaneousSchema as getMiscellaneousGlobalSche
 import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
-import { SelectedObjectSchema } from '../selectedObjectSchema';
 
 // Backup dialog
 define([
@@ -211,11 +209,6 @@ define([
         getUtilityView(
           schema, treeNodeInfo, 'create', 'dialog', j[0], panel, this.saveCallBack, extraData, 'Backup', baseUrl, sqlHelpUrl, helpUrl);
       }
-    },
-    showSelectedObjeBackup: function() {
-      Notify.showModal(gettext('Backup selected objects'), () => {
-        return <SelectedObjectSchema />;
-      }, { isFullScreen: false, isResizeable: true, showFullScreen: true, isFullWidth: true, dialogWidth: 550, dialogHeight: 550 });
     },
     // Callback to draw Backup Dialog for objects
     backupObjects: function(action, treeItem) {

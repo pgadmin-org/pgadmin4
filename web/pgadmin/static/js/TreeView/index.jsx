@@ -1,9 +1,9 @@
 import { Checkbox, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Tree } from 'react-arborist';
 import AutoSizer from 'react-virtualized-auto-sizer';
-import EventBus from '../../helpers/EventBus';
+import EventBus from '../helpers/EventBus';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PropTypes from 'prop-types';
@@ -21,8 +21,21 @@ const useStyles = makeStyles((theme) => ({
   checkboxStyle: {
     fill: theme.palette.primary.main
   },
-  treeBgColor: {
+  tree: {
     background: theme.palette.background.default,
+    height: '100%',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+  },
+  testTree: {
+    background: theme.palette.background.default,
+    height: 100,
+    width: 100,
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
   },
   selectedNode: {
     background: theme.otherVars.stepBg,
@@ -59,7 +72,7 @@ function TreeView({data, treeRef, eventBusObj, onSelectionChange, hasCheckbox=fa
 }
 
 TreeView.propTypes = {
-  data: PropTypes.object,
+  data: PropTypes.array,
   treeRef: PropTypes.object,
   hasCheckbox: PropTypes.bool,
   onSelectionChange: PropTypes.func,
@@ -68,7 +81,7 @@ TreeView.propTypes = {
 
 export const PgTreeSelectionContext = React.createContext();
 
-export function PgTreeView({ data = [], hasCheckbox = false, eventBusObj = null, selectionChange = null, isResetSelection=false, ...props}) {
+export function PgTreeView({ data = [], hasCheckbox = false, eventBusObj = null, selectionChange = null, ...props}) {
   let classes = useStyles();
   let treeData = data;
   const treeObj = useRef();
@@ -83,40 +96,12 @@ export function PgTreeView({ data = [], hasCheckbox = false, eventBusObj = null,
       setSelectedCheckBoxNodes(selectedChildNodes);
     }
 
-    let selectedNode = treeObj.current.selectedNodes;
-    let selectedNodeCollection = {
-      'schema': [],
-      'table': [],
-      'view': [],
-      'sequence': [],
-      'foreign_table': [],
-      'mview': [],
-    };
-    selectedNode.forEach((node)=> {
-      if(node.data.is_schema) {
-        selectedNodeCollection['schema'].push(node.data.name);
-      } else if(['table', 'view', 'mview', 'foreign_table', 'sequence'].includes(node.data.type) && !node.data.is_collection && !selectedNodeCollection['schema'].includes(node.data.schema) && !node?.parent?.parent.isSelected) {
-        selectedNodeCollection[node.data.type].push(node.data);
-      }
-    });
-    selectionChange?.(selectedNodeCollection);
+    selectionChange?.(treeObj.current.selectedNodes);
   };
 
-  useEffect(()=>{
-    if(isResetSelection){
-      treeObj.current?.deselectAll();
-    }
-  },[isResetSelection]);
-
   return (
-    <PgTreeSelectionContext.Provider value={_.isUndefined(selectedCheckBoxNodes) ? []: isResetSelection ? []: selectedCheckBoxNodes}>
-      <div style={{
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-      }} className={classes.treeBgColor}>
+    <PgTreeSelectionContext.Provider value={_.isUndefined(selectedCheckBoxNodes) ? []: selectedCheckBoxNodes}>
+      <div className={clsx(classes.tree)}>
         <TreeView data={treeData} treeRef={treeObj} hasCheckbox={hasCheckbox} eventBusObj={eventBusObj} onSelectionChange={onSelectionChange} {...props}></TreeView>
       </div>
     </PgTreeSelectionContext.Provider>
@@ -124,11 +109,12 @@ export function PgTreeView({ data = [], hasCheckbox = false, eventBusObj = null,
 }
 
 PgTreeView.propTypes = {
-  data: PropTypes.object,
+  data: PropTypes.array,
   eventBusObj: PropTypes.object,
   selectionChange: PropTypes.func,
-  isResetSelection: PropTypes.bool,
   hasCheckbox: PropTypes.bool,
+  height: PropTypes.string,
+  width: PropTypes.string,
 
 };
 

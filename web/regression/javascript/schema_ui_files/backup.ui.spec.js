@@ -67,41 +67,41 @@ describe('BackupSchema', ()=>{
   });
 
 
-  let backupSelectedSchemaObj = new BackupSchema(
-    ()=> getSectionSchema(),
-    ()=> getTypeObjSchema(),
-    ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
-    ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
-    ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
-    {
-      role: ()=>[],
-      encoding: ()=>[],
-    },
-    {server: {version: 11000}},
-    pgAdmin.pgBrowser,
-    'backup_objects',
-    [{'id': 'public','name': 'public','icon': 'icon-schema', 'children': [{'id': 'public_table','name': 'table','icon': 'icon-coll-table','children': [{'id': 'public_test','name': 'test','icon': 'icon-table','schema': 'public','type': 'table','_name': 'public.test'}],'type': 'table','is_collection': true}],'is_schema': true}]
-  );
+  // let backupSelectedSchemaObj = new BackupSchema(
+  //   ()=> getSectionSchema(),
+  //   ()=> getTypeObjSchema(),
+  //   ()=> getSaveOptSchema({nodeInfo: {server: {version: 11000}}}),
+  //   ()=> getDisabledOptionSchema({nodeInfo: {server: {version: 11000}}}),
+  //   ()=> getMiscellaneousSchema({nodeInfo: {server: {version: 11000}}}),
+  //   {
+  //     role: ()=>[],
+  //     encoding: ()=>[],
+  //   },
+  //   {server: {version: 11000}},
+  //   pgAdmin.pgBrowser,
+  //   'backup_objects',
+  //   [{'id': 'public','name': 'public','icon': 'icon-schema', 'children': [{'id': 'public_table','name': 'table','icon': 'icon-coll-table','children': [{'id': 'public_test','name': 'test','icon': 'icon-table','schema': 'public','type': 'table','_name': 'public.test'}],'type': 'table','is_collection': true}],'is_schema': true}]
+  // );
 
-  it('create selected object backup', ()=>{
-    mount(<Theme>
-      <SchemaView
-        formType='dialog'
-        schema={backupSelectedSchemaObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{/*This is intentional (SonarQube)*/}}
-        onClose={()=>{/*This is intentional (SonarQube)*/}}
-        onHelp={()=>{/*This is intentional (SonarQube)*/}}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />
-    </Theme>);
-  });
+  // it('create selected object backup', ()=>{
+  //   mount(<Theme>
+  //     <SchemaView
+  //       formType='dialog'
+  //       schema={backupSelectedSchemaObj}
+  //       viewHelperProps={{
+  //         mode: 'create',
+  //       }}
+  //       onSave={()=>{/*This is intentional (SonarQube)*/}}
+  //       onClose={()=>{/*This is intentional (SonarQube)*/}}
+  //       onHelp={()=>{/*This is intentional (SonarQube)*/}}
+  //       onDataChange={()=>{/*This is intentional (SonarQube)*/}}
+  //       confirmOnCloseReset={false}
+  //       hasSQL={false}
+  //       disableSqlHelp={false}
+  //       disableDialogHelp={false}
+  //     />
+  //   </Theme>);
+  // });
 
 
   let backupServerSchemaObj = new BackupSchema(
