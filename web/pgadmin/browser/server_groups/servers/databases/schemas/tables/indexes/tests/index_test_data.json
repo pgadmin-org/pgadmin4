@@ -545,6 +545,8 @@
       "is_positive_test": true,
       "update_statistics": true,
       "inventory_data": {
+        "server_min_version": 110000,
+        "skip_msg": "Update statistics is not supported below PPAS/PG 11.0"
       },
       "test_data": {
         "columns": "PLACE_HOLDER"

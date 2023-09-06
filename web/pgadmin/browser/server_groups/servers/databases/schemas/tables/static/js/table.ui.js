@@ -45,6 +45,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', tableNode, treeNodeInfo, itemNodeData),
       typname: ()=>getNodeAjaxOptions('get_oftype', tableNode, treeNodeInfo, itemNodeData),
       like_relation: ()=>getNodeAjaxOptions('get_relations', tableNode, treeNodeInfo, itemNodeData),
+      table_amname_list: ()=>getNodeAjaxOptions('get_table_access_methods', tableNode, treeNodeInfo, itemNodeData),
     },
     treeNodeInfo,
     {
@@ -343,6 +344,7 @@ export default class TableSchema extends BaseUISchema {
       partition_type: 'range',
       is_partitioned: false,
       columns: [],
+      amname: undefined,
       ...initValues,
     });
 
@@ -352,7 +354,7 @@ export default class TableSchema extends BaseUISchema {
     this.nodeInfo = nodeInfo;
     this.getColumns = getColumns;
 
-    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables);
+    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables, fieldOptions.table_amname_list);
     this.constraintsObj = this.schemas.constraints && this.schemas.constraints() || {};
     this.columnsSchema = this.schemas.columns && this.schemas.columns() || {};
     this.vacuumSettingsSchema = this.schemas.vacuum_settings && this.schemas.vacuum_settings() || {};
@@ -757,6 +759,29 @@ export default class TableSchema extends BaseUISchema {
           });
         } else {
           return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
+        }
+      },
+    },
+    {
+      id: 'amname', label: gettext('Access Method'), group: 'advanced',
+      deps:['is_partitioned'], type: (state)=>{
+        return {
+          type: 'select', options: this.fieldOptions.table_amname_list,
+          controlProps: {
+            allowClear: obj.isNew(state) ? true : false,
+          }
+        };
+      }, mode: ['create', 'properties', 'edit'], min_version: 120000,
+      disabled: (state) => {
+        if (obj.getServerVersion() < 150000 && !obj.isNew(state)) {
+          return true;
+        }
+        return obj.isPartitioned(state);
+      }, depChange: state => {
+        if (state.is_partitioned) {
+          return {
+            amname: undefined
+          };
         }
       },
     },

@@ -31,17 +31,6 @@ Use the fields in the *General* tab to identify the materialized view:
 Click the *Definition* tab to continue.
 
 .. image:: images/materialized_view_definition.png
-    :alt: Materialized view dialog definition tab
-    :align: center
-
-Use the text editor field in the *Definition* tab to provide the query that will
-populate the materialized view. Please note that updating the definition of existing
-materialized view would result in loss of Parameter(Table, Toast), Security(Privileges & Security labels),
-Indexes and other dependent objects.
-
-Click the *Storage* tab to continue.
-
-.. image:: images/materialized_view_storage.png
     :alt: Materialized view dialog storage tab
     :align: center
 
@@ -52,9 +41,23 @@ Use the fields in the *Storage* tab to maintain the materialized view:
   cannot be queried until you invoke REFRESH MATERIALIZED VIEW.
 * Use the drop-down listbox next to *Tablespace* to select a location for the
   materialized view.
+* Use the drop-down list box next to Access Method to specify the table access method to use to store the contents
+  for the new materialized view; the method needs to be an access method of type TABLE. This field is optional.
+  This option is available from v12 and above.
 * Use the *Fill Factor* field to specify a fill factor for the materialized
   view. The fill factor for a table is a percentage between 10 and 100. 100
   (complete packing) is the default.
+
+Click the *Code* tab to continue.
+
+.. image:: images/materialized_view_code.png
+    :alt: Materialized view dialog definition tab
+    :align: center
+
+Use the text editor field in the *Code* tab to provide the query that will
+populate the materialized view. Please note that updating the definition of existing
+materialized view would result in loss of Parameter(Table, Toast), Security(Privileges & Security labels),
+Indexes and other dependent objects.
 
 Click the *Parameter* tab to continue.
 

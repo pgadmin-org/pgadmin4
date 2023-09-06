@@ -394,6 +394,9 @@ Use the fields in the *Advanced* tab to define advanced features for the table:
 * Use the drop-down listbox next to *Of type* to copy the table structure from
   the specified composite type. Please note that a typed table will be dropped
   if the type is dropped (with DROP TYPE ... CASCADE).
+* Use the drop-down list box next to Access Method to specify the table access method to use to store
+  the contents for the new table; the method needs to be an access method of type TABLE. This field is optional.
+  This option is available from v12 and above.
 * Use the *Fill Factor* field to specify a fill factor for the table. The fill
   factor for a table is a percentage between 10 and 100. 100 (complete packing)
   is the default.

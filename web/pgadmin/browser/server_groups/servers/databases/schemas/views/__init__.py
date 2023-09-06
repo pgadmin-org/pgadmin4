@@ -1759,7 +1759,8 @@ class ViewNode(PGChildNodeView, VacuumSettings, SchemaDiffObjectCompare):
 # Override the operations for materialized view
 mview_operations = {
     'refresh_data': [{'put': 'refresh_data'}, {}],
-    'check_utility_exists': [{'get': 'check_utility_exists'}, {}]
+    'check_utility_exists': [{'get': 'check_utility_exists'}, {}],
+    'get_access_methods': [{}, {'get': 'get_access_methods'}],
 }
 mview_operations.update(ViewNode.operations)
 
@@ -2409,6 +2410,35 @@ class MViewNode(ViewNode, VacuumSettings):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @check_precondition
+    def get_access_methods(self, gid, sid, did, scid, vid=None):
+        """
+        Args:
+            gid: Server Group ID
+            sid: Server ID
+            did: Database ID
+            scid: Schema ID
+            vid: View ID
+
+            Returns the access method to be used by mview
+        """
+        res = []
+        sql = render_template("/".join([self.template_path,
+                                        'sql/get_access_methods.sql']))
+        status, rest = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rest)
+
+        for row in rest['rows']:
+            res.append(
+                {'label': row['amname'], 'value': row['amname']}
+            )
 
         return make_json_response(
             data=res,

@@ -40,6 +40,7 @@ export function getNodePartitionTableSchema(treeNodeInfo, itemNodeData, pgBrowse
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', partNode, treeNodeInfo, itemNodeData),
       typname: ()=>getNodeAjaxOptions('get_oftype', partNode, treeNodeInfo, itemNodeData),
       like_relation: ()=>getNodeAjaxOptions('get_relations', partNode, treeNodeInfo, itemNodeData),
+      table_amname_list: ()=>getNodeAjaxOptions('get_table_access_methods', partNode, treeNodeInfo, itemNodeData),
     },
     treeNodeInfo,
     {
@@ -110,6 +111,7 @@ export default class PartitionTableSchema extends BaseUISchema {
       partition_type: 'range',
       is_partitioned: false,
       partition_value: undefined,
+      amname: undefined,
       ...initValues,
     });
 
@@ -121,7 +123,7 @@ export default class PartitionTableSchema extends BaseUISchema {
     this.getAttachTables = getAttachTables;
 
     this.partitionKeysObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
-    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables);
+    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables, fieldOptions.table_amname_list);
     this.constraintsObj = this.schemas.constraints();
   }
 
@@ -228,6 +230,23 @@ export default class PartitionTableSchema extends BaseUISchema {
       id: 'parallel_workers', label: gettext('Parallel workers'), type: 'int',
       mode: ['create', 'edit'], group: 'advanced', min_version: 90600,
       disabled: obj.isPartitioned,
+    },
+    {
+      id: 'amname', label: gettext('Access Method'), group: 'advanced',
+      type: (state)=>{
+        return {
+          type: 'select', options: this.fieldOptions.table_amname_list,
+          controlProps: {
+            allowClear: obj.isNew(state) ? true : false,
+          }
+        };
+      }, mode: ['create', 'properties', 'edit'], min_version: 120000,
+      disabled: (state) => {
+        if (obj.getServerVersion() < 150000 && !obj.isNew(state)) {
+          return true;
+        }
+        return obj.isPartitioned(state);
+      },
     },
     {
       id: 'relhasoids', label: gettext('Has OIDs?'), cell: 'switch',

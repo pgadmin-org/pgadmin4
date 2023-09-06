@@ -211,7 +211,8 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
         'msql': [{'get': 'msql'}, {}],
         'detach': [{'put': 'detach'}],
         'truncate': [{'put': 'truncate'}],
-        'set_trigger': [{'put': 'enable_disable_triggers'}]
+        'set_trigger': [{'put': 'enable_disable_triggers'}],
+        'get_table_access_methods': [{}, {'get': 'get_table_access_methods'}],
     })
 
     # Schema Diff: Keys to ignore while comparing
@@ -864,6 +865,29 @@ class PartitionsView(BaseTableView, DataTypeReader, SchemaDiffObjectCompare):
                                       target_data=parent_target_data)
 
         return diff + '\n'
+
+    @BaseTableView.check_precondition
+    def get_table_access_methods(self, gid, sid, did, scid, tid, ptid=None):
+        """
+        This function returns access methods for table.
+
+        Args:
+          gid: Server Group ID
+          sid: Server ID
+          did: Database ID
+          scid: Schema ID
+          tid: Table ID
+          ptid: Partition Table ID
+
+        Returns:
+          Returns list of access methods for partition table
+        """
+        res = BaseTableView.get_access_methods(self)
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
 
 
 SchemaDiffRegistry(blueprint.node_type, PartitionsView, 'table')

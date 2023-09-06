@@ -89,6 +89,11 @@ CACHE {{c.seqcache|int}} {% endif %}
 {% if data.coll_inherits %}
     INHERITS ({% for val in data.coll_inherits %}{% if loop.index != 1 %}, {% endif %}{{val}}{% endfor %}){% if not data.spcname and not with_clause %};{% endif %}
 {% endif %}
+{% if data.default_amname and data.default_amname != data.amname and data.amname is not none %}
+USING {{data.amname}}
+{% elif data.amname and not data.default_amname %}
+USING {{data.amname}}
+{% endif %}
 
 {% if with_clause %}
 {% set ns = namespace(add_comma=false) %}
