@@ -251,6 +251,16 @@ tab to provide other backup options.
      table locks at the beginning of the dump. Instead, fail if unable to lock a
      table within the specified timeout.
 
+Click the *Objects* tab to continue.
+
+.. image:: images/backup_object_selection.png
+    :alt: Select objects in backup dialog
+    :align: center
+
+* Select the objects from tree to take backup of selected objects only.
+    * If Schema is selected then it will take the backup of that selected schema only.
+    * If any Table, View, Materialized View, Sequences, or Foreign Table is selected then it will take the backup of those selected objects.
+
 When you’ve specified the details that will be incorporated into the pg_dump
 command:
 

@@ -106,6 +106,7 @@ class StartRunningQuery:
             status = False
             result = gettext(
                 'Either transaction object or session object not found.')
+
         return make_json_response(
             data={
                 'status': status, 'result': result,

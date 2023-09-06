@@ -141,6 +141,7 @@
     "raf": "^3.4.1",
     "rc-dock": "^3.2.9",
     "react": "^17.0.1",
+    "react-arborist": "^3.2.0",
     "react-aspen": "^1.1.0",
     "react-checkbox-tree": "^1.7.2",
     "react-data-grid": "https://github.com/pgadmin-org/react-data-grid.git#200d2f5e02de694e3e9ffbe177c279bc40240fb8",

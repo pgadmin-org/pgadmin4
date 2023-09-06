@@ -270,12 +270,22 @@ def properties(sid, did, node_id, node_type):
        and render into selection page of wizard
     """
 
+    res_data, msg = get_data(sid, did, node_id, node_type, server_info)
+
+    return make_json_response(
+        result=res_data,
+        info=msg,
+        status=200
+    )
+
+
+def get_data(sid, did, node_id, node_type, server_data):
     get_schema_sql_url = '/sql/get_schemas.sql'
 
     # unquote encoded url parameter
     node_type = unquote(node_type)
 
-    server_prop = server_info
+    server_prop = server_data
 
     res_data = []
     failed_objects = []
@@ -350,12 +360,7 @@ def properties(sid, did, node_id, node_type):
         msg = gettext('Unable to fetch the {} objects'.format(
             ", ".join(failed_objects))
         )
-
-    return make_json_response(
-        result=res_data,
-        info=msg,
-        status=200
-    )
+    return res_data, msg
 
 
 def get_req_data():

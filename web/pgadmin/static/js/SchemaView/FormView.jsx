@@ -17,7 +17,7 @@ import { MappedFormControl } from './MappedControl';
 import TabPanel from '../components/TabPanel';
 import DataGridView from './DataGridView';
 import { SCHEMA_STATE_ACTIONS, StateUtilsContext } from '.';
-import { InputSQL } from '../components/FormComponents';
+import { FormNote, InputSQL } from '../components/FormComponents';
 import gettext from 'sources/gettext';
 import { evalFunc } from 'sources/utils';
 import CustomPropTypes from '../custom_prop_types';
@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme)=>({
   },
   nestedControl: {
     height: 'unset',
+  },
+  fullControl: {
+    display: 'flex',
+    flexDirection: 'column'
   },
   errorMargin: {
     /* Error footer space */
@@ -306,7 +310,7 @@ export default function FormView({
           firstEleID.current = field.id;
         }
 
-        const currentControl = <MappedFormControl
+        let currentControl = <MappedFormControl
           inputRef={(ele)=>{
             if(firstEleRef && firstEleID.current === field.id) {
               firstEleRef.current = ele;
@@ -343,6 +347,13 @@ export default function FormView({
             ...(evalFunc(null, field.deps) || []).map((dep)=>value[dep]),
           ]}
         />;
+
+        if(field.isFullTab && field.helpMessage) {
+          currentControl = (<React.Fragment key={`coll-${field.id}`}>
+            <FormNote key={`note-${field.id}`} text={field.helpMessage}/>
+            {currentControl}
+          </React.Fragment>);
+        }
 
         if(field.inlineNext) {
           inlineComponents.push(React.cloneElement(currentControl, {
@@ -422,6 +433,8 @@ export default function FormView({
             let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
             if(fullTabs.indexOf(tabName) == -1) {
               contentClassName.push(classes.nestedControl);
+            } else {
+              contentClassName.push(classes.fullControl);
             }
             return (
               <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}

@@ -10,6 +10,7 @@
 
 import json
 import os
+import copy
 import functools
 import operator
 
@@ -27,6 +28,8 @@ from config import PG_DEFAULT_DRIVER
 from pgadmin.model import Server, SharedServer
 from pgadmin.misc.bgprocess import escape_dquotes_process_arg
 from pgadmin.utils.constants import MIMETYPE_APP_JS
+from pgadmin.tools.grant_wizard import _get_rows_for_type, \
+    get_node_sql_with_type, properties, get_data
 
 # set template path for sql scripts
 MODULE_NAME = 'backup'
@@ -56,7 +59,8 @@ class BackupModule(PgAdminModule):
             list: URL endpoints for backup module
         """
         return ['backup.create_server_job', 'backup.create_object_job',
-                'backup.utility_exists']
+                'backup.utility_exists', 'backup.objects',
+                'backup.schema_objects']
 
 
 # Create blueprint for BackupModule class
@@ -355,6 +359,23 @@ def _get_args_params_values(data, conn, backup_obj_type, backup_file, server,
         )
     )
 
+    if 'objects' in data:
+        selected_objects = data.get('objects', {})
+        for _key in selected_objects:
+            param = 'schema' if _key == 'schema' else 'table'
+            args.extend(
+                functools.reduce(operator.iconcat, map(
+                    lambda s: [f'--{param}',
+                               r'{0}.{1}'.format(
+                                   driver.qtIdent(conn, s['schema']).replace(
+                                       '"', '\"'),
+                                   driver.qtIdent(conn, s['name']).replace(
+                                       '"', '\"')) if type(
+                                   s) is dict else driver.qtIdent(
+                                   conn, s).replace('"', '\"')],
+                    selected_objects[_key] or []), [])
+            )
+
     return args
 
 
@@ -505,3 +526,124 @@ def check_utility_exists(sid, backup_obj_type):
         )
 
     return make_json_response(success=1)
+
+
+@blueprint.route(
+    '/objects/<int:sid>/<int:did>', endpoint='objects'
+)
+@blueprint.route(
+    '/objects/<int:sid>/<int:did>/<int:scid>', endpoint='schema_objects'
+)
+@login_required
+def objects(sid, did, scid=None):
+    """
+    This function returns backup objects
+
+    Args:
+        sid: Server ID
+        did: database ID
+        scid: schema ID
+    Returns:
+        list of objects
+    """
+    from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
+    server = get_server(sid)
+
+    if server is None:
+        return make_json_response(
+            success=0,
+            errormsg=_("Could not find the specified server.")
+        )
+
+    from pgadmin.utils.driver import get_driver
+    from flask_babel import gettext
+    from pgadmin.utils.ajax import precondition_required
+
+    server_info = {}
+    server_info['manager'] = get_driver(PG_DEFAULT_DRIVER) \
+        .connection_manager(sid)
+    server_info['conn'] = server_info['manager'].connection(
+        did=did)
+    # If DB not connected then return error to browser
+    if not server_info['conn'].connected():
+        return precondition_required(
+            gettext("Connection to the server has been lost.")
+        )
+
+    # Set template path for sql scripts
+    server_info['server_type'] = server_info['manager'].server_type
+    server_info['version'] = server_info['manager'].version
+    if server_info['server_type'] == 'pg':
+        server_info['template_path'] = 'grant_wizard/pg/#{0}#'.format(
+            server_info['version'])
+    elif server_info['server_type'] == 'ppas':
+        server_info['template_path'] = 'grant_wizard/ppas/#{0}#'.format(
+            server_info['version'])
+
+    res, msg = get_data(sid, did, scid, 'schema' if scid else 'database',
+                        server_info)
+
+    tree_data = {
+        'table': [],
+        'view': [],
+        'materialized view': [],
+        'foreign table': [],
+        'sequence': []
+    }
+
+    schema_group = {}
+
+    for data in res:
+        obj_type = data['object_type'].lower()
+        if obj_type in ['table', 'view', 'materialized view', 'foreign table',
+                        'sequence']:
+
+            if data['nspname'] not in schema_group:
+                schema_group[data['nspname']] = {
+                    'id': data['nspname'],
+                    'name': data['nspname'],
+                    'icon': 'icon-schema',
+                    'children': copy.deepcopy(tree_data),
+                    'is_schema': True,
+                }
+            icon_data = {
+                'materialized view': 'icon-mview',
+                'foreign table': 'icon-foreign_table'
+            }
+            icon = icon_data[obj_type] if obj_type in icon_data \
+                else data['icon']
+            schema_group[data['nspname']]['children'][obj_type].append({
+                'id': f'{data["nspname"]}_{data["name"]}',
+                'name': data['name'],
+                'icon': icon,
+                'schema': data['nspname'],
+                'type': obj_type,
+                '_name': '{0}.{1}'.format(data['nspname'], data['name'])
+            })
+
+    schema_group = [dt for k, dt in schema_group.items()]
+    for ch in schema_group:
+        children = []
+        for obj_type, data in ch['children'].items():
+            if data:
+                icon_data = {
+                    'materialized view': 'icon-coll-mview',
+                    'foreign table': 'icon-coll-foreign_table'
+                }
+                icon = icon_data[obj_type] if obj_type in icon_data \
+                    else f'icon-coll-{obj_type.lower()}',
+                children.append({
+                    'id': f'{ch["id"]}_{obj_type}',
+                    'name': f'{obj_type.title()}s',
+                    'icon': icon,
+                    'children': data,
+                    'type': obj_type,
+                    'is_collection': True,
+                })
+
+        ch['children'] = children
+
+    return make_json_response(
+        data=schema_group,
+        success=200
+    )
