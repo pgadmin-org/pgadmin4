@@ -93,6 +93,11 @@ USING {{data.amname}}
 {% elif not data.default_amname and data.amname %}
 USING {{data.amname}}{% if not data.spcname and not with_clause %};{% endif %}
 {% endif %}
+{% if data.default_amname and data.default_amname != data.amname and data.amname is not none %}
+USING {{data.amname}}
+{% elif not data.default_amname and data.amname %}
+USING {{data.amname}}
+{% endif %}
 
 {% if with_clause %}
 {% set ns = namespace(add_comma=false) %}
