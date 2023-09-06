@@ -40,6 +40,7 @@ define('pgadmin.node.mview', [
         type: 'coll-mview',
         columns: ['name', 'owner', 'comment'],
         hasStatistics: true,
+        statsPrettifyFields: [gettext('Total Size')],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
@@ -66,6 +67,9 @@ define('pgadmin.node.mview', [
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: [gettext('Total Size'), gettext('Indexes size'), gettext('Table size'),
+          gettext('TOAST table size'), gettext('Tuple length'),
+          gettext('Dead tuple length'), gettext('Free space')],
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
       width: pgBrowser.stdW.md + 'px',
