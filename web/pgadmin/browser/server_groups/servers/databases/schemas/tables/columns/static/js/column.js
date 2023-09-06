@@ -23,7 +23,7 @@ define('pgadmin.node.column', [
         node: 'column',
         label: gettext('Columns'),
         type: 'coll-column',
-        columns: ['name', 'cltype', 'description'],
+        columns: ['name', 'cltype', 'is_pk','attnotnull', 'description'],
         canDrop: SchemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: false,
       });
