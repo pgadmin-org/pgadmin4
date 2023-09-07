@@ -251,8 +251,13 @@ class ColumnsView(PGChildNodeView, DataTypeReader):
 
         if not status:
             return internal_server_error(errormsg=res)
+
+        data = res['rows']
+        for column in data:
+            column_utils.column_formatter(self.conn, tid, column['attnum'],
+                                          column)
         return ajax_response(
-            response=res['rows'],
+            response=data,
             status=200
         )
 
