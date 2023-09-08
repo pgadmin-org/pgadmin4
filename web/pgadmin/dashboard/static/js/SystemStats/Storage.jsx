@@ -454,48 +454,6 @@ export function StorageWrapper(props) {
             </ChartContainer>
           </Grid>
           <Grid item md={6} sm={12}>
-            <ChartContainer 
-              id='t-space-graph' 
-              title={gettext('')} 
-              datasets={props.diskStats.map((item, index) => ({
-                borderColor: colors[(index + 2) % colors.length],
-                label: item.mount_point !== 'null' ? item.mount_point : item.drive_letter !== 'null' ? item.drive_letter : 'disk' + index,
-              }))}
-              errorMsg={props.errorMsg} 
-              isTest={props.isTest}>
-              <PieChart data={{
-                labels: props.diskStats.map((item, index) => item.mount_point!='null'?item.mount_point:item.drive_letter!='null'?item.drive_letter:'disk'+index),
-                datasets: [
-                  {
-                    data: props.diskStats.map((item) => item.total_space_actual?item.total_space_actual:0),
-                    backgroundColor: props.diskStats.map((item, index) => colors[(index + 2) % colors.length]),
-                  },
-                ],
-              }}
-              options={{
-                animation: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                  tooltip: {
-                    callbacks: {
-                      title: function (context) {
-                        const label = context[0].label || '';
-                        return label;
-                      },
-                      label: function (context) {
-                        const value = context.formattedValue || 0;
-                        return 'Total space: ' + value;
-                      },
-                    },
-                  },
-                },
-              }}
-              />
-            </ChartContainer>
-          </Grid>
-          <Grid item md={6} sm={12}>
             <ChartContainer id='ua-space-graph' title={gettext('')} datasets={[{borderColor: '#FF6384', label: 'Used space'}, {borderColor: '#36a2eb', label: 'Available space'}]}  errorMsg={props.errorMsg} isTest={props.isTest}>
               <BarChart data={{
                 labels: props.diskStats.map((item, index) => item.mount_point!='null'?item.mount_point:item.drive_letter!='null'?item.drive_letter:'disk'+index),

@@ -32,17 +32,6 @@ const useStyles = makeStyles((theme) => ({
   chartContainer: {
     padding: '4px',
   },
-  tableContainer: {
-    background: theme.otherVars.tableBg,
-    padding: '0px',
-    border: '1px solid rgb(221, 224, 230)',
-    borderCollapse: 'collapse',
-    borderRadius: '4px',
-    overflow: 'hidden',
-  },
-  chartContainer: {
-    padding: '4px',
-  },
   containerHeader: {
     fontWeight: 'bold',
     marginBottom: '0px',
