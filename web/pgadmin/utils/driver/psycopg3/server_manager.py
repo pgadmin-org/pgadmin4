@@ -204,10 +204,13 @@ class ServerManager(object):
             if did is not None and did in self.db_info:
                 self.db_info[did]['datname'] = database
         else:
+            conn_str = 'CONN:{0}'.format(conn_id)
             if did is None:
                 database = self.db
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
+            elif conn_id and conn_str in self.connections:
+                database = self.connections[conn_str].db
             else:
                 maintenance_db_id = 'DB:{0}'.format(self.db)
                 if maintenance_db_id in self.connections:

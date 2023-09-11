@@ -67,6 +67,7 @@ class StartRunningQuery:
                     PG_DEFAULT_DRIVER).connection_manager(
                     transaction_object.sid)
                 conn = manager.connection(did=transaction_object.did,
+                                          database=transaction_object.dbname,
                                           conn_id=self.connection_id,
                                           auto_reconnect=False,
                                           use_binary_placeholder=True,

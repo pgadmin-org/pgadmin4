@@ -8,6 +8,7 @@
 ##########################################################################
 
 import secrets
+import json
 
 from pgadmin.browser.server_groups.servers.databases.tests import utils as \
     database_utils
@@ -204,7 +205,9 @@ class TestQueryUpdatableResultset(BaseTestGenerator):
         self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
-        response = self.tester.post(url)
+        response = self.tester.post(url, data=json.dumps({
+            "dbname": self.db_name
+        }))
         self.assertEqual(response.status_code, 200)
 
     def _initialize_urls(self):

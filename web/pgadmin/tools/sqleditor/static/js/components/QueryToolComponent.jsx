@@ -113,7 +113,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       fgcolor: params.fgcolor,
       bgcolor: params.bgcolor,
       conn_title: getTitle(
-        pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.escape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
+        pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
         _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true' ? true : false),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
@@ -261,7 +261,8 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     api.post(baseUrl, qtState.params.is_query_tool ? {
       user: selectedConn.user,
       role: selectedConn.role,
-      password: password
+      password: password,
+      dbname: selectedConn.database_name
     } : JSON.stringify(qtState.params.sql_filter))
       .then(()=>{
         setQtState({
@@ -651,10 +652,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
             is_selected: true,
           };
 
-          let existIdx = _.findIndex(qtState.connection_list, (conn)=>(
-            conn.sid == connectionData.sid && conn.did == connectionData.did
-            && conn.user == connectionData.user && conn.role == connectionData.role
-          ));
+          let existIdx = _.findIndex(qtState.connection_list, (conn)=>{
+            conn.role= conn.role == ''? null :conn.role;
+            return(
+              conn.sid == connectionData.sid  && conn.database_name == connectionData.database_name
+              && conn.user == connectionData.user && conn.role == connectionData.role
+            );
+          });
           if(existIdx > -1) {
             reject(gettext('Connection with this configuration already present.'));
             return;
