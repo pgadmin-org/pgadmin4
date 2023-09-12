@@ -8,7 +8,10 @@ import PropTypes from 'prop-types';
 
 export default function LoginPage({userLanguage, langOptions, forgotPassUrl, csrfToken, loginUrl, authSources, authSourcesEnum, oauth2Config, loginBanner, ...props}) {
   const [form, setForm] = useState(({email: '', password: '', language: userLanguage}));
-  const showLoginForm = authSources?.includes('internal');
+
+  // Hide login form if auth source is only oauth2 and/or kerberos. #5386
+  const showLoginForm = !((authSources?.includes('oauth2') || authSources?.includes('kerberos')) && authSources?.length == 1 || (authSources?.includes('oauth2') 
+  && authSources?.includes('kerberos')) && authSources?.length == 2);
 
   const onTextChange = (n, val)=>{
     setForm((prev)=>({...prev, [n]: val}));
