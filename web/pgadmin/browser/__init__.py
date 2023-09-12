@@ -30,7 +30,8 @@ from flask_babel import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
 from flask_login.utils import login_url
-from flask_security.changeable import change_user_password
+from flask_security.changeable import change_user_password, \
+    send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
 from flask_security.recoverable import reset_password_token_status, \
     generate_reset_password_token, update_password
@@ -1071,30 +1072,27 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             }
         elif req_json:
             form = form_class(MultiDict(req_json))
-            if form.validate_on_submit():
+            if form.validate():
                 errormsg = None
                 try:
                     change_user_password(current_user._get_current_object(),
                                          form.new_password.data,
-                                         autologin=False)
-                except SOCKETErrorException as e:
-                    # Handle socket errors which are not covered by
-                    # SMTPExceptions.
-                    logging.exception(str(e), exc_info=True)
-                    errormsg = gettext(SMTP_SOCKET_ERROR).format(e)
-                except (SMTPConnectError, SMTPResponseException,
-                        SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
-                        SMTPException, SMTPAuthenticationError,
-                        SMTPSenderRefused, SMTPRecipientsRefused) as ex:
-                    # Handle smtp specific exceptions.
-                    logging.exception(str(ex), exc_info=True)
-                    errormsg = gettext(SMTP_ERROR).format(ex)
+                                         notify=False,
+                                         autologin=True)
+                    try:
+                        send_password_changed_notice(
+                            current_user._get_current_object())
+                    except Exception as _:
+                        # No need to throw error if failed in sending email
+                        pass
                 except Exception as e:
                     # Handle other exceptions.
                     logging.exception(str(e), exc_info=True)
                     errormsg = gettext(PASS_ERROR).format(e)
 
-                if request.get_json(silent=True) is None and errormsg is None:
+                if request.get_json(silent=True) is not None and \
+                        errormsg is None:
+                    after_this_request(view_commit)
                     old_key = get_crypt_key()[1]
                     set_crypt_key(form.new_password.data, False)
 
@@ -1102,13 +1100,11 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                         import reencrpyt_server_passwords
                     reencrpyt_server_passwords(
                         current_user.id, old_key, form.new_password.data)
-
-                    return redirect(get_url(_security.post_change_view) or
-                                    get_url(_security.post_login_view))
                 elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
                 return bad_request(list(form.errors.values())[0][0])
+
         return make_json_response(
             success=1,
             info=gettext('pgAdmin user password changed successfully')
