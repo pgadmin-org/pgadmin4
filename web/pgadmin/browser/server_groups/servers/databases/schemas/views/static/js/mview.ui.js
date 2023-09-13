@@ -87,8 +87,14 @@ export default class MViewSchema extends BaseUISchema {
         },
       }, {
         id: 'amname', label: gettext('Access Method'), group: gettext('Definition'),
-        type: 'select', mode: ['create', 'properties', 'edit'], min_version: 120000,
-        options: obj.fieldOptions.table_amname_list,
+        type: (state)=>{
+          return {
+            type: 'select', options: obj.fieldOptions.table_amname_list,
+            controlProps: {
+              allowClear: obj.isNew(state) ? true : false,
+            }
+          };
+        }, mode: ['create', 'properties', 'edit'], min_version: 120000,
         disabled: (state) => {
           if (obj.getServerVersion() < 150000 && !obj.isNew(state)) {
             return true;
