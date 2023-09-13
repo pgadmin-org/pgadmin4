@@ -43,6 +43,7 @@ import SelectThemes from './SelectThemes';
 import { showFileManager } from '../helpers/showFileManager';
 import { withColorPicker } from '../helpers/withColorPicker';
 import { useWindowSize } from '../custom_hooks';
+import PgTreeView from '../PgTreeView';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -1274,4 +1275,15 @@ FormButton.propTypes = {
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
   btnName: PropTypes.string
+};
+
+export function InputTree({hasCheckbox, treeData, onChange, ...props}){
+  return <PgTreeView data={treeData} hasCheckbox={hasCheckbox} selectionChange={onChange} {...props}></PgTreeView>;
+}
+
+InputTree.propTypes = {
+  hasCheckbox: PropTypes.bool,
+  treeData: PropTypes.array,
+  onChange: PropTypes.func,
+  selectionChange: PropTypes.func,
 };

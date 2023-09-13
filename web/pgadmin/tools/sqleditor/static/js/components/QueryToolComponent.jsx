@@ -109,7 +109,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       fgcolor: params.fgcolor,
       bgcolor: params.bgcolor,
       conn_title: getTitle(
-        pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
+        pgAdmin, null, selectedNodeInfo, true, _.unescape(params.server_name), _.escape(params.database_name) || getDatabaseLabel(selectedNodeInfo),
         _.unescape(params.role) || _.unescape(params.user), params.is_query_tool == 'true' ? true : false),
       server_name: _.unescape(params.server_name),
       database_name: _.unescape(params.database_name) || getDatabaseLabel(selectedNodeInfo),

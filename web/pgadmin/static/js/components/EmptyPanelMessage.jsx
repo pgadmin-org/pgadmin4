@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme)=>({
     fontSize: '0.8rem',
     display: 'flex',
     alignItems: 'center',
+    flexDirection: 'column'
   },
 }));
 
@@ -19,8 +20,7 @@ export default function EmptyPanelMessage({text}) {
   const classes = useStyles();
   return (
     <Box className={classes.root}>
-      <InfoRoundedIcon style={{height: '1.2rem'}}/>
-      <span style={{marginLeft: '4px'}}>{text}</span>
+      <span style={{marginLeft: '4px'}}><InfoRoundedIcon style={{height: '1.2rem'}}/>{text}</span>
     </Box>
   );
 }
