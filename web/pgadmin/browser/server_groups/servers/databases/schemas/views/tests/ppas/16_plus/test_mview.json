@@ -264,7 +264,7 @@
       "data": {
         "spcname": "pg_default",
         "schema": "public",
-        "owner": "postgres",
+        "owner": "enterprisedb",
         "datacl": [],
         "seclabels": [],
         "name": "testmview_am_$%{}[]()&*^!/@`#",
