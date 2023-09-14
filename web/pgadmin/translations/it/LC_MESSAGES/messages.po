@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PgAdmin 4\n"
 "Report-Msgid-Bugs-To: sgarbossa.domenico@gmail.com\n"
-"POT-Creation-Date: 2023-08-17 18:49+0530\n"
+"POT-Creation-Date: 2023-09-14 18:06+0530\n"
 "PO-Revision-Date: 2023-07-20 16:41+0200\n"
 "Last-Translator: Domenico Sgarbossa <sgarbossa.domenico@gmail.com>\n"
 "Language: it_IT\n"
@@ -81,7 +81,7 @@ msgid "NW.js Version"
 msgstr "Versione di NW.js"
 
 #: pgadmin/about/static/js/AboutComponent.jsx:105
-#: pgadmin/browser/__init__.py:89
+#: pgadmin/browser/__init__.py:90
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:351
 msgid "Browser"
 msgstr "Esplora"
@@ -209,7 +209,7 @@ msgstr "Trovato più di un risultato."
 msgid "Could not find the specified user."
 msgstr "Impossibile trovare l'utente specificato."
 
-#: pgadmin/authenticate/oauth2.py:183
+#: pgadmin/authenticate/oauth2.py:204
 msgid "Please set the configuration parameters properly."
 msgstr "Si prega di impostare correttamente i parametri di configurazione."
 
@@ -331,7 +331,7 @@ msgstr "Email address"
 
 #: pgadmin/authenticate/mfa/email.py:219
 #: pgadmin/browser/templates/browser/js/messages.js:46
-#: pgadmin/tools/backup/static/js/backup.ui.js:530
+#: pgadmin/tools/backup/static/js/backup.ui.js:539
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:103
 #: pgadmin/tools/erd/static/js/erd_tool/components/FloatingNote.jsx:86
 msgid "Note"
@@ -392,11 +392,11 @@ msgstr ""
 msgid "Complete the authentication process first"
 msgstr "Completa prima il processo di autenticazione"
 
-#: pgadmin/browser/__init__.py:78
+#: pgadmin/browser/__init__.py:79
 msgid "Your password has not been changed."
 msgstr "La tua password non è stata modificata."
 
-#: pgadmin/browser/__init__.py:79
+#: pgadmin/browser/__init__.py:80
 msgid ""
 "SMTP Socket error: {error}\n"
 " {pass_error}"
@@ -404,7 +404,7 @@ msgstr ""
 "Errore socket SMTP: {error}\n"
 "  {pass_error}"
 
-#: pgadmin/browser/__init__.py:82
+#: pgadmin/browser/__init__.py:83
 msgid ""
 "SMTP error: {error}\n"
 " {pass_error}"
@@ -412,7 +412,7 @@ msgstr ""
 "Errore SMTP: {error}\n"
 "  {pass_error}"
 
-#: pgadmin/browser/__init__.py:84
+#: pgadmin/browser/__init__.py:85
 msgid ""
 "Error: {error}\n"
 " {pass_error}"
@@ -420,40 +420,40 @@ msgstr ""
 "Errore: {error}\n"
 "  {pass_error}"
 
-#: pgadmin/browser/__init__.py:116
+#: pgadmin/browser/__init__.py:117
 #: pgadmin/browser/register_browser_preferences.py:102
 msgid "Lock Layout"
 msgstr "Blocca la disposizione"
 
-#: pgadmin/browser/__init__.py:123
+#: pgadmin/browser/__init__.py:124
 #: pgadmin/browser/register_browser_preferences.py:104
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:188
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:242
 msgid "None"
 msgstr "Nessuna"
 
-#: pgadmin/browser/__init__.py:130
+#: pgadmin/browser/__init__.py:131
 #: pgadmin/browser/register_browser_preferences.py:105
 msgid "Prevent Docking"
 msgstr "Disabilita il blocco disposizione"
 
-#: pgadmin/browser/__init__.py:137
+#: pgadmin/browser/__init__.py:138
 #: pgadmin/browser/register_browser_preferences.py:107
 msgid "Full Lock"
 msgstr "Blocco completo"
 
-#: pgadmin/browser/__init__.py:371 pgadmin/browser/collection.py:279
+#: pgadmin/browser/__init__.py:372 pgadmin/browser/collection.py:279
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:109
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/__init__.py:677
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:351
 msgid "Nodes"
 msgstr "Nodi"
 
-#: pgadmin/browser/__init__.py:834 pgadmin/browser/__init__.py:962
+#: pgadmin/browser/__init__.py:835 pgadmin/browser/__init__.py:963
 msgid "Incorrect master password"
 msgstr "Password principale non corretta"
 
-#: pgadmin/browser/__init__.py:943
+#: pgadmin/browser/__init__.py:944
 msgid ""
 "The master password could not be retrieved from the MASTER_PASSWORD_HOOK "
 "utility specified {0}.Please check that the hook utility is configured "
@@ -463,15 +463,15 @@ msgstr ""
 "MASTER_PASSWORD_HOOK specificata {0}. Verificare che l'utilità hook sia "
 "configurata correttamente."
 
-#: pgadmin/browser/__init__.py:1010
+#: pgadmin/browser/__init__.py:1011
 msgid "Master password cannot be empty"
 msgstr "La password principale non può essere vuota"
 
-#: pgadmin/browser/__init__.py:1114
+#: pgadmin/browser/__init__.py:1110
 msgid "pgAdmin user password changed successfully"
 msgstr "La password dell'utente pgAdmin è stata modificata correttamente"
 
-#: pgadmin/browser/__init__.py:1161
+#: pgadmin/browser/__init__.py:1157
 msgid ""
 "Your account is authenticated using an external {} source. Please contact"
 " the administrators of this service if you need to reset your password."
@@ -480,7 +480,7 @@ msgstr ""
 "di contattare gli amministratori di questo servizio se è necessario "
 "reimpostare la password."
 
-#: pgadmin/browser/__init__.py:1271
+#: pgadmin/browser/__init__.py:1267
 msgid ""
 "You successfully reset your password but your account is locked. Please "
 "contact the Administrator."
@@ -622,22 +622,22 @@ msgstr ""
 
 #: pgadmin/browser/register_browser_preferences.py:144
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:41
-#: pgadmin/utils/__init__.py:815 pgadmin/utils/__init__.py:824
+#: pgadmin/utils/__init__.py:816 pgadmin/utils/__init__.py:825
 msgid "Key"
 msgstr "Chiave"
 
 #: pgadmin/browser/register_browser_preferences.py:145
-#: pgadmin/static/js/keyboard_shortcuts.js:76 pgadmin/utils/__init__.py:829
+#: pgadmin/static/js/keyboard_shortcuts.js:76 pgadmin/utils/__init__.py:830
 msgid "Shift"
 msgstr "Sposta"
 
 #: pgadmin/browser/register_browser_preferences.py:146
-#: pgadmin/static/js/keyboard_shortcuts.js:79 pgadmin/utils/__init__.py:835
+#: pgadmin/static/js/keyboard_shortcuts.js:79 pgadmin/utils/__init__.py:836
 msgid "Ctrl"
 msgstr "Ctrl"
 
 #: pgadmin/browser/register_browser_preferences.py:147
-#: pgadmin/utils/__init__.py:840
+#: pgadmin/utils/__init__.py:841
 msgid "Alt/Option"
 msgstr "Alt/Opzione"
 
@@ -902,8 +902,9 @@ msgstr "Mancano le proprietà richieste."
 #: pgadmin/browser/templates/browser/js/messages.js:29
 #: pgadmin/browser/templates/browser/js/messages.js:48
 #: pgadmin/browser/utils.py:444 pgadmin/static/js/utils.js:543
+#: pgadmin/tools/backup/__init__.py:570
 #: pgadmin/tools/grant_wizard/__init__.py:107
-#: pgadmin/tools/sqleditor/__init__.py:941 pgadmin/utils/exception.py:37
+#: pgadmin/tools/sqleditor/__init__.py:940 pgadmin/utils/exception.py:37
 msgid "Connection to the server has been lost."
 msgstr "La connessione al server è stata persa."
 
@@ -964,7 +965,7 @@ msgid "name"
 msgstr "nome"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:823
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:130
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:139
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:153
 #: pgadmin/misc/cloud/static/js/aws.js:252
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:183
@@ -977,7 +978,7 @@ msgid "Maintenance database"
 msgstr "Database di manutenzione"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:825
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:146
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:155
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:169
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:246
 #: pgadmin/misc/cloud/static/js/aws.js:250
@@ -991,7 +992,7 @@ msgstr "Nome dell'utente"
 #: pgadmin/browser/server_groups/servers/__init__.py:826
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:87
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:134
-#: pgadmin/tools/backup/static/js/backup.ui.js:235
+#: pgadmin/tools/backup/static/js/backup.ui.js:243
 #: pgadmin/tools/restore/static/js/restore.ui.js:180
 msgid "Comments"
 msgstr "Commenti"
@@ -1019,7 +1020,7 @@ msgid "'{0}' is not allowed to modify, when server is connected."
 msgstr "'{0}' non è modificabile, quando il server è connesso."
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1145
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:675
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:701
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:394
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:413
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:699
@@ -1044,8 +1045,8 @@ msgstr "'{0}' non è modificabile, quando il server è connesso."
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:406
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:613
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/__init__.py:462
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:949
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:398
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:972
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:403
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:509
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:484
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:547
@@ -1055,7 +1056,7 @@ msgstr "'{0}' non è modificabile, quando il server è connesso."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:596
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/__init__.py:961
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:553
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:454
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:465
 #: pgadmin/browser/server_groups/servers/pgagent/__init__.py:316
 #: pgadmin/browser/server_groups/servers/resource_groups/__init__.py:375
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:304
@@ -1084,7 +1085,7 @@ msgstr "Inserisci i dettagli del server per connetterti"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1664
 #: pgadmin/tools/schema_diff/__init__.py:369
-#: pgadmin/tools/sqleditor/__init__.py:2471
+#: pgadmin/tools/sqleditor/__init__.py:2470
 msgid "Server connected."
 msgstr "Server connesso."
 
@@ -1211,34 +1212,34 @@ msgstr "PostgreSQL"
 msgid "Databases"
 msgstr "Database"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:219
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:223
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:224
 #: pgadmin/misc/cloud/__init__.py:187
 msgid "Could not find the server."
 msgstr "Impossibile trovare il server."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:576
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:580
 msgid "Database connected."
 msgstr "Database connesso."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:596
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:600
 msgid "Database could not be disconnected."
 msgstr "Il database non può essere disconesso."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:600
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:604
 msgid "Database disconnected."
 msgstr "Database disconnesso."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:793
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2233
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:819
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2234
 msgid "Could not find the database on the server."
 msgstr "Impossibile trovare il database sul server."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:952
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:978
 msgid "Database could not be deleted."
 msgstr "Impossibile eliminare il database."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:993
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1019
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:525
 #: pgadmin/browser/server_groups/servers/databases/event_triggers/__init__.py:572
 #: pgadmin/browser/server_groups/servers/databases/extensions/__init__.py:377
@@ -1256,15 +1257,15 @@ msgstr "Impossibile eliminare il database."
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/__init__.py:898
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/__init__.py:478
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/__init__.py:502
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1094
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:480
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1117
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:485
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/__init__.py:587
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/__init__.py:633
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/__init__.py:698
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/__init__.py:766
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:752
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:729
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:771
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:772
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/__init__.py:491
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/__init__.py:440
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:676
@@ -1275,13 +1276,13 @@ msgstr "Impossibile eliminare il database."
 msgid "Error: Object not found."
 msgstr "Errore: oggetto non trovato."
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:996
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1022
 msgid "The specified database could not be found.\n"
 msgstr "Impossibile trovare il database specificato. \n"
 
-#: pgadmin/browser/server_groups/servers/databases/__init__.py:1095
+#: pgadmin/browser/server_groups/servers/databases/__init__.py:1121
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:871
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1907
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1908
 msgid " -- definition incomplete"
 msgstr " -- definizione incompleta"
 
@@ -1311,13 +1312,13 @@ msgid "Could not find the specified cast on the server."
 msgstr "Impossibile trovare il cast specificato sul server."
 
 #: pgadmin/browser/server_groups/servers/databases/casts/__init__.py:625
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:640
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:645
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/utils.py:136
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/utils.py:181
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/utils.py:236
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/utils.py:201
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/utils.py:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1537
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1539
 #: pgadmin/browser/server_groups/servers/roles/__init__.py:1338
 msgid "-- definition incomplete"
 msgstr "-- definizione incompleta"
@@ -1382,7 +1383,7 @@ msgstr "Conversione..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.ui.js:44
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:49
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:40
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:177
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:159
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:106
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:259
@@ -1390,16 +1391,16 @@ msgstr "Conversione..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:439
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:170
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:172
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:39
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:177
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:460
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:179
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:462
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:215
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1268
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:54
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:56
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:54
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:110
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:119
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:295
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:56
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:70
@@ -1455,17 +1456,18 @@ msgstr "Nome"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:65
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:443
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:173
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:175
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:49
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:162
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:463
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:164
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:465
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:218
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1273
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:57
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:57
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:108
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:114
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:110
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:113
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:123
 #: pgadmin/browser/server_groups/servers/resource_groups/static/js/resource_group.ui.js:41
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:79
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:56
@@ -1578,16 +1580,17 @@ msgstr "Tipo di origine"
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:60
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:75
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:93
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:254
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:307
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:340
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:373
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:393
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:395
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:529
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:533
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:537
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:541
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:229
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:281
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:313
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:345
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:362
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:382
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:384
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:516
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:520
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:524
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:528
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui.js:78
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui.js:82
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui.js:97
@@ -1665,19 +1668,28 @@ msgstr "Tipo di origine"
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1470
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1476
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1482
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:83
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:84
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:86
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:90
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:97
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:113
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:117
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:119
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:83
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:87
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:91
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:122
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:127
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:133
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:132
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:138
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:143
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:148
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:152
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:158
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:156
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:169
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:182
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:195
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:209
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:213
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:226
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:230
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:236
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:93
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:99
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:111
@@ -1747,7 +1759,7 @@ msgstr "Cast di sistema?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:144
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.ui.js:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:63
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:549
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:536
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:162
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:268
@@ -1755,14 +1767,14 @@ msgstr "Cast di sistema?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:61
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:622
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:209
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:211
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:110
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:509
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:511
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:500
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1497
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:80
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:82
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:79
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:118
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:123
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:412
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:113
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:156
@@ -1837,16 +1849,16 @@ msgstr "Trigger evento ..."
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.ui.js:50
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:47
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:175
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:465
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:177
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:467
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1276
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:60
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:62
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:60
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:111
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:118
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:116
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:127
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:59
 #: pgadmin/dashboard/static/js/Dashboard.jsx:630
-#: pgadmin/tools/backup/static/js/backup.ui.js:199
+#: pgadmin/tools/backup/static/js/backup.ui.js:207
 #: pgadmin/tools/restore/static/js/restore.ui.js:159
 msgid "Owner"
 msgstr "Proprietario"
@@ -1876,10 +1888,10 @@ msgstr "Abilitare"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/rules/static/js/rule.ui.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:96
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:231
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:207
-#: pgadmin/tools/backup/static/js/backup.ui.js:320
-#: pgadmin/tools/backup/static/js/backup.ui.js:331
-#: pgadmin/tools/backup/static/js/backup.ui.js:694
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:216
+#: pgadmin/tools/backup/static/js/backup.ui.js:328
+#: pgadmin/tools/backup/static/js/backup.ui.js:339
+#: pgadmin/tools/backup/static/js/backup.ui.js:703
 #: pgadmin/tools/restore/static/js/restore.ui.js:250
 #: pgadmin/tools/restore/static/js/restore.ui.js:462
 msgid "Disable"
@@ -1930,16 +1942,16 @@ msgstr "Quando TAG é"
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:254
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:188
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:89
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:571
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:429
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1009
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:558
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:448
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1034
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1521
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:121
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:138
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:123
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:192
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:270
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:222
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:89
-#: pgadmin/tools/backup/static/js/backup.ui.js:259
+#: pgadmin/tools/backup/static/js/backup.ui.js:267
 #: pgadmin/tools/restore/static/js/restore.ui.js:204
 msgid "Security labels"
 msgstr "Etichetta di sicurezza"
@@ -1976,28 +1988,28 @@ msgstr "Etichetta di sicurezza"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:79
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:85
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:91
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:562
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:421
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:425
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:432
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:997
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:549
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:440
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:444
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:451
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1022
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1488
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1503
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1524
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:78
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:115
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:124
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:80
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:132
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:141
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:77
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:117
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:126
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:381
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:162
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:165
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:168
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:171
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:174
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:181
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:194
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:386
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:240
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:243
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:246
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:249
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:252
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:259
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:272
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:224
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:75
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:84
@@ -2067,10 +2079,10 @@ msgstr "A cascata?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:135
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/synonyms/static/js/synonym.ui.js:53
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:180
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:470
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:182
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:472
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1282
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:65
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:65
 msgid "Schema"
 msgstr "Schema"
@@ -2152,7 +2164,7 @@ msgid "System foreign server?"
 msgstr "Server esterno di sistema?"
 
 #: pgadmin/browser/server_groups/servers/databases/foreign_data_wrappers/foreign_servers/static/js/foreign_server.ui.js:67
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:443
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:431
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/row_security_policies/static/js/row_security_policy.ui.js:120
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.js:48
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:931
@@ -2208,8 +2220,8 @@ msgstr "Tipo"
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:422
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:748
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:755
-#: pgadmin/tools/backup/static/js/backup.ui.js:695
-#: pgadmin/tools/backup/static/js/backup.ui.js:700
+#: pgadmin/tools/backup/static/js/backup.ui.js:704
+#: pgadmin/tools/backup/static/js/backup.ui.js:709
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:122
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:128
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:134
@@ -2245,19 +2257,19 @@ msgstr "Opzioni"
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/catalog.ui.js:53
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:66
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:82
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:565
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:420
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:424
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1000
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1004
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:552
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:439
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:443
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1025
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1029
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1487
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1502
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:77
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:111
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:79
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:128
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:76
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:113
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:161
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:177
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:239
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:255
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:121
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:127
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:135
@@ -2268,7 +2280,7 @@ msgstr "Opzioni"
 #: pgadmin/browser/server_groups/servers/static/js/privilege.ui.js:65
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:74
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:83
-#: pgadmin/tools/backup/static/js/backup.ui.js:214
+#: pgadmin/tools/backup/static/js/backup.ui.js:222
 #: pgadmin/tools/grant_wizard/static/js/privilege_schema.ui.js:25
 #: pgadmin/tools/restore/static/js/restore.ui.js:166
 msgid "Privileges"
@@ -2400,7 +2412,7 @@ msgstr "La funzione di gestione non può essere vuota."
 
 #: pgadmin/browser/server_groups/servers/databases/publications/__init__.py:50
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:32
-#: pgadmin/tools/backup/static/js/backup.ui.js:243
+#: pgadmin/tools/backup/static/js/backup.ui.js:251
 #: pgadmin/tools/restore/static/js/restore.ui.js:188
 msgid "Publications"
 msgstr "Pubblicazioni"
@@ -2418,8 +2430,8 @@ msgid "Publication dropped"
 msgstr "Pubblicazione abbandonata"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.js:47
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:175
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:179
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:184
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:188
 msgid "Publication"
 msgstr "Pubblicazione"
 
@@ -2442,14 +2454,21 @@ msgstr "INSERT"
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:46
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:320
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:513
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:294
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:302
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:310
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:303
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:311
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:319
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:327
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:339
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:347
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:353
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:328
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:336
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:348
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:356
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:362
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:381
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:413
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:421
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:429
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:437
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:445
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:453
 msgid "With"
 msgstr "Con"
 
@@ -2514,9 +2533,9 @@ msgstr "Nome tabella"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:81
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:584
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:610
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:513
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:665
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:666
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:515
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:667
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:668
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:444
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:210
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:230
@@ -2701,10 +2720,10 @@ msgstr "Ordina operatore"
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:178
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:183
 #: pgadmin/browser/server_groups/servers/databases/schemas/aggregates/static/js/aggregate.ui.js:188
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:212
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:216
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:623
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:206
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:214
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:218
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:625
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:284
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:303
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:310
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:316
@@ -2755,7 +2774,7 @@ msgstr "Colonna"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.ui.js:54
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:338
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:249
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:224
 msgid "Position"
 msgstr "Posizione"
 
@@ -2763,7 +2782,7 @@ msgstr "Posizione"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:319
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:44
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.ui.js:47
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:252
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:227
 msgid "Data type"
 msgstr "Tipo dato"
 
@@ -2771,18 +2790,18 @@ msgstr "Tipo dato"
 #: pgadmin/browser/server_groups/servers/databases/schemas/collations/static/js/collation.js:47
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui.js:220
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:482
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:372
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:361
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:233
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:87
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:328
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:977
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1431
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:137
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:168
 msgid "Collation"
 msgstr "Collation"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/static/js/catalog_object_column.ui.js:66
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:546
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:533
 msgid "System column?"
 msgstr "Colonna di sistema?"
 
@@ -2791,7 +2810,7 @@ msgid "Catalog Object"
 msgstr "Oggetto catalogo"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/static/js/catalog_object.ui.js:44
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:115
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:120
 msgid "System database?"
 msgstr "Database di sistema?"
 
@@ -2890,7 +2909,7 @@ msgstr "Vincolo del dominio di sistema?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:537
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.js:36
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/check_constraint/static/js/check_constraint.ui.js:77
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:167
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:168
 msgid "Check"
 msgstr "Controllo"
 
@@ -2931,8 +2950,8 @@ msgstr "Precisione"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui.js:213
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:448
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:76
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:408
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:211
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:397
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:234
 #: pgadmin/browser/server_groups/servers/static/js/vacuum.ui.js:43
 #: pgadmin/tools/debugger/static/js/components/DebuggerArgs.ui.js:136
 msgid "Default"
@@ -2945,7 +2964,7 @@ msgstr "Immettere un'espressione o un valore."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui.js:217
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:461
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:430
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:418
 msgid "Not NULL?"
 msgstr "Non NULL?"
 
@@ -2953,22 +2972,22 @@ msgstr "Non NULL?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/domains/static/js/domain.ui.js:227
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:195
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:196
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:409
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:432
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:445
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:481
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:491
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:496
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:501
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:506
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:511
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:516
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:521
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:398
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:420
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:433
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:468
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:478
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:483
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:488
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:493
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:498
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:503
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:508
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/__init__.py:51
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:30
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/static/js/constraints.js:41
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:225
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:731
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:227
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:733
 msgid "Constraints"
 msgstr "Vincoli"
 
@@ -2983,8 +3002,8 @@ msgstr "Tabella esterna eliminata"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1448
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/__init__.py:1493
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1484
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1538
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1507
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1561
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:1679
 msgid "-- Please create column(s) first..."
 msgstr "-- Gentilmente creare prima la colonna(e)..."
@@ -3020,7 +3039,7 @@ msgid "Inherited From"
 msgstr "Eredita da"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui.js:466
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:391
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:380
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:244
 #: pgadmin/browser/static/js/browser.js:287
 #: pgadmin/browser/templates/browser/js/messages.js:40
@@ -3159,7 +3178,7 @@ msgid "System FTS dictionary?"
 msgstr "Dizionario FTS di sistema?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/fts_dictionaries/static/js/fts_dictionary.ui.js:77
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:126
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:131
 msgid "Template"
 msgstr "Template"
 
@@ -3398,6 +3417,7 @@ msgstr "Simbolo di collegamento"
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbfuncs/static/js/edbfunc.ui.js:83
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/compound_triggers/static/js/compound_trigger.ui.js:148
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui.js:475
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:120
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:106
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:107
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:159
@@ -3430,6 +3450,7 @@ msgid "Window?"
 msgstr "Finestre?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:340
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:396
 msgid "Parallel"
 msgstr "Parallelo"
 
@@ -3454,8 +3475,8 @@ msgstr "Funzione di supporto"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui.js:389
 #: pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/trigger_function.ui.js:239
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:986
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:188
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1011
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:266
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:216
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:220
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.ui.js:80
@@ -3676,8 +3697,8 @@ msgstr "Visibilità"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/__init__.py:55
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/edbvars/static/js/edbvar.js:30
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:553
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:554
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:540
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:541
 msgid "Variables"
 msgstr "Variabili"
 
@@ -3732,7 +3753,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:115
 #: pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui.js:131
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:152
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:169
 msgid "Do you want to continue?"
 msgstr "Vuoi continuare?"
 
@@ -3787,39 +3808,39 @@ msgid "Current value"
 msgstr "Valore attuale"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:150
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:490
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:477
 msgid "Increment"
 msgstr "Incrementa"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:153
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:495
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:482
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:299
 msgid "Start"
 msgstr "Inizio"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:156
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:500
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:487
 msgid "Minimum"
 msgstr "Minimo"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:159
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:505
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:492
 msgid "Maximum"
 msgstr "Massimo"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:162
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:510
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:497
 msgid "Cache"
 msgstr "Cache"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:166
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:515
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:502
 msgid "Cycled"
 msgstr "Cíclica"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:169
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:254
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:815
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:273
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:840
 msgid "Unlogged?"
 msgstr "Non registrato?"
 
@@ -3841,17 +3862,17 @@ msgstr ""
 "proprietario ed essere nello stesso schema della sequenza."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:266
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:651
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:634
 msgid "Minimum value must be less than maximum value."
 msgstr "Il valore minimo deve essere inferiore al valore massimo."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:267
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:656
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:639
 msgid "Start value cannot be less than minimum value."
 msgstr "Il valore iniziale non può essere inferiore al valore minimo."
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui.js:268
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:661
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:644
 msgid "Start value cannot be greater than maximum value."
 msgstr "Il valore iniziale non può essere maggiore del valore massimo."
 
@@ -3886,22 +3907,22 @@ msgid "System schema?"
 msgstr "Schema di sistema?"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:69
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:164
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:242
 msgid "Default TABLE privileges"
 msgstr "Privilegi TABELLA predefiniti"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:72
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:167
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:245
 msgid "Default SEQUENCE privileges"
 msgstr "Privilegi SEQUENCE predefiniti"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:75
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:170
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:248
 msgid "Default FUNCTION privileges"
 msgstr "Privilegi FUNZIONE predefiniti"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.ui.js:78
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:173
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:251
 msgid "Default TYPE privileges"
 msgstr "Privilegi TYPE predefiniti"
 
@@ -3953,45 +3974,45 @@ msgstr "Oggetto destinazione"
 msgid "System synonym?"
 msgstr "Sinonimo di sistema?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:388
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:389
 msgid "Could not find the table."
 msgstr "Impossibile trovare il tavolo."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1098
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1121
 msgid "\n"
 msgstr "\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1114
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1137
 msgid "Table dropped"
 msgstr "Tabella eliminata"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1206
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:835
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1229
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:836
 msgid "Trigger(s) have been disabled"
 msgstr "I trigger(s) sono stati disabilitati"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1208
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:837
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1231
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:838
 msgid "Trigger(s) have been enabled"
 msgstr "I trigger(s) sono stati abilitati"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1631
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/__init__.py:1654
 msgid "Table rows counted: {}"
 msgstr "Righe della tabella conteggiate: {}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1115
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1117
 msgid "Table statistics have been reset"
 msgstr "Statistiche tabella ripristinate"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1441
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1443
 msgid "-- definition incomplete for {0}"
 msgstr "-- definizione incompleta per {0}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1993
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:1996
 msgid "Table truncated"
 msgstr "Tabella troncata"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2058
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/utils.py:2061
 msgid ""
 "The table is currently locked and the operation cannot be completed. "
 "Please try again later. \r\n"
@@ -4001,7 +4022,7 @@ msgstr ""
 "completata. Per favore riprova più tardi.\n"
 "ID processo di blocco: {0} Nome applicazione: {1}"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:500
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/__init__.py:505
 msgid "Column is dropped"
 msgstr "La colonna è stata eliminata"
 
@@ -4012,34 +4033,38 @@ msgstr "La colonna è stata eliminata"
 msgid "Column..."
 msgstr "Colonna..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:186
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:527
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:166
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:514
 msgid "Primary key?"
 msgstr "Chiave Primaria?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:297
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:271
 msgid "Inherited from table"
 msgstr "Ereditato da table"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:306
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:280
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:947
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1123
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1469
 msgid "Length/Precision"
 msgstr "Lunghezza/Precisione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:339
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:312
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:968
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1167
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1475
 msgid "Scale"
 msgstr "Scala"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:395
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:88
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:92
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:100
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:104
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:344
+msgid "Compression"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:346
+msgid "Select compression"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:384
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:59
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:499
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:500
@@ -4047,40 +4072,40 @@ msgstr "Scala"
 msgid "Storage"
 msgstr "Memoria di archivizione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:398
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:387
 msgid "Select storage"
 msgstr "Seleziona spazio di archiviazione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:448
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:436
 msgid "NONE"
 msgstr "NONE"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:449
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:437
 msgid "IDENTITY"
 msgstr "IDENTITY"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:457
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:462
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:444
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:449
 msgid "GENERATED"
 msgstr "GENERATED"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:478
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:465
 msgid "Identity"
 msgstr "Identità"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:480
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:467
 msgid "Select identity"
 msgstr "Seleziona identità"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:483
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:470
 msgid "ALWAYS"
 msgstr "ALWAYS"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:484
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:471
 msgid "BY DEFAULT"
 msgstr "BY DEFAULT"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:520
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:507
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/exclusion_constraint/static/js/exclusion_constraint.ui.js:93
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:67
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:49
@@ -4088,54 +4113,54 @@ msgstr "BY DEFAULT"
 msgid "Expression"
 msgstr "Espressione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:531
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:518
 msgid "Foreign key?"
 msgstr "Chiave esterna?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:535
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:522
 msgid "Inherited?"
 msgstr "Ereditato?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:539
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:215
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:512
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:656
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:526
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:217
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:514
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:658
 msgid "Inherited from table(s)"
 msgstr "Ereditato da tabelle"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:586
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:572
 msgid "Length/Precision should not be less than: "
 msgstr "La lunghezza/Precisione non deve essere maggiore di: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:588
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:574
 msgid "Length/Precision should not be greater than: "
 msgstr "La lunghezza/Precisione non deve essere maggiore di: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:601
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:585
 msgid "Scale should not be less than: "
 msgstr "La scale non dovrebbe essere minore di: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:603
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:587
 msgid "Scale should not be greater than: "
 msgstr "La scale non dovrebbe essere maggiore di: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:613
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:596
 msgid "Expression value cannot be empty."
 msgstr "Il valore dell'espressione non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:622
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:605
 msgid "Increment value cannot be empty."
 msgstr "Il valore di incremento non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:628
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:611
 msgid "Minimum value cannot be empty."
 msgstr "Il valore minimo non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:634
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:617
 msgid "Maximum value cannot be empty."
 msgstr "Il valore massimo non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:640
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:623
 msgid "Cache value cannot be empty."
 msgstr "Il valore della cache non può essere vuoto."
 
@@ -4431,10 +4456,10 @@ msgstr "Vincolo di esclusione del sistema?"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:171
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:181
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:446
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:185
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:475
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:91
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:132
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:187
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:477
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:89
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:137
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:51
 msgid "Tablespace"
 msgstr "Tablespace"
@@ -4455,9 +4480,9 @@ msgstr "La modifica del metodo di accesso cancella la raccolta delle colonne"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:205
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:217
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:264
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:229
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:790
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:99
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:231
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:815
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:112
 msgid "Fill factor"
 msgstr "Fattore di riempimento"
 
@@ -4612,7 +4637,7 @@ msgid "Index constraint"
 msgstr "Vincolo indice"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:115
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:123
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:124
 msgid "Primary Key"
 msgstr "Chiave Primaria"
 
@@ -4647,8 +4672,8 @@ msgstr "chiave univoca"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/__init__.py:1032
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:33
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.js:56
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:259
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:820
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:278
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:845
 msgid "Primary key"
 msgstr "Chiave Primaria"
 
@@ -4769,10 +4794,12 @@ msgid "Auto"
 msgstr "Auto"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:302
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:385
 msgid "On"
 msgstr "Attivo"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:306
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:389
 msgid "Off"
 msgstr "Disattivato"
 
@@ -4793,6 +4820,10 @@ msgid "Select the column(s)"
 msgstr "Seleziona le colonne"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:454
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:246
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:213
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:792
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:97
 msgid "Access Method"
 msgstr "Metodo di accesso"
 
@@ -4843,24 +4874,24 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:76
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:38
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:190
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:371
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:391
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:487
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:938
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:958
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:192
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:390
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:410
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:489
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:963
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:983
 msgid "Partitions"
 msgstr "Partizioni"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:618
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:619
 msgid "Partition detached."
 msgstr "Partizione separata."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:774
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:775
 msgid "The specified partition could not be found.\n"
 msgstr "Impossibile trovare la partizione specificata. \n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:787
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:788
 msgid "Partition dropped"
 msgstr "Partizione rimossa"
 
@@ -4872,6 +4903,8 @@ msgstr "Partizione"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:41
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/coll_table_stats.sql:22
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:43
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:70
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/coll_mview_stats.sql:22
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/coll_mview_stats.sql:22
 #: pgadmin/misc/statistics/static/js/Statistics.jsx:68
@@ -4882,6 +4915,7 @@ msgstr "Dimensione totale"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:41
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/stats.sql:31
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:70
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:31
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:31
 msgid "Indexes size"
@@ -4891,6 +4925,7 @@ msgstr "Dimensione degli indici"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:41
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/stats.sql:24
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:70
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:24
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:24
 msgid "Table size"
@@ -4899,6 +4934,7 @@ msgstr "Dimensione della tabella"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:42
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:58
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:71
 msgid "TOAST table size"
 msgstr "TOAST table size"
 
@@ -4906,6 +4942,7 @@ msgstr "TOAST table size"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:42
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/stats.sql:35
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:71
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:35
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:35
 msgid "Tuple length"
@@ -4915,6 +4952,7 @@ msgstr "Lunghezza della tuple"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:43
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/stats.sql:38
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:38
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:38
 msgid "Dead tuple length"
@@ -4924,6 +4962,7 @@ msgstr "Lunghezza delle tuple inutilizzate"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:43
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:59
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/templates/tables/sql/default/stats.sql:40
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:72
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/stats.sql:40
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/stats.sql:40
 msgid "Free space"
@@ -4979,8 +5018,8 @@ msgstr "Ripristinare statistiche"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:112
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:123
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:282
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:382
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:949
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:401
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:974
 msgid "Detach Partition"
 msgstr "Separa partizione"
 
@@ -5036,128 +5075,128 @@ msgstr "Scollega partizione Finalizza"
 msgid "Are you sure you want to detach the partition %s?"
 msgstr "Sei sicuro di voler staccare la partizione %s?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:198
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:269
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:498
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:200
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:292
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:500
 msgid "Partitioned table?"
 msgstr "Tabella partizionata?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:505
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:207
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:507
 msgid "System table?"
 msgstr "Tabella di sistema?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:219
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:659
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:221
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:661
 msgid "Inherited tables count"
 msgstr "Conteggio delle tabelle ereditate"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:234
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:795
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:236
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:820
 msgid "Toast tuple target"
 msgstr "Tupla Toast di destinazione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:239
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:800
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:241
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:825
 msgid "Parallel workers"
 msgstr "Lavoratori paralleli"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:244
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:805
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:263
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:830
 msgid "Has OIDs?"
 msgstr "Ha OIDs?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:263
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:824
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:282
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:849
 msgid "Rows (estimated)"
 msgstr "Righe (stimate)"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:267
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:828
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:286
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:853
 msgid "Rows (counted)"
 msgstr "Righe (contate)"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:279
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:840
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:298
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:865
 msgid "Is inherited?"
 msgstr "E' ereditato?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:283
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:283
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:849
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:302
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:306
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:874
 msgid "Partition Type"
 msgstr "Tipo di partizione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:288
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:288
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:854
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:307
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:311
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:879
 #: pgadmin/browser/server_groups/servers/databases/schemas/types/static/js/type.ui.js:1326
 msgid "Range"
 msgstr "Insieme"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:290
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:290
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:856
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:309
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:313
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:881
 #: pgadmin/misc/file_manager/__init__.py:168
 msgid "List"
 msgstr "Elenco"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:295
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:295
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:861
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:314
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:318
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:886
 msgid "Hash"
 msgstr "Hash"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:308
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:352
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:304
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:874
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:919
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:327
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:371
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:327
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:899
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:944
 msgid "Partition Keys"
 msgstr "Chiavi di partizione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:343
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:340
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:910
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:362
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:363
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:935
 msgid "Partition Scheme"
 msgstr "Struttura della partizione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:356
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:923
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:375
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:948
 msgid "Partition table supports two types of keys:"
 msgstr "La Tabella di partizione supporta due tipi di chiavi:"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:358
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:925
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:377
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:950
 msgid "Column: "
 msgstr "Colonna: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:359
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:926
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:378
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:951
 msgid "User can select any column from the list of available columns."
 msgstr ""
 "L'utente può selezionare qualsiasi colonna dalla lista delle colonne "
 "disponibili."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:361
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:928
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:380
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:953
 msgid "Expression: "
 msgstr "Espressione: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:362
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:929
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:381
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:954
 msgid "User can specify expression to create partition key."
 msgstr ""
 "L'utente può indicare un'espressione per creare la chiave della "
 "partizione."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:364
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:931
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:383
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:956
 msgid "Example: "
 msgstr "Esempio: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:365
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:932
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:384
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:957
 msgid ""
 "Let's say, we want to create a partition table based per year for the "
 "column 'saledate', having datatype 'date/timestamp', then we need to "
@@ -5168,18 +5207,18 @@ msgstr ""
 "specificare l'espressione come 'extract (YEAR from saledate)' come chiave"
 " di partizione."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:383
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:950
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:402
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:975
 msgid "Are you sure you wish to detach this partition?"
 msgstr "Sei sicuro di voler staccare questa partizione?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:395
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:962
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:414
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:987
 msgid "Create a table: "
 msgstr "Creazione tabella: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:396
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:963
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:415
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:988
 msgid ""
 "User can create multiple partitions while creating new partitioned table."
 " Operation switch is disabled in this scenario."
@@ -5188,13 +5227,13 @@ msgstr ""
 "nuova tabella partizionata. Il cambio di operazione è disabilitato in "
 "questa situazione."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:398
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:965
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:417
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:990
 msgid "Edit existing table: "
 msgstr "Modifica tabella esistente: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:399
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:966
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:418
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:991
 msgid ""
 "User can create/attach/detach multiple partitions. In attach operation "
 "user can select table from the list of suitable tables to be attached."
@@ -5203,13 +5242,13 @@ msgstr ""
 "di aggancio l'utente può selezionare la tabella dalla lista delle tabelle"
 " adatte ad essere agganciate."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:401
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:968
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:420
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:993
 msgid "Default: "
 msgstr "Default: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:402
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:969
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:421
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:994
 msgid ""
 "The default partition can store rows that do not fall into any existing "
 "partition’s range or list."
@@ -5217,13 +5256,13 @@ msgstr ""
 "La partizione di default può memorizzare righe che non fanno parte in "
 "nessun insieme o lista delle partizioni esistenti."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:404
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:971
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:423
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:996
 msgid "From/To/In input: "
 msgstr "Da/A/In ingresso: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:405
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:972
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:424
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:997
 msgid ""
 "From/To/In input: Values for these fields must be quoted with single "
 "quote. For more than one partition key values must be comma(,) separated."
@@ -5232,13 +5271,13 @@ msgstr ""
 "virgolette singole. Per più di una chiave di partizione i valori devono "
 "essere separati da virgola (,)."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:407
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:974
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:426
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:999
 msgid "Example: From/To: "
 msgstr "Esempio: Da/A: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:408
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:975
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:427
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1000
 msgid ""
 "Enabled for range partition. Consider partitioned table with multiple "
 "keys of type Integer, then values should be specified like '100','200'."
@@ -5247,13 +5286,13 @@ msgstr ""
 " con più chiavi di tipo Intero, quindi i valori devono essere specificati"
 " come '100', '200'."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:410
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:977
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:429
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1002
 msgid "In: "
 msgstr "In: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:411
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:978
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:430
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1003
 msgid ""
 "Enabled for list partition. Values must be comma(,) separated and quoted "
 "with single quote."
@@ -5261,25 +5300,25 @@ msgstr ""
 "Abilitato per la partizione elenco. I valori devono essere separati da "
 "virgola (,) e indicati tra virgolette singole."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:413
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:980
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:432
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1005
 msgid "Modulus/Remainder: "
 msgstr "Modulo / Resto: "
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:414
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:981
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:433
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1006
 msgid "Enabled for hash partition."
 msgstr "Abilitato per la partizione hash."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:434
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1014
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:103
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:453
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1039
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:116
 msgid "Storage settings"
 msgstr "Impostazioni archiviazione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:442
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:356
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1022
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.ui.js:461
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:379
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:1047
 msgid "Please specify at least one key for partitioned table."
 msgstr "Specificare almeno una chiave per la tabella partizionata."
 
@@ -5415,58 +5454,58 @@ msgstr "Tipo di chiave"
 msgid "partition"
 msgstr "partizione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:165
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:167
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:60
 msgid "Operation"
 msgstr "Operazione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:167
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:169
 msgid "Attach"
 msgstr "Aggancia"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:168
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:170
 #: pgadmin/browser/static/js/browser.js:434
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:703
 msgid "Create"
 msgstr "Crea"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:224
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:247
 msgid "From"
 msgstr "Da"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:234
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:257
 msgid "To"
 msgstr "A"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:243
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:266
 msgid "In"
 msgstr "In"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:252
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:275
 msgid "Modulus"
 msgstr "Resto"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:260
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:283
 msgid "Remainder"
 msgstr "Promemoria"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:364
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:387
 msgid "For range partition From field cannot be empty."
 msgstr "Per il campo partizione campo Da non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:368
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:391
 msgid "For range partition To field cannot be empty."
 msgstr "Per il campo Partizione A non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:374
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:397
 msgid "For list partition In field cannot be empty."
 msgstr "Per l'elenco La partizione nel campo non può essere vuota."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:380
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:403
 msgid "For hash partition Modulus field cannot be empty."
 msgstr "Per la partizione hash il campo Modulo non può essere vuoto."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:386
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/partition.utils.ui.js:409
 msgid "For hash partition Remainder field cannot be empty."
 msgstr "Per la partizione hash, il campo Remainder non può essere vuoto."
 
@@ -5484,71 +5523,71 @@ msgstr "Tronca identità di riavvio"
 msgid "ERD For Table"
 msgstr "ERD per tabella"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:152
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:153
 msgid "Foreign Key"
 msgstr "Chiave esterna"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:178
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:179
 msgid "Unique"
 msgstr "Unico"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:198
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:199
 msgid "Exclude"
 msgstr "Escludi"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:255
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:256
 msgid "Relation"
 msgstr "Relazione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:269
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:270
 msgid "With default values?"
 msgstr "Con valori di default?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:274
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:275
 msgid "With constraints?"
 msgstr "Con vincoli?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:279
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:280
 msgid "With indexes?"
 msgstr "Con índici?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:284
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:285
 msgid "With storage?"
 msgstr "Con deposito?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:289
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:290
 msgid "With comments?"
 msgstr "Con commenti?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:294
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:295
 msgid "With compression?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:299
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:300
 msgid "With generated?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:304
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:305
 msgid "With identity?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:309
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:310
 msgid "With statistics?"
 msgstr ""
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:515
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:517
 msgid "Select to inherit from..."
 msgstr "Seleziona per ereditare da ..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:627
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:629
 msgid "RLS Policy?"
 msgstr "RLS Policy?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:633
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:635
 msgid "Check Policy?"
 msgstr "Verifica policy?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:634
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:636
 msgid ""
 "Please check if any policy exists. If no policy exists for the table, a "
 "default-deny policy is used, meaning that no rows are visible or can be "
@@ -5559,27 +5598,27 @@ msgstr ""
 "predefinito, il che significa che nessuna riga è visibile o può essere "
 "modificata da altri utenti"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:640
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:642
 msgid "Force RLS Policy?"
 msgstr "Forzare policy RLS?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:653
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:655
 msgid "Replica Identity"
 msgstr "Identità di replicazione"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:735
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:737
 msgid "Of type"
 msgstr "Di tipo"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:766
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:768
 msgid "Remove column definitions?"
 msgstr "Rimuovere le definizioni di colonna?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:767
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:769
 msgid "Changing 'Of type' will remove column definitions."
 msgstr "La modifica di \"Tipo\" rimuoverà le definizioni di colonna."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:844
+#: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:869
 msgid "Like"
 msgstr "Come"
 
@@ -5915,7 +5954,7 @@ msgstr "Percentuale libera"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/__init__.py:58
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.js:36
-#: pgadmin/tools/backup/static/js/backup.ui.js:318
+#: pgadmin/tools/backup/static/js/backup.ui.js:326
 #: pgadmin/tools/restore/static/js/restore.ui.js:247
 msgid "Triggers"
 msgstr "Triggers"
@@ -6293,7 +6332,7 @@ msgid "Refresh Materialized View"
 msgstr "Aggiorna vista materializzata"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:186
-#: pgadmin/tools/backup/__init__.py:110
+#: pgadmin/tools/backup/__init__.py:114
 #: pgadmin/tools/import_export/__init__.py:102
 #: pgadmin/tools/maintenance/__init__.py:67
 #: pgadmin/tools/restore/__init__.py:81
@@ -6330,70 +6369,71 @@ msgstr ""
 "modificate\n"
 "-- tenere conto delle modifiche.\n"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2212
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2213
 #: pgadmin/tools/import_export/__init__.py:251
 #: pgadmin/tools/maintenance/__init__.py:197
 msgid "Could not find the given server"
 msgstr "Impossibile trovare il server specificato"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2224
-#: pgadmin/tools/backup/__init__.py:410
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2225
+#: pgadmin/tools/backup/__init__.py:431
 #: pgadmin/tools/maintenance/__init__.py:209
 #: pgadmin/tools/restore/__init__.py:180
 msgid "Please connect to the server first."
 msgstr "Per favore, connettiti prima al server."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2277
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2278
 msgid "Materialized view refresh job created."
 msgstr "Processo di aggiornamento della vista materializzata creato."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2329
-#: pgadmin/tools/backup/__init__.py:397 pgadmin/tools/backup/__init__.py:490
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/__init__.py:2330
+#: pgadmin/tools/backup/__init__.py:418 pgadmin/tools/backup/__init__.py:511
+#: pgadmin/tools/backup/__init__.py:555
 #: pgadmin/tools/import_export/__init__.py:392
 #: pgadmin/tools/maintenance/__init__.py:279
 #: pgadmin/tools/restore/__init__.py:166 pgadmin/tools/restore/__init__.py:430
 msgid "Could not find the specified server."
 msgstr "Impossibile trovare il server specificato."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:65
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:66
 msgid "Materialized View"
 msgstr "Vista Materializzata"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:88
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:92
 msgid "Refresh View"
 msgstr "Aggiorna la vista"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:94
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:100
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:106
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:98
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:104
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:110
 msgid "Materialized View..."
 msgstr "Vista Materializata..."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:110
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:114
 msgid "With data"
 msgstr "Con dati"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:116
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:120
 msgid "With no data"
 msgstr "Senza dati"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:124
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:128
 msgid "With data (concurrently)"
 msgstr "Con datos (concurrente)"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:130
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:134
 msgid "With no data (concurrently)"
 msgstr "Senza dati (attualmente)"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:174
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:179
 #: pgadmin/tools/import_export/static/js/import_export.js:127
 #: pgadmin/tools/maintenance/static/js/maintenance.js:156
 msgid "Please select server or child node from tree."
 msgstr "Seleziona il server o il nodo figlio dall'albero."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:192
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:218
-#: pgadmin/tools/backup/static/js/backup.js:230
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:197
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:223
+#: pgadmin/tools/backup/static/js/backup.js:244
 #: pgadmin/tools/import_export/static/js/import_export.js:159
 #: pgadmin/tools/import_export/static/js/import_export.js:191
 #: pgadmin/tools/maintenance/static/js/maintenance.js:199
@@ -6403,37 +6443,38 @@ msgstr "Seleziona il server o il nodo figlio dall'albero."
 msgid "Utility not found"
 msgstr "Utilità non trovata"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:205
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:212
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:210
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:217
 msgid "Failed to create materialized view refresh job."
 msgstr ""
 "Impossibile creare il processo di aggiornamento della vista "
 "materializzata."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:219
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.js:224
 #: pgadmin/tools/import_export/static/js/import_export.js:192
 #: pgadmin/tools/maintenance/static/js/maintenance.js:231
 #: pgadmin/tools/restore/static/js/restore.js:172
 msgid "Failed to fetch Utility information"
 msgstr "Impossibile recuperare le informazioni sull'utilità"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:73
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:75
 msgid "System materialized view?"
 msgstr "Vista materializzata di sistema?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:87
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:85
 msgid "With data?"
 msgstr "Con dati?"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:107
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:124
 msgid "Parameter"
 msgstr "Parametro"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:140
-msgid "Please enter view definition."
-msgstr "Inserisci la definizione di visualizzazione."
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:157
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:140
+msgid "Please enter view code."
+msgstr "Inserisci il codice sorgente della vista."
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:150
+#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/mview.ui.js:167
 msgid ""
 "Updating the definition will drop and re-create the materialized view. It"
 " may result in loss of information about its dependent objects."
@@ -6477,10 +6518,6 @@ msgstr "No"
 msgid "Cascaded"
 msgstr "Cascata"
 
-#: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:140
-msgid "Please enter view code."
-msgstr "Inserisci il codice sorgente della vista."
-
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:176
 msgid ""
 "Changing the columns in a view requires dropping and re-creating the "
@@ -6508,8 +6545,8 @@ msgid "Size of temporary files"
 msgstr "Dimensione dei files temporanei"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:72
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:105
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:142
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:107
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:151
 #: pgadmin/browser/server_groups/servers/databases/templates/databases/sql/default/stats.sql:2
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:126
 #: pgadmin/browser/server_groups/servers/static/js/variable.ui.js:194
@@ -6568,44 +6605,80 @@ msgstr "Desideri riconnetterti al database?"
 msgid "Are you sure you want to disconnect from database - %s?"
 msgstr "Sei sicuro di voler disconnetterti dal database - %s?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:418
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:423
 msgid "Connect to database."
 msgstr "Connetti al database."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:434
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:439
 msgid "Connect to database"
 msgstr "Connettere al database"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:458
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:463
 msgid "Database already connected."
 msgstr "Database già connesso."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:506
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.js:511
 #: pgadmin/static/js/helpers/Notifier.jsx:165
 #, python-format
 msgid "Error: Object not found - %s."
 msgstr "Errore: oggetto non trovato - %s."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:121
-#: pgadmin/tools/backup/static/js/backup.ui.js:505
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:126
+#: pgadmin/tools/backup/static/js/backup.ui.js:514
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:113
 msgid "Encoding"
 msgstr "Codifica"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:142
+msgid "Strategy"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:147
+msgid "WAL Log"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:150
+msgid "File Copy"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:155
+msgid "Locale Provider"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:160
+msgid "icu"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:163
+msgid "libc"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:181
 msgid "Character type"
 msgstr "Tipo carattere"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:147
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:194
+msgid "ICU Locale"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:208
+msgid "Collation Version"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:212
+msgid "ICU Rules"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:225
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:112
 msgid "Connection limit"
 msgstr "Limite di connessione"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:151
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:229
 msgid "Template?"
 msgstr "Template?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:154
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:232
 msgid ""
 "Note: When the preferences setting 'show template databases' is set to "
 "false, then template databases won't be displayed in the object explorer."
@@ -6614,19 +6687,19 @@ msgstr ""
 "impostata su false, i database modello non verranno visualizzati in "
 "Esplora oggetti."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:157
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:235
 msgid "Allow connections?"
 msgstr "Connessioni concesse?"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:200
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:278
 msgid "Default Privileges"
 msgstr "Privilegi predefiniti"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:205
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:283
 msgid "Schema restriction"
 msgstr "Limitazione dello schema"
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:208
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:286
 msgid ""
 "Note: Changes to the schema restriction will require the Schemas node in "
 "the browser to be refreshed before they will be shown."
@@ -6634,7 +6707,7 @@ msgstr ""
 "Nota: le modifiche alla restrizione dello schema richiederanno "
 "l'aggiornamento del nodo Schemi nel browser prima di essere visualizzate."
 
-#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:218
+#: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:296
 msgid ""
 "Please refresh the Schemas node to make changes to the schema restriction"
 " take effect."
@@ -6644,7 +6717,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:53
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.js:34
-#: pgadmin/tools/backup/static/js/backup.ui.js:251
+#: pgadmin/tools/backup/static/js/backup.ui.js:259
 #: pgadmin/tools/restore/static/js/restore.ui.js:196
 msgid "Subscriptions"
 msgstr "Sottoscrizione"
@@ -6653,11 +6726,11 @@ msgstr "Sottoscrizione"
 msgid "Could not find the subscription information."
 msgstr "Impossibile trovare le informazioni sulla Sottoscrizione."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:330
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:337
 msgid "Could not find the specified subscription."
 msgstr "Impossibile trovare la Sottoscrizione specificata."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:538
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/__init__.py:549
 msgid "Subscription dropped"
 msgstr "Sottoscrizione rimosso"
 
@@ -6681,20 +6754,20 @@ msgstr "Pubblicazione recuperata correttamente."
 msgid "Check connection?"
 msgstr "Verificare la connessione?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:126
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:135
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:140
 msgid "Host name/address"
 msgstr "Nome / indirizzo server di host"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:126
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:130
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:142
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:146
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:161
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:168
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:171
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:175
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:135
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:139
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:151
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:155
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:170
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:177
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:180
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:184
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:189
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:102
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:138
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:140
@@ -6711,8 +6784,8 @@ msgstr "Nome / indirizzo server di host"
 msgid "Connection"
 msgstr "Connessione"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:134
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:150
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:143
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:159
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:144
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:157
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:173
@@ -6723,7 +6796,7 @@ msgstr ""
 "Per applicare le modifiche alla configurazione della connessione, "
 "disconnettersi dal server e quindi riconnettersi."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:159
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:168
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:92
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:190
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:256
@@ -6736,99 +6809,99 @@ msgstr ""
 #: pgadmin/misc/cloud/static/js/biganimal.js:264
 #: pgadmin/misc/cloud/static/js/google.js:329
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:396
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:34
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:38
 #: pgadmin/static/js/SecurityPages/PasswordResetPage.jsx:19
 msgid "Password"
 msgstr "Password"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:166
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:175
 msgid "Connection timeout"
 msgstr "Connesione finita"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:171
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:180
 msgid "Passfile"
 msgstr "Passfile"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:182
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:191
 msgid "Click the refresh button to get the publications"
 msgstr "Fare clic sul pulsante di aggiornamento per ottenere le pubblicazioni"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:198
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:207
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:450
 msgid "SSL mode"
 msgstr "Modo SSL"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:198
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:213
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:207
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:222
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:230
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:238
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:231
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:239
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:247
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:253
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:261
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:269
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:277
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:285
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:256
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:262
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:270
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:278
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:286
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:294
 msgid "SSL"
 msgstr "SSL"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:204
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:213
 msgid "Allow"
 msgstr "Concesso"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:205
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:214
 msgid "Prefer"
 msgstr "Preferito"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:206
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:215
 msgid "Require"
 msgstr "Richiesto"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:208
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:217
 msgid "Verify-CA"
 msgstr "Verify-CA"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:209
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:218
 msgid "Verify-Full"
 msgstr "Verify-Full"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:212
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:252
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:221
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:261
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:456
 msgid "Client certificate"
 msgstr "Certificato del client"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:221
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:260
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:230
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:269
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:458
 msgid "Client certificate key"
 msgstr "Chiave del certificato del client"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:229
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:268
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:238
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:277
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:463
 msgid "Root certificate"
 msgstr "Certificato root"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:237
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:276
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:246
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:285
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:465
 msgid "Certificate revocation list"
 msgstr "Elenco dei certificati revocati"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:246
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:284
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:255
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:293
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:454
 msgid "SSL compression?"
 msgstr "Compressione SSL?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:292
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:300
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:301
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:309
 msgid "Copy data?"
 msgstr "Copia i dati?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:296
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:304
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:305
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:313
 msgid ""
 "Specifies whether the existing data in the publications that are being "
 "subscribed to should be copied once the replication starts."
@@ -6837,11 +6910,11 @@ msgstr ""
 "effettuando la sottoscrizione devono essere copiati una volta avviata la "
 "replica."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:308
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:317
 msgid "Create slot?"
 msgstr "Creare uno slot?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:313
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:322
 msgid ""
 "Specifies whether the command should create the replication slot on the "
 "publisher.This field will be disabled and set to false if subscription "
@@ -6853,14 +6926,14 @@ msgstr ""
 " si connette allo stesso database. In caso contrario, la chiamata CREATE "
 "SUBSCRIPTION si bloccherà."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:317
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:326
 #: pgadmin/browser/server_groups/servers/pgagent/schedules/static/js/pga_schedule.ui.js:297
 #: pgadmin/browser/server_groups/servers/pgagent/static/js/pga_job.ui.js:61
 #: pgadmin/browser/server_groups/servers/pgagent/steps/static/js/pga_jobstep.ui.js:73
 msgid "Enabled?"
 msgstr "Abilitato?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:321
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:330
 msgid ""
 "Specifies whether the subscription should be actively replicating, or "
 "whether it should be just setup but not started yet."
@@ -6868,19 +6941,19 @@ msgstr ""
 "Specifica se la sottoscrizione deve essere replicata attivamente o se "
 "deve essere solo configurata ma non ancora avviata."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:325
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:334
 msgid "Refresh publication?"
 msgstr "Aggiorna pubblicazione?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:328
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:337
 msgid "Fetch missing table information from publisher."
 msgstr "Recupera le informazioni mancanti sulla tabella dall'editore."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:337
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:346
 msgid "Connect?"
 msgstr "Connesso?"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:341
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:350
 msgid ""
 "Specifies whether the CREATE SUBSCRIPTION should connect to the publisher"
 " at all. Setting this to false will change default values of enabled, "
@@ -6890,11 +6963,11 @@ msgstr ""
 "L'impostazione di questo su false cambierà i valori predefiniti di "
 "enabled, create_slot e copy_data in false."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:345
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:354
 msgid "Slot name"
 msgstr "Nome dello slot"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:348
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:357
 msgid ""
 "Name of the replication slot to use. The default behavior is to use the "
 "name of the subscription for the slot name."
@@ -6902,11 +6975,11 @@ msgstr ""
 "Nome dello slot di replica da utilizzare. Il comportamento predefinito è "
 "utilizzare il nome dell'abbonamento per il nome dello slot."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:352
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:361
 msgid "Synchronous commit"
 msgstr "Commit sincrono"
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:354
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:363
 msgid ""
 "The value of this parameter overrides the synchronous_commit setting. The"
 " default value is off."
@@ -6914,40 +6987,127 @@ msgstr ""
 "Il valore di questo parametro sostituisce l'impostazione "
 "synchronous_commit. Il valore predefinito è disattivato."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:373
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:379
+msgid "Streaming"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:407
+msgid ""
+"Specifies whether to enable streaming of in-progress transactions for "
+"this subscription. By default, all transactions are fully decoded on the "
+"publisher and only then sent to the subscriber as a whole."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:411
+msgid "Binary?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:415
+msgid ""
+"Specifies whether the subscription will request the publisher to send the"
+" data in binary format (as opposed to text). Even when this option is "
+"enabled, only data types having binary send and receive functions will be"
+" transferred in binary."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:419
+msgid "Two phase?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:423
+msgid "Specifies whether two-phase commit is enabled for this subscription."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:427
+msgid "Disable on error?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:431
+msgid ""
+"Specifies whether the subscription should be automatically disabled if "
+"any errors are detected by subscription workers during data replication "
+"from the publisher."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:435
+msgid "Run as owner?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:439
+msgid ""
+"If true, all replication actions are performed as the subscription owner."
+" If false, replication workers will perform actions on each table as the "
+"owner of that table."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:443
+msgid "Password required?"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:447
+msgid ""
+"Specifies whether connections to the publisher made as a result of this "
+"subscription must use password authentication. Only superusers can set "
+"this value to false."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:451
+msgid "Origin"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:458
+msgid "none"
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:459
+#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
+msgid "any"
+msgstr "qualsiasi"
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:462
+msgid ""
+"Specifies whether the subscription will request the publisher to only "
+"send changes that do not have an origin or send changes regardless of "
+"origin. Setting origin to none means that the subscription will request "
+"the publisher to only send changes that do not have an origin. Setting "
+"origin to any means that the publisher sends changes regardless of their "
+"origin."
+msgstr ""
+
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:470
 msgid "Either Host name, Address must be specified."
 msgstr "È necessario specificare Nome host o Indirizzo."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:381
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:478
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:350
 msgid "Username must be specified."
 msgstr "Il nome utente deve essere indicaro."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:389
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:486
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:358
 msgid "Port must be specified."
 msgstr "La porta deve essere indicata."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:397
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:494
 msgid "Publication must be specified."
 msgstr "La pubblicazione deve essere indicata."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:406
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:503
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:372
 msgid "SSH Tunnel host must be specified."
 msgstr "È necessario specificare l'host del tunnel SSH."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:414
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:511
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:380
 msgid "SSH Tunnel port must be specified."
 msgstr "È necessario specificare la porta del tunnel SSH."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:422
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:519
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:388
 msgid "SSH Tunnel username must be specified."
 msgstr "È necessario specificare il nome utente del tunnel SSH."
 
-#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:431
+#: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:528
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:397
 msgid "SSH Tunnel identity file must be specified."
 msgstr "È necessario specificare il file di identità del tunnel SSH."
@@ -7780,7 +7940,7 @@ msgstr "Passo dell'operazione..."
 #: pgadmin/browser/static/js/browser.js:301
 #: pgadmin/browser/templates/browser/js/messages.js:32
 #: pgadmin/dashboard/static/js/ActiveQuery.ui.js:60
-#: pgadmin/static/js/SchemaView/FormView.jsx:390
+#: pgadmin/static/js/SchemaView/FormView.jsx:401
 #: pgadmin/tools/sqleditor/static/js/components/dialogs/MacrosDialog.jsx:52
 msgid "SQL"
 msgstr "SQL"
@@ -8545,7 +8705,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/roles/static/js/roleReassign.js:195
 #: pgadmin/browser/static/js/node.js:1108 pgadmin/misc/sql/static/js/SQL.jsx:80
-#: pgadmin/tools/backup/static/js/backup.js:179
+#: pgadmin/tools/backup/static/js/backup.js:191
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:297
 #: pgadmin/tools/erd/static/js/erd_tool/components/ERDTool.jsx:835
 #: pgadmin/tools/import_export/static/js/import_export.js:93
@@ -9073,10 +9233,6 @@ msgid "Target session attribute"
 msgstr "Attributo della sessione di destinazione"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
-msgid "any"
-msgstr "qualsiasi"
-
-#: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
 msgid "read-write"
 msgstr "sola scrittura"
 
@@ -9139,7 +9295,7 @@ msgstr "Inserisci un valore per il parametro."
 
 #: pgadmin/browser/server_groups/servers/tablespaces/__init__.py:29
 #: pgadmin/browser/server_groups/servers/tablespaces/static/js/tablespace.js:34
-#: pgadmin/tools/backup/static/js/backup.ui.js:221
+#: pgadmin/tools/backup/static/js/backup.ui.js:229
 #: pgadmin/tools/restore/static/js/restore.ui.js:173
 msgid "Tablespaces"
 msgstr "Tablespaces"
@@ -10309,14 +10465,14 @@ msgstr ""
 "Percorso della documentazione PostgreSQL. $ VERSION $ verrà sostituito "
 "con il numero di versione major.minor."
 
-#: pgadmin/misc/__init__.py:33 pgadmin/tools/backup/static/js/backup.ui.js:366
-#: pgadmin/tools/backup/static/js/backup.ui.js:373
-#: pgadmin/tools/backup/static/js/backup.ui.js:380
-#: pgadmin/tools/backup/static/js/backup.ui.js:387
+#: pgadmin/misc/__init__.py:33 pgadmin/tools/backup/static/js/backup.ui.js:374
+#: pgadmin/tools/backup/static/js/backup.ui.js:381
+#: pgadmin/tools/backup/static/js/backup.ui.js:388
 #: pgadmin/tools/backup/static/js/backup.ui.js:395
-#: pgadmin/tools/backup/static/js/backup.ui.js:402
-#: pgadmin/tools/backup/static/js/backup.ui.js:409
-#: pgadmin/tools/backup/static/js/backup.ui.js:699
+#: pgadmin/tools/backup/static/js/backup.ui.js:403
+#: pgadmin/tools/backup/static/js/backup.ui.js:410
+#: pgadmin/tools/backup/static/js/backup.ui.js:417
+#: pgadmin/tools/backup/static/js/backup.ui.js:708
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:41
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:47
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:98
@@ -10509,7 +10665,7 @@ msgstr "Osservatore di processo - %s"
 
 #: pgadmin/misc/cloud/__init__.py:95 pgadmin/misc/cloud/google/__init__.py:66
 #: pgadmin/misc/file_manager/__init__.py:190 pgadmin/settings/__init__.py:85
-#: pgadmin/tools/backup/__init__.py:177 pgadmin/tools/debugger/__init__.py:243
+#: pgadmin/tools/backup/__init__.py:181 pgadmin/tools/debugger/__init__.py:243
 #: pgadmin/tools/grant_wizard/__init__.py:129
 #: pgadmin/tools/import_export/__init__.py:141
 #: pgadmin/tools/import_export_servers/__init__.py:59
@@ -12105,6 +12261,10 @@ msgstr ""
 "per una query. In alternativa, puoi anche eseguire \"EXPLAIN (FORMAT "
 "JSON) [QUERY]\"."
 
+#: pgadmin/static/js/PgTreeView/index.jsx:83
+msgid "No objects are found to display"
+msgstr ""
+
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:353
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:167
 msgid "Add row"
@@ -12177,20 +12337,20 @@ msgstr "Indirizzo e-mail"
 msgid "Recover Password"
 msgstr "Recupera password"
 
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:28
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:39
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:32
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:43
 msgid "Login"
 msgstr "Login"
 
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:33
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:37
 msgid "Email Address / Username"
 msgstr "Indirizzo e-mail/nome utente"
 
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:36
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:40
 msgid "Forgotten your password?"
 msgstr "Hai dimenticato la tua password?"
 
-#: pgadmin/static/js/SecurityPages/LoginPage.jsx:46
+#: pgadmin/static/js/SecurityPages/LoginPage.jsx:50
 #, python-format
 msgid "Login with %s"
 msgstr "Accedi con %s"
@@ -12219,7 +12379,7 @@ msgstr "Invia di nuovo"
 
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:60
 #: pgadmin/static/js/SecurityPages/MfaValidatePage.jsx:85
-#: pgadmin/static/js/components/FormComponents.jsx:481
+#: pgadmin/static/js/components/FormComponents.jsx:482
 msgid "Validate"
 msgstr "Convalidare"
 
@@ -12258,19 +12418,19 @@ msgstr "Rimpiazza tutto"
 msgid "SQL editor"
 msgstr "Strumento SQL"
 
-#: pgadmin/static/js/components/FormComponents.jsx:478
+#: pgadmin/static/js/components/FormComponents.jsx:479
 msgid "Select a file"
 msgstr "Seleziona un file"
 
-#: pgadmin/static/js/components/FormComponents.jsx:973
+#: pgadmin/static/js/components/FormComponents.jsx:974
 msgid "<Select All>"
 msgstr "<Select All>"
 
-#: pgadmin/static/js/components/FormComponents.jsx:978
+#: pgadmin/static/js/components/FormComponents.jsx:979
 msgid "Select an item..."
 msgstr "Seleziona un oggetto..."
 
-#: pgadmin/static/js/components/FormComponents.jsx:1037
+#: pgadmin/static/js/components/FormComponents.jsx:1038
 msgid "Select the color"
 msgstr "Seleziona il colore"
 
@@ -12362,57 +12522,57 @@ msgstr "Seleziona un database o il suo nodo figlio dal browser."
 msgid "This URL cannot be requested directly."
 msgstr "Questo URL non può essere richiesto direttamente."
 
-#: pgadmin/tools/backup/__init__.py:45 pgadmin/tools/backup/__init__.py:157
+#: pgadmin/tools/backup/__init__.py:48 pgadmin/tools/backup/__init__.py:161
 msgid "Backup"
 msgstr "Backup"
 
-#: pgadmin/tools/backup/__init__.py:124
+#: pgadmin/tools/backup/__init__.py:128
 msgid "Backing up an object on the server"
 msgstr "Backup di un oggetto sul server"
 
-#: pgadmin/tools/backup/__init__.py:126
+#: pgadmin/tools/backup/__init__.py:130
 msgid "Backing up the global objects"
 msgstr "Backup degli oggetti globali"
 
-#: pgadmin/tools/backup/__init__.py:128
+#: pgadmin/tools/backup/__init__.py:132
 msgid "Backing up the server"
 msgstr "Backup del server"
 
-#: pgadmin/tools/backup/__init__.py:131
+#: pgadmin/tools/backup/__init__.py:135
 msgid "Unknown Backup"
 msgstr "Backup sconosciuto"
 
-#: pgadmin/tools/backup/__init__.py:138
+#: pgadmin/tools/backup/__init__.py:142
 msgid "Backing up an object on the server '{0}' from database '{1}'"
 msgstr "Backup di un oggetto sul server '{0}' dal database '{1}'"
 
-#: pgadmin/tools/backup/__init__.py:143
+#: pgadmin/tools/backup/__init__.py:147
 msgid "Backing up the global objects on the server '{0}'"
 msgstr "Backup degli oggetti globali sul server '{0}'"
 
-#: pgadmin/tools/backup/__init__.py:148
+#: pgadmin/tools/backup/__init__.py:152
 msgid "Backing up the server '{0}'"
 msgstr "Backup del server '{0}'"
 
-#: pgadmin/tools/backup/__init__.py:159
+#: pgadmin/tools/backup/__init__.py:163
 msgid "Backup Object"
 msgstr "Oggetto di backup"
 
-#: pgadmin/tools/backup/__init__.py:161
+#: pgadmin/tools/backup/__init__.py:165
 msgid "Backup Globals"
 msgstr "Impostazioni backup"
 
-#: pgadmin/tools/backup/__init__.py:163
-#: pgadmin/tools/backup/static/js/backup.js:168
+#: pgadmin/tools/backup/__init__.py:167
+#: pgadmin/tools/backup/static/js/backup.js:180
 msgid "Backup Server"
 msgstr "Server di backup"
 
-#: pgadmin/tools/backup/static/js/backup.js:64
-#: pgadmin/tools/backup/static/js/backup.js:89
+#: pgadmin/tools/backup/static/js/backup.js:76
+#: pgadmin/tools/backup/static/js/backup.js:101
 msgid "Backup Globals..."
 msgstr "Backup variabili Globali..."
 
-#: pgadmin/tools/backup/static/js/backup.js:68
+#: pgadmin/tools/backup/static/js/backup.js:80
 msgid ""
 "Please select any server from the object explorer to take Backup of "
 "global objects."
@@ -12420,20 +12580,20 @@ msgstr ""
 "Si prega di selezionare qualsiasi server da Esplora oggetti per eseguire "
 "il backup degli oggetti globali."
 
-#: pgadmin/tools/backup/static/js/backup.js:76
-#: pgadmin/tools/backup/static/js/backup.js:102
+#: pgadmin/tools/backup/static/js/backup.js:88
+#: pgadmin/tools/backup/static/js/backup.js:114
 msgid "Backup Server..."
 msgstr "Backup server..."
 
-#: pgadmin/tools/backup/static/js/backup.js:80
-#: pgadmin/tools/backup/static/js/backup.js:106
+#: pgadmin/tools/backup/static/js/backup.js:92
+#: pgadmin/tools/backup/static/js/backup.js:118
 msgid "Please select any server from the object explorer to take Server Backup."
 msgstr ""
 "Si prega di selezionare qualsiasi server da Esplora oggetti per eseguire "
 "il backup del server."
 
-#: pgadmin/tools/backup/static/js/backup.js:93
-#: pgadmin/tools/backup/static/js/backup.js:120
+#: pgadmin/tools/backup/static/js/backup.js:105
+#: pgadmin/tools/backup/static/js/backup.js:132
 msgid ""
 "Please select any database or schema or table from the object explorer to"
 " take Backup."
@@ -12441,28 +12601,28 @@ msgstr ""
 "Selezionare qualsiasi database, schema o tabella da Esplora oggetti per "
 "eseguire il backup."
 
-#: pgadmin/tools/backup/static/js/backup.js:114
-#: pgadmin/tools/backup/static/js/backup.js:132
+#: pgadmin/tools/backup/static/js/backup.js:126
+#: pgadmin/tools/backup/static/js/backup.js:144
 msgid "Backup..."
 msgstr "Backup..."
 
-#: pgadmin/tools/backup/static/js/backup.js:219
+#: pgadmin/tools/backup/static/js/backup.js:233
 msgid "Backup Error"
 msgstr "Errore di backup"
 
-#: pgadmin/tools/backup/static/js/backup.js:241
+#: pgadmin/tools/backup/static/js/backup.js:277
 msgid "Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})"
 msgstr "Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:33
+#: pgadmin/tools/backup/static/js/backup.ui.js:41
 #: pgadmin/tools/restore/static/js/restore.ui.js:42
 msgid "Pre-data"
 msgstr "Pre-dati"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:35
-#: pgadmin/tools/backup/static/js/backup.ui.js:48
-#: pgadmin/tools/backup/static/js/backup.ui.js:60
-#: pgadmin/tools/backup/static/js/backup.ui.js:538
+#: pgadmin/tools/backup/static/js/backup.ui.js:43
+#: pgadmin/tools/backup/static/js/backup.ui.js:56
+#: pgadmin/tools/backup/static/js/backup.ui.js:68
+#: pgadmin/tools/backup/static/js/backup.ui.js:547
 #: pgadmin/tools/restore/static/js/restore.ui.js:44
 #: pgadmin/tools/restore/static/js/restore.ui.js:54
 #: pgadmin/tools/restore/static/js/restore.ui.js:64
@@ -12470,27 +12630,27 @@ msgstr "Pre-dati"
 msgid "Sections"
 msgstr "Sezioni"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:46
+#: pgadmin/tools/backup/static/js/backup.ui.js:54
 #: pgadmin/tools/restore/static/js/restore.ui.js:52
 msgid "Data"
 msgstr "Dati"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:58
+#: pgadmin/tools/backup/static/js/backup.ui.js:66
 #: pgadmin/tools/restore/static/js/restore.ui.js:62
 msgid "Post-data"
 msgstr "Post-data"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:95
+#: pgadmin/tools/backup/static/js/backup.ui.js:103
 #: pgadmin/tools/restore/static/js/restore.ui.js:97
 msgid "Only data"
 msgstr "Solo dati"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:97
-#: pgadmin/tools/backup/static/js/backup.ui.js:113
-#: pgadmin/tools/backup/static/js/backup.ui.js:129
-#: pgadmin/tools/backup/static/js/backup.ui.js:146
-#: pgadmin/tools/backup/static/js/backup.ui.js:162
-#: pgadmin/tools/backup/static/js/backup.ui.js:544
+#: pgadmin/tools/backup/static/js/backup.ui.js:105
+#: pgadmin/tools/backup/static/js/backup.ui.js:121
+#: pgadmin/tools/backup/static/js/backup.ui.js:137
+#: pgadmin/tools/backup/static/js/backup.ui.js:154
+#: pgadmin/tools/backup/static/js/backup.ui.js:170
+#: pgadmin/tools/backup/static/js/backup.ui.js:553
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:398
 #: pgadmin/tools/restore/static/js/restore.ui.js:99
 #: pgadmin/tools/restore/static/js/restore.ui.js:117
@@ -12498,34 +12658,34 @@ msgstr "Solo dati"
 msgid "Type of objects"
 msgstr "Tipo degli oggetti"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:111
+#: pgadmin/tools/backup/static/js/backup.ui.js:119
 msgid "Only schemas"
 msgstr "Only schemas"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:127
+#: pgadmin/tools/backup/static/js/backup.ui.js:135
 msgid "Only tablespaces"
 msgstr "Solo tablespace"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:144
+#: pgadmin/tools/backup/static/js/backup.ui.js:152
 msgid "Only roles"
 msgstr "Only roles"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:160
+#: pgadmin/tools/backup/static/js/backup.ui.js:168
 msgid "Blobs"
 msgstr "Blobs"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:202
-#: pgadmin/tools/backup/static/js/backup.ui.js:209
+#: pgadmin/tools/backup/static/js/backup.ui.js:210
 #: pgadmin/tools/backup/static/js/backup.ui.js:217
-#: pgadmin/tools/backup/static/js/backup.ui.js:224
-#: pgadmin/tools/backup/static/js/backup.ui.js:231
-#: pgadmin/tools/backup/static/js/backup.ui.js:238
+#: pgadmin/tools/backup/static/js/backup.ui.js:225
+#: pgadmin/tools/backup/static/js/backup.ui.js:232
+#: pgadmin/tools/backup/static/js/backup.ui.js:239
 #: pgadmin/tools/backup/static/js/backup.ui.js:246
 #: pgadmin/tools/backup/static/js/backup.ui.js:254
 #: pgadmin/tools/backup/static/js/backup.ui.js:262
 #: pgadmin/tools/backup/static/js/backup.ui.js:270
 #: pgadmin/tools/backup/static/js/backup.ui.js:278
-#: pgadmin/tools/backup/static/js/backup.ui.js:549
+#: pgadmin/tools/backup/static/js/backup.ui.js:286
+#: pgadmin/tools/backup/static/js/backup.ui.js:558
 #: pgadmin/tools/restore/static/js/restore.ui.js:163
 #: pgadmin/tools/restore/static/js/restore.ui.js:170
 #: pgadmin/tools/restore/static/js/restore.ui.js:177
@@ -12538,61 +12698,61 @@ msgstr "Blobs"
 msgid "Do not save"
 msgstr "Non salvare"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:206
+#: pgadmin/tools/backup/static/js/backup.ui.js:214
 msgid "Role passwords"
 msgstr "Role passwords"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:228
+#: pgadmin/tools/backup/static/js/backup.ui.js:236
 msgid "Unlogged table data"
 msgstr "Dati tabella non registrati"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:267
+#: pgadmin/tools/backup/static/js/backup.ui.js:275
 msgid "Toast compressions"
 msgstr "Compressione dei Toast"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:275
+#: pgadmin/tools/backup/static/js/backup.ui.js:283
 #: pgadmin/tools/restore/static/js/restore.ui.js:212
 msgid "Table access methods"
 msgstr "Metodi di accesso alle tabelle"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:328
+#: pgadmin/tools/backup/static/js/backup.ui.js:336
 msgid "$ quoting"
 msgstr "$ citato"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:363
+#: pgadmin/tools/backup/static/js/backup.ui.js:371
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:38
 #: pgadmin/tools/restore/static/js/restore.ui.js:280
 msgid "Verbose messages"
 msgstr "Messaggi dettagliati"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:370
+#: pgadmin/tools/backup/static/js/backup.ui.js:378
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:44
 msgid "Force double quote on identifiers"
 msgstr "Forza la doppia virgoletta sugli identificatori"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:377
+#: pgadmin/tools/backup/static/js/backup.ui.js:385
 #: pgadmin/tools/restore/static/js/restore.ui.js:286
 msgid "Use SET SESSION AUTHORIZATION"
 msgstr "Usa SET SESSION AUTHORIZATION"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:384
+#: pgadmin/tools/backup/static/js/backup.ui.js:392
 #: pgadmin/tools/restore/static/js/restore.ui.js:298
 msgid "Exclude schema"
 msgstr "Exclude schema"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:391
+#: pgadmin/tools/backup/static/js/backup.ui.js:399
 msgid "Exclude database"
 msgstr "Exclude database"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:399
+#: pgadmin/tools/backup/static/js/backup.ui.js:407
 msgid "Extra float digits"
 msgstr "Extra float digits"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:406
+#: pgadmin/tools/backup/static/js/backup.ui.js:414
 msgid "Lock wait timeout"
 msgstr "Lock wait timeout"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:452
+#: pgadmin/tools/backup/static/js/backup.ui.js:461
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:79
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:69
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:46
@@ -12600,67 +12760,67 @@ msgstr "Lock wait timeout"
 msgid "Filename"
 msgstr "Nome del file"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:463
+#: pgadmin/tools/backup/static/js/backup.ui.js:472
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:92
 #: pgadmin/tools/restore/static/js/restore.ui.js:354
 msgid "Format"
 msgstr "Formato"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:469
+#: pgadmin/tools/backup/static/js/backup.ui.js:478
 msgid "Custom"
 msgstr "Personalizzato"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:473
+#: pgadmin/tools/backup/static/js/backup.ui.js:482
 msgid "Tar"
 msgstr "Tar"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:477
+#: pgadmin/tools/backup/static/js/backup.ui.js:486
 msgid "Plain"
 msgstr "Semplice"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:481
+#: pgadmin/tools/backup/static/js/backup.ui.js:490
 #: pgadmin/tools/restore/static/js/restore.ui.js:362
 msgid "Directory"
 msgstr "Directory"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:494
+#: pgadmin/tools/backup/static/js/backup.ui.js:503
 msgid "Compression ratio"
 msgstr "Rapporto di compressione"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:513
+#: pgadmin/tools/backup/static/js/backup.ui.js:522
 #: pgadmin/tools/restore/static/js/restore.ui.js:382
 msgid "Number of jobs"
 msgstr "Numero di operazioni"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:522
+#: pgadmin/tools/backup/static/js/backup.ui.js:531
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:90
 #: pgadmin/tools/restore/static/js/restore.ui.js:386
 msgid "Role name"
 msgstr "Nome del ruolo"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:531
+#: pgadmin/tools/backup/static/js/backup.ui.js:540
 msgid "The backup format will be PLAIN"
 msgstr "Il formato del backup sarà PLAIN"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:539
-#: pgadmin/tools/backup/static/js/backup.ui.js:545
-#: pgadmin/tools/backup/static/js/backup.ui.js:550
+#: pgadmin/tools/backup/static/js/backup.ui.js:548
+#: pgadmin/tools/backup/static/js/backup.ui.js:554
+#: pgadmin/tools/backup/static/js/backup.ui.js:559
 #: pgadmin/tools/restore/static/js/restore.ui.js:396
 #: pgadmin/tools/restore/static/js/restore.ui.js:402
 #: pgadmin/tools/restore/static/js/restore.ui.js:408
 msgid "Data Options"
 msgstr "Data Options"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:554
+#: pgadmin/tools/backup/static/js/backup.ui.js:563
 msgid "Use INSERT Commands"
 msgstr "Use INSERT Commands"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:557
-#: pgadmin/tools/backup/static/js/backup.ui.js:563
-#: pgadmin/tools/backup/static/js/backup.ui.js:569
-#: pgadmin/tools/backup/static/js/backup.ui.js:585
-#: pgadmin/tools/backup/static/js/backup.ui.js:592
-#: pgadmin/tools/backup/static/js/backup.ui.js:606
+#: pgadmin/tools/backup/static/js/backup.ui.js:566
+#: pgadmin/tools/backup/static/js/backup.ui.js:572
+#: pgadmin/tools/backup/static/js/backup.ui.js:578
+#: pgadmin/tools/backup/static/js/backup.ui.js:594
+#: pgadmin/tools/backup/static/js/backup.ui.js:601
+#: pgadmin/tools/backup/static/js/backup.ui.js:615
 #: pgadmin/tools/restore/static/js/restore.ui.js:416
 #: pgadmin/tools/restore/static/js/restore.ui.js:421
 #: pgadmin/tools/restore/static/js/restore.ui.js:433
@@ -12668,79 +12828,94 @@ msgstr "Use INSERT Commands"
 msgid "Query Options"
 msgstr "Query Options"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:560
+#: pgadmin/tools/backup/static/js/backup.ui.js:569
 msgid "Maximum rows per INSERT command"
 msgstr "Numero massimo di righe per comando INSERT"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:567
+#: pgadmin/tools/backup/static/js/backup.ui.js:576
 msgid "On conflict do nothing to INSERT command"
 msgstr "In caso di conflitto non fare nulla al comando INSERT"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:582
+#: pgadmin/tools/backup/static/js/backup.ui.js:591
 #: pgadmin/tools/restore/static/js/restore.ui.js:413
 msgid "Include CREATE DATABASE statement"
 msgstr "Include il costrutto CREATE DATABASE"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:590
+#: pgadmin/tools/backup/static/js/backup.ui.js:599
 msgid "Include DROP DATABASE statement"
 msgstr "Include il costrutto DROP DATABASE"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:604
+#: pgadmin/tools/backup/static/js/backup.ui.js:613
 #: pgadmin/tools/restore/static/js/restore.ui.js:431
 msgid "Include IF EXISTS clause"
 msgstr "Includere la clausola IF EXISTS"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:617
+#: pgadmin/tools/backup/static/js/backup.ui.js:626
 msgid "Use Column INSERTS"
 msgstr "Usa la colonna INSERTI"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:620
-#: pgadmin/tools/backup/static/js/backup.ui.js:626
-#: pgadmin/tools/backup/static/js/backup.ui.js:632
-#: pgadmin/tools/backup/static/js/backup.ui.js:648
-#: pgadmin/tools/backup/static/js/backup.ui.js:666
-#: pgadmin/tools/backup/static/js/backup.ui.js:673
-#: pgadmin/tools/backup/static/js/backup.ui.js:681
-#: pgadmin/tools/backup/static/js/backup.ui.js:689
+#: pgadmin/tools/backup/static/js/backup.ui.js:629
+#: pgadmin/tools/backup/static/js/backup.ui.js:635
+#: pgadmin/tools/backup/static/js/backup.ui.js:641
+#: pgadmin/tools/backup/static/js/backup.ui.js:657
+#: pgadmin/tools/backup/static/js/backup.ui.js:675
+#: pgadmin/tools/backup/static/js/backup.ui.js:682
+#: pgadmin/tools/backup/static/js/backup.ui.js:690
+#: pgadmin/tools/backup/static/js/backup.ui.js:698
 #: pgadmin/tools/restore/static/js/restore.ui.js:453
 #: pgadmin/tools/restore/static/js/restore.ui.js:459
 msgid "Table Options"
 msgstr "Opzioni tabella"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:623
+#: pgadmin/tools/backup/static/js/backup.ui.js:632
 msgid "Load via partition root"
 msgstr "Carica tramite root della partizione"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:630
+#: pgadmin/tools/backup/static/js/backup.ui.js:639
 #: pgadmin/tools/restore/static/js/restore.ui.js:450
 msgid "Enable row security"
 msgstr "Abilita la sicurezza delle righe"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:642
+#: pgadmin/tools/backup/static/js/backup.ui.js:651
 msgid "This option is enabled only when Use INSERT Commands is enabled."
 msgstr "Questa opzione è abilitata solo quando Usa comandi INSERT è abilitato."
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:645
+#: pgadmin/tools/backup/static/js/backup.ui.js:654
 msgid "With OID(s)"
 msgstr "Con OID(s)"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:663
+#: pgadmin/tools/backup/static/js/backup.ui.js:672
 msgid "Exclude table data"
 msgstr "Escludi i dati della tabella"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:670
+#: pgadmin/tools/backup/static/js/backup.ui.js:679
 msgid "Table and Children"
 msgstr "Tabelle e oggetti figli"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:678
+#: pgadmin/tools/backup/static/js/backup.ui.js:687
 msgid "Exclude table and children"
 msgstr "Escludi tabella e oggetti figli"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:686
+#: pgadmin/tools/backup/static/js/backup.ui.js:695
 msgid "Exclude table data and children"
 msgstr "Escludi dati tabella e oggetti figli"
 
-#: pgadmin/tools/backup/static/js/backup.ui.js:710
+#: pgadmin/tools/backup/static/js/backup.ui.js:713
+#: pgadmin/tools/backup/static/js/backup.ui.js:719
+msgid "Objects"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup.ui.js:718
+msgid "objects"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup.ui.js:721
+msgid ""
+"If Schema(s) is selected then it will take the backup of that selected "
+"schema(s) only"
+msgstr ""
+
+#: pgadmin/tools/backup/static/js/backup.ui.js:755
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:114
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:251
 #: pgadmin/tools/import_export_servers/static/js/import_export_selection.ui.js:95
@@ -13544,7 +13719,7 @@ msgstr "Recupero in corso..."
 msgid "Failed to get data. Please delete this table."
 msgstr "Impossibile ottenere i dati. Elimina questa tabella."
 
-#: pgadmin/tools/grant_wizard/__init__.py:351
+#: pgadmin/tools/grant_wizard/__init__.py:361
 msgid "Unable to fetch the {} objects"
 msgstr "Impossibile recuperare gli oggetti {}"
 
@@ -14509,30 +14684,30 @@ msgstr "Controllo sullo stato della transazione fallito."
 msgid "Query tool"
 msgstr "Strumento Query"
 
-#: pgadmin/tools/sqleditor/__init__.py:950
+#: pgadmin/tools/sqleditor/__init__.py:949
 msgid "******* Error *******"
 msgstr "******* Error *******"
 
-#: pgadmin/tools/sqleditor/__init__.py:1335
+#: pgadmin/tools/sqleditor/__init__.py:1334
 msgid "No primary key found for this object, so unable to save records."
 msgstr ""
 "Nessuna chiave primaria trovata per questo oggetto, quindi impossibile "
 "salvare i record."
 
-#: pgadmin/tools/sqleditor/__init__.py:1657
+#: pgadmin/tools/sqleditor/__init__.py:1656
 #: pgadmin/tools/sqleditor/utils/start_running_query.py:107
 msgid "Either transaction object or session object not found."
 msgstr "Oggetto transazione o oggetto sessione non trovato."
 
-#: pgadmin/tools/sqleditor/__init__.py:1908
+#: pgadmin/tools/sqleditor/__init__.py:1907
 msgid "File type not supported"
 msgstr "Tipo file non supportato"
 
-#: pgadmin/tools/sqleditor/__init__.py:1969
+#: pgadmin/tools/sqleditor/__init__.py:1968
 msgid "Error: {0}"
 msgstr "Errore: {0}"
 
-#: pgadmin/tools/sqleditor/__init__.py:2010
+#: pgadmin/tools/sqleditor/__init__.py:2009
 msgid "Could not find the required parameter (query)."
 msgstr "Impossibile trovare il parametro richiesto (query)."
 
@@ -16062,7 +16237,7 @@ msgstr ""
 msgid "User Management"
 msgstr "Gestione utenti"
 
-#: pgadmin/utils/__init__.py:333
+#: pgadmin/utils/__init__.py:334
 msgid ""
 "Utility file not found. Please correct the Binary Path in the Preferences"
 " dialog"
@@ -16070,7 +16245,7 @@ msgstr ""
 "File di utilità non trovato. Correggi il percorso binario nella finestra "
 "di dialogo Preferenze"
 
-#: pgadmin/utils/__init__.py:338
+#: pgadmin/utils/__init__.py:339
 #, python-format
 msgid ""
 "'%s' file not found. Please correct the Binary Path in the Preferences "
@@ -16079,51 +16254,51 @@ msgstr ""
 "'%s'  file non trovato. Correggi il percorso nella maschera delle "
 "preferenze"
 
-#: pgadmin/utils/__init__.py:524
+#: pgadmin/utils/__init__.py:525
 #, python-format
 msgid "Configuration for %s servers dumped to %s"
 msgstr "Configurazione per %s server scaricata su %s"
 
-#: pgadmin/utils/__init__.py:540
+#: pgadmin/utils/__init__.py:541
 msgid "'Servers' attribute not found in the specified file."
 msgstr "Attributo 'Server' non trovato nel file specificato."
 
-#: pgadmin/utils/__init__.py:555
+#: pgadmin/utils/__init__.py:556
 #, python-format
 msgid "'%s' attribute not found for server '%s'"
 msgstr "Attributo '%s' non trovato per il server '%s'"
 
-#: pgadmin/utils/__init__.py:560
+#: pgadmin/utils/__init__.py:561
 #, python-format
 msgid "Port must be integer for server '%s'"
 msgstr "La porta deve essere intera per il server '%s'"
 
-#: pgadmin/utils/__init__.py:585
+#: pgadmin/utils/__init__.py:586
 #, python-format
 msgid "'Host' or 'Service' attribute not found for server '%s'"
 msgstr "Attributo 'Host' o 'Servizio' non trovato per il server '%s'"
 
-#: pgadmin/utils/__init__.py:615
+#: pgadmin/utils/__init__.py:616
 #, python-format
 msgid "Error parsing input file %s: %s"
 msgstr "Errore durante l'analisi del file di input %s: %s"
 
-#: pgadmin/utils/__init__.py:618
+#: pgadmin/utils/__init__.py:619
 #, python-format
 msgid "Error reading input file %s: [%d] %s"
 msgstr "Errore durante la lettura del file di input %s: [%d] %s"
 
-#: pgadmin/utils/__init__.py:657
+#: pgadmin/utils/__init__.py:658
 #, python-format
 msgid "Error creating server group '%s': %s"
 msgstr "Errore durante la creazione del gruppo di server '%s': %s"
 
-#: pgadmin/utils/__init__.py:735
+#: pgadmin/utils/__init__.py:736
 #, python-format
 msgid "Error creating server '%s': %s"
 msgstr "Errore durante la creazione del server '%s': %s"
 
-#: pgadmin/utils/__init__.py:773
+#: pgadmin/utils/__init__.py:774
 #, python-format
 msgid "Error clearing server configuration with error (%s)"
 msgstr ""
@@ -16280,7 +16455,7 @@ msgid "Could not find the specified preference."
 msgstr "Impossibile trovare la preferenza specificata."
 
 #: pgadmin/utils/driver/psycopg3/connection.py:153
-#: pgadmin/utils/driver/psycopg3/server_manager.py:560
+#: pgadmin/utils/driver/psycopg3/server_manager.py:562
 msgid "Unauthorized request."
 msgstr "Richiesta non autorizzata."
 
@@ -16391,7 +16566,7 @@ msgstr "L'informazione non è disponibile."
 msgid "Could not find the specified database."
 msgstr "Impossibile trovare il database richiesto."
 
-#: pgadmin/utils/driver/psycopg3/server_manager.py:577
+#: pgadmin/utils/driver/psycopg3/server_manager.py:579
 msgid ""
 "Failed to decrypt the SSH tunnel password.\n"
 "Error: {0}"
@@ -16399,7 +16574,7 @@ msgstr ""
 "Impossibile decrittografare la password del tunnel SSH.\n"
 "Errore: {0}"
 
-#: pgadmin/utils/driver/psycopg3/server_manager.py:612
+#: pgadmin/utils/driver/psycopg3/server_manager.py:614
 msgid ""
 "Failed to create the SSH tunnel.\n"
 "Error: {0}"
@@ -16599,4 +16774,7 @@ msgstr ""
 
 #~ msgid "PostgreSQL 10"
 #~ msgstr "PostgreSQL 10"
+
+#~ msgid "Please enter view definition."
+#~ msgstr "Inserisci la definizione di visualizzazione."
 
