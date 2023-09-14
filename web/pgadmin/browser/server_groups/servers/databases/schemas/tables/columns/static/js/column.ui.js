@@ -341,6 +341,23 @@ export default class ColumnSchema extends BaseUISchema {
     },{
       id: 'max_val_attprecision', skipChange: true, visible: false, type: '',
     },{
+      id: 'attcompression', label: gettext('Compression'),
+      group: gettext('Definition'), type: 'select', deps: ['cltype'],
+      controlProps: { placeholder: gettext('Select compression'), allowClear: false},
+      options: [
+        {label: 'PGLZ', value: 'pglz'},
+        {label: 'LZ4', value: 'lz4'}
+      ],
+      disabled: function(state) {
+        return !obj.attlenRange(state);
+      },
+      depChange: (state)=>{
+        if(!obj.attlenRange(state)) {
+          return { attcompression: '' };
+        }
+      },
+      min_version: 140000,
+    }, {
       id: 'collspcname', label: gettext('Collation'), cell: 'select',
       type: 'select', group: gettext('Definition'),
       deps: ['cltype'], options: this.collspcnameOptions,

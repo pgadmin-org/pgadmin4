@@ -1667,6 +1667,14 @@
       "expected_msql_file": "create_table_with_partition_msql.sql"
     },
     {
+      "type": "delete",
+      "name": "Delete Table with list partition",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_patition_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
       "type": "create",
       "name": "Create Table with range partition",
       "endpoint": "NODE-table.obj",
@@ -1817,6 +1825,14 @@
       "store_object_id": true,
       "expected_sql_file": "create_table_with_range_partition.sql",
       "expected_msql_file": "create_table_with_range_partition_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with range partition",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_range_patition_$%{}[]()&*^!@\"'`\\/#"
+      }
     },
     {
       "type": "create",
@@ -1972,6 +1988,14 @@
       "expected_msql_file": "create_table_with_hash_partition_msql.sql"
     },
     {
+      "type": "delete",
+      "name": "Delete Table with hash partition",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_hash_patition_$%{}[]()&*^!@\\\"'`\\\\/#"
+      }
+    },
+    {
       "type": "create",
       "name": "Create Table with range partition with collate and opclass",
       "endpoint": "NODE-table.obj",
@@ -2125,6 +2149,14 @@
       "store_object_id": true,
       "expected_sql_file": "create_partition_table_with_collate.sql",
       "expected_msql_file": "create_partition_table_with_collate_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table ",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "partition_table_with_collate_$%{}[]()&*^!@\"'`\\/#"
+      }
     }
   ]
 }

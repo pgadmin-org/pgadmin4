@@ -29,9 +29,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     flex: 1,
   },
-  selectedNode: {
-    background: theme.otherVars.stepBg,
-  },
   focusedNode: {
     background: theme.palette.primary.light,
   },
@@ -139,7 +136,7 @@ function Node({ node, style, tree, hasCheckbox, onNodeSelectionChange}) {
   };
 
   return (
-    <div style={style} className={clsx(node.isFocused ? classes.focusedNode : '', node.isSelected ? classes.selectedNode : '')} onClick={(e) => {
+    <div style={style} className={clsx(node.isFocused ? classes.focusedNode : '')} onClick={(e) => {
       node.focus();
       e.stopPropagation();
     }}>

@@ -45,7 +45,6 @@
           "binary": false,
           "streaming": false,
           "disable_on_error": false,
-          "run_as_owner": false,
           "origin": "none"
       },
       "expected_sql_file": "alter_parameters.sql",
