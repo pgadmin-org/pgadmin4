@@ -30,14 +30,13 @@ from flask_babel import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
 from flask_login.utils import login_url
-from flask_security.changeable import change_user_password, \
-    send_password_changed_notice
+from flask_security.changeable import send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
 from flask_security.recoverable import reset_password_token_status, \
     generate_reset_password_token, update_password
 from flask_security.signals import reset_password_instructions_sent
 from flask_security.utils import config_value, do_flash, get_url, \
-    get_message, slash_url_suffix, login_user, send_mail, \
+    get_message, slash_url_suffix, login_user, send_mail, hash_password, \
     get_post_logout_redirect
 from flask_security.views import _security, view_commit, _ctx
 from werkzeug.datastructures import MultiDict
@@ -1074,14 +1073,16 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             form = form_class(MultiDict(req_json))
             if form.validate():
                 errormsg = None
+                # change_user_password from flask-security logs out the user
+                # this is undesirable, so change password on own
                 try:
-                    change_user_password(current_user._get_current_object(),
-                                         form.new_password.data,
-                                         notify=False,
-                                         autologin=True)
+                    user = User.query.filter(
+                        User.fs_uniquifier == current_user.fs_uniquifier)\
+                        .first()
+                    user.password = hash_password(form.new_password.data)
+
                     try:
-                        send_password_changed_notice(
-                            current_user._get_current_object())
+                        send_password_changed_notice(user)
                     except Exception as _:
                         # No need to throw error if failed in sending email
                         pass
@@ -1090,9 +1091,7 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                     logging.exception(str(e), exc_info=True)
                     errormsg = gettext(PASS_ERROR).format(e)
 
-                if request.get_json(silent=True) is not None and \
-                        errormsg is None:
-                    after_this_request(view_commit)
+                if errormsg is None:
                     old_key = get_crypt_key()[1]
                     set_crypt_key(form.new_password.data, False)
 
@@ -1100,6 +1099,8 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                         import reencrpyt_server_passwords
                     reencrpyt_server_passwords(
                         current_user.id, old_key, form.new_password.data)
+
+                    db.session.commit()
                 elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
