@@ -41,3 +41,4 @@ Bug fixes
   | `Issue #6712 <https://github.com/pgadmin-org/pgadmin4/issues/6712>`_ -  Ensure that Materialized view size fields in "Statistics" should be human-readable.
   | `Issue #6730 <https://github.com/pgadmin-org/pgadmin4/issues/6730>`_ -  Fix an issue where changing the password shows success but the new password is not working.
   | `Issue #6738 <https://github.com/pgadmin-org/pgadmin4/issues/6738>`_ -  Fix an issue where login form doesn't appear if internal auth source is removed.
+  | `Issue #6764 <https://github.com/pgadmin-org/pgadmin4/issues/6764>`_ -  Fix a security related issue where an authenticated user can run remote command using validate binary path API (CVE-2023-5002).

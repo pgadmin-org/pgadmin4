@@ -268,9 +268,11 @@ def validate_binary_path():
                 if not os.path.exists(binary_path):
                     current_app.logger.warning('Invalid binary path.')
                     raise Exception()
+                # escape double quotes to avoid command injection.
                 # Get the output of the '--version' command
                 version_string = \
-                    subprocess.getoutput('"{0}" --version'.format(full_path))
+                    subprocess.getoutput(r'"{0}" --version'.format(
+                        full_path.replace('"', '""')))
                 # Get the version number by splitting the result string
                 version_string.split(") ", 1)[1].split('.', 1)[0]
             except Exception:
