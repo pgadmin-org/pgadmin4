@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pgAdmin 4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-09-14 18:06+0530\n"
-"PO-Revision-Date: 2023-02-06 05:23+0900\n"
+"PO-Revision-Date: 2023-09-18 16:35+0900\n"
 "Last-Translator: \n"
 "Language: ja\n"
 "Language-Team: ja\n"
@@ -303,7 +303,7 @@ msgstr "コードを送信"
 
 #: pgadmin/authenticate/mfa/email.py:208
 msgid "Sending Code..."
-msgstr ""
+msgstr "コードを送信しています..."
 
 #: pgadmin/authenticate/mfa/email.py:216
 msgid "Enter the email address to send a code"
@@ -438,6 +438,8 @@ msgid ""
 "utility specified {0}.Please check that the hook utility is configured "
 "correctly."
 msgstr ""
+"指定された MASTER_PASSWORD_HOOK ユーティリティ {0} "
+"から、マスタパスワードを取得できませんでした。フックユーティリティが正しく設定されていることを確認してください。"
 
 #: pgadmin/browser/__init__.py:1011
 msgid "Master password cannot be empty"
@@ -445,7 +447,7 @@ msgstr "マスタパスワードは必須です"
 
 #: pgadmin/browser/__init__.py:1110
 msgid "pgAdmin user password changed successfully"
-msgstr ""
+msgstr "pgAdmin ユーザのパスワードが正常に変更されました"
 
 #: pgadmin/browser/__init__.py:1157
 msgid ""
@@ -465,13 +467,13 @@ msgstr "システムオブジェクトを表示"
 
 #: pgadmin/browser/register_browser_preferences.py:34
 msgid "Show empty object collections?"
-msgstr ""
+msgstr "空のオブジェクトの集合を表示"
 
 #: pgadmin/browser/register_browser_preferences.py:36
 msgid ""
 "If turned off, then all object collections which are empty will be hidden"
 " from browser tree."
-msgstr ""
+msgstr "無効にすると、何もないオブジェクトの集合は、すべてブラウザツリーに表示されなくなります。"
 
 #: pgadmin/browser/register_browser_preferences.py:44
 msgid "Show template databases?"
@@ -492,13 +494,13 @@ msgstr "True の場合、すべての共有サーバがブラウザツリーに�
 
 #: pgadmin/browser/register_browser_preferences.py:61
 msgid "Object explorer tree state saving interval"
-msgstr ""
+msgstr "オブジェクトエクスプローラのツリー状態の保存間隔"
 
 #: pgadmin/browser/register_browser_preferences.py:63
 msgid ""
 "Object explorer state saving interval in seconds. Use -1 to disable the "
 "tree saving mechanism."
-msgstr ""
+msgstr "オブジェクトエクスプローラの状態を何秒おきに保存するか指定します。全く保存させない場合は -1 にしてください。"
 
 #: pgadmin/browser/register_browser_preferences.py:71
 msgid "Confirm on close or refresh?"
@@ -593,7 +595,7 @@ msgstr "Alt/Option"
 #: pgadmin/browser/register_browser_preferences.py:153
 #: pgadmin/browser/static/js/browser.js:254
 msgid "Object Explorer"
-msgstr ""
+msgstr "オブジェクトエクスプローラ"
 
 #: pgadmin/browser/register_browser_preferences.py:168
 msgid "Tabbed panel backward"
@@ -668,7 +670,7 @@ msgstr "ダイアログタブを戻す"
 
 #: pgadmin/browser/register_browser_preferences.py:409
 msgid "Refresh object explorer"
-msgstr ""
+msgstr "オブジェクトエクスプローラを再読み込み"
 
 #: pgadmin/browser/register_browser_preferences.py:424
 msgid "Add grid row"
@@ -804,21 +806,21 @@ msgstr "PSQL ツールタブのタイトル"
 
 #: pgadmin/browser/register_browser_preferences.py:544
 msgid "Enable object breadcrumbs?"
-msgstr ""
+msgstr "オブジェクトのパンくずリストを有効化"
 
 #: pgadmin/browser/register_browser_preferences.py:547
 msgid ""
 "Enable breadcrumbs to show the complete path of an object in the object "
 "explorer. The breadcrumbs are displayed on object mouse hover."
-msgstr ""
+msgstr "オブジェクトエクスプローラのオブジェクトが、どのパスに位置しているのかを示すパンくずリストを有効にします。パンくずリストが表示されるのは、オブジェクトにマウスを合わせたときです。"
 
 #: pgadmin/browser/register_browser_preferences.py:556
 msgid "Show comment with object breadcrumbs?"
-msgstr ""
+msgstr "オブジェクトのパンくずリストにコメントを表示"
 
 #: pgadmin/browser/register_browser_preferences.py:559
 msgid "Show object comment along with breadcrumbs."
-msgstr ""
+msgstr "パンくずリストと一緒に、オブジェクトのコメントを表示します。"
 
 #: pgadmin/browser/utils.py:303
 msgid "Unimplemented method ({0}) for this url ({1})"
@@ -1078,7 +1080,7 @@ msgstr "WAL の適用を一時停止しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1959
 msgid "WAL replay resumed"
-msgstr ""
+msgstr "WAL の適用を再開しました"
 
 #: pgadmin/browser/server_groups/servers/__init__.py:1965
 #: pgadmin/browser/server_groups/servers/__init__.py:2023
@@ -2447,7 +2449,7 @@ msgstr "バージョン %s までサポート"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:104
 msgid "Table Name"
-msgstr ""
+msgstr "テーブル名"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:124
 #: pgadmin/browser/server_groups/servers/databases/schemas/catalog_objects/columns/__init__.py:51
@@ -2476,7 +2478,7 @@ msgstr "列"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:150
 msgid "Where"
-msgstr ""
+msgstr "WHERE"
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:272
 msgid "All tables?"
@@ -2510,7 +2512,7 @@ msgstr ""
 
 #: pgadmin/browser/server_groups/servers/databases/publications/static/js/publication.ui.js:287
 msgid "Tables in Schema"
-msgstr ""
+msgstr "スキーマ内のテーブル"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/__init__.py:69
 #: pgadmin/browser/server_groups/servers/databases/schemas/static/js/schema.js:33
@@ -3971,11 +3973,11 @@ msgstr "スケール"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:344
 msgid "Compression"
-msgstr ""
+msgstr "圧縮方式"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:346
 msgid "Select compression"
-msgstr ""
+msgstr "圧縮方式を選択"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui.js:384
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:59
@@ -4614,7 +4616,7 @@ msgstr "インデックス"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:260
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:641
 msgid "Name cannot be empty in edit mode."
-msgstr ""
+msgstr "編集モードでは名前が必須です。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/primary_key.ui.js:268
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:283
@@ -4625,7 +4627,7 @@ msgstr "%sの列を指定してください。"
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/index_constraint/static/js/unique_constraint.ui.js:271
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:530
 msgid "NULLs not distinct?"
-msgstr ""
+msgstr "NULL 同士を等価と見なす"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/__init__.py:57
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.js:35
@@ -4680,51 +4682,51 @@ msgstr "NULL"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:276
 msgid "Gin pending list limit"
-msgstr ""
+msgstr "GIN 保留リストの上限"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:284
 msgid "This value is specified in kilobytes."
-msgstr ""
+msgstr "この値はキロバイト単位で指定します。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:286
 msgid "Pages per range"
-msgstr ""
+msgstr "範囲あたりのページ数"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:293
 msgid ""
 "Number of table blocks that make up one block range for each entry of a "
 "BRIN index."
-msgstr ""
+msgstr "BRIN インデックスの各エントリにおいて、ひとつのブロック範囲を構成するテーブルブロック数です。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:295
 msgid "Buffering"
-msgstr ""
+msgstr "バッファリング"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:298
 msgid "Auto"
-msgstr ""
+msgstr "自動"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:302
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:385
 msgid "On"
-msgstr ""
+msgstr "入"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:306
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:389
 msgid "Off"
-msgstr ""
+msgstr "切"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:317
 msgid "Deduplicate items?"
-msgstr ""
+msgstr "重複項目を排除"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:331
 msgid "Fast update?"
-msgstr ""
+msgstr "高速更新"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:344
 msgid "Autosummarize?"
-msgstr ""
+msgstr "自動的にサマリー処理"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:413
 msgid "Select the column(s)"
@@ -4779,7 +4781,7 @@ msgstr "並行作成"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/indexes/static/js/index.ui.js:652
 msgid "You must specify at least one column/expression."
-msgstr ""
+msgstr "少なくとも列/式をひとつ指定してください。"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/__init__.py:76
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:38
@@ -4934,15 +4936,15 @@ msgstr "パーティションを取り外す"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:108
 msgid "Detach"
-msgstr ""
+msgstr "デタッチ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:112
 msgid "Concurrently"
-msgstr ""
+msgstr "同時実行"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:123
 msgid "Finalize"
-msgstr ""
+msgstr "保留中のデタッチ操作を処理"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:134
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.js:131
@@ -4973,11 +4975,11 @@ msgstr "テーブル \"%s\" の統計をリセットしますか？"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:285
 msgid "Detach Partition Concurrently"
-msgstr ""
+msgstr "パーティションを同時実行でデタッチ"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:287
 msgid "Detach Partition Finalize"
-msgstr ""
+msgstr "デタッチ保留中のパーティションを処理"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/partitions/static/js/partition.js:292
 #, python-format
@@ -5443,19 +5445,19 @@ msgstr "コメントあり"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:295
 msgid "With compression?"
-msgstr ""
+msgstr "圧縮方式あり"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:300
 msgid "With generated?"
-msgstr ""
+msgstr "生成式あり"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:305
 msgid "With identity?"
-msgstr ""
+msgstr "IDENTITY あり"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:310
 msgid "With statistics?"
-msgstr ""
+msgstr "統計あり"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:517
 msgid "Select to inherit from..."
@@ -5474,7 +5476,7 @@ msgid ""
 "Please check if any policy exists. If no policy exists for the table, a "
 "default-deny policy is used, meaning that no rows are visible or can be "
 "modified by other users"
-msgstr ""
+msgstr "何らかのポリシーが、テーブルに存在しているかどうかを確認してください。存在しない場合、拒否を既定とするポリシーを使用します。これにより、すべての行が不可視となり、誰にも変更できなくなります"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui.js:642
 msgid "Force RLS Policy?"
@@ -6368,7 +6370,7 @@ msgstr "セキュリティバリア"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:86
 msgid "Security invoker?"
-msgstr ""
+msgstr "問い合わせユーザの権限で実行"
 
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/static/js/view.ui.js:90
 msgid "Check options"
@@ -6402,7 +6404,7 @@ msgstr "続行しますか？"
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/pg/default/sql/coll_mview_stats.sql:2
 #: pgadmin/browser/server_groups/servers/databases/schemas/views/templates/mviews/ppas/default/sql/coll_mview_stats.sql:2
 msgid "View Name"
-msgstr ""
+msgstr "ビュー名"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:53
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:67
@@ -6440,7 +6442,7 @@ msgstr "選択したデータベースへはすでに接続されています。
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:112
 msgid "Delete (Force)"
-msgstr ""
+msgstr "削除 (強制)"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:117
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:244
@@ -6472,7 +6474,7 @@ msgstr "データベース %s から切断しますか？"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:423
 msgid "Connect to database."
-msgstr ""
+msgstr "データベースに接続。"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.js:439
 msgid "Connect to database"
@@ -6496,27 +6498,27 @@ msgstr "エンコーディング"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:142
 msgid "Strategy"
-msgstr ""
+msgstr "ストラテジ"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:147
 msgid "WAL Log"
-msgstr ""
+msgstr "WAL ログ"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:150
 msgid "File Copy"
-msgstr ""
+msgstr "ファイルコピー"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:155
 msgid "Locale Provider"
-msgstr ""
+msgstr "ロケールプロバイダ"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:160
 msgid "icu"
-msgstr ""
+msgstr "icu"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:163
 msgid "libc"
-msgstr ""
+msgstr "libc"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:181
 msgid "Character type"
@@ -6524,15 +6526,15 @@ msgstr "文字の分類"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:194
 msgid "ICU Locale"
-msgstr ""
+msgstr "ICU のロケール"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:208
 msgid "Collation Version"
-msgstr ""
+msgstr "照合順序のバージョン"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:212
 msgid "ICU Rules"
-msgstr ""
+msgstr "ICU のルール"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:225
 #: pgadmin/browser/server_groups/servers/roles/static/js/role.ui.js:112
@@ -6547,7 +6549,7 @@ msgstr "テンプレート"
 msgid ""
 "Note: When the preferences setting 'show template databases' is set to "
 "false, then template databases won't be displayed in the object explorer."
-msgstr ""
+msgstr "注: 'テンプレートデータベースを表示' 設定が無効になっていると、オブジェクトエクスプローラにテンプレートデータベースは表示されません。"
 
 #: pgadmin/browser/server_groups/servers/databases/static/js/database.ui.js:235
 msgid "Allow connections?"
@@ -6831,18 +6833,18 @@ msgstr "このパラメーターの値は synchronous_commit の設定を上書�
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:379
 msgid "Streaming"
-msgstr ""
+msgstr "ストリーミング"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:407
 msgid ""
 "Specifies whether to enable streaming of in-progress transactions for "
 "this subscription. By default, all transactions are fully decoded on the "
 "publisher and only then sent to the subscriber as a whole."
-msgstr ""
+msgstr "このサブスクリプションにおいて、進行中のトランザクションをストリーミングするかどうか指定します。既定では、すべてのトランザクションはパブリッシャー側で完全にデコードされ、その後でのみ全体をサブスクライバーに送信します。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:411
 msgid "Binary?"
-msgstr ""
+msgstr "バイナリ"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:415
 msgid ""
@@ -6851,29 +6853,31 @@ msgid ""
 "enabled, only data types having binary send and receive functions will be"
 " transferred in binary."
 msgstr ""
+"サブスクリプション側からパブリッシャー側に対し、データを (テキスト形式ではなく) "
+"バイナリ形式で送信してもらうよう要求するかどうか指定します。このオプションが有効であっても、バイナリ送受信関数を持つデータ型でないと、バイナリ形式で転送することはできません。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:419
 msgid "Two phase?"
-msgstr ""
+msgstr "2 相コミット"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:423
 msgid "Specifies whether two-phase commit is enabled for this subscription."
-msgstr ""
+msgstr "このサブスクリプションにおいて、2 相コミットを有効にするかどうか指定します。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:427
 msgid "Disable on error?"
-msgstr ""
+msgstr "エラー時に無効化"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:431
 msgid ""
 "Specifies whether the subscription should be automatically disabled if "
 "any errors are detected by subscription workers during data replication "
 "from the publisher."
-msgstr ""
+msgstr "パブリッシャーからのデータを複製する際に、サブスクリプションワーカがエラーを検出したら、自動でサブスクリプションを無効にするかどうか指定します。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:435
 msgid "Run as owner?"
-msgstr ""
+msgstr "所有者として実行"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:439
 msgid ""
@@ -6881,10 +6885,12 @@ msgid ""
 " If false, replication workers will perform actions on each table as the "
 "owner of that table."
 msgstr ""
+"true にすると、サブスクリプションの所有者として、すべてのレプリケーションのアクションが実行されます。false "
+"にすると、各テーブルの所有者として、それぞれにアクションが実行されます。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:443
 msgid "Password required?"
-msgstr ""
+msgstr "パスワード必須"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:447
 msgid ""
@@ -6892,14 +6898,16 @@ msgid ""
 "subscription must use password authentication. Only superusers can set "
 "this value to false."
 msgstr ""
+"このサブスクリプションがパブリッシャー側に接続することになったとき、パスワード認証を使うべきかどうか指定します。この値を false "
+"にできるのはスーパユーザだけです。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:451
 msgid "Origin"
-msgstr ""
+msgstr "オリジン"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:458
 msgid "none"
-msgstr ""
+msgstr "なし"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:459
 #: pgadmin/browser/server_groups/servers/static/js/server.ui.js:491
@@ -6915,6 +6923,8 @@ msgid ""
 "origin to any means that the publisher sends changes regardless of their "
 "origin."
 msgstr ""
+"サブスクリプション側がパブリッシャー側に対し、オリジンがない変更のみの送信を要求する (オリジンを 'なし' に設定した場合) "
+"か、オリジンとは無関係に変更の送信を要求する (オリジンを 'any' に設定した場合) か指定します。"
 
 #: pgadmin/browser/server_groups/servers/databases/subscriptions/static/js/subscription.ui.js:470
 msgid "Either Host name, Address must be specified."
@@ -8637,7 +8647,7 @@ msgstr "設定を再読み込み"
 msgid ""
 "Please select a server from the object explorer to reload the "
 "configuration files."
-msgstr ""
+msgstr "オブジェクトエクスプローラから、設定ファイルを再読み込みするサーバを選択してください。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:95
 msgid "Add Named Restore Point..."
@@ -8647,7 +8657,7 @@ msgstr "リストアポイントを追加..."
 msgid ""
 "Please select any server from the object explorer to Add Named Restore "
 "Point."
-msgstr ""
+msgstr "オブジェクトエクスプローラから、名前付きリストアポイントを追加するサーバを選択してください。"
 
 #: pgadmin/browser/server_groups/servers/static/js/server.js:102
 msgid "Change Password..."
@@ -9316,7 +9326,7 @@ msgstr "登録"
 
 #: pgadmin/browser/static/js/browser.js:460
 msgid "No menu available for this object."
-msgstr ""
+msgstr "このオブジェクトに表示できるメニューはありません。"
 
 #: pgadmin/browser/static/js/browser.js:545
 #: pgadmin/browser/static/js/preferences.js:139
@@ -9394,7 +9404,7 @@ msgstr "再読み込み..."
 
 #: pgadmin/browser/static/js/node.js:161
 msgid "Properties..."
-msgstr ""
+msgstr "プロパティ..."
 
 #: pgadmin/browser/static/js/node.js:180
 #, python-format
@@ -9410,7 +9420,7 @@ msgstr "削除"
 
 #: pgadmin/browser/static/js/node.js:199
 msgid "Delete (Cascade)"
-msgstr ""
+msgstr "削除 (カスケード)"
 
 #: pgadmin/browser/static/js/node.js:261
 #, python-format
@@ -9453,24 +9463,24 @@ msgid ""
 "Delete database with the force option will attempt to terminate all "
 "existing connections to the \"%s\" database. Are you sure you want to "
 "proceed?"
-msgstr ""
+msgstr "強制的にデータベースを削除すると、データベース \"%s\" への既存の接続がすべて切断されます。よろしいですか？"
 
 #: pgadmin/browser/static/js/node.js:740
 #, python-format
 msgid "Delete FORCE %s?"
-msgstr ""
+msgstr "%sを強制削除しますか？"
 
 #: pgadmin/browser/static/js/node.js:744
 #, python-format
 msgid ""
 "Are you sure you want to delete %s \"%s\" and all the objects that depend"
 " on it?"
-msgstr ""
+msgstr "%s \"%s\" と、それに依存するオブジェクトすべてを削除しますか？"
 
 #: pgadmin/browser/static/js/node.js:745
 #, python-format
 msgid "Delete CASCADE %s?"
-msgstr ""
+msgstr "%sをカスケードで削除しますか？"
 
 #: pgadmin/browser/static/js/node.js:750
 #, python-format
@@ -9490,12 +9500,12 @@ msgstr "%sを削除しますか？"
 #: pgadmin/browser/static/js/node.js:760
 #, python-format
 msgid "Are you sure you want to delete %s \"%s\"?"
-msgstr ""
+msgstr "%s \"%s\" を削除しますか？"
 
 #: pgadmin/browser/static/js/node.js:761
 #, python-format
 msgid "Delete %s?"
-msgstr ""
+msgstr "%sを削除しますか？"
 
 #: pgadmin/browser/static/js/node.js:767
 #, python-format
@@ -10024,7 +10034,7 @@ msgstr "ダッシュボードを読み込んでいます..."
 #: pgadmin/dashboard/static/js/Dashboard.jsx:848
 #: pgadmin/dashboard/static/js/Dashboard.jsx:853
 msgid "Active sessions only"
-msgstr ""
+msgstr "アクティブなセッションのみ"
 
 #: pgadmin/dashboard/static/js/Dashboard.jsx:883
 #: pgadmin/dashboard/static/js/Dashboard.jsx:885
@@ -10422,7 +10432,7 @@ msgstr "権限がありません"
 
 #: pgadmin/misc/cloud/biganimal/__init__.py:300
 msgid "Project not provided."
-msgstr ""
+msgstr "プロジェクトが未指定です。"
 
 #: pgadmin/misc/cloud/biganimal/__init__.py:318
 msgid "Error retrieving providers."
@@ -10434,7 +10444,7 @@ msgstr "地域の取得エラー。"
 
 #: pgadmin/misc/cloud/biganimal/__init__.py:448
 msgid "Error retrieving projects."
-msgstr ""
+msgstr "プロジェクトの取得エラー。"
 
 #: pgadmin/misc/cloud/rds/__init__.py:101
 #: pgadmin/misc/cloud/rds/__init__.py:133
@@ -10529,7 +10539,7 @@ msgstr "クラウドインスタンスを展開"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:441
 msgid "Select a cloud provider for PostgreSQL database."
-msgstr ""
+msgstr "PostgreSQL データベースのクラウドプロバイダを選択します。"
 
 #: pgadmin/misc/cloud/static/js/CloudWizard.jsx:453
 msgid "The verification code to authenticate the pgAdmin to EDB BigAnimal is: "
@@ -10725,7 +10735,7 @@ msgstr "バーストクラス (t クラスを含む)"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:281
 msgid "General Purpose SSD (gp3)"
-msgstr ""
+msgstr "汎用 SSD (gp3)"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:282
 msgid "General Purpose SSD (gp2)"
@@ -10745,15 +10755,15 @@ msgstr "GiB 単位での容量です。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:319
 msgid "Allocated storage should be between 20 - 65536 GiB."
-msgstr ""
+msgstr "割り当てストレージは 20 から 65536 GiB まででないといけません。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:323
 msgid "Allocated storage should be between 100 - 65536 GiB."
-msgstr ""
+msgstr "割り当てストレージは 100 から 65536 GiB まででないといけません。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:327
 msgid "Allocated storage should be between 5 - 3072 GiB."
-msgstr ""
+msgstr "割り当てストレージは 5 から 3072 GiB まででないといけません。"
 
 #: pgadmin/misc/cloud/static/js/aws_schema.ui.js:347
 msgid ""
@@ -11014,7 +11024,7 @@ msgstr "ボリュームの IOPS"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:260
 msgid "Disk Throuhgput"
-msgstr ""
+msgstr "ディスクのスループット"
 
 #: pgadmin/misc/cloud/static/js/biganimal.js:265
 msgid "Database Type"
@@ -11033,7 +11043,7 @@ msgstr "スタンバイレプリカの数を選択してください。"
 #: pgadmin/misc/cloud/static/js/google.js:311
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:120
 msgid "Project"
-msgstr ""
+msgstr "プロジェクト"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:73
 msgid "Single Node"
@@ -11075,15 +11085,15 @@ msgstr "ボリュームのプロパティを選択してください。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:248
 msgid "Please enter the volume size in the range between 1 to 16384."
-msgstr ""
+msgstr "ボリュームの容量を 1 から 16384 までの範囲で入力してください。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:252
 msgid "Please enter the volume size in the range between 4 to 16384."
-msgstr ""
+msgstr "ボリュームの容量を 4 から 16384 までの範囲で入力してください。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:257
 msgid "Please enter volume IOPS."
-msgstr ""
+msgstr "ボリュームの IOPS を入力してください。"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:304
 msgid "Volume properties"
@@ -11103,7 +11113,7 @@ msgstr "IOPS"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:354
 msgid "Disk throughput"
-msgstr ""
+msgstr "ディスクのスループット"
 
 #: pgadmin/misc/cloud/static/js/biganimal_schema.ui.js:393
 msgid "Password must be 12 characters or more."
@@ -11141,16 +11151,16 @@ msgstr "クラウドウィザードのデータ消去中にエラーが発生し
 
 #: pgadmin/misc/cloud/static/js/google.js:72
 msgid "Error while authentication: ${error}"
-msgstr ""
+msgstr "認証中にエラーが発生しました: ${error}"
 
 #: pgadmin/misc/cloud/static/js/google.js:338
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:325
 msgid "Secondary availability zone"
-msgstr ""
+msgstr "セカンダリの可用性ゾーン"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:47
 msgid "Client secret file"
-msgstr ""
+msgstr "クライアントシークレットファイル"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:49
 msgid ""
@@ -11160,70 +11170,75 @@ msgid ""
 "=%2Cuser-consent%2Cpublic-and-internal-applications\" "
 "target=\"_blank\">link</a> for creating client secret."
 msgstr ""
+"Google 認証に使うクライアント ID、クライアントシークレット、その他 OAuth 2.0 "
+"のパラメータを含むクライアントシークレットファイルを選択します。クライアントシークレットの作成については、<a "
+"href=\"https://support.google.com/cloud/answer/6158849?hl=en#userconsent&zippy"
+"=%2Cuser-consent%2Cpublic-and-internal-applications\" "
+"target=\"_blank\">リンク</a>を参照してください。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:61
 msgid "Click here to authenticate yourself to Google"
-msgstr ""
+msgstr "ここをクリックして Google へ認証します"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:62
 msgid ""
 "After clicking the button above you will be redirected to the Google "
 "authentication page in a new browser tab."
-msgstr ""
+msgstr "上のボタンをクリックすると、新しいブラウザタブで Google の認証ページへとリダイレクトされます。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:204
 msgid "Shared core"
-msgstr ""
+msgstr "共有コア"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:207
 msgid "Standard"
-msgstr ""
+msgstr "標準"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:211
 msgid "High Memory"
-msgstr ""
+msgstr "高メモリ"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:252
 msgid "SSD"
-msgstr ""
+msgstr "SSD"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:253
 msgid "HDD"
-msgstr ""
+msgstr "HDD"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:258
 msgid "Storage capacity"
-msgstr ""
+msgstr "ストレージの容量"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:263
 msgid "Size in GB."
-msgstr ""
+msgstr "GB 単位での容量です。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:270
 msgid "Please enter the value between 10 and 65,536."
-msgstr ""
+msgstr "値を 10 から 65,536 までの範囲で入力してください。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:319
 msgid "High availability?"
-msgstr ""
+msgstr "高可用性"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:349
 msgid "Please select Secondary availability zone different than primary."
-msgstr ""
+msgstr "セカンダリの可用性ゾーンには、プライマリと異なるものを選択してください。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:391
 msgid "Admin username for your Google Cloud Sql PostgreSQL instance."
-msgstr ""
+msgstr "あなたの Google Cloud SQL for PostgreSQL インスタンスの管理者ユーザ名です。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:400
 msgid "Set a password for the default admin user \"postgres\"."
-msgstr ""
+msgstr "既定の管理用ユーザ \"postgres\" のパスワードを設定します。"
 
 #: pgadmin/misc/cloud/static/js/google_schema.ui.js:521
 msgid ""
 "Name must only contain lowercase letters, numbers, and hyphens.Should "
 "start with a letter and must be 97 characters or less"
-msgstr ""
+msgstr "名前は 97 文字以下の小文字アルファベット、数字、ハイフンにしてください。また、名前はアルファベットから始まるようにしてください"
 
 #: pgadmin/misc/cloud/utils/__init__.py:80
 msgid "Deployment on {0} is started for instance {1}."
@@ -11244,7 +11259,7 @@ msgstr "パネル"
 
 #: pgadmin/misc/dependents/static/js/Dependents.jsx:117
 msgid "No dependent information is available for the selected object."
-msgstr ""
+msgstr "選択されたオブジェクトに表示できる依存情報はありません。"
 
 #: pgadmin/misc/file_manager/__init__.py:150
 msgid "Maximum file upload size (MB)"
@@ -11252,11 +11267,11 @@ msgstr "アップロードできるファイルのサイズ上限 (MB)"
 
 #: pgadmin/misc/file_manager/__init__.py:155
 msgid "Last directory visited"
-msgstr "最終閲覧ディレクトリ"
+msgstr "最後に閲覧したディレクトリ"
 
 #: pgadmin/misc/file_manager/__init__.py:160
 msgid "Last storage"
-msgstr ""
+msgstr "最後に使ったストレージ"
 
 #: pgadmin/misc/file_manager/__init__.py:166
 msgid "File dialog view"
@@ -11335,7 +11350,7 @@ msgstr "選択"
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:716
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:792
 msgid "My Storage"
-msgstr ""
+msgstr "自分のストレージ"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:719
 msgid "Home"
@@ -11383,7 +11398,7 @@ msgstr "隠しファイルを表示"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:786
 msgid "${selectedSS}"
-msgstr ""
+msgstr "${selectedSS}"
 
 #: pgadmin/misc/file_manager/static/js/components/FileManager.jsx:842
 msgid "All Files"
@@ -11461,20 +11476,20 @@ msgstr "結果グリッド"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:352
 msgid "This settings is to Show/Hide nodes in the object explorer."
-msgstr ""
+msgstr "この設定を変更すると、オブジェクトエクスプローラのノードを表示/非表示にできます。"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:354
 #, python-format
 msgid "The Accesskey here is %s."
-msgstr ""
+msgstr "ここでのアクセスキーは %s です。"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:601
 msgid "Object explorer refresh required"
-msgstr ""
+msgstr "オブジェクトエクスプローラの再読み込みが必要です"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:602
 msgid "An object explorer refresh is required. Do you wish to refresh it now?"
-msgstr ""
+msgstr "オブジェクトエクスプローラを再読み込みする必要があります。今すぐ行いますか？"
 
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:615
 #: pgadmin/preferences/static/js/components/PreferencesComponent.jsx:630
@@ -11667,6 +11682,8 @@ msgid ""
 "master password for your existing pgAdmin saved passwords and they will "
 "be migrated to the operating system store when you click OK."
 msgstr ""
+"pgAdmin は、保存されたパスワードを ${keyringName} に保管するようになりました。現在の pgAdmin "
+"のマスタパスワードを入力して OK をクリックすると、保存されたパスワードがオペレーティングシステムの保管領域に移行されます。"
 
 #: pgadmin/static/js/Dialogs/MasterPasswordContent.jsx:94
 msgid "Please set a master password for pgAdmin."
@@ -11702,31 +11719,33 @@ msgstr "題名は必須です"
 msgid ""
 "The master password retrieved from the master password hook utility is "
 "different from what was previously retrieved."
-msgstr ""
+msgstr "マスタパスワードのフックユーティリティから取得したマスタパスワードが、以前取得したものと異なります。"
 
 #: pgadmin/static/js/Dialogs/index.jsx:182
 msgid "Do you want to reset your master password to match?"
-msgstr ""
+msgstr "マスタパスワードが一致するように初期化しますか？"
 
 #: pgadmin/static/js/Dialogs/index.jsx:183
 msgid ""
 "Note that this will close all open database connections and remove all "
 "saved passwords."
-msgstr ""
+msgstr "注: 既存のデータベースへの接続はすべて切断され、保存されたパスワードも完全に削除されます。"
 
 #: pgadmin/static/js/Dialogs/index.jsx:205
 msgid "Migration successful"
-msgstr ""
+msgstr "移行が成功しました"
 
 #: pgadmin/static/js/Dialogs/index.jsx:206
 msgid ""
 "Passwords previously saved by pgAdmin have been successfully migrated to "
 "${res.data.data.keyring_name} and removed from the pgAdmin store."
 msgstr ""
+"今まで pgAdmin が保存していたパスワードを正常に ${res.data.data.keyring_name} "
+"へと移行しました。また、pgAdmin の保管領域からパスワードを削除しました。"
 
 #: pgadmin/static/js/Dialogs/index.jsx:218
 msgid "Migrate Saved Passwords"
-msgstr ""
+msgstr "保存されたパスワードを移行"
 
 #: pgadmin/static/js/Dialogs/index.jsx:218
 msgid "Unlock Saved Passwords"
@@ -11751,7 +11770,7 @@ msgstr "他の操作をする前に、まずサーバから切断して、pgpass
 
 #: pgadmin/static/js/Dialogs/index.jsx:312
 msgid "Change pgAdmin User Password"
-msgstr ""
+msgstr "pgAdmin ユーザのパスワードを変更"
 
 #: pgadmin/static/js/Dialogs/index.jsx:458
 msgid "Rename Panel ${_.escape(title)}"
@@ -11899,7 +11918,7 @@ msgstr ""
 
 #: pgadmin/static/js/PgTreeView/index.jsx:83
 msgid "No objects are found to display"
-msgstr ""
+msgstr "表示するオブジェクトが見つかりませんでした"
 
 #: pgadmin/static/js/SchemaView/DataGridView.jsx:353
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:167
@@ -11951,11 +11970,11 @@ msgstr "リセット"
 
 #: pgadmin/static/js/SchemaView/index.jsx:1005
 msgid "Edit object..."
-msgstr ""
+msgstr "オブジェクトを編集..."
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:16
 msgid "Forget Password"
-msgstr ""
+msgstr "忘れたパスワードの復元"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:19
 msgid ""
@@ -11965,7 +11984,7 @@ msgstr "パスワードを復元したいユーザアカウントのメールア
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:20
 msgid "Email Address"
-msgstr ""
+msgstr "メールアドレス"
 
 #: pgadmin/static/js/SecurityPages/ForgotPasswordPage.jsx:21
 msgid "Recover Password"
@@ -11978,20 +11997,20 @@ msgstr "ログイン"
 
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:37
 msgid "Email Address / Username"
-msgstr ""
+msgstr "メールアドレス / ユーザ名"
 
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:40
 msgid "Forgotten your password?"
-msgstr ""
+msgstr "パスワードをお忘れですか？"
 
 #: pgadmin/static/js/SecurityPages/LoginPage.jsx:50
 #, python-format
 msgid "Login with %s"
-msgstr ""
+msgstr "%s でログイン"
 
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:72
 msgid "Authentication Registration"
-msgstr ""
+msgstr "認証の登録"
 
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:78
 #: pgadmin/static/js/SecurityPages/MfaRegisterPage.jsx:98
@@ -12028,7 +12047,7 @@ msgstr "パスワードをリセット"
 
 #: pgadmin/static/js/SecurityPages/PasswordResetPage.jsx:20
 msgid "Retype Password"
-msgstr ""
+msgstr "パスワードを再入力"
 
 #: pgadmin/static/js/components/CodeMirror.jsx:288
 msgid "Previous"
@@ -12082,7 +12101,7 @@ msgstr "アラート"
 
 #: pgadmin/static/js/components/QueryThresholds.jsx:87
 msgid "(in minutes)"
-msgstr ""
+msgstr "(分)"
 
 #: pgadmin/static/js/components/SelectThemes.jsx:50
 msgid "Preview not available..."
@@ -12143,7 +12162,7 @@ msgstr "このユーティリティでは、名前に = 記号の入ったデー
 
 #: pgadmin/static/js/tree/tree_utils.js:61
 msgid "Please select server or child node from the object explorer."
-msgstr ""
+msgstr "オブジェクトエクスプローラからサーバか子ノードを選択してください。"
 
 #: pgadmin/static/js/tree/tree_utils.js:93
 msgid "Please select a database or its child node from the browser."
@@ -12208,7 +12227,7 @@ msgstr "グローバルオブジェクトをバックアップ..."
 msgid ""
 "Please select any server from the object explorer to take Backup of "
 "global objects."
-msgstr ""
+msgstr "グローバルオブジェクトのバックアップを取るサーバをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/backup/static/js/backup.js:88
 #: pgadmin/tools/backup/static/js/backup.js:114
@@ -12218,14 +12237,14 @@ msgstr "サーバをバックアップ..."
 #: pgadmin/tools/backup/static/js/backup.js:92
 #: pgadmin/tools/backup/static/js/backup.js:118
 msgid "Please select any server from the object explorer to take Server Backup."
-msgstr ""
+msgstr "全体のバックアップを取るサーバをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/backup/static/js/backup.js:105
 #: pgadmin/tools/backup/static/js/backup.js:132
 msgid ""
 "Please select any database or schema or table from the object explorer to"
 " take Backup."
-msgstr ""
+msgstr "バックアップを取るデータベース、スキーマ、またはテーブルをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/backup/static/js/backup.js:126
 #: pgadmin/tools/backup/static/js/backup.js:144
@@ -12286,15 +12305,15 @@ msgstr "オブジェクトの種類"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:119
 msgid "Only schemas"
-msgstr ""
+msgstr "スキーマのみ"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:135
 msgid "Only tablespaces"
-msgstr ""
+msgstr "テーブル空間のみ"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:152
 msgid "Only roles"
-msgstr ""
+msgstr "ロールのみ"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:168
 msgid "Blobs"
@@ -12326,7 +12345,7 @@ msgstr "保存しない"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:214
 msgid "Role passwords"
-msgstr ""
+msgstr "ロールのパスワード"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:236
 msgid "Unlogged table data"
@@ -12334,12 +12353,12 @@ msgstr "ログを取らないテーブルデータ"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:275
 msgid "Toast compressions"
-msgstr ""
+msgstr "TOAST の圧縮方式"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:283
 #: pgadmin/tools/restore/static/js/restore.ui.js:212
 msgid "Table access methods"
-msgstr ""
+msgstr "テーブルのアクセスメソッド"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:336
 msgid "$ quoting"
@@ -12364,19 +12383,19 @@ msgstr "SET SESSION AUTHORIZATION を使用"
 #: pgadmin/tools/backup/static/js/backup.ui.js:392
 #: pgadmin/tools/restore/static/js/restore.ui.js:298
 msgid "Exclude schema"
-msgstr ""
+msgstr "スキーマを除外"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:399
 msgid "Exclude database"
-msgstr ""
+msgstr "データベースを除外"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:407
 msgid "Extra float digits"
-msgstr ""
+msgstr "浮動小数点の桁の表現"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:414
 msgid "Lock wait timeout"
-msgstr ""
+msgstr "ロック待機のタイムアウト"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:461
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:79
@@ -12435,11 +12454,11 @@ msgstr "バックアップ形式には、平文が使用されます"
 #: pgadmin/tools/restore/static/js/restore.ui.js:402
 #: pgadmin/tools/restore/static/js/restore.ui.js:408
 msgid "Data Options"
-msgstr ""
+msgstr "データのオプション"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:563
 msgid "Use INSERT Commands"
-msgstr ""
+msgstr "INSERT コマンドを使用"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:566
 #: pgadmin/tools/backup/static/js/backup.ui.js:572
@@ -12452,15 +12471,15 @@ msgstr ""
 #: pgadmin/tools/restore/static/js/restore.ui.js:433
 #: pgadmin/tools/restore/static/js/restore.ui.js:447
 msgid "Query Options"
-msgstr ""
+msgstr "クエリのオプション"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:569
 msgid "Maximum rows per INSERT command"
-msgstr ""
+msgstr "INSERT コマンドごとの最大行数"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:576
 msgid "On conflict do nothing to INSERT command"
-msgstr ""
+msgstr "INSERT コマンドに ON CONFLICT DO NOTHING を付与"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:591
 #: pgadmin/tools/restore/static/js/restore.ui.js:413
@@ -12474,11 +12493,11 @@ msgstr "DROP DATABASE 文を含む"
 #: pgadmin/tools/backup/static/js/backup.ui.js:613
 #: pgadmin/tools/restore/static/js/restore.ui.js:431
 msgid "Include IF EXISTS clause"
-msgstr ""
+msgstr "IF EXISTS 句を含める"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:626
 msgid "Use Column INSERTS"
-msgstr ""
+msgstr "列名付き INSERT を使用"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:629
 #: pgadmin/tools/backup/static/js/backup.ui.js:635
@@ -12491,20 +12510,20 @@ msgstr ""
 #: pgadmin/tools/restore/static/js/restore.ui.js:453
 #: pgadmin/tools/restore/static/js/restore.ui.js:459
 msgid "Table Options"
-msgstr ""
+msgstr "テーブルのオプション"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:632
 msgid "Load via partition root"
-msgstr ""
+msgstr "親テーブル経由で読み込む"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:639
 #: pgadmin/tools/restore/static/js/restore.ui.js:450
 msgid "Enable row security"
-msgstr ""
+msgstr "行セキュリティを有効化"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:651
 msgid "This option is enabled only when Use INSERT Commands is enabled."
-msgstr ""
+msgstr "このオプションは INSERT コマンドを使用するときにのみ有効となります。"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:654
 msgid "With OID(s)"
@@ -12512,34 +12531,34 @@ msgstr "OID 付き"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:672
 msgid "Exclude table data"
-msgstr ""
+msgstr "テーブルのデータを除外"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:679
 msgid "Table and Children"
-msgstr ""
+msgstr "テーブルと、その子テーブル"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:687
 msgid "Exclude table and children"
-msgstr ""
+msgstr "テーブルと、その子テーブルを除外"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:695
 msgid "Exclude table data and children"
-msgstr ""
+msgstr "テーブルと、その子テーブルのデータを除外"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:713
 #: pgadmin/tools/backup/static/js/backup.ui.js:719
 msgid "Objects"
-msgstr ""
+msgstr "オブジェクト"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:718
 msgid "objects"
-msgstr ""
+msgstr "オブジェクト"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:721
 msgid ""
 "If Schema(s) is selected then it will take the backup of that selected "
 "schema(s) only"
-msgstr ""
+msgstr "スキーマが選択されている場合、そのスキーマのみをバックアップします"
 
 #: pgadmin/tools/backup/static/js/backup.ui.js:755
 #: pgadmin/tools/backup/static/js/backupGlobal.ui.js:114
@@ -12797,13 +12816,13 @@ msgstr "すべて消去"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:169
 msgid "Debugger Aborted"
-msgstr ""
+msgstr "デバッガが中断されました"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:170
 msgid ""
 "Debugger has been aborted. On clicking the ok button, debugger panel will"
 " be closed."
-msgstr ""
+msgstr "デバッガが中断されました。OK ボタンをクリックすると、デバッガパネルが閉じられます。"
 
 #: pgadmin/tools/debugger/static/js/components/DebuggerComponent.jsx:184
 msgid "Error while starting debugging listener."
@@ -13044,19 +13063,19 @@ msgstr "テーブルに対する ERD を生成するとき、関連するテー�
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:296
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:343
 msgid "Cardinality Notation"
-msgstr ""
+msgstr "カーディナリティの記法"
 
 #: pgadmin/tools/erd/__init__.py:407
 msgid "Crow's foot"
-msgstr ""
+msgstr "鳥の足"
 
 #: pgadmin/tools/erd/__init__.py:408
 msgid "Chen"
-msgstr ""
+msgstr "チェン"
 
 #: pgadmin/tools/erd/__init__.py:410
 msgid "Notation to be used to present cardinality."
-msgstr ""
+msgstr "カーディナリティを表現するのに使う記法です。"
 
 #: pgadmin/tools/erd/static/js/ERDModule.js:102
 #: pgadmin/tools/erd/static/js/ERDModule.js:112
@@ -13289,11 +13308,11 @@ msgstr "DROP TABLE を付加"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:346
 msgid "Crow's Foot Notation"
-msgstr ""
+msgstr "鳥の足記法"
 
 #: pgadmin/tools/erd/static/js/erd_tool/components/MainToolBar.jsx:347
 msgid "Chen Notation"
-msgstr ""
+msgstr "チェン記法"
 
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/ManyToManyDialog.js:35
 #: pgadmin/tools/erd/static/js/erd_tool/dialogs/OneToManyDialog.js:35
@@ -13370,7 +13389,7 @@ msgstr "権限付与ウィザード..."
 msgid ""
 "Please select any database, schema or schema objects from the object "
 "explorer to access Grant Wizard Tool."
-msgstr ""
+msgstr "権限付与ウィザードを実行するデータベース、スキーマ、またはスキーマオブジェクトをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/import_export/__init__.py:39
 #: pgadmin/tools/import_export/static/js/import_export.ui.js:59
@@ -13418,7 +13437,7 @@ msgstr "データをインポート/エクスポート..."
 
 #: pgadmin/tools/import_export/static/js/import_export.js:65
 msgid "Please select any table from the object explorer to Import/Export data."
-msgstr ""
+msgstr "データをインポート/エクスポートするテーブルをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/import_export/static/js/import_export.js:170
 #, python-format
@@ -13602,11 +13621,11 @@ msgid ""
 "All existing server groups and servers will be removed before the servers"
 " above are imported. On a successful import process, the object explorer "
 "will be refreshed."
-msgstr ""
+msgstr "これらのサーバをインポートする前に、既存のサーバグループとサーバをすべて削除します。インポート処理が成功したら、オブジェクトエクスプローラが再読み込みされます。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:166
 msgid "On a successful import process, the object explorer will be refreshed."
-msgstr ""
+msgstr "インポート処理が成功したら、オブジェクトエクスプローラが再読み込みされます。"
 
 #: pgadmin/tools/import_export_servers/static/js/ImportExportServers.jsx:187
 msgid "Error while fetching Server Groups and Servers."
@@ -13643,23 +13662,23 @@ msgstr "メンテナンス"
 
 #: pgadmin/tools/maintenance/__init__.py:79
 msgid "on database '{0}'"
-msgstr ""
+msgstr "データベース '{0}'"
 
 #: pgadmin/tools/maintenance/__init__.py:81
 msgid "on constraint '{0}/{1}/{2}/{3}'"
-msgstr ""
+msgstr "制約 '{0}/{1}/{2}/{3}'"
 
 #: pgadmin/tools/maintenance/__init__.py:86
 msgid "on index '{0}/{1}/{2}/{3}'"
-msgstr ""
+msgstr "インデックス '{0}/{1}/{2}/{3}'"
 
 #: pgadmin/tools/maintenance/__init__.py:90
 msgid "on table '{0}/{1}/{2}'"
-msgstr ""
+msgstr "テーブル '{0}/{1}/{2}'"
 
 #: pgadmin/tools/maintenance/__init__.py:93
 msgid "on schema '{0}/{1}'"
-msgstr ""
+msgstr "スキーマ '{0}/{1}'"
 
 #: pgadmin/tools/maintenance/__init__.py:99
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:375
@@ -13687,7 +13706,7 @@ msgstr "REINDEX TABLE"
 
 #: pgadmin/tools/maintenance/__init__.py:111
 msgid "REINDEX SCHEMA"
-msgstr ""
+msgstr "REINDEX SCHEMA"
 
 #: pgadmin/tools/maintenance/__init__.py:113
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:390
@@ -13696,7 +13715,7 @@ msgstr "CLUSTER"
 
 #: pgadmin/tools/maintenance/__init__.py:115
 msgid "{0} {1} of server {2}"
-msgstr ""
+msgstr "サーバ {2} の{1} に {0} を実行"
 
 #: pgadmin/tools/maintenance/__init__.py:256
 msgid "Maintenance job created."
@@ -13710,7 +13729,7 @@ msgstr "メンテナンス..."
 #: pgadmin/tools/maintenance/static/js/maintenance.js:64
 #: pgadmin/tools/maintenance/static/js/maintenance.js:83
 msgid "Please select any database from the object explorer to do Maintenance."
-msgstr ""
+msgstr "メンテナンスを行うデータベースをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.js:178
 msgid "Maintenance error"
@@ -13732,51 +13751,51 @@ msgstr "FREEZE"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:95
 msgid "DISABLE PAGE SKIPPING"
-msgstr ""
+msgstr "DISABLE PAGE SKIPPING"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:111
 msgid "SKIP LOCKED"
-msgstr ""
+msgstr "SKIP LOCKED"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:145
 msgid "PROCESS TOAST"
-msgstr ""
+msgstr "PROCESS TOAST"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:162
 msgid "PROCESS MAIN"
-msgstr ""
+msgstr "PROCESS MAIN"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:179
 msgid "SKIP DATABASE STATS"
-msgstr ""
+msgstr "SKIP DATABASE STATS"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:196
 msgid "ONLY DATABASE STATS"
-msgstr ""
+msgstr "ONLY DATABASE STATS"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:213
 msgid "INDEX CLEANUP"
-msgstr ""
+msgstr "INDEX CLEANUP"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:217
 msgid "AUTO"
-msgstr ""
+msgstr "自動"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:221
 msgid "ON"
-msgstr ""
+msgstr "入"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:225
 msgid "OFF"
-msgstr ""
+msgstr "切"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:244
 msgid "PARALLEL"
-msgstr ""
+msgstr "PARALLEL"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:261
 msgid "BUFFER USAGE LIMIT"
-msgstr ""
+msgstr "BUFFER USAGE LIMIT"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:272
 msgid ""
@@ -13784,20 +13803,22 @@ msgid ""
 "followed by any one of the following memory units: kB (kilobytes), MB "
 "(megabytes), GB (gigabytes), or TB (terabytes)"
 msgstr ""
+"サイズには、数字とメモリ単位 - kB (キロバイト), MB (メガバイト), GB (ギガバイト), TB (テラバイト) "
+"を組み合わせた文字列で指定してください"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:278
 msgid "SYSTEM"
-msgstr ""
+msgstr "SYSTEM"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:289
 msgid ""
 "This option is enabled only when the database is selected in the object "
 "explorer."
-msgstr ""
+msgstr "このオプションは、オブジェクトエクスプローラでデータベースが選択されているときにのみ有効となります。"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:308
 msgid "TABLESPACE"
-msgstr ""
+msgstr "TABLESPACE"
 
 #: pgadmin/tools/maintenance/static/js/maintenance.ui.js:370
 msgid "Maintenance operation"
@@ -13868,7 +13889,7 @@ msgstr "リストア..."
 msgid ""
 "Please select any schema or table from the object explorer to Restore "
 "data."
-msgstr ""
+msgstr "データをリストアするスキーマ、またはテーブルをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/restore/static/js/restore.js:131
 msgid "Restore Error"
@@ -13908,7 +13929,7 @@ msgstr "単一トランザクション"
 
 #: pgadmin/tools/restore/static/js/restore.ui.js:456
 msgid "No data for failed tables"
-msgstr ""
+msgstr "失敗したテーブルのデータは無視"
 
 #: pgadmin/tools/schema_diff/__init__.py:35
 msgid "Comparing objects..."
@@ -13917,7 +13938,7 @@ msgstr "オブジェクトを比較しています..."
 #: pgadmin/tools/schema_diff/__init__.py:76
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:79
 msgid "Ignore Whitespace"
-msgstr ""
+msgstr "空白を無視"
 
 #: pgadmin/tools/schema_diff/__init__.py:78
 msgid ""
@@ -13928,7 +13949,7 @@ msgstr "空白を無視するか、しないかの既定値を設定します (�
 #: pgadmin/tools/schema_diff/__init__.py:85
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:78
 msgid "Ignore Owner"
-msgstr ""
+msgstr "所有者を無視"
 
 #: pgadmin/tools/schema_diff/__init__.py:87
 msgid ""
@@ -13939,23 +13960,27 @@ msgstr "所有者を無視するか、しないかの既定値を設定します
 #: pgadmin/tools/schema_diff/__init__.py:94
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:80
 msgid "Ignore Tablespace"
-msgstr ""
+msgstr "テーブル空間を無視"
 
 #: pgadmin/tools/schema_diff/__init__.py:96
 msgid ""
 "Set ignore tablespace on or off by default in the drop-down menu near the"
 " Compare button in the Schema Diff tab."
 msgstr ""
+"テーブル空間を無視するか、しないかの既定値を設定します "
+"(スキーマ比較タブにある、比較ボタン横のドロップダウンメニューからいつでも切り替えられます)。"
 
 #: pgadmin/tools/schema_diff/__init__.py:103
 msgid "Ignore Grants/Revoke"
-msgstr ""
+msgstr "GRANT/REVOKE を無視"
 
 #: pgadmin/tools/schema_diff/__init__.py:105
 msgid ""
 "Set ignore grants/revoke on or off by default in the drop-down menu near "
 "the Compare button in the Schema Diff tab."
 msgstr ""
+"GRANT/REVOKE を無視するか、しないかの既定値を設定します "
+"(スキーマ比較タブにある、比較ボタン横のドロップダウンメニューからいつでも切り替えられます)。"
 
 #: pgadmin/tools/schema_diff/__init__.py:643
 msgid "Schema Objects"
@@ -14015,7 +14040,7 @@ msgstr "比較対象のみ"
 
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffConstants.js:81
 msgid "Ignore Grant/Revoke"
-msgstr ""
+msgstr "GRANT/REVOKE を無視"
 
 #: pgadmin/tools/schema_diff/static/js/SchemaDiffModule.js:110
 msgid "Error in schema diff initialize ${error.response.data}"
@@ -14069,7 +14094,7 @@ msgstr "比較元と比較対象には異なるものを選択してください
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:322
 msgid " (this may take a few minutes)... ${Math.round(res.diff_percentage)} %"
-msgstr ""
+msgstr " (少し時間がかかります)... ${Math.round(res.diff_percentage)} %"
 
 #: pgadmin/tools/schema_diff/static/js/components/SchemaDiffCompare.jsx:344
 msgid "Generating script..."
@@ -14162,7 +14187,7 @@ msgstr "オブジェクト名"
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:145
 msgid "Object path"
-msgstr ""
+msgstr "オブジェクトパス"
 
 #: pgadmin/tools/search_objects/static/js/SearchObjects.jsx:307
 #, python-format
@@ -14197,7 +14222,7 @@ msgstr "少なくとも 3 文字は入力してください"
 msgid ""
 "Please select a database from the object explorer to search the database "
 "objects."
-msgstr ""
+msgstr "データベースオブジェクトを検索するデータベースをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/search_objects/static/js/index.js:92
 msgid "Search Objects - "
@@ -14254,7 +14279,7 @@ msgstr "更新できない結果セットです。"
 
 #: pgadmin/tools/sqleditor/static/js/SQLEditorModule.js:137
 msgid "Please select a database from the object explorer to access Query Tool."
-msgstr ""
+msgstr "クエリツールの接続先となるデータベースをオブジェクトエクスプローラから選択してください。"
 
 #: pgadmin/tools/sqleditor/static/js/SQLEditorModule.js:156
 msgid "All Rows"
@@ -14427,7 +14452,7 @@ msgstr "有効な数字を入力してください"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/Editors.jsx:372
 msgid "Invalid JSON input"
-msgstr ""
+msgstr "不正な JSON 入力です"
 
 #: pgadmin/tools/sqleditor/static/js/components/QueryToolDataGrid/index.jsx:182
 msgid "View all geometries in this column"
@@ -14745,7 +14770,7 @@ msgstr "設定"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:637
 msgid "Wal"
-msgstr ""
+msgstr "WAL"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/MainToolBar.jsx:643
 msgid "Macros Menu"
@@ -14984,7 +15009,7 @@ msgstr "貼り付け"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:175
 msgid "Paste options"
-msgstr ""
+msgstr "貼り付けのオプション"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:181
 msgid "Save Data Changes"
@@ -15004,11 +15029,11 @@ msgstr "ヘッダを付けてコピー"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:206
 msgid "Paste Options Menu"
-msgstr ""
+msgstr "貼り付けのオプションメニュー"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/ResultSetToolbar.jsx:208
 msgid "Paste with SERIAL/IDENTITY values?"
-msgstr ""
+msgstr "連番 (SERIAL/IDENTITY) の値込みで貼り付け"
 
 #: pgadmin/tools/sqleditor/static/js/components/sections/StatusBar.jsx:98
 #, python-format
@@ -15095,7 +15120,7 @@ msgstr "設定を表示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:60
 msgid "Show wal?"
-msgstr ""
+msgstr "WAL を表示"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:68
 msgid "Set auto commit on or off by default in new Query Tool tabs."
@@ -15286,7 +15311,7 @@ msgstr "'列幅の基準とする項目' が '列のデータ' の場合、こ�
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:304
 msgid "On demand record count"
-msgstr ""
+msgstr "一度に取得するレコード数"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:307
 msgid ""
@@ -15294,6 +15319,8 @@ msgid ""
 "query result set is large. Changing this value will override "
 "ON_DEMAND_RECORD_COUNT setting from config file."
 msgstr ""
+"クエリの結果セットが大きすぎるときの、一度に取得するレコードの上限数です。ここで指定した値は、設定ファイルの "
+"ON_DEMAND_RECORD_COUNT の値よりも優先されます。"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:315
 msgid "Font size"
@@ -15401,7 +15428,7 @@ msgstr "アクセスキー (クエリをキャンセル)"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:639
 msgid "Accesskey (Edit options)"
-msgstr ""
+msgstr "アクセスキー (オプションを編集)"
 
 #: pgadmin/tools/sqleditor/utils/query_tool_preferences.py:653
 msgid "Toggle case of selected text"
@@ -15654,14 +15681,14 @@ msgstr "所有権を変更"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:337
 msgid "Object explorer tree refresh required"
-msgstr ""
+msgstr "オブジェクトエクスプローラのツリーの再読み込みが必要です"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:338
 msgid ""
 "The ownership of the shared server was changed or the shared server was "
 "deleted, so the object explorer tree refresh is required. Do you wish to "
 "refresh the tree?"
-msgstr ""
+msgstr "共有サーバの所有権が移譲、もしくは削除されたため、オブジェクトエクスプローラの再読み込みが必要です。ツリーを再読み込みしますか？"
 
 #: pgadmin/tools/user_management/static/js/UserManagementDialog.jsx:419
 msgid "User Management"
@@ -15743,7 +15770,7 @@ msgstr "キーボードショートカット"
 
 #: pgadmin/utils/constants.py:21
 msgid "Object Breadcrumbs"
-msgstr ""
+msgstr "オブジェクトのパンくずリスト"
 
 #: pgadmin/utils/constants.py:24
 msgid "Editor"
@@ -15799,7 +15826,7 @@ msgstr "EDB Advanced Server 15"
 
 #: pgadmin/utils/constants.py:90
 msgid "EDB Advanced Server 16"
-msgstr ""
+msgstr "EDB Advanced Server 16"
 
 #: pgadmin/utils/constants.py:95
 msgid "PostgreSQL 11"
@@ -15823,7 +15850,7 @@ msgstr "PostgreSQL 15"
 
 #: pgadmin/utils/constants.py:110
 msgid "PostgreSQL 16"
-msgstr ""
+msgstr "PostgreSQL 16"
 
 #: pgadmin/utils/constants.py:118
 #, python-format
@@ -15834,7 +15861,7 @@ msgstr "指定されたユーザ ID (%s) が見つかりませんでした。"
 msgid ""
 "Access denied: You’re having limited access. You’re not allowed to "
 "Rename, Delete or Create any files/folders"
-msgstr ""
+msgstr "アクセスが拒否されました: アクセス権が制限されています。ファイル/フォルダを作成・削除したり、名前を変更することはできません"
 
 #: pgadmin/utils/exception.py:70
 msgid ""
@@ -15896,6 +15923,8 @@ msgid ""
 "Failed to setup the role \n"
 "{0}"
 msgstr ""
+"ロールのセットアップに失敗しました \n"
+"{0}"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:730
 msgid ""
@@ -15903,6 +15932,8 @@ msgid ""
 "the server#{1}:{2}:\n"
 "{0}"
 msgstr ""
+"psycopg3 接続でのカーソルの作成に失敗しました (サーバ #{1}:{2}):\n"
+"{0}"
 
 #: pgadmin/utils/driver/psycopg3/connection.py:742
 msgid ""
@@ -15948,7 +15979,7 @@ msgstr "非同期通知 \"{0}\" を受信しました。送信元サーバのプ
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1683
 msgid "ERROR:  "
-msgstr ""
+msgstr "エラー:  "
 
 #: pgadmin/utils/driver/psycopg3/connection.py:1704
 msgid "SQL state: "
@@ -15993,406 +16024,4 @@ msgid ""
 msgstr ""
 "SSH トンネルの作成に失敗しました。\n"
 "エラー: {0}"
-
-#~ msgid "Browser tree state saving interval"
-#~ msgstr "ブラウザツリー状態の保存間隔"
-
-#~ msgid ""
-#~ "Browser tree state saving interval in"
-#~ " seconds. Use -1 to disable the "
-#~ "tree saving mechanism."
-#~ msgstr "ブラウザツリーの状態を何秒おきに保存するか指定します。全く保存させない場合は -1 にしてください。"
-
-#~ msgid "Browser tree"
-#~ msgstr "ブラウザツリー"
-
-#~ msgid "Refresh browser tree"
-#~ msgstr "ブラウザツリーを再読み込み"
-
-#~ msgid "Disable compound trigger failed"
-#~ msgstr "複合トリガの無効化に失敗しました"
-
-#~ msgid "Disable rule failed"
-#~ msgstr "ルールの無効化に失敗しました"
-
-#~ msgid ""
-#~ "Please check if any policy exist. "
-#~ "If no policy exists for the table,"
-#~ " a default-deny policy is used, "
-#~ "meaning that no rows are visible "
-#~ "or can be modified by other users"
-#~ msgstr "何らかのポリシーが、テーブルに存在しているかどうかを確認してください。存在しない場合、拒否を既定とするポリシーを使用します。これにより、すべての行が不可視となり、誰にも変更できなくなります"
-
-#~ msgid "Disable trigger failed"
-#~ msgstr "トリガの無効化に失敗しました"
-
-#~ msgid "Connect  to database."
-#~ msgstr "データベースに接続。"
-
-#~ msgid ""
-#~ "Note: When the preferences setting 'show"
-#~ " template databases' is set to false,"
-#~ " then template databases won't be "
-#~ "displayed in the browser tree."
-#~ msgstr "注: 'テンプレートデータベースを表示' 設定を false にすると、ブラウザツリーにテンプレートデータベースが表示されなくなります。"
-
-#~ msgid ""
-#~ "Please select a server from the "
-#~ "browser tree to reload the configuration"
-#~ " files."
-#~ msgstr "ブラウザツリーから、設定ファイルを再読み込みするサーバを選択してください。"
-
-#~ msgid ""
-#~ "Please select any server from the "
-#~ "browser tree to Add Named Restore "
-#~ "Point."
-#~ msgstr "ブラウザツリーから、名前付きリストアポイントを追加するサーバを選択してください。"
-
-#~ msgid "SQL Code"
-#~ msgstr "SQL コード"
-
-#~ msgid "Error message"
-#~ msgstr "エラーメッセージ"
-
-#~ msgid "Additional info"
-#~ msgstr "追加情報"
-
-#~ msgid "Properties..."
-#~ msgstr "プロパティ..."
-
-#~ msgid "Please wait while we fetch information ..."
-#~ msgstr "情報を取得するまでお待ちください ..."
-
-#~ msgid ""
-#~ "Please wait while we fetch information"
-#~ " about the node from the server..."
-#~ msgstr "サーバからノードに関する情報を取得しています。お待ちください..."
-
-#~ msgid "Error loading script - "
-#~ msgstr "スクリプトの読み込みエラー - "
-
-#~ msgid " seconds ago"
-#~ msgstr " 秒前"
-
-#~ msgid "Provider not provided."
-#~ msgstr "プロバイダが未指定です。"
-
-#~ msgid "Amazon RDS"
-#~ msgstr "Amazon RDS"
-
-#~ msgid "EDB BigAnimal"
-#~ msgstr "EDB BigAnimal"
-
-#~ msgid "Azure PostgreSQL"
-#~ msgstr "Azure PostgreSQL"
-
-#~ msgid "Select a cloud provider."
-#~ msgstr "クラウドプロバイダを選択してください。"
-
-#~ msgid ""
-#~ "Error while getting the biganimal "
-#~ "providers: ${error.response.data.errormsg}"
-#~ msgstr "BigAnimal プロバイダの取得中にエラーが発生しました: ${error.response.data.errormsg}"
-
-#~ msgid "Download File"
-#~ msgstr "ファイルをダウンロード"
-
-#~ msgid "Delete File/Folder"
-#~ msgstr "ファイル/フォルダを削除"
-
-#~ msgid "Rename File/Folder"
-#~ msgstr "ファイル/フォルダの名前を変更"
-
-#~ msgid "Create new folder"
-#~ msgstr "新しいフォルダを作成"
-
-#~ msgid "View as grid"
-#~ msgstr "グリッドで表示"
-
-#~ msgid "View as table"
-#~ msgstr "テーブルで表示"
-
-#~ msgid "Are you sure you want to delete this item?"
-#~ msgstr "この項目を削除しますか？"
-
-#~ msgid "This settings is to Show/Hide nodes in the browser tree."
-#~ msgstr "この設定を変更すると、ブラウザツリーのノードを表示/非表示にできます。"
-
-#~ msgid "Browser tree refresh required"
-#~ msgstr "ブラウザツリーの再読み込みが必要です"
-
-#~ msgid "A browser tree refresh is required. Do you wish to refresh the tree?"
-#~ msgstr "ブラウザツリーを再読み込みする必要があります。今すぐ行いますか？"
-
-#~ msgid "Unknown error"
-#~ msgstr "不明なエラー"
-
-#~ msgid "INTERNAL SERVER ERROR"
-#~ msgstr "内部サーバエラー"
-
-#~ msgid "Error saving the tree state.\""
-#~ msgstr "ツリー状態の保存中にエラーが発生しました。\""
-
-#~ msgid "Error fetching the tree state."
-#~ msgstr "ツリー状態の取得中にエラーが発生しました。"
-
-#~ msgid "Please select server or child node from the browser tree."
-#~ msgstr "ブラウザツリーからサーバか子ノードを選択してください。"
-
-#~ msgid ""
-#~ "Please select any server from the "
-#~ "browser tree to take Backup of "
-#~ "global objects."
-#~ msgstr "グローバルオブジェクトのバックアップを取るサーバをブラウザツリーから選択してください。"
-
-#~ msgid "Please select any server from the browser tree to take Server Backup."
-#~ msgstr "全体のバックアップを取るサーバをブラウザツリーから選択してください。"
-
-#~ msgid ""
-#~ "Please select any database or schema "
-#~ "or table from the browser tree to"
-#~ " take Backup."
-#~ msgstr "バックアップを取るデータベース、スキーマ、またはテーブルをブラウザツリーから選択してください。"
-
-#~ msgid ""
-#~ "Please select any database, schema or"
-#~ " schema objects from the browser tree"
-#~ " to access Grant Wizard Tool."
-#~ msgstr "権限付与ウィザードを実行するデータベース、スキーマ、またはスキーマオブジェクトをブラウザツリーから選択してください。"
-
-#~ msgid "Please select any table from the browser tree to Import/Export data."
-#~ msgstr "データをインポート/エクスポートするテーブルをブラウザツリーから選択してください。"
-
-#~ msgid ""
-#~ "All existing server groups and servers"
-#~ " will be removed before the servers"
-#~ " above are imported. On a successful"
-#~ " import process, the browser tree "
-#~ "will be refreshed."
-#~ msgstr "これらのサーバをインポートする前に、既存のサーバグループとサーバをすべて削除します。インポート処理が成功したら、ブラウザツリーが再読み込みされます。"
-
-#~ msgid "On a successful import process, the browser tree will be refreshed."
-#~ msgstr "インポート処理が成功したら、ブラウザツリーが再読み込みされます。"
-
-#~ msgid "Please select any database from the browser tree to do Maintenance."
-#~ msgstr "メンテナンスを行うデータベースをブラウザツリーから選択してください。"
-
-#~ msgid ""
-#~ "Please select any schema or table "
-#~ "from the browser tree to Restore "
-#~ "data."
-#~ msgstr "データをリストアするスキーマ、またはテーブルをブラウザツリーから選択してください。"
-
-#~ msgid "Browser path"
-#~ msgstr "ブラウザパス"
-
-#~ msgid ""
-#~ "Please select a database from the "
-#~ "browser tree to search the database "
-#~ "objects."
-#~ msgstr "データベースオブジェクトを検索するデータベースをブラウザツリーから選択してください。"
-
-#~ msgid "Please select a database from the browser tree to access Query Tool."
-#~ msgstr "クエリツールの接続先となるデータベースをブラウザツリーから選択してください。"
-
-#~ msgid ""
-#~ "The ownership of the shared server "
-#~ "was changed or the shared server "
-#~ "was deleted, so a browser tree "
-#~ "refresh is required. Do you wish "
-#~ "to refresh the tree?"
-#~ msgstr "共有サーバの所有権が移譲、もしくは削除されたため、ブラウザツリーの再読み込みが必要です。ツリーを再読み込みしますか？"
-
-#~ msgid ""
-#~ "Failed to create cursor for psycopg2 "
-#~ "connection with error message for the"
-#~ " server#{1}:{2}:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "サーバ #{1}:{2} に対する psycopg2 接続のカーソルを作成できませんでした。\n"
-#~ "エラー: {0}"
-
-#~ msgid "ERROR: "
-#~ msgstr "エラー: "
-
-#~ msgid "Edit Object..."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "An email id is required to login"
-#~ " into pgAdmin. Please update your "
-#~ "Oauth2 profile."
-#~ msgstr "pgAdmin へのログインにはメールアドレス ID が必要です。お使いの OAuth2 プロフィールを更新してください。"
-
-#~ msgid "No dependant information is available for the selected object."
-#~ msgstr "選択されたオブジェクトに表示できる依存情報はありません。"
-
-#~ msgid ""
-#~ "The object explorer tree refresh is "
-#~ "required. Do you wish to refresh "
-#~ "the tree?"
-#~ msgstr ""
-
-#~ msgid "(in minuts)"
-#~ msgstr "(分)"
-
-#~ msgid ""
-#~ "Failed to setup the role with error message:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "ロールの設定に失敗しました。\n"
-#~ "エラー: {0}"
-
-#~ msgid "Delete/Drop multiple objects"
-#~ msgstr "複数のオブジェクトを削除"
-
-#~ msgid "Drop Cascade multiple objects"
-#~ msgstr "複数のオブジェクトを強制削除"
-
-#~ msgid "Delete/Drop"
-#~ msgstr "削除"
-
-#~ msgid "Drop Cascade"
-#~ msgstr "強制削除"
-
-#~ msgid ""
-#~ "Are you sure you want to drop "
-#~ "%s \"%s\" and all the objects that"
-#~ " depend on it?"
-#~ msgstr "%s \"%s\" と、それに依存するオブジェクトすべてを削除しますか？"
-
-#~ msgid "DROP CASCADE %s?"
-#~ msgstr "%s を強制削除しますか？"
-
-#~ msgid "Are you sure you want to drop %s \"%s\"?"
-#~ msgstr "%s \"%s\" を削除しますか？"
-
-#~ msgid "Drop %s?"
-#~ msgstr "%sを削除しますか？"
-
-#~ msgid "Successfully compare the specified databases."
-#~ msgstr "指定されたデータベースを正常に比較しました。"
-
-#~ msgid "Successfully compare the specified schemas."
-#~ msgstr "指定されたスキーマを正常に比較しました。"
-
-#~ msgid "Accesskey (Connection status)"
-#~ msgstr "アクセスキー (接続状態)"
-
-#~ msgid "Accesskey (Find options)"
-#~ msgstr "アクセスキー (検索のオプション)"
-
-#~ msgid "Registration"
-#~ msgstr "登録"
-
-#~ msgid "Authentication registration"
-#~ msgstr "認証の登録"
-
-#~ msgid "Please select volume IOPS."
-#~ msgstr "ボリュームの IOPS を選択してください。"
-
-#~ msgid "Please enter the volume size in the range between 1 tp 16384."
-#~ msgstr "ボリュームの容量を 1 から 16384 までの範囲で入力してください。"
-
-#~ msgid "Please enter the volume size in the range between 4 tp 16384."
-#~ msgstr "ボリュームの容量を 4 から 16384 までの範囲で入力してください。"
-
-#~ msgid "Please enter the volume IOPS 3000."
-#~ msgstr "ボリュームの IOPS 3000 を入力してください。"
-
-#~ msgid "Please enter the volume IOPS in the range between 100 tp 2000."
-#~ msgstr "ボリュームの IOPS を 100 から 2000 までの範囲で入力してください。"
-
-#~ msgid "IOPS (100-2,000)"
-#~ msgstr "IOPS (100-2,000)"
-
-#~ msgid "IOPS (3,000-3,000)"
-#~ msgstr "IOPS (3,000-3,000)"
-
-#~ msgid "Password Change"
-#~ msgstr "パスワードを変更"
-
-#~ msgid "Change Password Form"
-#~ msgstr "パスワード変更フォーム"
-
-#~ msgid "Forgot Password"
-#~ msgstr "パスワードを忘れた"
-
-#~ msgid "Forget Password Form"
-#~ msgstr "パスワード復元フォーム"
-
-#~ msgid "<a href=\"%(url)s\" class=\"text-white\">Forgotten your password</a>?"
-#~ msgstr "<a href=\"%(url)s\" class=\"text-white\">パスワードをお忘れですか</a>？"
-
-#~ msgid "Login with %(oauth_name)s"
-#~ msgstr "%(oauth_name)s でログイン"
-
-#~ msgid "%(appname)s Password Reset"
-#~ msgstr "%(appname)s パスワードをリセット"
-
-#~ msgid "Reset Password Form"
-#~ msgstr "パスワードリセットフォーム"
-
-#~ msgid "logo"
-#~ msgstr "ロゴ"
-
-#~ msgid "Privilege"
-#~ msgstr "権限"
-
-#~ msgid "Use Column Inserts"
-#~ msgstr "列名付き INSERT を使用"
-
-#~ msgid "Queries"
-#~ msgstr "クエリ"
-
-#~ msgid "Use Insert Commands"
-#~ msgstr "INSERT コマンドを使用"
-
-#~ msgid "Load Via Partition Root"
-#~ msgstr "親テーブル経由で読み込む"
-
-#~ msgid "Data/Objects"
-#~ msgstr "データ/オブジェクト"
-
-#~ msgid "No data for Failed Tables"
-#~ msgstr "既存テーブルには復元しない"
-
-#~ msgid "You must specify at least one column."
-#~ msgstr "少なくとも列をひとつ指定してください。"
-
-#~ msgid "objects"
-#~ msgstr ""
-
-#~ msgid "Objects"
-#~ msgstr ""
-
-#~ msgid "VERBOSE"
-#~ msgstr "VERBOSE"
-
-#~ msgid "{0} on database '{1}' of server {2}"
-#~ msgstr "サーバ {2} のデータベース '{1}' で {0} を実行"
-
-#~ msgid "VACUUM ({0})"
-#~ msgstr "VACUUM ({0})"
-
-#~ msgid "Vacuum"
-#~ msgstr "VACUUM"
-
-#~ msgid "Ignore whitespace"
-#~ msgstr "空白を無視"
-
-#~ msgid "Ignore owner"
-#~ msgstr "所有者を無視"
-
-#~ msgid " (this may take a few minutes)... ${res.diff_percentage} %"
-#~ msgstr " (しばらく時間がかかります)... ${res.diff_percentage} %"
-
-#~ msgid "EDB Advanced Server 10"
-#~ msgstr "EDB Advanced Server 10"
-
-#~ msgid "PostgreSQL 10"
-#~ msgstr "PostgreSQL 10"
-
-#~ msgid "Please enter view definition."
-#~ msgstr "ビューの定義を入力してください。"
 
