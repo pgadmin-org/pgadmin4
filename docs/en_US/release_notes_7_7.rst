@@ -14,7 +14,7 @@ Supported Database Servers
 
 Bundled PostgreSQL Utilities
 ****************************
-**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 15.3
+**psql**, **pg_dump**, **pg_dumpall**, **pg_restore**: 15.4
 
 
 New features
