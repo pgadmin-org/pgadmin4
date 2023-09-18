@@ -1824,7 +1824,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 'values_to': range_to,
                 'is_default': is_default,
                 'is_sub_partitioned': row['is_sub_partitioned'],
-                'sub_partition_scheme': row['sub_partition_scheme']
+                'sub_partition_scheme': row['sub_partition_scheme'],
+                'amname': row['amname']
             })
         elif data['partition_type'] == 'list':
             if row['partition_value'] == 'DEFAULT':
@@ -1842,7 +1843,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 'values_in': range_in,
                 'is_default': is_default,
                 'is_sub_partitioned': row['is_sub_partitioned'],
-                'sub_partition_scheme': row['sub_partition_scheme']
+                'sub_partition_scheme': row['sub_partition_scheme'],
+                'amname': row['amname']
             })
         else:
             range_part = row['partition_value'].split(
@@ -1858,7 +1860,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 'values_modulus': range_modulus,
                 'values_remainder': range_remainder,
                 'is_sub_partitioned': row['is_sub_partitioned'],
-                'sub_partition_scheme': row['sub_partition_scheme']
+                'sub_partition_scheme': row['sub_partition_scheme'],
+                'amname': row['amname']
             })
 
     def get_partitions_sql(self, partitions, schema_diff=False):

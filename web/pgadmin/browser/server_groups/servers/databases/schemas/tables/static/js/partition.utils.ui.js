@@ -220,6 +220,8 @@ export class PartitionsSchema extends BaseUISchema {
             amname: undefined
           };
         }
+      }, readonly: function(state) {
+        return !obj.isNew(state);
       },
     },{
       id: 'is_default', label: gettext('Default'), type: 'switch', cell:'switch',
