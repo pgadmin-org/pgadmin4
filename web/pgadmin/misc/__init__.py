@@ -287,7 +287,7 @@ def validate_binary_path():
                 # Get the version number by splitting the result string
                 version_string.split(") ", 1)[1].split('.', 1)[0]
             except Exception:
-                version_str += "<b>" + utility + ":</b> " + \
+                version_string += "<b>" + utility + ":</b> " + \
                                "not found on the specified binary path.<br/>"
                 continue
 
