@@ -255,24 +255,35 @@ def validate_binary_path():
     version_str = ''
     if 'utility_path' in data and data['utility_path'] is not None:
         # Check if "$DIR" present in binary path
-        binary_path = replace_binary_path(data['utility_path'])
+        binary_path = os.path.abspath(
+            replace_binary_path(data['utility_path'])
+        )
 
         for utility in UTILITIES_ARRAY:
-            full_path = os.path.abspath(
-                os.path.join(binary_path,
+            full_path = os.path.join(binary_path,
                              (utility if os.name != 'nt' else
-                              (utility + '.exe'))))
+                              (utility + '.exe')))
 
             try:
                 # if path doesn't exist raise exception
-                if not os.path.exists(binary_path):
+                if not os.path.isdir(binary_path):
                     current_app.logger.warning('Invalid binary path.')
                     raise Exception()
                 # escape double quotes to avoid command injection.
                 # Get the output of the '--version' command
-                version_string = \
-                    subprocess.getoutput(r'"{0}" --version'.format(
-                        full_path.replace('"', '""')))
+                cmd = subprocess.run(
+                    [full_path, '--version'],
+                    shell=False,
+                    capture_output=True,
+                    text=True
+                )
+                if cmd.returncode == 0:
+                    version_string = cmd.stdout
+                else:
+                    current_app.logger.warning(
+                        'Invalid version command return code'
+                    )
+                    raise Exception()
                 # Get the version number by splitting the result string
                 version_string.split(") ", 1)[1].split('.', 1)[0]
             except Exception:

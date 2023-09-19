@@ -360,7 +360,7 @@ def set_binary_path(binary_path, bin_paths, server_type,
     path_with_dir = binary_path if "$DIR" in binary_path else None
 
     # Check if "$DIR" present in binary path
-    binary_path = replace_binary_path(binary_path)
+    binary_path = os.path.abspath(replace_binary_path(binary_path))
 
     for utility in UTILITIES_ARRAY:
         full_path = os.path.abspath(
@@ -370,9 +370,24 @@ def set_binary_path(binary_path, bin_paths, server_type,
         try:
             # if version_number is provided then no need to fetch it.
             if version_number is None:
+                # if path doesn't exist raise exception
+                if not os.path.isdir(binary_path):
+                    current_app.logger.warning('Invalid binary path.')
+                    raise Exception()
                 # Get the output of the '--version' command
-                version_string = \
-                    subprocess.getoutput('"{0}" --version'.format(full_path))
+                cmd = subprocess.run(
+                    [full_path, '--version'],
+                    shell=False,
+                    capture_output=True,
+                    text=True
+                )
+                if cmd.returncode == 0:
+                    version_string = cmd.stdout
+                else:
+                    current_app.logger.warning(
+                        'Invalid version command output'
+                    )
+                    raise Exception()
 
                 # Get the version number by splitting the result string
                 version_number = \
