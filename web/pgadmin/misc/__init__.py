@@ -278,14 +278,14 @@ def validate_binary_path():
                     text=True
                 )
                 if cmd.returncode == 0:
-                    version_string = cmd.stdout
+                    # Get the version number by splitting the result string
+                    version_string = \
+                        cmd.stdout.split(") ", 1)[1].split('.', 1)[0]
                 else:
                     current_app.logger.warning(
                         'Invalid version command return code'
                     )
                     raise Exception()
-                # Get the version number by splitting the result string
-                version_string.split(") ", 1)[1].split('.', 1)[0]
             except Exception:
                 version_string += "<b>" + utility + ":</b> " + \
                                "not found on the specified binary path.<br/>"
