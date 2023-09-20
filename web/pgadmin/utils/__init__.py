@@ -396,6 +396,8 @@ def set_binary_path(binary_path, bin_paths, server_type,
 
     for utility, version in binary_versions.items():
         version_number = version if version_number is None else version_number
+        # version will be None if binary not present
+        version_number = version_number or ''
         if version_number.find('.'):
             version_number = version_number.split('.', 1)[0]
         try:
