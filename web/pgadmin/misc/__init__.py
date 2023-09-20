@@ -13,7 +13,8 @@ from pgadmin.utils import driver
 from flask import url_for, render_template, Response, request, current_app
 from flask_babel import gettext
 from flask_security import login_required
-from pgadmin.utils import PgAdminModule, replace_binary_path
+from pgadmin.utils import PgAdminModule, replace_binary_path, \
+    get_binary_path_versions
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.session import cleanup_session_files
 from pgadmin.misc.themes import get_all_themes
@@ -254,37 +255,13 @@ def validate_binary_path():
 
     version_str = ''
     if 'utility_path' in data and data['utility_path'] is not None:
-        # Check if "$DIR" present in binary path
-        binary_path = replace_binary_path(data['utility_path'])
-
-        for utility in UTILITIES_ARRAY:
-            full_path = os.path.abspath(
-                os.path.join(binary_path,
-                             (utility if os.name != 'nt' else
-                              (utility + '.exe'))))
-
-            try:
-                # if path doesn't exist raise exception
-                if not os.path.exists(binary_path):
-                    current_app.logger.warning('Invalid binary path.')
-                    raise Exception()
-                # escape double quotes to avoid command injection.
-                # Get the output of the '--version' command
-                version_string = \
-                    subprocess.getoutput(r'"{0}" --version'.format(
-                        full_path.replace('"', '""')))
-                # Get the version number by splitting the result string
-                version_string.split(") ", 1)[1].split('.', 1)[0]
-            except Exception:
+        binary_versions = get_binary_path_versions(data['utility_path'])
+        for utility, version in binary_versions.items():
+            if version is None:
                 version_str += "<b>" + utility + ":</b> " + \
                                "not found on the specified binary path.<br/>"
-                continue
-
-            # Replace the name of the utility from the result to avoid
-            # duplicate name.
-            result_str = version_string.replace(utility, '')
-
-            version_str += "<b>" + utility + ":</b> " + result_str + "<br/>"
+            else:
+                version_str += "<b>" + utility + ":</b> " + version + "<br/>"
     else:
         return precondition_required(gettext('Invalid binary path.'))
 
