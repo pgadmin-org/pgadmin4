@@ -1,5 +1,5 @@
 ***********
-Version 7.8
+Version 7.7
 ***********
 
 Release date: 2023-09-21
