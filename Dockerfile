@@ -119,6 +119,7 @@ FROM postgres:12-alpine AS pg12-builder
 FROM postgres:13-alpine AS pg13-builder
 FROM postgres:14-alpine AS pg14-builder
 FROM postgres:15-alpine AS pg15-builder
+FROM postgres:16-alpine AS pg16-builder
 
 FROM alpine:latest AS tool-builder
 
@@ -148,6 +149,11 @@ COPY --from=pg15-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-15/
 COPY --from=pg15-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-15/
 COPY --from=pg15-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-15/
 
+COPY --from=pg16-builder /usr/local/bin/pg_dump /usr/local/pgsql/pgsql-16/
+COPY --from=pg16-builder /usr/local/bin/pg_dumpall /usr/local/pgsql/pgsql-16/
+COPY --from=pg16-builder /usr/local/bin/pg_restore /usr/local/pgsql/pgsql-16/
+COPY --from=pg16-builder /usr/local/bin/psql /usr/local/pgsql/pgsql-16/
+
 #########################################################################
 # Assemble everything into the final container.
 #########################################################################
@@ -159,9 +165,9 @@ COPY --from=env-builder /venv /venv
 
 # Copy in the tools
 COPY --from=tool-builder /usr/local/pgsql /usr/local/
-COPY --from=pg15-builder /usr/local/lib/libpq.so.5.15 /usr/lib/
-RUN ln -s libpq.so.5.15 /usr/lib/libpq.so.5 && \
-    ln -s libpq.so.5.15 /usr/lib/libpq.so
+COPY --from=pg16-builder /usr/local/lib/libpq.so.5.16 /usr/lib/
+RUN ln -s libpq.so.5.16 /usr/lib/libpq.so.5 && \
+    ln -s libpq.so.5.16 /usr/lib/libpq.so
 
 WORKDIR /pgadmin4
 ENV PYTHONPATH=/pgadmin4
