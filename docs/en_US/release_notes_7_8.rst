@@ -2,7 +2,7 @@
 Version 7.8
 ***********
 
-Release date: 2023-09-21
+Release date: 2023-10-19
 
 This release contains a number of bug fixes and new features since the release of pgAdmin 4 v7.7.
 
