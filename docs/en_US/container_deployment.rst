@@ -53,11 +53,11 @@ The default binary paths set in the container are as follows:
 .. code-block:: bash
 
     DEFAULT_BINARY_PATHS = {
+        'pg-16': '/usr/local/pgsql-16',
         'pg-15': '/usr/local/pgsql-15',
         'pg-14': '/usr/local/pgsql-14',
         'pg-13': '/usr/local/pgsql-13',
-        'pg-12': '/usr/local/pgsql-12',
-        'pg-11': '/usr/local/pgsql-11'
+        'pg-12': '/usr/local/pgsql-12'
     }
 
 this may be changed in the :ref:`preferences`.

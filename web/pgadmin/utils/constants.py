@@ -71,9 +71,6 @@ SUPPORTED_AUTH_SOURCES = [INTERNAL,
 
 BINARY_PATHS = {
     "as_bin_paths": [
-        {"version": "110000", "next_major_version": "120000",
-         "serverType": gettext("EDB Advanced Server 11"), "binaryPath": None,
-         "isDefault": False},
         {"version": "120000", "next_major_version": "130000",
          "serverType": gettext("EDB Advanced Server 12"), "binaryPath": None,
          "isDefault": False},
@@ -91,9 +88,6 @@ BINARY_PATHS = {
          "isDefault": False}
     ],
     "pg_bin_paths": [
-        {"version": "110000", "next_major_version": "120000",
-         "serverType": gettext("PostgreSQL 11"), "binaryPath": None,
-         "isDefault": False},
         {"version": "120000", "next_major_version": "130000",
          "serverType": gettext("PostgreSQL 12"), "binaryPath": None,
          "isDefault": False},
