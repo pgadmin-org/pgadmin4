@@ -325,7 +325,7 @@ export default class DebuggerModule {
   }
 
   checkDbNameChange(data, dbNode, newTreeInfo, db_label) {
-    if (data && data.data_obj && data.data_obj.db_name != newTreeInfo.database.label) {
+    if (data && data.data_obj && data.data_obj.db_name != _.unescape(newTreeInfo.database.label)) {
       db_label = data.data_obj.db_name;
       let message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
       refresh_db_node(message, dbNode);
