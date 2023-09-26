@@ -20,6 +20,9 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #640 <https://github.com/pgadmin-org/pgadmin4/issues/640>`_ -    Add support for foreign table's new functionality for PG 11 and above.
+  | `Issue #6373 <https://github.com/pgadmin-org/pgadmin4/issues/6373>`_ -  Add 'GENERATED ALWAYS AS..' option while creating column constraints for Foreign Table.
+
 Housekeeping
 ************
 
@@ -27,3 +30,5 @@ Housekeeping
 
 Bug fixes
 *********
+
+  | `Issue #6674 <https://github.com/pgadmin-org/pgadmin4/issues/6674>`_ -  Fix an issue where foreign table column name becomes "none" if the user changes any column data type.
