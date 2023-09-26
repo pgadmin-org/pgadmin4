@@ -228,20 +228,6 @@ describe('ForeignTableColumnSchema', ()=>{
     mount(getEditView(schemaObj, getInitData));
   });
 
-  it('column editable', ()=>{
-    let state = {};
-    let editable = _.find(schemaObj.fields, (f)=>f.id=='attname').editable;
-    let status = editable(state);
-    expect(status).toBe(true);
-  });
-
-  it('typdefault editable', ()=>{
-    let state = {};
-    let editable = _.find(schemaObj.fields, (f)=>f.id=='typdefault').editable;
-    let status = editable(state);
-    expect(status).toBe(true);
-  });
-
   it('typdefault_edit', ()=>{
     let defaultSchemaObj = new ForeignTableSchema(
       ()=>new MockSchema(),

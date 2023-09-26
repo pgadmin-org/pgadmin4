@@ -155,6 +155,10 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
         data['seclabels'] = seclabels
 
+    # Get formatted Column Options
+    if 'attfdwoptions' in data and data['attfdwoptions'] != '':
+        data['coloptions'] = _parse_options_for_column(data['attfdwoptions'])
+
     # We need to parse & convert ACL coming from database to json format
     SQL = render_template("/".join([template_path, 'acl.sql']),
                           tid=tid, clid=clid)
@@ -186,10 +190,42 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     # We will need present type in edit mode
     edit_types_list.append(data['typname'])
     data['edit_types'] = sorted(edit_types_list)
-
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
-
     return data
+
+
+def _parse_options_for_column(db_variables):
+    """
+        Function to format the output for variables.
+
+        Args:
+            db_variables: Variable object
+
+                Expected Object Format:
+                    ['option1=value1', ..]
+                where:
+                    user_name and database are optional
+        Returns:
+            Variable Object in below format:
+                {
+                'variables': [
+                    {'name': 'var_name', 'value': 'var_value',
+                    'user_name': 'user_name', 'database': 'database_name'},
+                    ...]
+                }
+                where:
+                    user_name and database are optional
+        """
+    variables_lst = []
+
+    if db_variables is not None:
+        for row in db_variables:
+            # The value may contain equals in string, split on
+            # first equals only
+            var_name, var_value = row.split("=", 1)
+            var_dict = {'option': var_name, 'value': var_value}
+            variables_lst.append(var_dict)
+    return variables_lst
 
 
 @get_template_path

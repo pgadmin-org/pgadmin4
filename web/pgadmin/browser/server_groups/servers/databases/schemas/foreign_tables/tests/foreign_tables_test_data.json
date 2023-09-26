@@ -9,8 +9,8 @@
         "basensp": "schema_name",
         "columns": [
           {
-            "attname": "ename",
-            "datatype": "text",
+            "name": "ename",
+            "cltype": "text",
             "coloptions": []
           }
         ],
@@ -41,8 +41,8 @@
         "basensp": "schema_name",
         "columns": [
           {
-            "attname": "ename",
-            "datatype": "text",
+            "name": "ename",
+            "cltype": "text",
             "coloptions": []
           }
         ],
@@ -72,8 +72,8 @@
         "basensp": "schema_name",
         "columns": [
           {
-            "attname": "ename",
-            "datatype": "text",
+            "name": "ename",
+            "cltype": "text",
             "coloptions": []
           }
         ],
@@ -255,8 +255,8 @@
         "columns": {
           "added": [
             {
-              "attname": "col2",
-              "datatype": "character varying[]",
+              "name": "col2",
+              "cltype": "character varying[]",
               "coloptions": []
             }
           ],
@@ -268,8 +268,8 @@
                   "value": "OptionValue"
                 }
               ],
-              "attname": "emp",
-              "datatype": "\"char\"",
+              "name": "emp",
+              "cltype": "\"char\"",
               "typdefault": null,
               "attnotnull": false,
               "collname": "pg_catalog.\"default\"",

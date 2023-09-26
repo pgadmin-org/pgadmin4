@@ -34,12 +34,12 @@
         "description":"Test Comment",
         "ftsrvname":"test_fs_for_foreign_table",
         "columns":[{
-          "attname":"col1",
-          "datatype":"bigint",
+          "name":"col1",
+          "cltype":"bigint",
           "coloptions":[]
         },{
-          "attname":"col2",
-          "datatype":"text",
+          "name":"col2",
+          "cltype":"text",
           "coloptions":[]
         }],
         "constraints":[{
@@ -107,12 +107,12 @@
         "description":"Test Comment",
         "columns": {
           "added": [{
-            "attname":"col1",
-            "datatype":"bigint",
+            "name":"col1",
+            "cltype":"bigint",
             "coloptions":[]
           },{
-            "attname":"col2",
-            "datatype":"text",
+            "name":"col2",
+            "cltype":"text",
             "coloptions":[]
           }]
         }
@@ -182,17 +182,17 @@
         },
         "columns": {
           "changed": [{
-            "attname": "col1",
+            "name": "col1",
             "attnum": 1,
             "attoptions": null,
             "collname": "",
             "coloptions": [],
-            "datatype": "integer",
+            "cltype": "integer",
             "fulltype": "bigint"
           }],
           "deleted": [{
-            "attname":"col2",
-            "datatype":"text"
+            "name":"col2",
+            "cltype":"text"
           }]
         }
       },
