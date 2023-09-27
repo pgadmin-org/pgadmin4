@@ -29,6 +29,10 @@ import _ from 'lodash';
 import CachedOutlinedIcon from '@material-ui/icons/CachedOutlined';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
+import Summary from 'SystemStats/Summary';
+import CPU from 'SystemStats/CPU';
+import Memory from 'SystemStats/Memory';
+import Storage from 'SystemStats/Storage';
 
 function parseData(data) {
   let res = [];
@@ -148,12 +152,21 @@ export default function Dashboard({
 }) {
   const classes = useStyles();
   let tabs = [gettext('Sessions'), gettext('Locks'), gettext('Prepared Transactions')];
+  let mainTabs = [gettext('General'), gettext('System Statistics')];
+  let systemStatsTabs = [gettext('Summary'), gettext('CPU'), gettext('Memory'), gettext('Storage')];
   const [dashData, setdashData] = useState([]);
   const [msg, setMsg] = useState('');
+  const [ssMsg, setSsMsg] = useState('');
   const [tabVal, setTabVal] = useState(0);
+  const [mainTabVal, setMainTabVal] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const [activeOnly, setActiveOnly] = useState(false);
   const [schemaDict, setSchemaDict] = React.useState({});
+  const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
+
+  const systemStatsTabChanged = (e, tabVal) => {
+    setSystemStatsTabVal(tabVal);
+  };
 
   if (!did) {
     tabs.push(gettext('Configuration'));
@@ -161,6 +174,10 @@ export default function Dashboard({
 
   const tabChanged = (e, tabVal) => {
     setTabVal(tabVal);
+  };
+
+  const mainTabChanged = (e, tabVal) => {
+    setMainTabVal(tabVal);
   };
 
   const serverConfigColumns = [
@@ -745,6 +762,7 @@ export default function Dashboard({
 
   useEffect(() => {
     let url,
+      ssExtensionCheckUrl = url_for('dashboard.check_system_statistics'),
       message = gettext(
         'Please connect to the selected server to view the dashboard.'
       );
@@ -770,6 +788,10 @@ export default function Dashboard({
       if (did) url += sid + '/' + did;
       else url += sid;
 
+      if (did && !props.dbConnected) return;
+      if (did) ssExtensionCheckUrl += '/' + sid + '/' + did;
+      else ssExtensionCheckUrl += '/' + sid;
+
       const api = getApiInstance();
       if (node) {
         api({
@@ -786,6 +808,22 @@ export default function Dashboard({
             );
             // show failed message.
             setMsg(gettext('Failed to retrieve data from the server.'));
+          });
+
+        api({
+          url: ssExtensionCheckUrl,
+          type: 'GET',
+        })
+          .then((res) => {
+            const data = res.data;
+            if(data['ss_present'] == false){
+              setSsMsg(gettext('System stats extension is not installed. You can install the extension in a database using the "CREATE EXTENSION system_stats;" SQL command. Reload the pgAdmin once you installed.'));
+            } else {
+              setSsMsg(gettext(''));
+            }
+          })
+          .catch(() => {
+            setSsMsg(gettext('Failed to verify the presence of system stats extension.'));
           });
       } else {
         setMsg(message);
@@ -867,68 +905,148 @@ export default function Dashboard({
       {sid && props.serverConnected ? (
         <Box className={classes.dashboardPanel}>
           <Box className={classes.emptyPanel}>
-            {!_.isUndefined(preferences) && preferences.show_graphs && (
-              <Graphs
-                key={sid + did}
-                preferences={preferences}
-                sid={sid}
-                did={did}
-                pageVisible={props.panelVisible}
-              ></Graphs>
-            )}
-            {!_.isUndefined(preferences) && preferences.show_activity && (
-              <Box className={classes.panelContent}>
-                <Box
-                  className={classes.cardHeader}
-                  title={props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}
-                >
-                  {props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}{' '}
+            <Box className={classes.panelContent}>
+              <Box height="100%" display="flex" flexDirection="column">
+                <Box>
+                  <Tabs
+                    value={mainTabVal}
+                    onChange={mainTabChanged}
+                  >
+                    {mainTabs.map((tabValue) => {
+                      return <Tab key={tabValue} label={tabValue} />;
+                    })}
+                  </Tabs>
                 </Box>
-                <Box height="100%" display="flex" flexDirection="column">
-                  <Box>
-                    <Tabs
-                      value={tabVal}
-                      onChange={tabChanged}
-                    >
-                      {tabs.map((tabValue) => {
-                        return <Tab key={tabValue} label={tabValue} />;
-                      })}
-                      <RefreshButton/>
-                    </Tabs>
+                {/* General Statistics */}
+                <TabPanel value={mainTabVal} index={0} classNameRoot={classes.tabPanel}>
+                  {!_.isUndefined(preferences) && preferences.show_graphs && (
+                    <Graphs
+                      key={sid + did}
+                      preferences={preferences}
+                      sid={sid}
+                      did={did}
+                      pageVisible={props.panelVisible}
+                    ></Graphs>
+                  )}
+                  {!_.isUndefined(preferences) && preferences.show_activity && (
+                    <Box className={classes.panelContent}>
+                      <Box
+                        className={classes.cardHeader}
+                        title={props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}
+                      >
+                        {props.dbConnected ?  gettext('Database activity') : gettext('Server activity')}{' '}
+                      </Box>
+                      <Box height="100%" display="flex" flexDirection="column">
+                        <Box>
+                          <Tabs
+                            value={tabVal}
+                            onChange={tabChanged}
+                          >
+                            {tabs.map((tabValue) => {
+                              return <Tab key={tabValue} label={tabValue} />;
+                            })}
+                            <RefreshButton/>
+                          </Tabs>
+                        </Box>
+                        <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
+                          <PgTable
+                            caveTable={false}
+                            CustomHeader={CustomActiveOnlyHeader}
+                            columns={activityColumns}
+                            data={filteredDashData}
+                            schema={schemaDict}
+                          ></PgTable>
+                        </TabPanel>
+                        <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
+                          <PgTable
+                            caveTable={false}
+                            columns={databaseLocksColumns}
+                            data={dashData}
+                          ></PgTable>
+                        </TabPanel>
+                        <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
+                          <PgTable
+                            caveTable={false}
+                            columns={databasePreparedColumns}
+                            data={dashData}
+                          ></PgTable>
+                        </TabPanel>
+                        <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
+                          <PgTable
+                            caveTable={false}
+                            columns={serverConfigColumns}
+                            data={dashData}
+                          ></PgTable>
+                        </TabPanel>
+                      </Box>
+                    </Box>
+                  )}
+                </TabPanel>
+                {/* System Statistics */}
+                <TabPanel value={mainTabVal} index={1} classNameRoot={classes.tabPanel}>
+                  <Box height="100%" display="flex" flexDirection="column">
+                    {ssMsg === '' ?
+                      <>
+                        <Box>
+                          <Tabs
+                            value={systemStatsTabVal}
+                            onChange={systemStatsTabChanged}
+                          >
+                            {systemStatsTabs.map((tabValue) => {
+                              return <Tab key={tabValue} label={tabValue} />;
+                            })}
+                          </Tabs>
+                        </Box>
+                        <TabPanel value={systemStatsTabVal} index={0} classNameRoot={classes.tabPanel}>
+                          <Summary
+                            key={sid + did}
+                            preferences={preferences}
+                            sid={sid}
+                            did={did}
+                            pageVisible={props.panelVisible}
+                            serverConnected={props.serverConnected}
+                          />
+                        </TabPanel>
+                        <TabPanel value={systemStatsTabVal} index={1} classNameRoot={classes.tabPanel}>
+                          <CPU
+                            key={sid + did}
+                            preferences={preferences}
+                            sid={sid}
+                            did={did}
+                            pageVisible={props.panelVisible}
+                            serverConnected={props.serverConnected}
+                          />
+                        </TabPanel>
+                        <TabPanel value={systemStatsTabVal} index={2} classNameRoot={classes.tabPanel}>
+                          <Memory
+                            key={sid + did}
+                            preferences={preferences}
+                            sid={sid}
+                            did={did}
+                            pageVisible={props.panelVisible}
+                            serverConnected={props.serverConnected}
+                          />
+                        </TabPanel>
+                        <TabPanel value={systemStatsTabVal} index={3} classNameRoot={classes.tabPanel}>
+                          <Storage
+                            key={sid + did}
+                            preferences={preferences}
+                            sid={sid}
+                            did={did}
+                            pageVisible={props.panelVisible}
+                            serverConnected={props.serverConnected}
+                            systemStatsTabVal={systemStatsTabVal}
+                          />
+                        </TabPanel>
+                      </> :
+                      <div className={classes.emptyPanel}>
+                        <EmptyPanelMessage text={ssMsg}/>
+                      </div>
+                    }
                   </Box>
-                  <TabPanel value={tabVal} index={0} classNameRoot={classes.tabPanel}>
-                    <PgTable
-                      caveTable={false}
-                      CustomHeader={CustomActiveOnlyHeader}
-                      columns={activityColumns}
-                      data={filteredDashData}
-                      schema={schemaDict}
-                    ></PgTable>
-                  </TabPanel>
-                  <TabPanel value={tabVal} index={1} classNameRoot={classes.tabPanel}>
-                    <PgTable
-                      caveTable={false}
-                      columns={databaseLocksColumns}
-                      data={dashData}
-                    ></PgTable>
-                  </TabPanel>
-                  <TabPanel value={tabVal} index={2} classNameRoot={classes.tabPanel}>
-                    <PgTable
-                      caveTable={false}
-                      columns={databasePreparedColumns}
-                      data={dashData}
-                    ></PgTable>
-                  </TabPanel>
-                  <TabPanel value={tabVal} index={3} classNameRoot={classes.tabPanel}>
-                    <PgTable
-                      caveTable={false}
-                      columns={serverConfigColumns}
-                      data={dashData}
-                    ></PgTable>
-                  </TabPanel>
-                </Box>
+                </TabPanel>
               </Box>
-            )}
+            </Box>
           </Box>
         </Box>
       ) : showDefaultContents() }
