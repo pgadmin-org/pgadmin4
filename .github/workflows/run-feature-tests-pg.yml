@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pgver: [11, 12, 13, 14, 15]
+        pgver: [12, 13, 14, 15, 16]
 
     runs-on: ubuntu-latest
 
