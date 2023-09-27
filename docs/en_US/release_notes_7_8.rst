@@ -22,6 +22,7 @@ New features
 
   | `Issue #640 <https://github.com/pgadmin-org/pgadmin4/issues/640>`_ -    Add support for foreign table's new functionality for PG 11 and above.
   | `Issue #6373 <https://github.com/pgadmin-org/pgadmin4/issues/6373>`_ -  Add 'GENERATED ALWAYS AS..' option while creating column constraints for Foreign Table.
+  | `Issue #6797 <https://github.com/pgadmin-org/pgadmin4/issues/6797>`_ -  GUI representation of the system's activity using the 'system_stats' extension. #6797
 
 Housekeeping
 ************
