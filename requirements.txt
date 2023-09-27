@@ -31,7 +31,8 @@ psycopg[c]==3.1.9
 python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.0.*
-cryptography==41.0.*
+# Pinned for #6718
+cryptography==40.0.*
 sshtunnel==0.*
 ldap3==2.*
 gssapi==1.8.*
