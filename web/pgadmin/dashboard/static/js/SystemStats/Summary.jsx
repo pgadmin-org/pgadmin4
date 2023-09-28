@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -19,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     height: 'auto',
     padding: '0px !important',
-    marginBottom: '30px',
+    marginBottom: '4px',
   },
   tableContainer: {
     background: theme.otherVars.tableBg,

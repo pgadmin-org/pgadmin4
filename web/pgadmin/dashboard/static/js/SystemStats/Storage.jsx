@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useRef, useReducer, useMemo } from 'react';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
@@ -20,17 +28,17 @@ const useStyles = makeStyles((theme) => ({
   container: {
     height: 'auto',
     padding: '8px',
-    marginBottom: '15px',
+    marginBottom: '4px',
   },
   diskInfoContainer: {
     height: 'auto',
     padding: '8px',
-    marginBottom: '15px',
+    marginBottom: '4px',
   },
   diskInfoSummary: {
     height: 'auto',
     padding: '0px',
-    marginBottom: '5px',
+    marginBottom: '4px',
   },
   containerHeaderText: {
     fontWeight: 'bold',
@@ -44,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '4px',
     overflow: 'hidden',
     width: '100%',
-    margin: '4px 4px 15px 4px',
+    margin: '4px 4px 4px 4px',
   },
   tableWhiteSpace: {
     '& td, & th': {
@@ -55,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     height: 'auto',
     padding: '5px 0px 0px 0px',
     background: theme.otherVars.tableBg,
-    marginBottom: '5px',
+    marginBottom: '4px',
     borderRadius: '4px 4px 0px 0px',
   },
   driveContainerBody: {
@@ -253,8 +261,8 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
             let di_info_list = [];
             const di_info_obj = data['di_stats'];
             for (const key in di_info_obj) {
-              di_info_list.push({ 
-                icon: '', 
+              di_info_list.push({
+                icon: '',
                 file_system: di_info_obj[key]['file_system']?gettext(di_info_obj[key]['file_system']):'',
                 file_system_type: di_info_obj[key]['file_system_type']?gettext(di_info_obj[key]['file_system_type']):'',
                 mount_point: di_info_obj[key]['mount_point']?gettext(di_info_obj[key]['mount_point']):'',
@@ -412,14 +420,14 @@ export function StorageWrapper(props) {
         </Grid>
         <Grid container spacing={1} className={classes.diskInfoSummary}>
           <Grid item md={6} sm={12}>
-            <ChartContainer 
-              id='t-space-graph' 
-              title={gettext('')} 
+            <ChartContainer
+              id='t-space-graph'
+              title={gettext('')}
               datasets={props.diskStats.map((item, index) => ({
                 borderColor: colors[(index + 2) % colors.length],
                 label: item.mount_point !== 'null' ? item.mount_point : item.drive_letter !== 'null' ? item.drive_letter : 'disk' + index,
               }))}
-              errorMsg={props.errorMsg} 
+              errorMsg={props.errorMsg}
               isTest={props.isTest}>
               <PieChart data={{
                 labels: props.diskStats.map((item, index) => item.mount_point!='null'?item.mount_point:item.drive_letter!='null'?item.drive_letter:'disk'+index),
@@ -475,7 +483,7 @@ export function StorageWrapper(props) {
                 ],
               }}
               options={
-                { 
+                {
                   scales: {
                     x: {
                       display: true,

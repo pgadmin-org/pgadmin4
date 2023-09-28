@@ -29,10 +29,10 @@ import _ from 'lodash';
 import CachedOutlinedIcon from '@material-ui/icons/CachedOutlined';
 import EmptyPanelMessage from '../../../static/js/components/EmptyPanelMessage';
 import TabPanel from '../../../static/js/components/TabPanel';
-import Summary from 'SystemStats/Summary';
-import CPU from 'SystemStats/CPU';
-import Memory from 'SystemStats/Memory';
-import Storage from 'SystemStats/Storage';
+import Summary from './SystemStats/Summary';
+import CPU from './SystemStats/CPU';
+import Memory from './SystemStats/Memory';
+import Storage from './SystemStats/Storage';
 
 function parseData(data) {
   let res = [];

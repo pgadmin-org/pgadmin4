@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   container: {
     height: 'auto',
     padding: '0px !important',
-    marginBottom: '30px',
+    marginBottom: '4px',
   },
   fixedContainer: {
     height: '577px',

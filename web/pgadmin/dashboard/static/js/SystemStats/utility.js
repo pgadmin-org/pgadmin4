@@ -1,3 +1,11 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import url_for from 'sources/url_for';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 
@@ -9,7 +17,7 @@ export function getStatsUrl(sid=-1, did=-1, chart_names=[]) {
   base_url += '/' + sid;
   base_url += (did > 0) ? ('/' + did) : '';
   base_url += '?chart_names=' + chart_names.join(',');
-  
+
   return base_url;
 }
 
@@ -28,7 +36,7 @@ export function transformData(labels, refreshRate) {
       pointHitRadius: DATA_POINT_SIZE,
     };
   }) || [];
-  
+
   return {
     datasets: datasets,
     refreshRate: refreshRate,
@@ -43,15 +51,15 @@ export function statsReducer(state, action) {
   if(action.reset) {
     return action.reset;
   }
-  
+
   if(!action.incoming) {
     return state;
   }
-  
+
   if(!action.counterData) {
     action.counterData = action.incoming;
   }
-  
+
   let newState = {};
   Object.keys(action.incoming).forEach(label => {
     if(state[label]) {
