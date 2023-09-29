@@ -165,7 +165,7 @@ export default class ColumnSchema extends BaseUISchema {
       // Need to show this field only when creating new table
       // [in SubNode control]
       id: 'is_primary_key', label: gettext('Primary key?'),
-      cell: 'switch', type: 'switch',  width: 100, disableResizing: true, deps:['name'],
+      cell: 'switch', type: 'switch',  width: 100, disableResizing: true, deps:['name', ['primary_key']],
       visible: ()=>{
         return obj.top?.nodeInfo && _.isUndefined(
           obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||
@@ -178,13 +178,13 @@ export default class ColumnSchema extends BaseUISchema {
         // - Table is a partitioned table
         if (
           obj.top && ((
-            !_.isUndefined(obj.top.origData['oid'])
-              && !_.isUndefined(obj.top.origData['primary_key'])
-              && obj.top.origData['primary_key'].length > 0
-              && !_.isUndefined(obj.top.origData['primary_key'][0]['oid'])
+            !_.isUndefined(obj.top.sessData['oid'])
+              && !_.isUndefined(obj.top.sessData['primary_key'])
+              && obj.top.sessData['primary_key'].length > 0
+              && !_.isUndefined(obj.top.sessData['primary_key'][0]['oid'])
           ) || (
-            'is_partitioned' in obj.top.origData
-            && obj.top.origData['is_partitioned']
+            'is_partitioned' in obj.top.sessData
+            && obj.top.sessData['is_partitioned']
             && obj.getServerVersion() < 11000
           ))
         ) {
@@ -200,10 +200,10 @@ export default class ColumnSchema extends BaseUISchema {
         // If primary key already exist then disable.
         if (
           obj.top && (
-            !_.isUndefined(obj.top.origData['oid'])
-              && !_.isUndefined(obj.top.origData['primary_key'])
-              && obj.top.origData['primary_key'].length > 0
-              && !_.isUndefined(obj.top.origData['primary_key'][0]['oid'])
+            !_.isUndefined(obj.top.sessData['oid'])
+              && !_.isUndefined(obj.top.sessData['primary_key'])
+              && obj.top.sessData['primary_key'].length > 0
+              && !_.isUndefined(obj.top.sessData['primary_key'][0]['oid'])
           )
         ) {
           return false;
@@ -212,8 +212,8 @@ export default class ColumnSchema extends BaseUISchema {
         // If table is partitioned table then disable
         if(
           obj.top && (
-            'is_partitioned' in obj.top.origData
-          && obj.top.origData['is_partitioned']
+            'is_partitioned' in obj.top.sessData
+          && obj.top.sessData['is_partitioned']
           && obj.getServerVersion() < 11000)
         ) {
           return false;
