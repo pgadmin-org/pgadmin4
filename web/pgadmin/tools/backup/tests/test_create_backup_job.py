@@ -39,7 +39,38 @@ class BackupJobTest(BaseTestGenerator):
              message='--blobs is deprecated and is not supported by EPAS/PG '
                      'server greater than 15'
          )),
-        ('When backup the object with the default options (>= v16)',
+        ('When backup selected objects (< v16)',
+         dict(
+             params=dict(
+                 file='test_backup',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 objects={
+                     "schema": [],
+                     "table": [
+                         {"id": "public_test", "name": "test",
+                          "icon": "icon-table", "schema": "public",
+                          "type": "table", "_name": "public.test"}
+                     ],
+                     "view": [], "sequence": [], "foreign_table": [],
+                     "mview": []
+                 }
+             ),
+             server_max_version=159999,
+             url='/backup/job/{0}/object',
+             expected_params=dict(
+                 expected_cmd_opts=['--verbose', '--format=c', '--blobs'],
+                 not_expected_cmd_opts=[],
+                 expected_exit_code=[1]
+             ),
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
+         )),
+        ('When backup the object with the default options 1 (>= v16)',
          dict(
              params=dict(
                  file='test_backup',
@@ -61,7 +92,7 @@ class BackupJobTest(BaseTestGenerator):
              message='--large-objects is not supported by EPAS/PG server '
                      'less than 16'
          )),
-        ('When backup selected objects ',
+        ('When backup selected objects (>=16)',
          dict(
              params=dict(
                  file='test_backup',
@@ -82,12 +113,16 @@ class BackupJobTest(BaseTestGenerator):
                      "mview": []
                  }
              ),
+             server_min_version=160000,
              url='/backup/job/{0}/object',
              expected_params=dict(
-                 expected_cmd_opts=['--verbose', '--format=c', '--blobs'],
+                 expected_cmd_opts=['--verbose', '--format=c',
+                                    '--large-objects'],
                  not_expected_cmd_opts=[],
                  expected_exit_code=[1]
-             )
+             ),
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
          )),
     ]
 
