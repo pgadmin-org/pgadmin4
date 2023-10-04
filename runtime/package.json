@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "axios": "^1.5.1",
-    "bootstrap": "^4.5.3"
+    "bootstrap": "^5.3.2"
   },
   "devDependencies": {
     "eslint": "^8.42.0",
