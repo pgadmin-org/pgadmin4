@@ -490,6 +490,10 @@ export default class ServerSchema extends BaseUISchema {
       'vartype': 'enum',
       'enumvals': [gettext('any'), gettext('read-write'), gettext('read-only'),
         gettext('primary'), gettext('standby'), gettext('prefer-standby')]
+    }, {
+      'value': 'load_balance_hosts', 'label': gettext('Load balance hosts'),
+      'vartype': 'enum', 'min_server_version': '16',
+      'enumvals': [gettext('disable'), gettext('random')]
     }];
   }
 }
