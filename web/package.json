@@ -116,7 +116,7 @@
     "dagre": "^0.8.4",
     "date-fns": "^2.24.0",
     "diff-arrays-of-objects": "^1.1.8",
-    "html2canvas": "^1.0.0-rc.7",
+    "html-to-image": "^1.11.11",
     "immutability-helper": "^3.0.0",
     "insert-if": "^1.1.0",
     "ip-address": "^7.1.0",
