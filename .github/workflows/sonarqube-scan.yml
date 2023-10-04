@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  run-sonarqube-scan:
     # Only run if the project key is set
     if: vars.SONARQUBE_PROJECT_KEY != null
 

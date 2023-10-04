@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-feature-tests-pg:
     strategy:
       fail-fast: false
       matrix:

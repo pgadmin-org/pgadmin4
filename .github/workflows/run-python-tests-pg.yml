@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-python-tests-pg:
     strategy:
       fail-fast: false
       matrix:

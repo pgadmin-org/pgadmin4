@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-javascript-tests:
     strategy:
       fail-fast: false
       matrix:
@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Upgrade yarn
         run: |
           yarn set version berry
