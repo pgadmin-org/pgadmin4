@@ -163,6 +163,7 @@ export default function Dashboard({
   const [activeOnly, setActiveOnly] = useState(false);
   const [schemaDict, setSchemaDict] = React.useState({});
   const [systemStatsTabVal, setSystemStatsTabVal] = useState(0);
+  const [ldid, setLdid] = useState(0);
 
   const systemStatsTabChanged = (e, tabVal) => {
     setSystemStatsTabVal(tabVal);
@@ -772,7 +773,6 @@ export default function Dashboard({
     }
 
     if (sid && props.serverConnected) {
-
       if (tabVal === 0) {
         url = url_for('dashboard.activity');
       } else if (tabVal === 1) {
@@ -789,42 +789,51 @@ export default function Dashboard({
       else url += sid;
 
       if (did && !props.dbConnected) return;
-      if (did) ssExtensionCheckUrl += '/' + sid + '/' + did;
+      if (did && did > 0) ssExtensionCheckUrl += '/' + sid + '/' + did;
       else ssExtensionCheckUrl += '/' + sid;
 
       const api = getApiInstance();
       if (node) {
-        api({
-          url: url,
-          type: 'GET',
-        })
-          .then((res) => {
-            setdashData(parseData(res.data));
+        if (mainTabVal == 0) {
+          api({
+            url: url,
+            type: 'GET',
           })
-          .catch((error) => {
-            Notify.alert(
-              gettext('Failed to retrieve data from the server.'),
-              _.isUndefined(error.response) ? error.message : error.response.data.errormsg
-            );
-            // show failed message.
-            setMsg(gettext('Failed to retrieve data from the server.'));
-          });
-
-        api({
-          url: ssExtensionCheckUrl,
-          type: 'GET',
-        })
-          .then((res) => {
-            const data = res.data;
-            if(data['ss_present'] == false){
-              setSsMsg(gettext('System stats extension is not installed. You can install the extension in a database using the "CREATE EXTENSION system_stats;" SQL command. Reload the pgAdmin once you installed.'));
-            } else {
-              setSsMsg(gettext(''));
-            }
+            .then((res) => {
+              setdashData(parseData(res.data));
+            })
+            .catch((error) => {
+              Notify.alert(
+                gettext('Failed to retrieve data from the server.'),
+                _.isUndefined(error.response) ? error.message : error.response.data.errormsg
+              );
+              // show failed message.
+              setMsg(gettext('Failed to retrieve data from the server.'));
+            });
+        }
+        else if (mainTabVal == 1) {
+          api({
+            url: ssExtensionCheckUrl,
+            type: 'GET',
           })
-          .catch(() => {
-            setSsMsg(gettext('Failed to verify the presence of system stats extension.'));
-          });
+            .then((res) => {
+              const data = res.data;
+              if(data['ss_present'] == false){
+                setSsMsg(gettext('System stats extension is not installed. You can install the extension in a database using the "CREATE EXTENSION system_stats;" SQL command. Reload the pgAdmin once you installed.'));
+                setLdid(0);
+              } else {
+                setSsMsg('installed');
+                setLdid(did);
+              }
+            })
+            .catch(() => {
+              setSsMsg(gettext('Failed to verify the presence of system stats extension.'));
+              setLdid(0);
+            });
+        } else {
+          setSsMsg('');
+          setLdid(0);
+        }
       } else {
         setMsg(message);
       }
@@ -832,7 +841,7 @@ export default function Dashboard({
     if (message != '') {
       setMsg(message);
     }
-  }, [nodeData, tabVal, did, preferences, refresh, props.dbConnected]);
+  }, [nodeData, tabVal, did, preferences, refresh, props.dbConnected, mainTabVal]);
 
   const filteredDashData = useMemo(()=>{
     if (tabVal == 0 && activeOnly) {
@@ -985,7 +994,7 @@ export default function Dashboard({
                 {/* System Statistics */}
                 <TabPanel value={mainTabVal} index={1} classNameRoot={classes.tabPanel}>
                   <Box height="100%" display="flex" flexDirection="column">
-                    {ssMsg === '' ?
+                    {ssMsg === 'installed' && did === ldid ?
                       <>
                         <Box>
                           <Tabs
