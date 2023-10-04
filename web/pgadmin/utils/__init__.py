@@ -805,9 +805,16 @@ def _does_user_exist(user, from_setup):
     This function will check user is exist or not. If exist then return
     """
     if isinstance(user, User):
-        user = user.email
-
-    new_user = User.query.filter_by(email=user).first()
+        if user.email:
+            user = user.email
+            new_user = User.query.filter_by(email=user).first()
+        elif user.username:
+            user = user.username
+            new_user = User.query.filter_by(username=user).first()
+        else:
+            new_user = None
+    else:
+        new_user = User.query.filter_by(email=user).first()
 
     if new_user is None:
         print(USER_NOT_FOUND % user)
