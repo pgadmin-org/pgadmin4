@@ -28,7 +28,8 @@ import FieldSetView from './FieldSetView';
 const useStyles = makeStyles((theme)=>({
   fullSpace: {
     padding: 0,
-    height: '100%'
+    height: '100%',
+    overflow: 'hidden',
   },
   controlRow: {
     marginBottom: theme.spacing(1),
