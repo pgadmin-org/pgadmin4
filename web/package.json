@@ -120,7 +120,7 @@
     "immutability-helper": "^3.0.0",
     "insert-if": "^1.1.0",
     "ip-address": "^7.1.0",
-    "jquery": "^3.6.0",
+    "jquery": "^3.7.1",
     "jquery-contextmenu": "^2.9.2",
     "json-bignumber": "^1.0.1",
     "jsoneditor": "^9.5.4",
