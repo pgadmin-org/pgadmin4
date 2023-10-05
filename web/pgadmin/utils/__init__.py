@@ -801,26 +801,25 @@ def clear_database_servers(load_user=current_user, from_setup=False):
 
 
 def _does_user_exist(user, from_setup):
-    """
-    This function will check user is exist or not. If exist then return
-    """
-    if isinstance(user, User):
-        if user.email:
-            user = user.email
-            new_user = User.query.filter_by(email=user).first()
-        elif user.username:
-            user = user.username
-            new_user = User.query.filter_by(username=user).first()
-        else:
-            new_user = None
-    else:
-        new_user = User.query.filter_by(email=user).first()
-
-    if new_user is None:
-        print(USER_NOT_FOUND % user)
-        if from_setup:
-            sys.exit(1)
-
+    """                                                                        
+    This function will check user is exist or not. If exist then return        
+    """                                                                        
+    if isinstance(user, User):                                                 
+        if user.username:                                                      
+            auth_source = user.auth_source                                     
+            user = user.username                                               
+            new_user = User.query.filter_by(username=user, auth_source=auth_source).first()
+        else:                                                                  
+            user = ""                                                          
+            new_user = None                                                    
+    else:                                                                                  
+        new_user = User.query.filter_by(email=user).first()                    
+                                                                               
+    if new_user is None:                                                       
+        print(USER_NOT_FOUND % user)                                                       
+        if from_setup:                                                         
+            sys.exit(1)                                                        
+                                                                               
     return new_user
 
 
