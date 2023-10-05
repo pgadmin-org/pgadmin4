@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-python-tests-epas:
     # Only run if the tests are enabled
     # TODO: Figure out a way to test for the presence of the secrets instead
     if: vars.ENABLE_EPAS_TESTS == 'true'
