@@ -10,18 +10,21 @@ ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if 'coloptions' in data and data.coloptions != None and data.coloptions|length > 0 %}
 {% set coloptions = data.coloptions %}
 {% if data.name %}
+{% set colname = data.name %}
+{% else %}
+{% set colname = o_data.name %}
+{% endif %}
 {% if 'added' in coloptions and coloptions.added|length > 0 %}
 ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {{conn|qtIdent(data.name)}} OPTIONS (ADD {% for opt in coloptions.added %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(opt.option) }} {{ opt.value|qtLiteral(conn) }}{% endfor %});
+    ALTER COLUMN {{conn|qtIdent(colname)}} OPTIONS (ADD {% for opt in coloptions.added %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(opt.option) }} {{ opt.value|qtLiteral(conn) }}{% endfor %});
 {% endif %}
 {% if 'changed' in coloptions and coloptions.changed|length > 0 %}
 ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {{conn|qtIdent(data.name)}} OPTIONS (SET {% for opt in coloptions.changed %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(opt.option) }} {{ opt.value|qtLiteral(conn) }}{% endfor %});
+    ALTER COLUMN {{conn|qtIdent(colname)}} OPTIONS (SET {% for opt in coloptions.changed %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(opt.option) }} {{ opt.value|qtLiteral(conn) }}{% endfor %});
 {% endif %}
 {% if 'deleted' in coloptions and coloptions.deleted|length > 0 %}
 ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
-    ALTER COLUMN {{conn|qtIdent(data.name)}} OPTIONS (DROP {% for opt in coloptions.deleted %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(opt.option) }}{% endfor %});
-{% endif %}
+    ALTER COLUMN {{conn|qtIdent(colname)}} OPTIONS (DROP {% for opt in coloptions.deleted %}{% if loop.index != 1 %}, {% endif %}{{ conn|qtIdent(opt.option) }}{% endfor %});
 {% endif %}
 {% endif %}
 {###  Alter column type and collation ###}
@@ -31,7 +34,7 @@ ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 -- The SQL statement below would normally be used to alter the cltype for the {{o_data.name}} column, however,
 -- the current datatype cannot be cast to the target cltype so this conversion cannot be made automatically.
 {% endif %}
-{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}ALTER FOREIGN TABLE {{conn|qtIdent(data.schema, data.table)}}
+{% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}ALTER FOREIGN TABLE IF EXISTS {{conn|qtIdent(data.schema, data.table)}}
 {% if data.col_type_conversion is defined and data.col_type_conversion == False %} -- {% endif %}    ALTER COLUMN {% if data.name %}{{conn|qtTypeIdent(data.name)}}{% else %}{{conn|qtTypeIdent(o_data.name)}}{% endif %} TYPE {{ GET_TYPE.UPDATE_TYPE_SQL(conn, data, o_data) }}{% if data.collspcname and data.collspcname != o_data.collspcname %}
  COLLATE {{data.collspcname}}{% elif o_data.collspcname %} COLLATE {{o_data.collspcname}}{% endif %};
 

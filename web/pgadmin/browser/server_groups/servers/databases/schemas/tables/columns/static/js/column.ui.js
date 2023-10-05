@@ -82,16 +82,17 @@ export default class ColumnSchema extends BaseUISchema {
     }
 
     if(this.nodeInfo &&  ('schema' in this.nodeInfo)) {
-      // We will disable control if it's system columns
-      // inheritedfrom check is useful when we use this schema in table node
-      // inheritedfrom has value then we should disable it
-      if(!_.isUndefined(state.inheritedfrom)) {
-        return true;
-      }
-
       if(this.isNew(state)) {
         return false;
       }
+
+      // We will disable control if it's system columns
+      // inheritedfrom check is useful when we use this schema in table node
+      // inheritedfrom has value then we should disable it
+      if (!isEmptyString(state.inheritedfrom)){
+        return true;
+      }
+
       // ie: it's position is less than 1
       return !(!_.isUndefined(state.attnum) && state.attnum > 0);
     }

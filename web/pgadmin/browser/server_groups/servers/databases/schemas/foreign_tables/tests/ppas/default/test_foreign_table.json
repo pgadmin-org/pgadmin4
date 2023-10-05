@@ -109,7 +109,8 @@
           "added": [{
             "name":"col1",
             "cltype":"bigint",
-            "coloptions":[]
+            "coloptions":[],
+            "attnotnull": true
           },{
             "name":"col2",
             "cltype":"text",
@@ -185,10 +186,11 @@
             "name": "col1",
             "attnum": 1,
             "attoptions": null,
+            "attnotnull":false,
+            "attstattarget": 10,
             "collname": "",
             "coloptions": [],
-            "cltype": "integer",
-            "fulltype": "bigint"
+            "cltype": "integer"
           }],
           "deleted": [{
             "name":"col2",

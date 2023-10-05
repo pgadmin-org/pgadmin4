@@ -139,12 +139,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # We need to format variables according to client js collection
     if 'attoptions' in data and data['attoptions'] is not None:
-        spcoptions = []
-        for spcoption in data['attoptions']:
-            k, v = spcoption.split('=')
-            spcoptions.append({'name': k, 'value': v})
-
-        data['attoptions'] = spcoptions
+        data['attoptions'] = parse_column_variables(data['attoptions'])
 
     # Need to format security labels according to client js collection
     if 'seclabels' in data and data['seclabels'] is not None:
@@ -157,7 +152,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # Get formatted Column Options
     if 'attfdwoptions' in data and data['attfdwoptions'] != '':
-        data['coloptions'] = _parse_options_for_column(data['attfdwoptions'])
+        data['coloptions'] = parse_options_for_column(data['attfdwoptions'])
 
     # We need to parse & convert ACL coming from database to json format
     SQL = render_template("/".join([template_path, 'acl.sql']),
@@ -194,7 +189,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     return data
 
 
-def _parse_options_for_column(db_variables):
+def parse_options_for_column(db_variables):
     """
         Function to format the output for variables.
 
@@ -446,3 +441,13 @@ def fetch_length_precision(data):
             data['attprecision'] = None
 
     return data
+
+
+def parse_column_variables(col_variables):
+    # We need to format variables according to client js collection
+    spcoptions = []
+    if col_variables is not None:
+        for spcoption in col_variables:
+            k, v = spcoption.split('=')
+            spcoptions.append({'name': k, 'value': v})
+    return spcoptions
