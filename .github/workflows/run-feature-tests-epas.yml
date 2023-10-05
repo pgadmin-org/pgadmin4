@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-feature-tests-epas:
     # Only run if the tests are enabled
     # TODO: Figure out a way to test for the presence of the secrets instead
     if: vars.ENABLE_EPAS_TESTS == 'true'
@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pgver: [12, 13, 14, 15]
+        pgver: [11, 12, 13, 14, 15]
 
     runs-on: ubuntu-latest
 

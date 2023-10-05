@@ -11,7 +11,7 @@ import * as React from 'react';
 import { CanvasWidget, Action, InputType } from '@projectstorm/react-canvas-core';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import html2canvas from 'html2canvas';
+import {toPng} from 'html-to-image';
 
 import ERDCore from '../ERDCore';
 import ConnectionBar, { STATUS as CONNECT_STATUS } from './ConnectionBar';
@@ -76,7 +76,7 @@ const styles = ((theme)=>({
   diagramContainer: {
     position: 'relative',
     width: '100%',
-    height: '100%',
+    flexGrow: 1,
     minHeight: 0,
   },
   diagramCanvas: {
@@ -722,66 +722,49 @@ class ERDTool extends React.Component {
      * the canvas back to original state.
      * Code referred from - zoomToFitNodes function.
      */
-    let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes(), 10);
+    this.diagramContainerRef.current?.classList.add(this.props.classes.html2canvasReset);
+    const margin = 10;
+    let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes());
+    let linksRect = this.diagram.getBoundingLinksRect();
+
+    // Check what is to the most top left - links or nodes?
+    let topLeftXY = {
+      x: nodesRect.getTopLeft().x,
+      y: nodesRect.getTopLeft().y
+    };
+    if(topLeftXY.x > linksRect.getTopLeft().x) {
+      topLeftXY.x = linksRect.getTopLeft().x;
+    }
+    if(topLeftXY.y > linksRect.getTopLeft().y) {
+      topLeftXY.y = linksRect.getTopLeft().y;
+    }
+    topLeftXY.x -= margin;
+    topLeftXY.y -= margin;
+
     let canvasRect = this.canvasEle.getBoundingClientRect();
-    let canvasTopLeftPoint = {
+    let canvasTopLeftOnScreen = {
       x: canvasRect.left,
       y: canvasRect.top
     };
     let nodeLayerTopLeftPoint = {
-      x: canvasTopLeftPoint.x + this.diagram.getModel().getOffsetX(),
-      y: canvasTopLeftPoint.y + this.diagram.getModel().getOffsetY()
+      x: canvasTopLeftOnScreen.x + this.diagram.getModel().getOffsetX(),
+      y: canvasTopLeftOnScreen.y + this.diagram.getModel().getOffsetY()
     };
     let nodesRectTopLeftPoint = {
-      x: nodeLayerTopLeftPoint.x + nodesRect.getTopLeft().x,
-      y: nodeLayerTopLeftPoint.y + nodesRect.getTopLeft().y
+      x: nodeLayerTopLeftPoint.x + topLeftXY.x,
+      y: nodeLayerTopLeftPoint.y + topLeftXY.y
     };
+
     let prevTransform = this.canvasEle.querySelector('div').style.transform;
     this.canvasEle.childNodes.forEach((ele)=>{
       ele.style.transform = `translate(${nodeLayerTopLeftPoint.x - nodesRectTopLeftPoint.x}px, ${nodeLayerTopLeftPoint.y - nodesRectTopLeftPoint.y}px) scale(1.0)`;
     });
 
-    /* Change the styles for suiting html2canvas */
-    this.canvasEle.classList.add(this.props.classes.html2canvasReset);
-    this.canvasEle.style.width = this.canvasEle.scrollWidth + 'px';
-    this.canvasEle.style.height = this.canvasEle.scrollHeight + 'px';
-
-    /* html2canvas ignores CSS styles, set the CSS styles to inline */
-    const setSvgInlineStyles = (targetElem) => {
-      const transformProperties = [
-        'fill',
-        'color',
-        'font-size',
-        'stroke',
-        'font',
-        'display',
-      ];
-      let svgElems = Array.from(targetElem.getElementsByTagName('svg'));
-      for (let svgEle of svgElems) {
-        svgEle.setAttribute('width', svgEle.clientWidth);
-        svgEle.setAttribute('height', svgEle.clientHeight);
-        /* Wrap the SVG in a div tag so that transforms are consistent with html */
-        let wrap = document.createElement('div');
-        wrap.setAttribute('style', svgEle.getAttribute('style'));
-        svgEle.setAttribute('style', null);
-        svgEle.style.display = 'block';
-        svgEle.parentNode.insertBefore(wrap, svgEle);
-        wrap.appendChild(svgEle);
-        recurseElementChildren(svgEle);
-      }
-      function recurseElementChildren(node) {
-        if (!node.style)
-          return;
-
-        let styles = getComputedStyle(node);
-        for (let transformProperty of transformProperties) {
-          node.style[transformProperty] = styles[transformProperty];
-        }
-        for (let child of Array.from(node.childNodes)) {
-          recurseElementChildren(child);
-        }
-      }
-    };
+    // Capture the links beyond the nodes as well.
+    const linkOutsideWidth = linksRect.getBottomRight().x - nodesRect.getBottomRight().x;
+    const linkOutsideHeight = linksRect.getBottomRight().y - nodesRect.getBottomRight().y;
+    this.canvasEle.style.width = this.canvasEle.scrollWidth + (linkOutsideWidth > 0 ? linkOutsideWidth : 0) + margin + 'px';
+    this.canvasEle.style.height = this.canvasEle.scrollHeight + (linkOutsideHeight > 0 ? linkOutsideHeight : 0) + margin + 'px';
 
     setTimeout(()=>{
       let width = this.canvasEle.scrollWidth + 10;
@@ -796,46 +779,34 @@ class ERDTool extends React.Component {
         height = 32766;
         isCut = true;
       }
-      html2canvas(this.canvasEle, {
-        width: width,
-        height: height,
-        scrollX: 0,
-        scrollY: 0,
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: window.getComputedStyle(this.canvasEle).backgroundColor,
-        onclone: (clonedEle)=>{
-          setSvgInlineStyles(clonedEle.body.querySelector('div[data-test="diagram-container"]'));
-          return clonedEle;
-        },
-      }).then((canvas)=>{
-        let link = document.createElement('a');
-        link.setAttribute('href', canvas.toDataURL('image/png'));
-        link.setAttribute('download', this.getCurrentProjectName() + '.png');
-        link.click();
-        link.remove();
-      }).catch((err)=>{
-        console.error(err);
-        let msg = gettext('Unknown error. Check console logs');
-        if(err.name) {
-          msg = `${err.name}: ${err.message}`;
-        }
-        Notify.alert(gettext('Error'), msg);
-      }).then(()=>{
-        /* Revert back to the original CSS styles */
-        this.canvasEle.classList.remove(this.props.classes.html2canvasReset);
-        this.canvasEle.style.width = '';
-        this.canvasEle.style.height = '';
-        this.canvasEle.childNodes.forEach((ele)=>{
-          ele.style.transform = prevTransform;
+      toPng(this.canvasEle)
+        .then((dataUrl)=>{
+          let link = document.createElement('a');
+          link.setAttribute('href', dataUrl);
+          link.setAttribute('download', this.getCurrentProjectName() + '.png');
+          link.click();
+          link.remove();
+        }).catch((err)=>{
+          console.error(err);
+          let msg = gettext('Unknown error. Check console logs');
+          if(err.name) {
+            msg = `${err.name}: ${err.message}`;
+          }
+          Notify.alert(gettext('Error'), msg);
+        }).then(()=>{
+          /* Revert back to the original CSS styles */
+          this.diagramContainerRef.current.classList.remove(this.props.classes.html2canvasReset);
+          this.canvasEle.style.width = '';
+          this.canvasEle.style.height = '';
+          this.canvasEle.childNodes.forEach((ele)=>{
+            ele.style.transform = prevTransform;
+          });
+          this.setLoading(null);
+          if(isCut) {
+            Notify.alert(gettext('Maximum image size limit'),
+              gettext('The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, and has been cropped to that size.'));
+          }
         });
-        this.setLoading(null);
-        if(isCut) {
-          Notify.alert(gettext('Maximum image size limit'),
-            gettext('The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, and has been cropped to that size.'));
-        }
-      });
     }, 1000);
   }
 
@@ -959,7 +930,7 @@ class ERDTool extends React.Component {
     this.erdDialogs.modal = this.context;
 
     return (
-      <Box ref={this.containerRef} height="100%">
+      <Box ref={this.containerRef} height="100%" display="flex" flexDirection="column">
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
           fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
