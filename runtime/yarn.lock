@@ -1216,10 +1216,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge@npm:^1.2.0":
-  version: 1.2.1
-  resolution: "merge@npm:1.2.1"
-  checksum: 2298c4fdcf64561f320b92338681f7ffcafafb579a6e294066ae3e7bd10ae25df363903d2f028072733b9f79a1f75d2b999aef98ad5d73de13641da39cda0913
+"merge@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "merge@npm:2.1.1"
+  checksum: 9c36b0e25aa53b3f7305d7cf0f330397f1142cf311802b681e5619f12e986a790019b8246c1c0df21701c8652449f9046b0129551030097ef563d1958c823249
   languageName: node
   linkType: hard
 
@@ -1297,22 +1297,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nw@npm:0.77.0":
-  version: 0.77.0
-  resolution: "nw@npm:0.77.0"
+"nw@npm:0.80.0":
+  version: 0.80.0
+  resolution: "nw@npm:0.80.0"
   dependencies:
     chalk: ~1.1.3
     decompress: ^4.2.0
     download: ^5.0.3
     file-exists: ^2.0.0
-    merge: ^1.2.0
+    merge: ^2.1.1
     progress: ^2.0.3
     rimraf: ^2.2.8
     semver: ^5.1.0
     yargs: ^3.2.1
   bin:
     nw: bin/nw
-  checksum: 95b76c0b26404a3bfe4a3bd6f26143bbda4097231a9f37a3a7137a784192c19cfe86d1943edd8bf4398d30c52eed83e4c004c22ba8ca770c0f597911828825b7
+  checksum: add4207037bac453cbc607b1141cc9e6112d4654b51a3737ca391b3a0f4b54fc35eb49e3a37c69ffa09857f4c4d86a6db674723e424ee284846bbe77fd7c9594
   languageName: node
   linkType: hard
 
@@ -1417,7 +1417,7 @@ __metadata:
     axios: ^1.5.1
     bootstrap: ^4.5.3
     eslint: ^8.50.0
-    nw: 0.77.0
+    nw: 0.80.0
   languageName: unknown
   linkType: soft
 
