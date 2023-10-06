@@ -261,8 +261,8 @@ export default function Storage({preferences, sid, did, pageVisible, enablePoll=
             let di_info_list = [];
             const di_info_obj = data['di_stats'];
             for (const key in di_info_obj) {
-              di_info_list.push({ 
-                icon: '', 
+              di_info_list.push({
+                icon: '',
                 file_system: di_info_obj[key]['file_system']?gettext(di_info_obj[key]['file_system']):'',
                 file_system_type: di_info_obj[key]['file_system_type']?gettext(di_info_obj[key]['file_system_type']):'',
                 mount_point: di_info_obj[key]['mount_point']?gettext(di_info_obj[key]['mount_point']):'',
@@ -420,14 +420,14 @@ export function StorageWrapper(props) {
         </Grid>
         <Grid container spacing={1} className={classes.diskInfoCharts}>
           <Grid item md={6} sm={12}>
-            <ChartContainer 
-              id='t-space-graph' 
-              title={gettext('')} 
+            <ChartContainer
+              id='t-space-graph'
+              title={gettext('')}
               datasets={props.diskStats.map((item, index) => ({
                 borderColor: colors[(index + 2) % colors.length],
                 label: item.mount_point !== '' ? item.mount_point : item.drive_letter !== '' ? item.drive_letter : 'disk' + index,
               }))}
-              errorMsg={props.errorMsg} 
+              errorMsg={props.errorMsg}
               isTest={props.isTest}>
               <PieChart data={{
                 labels: props.diskStats.map((item, index) => item.mount_point!=''?item.mount_point:item.drive_letter!=''?item.drive_letter:'disk'+index),
@@ -483,7 +483,7 @@ export function StorageWrapper(props) {
                 ],
               }}
               options={
-                { 
+                {
                   scales: {
                     x: {
                       display: true,
