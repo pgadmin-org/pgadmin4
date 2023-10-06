@@ -1,3 +1,18 @@
+WITH INH_TABLES AS
+    (SELECT
+     at.attname AS name, ph.inhparent AS inheritedid, ph.inhseqno,
+     pg_catalog.concat(nmsp_parent.nspname, '.',parent.relname ) AS inheritedfrom
+    FROM
+        pg_catalog.pg_attribute at
+    JOIN
+        pg_catalog.pg_inherits ph ON ph.inhparent = at.attrelid AND ph.inhrelid = 33896::oid
+    JOIN
+        pg_catalog.pg_class parent ON ph.inhparent  = parent.oid
+    JOIN
+        pg_catalog.pg_namespace nmsp_parent ON nmsp_parent.oid  = parent.relnamespace
+    GROUP BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
+    ORDER BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
+    )
 SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, att.attnum, att.attndims,
 		att.atttypmod, att.attacl, att.attnotnull, att.attoptions, att.attfdwoptions, att.attstattarget,
 		att.attstorage, att.attidentity,
@@ -5,6 +20,8 @@ SELECT DISTINCT ON (att.attnum) att.attname as name, att.atttypid, att.attlen, a
 		pg_catalog.format_type(ty.oid,NULL) AS typname,
         pg_catalog.format_type(ty.oid,att.atttypmod) AS displaytypname,
 		pg_catalog.format_type(ty.oid,att.atttypmod) AS cltype,
+		inh.inheritedfrom,
+		inh.inheritedid,
         CASE WHEN ty.typelem > 0 THEN ty.typelem ELSE ty.oid END as elemoid,
 		(SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = ty.typnamespace) as typnspname,
         ty.typstorage AS defaultstorage,
@@ -31,6 +48,7 @@ FROM pg_catalog.pg_attribute att
   LEFT OUTER JOIN pg_catalog.pg_namespace nspc ON coll.collnamespace=nspc.oid
   LEFT OUTER JOIN pg_catalog.pg_sequence seq ON cs.oid=seq.seqrelid
   LEFT OUTER JOIN pg_catalog.pg_class tab on tab.oid = att.attrelid
+  LEFT OUTER join INH_TABLES as INH ON att.attname = INH.name
 WHERE att.attrelid = {{tid}}::oid
 {% if clid %}
     AND att.attnum = {{clid}}::int

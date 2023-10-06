@@ -1,4 +1,4 @@
-ALTER FOREIGN TABLE public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
     ALTER COLUMN "col_3_$%{}[]()&*^!@""'`\/#" TYPE time(10) with time zone ;
 
 ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"

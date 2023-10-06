@@ -11,7 +11,7 @@ CREATE FOREIGN TABLE{% if add_not_exists_clause %} IF NOT EXISTS{% endif %} {{ c
 {% for o in c.coloptions %}{% if o.option is defined and o.value is defined %}
 {% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %}){% endif %}{% endif %}
 {% endfor %}{% endif %}
-{% if c.attnotnull %} NOT NULL{% else %} NULL{% endif %}
+{% if c.attnotnull %} NOT NULL{% endif %}
 {% if c.defval is defined and c.defval is not none %} DEFAULT {{c.defval}}{% endif %}
 {% if c.collname %} COLLATE {{c.collname}}{% endif %}
 {% if not loop.last %},

@@ -233,7 +233,7 @@
       "name": "Update Foreign Table: With existing foreign table.",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) OPTIONS (columnoptionkey 'columnOptionVal') NULL ) SERVER %s;\" %(schema_name, foreign_table_name, fsrv_name)"
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) OPTIONS (column_name 'columnOptionVal') NULL ) SERVER %s;\" %(schema_name, foreign_table_name, fsrv_name)"
       },
       "test_data": {
         "description": "This is foreign table update comment",
@@ -264,7 +264,7 @@
             {
               "coloptions": [
                 {
-                  "option": "OptionKey",
+                  "option": "column_name",
                   "value": "OptionValue"
                 }
               ],
@@ -279,7 +279,7 @@
               "attstattarget": -1,
               "attoptions": null,
               "attfdwoptions": [
-                "ColOptionKey=ColOptionValue"
+                "column_name=ColOptionValue"
               ],
               "attndims": 0,
               "atttypmod": -1,
