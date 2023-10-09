@@ -256,6 +256,12 @@ This will create a file in: $PGADMIN4_SRC/web/migrations/versions/ .
 Add any changes to the 'upgrade' function.
 Increment the SCHEMA_VERSION in $PGADMIN4_SRC/web/pgadmin/model/__init__.py file.
 
+Add below argument in batch_alter_table if you want sqlite to use auto increment instead of last row id for next record
+```
+table_kwargs={'sqlite_autoincrement': True}
+```
+Ref https://sqlite.org/autoinc.html and https://docs.sqlalchemy.org/en/14/dialects/sqlite.html#sqlite-auto-incrementing-behavior
+
 There is no need to increment the SETTINGS_SCHEMA_VERSION.
 
 # Support
