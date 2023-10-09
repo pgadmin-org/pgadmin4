@@ -291,7 +291,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             server_types = default_binary_path.keys()
             path_already_set = True
             for serv in server_types:
-                if serv == 'pg' and server_version is not None:
+                if serv == 'pg' and server_version is not None and \
+                        default_binary_path['pg'] != '':
                     path_input = \
                         self.page.find_by_xpath(
                             "//div[span[text()='PostgreSQL {}']]"
@@ -303,7 +304,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                         self.page.clear_edit_box(path_input)
                         path_input.click()
                         path_input.send_keys(default_binary_path['pg'])
-                elif serv == 'ppas' and server_version is not None:
+                elif serv == 'ppas' and server_version is not None and \
+                        default_binary_path['ppas'] != '':
                     path_input = \
                         self.page.find_by_xpath(
                             "//div[span[text()='EDB Advanced Server {}']]"
