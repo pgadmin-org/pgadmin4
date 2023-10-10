@@ -44,6 +44,7 @@ import { showFileManager } from '../helpers/showFileManager';
 import { withColorPicker } from '../helpers/withColorPicker';
 import { useWindowSize } from '../custom_hooks';
 import PgTreeView from '../PgTreeView';
+import Loader from 'sources/components/Loader';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -1278,12 +1279,28 @@ FormButton.propTypes = {
 };
 
 export function InputTree({hasCheckbox, treeData, onChange, ...props}){
-  return <PgTreeView data={treeData} hasCheckbox={hasCheckbox} selectionChange={onChange} {...props}></PgTreeView>;
+  const [[finalData, isLoading], setFinalData] = useState([[], true]);
+
+  useEffect(() => {
+    let tdata = treeData, umounted = false;
+    if (typeof treeData === 'function') {
+      tdata = treeData();
+    }
+    setFinalData([[], true]);
+    Promise.resolve(tdata)
+      .then((res) => {
+        if(!umounted){
+          setFinalData([res, false]);
+        }
+      });
+    return () => umounted = true;
+  }, []);
+  return <>{isLoading ? <Loader message={gettext('Loading')}></Loader> : <PgTreeView data={finalData} hasCheckbox={hasCheckbox} selectionChange={onChange} {...props}></PgTreeView>}</>;
 }
 
 InputTree.propTypes = {
   hasCheckbox: PropTypes.bool,
-  treeData: PropTypes.array,
+  treeData: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
   onChange: PropTypes.func,
   selectionChange: PropTypes.func,
 };
