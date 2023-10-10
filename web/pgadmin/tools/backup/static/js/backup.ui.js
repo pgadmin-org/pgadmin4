@@ -430,8 +430,7 @@ export default class BackupSchema extends BaseUISchema {
       role: null,
       ...fieldOptions,
     };
-
-    this.treeData = objects;
+    this.treeData = objects?.objects;
     this.treeNodeInfo = treeNodeInfo;
     this.pgBrowser = pgBrowser;
     this.backupType = backupType;

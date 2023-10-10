@@ -255,26 +255,20 @@ define([
           });
         }
 
-        api({
-          url: backup_obj_url,
-          method: 'GET'
-        }).then((response)=> {
-          let objects = response.data.data;
-          let schema = that.getUISchema(treeItem,  'backup_objects', objects);
-          panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
-          panel.focus();
+        let schema = that.getUISchema(treeItem,  'backup_objects', backup_obj_url);
+        panel.title(gettext(`Backup (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
+        panel.focus();
 
-          let typeOfDialog = 'backup_objects',
-            serverIdentifier = that.retrieveServerIdentifier(),
-            extraData = that.setExtraParameters(typeOfDialog);
+        let typeOfDialog = 'backup_objects',
+          serverIdentifier = that.retrieveServerIdentifier(),
+          extraData = that.setExtraParameters(typeOfDialog);
 
-          that.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
-        });
+        that.showBackupDialog(schema, treeItem, j, data, panel, typeOfDialog, serverIdentifier, extraData);
 
       });
     },
 
-    getUISchema: function(treeItem, backupType, objects) {
+    getUISchema: function(treeItem, backupType, backup_obj_url) {
       let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
       const selectedNode = pgBrowser.tree.selected();
       let itemNodeData = pgBrowser.tree.findNodeByDomElement(selectedNode).getData();
@@ -289,12 +283,25 @@ define([
           encoding: ()=>getNodeAjaxOptions('get_encodings', pgBrowser.Nodes['database'], treeNodeInfo, itemNodeData, {
             cacheNode: 'database',
             cacheLevel: 'server',
-          }),
+          })
         },
         treeNodeInfo,
         pgBrowser,
         backupType,
-        objects
+        {
+          objects: () => {
+            return new Promise((resolve, reject)=>{
+              let api = getApiInstance();
+              api({
+                url: backup_obj_url,
+                method: 'GET'
+              }).then((response)=> {
+                resolve(response.data.data);
+              }).catch((err)=>{
+                reject(err);
+              });
+            });
+          }}
       );
     },
     getGlobalUISchema: function(treeItem) {
