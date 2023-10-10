@@ -15,3 +15,7 @@ COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
     IS 'Test Comment';
 
 GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO postgres;
+
+
+ALTER TABLE IF EXISTS "FT1_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN col1 SET STATISTICS 10;
