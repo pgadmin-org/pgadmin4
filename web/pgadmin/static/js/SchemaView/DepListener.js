@@ -59,7 +59,8 @@ export default class DepListener {
     if(actionObj.listener?.callback) {
       state = this._getListenerData(state, actionObj.listener, actionObj);
     } else {
-      let allListeners = _.filter(this._depListeners, (entry)=>_.join(currPath, '|').startsWith(_.join(entry.source, '|')));
+      // adding a extra item in path to avoid incorrect matching like shared and shared_username
+      let allListeners = _.filter(this._depListeners, (entry)=>_.join(currPath.concat(['']), '|').startsWith(_.join(entry.source.concat(['']), '|')));
       if(allListeners) {
         for(const listener of allListeners) {
           state = this._getListenerData(state, listener, actionObj);

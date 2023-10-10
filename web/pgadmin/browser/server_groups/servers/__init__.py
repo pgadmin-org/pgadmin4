@@ -376,7 +376,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 host=data.host,
                 port=data.port,
                 maintenance_db=data.maintenance_db,
-                username=None,
+                username=data.shared_username,
                 save_password=0,
                 comment=None,
                 role=data.role,
@@ -814,6 +814,7 @@ class ServerNode(PGChildNodeView):
             'tunnel_authentication': 'tunnel_authentication',
             'tunnel_identity_file': 'tunnel_identity_file',
             'shared': 'shared',
+            'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
             'connection_params': 'connection_params'
         }
@@ -849,6 +850,10 @@ class ServerNode(PGChildNodeView):
                 status=400,
                 errormsg=gettext('Not a valid Host address')
             )
+
+        # remove the shared username if shared is updated to False
+        if 'shared' in data and data['shared'] is False:
+            data['shared_username'] = ''
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -1073,6 +1078,8 @@ class ServerNode(PGChildNodeView):
             'port': server.port,
             'db': server.maintenance_db,
             'shared': server.shared if config.SERVER_MODE else None,
+            'shared_username': server.shared_username
+            if config.SERVER_MODE else None,
             'username': server.username,
             'gid': str(server.servergroup_id),
             'group-name': sg.name if (sg and sg.name) else gettext('Servers'),

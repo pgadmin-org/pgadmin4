@@ -44,6 +44,9 @@ Use the fields in the *General* tab to identify the server:
   Please note that once the server is shared, it's icon is changed in the
   object explorer.
 
+* Use the *Shared Username* field to fill the username of the shared server
+  connection. By default, it will take the username of the server being shared.
+
 * Provide a comment about the server in the *Comments* field.
 
 Click the *Connection* tab to continue.
