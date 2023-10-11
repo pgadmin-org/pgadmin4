@@ -21,6 +21,7 @@ New features
 ************
 
   | `Issue #640 <https://github.com/pgadmin-org/pgadmin4/issues/640>`_ -    Add support for foreign table's new functionality for PG 11 and above.
+  | `Issue #6229 <https://github.com/pgadmin-org/pgadmin4/issues/6229>`_ -  Allow setting custom username for shared servers, with default as username of server being shared.
   | `Issue #6373 <https://github.com/pgadmin-org/pgadmin4/issues/6373>`_ -  Add 'GENERATED ALWAYS AS..' option while creating column constraints for Foreign Table.
   | `Issue #6797 <https://github.com/pgadmin-org/pgadmin4/issues/6797>`_ -  GUI representation of the system's activity using the 'system_stats' extension.
   | `Issue #6802 <https://github.com/pgadmin-org/pgadmin4/issues/6802>`_ -  Added 'load_balance_hosts' connection string parameter for PG 16 and above.
@@ -34,7 +35,10 @@ Bug fixes
 *********
 
   | `Issue #4995 <https://github.com/pgadmin-org/pgadmin4/issues/4995>`_ -  Fixed an issue in ERD tool where the downloaded images have a few links cut.
+  | `Issue #5749 <https://github.com/pgadmin-org/pgadmin4/issues/5749>`_ -  Fixed an issue where user was not able to assign new/old columns as primary key once column with primary key is deleted.
   | `Issue #6482 <https://github.com/pgadmin-org/pgadmin4/issues/6482>`_ -  Fixed an issue where the wrong message "Current database has been moved or renamed" is displayed when debugging any function.
+  | `Issue #6538 <https://github.com/pgadmin-org/pgadmin4/issues/6538>`_ -  Fixed an issue where Processes tab displays wrong server name in some scenario.
+  | `Issue #6579 <https://github.com/pgadmin-org/pgadmin4/issues/6579>`_ -  Fix an issue where global/native keyboard shortcuts are not working when any cell of data output grid has focus.
   | `Issue #6674 <https://github.com/pgadmin-org/pgadmin4/issues/6674>`_ -  Fix an issue where foreign table column name becomes "none" if the user changes any column data type.
   | `Issue #6718 <https://github.com/pgadmin-org/pgadmin4/issues/6718>`_ -  Pin the cryptography version to fix PyO3 modules initialisation error.
   | `Issue #6790 <https://github.com/pgadmin-org/pgadmin4/issues/6790>`_ -  Ensure that the backup works properly for PG 16 on the latest docker image.
