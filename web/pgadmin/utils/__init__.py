@@ -493,6 +493,7 @@ def dump_database_servers(output_file, selected_servers,
             add_value(attr_dict, "Role", server.role)
             add_value(attr_dict, "Comment", server.comment)
             add_value(attr_dict, "Shared", server.shared)
+            add_value(attr_dict, "SharedUsername", server.shared_username)
             add_value(attr_dict, "DBRestriction", server.db_res)
             add_value(attr_dict, "BGColor", server.bgcolor)
             add_value(attr_dict, "FGColor", server.fgcolor)
@@ -737,6 +738,8 @@ def load_database_servers(input_file, selected_servers,
                 obj.get("TunnelAuthentication", None)
 
             new_server.shared = obj.get("Shared", None)
+
+            new_server.shared_username = obj.get("SharedUsername", None)
 
             new_server.kerberos_conn = obj.get("KerberosAuthentication", None)
 

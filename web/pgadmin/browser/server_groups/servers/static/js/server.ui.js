@@ -36,6 +36,7 @@ export default class ServerSchema extends BaseUISchema {
       passexec: undefined,
       passexec_expiration: undefined,
       service: undefined,
+      shared_username: '',
       use_ssh_tunnel: false,
       tunnel_host: undefined,
       tunnel_port: 22,
@@ -128,6 +129,34 @@ export default class ServerSchema extends BaseUISchema {
           return !obj.isNew(state) && serverOwner != current_user.id;
         }, visible: function(){
           return current_user.is_admin && pgAdmin.server_mode == 'True';
+        },
+      },
+      {
+        id: 'shared_username', label: gettext('Shared Username'), type: 'text',
+        controlProps: { maxLength: 64},
+        mode: ['properties', 'create', 'edit'], deps: ['shared', 'username'],
+        readonly: (s)=>{
+          if(!this.origData.shared && s.shared) {
+            return false;
+          }
+          return true;
+        }, visible: (s)=>!obj.isShared(s),
+        depChange: (state, source, _topState, actionObj)=>{
+          let ret = {};
+          if(this.origData.shared) {
+            return ret;
+          }
+          if(source == 'username' && actionObj.oldState.username == state.shared_username) {
+            ret['shared_username'] = state.username;
+          }
+          if(source == 'shared') {
+            if(state.shared) {
+              ret['shared_username'] = state.username;
+            } else {
+              ret['shared_username'] = '';
+            }
+          }
+          return ret;
         },
       },
       {
