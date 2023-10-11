@@ -143,7 +143,8 @@ export default class ColumnSchema extends BaseUISchema {
   attprecisionRange(state) {
     for(let o of this.datatypes) {
       if ( state.cltype == o.value ) {
-        if(o.precision) return {min: o.min_val || 0, max: o.max_val};
+        // PostgreSQL allows negative precision
+        if(o.precision) return {min: -o.max_val, max: o.max_val};
       }
     }
     return null;

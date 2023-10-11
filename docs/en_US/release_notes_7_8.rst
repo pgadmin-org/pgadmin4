@@ -44,3 +44,4 @@ Bug fixes
   | `Issue #6790 <https://github.com/pgadmin-org/pgadmin4/issues/6790>`_ -  Ensure that the backup works properly for PG 16 on the latest docker image.
   | `Issue #6799 <https://github.com/pgadmin-org/pgadmin4/issues/6799>`_ -  Fixed an issue where the user is unable to select objects on the backup dialog due to tree flickering.
   | `Issue #6836 <https://github.com/pgadmin-org/pgadmin4/issues/6836>`_ -  Fixed an issue where non-super PostgreSQL users are not able to terminate their own connections from dashboard.
+  | `Issue #6851 <https://github.com/pgadmin-org/pgadmin4/issues/6851>`_ -  Fix an issue where scale in columns is not allowed to have value as 0 or below.
