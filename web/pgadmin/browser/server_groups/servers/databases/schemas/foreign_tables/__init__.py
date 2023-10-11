@@ -1189,7 +1189,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 c['schema'] = data['schema']
                 c['table'] = data['name']
                 # Sql for drop column
-                if 'inheritedfrom' not in c:
+                if 'inheritedfrom' not in c or \
+                        ('inheritedfrom' in c and c['inheritedfrom'] is None):
                     column_sql += render_template("/".join(
                         [self.foreign_table_column_template_path,
                          self._DELETE_SQL]),

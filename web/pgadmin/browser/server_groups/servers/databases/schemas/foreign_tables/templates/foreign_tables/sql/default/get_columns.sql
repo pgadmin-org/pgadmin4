@@ -16,6 +16,7 @@ WITH INH_TABLES AS
 SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, att.atttypid, attfdwoptions,
     att.attname as name, att.attndims, att.atttypmod, pg_catalog.format_type(t.oid,NULL) AS cltype,
     att.attnotnull, att.attstorage, att.attstattarget, att.attnum, pg_catalog.format_type(t.oid, att.atttypmod) AS fulltype,
+    t.typstorage AS defaultstorage,
     CASE WHEN t.typelem > 0 THEN t.typelem ELSE t.oid END as elemoid,
     (CASE WHEN (att.attidentity in ('a', 'd')) THEN 'i' WHEN (att.attgenerated in ('s')) THEN 'g' ELSE 'n' END) AS colconstype,
     (CASE WHEN (att.attgenerated in ('s')) THEN pg_catalog.pg_get_expr(def.adbin, def.adrelid) END) AS genexpr,
