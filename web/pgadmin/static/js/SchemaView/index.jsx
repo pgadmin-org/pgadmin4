@@ -515,8 +515,6 @@ function SchemaDialogView({
   useEffect(()=>{
     /* if sessData changes, validate the schema */
     if(!formReady) return;
-    /* Set the _sessData, can be usefull to some deep controls */
-    schema._sessData = sessData;
     let isNotValid = validateSchema(schema, sessData, (path, message)=>{
       if(message) {
         setFormErr({
@@ -779,6 +777,8 @@ function SchemaDialogView({
   };
 
   let ButtonIcon = getButtonIcon();
+  /* Set the _sessData, can be usefull to some deep controls */
+  schema._sessData = sessData;
 
   /* I am Groot */
   return (
