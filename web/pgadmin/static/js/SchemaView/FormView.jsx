@@ -192,7 +192,10 @@ export default function FormView({
           depListener.addDepListener(accessPath.concat(field.id), accessPath.concat(field.id), field.depChange, field.deferredDepChange);
         }
         (evalFunc(null, field.deps) || []).forEach((dep)=>{
+          // when dep is a string then prepend the complete accessPath
           let source = accessPath.concat(dep);
+
+          // but when dep is an array, then the intention is to provide the exact accesspath
           if(_.isArray(dep)) {
             source = dep;
           }

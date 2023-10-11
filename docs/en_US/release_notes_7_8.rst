@@ -43,3 +43,4 @@ Bug fixes
   | `Issue #6718 <https://github.com/pgadmin-org/pgadmin4/issues/6718>`_ -  Pin the cryptography version to fix PyO3 modules initialisation error.
   | `Issue #6790 <https://github.com/pgadmin-org/pgadmin4/issues/6790>`_ -  Ensure that the backup works properly for PG 16 on the latest docker image.
   | `Issue #6799 <https://github.com/pgadmin-org/pgadmin4/issues/6799>`_ -  Fixed an issue where the user is unable to select objects on the backup dialog due to tree flickering.
+  | `Issue #6836 <https://github.com/pgadmin-org/pgadmin4/issues/6836>`_ -  Fixed an issue where non-super PostgreSQL users are not able to terminate their own connections from dashboard.

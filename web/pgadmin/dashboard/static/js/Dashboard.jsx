@@ -739,7 +739,7 @@ export default function Dashboard({
     } else if (is_super_user) {
       // Super user can do anything
       return true;
-    } else if (current_user && current_user == treeNodeInfo.server.user) {
+    } else if (current_user && current_user == treeNodeInfo.server.user?.name) {
       // Non-super user can cancel only their active queries
       return true;
     } else {
