@@ -121,7 +121,7 @@ describe('ColumnSchema', ()=>{
   it('attprecisionRange', ()=>{
     schemaObj.datatypes = datatypes;
     let state = {cltype: 'numeric'};
-    expect(schemaObj.attprecisionRange(state)).toEqual({min: 1, max: 140391});
+    expect(schemaObj.attprecisionRange(state)).toEqual({min: -140391, max: 140391});
   });
 
   it('inSchemaWithColumnCheck', ()=>{
@@ -161,7 +161,7 @@ describe('ColumnSchema', ()=>{
 
     expect(getFieldDepChange(schemaObj, 'attprecision')(state)).toEqual({
       cltype: 'numeric',
-      min_val_attprecision: 1,
+      min_val_attprecision: -140391,
       max_val_attprecision: 140391,
     });
   });
