@@ -136,11 +136,10 @@ export default class ServerSchema extends BaseUISchema {
         controlProps: { maxLength: 64},
         mode: ['properties', 'create', 'edit'], deps: ['shared', 'username'],
         readonly: (s)=>{
-          if(!this.origData.shared && s.shared) {
-            return false;
-          }
-          return true;
-        }, visible: (s)=>!obj.isShared(s),
+          return !(!this.origData.shared && s.shared);
+        }, visible: ()=>{
+          return current_user.is_admin && pgAdmin.server_mode == 'True';
+        },
         depChange: (state, source, _topState, actionObj)=>{
           let ret = {};
           if(this.origData.shared) {

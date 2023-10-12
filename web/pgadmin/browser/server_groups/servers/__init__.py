@@ -401,8 +401,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 db.session.delete(shared_server)
                 db.session.commit()
 
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+            raise e
 
     @staticmethod
     def get_shared_server(server, gid):
@@ -1203,6 +1202,7 @@ class ServerNode(PGChildNodeView):
                                                     False) else 0,
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
                 shared=data.get('shared', None),
+                shared_username=data.get('shared_username', None),
                 passexec_cmd=data.get('passexec_cmd', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,

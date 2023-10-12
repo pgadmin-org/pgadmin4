@@ -36,6 +36,7 @@ Bug fixes
 
   | `Issue #4995 <https://github.com/pgadmin-org/pgadmin4/issues/4995>`_ -  Fixed an issue in ERD tool where the downloaded images have a few links cut.
   | `Issue #5749 <https://github.com/pgadmin-org/pgadmin4/issues/5749>`_ -  Fixed an issue where user was not able to assign new/old columns as primary key once column with primary key is deleted.
+  | `Issue #6285 <https://github.com/pgadmin-org/pgadmin4/issues/6285>`_ -  Add support for setting prepare threshold in server connection.
   | `Issue #6482 <https://github.com/pgadmin-org/pgadmin4/issues/6482>`_ -  Fixed an issue where the wrong message "Current database has been moved or renamed" is displayed when debugging any function.
   | `Issue #6538 <https://github.com/pgadmin-org/pgadmin4/issues/6538>`_ -  Fixed an issue where Processes tab displays wrong server name in some scenario.
   | `Issue #6579 <https://github.com/pgadmin-org/pgadmin4/issues/6579>`_ -  Fix an issue where global/native keyboard shortcuts are not working when any cell of data output grid has focus.
