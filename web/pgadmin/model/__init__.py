@@ -33,7 +33,7 @@ import config
 #
 ##########################################################################
 
-SCHEMA_VERSION = 36
+SCHEMA_VERSION = 37
 
 ##########################################################################
 #
@@ -206,6 +206,7 @@ class Server(db.Model):
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
+    prepare_threshold = db.Column(db.Integer(), nullable=True)
 
 
 class ModulePreference(db.Model):
@@ -414,6 +415,7 @@ class SharedServer(db.Model):
     tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
+    prepare_threshold = db.Column(db.Integer(), nullable=True)
 
 
 class Macros(db.Model):

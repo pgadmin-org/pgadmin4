@@ -112,6 +112,7 @@ class ServerManager(object):
         self.gss_encrypted = False
         self.connection_params = server.connection_params
         self.create_connection_string(self.db, self.user)
+        self.prepare_threshold = server.prepare_threshold
 
         for con in self.connections:
             self.connections[con]._release()

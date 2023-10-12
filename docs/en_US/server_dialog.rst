@@ -206,6 +206,12 @@ Use the fields in the *Advanced* tab to configure a connection:
   the password will not expire until your pgAdmin session does.
   Zero means the command will be executed for each new connection or reconnection that is made.
   If the generated password is not valid indefinitely, set this value to slightly before it will expire.
+* Use the *Prepare threshold* field to specify the number of times a query is
+  executed before it is prepared. If it is set to 0, every query is prepared
+  the first time it is executed. If it is set to blank, prepared statements are disabled
+  on the connection. This is particularly useful with external connection poolers,
+  such as PgBouncer, which is not compatible with prepared statements. Set this to
+  blank in such cases.
 
 .. note:: The password file option is only supported when pgAdmin is using libpq
     v10.0 or later to connect to the server.

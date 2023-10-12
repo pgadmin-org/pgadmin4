@@ -344,9 +344,16 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
-        visible: function(state) {
-          return !_.isEmpty(state.passexec_cmd);
+        disabled: function(state) {
+          return isEmptyString(state.passexec_cmd);
         },
+      },
+      {
+        id: 'prepare_threshold', label: gettext('Prepare threshold'), type: 'int',
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
+        helpMessageMode: ['edit', 'create'],
+        helpMessage: gettext('If it is set to 0, every query is prepared the first time it is executed. If it is set to blank, prepared statements are disabled on the connection.')
       }
     ];
   }

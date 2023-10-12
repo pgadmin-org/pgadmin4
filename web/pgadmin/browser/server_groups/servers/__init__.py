@@ -176,6 +176,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.username = sharedserver.username
         server.server_owner = sharedserver.server_owner
         server.password = sharedserver.password
+        server.prepare_threshold = sharedserver.prepare_threshold
 
         return server
 
@@ -390,7 +391,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 tunnel_authentication=0,
                 tunnel_identity_file=None,
                 shared=True,
-                connection_params=data.connection_params
+                connection_params=data.connection_params,
+                prepare_threshold=data.prepare_threshold
             )
             db.session.add(shared_server)
             db.session.commit()
@@ -816,7 +818,8 @@ class ServerNode(PGChildNodeView):
             'shared': 'shared',
             'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
-            'connection_params': 'connection_params'
+            'connection_params': 'connection_params',
+            'prepare_threshold': 'prepare_threshold'
         }
 
         disp_lbl = {
@@ -1109,7 +1112,8 @@ class ServerNode(PGChildNodeView):
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
             'connection_params': connection_params,
-            'connection_string': manager.display_connection_string
+            'connection_string': manager.display_connection_string,
+            'prepare_threshold': server.prepare_threshold
         }
 
         return ajax_response(response)
@@ -1202,7 +1206,8 @@ class ServerNode(PGChildNodeView):
                 passexec_cmd=data.get('passexec_cmd', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
-                connection_params=connection_params
+                connection_params=connection_params,
+                prepare_threshold=data.get('prepare_threshold', None)
             )
             db.session.add(server)
             db.session.commit()
