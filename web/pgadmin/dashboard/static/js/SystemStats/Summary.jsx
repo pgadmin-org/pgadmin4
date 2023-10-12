@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const chartsDefault = {
-  'hpc_stats': {'Handle': [], 'Process': []},
+  'hpc_stats': {'Process': [], 'Handle': []},
 };
 
 const SummaryTable = (props) => {
@@ -294,7 +294,7 @@ export function SummaryWrapper(props) {
           </div>
         </Grid>
         <Grid item md={6} sm={12} className={classes.chartContainer}>
-          <ChartContainer id='hpc-graph' title={gettext('Handle & process count')} datasets={props.processHandleCount.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+          <ChartContainer id='hpc-graph' title={gettext('Process & handle count')} datasets={props.processHandleCount.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
             <StreamingChart data={props.processHandleCount} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} showSecondAxis={true} />
           </ChartContainer>
         </Grid>

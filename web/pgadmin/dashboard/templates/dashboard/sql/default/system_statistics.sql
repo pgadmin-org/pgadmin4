@@ -19,8 +19,8 @@
 {% set add_union = true %}
     SELECT 'hpc_stats' AS chart_name, pg_catalog.row_to_json(t) AS chart_data
     FROM (SELECT
-        (SELECT handle_count FROM pg_sys_os_info())  AS "{{ _('Handle') }}",
-        (SELECT process_count FROM pg_sys_os_info())  AS "{{ _('Process') }}"
+        (SELECT process_count FROM pg_sys_os_info())  AS "{{ _('Process') }}",
+        (SELECT handle_count FROM pg_sys_os_info())  AS "{{ _('Handle') }}"
     ) t
 {% endif %}
 {% if add_union and 'cpu_stats' in chart_names %}
