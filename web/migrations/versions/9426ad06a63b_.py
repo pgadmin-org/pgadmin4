@@ -35,7 +35,6 @@ def upgrade():
         batch_op.add_column(sa.Column('shared_username', sa.String(64), nullable=True))
 
 
-
 def downgrade():
     # pgAdmin only upgrades, downgrade not implemented.
     pass
