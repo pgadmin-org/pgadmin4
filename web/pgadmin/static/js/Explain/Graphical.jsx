@@ -190,14 +190,23 @@ function NodeDetails({plan, download=false}) {
   return <>
     {Object.keys(plan).map((key)=>{
       if(AUXILIARY_KEYS.indexOf(key) != -1) {
-        return <></>;
+        return null;
+      }
+      let value = plan[key];
+      if(_.isArray(value)) {
+        value = value.map((v)=>{
+          if(typeof(v) == 'object') {
+            return JSON.stringify(v, null, 2);
+          }
+          return v;
+        });
       }
       if(download) {
-        return `${key}: ${plan[key]}\n`;
+        return `${key}: ${value}\n`;
       } else {
         return (<tr key={key}>
           <td>{key}</td>
-          <td>{plan[key]}</td>
+          <td>{value}</td>
         </tr>);
       }
     })}

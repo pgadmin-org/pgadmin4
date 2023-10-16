@@ -46,3 +46,4 @@ Bug fixes
   | `Issue #6799 <https://github.com/pgadmin-org/pgadmin4/issues/6799>`_ -  Fixed an issue where the user is unable to select objects on the backup dialog due to tree flickering.
   | `Issue #6836 <https://github.com/pgadmin-org/pgadmin4/issues/6836>`_ -  Fixed an issue where non-super PostgreSQL users are not able to terminate their own connections from dashboard.
   | `Issue #6851 <https://github.com/pgadmin-org/pgadmin4/issues/6851>`_ -  Fix an issue where scale in columns is not allowed to have value as 0 or below.
+  | `Issue #6858 <https://github.com/pgadmin-org/pgadmin4/issues/6858>`_ -  Fix an issue in graphical explain plan where query tool crashes when the plan has parallel workers details and sort node is clicked for details.
