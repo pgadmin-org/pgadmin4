@@ -760,10 +760,11 @@ def load_database_servers(input_file, selected_servers,
 
     # If `clear_database_servers` has dropped Servers and ServerGroups
     # and if the file has an empty array for "Servers",
-    # recreate the default ServerGroup for this user just as if they were a new user.
-    # This prevents an issue where a user with 0 ServerGroups could not manually
-    # create new Servers and ServerGroups.
-    if len(groups) == 0 and len(data["Servers"]) == 0:
+    # recreate the default ServerGroup for this user
+    # just as if they were a new user.
+    # This prevents an issue where a user with 0 ServerGroups
+    # could not manually create new Servers and ServerGroups.
+    if int(groups.count()) == 0 and len(data["Servers"]) == 0:
         server_group = ServerGroup(user_id=user_id, name="Servers")
         db.session.add(server_group)
         db.session.commit()
