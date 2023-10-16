@@ -360,12 +360,15 @@ class Connection(BaseConnection):
                         return await psycopg.AsyncConnection.connect(
                             connection_string,
                             cursor_factory=AsyncDictCursor,
-                            autocommit=autocommit)
+                            autocommit=autocommit,
+                            prepare_threshold=manager.prepare_threshold
+                        )
                     pg_conn = asyncio.run(connectdbserver())
                 else:
                     pg_conn = psycopg.Connection.connect(
                         connection_string,
-                        cursor_factory=DictCursor)
+                        cursor_factory=DictCursor,
+                        prepare_threshold=manager.prepare_threshold)
 
         except psycopg.Error as e:
             manager.stop_ssh_tunnel()

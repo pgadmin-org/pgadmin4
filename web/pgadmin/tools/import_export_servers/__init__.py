@@ -130,7 +130,8 @@ def load_servers():
                 data = json.loads(j.read())
 
                 # Validate the json file and data
-                errmsg = validate_json_data(data, False)
+                errmsg = validate_json_data(
+                    data, current_user.has_role("Administrator"))
                 if errmsg is not None:
                     return internal_server_error(errmsg)
 

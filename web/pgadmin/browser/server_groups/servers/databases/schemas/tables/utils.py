@@ -1270,7 +1270,8 @@ class BaseTableView(PGChildNodeView, BasePartitionTable, VacuumSettings):
                 c['schema'] = data['schema']
                 c['table'] = data['name']
                 # Sql for drop column
-                if 'inheritedfrom' not in c:
+                if 'inheritedfrom' not in c or \
+                        ('inheritedfrom' in c and c['inheritedfrom'] is None):
                     column_sql += render_template("/".join(
                         [self.column_template_path, self._DELETE_SQL]),
                         data=c, conn=self.conn).strip('\n') + \

@@ -113,7 +113,7 @@ export class ConstraintsSchema extends BaseUISchema {
       schema: this.primaryKeyObj,
       editable: false, type: 'collection',
       group: gettext('Primary Key'), mode: ['edit', 'create'],
-      canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
+      canEdit: true, canDelete: true, deps:['is_partitioned', 'typname', 'columns'],
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
@@ -135,6 +135,20 @@ export class ConstraintsSchema extends BaseUISchema {
             ...c, is_primary_key: columns.indexOf(c.name) > -1,
           }));
           return {columns: state.columns};
+        }
+        /* If column or primary key is deleted */
+        if(actionObj.type === SCHEMA_STATE_ACTIONS.DELETE_ROW) {
+          let deletedColumn = _.differenceBy(actionObj.oldState.columns,state.columns,'cid');
+          if(deletedColumn.length && deletedColumn[0].is_primary_key && !obj.top.isNew(state)) {
+            state.columns = state.columns.map(c=>({
+              ...c, is_primary_key: false
+            }));
+            return {primary_key: []};
+          } else if(source[0] === 'primary_key') {
+            state.columns = state.columns.map(c=>({
+              ...c, is_primary_key: false
+            }));
+          }
         }
       }
     },{

@@ -253,8 +253,11 @@ function initialiseColumns(columns, rows, totalRowCount, columnWidthBy) {
     col.editorOptions = {
       commitOnOutsideClick: false,
       onCellKeyDown: (e)=>{
-        /* Do not open the editor */
-        e.preventDefault();
+        // global keyboard shortcuts will work now and will open the the editor for the cell once pgAdmin reopens
+        if(!e.metaKey && !e.altKey && !e.shiftKey && !e.ctrlKey){
+          /* Do not open the editor */
+          e.preventDefault();
+        }
       }
     };
     setEditorFormatter(col);

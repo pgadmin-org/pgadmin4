@@ -15,6 +15,23 @@ const removeExistingTooltips = () => {
   });
 };
 
+function formatLabel(ticks) {
+  // Format the label
+  return ticks.map((value) => {
+    if(value < 1){
+      return value+'';
+    }
+    return parseLabel(value);
+  });
+}
+
+function parseLabel(label) {
+  const suffixes = ['', 'k', 'M', 'B', 'T'];
+  const suffixNum = Math.floor(Math.log10(label) / 3);
+  const shortValue = (label / Math.pow(1000, suffixNum)).toFixed(1);
+  return shortValue + ' ' + suffixes[suffixNum];
+}
+
 function tooltipPlugin(refreshRate) {
   let tooltipTopOffset = -20;
   let tooltipLeftOffset = 10;
@@ -41,9 +58,12 @@ function tooltipPlugin(refreshRate) {
       return;
     }
     showTooltip();
+
     let tooltipHtml=`<div>${(u.data[1].length-1-parseInt(u.legend.values[0]['_'])) * refreshRate + gettext(' seconds ago')}</div>`;
     for(let i=1; i<u.series.length; i++) {
-      tooltipHtml += `<div class='uplot-tooltip-label'><div style='height:12px; width:12px; background-color:${u.series[i].stroke()}'></div> ${u.series[i].label}: ${u.legend.values[i]['_']}</div>`;
+      let _tooltip = parseFloat(u.legend.values[i]['_'].replace(/,/g,''));
+      if (_tooltip > 1) _tooltip = parseLabel(_tooltip);
+      tooltipHtml += `<div class='uplot-tooltip-label'><div style='height:12px; width:12px; background-color:${u.series[i].stroke()}'></div> ${u.series[i].label}: ${_tooltip}</div>`;
     }
     tooltip.innerHTML = tooltipHtml;
 
@@ -110,18 +130,7 @@ export default function StreamingChart({xRange=75, data, options, showSecondAxis
           return size;
         },
         // y-axis configuration
-        values: (self, ticks) => {
-          // Format the label
-          return ticks.map((value) => {
-            if(value < 1){
-              return value+'';
-            }
-            const suffixes = ['', 'k', 'M', 'B', 'T'];
-            const suffixNum = Math.floor(Math.log10(value) / 3);
-            const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1);
-            return shortValue + suffixes[suffixNum];
-          });
-        }
+        values: (self, ticks) => { return formatLabel(ticks); }
       });
       axes.push({
         scale: 'y1',
@@ -137,18 +146,7 @@ export default function StreamingChart({xRange=75, data, options, showSecondAxis
           return size;
         },
         // y-axis configuration
-        values: (self, ticks) => {
-          // Format the label
-          return ticks.map((value) => {
-            if(value < 1){
-              return value+'';
-            }
-            const suffixes = ['', 'k', 'M', 'B', 'T'];
-            const suffixNum = Math.floor(Math.log10(value) / 3);
-            const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1);
-            return shortValue + suffixes[suffixNum];
-          });
-        }
+        values: (self, ticks) => { return formatLabel(ticks); }
       });
     } else{
       axes.push({
@@ -167,18 +165,7 @@ export default function StreamingChart({xRange=75, data, options, showSecondAxis
           return size;
         },
         // y-axis configuration
-        values: (self, ticks) => {
-          // Format the label
-          return ticks.map((value) => {
-            if(value < 1){
-              return value+'';
-            }
-            const suffixes = ['', 'k', 'M', 'B', 'T'];
-            const suffixNum = Math.floor(Math.log10(value) / 3);
-            const shortValue = (value / Math.pow(1000, suffixNum)).toFixed(1);
-            return shortValue + suffixes[suffixNum];
-          });
-        }
+        values: (self, ticks) => { return formatLabel(ticks); }
       });
     }
 

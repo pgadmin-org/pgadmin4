@@ -82,16 +82,17 @@ export default class ColumnSchema extends BaseUISchema {
     }
 
     if(this.nodeInfo &&  ('schema' in this.nodeInfo)) {
-      // We will disable control if it's system columns
-      // inheritedfrom check is useful when we use this schema in table node
-      // inheritedfrom has value then we should disable it
-      if(!_.isUndefined(state.inheritedfrom)) {
-        return true;
-      }
-
       if(this.isNew(state)) {
         return false;
       }
+
+      // We will disable control if it's system columns
+      // inheritedfrom check is useful when we use this schema in table node
+      // inheritedfrom has value then we should disable it
+      if (!isEmptyString(state.inheritedfrom)){
+        return true;
+      }
+
       // ie: it's position is less than 1
       return !(!_.isUndefined(state.attnum) && state.attnum > 0);
     }
@@ -142,7 +143,8 @@ export default class ColumnSchema extends BaseUISchema {
   attprecisionRange(state) {
     for(let o of this.datatypes) {
       if ( state.cltype == o.value ) {
-        if(o.precision) return {min: o.min_val || 0, max: o.max_val};
+        // PostgreSQL allows negative precision
+        if(o.precision) return {min: -o.max_val, max: o.max_val};
       }
     }
     return null;
@@ -164,7 +166,7 @@ export default class ColumnSchema extends BaseUISchema {
       // Need to show this field only when creating new table
       // [in SubNode control]
       id: 'is_primary_key', label: gettext('Primary key?'),
-      cell: 'switch', type: 'switch',  width: 100, disableResizing: true, deps:['name'],
+      cell: 'switch', type: 'switch',  width: 100, disableResizing: true, deps:['name', ['primary_key']],
       visible: ()=>{
         return obj.top?.nodeInfo && _.isUndefined(
           obj.top.nodeInfo['table'] || obj.top.nodeInfo['view'] ||
@@ -177,13 +179,13 @@ export default class ColumnSchema extends BaseUISchema {
         // - Table is a partitioned table
         if (
           obj.top && ((
-            !_.isUndefined(obj.top.origData['oid'])
-              && !_.isUndefined(obj.top.origData['primary_key'])
-              && obj.top.origData['primary_key'].length > 0
-              && !_.isUndefined(obj.top.origData['primary_key'][0]['oid'])
+            !_.isUndefined(obj.top.sessData['oid'])
+              && !_.isUndefined(obj.top.sessData['primary_key'])
+              && obj.top.sessData['primary_key'].length > 0
+              && !_.isUndefined(obj.top.sessData['primary_key'][0]['oid'])
           ) || (
-            'is_partitioned' in obj.top.origData
-            && obj.top.origData['is_partitioned']
+            'is_partitioned' in obj.top.sessData
+            && obj.top.sessData['is_partitioned']
             && obj.getServerVersion() < 11000
           ))
         ) {
@@ -199,10 +201,10 @@ export default class ColumnSchema extends BaseUISchema {
         // If primary key already exist then disable.
         if (
           obj.top && (
-            !_.isUndefined(obj.top.origData['oid'])
-              && !_.isUndefined(obj.top.origData['primary_key'])
-              && obj.top.origData['primary_key'].length > 0
-              && !_.isUndefined(obj.top.origData['primary_key'][0]['oid'])
+            !_.isUndefined(obj.top.sessData['oid'])
+              && !_.isUndefined(obj.top.sessData['primary_key'])
+              && obj.top.sessData['primary_key'].length > 0
+              && !_.isUndefined(obj.top.sessData['primary_key'][0]['oid'])
           )
         ) {
           return false;
@@ -211,8 +213,8 @@ export default class ColumnSchema extends BaseUISchema {
         // If table is partitioned table then disable
         if(
           obj.top && (
-            'is_partitioned' in obj.top.origData
-          && obj.top.origData['is_partitioned']
+            'is_partitioned' in obj.top.sessData
+          && obj.top.sessData['is_partitioned']
           && obj.getServerVersion() < 11000)
         ) {
           return false;

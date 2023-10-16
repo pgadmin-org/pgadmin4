@@ -176,6 +176,7 @@ class ServerModule(sg.ServerGroupPluginModule):
         server.username = sharedserver.username
         server.server_owner = sharedserver.server_owner
         server.password = sharedserver.password
+        server.prepare_threshold = sharedserver.prepare_threshold
 
         return server
 
@@ -376,7 +377,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 host=data.host,
                 port=data.port,
                 maintenance_db=data.maintenance_db,
-                username=None,
+                username=data.shared_username,
                 save_password=0,
                 comment=None,
                 role=data.role,
@@ -390,7 +391,8 @@ class ServerModule(sg.ServerGroupPluginModule):
                 tunnel_authentication=0,
                 tunnel_identity_file=None,
                 shared=True,
-                connection_params=data.connection_params
+                connection_params=data.connection_params,
+                prepare_threshold=data.prepare_threshold
             )
             db.session.add(shared_server)
             db.session.commit()
@@ -399,8 +401,7 @@ class ServerModule(sg.ServerGroupPluginModule):
                 db.session.delete(shared_server)
                 db.session.commit()
 
-            current_app.logger.exception(e)
-            return internal_server_error(errormsg=str(e))
+            raise e
 
     @staticmethod
     def get_shared_server(server, gid):
@@ -814,8 +815,10 @@ class ServerNode(PGChildNodeView):
             'tunnel_authentication': 'tunnel_authentication',
             'tunnel_identity_file': 'tunnel_identity_file',
             'shared': 'shared',
+            'shared_username': 'shared_username',
             'kerberos_conn': 'kerberos_conn',
-            'connection_params': 'connection_params'
+            'connection_params': 'connection_params',
+            'prepare_threshold': 'prepare_threshold'
         }
 
         disp_lbl = {
@@ -849,6 +852,10 @@ class ServerNode(PGChildNodeView):
                 status=400,
                 errormsg=gettext('Not a valid Host address')
             )
+
+        # remove the shared username if shared is updated to False
+        if 'shared' in data and data['shared'] is False:
+            data['shared_username'] = ''
 
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(sid)
         conn = manager.connection()
@@ -1073,6 +1080,8 @@ class ServerNode(PGChildNodeView):
             'port': server.port,
             'db': server.maintenance_db,
             'shared': server.shared if config.SERVER_MODE else None,
+            'shared_username': server.shared_username
+            if config.SERVER_MODE else None,
             'username': server.username,
             'gid': str(server.servergroup_id),
             'group-name': sg.name if (sg and sg.name) else gettext('Servers'),
@@ -1102,7 +1111,8 @@ class ServerNode(PGChildNodeView):
             'gss_encrypted': manager.gss_encrypted,
             'cloud_status': server.cloud_status,
             'connection_params': connection_params,
-            'connection_string': manager.display_connection_string
+            'connection_string': manager.display_connection_string,
+            'prepare_threshold': server.prepare_threshold
         }
 
         return ajax_response(response)
@@ -1192,10 +1202,12 @@ class ServerNode(PGChildNodeView):
                                                     False) else 0,
                 tunnel_identity_file=data.get('tunnel_identity_file', None),
                 shared=data.get('shared', None),
+                shared_username=data.get('shared_username', None),
                 passexec_cmd=data.get('passexec_cmd', None),
                 passexec_expiration=data.get('passexec_expiration', None),
                 kerberos_conn=1 if data.get('kerberos_conn', False) else 0,
-                connection_params=connection_params
+                connection_params=connection_params,
+                prepare_threshold=data.get('prepare_threshold', None)
             )
             db.session.add(server)
             db.session.commit()

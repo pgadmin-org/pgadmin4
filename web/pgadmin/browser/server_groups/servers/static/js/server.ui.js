@@ -36,6 +36,7 @@ export default class ServerSchema extends BaseUISchema {
       passexec: undefined,
       passexec_expiration: undefined,
       service: undefined,
+      shared_username: '',
       use_ssh_tunnel: false,
       tunnel_host: undefined,
       tunnel_port: 22,
@@ -128,6 +129,33 @@ export default class ServerSchema extends BaseUISchema {
           return !obj.isNew(state) && serverOwner != current_user.id;
         }, visible: function(){
           return current_user.is_admin && pgAdmin.server_mode == 'True';
+        },
+      },
+      {
+        id: 'shared_username', label: gettext('Shared Username'), type: 'text',
+        controlProps: { maxLength: 64},
+        mode: ['properties', 'create', 'edit'], deps: ['shared', 'username'],
+        readonly: (s)=>{
+          return !(!this.origData.shared && s.shared);
+        }, visible: ()=>{
+          return current_user.is_admin && pgAdmin.server_mode == 'True';
+        },
+        depChange: (state, source, _topState, actionObj)=>{
+          let ret = {};
+          if(this.origData.shared) {
+            return ret;
+          }
+          if(source == 'username' && actionObj.oldState.username == state.shared_username) {
+            ret['shared_username'] = state.username;
+          }
+          if(source == 'shared') {
+            if(state.shared) {
+              ret['shared_username'] = state.username;
+            } else {
+              ret['shared_username'] = '';
+            }
+          }
+          return ret;
         },
       },
       {
@@ -315,9 +343,16 @@ export default class ServerSchema extends BaseUISchema {
         id: 'passexec_expiration', label: gettext('Password exec expiration (seconds)'), type: 'int',
         group: gettext('Advanced'),
         mode: ['properties', 'edit', 'create'],
-        visible: function(state) {
-          return !_.isEmpty(state.passexec_cmd);
+        disabled: function(state) {
+          return isEmptyString(state.passexec_cmd);
         },
+      },
+      {
+        id: 'prepare_threshold', label: gettext('Prepare threshold'), type: 'int',
+        group: gettext('Advanced'),
+        mode: ['properties', 'edit', 'create'],
+        helpMessageMode: ['edit', 'create'],
+        helpMessage: gettext('If it is set to 0, every query is prepared the first time it is executed. If it is set to blank, prepared statements are disabled on the connection.')
       }
     ];
   }

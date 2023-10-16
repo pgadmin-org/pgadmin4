@@ -47,9 +47,11 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   containerHeader: {
-    fontSize: '16px',
+    fontSize: '15px',
     fontWeight: 'bold',
-    marginBottom: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
   }
 }));
 
@@ -89,14 +91,14 @@ export default function Memory({preferences, sid, did, pageVisible, enablePoll=t
       disableGlobalFilter: false,
     },
     {
-      Header: gettext('Memory Usage'),
+      Header: gettext('Memory usage'),
       accessor: 'memory_usage',
       sortable: true,
       resizable: true,
       disableGlobalFilter: false,
     },
     {
-      Header: gettext('Memory Bytes'),
+      Header: gettext('Memory bytes'),
       accessor: 'memory_bytes',
       sortable: true,
       resizable: true,
@@ -281,6 +283,9 @@ export function MemoryWrapper(props) {
         <div className={classes.tableContainer}>
           <PgTable
             className={classes.autoResizer}
+            CustomHeader={() => {
+              return <div className={classes.containerHeader}>{gettext('Process memory usage')}</div>;
+            }}
             columns={props.tableHeader}
             data={props.processMemoryUsageStats}
             msg={props.errorMsg}

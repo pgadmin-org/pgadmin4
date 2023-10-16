@@ -17,7 +17,6 @@ export function getStatsUrl(sid=-1, did=-1, chart_names=[]) {
   base_url += '/' + sid;
   base_url += (did > 0) ? ('/' + did) : '';
   base_url += '?chart_names=' + chart_names.join(',');
-
   return base_url;
 }
 
@@ -36,7 +35,6 @@ export function transformData(labels, refreshRate) {
       pointHitRadius: DATA_POINT_SIZE,
     };
   }) || [];
-
   return {
     datasets: datasets,
     refreshRate: refreshRate,

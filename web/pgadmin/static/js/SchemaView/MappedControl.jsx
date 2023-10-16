@@ -116,7 +116,7 @@ MappedFormControlBase.propTypes = {
   onClick: PropTypes.func,
   withContainer: PropTypes.bool,
   controlGridBasis: PropTypes.number,
-  treeData: PropTypes.array,
+  treeData: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
 };
 
 /* Control mapping for grid cell view */
