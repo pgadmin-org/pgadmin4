@@ -18,7 +18,7 @@ import { MainToolBar } from './sections/MainToolBar';
 import { Messages } from './sections/Messages';
 import getApiInstance, {callFetch, parseApiError} from '../../../../../static/js/api_instance';
 import url_for from 'sources/url_for';
-import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS } from './QueryToolConstants';
+import { PANELS, QUERY_TOOL_EVENTS, CONNECTION_STATUS, MAX_QUERY_LENGTH } from './QueryToolConstants';
 import { useInterval } from '../../../../../static/js/custom_hooks';
 import { Box } from '@material-ui/core';
 import { getDatabaseLabel, getTitle, setQueryToolDockerTitle } from '../sqleditor_title';
@@ -391,6 +391,13 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
     window.addEventListener('unload', closeConn);
 
     const pushHistory = (h)=>{
+      // Do not store query text if max lenght exceeds.
+      if(h?.query?.length > MAX_QUERY_LENGTH) {
+        h = {
+          ...h,
+          query: gettext(`-- Query text not stored as it exceeds maximum length of ${MAX_QUERY_LENGTH}`)
+        };
+      }
       api.post(
         url_for('sqleditor.add_query_history', {
           'trans_id': qtState.params.trans_id,

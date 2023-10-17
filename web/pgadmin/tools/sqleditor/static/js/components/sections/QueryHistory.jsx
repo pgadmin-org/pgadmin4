@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 import { makeStyles } from '@material-ui/styles';
 import React from 'react';
-import { PANELS, QUERY_TOOL_EVENTS } from '../QueryToolConstants';
+import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstants';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
@@ -418,6 +418,13 @@ export function QueryHistory() {
     setLoaderText('');
 
     const pushHistory = (h)=>{
+      // Do not store query text if max lenght exceeds.
+      if(h?.query?.length > MAX_QUERY_LENGTH) {
+        h = {
+          ...h,
+          query: gettext(`-- Query text not stored as it exceeds maximum length of ${MAX_QUERY_LENGTH}`)
+        };
+      }
       qhu.current.addEntry(h);
       refresh({});
     };
