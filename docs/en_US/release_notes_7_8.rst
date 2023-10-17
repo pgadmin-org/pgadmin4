@@ -40,6 +40,7 @@ Bug fixes
   | `Issue #6482 <https://github.com/pgadmin-org/pgadmin4/issues/6482>`_ -  Fixed an issue where the wrong message "Current database has been moved or renamed" is displayed when debugging any function.
   | `Issue #6538 <https://github.com/pgadmin-org/pgadmin4/issues/6538>`_ -  Fixed an issue where Processes tab displays wrong server name in some scenario.
   | `Issue #6579 <https://github.com/pgadmin-org/pgadmin4/issues/6579>`_ -  Fix an issue where global/native keyboard shortcuts are not working when any cell of data output grid has focus.
+  | `Issue #6666 <https://github.com/pgadmin-org/pgadmin4/issues/6666>`_ -  Fixed query history slowness issue by storing query only for those having certain threshold max length.
   | `Issue #6674 <https://github.com/pgadmin-org/pgadmin4/issues/6674>`_ -  Fix an issue where foreign table column name becomes "none" if the user changes any column data type.
   | `Issue #6718 <https://github.com/pgadmin-org/pgadmin4/issues/6718>`_ -  Pin the cryptography version to fix PyO3 modules initialisation error.
   | `Issue #6790 <https://github.com/pgadmin-org/pgadmin4/issues/6790>`_ -  Ensure that the backup works properly for PG 16 on the latest docker image.
