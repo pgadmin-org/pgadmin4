@@ -409,6 +409,26 @@ export function StorageWrapper(props) {
     lineBorderWidth: props.lineBorderWidth,
   }), [props.showTooltip, props.showDataPoints, props.lineBorderWidth]);
 
+  const chartJsExtraOptions = {
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        animation: false,
+        callbacks: {
+          title: function (context) {
+            const label = context[0].label || '';
+            return label;
+          },
+          label: function (context) {
+            return (context.dataset?.label ?? 'Total space: ') + toPrettySize(context.raw);
+          },
+        },
+      },
+    },
+  };
+
   return (
     <>
       <Grid container spacing={1} className={classes.diskInfoContainer}>
@@ -440,23 +460,7 @@ export function StorageWrapper(props) {
               }}
               options={{
                 animation: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                  tooltip: {
-                    callbacks: {
-                      title: function (context) {
-                        const label = context[0].label || '';
-                        return label;
-                      },
-                      label: function (context) {
-                        const value = context.formattedValue || 0;
-                        return 'Total space: ' + value;
-                      },
-                    },
-                  },
-                },
+                ...chartJsExtraOptions,
               }}
               />
             </ChartContainer>
@@ -502,11 +506,7 @@ export function StorageWrapper(props) {
                       },
                     },
                   },
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
+                  ...chartJsExtraOptions,
                 }
               }
               />
@@ -524,8 +524,11 @@ export function StorageWrapper(props) {
               <Grid container spacing={1} className={classes.driveContainerBody}>
                 {Object.keys(props.ioInfo[drive]).map((type, innerKeyIndex) => (
                   <Grid key={`${type}-${innerKeyIndex}`} item md={4} sm={6}>
-                    <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer (bytes)'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations (milliseconds)'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-                      <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
+                    <ChartContainer id={`io-graph-${type}`} title={type.endsWith('_bytes_rw') ? gettext('Data transfer'): type.endsWith('_total_rw') ? gettext('I/O operations count'): type.endsWith('_time_rw') ? gettext('Time spent in I/O operations'):''} datasets={transformData(props.ioInfo[drive][type], props.ioRefreshRate).datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
+                      <StreamingChart data={transformData(props.ioInfo[drive][type], props.ioRefreshRate)} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+                        valueFormatter={(v)=>{
+                          return type.endsWith('_time_rw') ? toPrettySize(v, 'ms') : toPrettySize(v);
+                        }} />
                     </ChartContainer>
                   </Grid>
                 ))}

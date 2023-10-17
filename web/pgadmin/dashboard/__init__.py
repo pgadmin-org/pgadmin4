@@ -659,6 +659,9 @@ def system_statistics(sid=None, did=None):
         )
         status, res = g.conn.execute_dict(sql)
 
+        if not status:
+            return internal_server_error(errormsg=str(res))
+
         for chart_row in res['rows']:
             resp_data[chart_row['chart_name']] = json.loads(
                 chart_row['chart_data'])

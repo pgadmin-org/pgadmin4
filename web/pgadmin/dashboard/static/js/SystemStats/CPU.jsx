@@ -169,10 +169,10 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
         setErrorMsg(null);
         if(data.hasOwnProperty('cpu_stats')){
           let new_cu_stats = {
-            'User Normal': data['cpu_stats']['usermode_normal_process_percent']?data['cpu_stats']['usermode_normal_process_percent']:0,
-            'User Niced': data['cpu_stats']['usermode_niced_process_percent']?data['cpu_stats']['usermode_niced_process_percent']:0,
-            'Kernel': data['cpu_stats']['kernelmode_process_percent']?data['cpu_stats']['kernelmode_process_percent']:0,
-            'Idle': data['cpu_stats']['idle_mode_percent']?data['cpu_stats']['idle_mode_percent']:0,
+            'User Normal': data['cpu_stats']['usermode_normal_process_percent'] ?? 0,
+            'User Niced': data['cpu_stats']['usermode_niced_process_percent'] ?? 0,
+            'Kernel': data['cpu_stats']['kernelmode_process_percent'] ?? 0,
+            'Idle': data['cpu_stats']['idle_mode_percent'] ?? 0,
           };
           cpuUsageInfoReduce({incoming: new_cu_stats});
         }

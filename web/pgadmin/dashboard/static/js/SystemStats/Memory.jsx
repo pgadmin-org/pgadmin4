@@ -270,12 +270,14 @@ export function MemoryWrapper(props) {
       <Grid container spacing={1} className={classes.container}>
         <Grid item md={6} sm={12}>
           <ChartContainer id='m-graph' title={gettext('Memory')} datasets={props.memoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-            <StreamingChart data={props.memoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
+            <StreamingChart data={props.memoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+              valueFormatter={toPrettySize}/>
           </ChartContainer>
         </Grid>
         <Grid item md={6} sm={12}>
           <ChartContainer id='sm-graph' title={gettext('Swap memory')} datasets={props.swapMemoryUsageInfo.datasets}  errorMsg={props.errorMsg} isTest={props.isTest}>
-            <StreamingChart data={props.swapMemoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options} />
+            <StreamingChart data={props.swapMemoryUsageInfo} dataPointSize={DATA_POINT_SIZE} xRange={X_AXIS_LENGTH} options={options}
+              valueFormatter={toPrettySize}/>
           </ChartContainer>
         </Grid>
       </Grid>
