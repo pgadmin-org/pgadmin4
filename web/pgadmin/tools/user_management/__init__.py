@@ -103,9 +103,9 @@ def current_user_info():
             is_admin='true' if current_user.has_role(
                 "Administrator") else 'false',
             user_id=current_user.id,
-            email=current_user.email,
+            email=current_user.email.replace("'","\\'"),
             name=(
-                current_user.username.split('@')[0] if
+                current_user.username.split('@')[0].replace("'","\\'") if
                 config.SERVER_MODE is True
                 else 'postgres'
             ),

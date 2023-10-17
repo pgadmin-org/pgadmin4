@@ -40,6 +40,7 @@ Bug fixes
   | `Issue #6482 <https://github.com/pgadmin-org/pgadmin4/issues/6482>`_ -  Fixed an issue where the wrong message "Current database has been moved or renamed" is displayed when debugging any function.
   | `Issue #6538 <https://github.com/pgadmin-org/pgadmin4/issues/6538>`_ -  Fixed an issue where Processes tab displays wrong server name in some scenario.
   | `Issue #6579 <https://github.com/pgadmin-org/pgadmin4/issues/6579>`_ -  Fix an issue where global/native keyboard shortcuts are not working when any cell of data output grid has focus.
+  | `Issue #6666 <https://github.com/pgadmin-org/pgadmin4/issues/6666>`_ -  Fixed query history slowness issue by storing query only for those having certain threshold max length.
   | `Issue #6674 <https://github.com/pgadmin-org/pgadmin4/issues/6674>`_ -  Fix an issue where foreign table column name becomes "none" if the user changes any column data type.
   | `Issue #6718 <https://github.com/pgadmin-org/pgadmin4/issues/6718>`_ -  Pin the cryptography version to fix PyO3 modules initialisation error.
   | `Issue #6790 <https://github.com/pgadmin-org/pgadmin4/issues/6790>`_ -  Ensure that the backup works properly for PG 16 on the latest docker image.
@@ -47,3 +48,4 @@ Bug fixes
   | `Issue #6836 <https://github.com/pgadmin-org/pgadmin4/issues/6836>`_ -  Fixed an issue where non-super PostgreSQL users are not able to terminate their own connections from dashboard.
   | `Issue #6851 <https://github.com/pgadmin-org/pgadmin4/issues/6851>`_ -  Fix an issue where scale in columns is not allowed to have value as 0 or below.
   | `Issue #6858 <https://github.com/pgadmin-org/pgadmin4/issues/6858>`_ -  Fix an issue in graphical explain plan where query tool crashes when the plan has parallel workers details and sort node is clicked for details.
+  | `Issue #6865 <https://github.com/pgadmin-org/pgadmin4/issues/6865>`_ -  Fix an issue where user login is not working if username/email contains single quote in server mode.

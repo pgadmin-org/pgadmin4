@@ -101,3 +101,5 @@ export const PANELS = {
   HISTORY: 'id-history',
   GRAPH_VISUALISER: 'id-graph-visualiser',
 };
+
+export const MAX_QUERY_LENGTH = 1000000;

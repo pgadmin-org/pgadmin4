@@ -60,14 +60,16 @@ export function statsReducer(state, action) {
 
   let newState = {};
   Object.keys(action.incoming).forEach(label => {
+    // Sys stats extension may send 'NaN' sometimes, better handle it.
+    const value = action.incoming[label] == 'NaN' ? 0 : action.incoming[label];
     if(state[label]) {
       newState[label] = [
-        action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label],
+        action.counter ?  value - action.counterData[label] :value,
         ...state[label].slice(0, X_AXIS_LENGTH-1),
       ];
     } else {
       newState[label] = [
-        action.counter ?  action.incoming[label] - action.counterData[label] : action.incoming[label],
+        action.counter ? value - action.counterData[label] : value,
       ];
     }
   });

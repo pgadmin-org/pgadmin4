@@ -444,9 +444,9 @@ export function downloadBlob(blob, fileName) {
   document.body.removeChild(link);
 }
 
-export function toPrettySize(rawSize) {
+export function toPrettySize(rawSize, from='B') {
   try {
-    let conVal = convert(rawSize).from('B').toBest();
+    let conVal = convert(rawSize).from(from).toBest();
     conVal.val = Math.round(conVal.val * 100) / 100;
     return `${conVal.val} ${conVal.unit}`;
   }
