@@ -761,17 +761,6 @@ def load_database_servers(input_file, selected_servers,
 
             servers_added = servers_added + 1
 
-    # If `clear_database_servers` has dropped Servers and ServerGroups
-    # and if the file has an empty array for "Servers",
-    # recreate the default ServerGroup for this user
-    # just as if they were a new user.
-    # This prevents an issue where a user with 0 ServerGroups
-    # could not manually create new Servers and ServerGroups.
-    if int(groups.count()) == 0 and len(data["Servers"]) == 0:
-        server_group = ServerGroup(user_id=user_id, name="Servers")
-        db.session.add(server_group)
-        db.session.commit()
-
     msg = ADD_SERVERS_MSG % (groups_added, servers_added)
     print(msg)
 
@@ -792,10 +781,15 @@ def clear_database_servers(load_user=current_user, from_setup=False):
     for server in servers:
         db.session.delete(server)
 
-    # Remove all groups
-    groups = ServerGroup.query.filter_by(user_id=user_id)
+    # Remove all servergroups except for the first
+    # This matches the UI behavior in
+    # web/pgadmin/browser/server_groups/__init__.py#delete
+    # TODO: Investigate if we can skip the first with an `offset(1)`
+    groups = ServerGroup.query.filter_by(user_id=user_id).order_by("id")
+    default_sg = groups.first()
     for group in groups:
-        db.session.delete(group)
+        if group.id != default_sg.id:
+            db.session.delete(group)
 
     try:
         db.session.commit()
