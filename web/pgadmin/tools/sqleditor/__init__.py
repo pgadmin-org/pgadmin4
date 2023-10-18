@@ -2172,7 +2172,8 @@ def _check_server_connection_status(sgid, sid=None):
             }
         )
 
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2212,12 +2213,12 @@ def get_new_connection_data(sgid=None, sid=None):
             conn = manager.connection()
             connected = conn.connected()
             server_group_data[server.servers.name].append({
-                'label': server.serialize['name'],
-                "value": server.serialize['id'],
+                'label': server.name,
+                "value": server.id,
                 'image': server_icon_and_background(connected, manager,
                                                     server),
-                'fgcolor': server.serialize['fgcolor'],
-                'bgcolor': server.serialize['bgcolor'],
+                'fgcolor': server.fgcolor,
+                'bgcolor': server.bgcolor,
                 'connected': connected})
 
         msg = "Success"
@@ -2231,7 +2232,8 @@ def get_new_connection_data(sgid=None, sid=None):
             }
         )
 
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2311,7 +2313,8 @@ def get_new_connection_database(sgid, sid=None):
                     }
                 }
             )
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2376,7 +2379,8 @@ def get_new_connection_user(sgid, sid=None):
                     }
                 }
             )
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2439,7 +2443,8 @@ def get_new_connection_role(sgid, sid=None):
                     }
                 }
             )
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,

@@ -14,7 +14,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {getGCD, getEpoch} from 'sources/utils';
 import {ChartContainer} from '../Dashboard';
-import { Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 import StreamingChart from '../../../../static/js/components/PgChart/StreamingChart';
 import {useInterval, usePrevious} from 'sources/custom_hooks';
@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '4px',
   },
   fixedContainer: {
-    height: '577px',
+    flexGrow: 1,
     padding: '0px !important',
-    marginBottom: '30px',
+    marginBottom: '4px',
   },
   tableContainer: {
     padding: '6px',
@@ -227,7 +227,7 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
   }, enablePoll ? pollDelay : -1);
 
   return (
-    <>
+    <Box display="flex" flexDirection="column" height="100%">
       <div data-testid='graph-poll-delay' style={{display: 'none'}}>{pollDelay}</div>
       {chartDrawnOnce &&
         <CPUWrapper
@@ -243,7 +243,7 @@ export default function CPU({preferences, sid, did, pageVisible, enablePoll=true
           isTest={false}
         />
       }
-    </>
+    </Box>
   );
 }
 

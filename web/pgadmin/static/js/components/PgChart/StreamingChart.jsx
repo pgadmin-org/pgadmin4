@@ -13,7 +13,6 @@ function tooltipPlugin(refreshRate) {
     if(!window.uplotTooltip) {
       window.uplotTooltip = document.createElement('div');
       window.uplotTooltip.className = 'uplot-tooltip';
-      window.uplotTooltip.style.display = 'block';
       document.body.appendChild(window.uplotTooltip);
     }
   }
@@ -28,6 +27,11 @@ function tooltipPlugin(refreshRate) {
       hideTooltip();
       return;
     }
+
+    if(u.legend?.values?.slice(1).every((v)=>v['_']=='')) {
+      return;
+    }
+
     showTooltip();
 
     let tooltipHtml=`<div>${(u.data[1].length-1-parseInt(u.legend.values[0]['_'])) * refreshRate + gettext(' seconds ago')}</div>`;
