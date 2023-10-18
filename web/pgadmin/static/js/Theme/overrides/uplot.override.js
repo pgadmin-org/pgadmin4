@@ -22,6 +22,7 @@ export default function uplotOverride(theme) {
       color: theme.palette.background.default,
       backgroundColor: theme.palette.text.primary,
       zIndex: 9999,
+      display: 'block',
 
       '& .uplot-tooltip-label': {
         display: 'flex',
