@@ -1,12 +1,20 @@
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
 import { PortModel } from '@projectstorm/react-diagrams-core';
 import OneToManyPortModel from 'pgadmin.tools.erd/erd_tool/ports/OneToManyPort';
 import {OneToManyLinkModel} from 'pgadmin.tools.erd/erd_tool/links/OneToManyLink';
 
 describe('ERD OneToManyPortModel', ()=>{
   it('removeAllLinks', ()=>{
-    let link1 = jasmine.createSpyObj('link1', ['remove']);
-    let link2 = jasmine.createSpyObj('link2', ['remove']);
-    spyOn(PortModel.prototype, 'getLinks').and.returnValue([link1, link2]);
+    let link1 = {'remove': jest.fn()};
+    let link2 = {'remove': jest.fn()};
+    jest.spyOn(PortModel.prototype, 'getLinks').mockReturnValue([link1, link2]);
 
     let portObj = new OneToManyPortModel({options: {}});
     portObj.removeAllLinks();

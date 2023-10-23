@@ -24,7 +24,8 @@ class TreeAreaLocators:
     # Server Node
     @staticmethod
     def server_node(server_name):
-        return "//div[@id='tree']//span[starts-with(text(),'%s')]" \
+        return "//div[@id='id-object-explorer']" \
+               "//span[starts-with(text(),'%s')]" \
                % server_name
 
     @staticmethod
@@ -35,7 +36,8 @@ class TreeAreaLocators:
     # Server Connection
     @staticmethod
     def server_connection_status_element(server_name):
-        return "//div[@id='tree']//span[starts-with(text(),'%s')]/" \
+        return "//div[@id='id-object-explorer']" \
+               "//span[starts-with(text(),'%s')]/" \
                "preceding-sibling::i" % server_name
 
     # Databases Node
@@ -77,7 +79,8 @@ class TreeAreaLocators:
     # Schema Node
     @staticmethod
     def schema_node(schema_name):
-        return "//div[@id='tree']//span[text()='%s']" % schema_name
+        return "//div[@id='id-object-explorer']" \
+               "//span[text()='%s']" % schema_name
 
     @staticmethod
     def schema_node_exp_status(schema_name):
@@ -171,11 +174,11 @@ class TreeAreaLocators:
     #     "following-sibling::ul/li/div/div/div/span[2]"
     #
     # specified_tree_node = \
-    #     "//div[@id='tree']//span[@class='aciTreeItem']/" \
+    #     "//div[@id='id-object-explorer']//span[@class='aciTreeItem']/" \
     #     "span[(@class='aciTreeText') and text()='{}']"
     #
     # specified_tree_node_exp_status = \
-    #     "//div[@id='tree']//span[@class='aciTreeItem']/" \
+    #     "//div[@id='id-object-explorer']//span[@class='aciTreeItem']/" \
     #     "span[(@class='aciTreeText') and text()='{}']" \
     #     "//ancestor::*[@class='aciTreeLine']"
     #

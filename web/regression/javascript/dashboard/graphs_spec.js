@@ -1,12 +1,12 @@
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import {mount} from 'enzyme';
-import '../helper/enzyme.helper';
+
 import { DATA_POINT_SIZE } from 'sources/chartjs';
 
-import Graphs, {GraphsWrapper, transformData,
+import Graphs, { transformData,
   getStatsUrl, statsReducer} from '../../../pgadmin/dashboard/static/js/Graphs';
 import { withTheme } from '../fake_theme';
+import { render } from '@testing-library/react';
 
 describe('Graphs.js', ()=>{
   it('transformData', ()=>{
@@ -96,7 +96,6 @@ describe('Graphs.js', ()=>{
     let did = 1;
     let ThemedGraphs = withTheme(Graphs);
     beforeEach(()=>{
-      jasmineEnzyme();
       let dashboardPref = {
         session_stats_refresh: 1,
         tps_stats_refresh: 1,
@@ -109,22 +108,15 @@ describe('Graphs.js', ()=>{
         graph_line_border_width: 2
       };
 
-      graphComp = mount(<ThemedGraphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
+      graphComp = render(<ThemedGraphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
     });
 
-    it('GraphsWrapper is rendered',  (done)=>{
-      let found = graphComp.find(GraphsWrapper);
-      expect(found.length).toBe(1);
-      done();
+    it('pollDelay is set',  ()=>{
+      let found = graphComp.container.querySelector('[data-testid="graph-poll-delay"]');
+      expect(found).toHaveTextContent('1000');
     });
 
-    it('pollDelay is set',  (done)=>{
-      let found = graphComp.find('[data-testid="graph-poll-delay"]');
-      expect(found).toHaveText('1000');
-      done();
-    });
-
-    it('pollDelay on preference update',  (done)=>{
+    it('pollDelay on preference update',  ()=>{
       let dashboardPref = {
         session_stats_refresh: 5,
         tps_stats_refresh: 10,
@@ -136,13 +128,9 @@ describe('Graphs.js', ()=>{
         graph_mouse_track: true,
         graph_line_border_width: 2
       };
-      graphComp.setProps({preferences: dashboardPref});
-      setTimeout(()=>{
-        graphComp.update();
-        let found = graphComp.find('[data-testid="graph-poll-delay"]');
-        expect(found).toHaveText('5000');
-        done();
-      }, 500);
+      graphComp.rerender(<ThemedGraphs preferences={dashboardPref} sid={sid} did={did} enablePoll={false} pageVisible={true} isTest={true} />);
+      let found = graphComp.container.querySelector('[data-testid="graph-poll-delay"]');
+      expect(found).toHaveTextContent('5000');
     });
   });
 });

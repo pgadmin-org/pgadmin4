@@ -1,11 +1,11 @@
-import Notifier from './helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 export async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
   } catch(err) {
     /* Suppress error */
-    Notifier.error('Does not have clipboard access');
+    pgAdmin.Browser.notifier.error('Does not have clipboard access');
   }
   localStorage.setItem('clipboard', text);
 }

@@ -13,44 +13,50 @@ import { FakeLink, FakeNode } from './fake_item';
 import { PortModelAlignment } from '@projectstorm/react-diagrams';
 
 describe('ERDCore', ()=>{
-  let eleFactory = jasmine.createSpyObj('nodeFactories', {
-    'registerFactory': null,
-    'getFactory': jasmine.createSpyObj('getFactory', ['generateModel']),
-  });
-  let erdEngine = jasmine.createSpyObj('engine', {
-    'getNodeFactories': eleFactory,
-    'getLinkFactories': eleFactory,
-    'getPortFactories': eleFactory,
-    'getActionEventBus': jasmine.createSpyObj('actionBus', ['fireAction', 'deregisterAction', 'registerAction']),
-    'setModel': null,
-    'getModel': jasmine.createSpyObj('modelObj', {
-      'addNode': null,
-      'clearSelection': null,
-      'getNodesDict': null,
-      'getLinks': null,
-      'serialize': ()=>({
+  let eleFactory = {
+    'registerFactory': jest.fn(),
+    'getFactory': jest.fn().mockReturnValue({
+      'generateModel': jest.fn(),
+    }),
+  };
+  let erdEngine = {
+    'getNodeFactories': jest.fn().mockReturnValue(eleFactory),
+    'getLinkFactories': jest.fn().mockReturnValue(eleFactory),
+    'getPortFactories': jest.fn().mockReturnValue(eleFactory),
+    'getActionEventBus': jest.fn().mockReturnValue({
+      'fireAction': jest.fn(),
+      'deregisterAction': jest.fn(),
+      'registerAction': jest.fn()
+    }),
+    'setModel': jest.fn(),
+    'getModel': jest.fn().mockReturnValue({
+      'addNode': jest.fn(),
+      'clearSelection': jest.fn(),
+      'getNodesDict': jest.fn(),
+      'getLinks': jest.fn(),
+      'serialize': jest.fn().mockReturnValue({
         'data': 'serialized',
       }),
-      'addLink': null,
-      'getNodes': null,
-      'setZoomLevel': null,
-      'getZoomLevel': null,
-      'fireEvent': null,
-      'registerListener': null,
+      'addLink': jest.fn(),
+      'getNodes': jest.fn(),
+      'setZoomLevel': jest.fn(),
+      'getZoomLevel': jest.fn(),
+      'fireEvent': jest.fn(),
+      'registerListener': jest.fn(),
     }),
-    'repaintCanvas': null,
-    'zoomToFitNodes': null,
-    'fireEvent': null,
-  });
+    'repaintCanvas': jest.fn(),
+    'zoomToFitNodes': jest.fn(),
+    'fireEvent': jest.fn(),
+  };
 
   beforeAll(()=>{
-    spyOn(createEngineLib, 'default').and.returnValue(erdEngine);
+    jest.spyOn(createEngineLib, 'default').mockReturnValue(erdEngine);
   });
 
   it('initialization', ()=>{
-    spyOn(ERDCore.prototype, 'initializeEngine').and.callThrough();
-    spyOn(ERDCore.prototype, 'initializeModel').and.callThrough();
-    spyOn(ERDCore.prototype, 'computeTableCounter').and.callThrough();
+    jest.spyOn(ERDCore.prototype, 'initializeEngine');
+    jest.spyOn(ERDCore.prototype, 'initializeModel');
+    jest.spyOn(ERDCore.prototype, 'computeTableCounter');
     let erdCoreObj = new ERDCore();
     expect(erdCoreObj.initializeEngine).toHaveBeenCalled();
     expect(erdCoreObj.initializeModel).toHaveBeenCalled();
@@ -121,7 +127,7 @@ describe('ERDCore', ()=>{
     });
 
     it('getNewPort', ()=>{
-      erdEngine.getPortFactories().getFactory().generateModel.calls.reset();
+      erdEngine.getPortFactories().getFactory().generateModel.mockClear();
       erdCoreObj.getNewPort('port1', PortModelAlignment.LEFT);
       expect(erdEngine.getPortFactories().getFactory).toHaveBeenCalledWith('onetomany');
       expect(erdEngine.getPortFactories().getFactory().generateModel).toHaveBeenCalledWith({
@@ -137,9 +143,9 @@ describe('ERDCore', ()=>{
 
     it('addNode', ()=>{
       let newNode = new FakeNode({});
-      spyOn(newNode, 'setPosition');
-      spyOn(erdCoreObj, 'getNewNode').and.returnValue(newNode);
-      spyOn(erdCoreObj, 'clearSelection');
+      jest.spyOn(newNode, 'setPosition');
+      jest.spyOn(erdCoreObj, 'getNewNode').mockReturnValue(newNode);
+      jest.spyOn(erdCoreObj, 'clearSelection');
 
       let data = {name: 'link1'};
 
@@ -158,16 +164,16 @@ describe('ERDCore', ()=>{
     it('addLink', ()=>{
       let node1 = new FakeNode({'name': 'table1'}, 'id1');
       let node2 = new FakeNode({'name': 'table2'}, 'id2');
-      spyOn(erdCoreObj, 'getOptimumPorts').and.returnValue([{name: 'port-1'}, {name: 'port-3'}]);
+      jest.spyOn(erdCoreObj, 'getOptimumPorts').mockReturnValue([{name: 'port-1'}, {name: 'port-3'}]);
       let nodesDict = {
         'id1': node1,
         'id2': node2,
       };
       let link = new FakeLink();
-      spyOn(link, 'setSourcePort').and.callThrough();
-      spyOn(link, 'setTargetPort').and.callThrough();
-      spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue(nodesDict);
-      spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
+      jest.spyOn(link, 'setSourcePort');
+      jest.spyOn(link, 'setTargetPort');
+      jest.spyOn(erdEngine.getModel(), 'getNodesDict').mockReturnValue(nodesDict);
+      jest.spyOn(erdCoreObj, 'getNewLink').mockImplementation(function() {
         return link;
       });
 
@@ -184,8 +190,8 @@ describe('ERDCore', ()=>{
 
     it('serialize', ()=>{
       let retVal = erdCoreObj.serialize();
-      expect(retVal.hasOwnProperty('version')).toBeTruthy();
-      expect(retVal.hasOwnProperty('data')).toBeTruthy();
+      expect(Object.prototype.hasOwnProperty.call(retVal,'version')).toBeTruthy();
+      expect(Object.prototype.hasOwnProperty.call(retVal,'data')).toBeTruthy();
       expect(erdEngine.getModel().serialize).toHaveBeenCalled();
     });
 
@@ -196,7 +202,7 @@ describe('ERDCore', ()=>{
           'key': 'serialized',
         },
       };
-      spyOn(erdCoreObj, 'initializeModel');
+      jest.spyOn(erdCoreObj, 'initializeModel');
       erdCoreObj.deserialize(deserialValue);
       expect(erdCoreObj.initializeModel).toHaveBeenCalledWith(deserialValue.data);
     });
@@ -208,8 +214,8 @@ describe('ERDCore', ()=>{
         'id1': node1,
         'id2': node2,
       };
-      spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue(nodesDict);
-      spyOn(erdEngine.getModel(), 'getLinks').and.returnValue([
+      jest.spyOn(erdEngine.getModel(), 'getNodesDict').mockReturnValue(nodesDict);
+      jest.spyOn(erdEngine.getModel(), 'getLinks').mockReturnValue([
         new FakeLink({
           'name': 'link1',
         }, 'lid1'),
@@ -246,20 +252,20 @@ describe('ERDCore', ()=>{
           }
         };
       });
-      spyOn(erdEngine.getModel(), 'getNodesDict').and.returnValue(nodesDict);
+      jest.spyOn(erdEngine.getModel(), 'getNodesDict').mockReturnValue(nodesDict);
 
-      spyOn(erdCoreObj, 'getNewLink').and.callFake(function() {
+      jest.spyOn(erdCoreObj, 'getNewLink').mockImplementation(function() {
         return {
           setSourcePort: function() {/*This is intentional (SonarQube)*/},
           setTargetPort: function() {/*This is intentional (SonarQube)*/},
         };
       });
-      spyOn(erdCoreObj, 'getNewPort').and.returnValue({id: 'id'});
-      spyOn(erdCoreObj, 'addNode').and.callFake(function(data) {
+      jest.spyOn(erdCoreObj, 'getNewPort').mockReturnValue({id: 'id'});
+      jest.spyOn(erdCoreObj, 'addNode').mockImplementation(function(data) {
         return new FakeNode({}, `id-${data.name}`);
       });
-      spyOn(erdCoreObj, 'addLink');
-      spyOn(erdCoreObj, 'dagreDistributeNodes').and.callFake(()=>{/* intentionally empty */});
+      jest.spyOn(erdCoreObj, 'addLink');
+      jest.spyOn(erdCoreObj, 'dagreDistributeNodes').mockImplementation(()=>{/* intentionally empty */});
 
       erdCoreObj.deserializeData(TEST_TABLES_DATA);
       expect(erdCoreObj.addNode).toHaveBeenCalledTimes(TEST_TABLES_DATA.length);
@@ -282,7 +288,7 @@ describe('ERDCore', ()=>{
     });
 
     it('getNodesData', ()=>{
-      spyOn(erdEngine.getModel(), 'getNodes').and.returnValue([
+      jest.spyOn(erdEngine.getModel(), 'getNodes').mockReturnValue([
         new FakeNode({name:'node1'}),
         new FakeNode({name:'node2'}),
       ]);
@@ -292,16 +298,16 @@ describe('ERDCore', ()=>{
     });
 
     it('zoomIn', ()=>{
-      spyOn(erdEngine.getModel(), 'getZoomLevel').and.returnValue(100);
-      spyOn(erdCoreObj, 'repaint');
+      jest.spyOn(erdEngine.getModel(), 'getZoomLevel').mockReturnValue(100);
+      jest.spyOn(erdCoreObj, 'repaint');
       erdCoreObj.zoomIn();
       expect(erdEngine.getModel().setZoomLevel).toHaveBeenCalledWith(125);
       expect(erdCoreObj.repaint).toHaveBeenCalled();
     });
 
     it('zoomOut', ()=>{
-      spyOn(erdEngine.getModel(), 'getZoomLevel').and.returnValue(100);
-      spyOn(erdCoreObj, 'repaint');
+      jest.spyOn(erdEngine.getModel(), 'getZoomLevel').mockReturnValue(100);
+      jest.spyOn(erdCoreObj, 'repaint');
       erdCoreObj.zoomOut();
       expect(erdEngine.getModel().setZoomLevel).toHaveBeenCalledWith(75);
       expect(erdCoreObj.repaint).toHaveBeenCalled();

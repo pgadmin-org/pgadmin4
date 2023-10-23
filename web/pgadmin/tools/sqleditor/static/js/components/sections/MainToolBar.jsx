@@ -34,7 +34,7 @@ import PropTypes from 'prop-types';
 import CustomPropTypes from '../../../../../../static/js/custom_prop_types';
 import ConfirmTransactionContent from '../dialogs/ConfirmTransactionContent';
 import { isMac } from '../../../../../../static/js/keyboard_shortcuts';
-import { LayoutHelper } from '../../../../../../static/js/helpers/Layout';
+import { LayoutDocker } from '../../../../../../static/js/helpers/Layout';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -465,7 +465,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       shortcut: queryToolPref.move_previous,
       options: {
         callback: ()=>{
-          LayoutHelper.moveTo('left');
+          LayoutDocker.moveTo('left');
         }
       }
     },
@@ -473,7 +473,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       shortcut: queryToolPref.move_next,
       options: {
         callback: ()=>{
-          LayoutHelper.moveTo('right');
+          LayoutDocker.moveTo('right');
         }
       }
     },
@@ -481,7 +481,7 @@ export function MainToolBar({containerRef, onFilterClick, onManageMacros}) {
       shortcut: queryToolPref.switch_panel,
       options: {
         callback: ()=>{
-          LayoutHelper.switchPanel(queryToolCtx.docker);
+          LayoutDocker.switchPanel(queryToolCtx.docker);
         }
       }
     },

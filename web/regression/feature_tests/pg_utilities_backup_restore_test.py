@@ -184,8 +184,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
             "test_backup", input_keys=True, loose_focus=True)
 
         # Click on the take Backup button
-        take_bckup = self.page.find_by_xpath(
-            NavMenuLocators.backup_btn_xpath)
+        take_bckup = self.page.find_by_css_selector(
+            NavMenuLocators.backup_btn)
         click = True
         retry = 3
         while click and retry > 0:
@@ -193,8 +193,8 @@ class PGUtilitiesBackupFeatureTest(BaseFeatureTest):
                 take_bckup.click()
                 if self.page.wait_for_element_to_disappear(
                     lambda driver: driver.find_element(
-                        By.XPATH,
-                        "//*[@id='0']/div[contains(text(),'Backup')]")):
+                        By.CSS_SELECTOR,
+                        ".dock-fbox div[title^='Backup']")):
                     click = False
             except Exception:
                 retry -= 1

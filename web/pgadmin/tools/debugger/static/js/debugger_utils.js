@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////////////////
 
 import {generateTitle} from '../../../sqleditor/static/js/sqleditor_title';
-import {_set_dynamic_tab} from '../../../sqleditor/static/js/show_query_tool';
 
 function getFunctionId(treeInfoObject) {
   let objectId;
@@ -34,7 +33,7 @@ function getProcedureId(treeInfoObject) {
   return objectId;
 }
 
-function setDebuggerTitle(panel, preferences, function_name, schema_name, database_name, custom_title=null, pgBrowser=null) {
+function getDebuggerTitle(preferences, function_name, schema_name, database_name, custom_title=null) {
   let debugger_title_placeholder = '';
   if(custom_title) {
     debugger_title_placeholder = custom_title;
@@ -59,8 +58,7 @@ function setDebuggerTitle(panel, preferences, function_name, schema_name, databa
     'type': 'debugger',
   };
   let title = generateTitle(debugger_title_placeholder, title_data);
-  _set_dynamic_tab(pgBrowser, preferences['dynamic_tabs']);
-  panel.title('<span>'+ title +'</span>');
+  return title;
 }
 
 function get_function_name(function_name) {
@@ -96,6 +94,7 @@ function getAppropriateLabel(treeInfo) {
 module.exports = {
   getFunctionId: getFunctionId,
   getProcedureId: getProcedureId,
-  setDebuggerTitle: setDebuggerTitle,
+  setDebuggerTitle: getDebuggerTitle,
+  getDebuggerTitle: getDebuggerTitle,
   getAppropriateLabel: getAppropriateLabel,
 };

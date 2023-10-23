@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme)=>({
     },
     '& .szh-menu__item': {
       display: 'flex',
-      padding: '4px 12px',
+      padding: '3px 12px',
       '&:after': {
         right: '0.75rem',
       },
@@ -106,7 +106,7 @@ export const PgMenuItem = applyStatics(MenuItem)(({hasCheck=false, checked=false
   }
   const dataLabel = typeof(children) == 'string' ? children : props.datalabel;
   return <MenuItem {...props} onClick={onClick} data-label={dataLabel} data-checked={checked}>
-    {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} />}
+    {hasCheck && <CheckIcon className={classes.checkIcon} style={checked ? {} : {visibility: 'hidden'}} data-label="CheckIcon"/>}
     {children}
     {(shortcut || accesskey) && <div className={classes.shortcut}>({shortcutToString(shortcut, accesskey)})</div>}
   </MenuItem>;

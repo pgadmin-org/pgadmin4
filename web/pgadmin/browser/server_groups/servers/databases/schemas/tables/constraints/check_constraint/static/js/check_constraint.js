@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import CheckConstraintSchema from './check_constraint.ui';
-import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../../../static/js/api_instance';
 
@@ -73,7 +72,7 @@ define('pgadmin.node.check_constraint', [
             getApiInstance().get(obj.generate_url(i, 'validate', d, true))
               .then(({data: res})=>{
                 if (res.success == 1) {
-                  Notify.success(res.info);
+                  pgAdmin.Browser.notifier.success(res.info);
                   t.removeIcon(i);
                   data.valid = true;
                   data.icon = 'icon-check_constraint';
@@ -83,7 +82,7 @@ define('pgadmin.node.check_constraint', [
                 }
               })
               .catch((error)=>{
-                Notify.pgRespErrorNotify(error);
+                pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                 t.unload(i);
               });
           }

@@ -17,9 +17,9 @@ import url_for from 'sources/url_for';
 
 import getApiInstance from '../../../../../static/js/api_instance';
 import CodeMirror from '../../../../../static/js/components/CodeMirror';
-import Notify from '../../../../../static/js/helpers/Notifier';
 import { DEBUGGER_EVENTS } from '../DebuggerConstants';
 import { DebuggerEventsContext } from './DebuggerComponent';
+import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
 
 
 const useStyles = makeStyles(() => ({
@@ -32,6 +32,7 @@ export default function DebuggerEditor({ getEditor, params }) {
   const classes = useStyles();
   const editor = React.useRef();
   const eventBus = useContext(DebuggerEventsContext);
+  const pgAdmin = usePgAdmin();
 
   const api = getApiInstance();
 
@@ -59,7 +60,7 @@ export default function DebuggerEditor({ getEditor, params }) {
         }
       })
       .catch(function() {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('Debugger Error'),
           gettext('Error while setting debugging breakpoint.')
         );

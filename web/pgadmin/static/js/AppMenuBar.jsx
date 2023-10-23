@@ -4,11 +4,11 @@ import { PrimaryButton } from './components/Buttons';
 import { PgMenu, PgMenuDivider, PgMenuItem, PgSubMenu } from './components/Menu';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
-import pgAdmin from 'sources/pgadmin';
+import { usePgAdmin } from '../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme)=>({
   root: {
-    height: '32px',
+    height: '30px',
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
     padding: '0 0.5rem',
@@ -33,11 +33,8 @@ const useStyles = makeStyles((theme)=>({
     marginLeft: '16px',
 
     '& .MuiButton-containedPrimary': {
-      padding: '2px 8px',
+      padding: '1px 8px',
     }
-  },
-  menuButton: {
-    fontSize: '0.925rem',
   },
   userMenu: {
     marginLeft: 'auto',
@@ -55,16 +52,17 @@ const useStyles = makeStyles((theme)=>({
 export default function AppMenuBar() {
   const classes = useStyles();
   const [,setRefresh] = useState(false);
+  const pgAdmin = usePgAdmin();
 
   const reRenderMenus = ()=>setRefresh((prev)=>!prev);
 
   useEffect(()=>{
-    pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', ()=>{
+    pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(()=>{
       reRenderMenus();
-    });
-    pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item',  ()=>{
+    }, 100));
+    pgAdmin.Browser.Events.on('pgadmin:nw-refresh-menu-item', _.debounce(()=>{
       reRenderMenus();
-    });
+    }, 100));
   }, []);
 
   const getPgMenuItem = (menuItem, i)=>{
@@ -92,13 +90,13 @@ export default function AppMenuBar() {
 
   return(
     <>
-      <Box className={classes.root}>
+      <Box className={classes.root} data-test="app-menu-bar">
         <div className={classes.logo} />
         <div className={classes.menus}>
           {pgAdmin.Browser.MainMenus?.map((menu)=>{
             return (
               <PgMenu
-                menuButton={<PrimaryButton key={menu.label} className={classes.menuButton} data-label={menu.label}>{menu.label}<KeyboardArrowDownIcon fontSize="small" /></PrimaryButton>}
+                menuButton={<PrimaryButton key={menu.label} data-label={menu.label}>{menu.label}<KeyboardArrowDownIcon fontSize="small" /></PrimaryButton>}
                 label={menu.label}
                 key={menu.name}
               >
@@ -121,7 +119,7 @@ export default function AppMenuBar() {
         <div className={classes.userMenu}>
           <PgMenu
             menuButton={
-              <PrimaryButton className={classes.menuButton} data-test="loggedin-username">
+              <PrimaryButton data-test="loggedin-username">
                 <div className={classes.gravatar}>
                   {userMenuInfo.gravatar &&
                   <img src={userMenuInfo.gravatar} width = "18" height = "18"

@@ -149,10 +149,7 @@ export default class BaseUISchema {
 
   /* Get the server version */
   getServerVersion() {
-    if(!_.isUndefined(this.nodeInfo) && !_.isUndefined(this.nodeInfo.server)
-      && !_.isUndefined(this.nodeInfo.server.version)) {
-      return this.nodeInfo.server.version;
-    }
+    return this.nodeInfo?.server?.version;
   }
 
   /* Get the filter options */

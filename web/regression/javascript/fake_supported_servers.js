@@ -7,10 +7,8 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-define(function () {
-  return [
-    {label: 'EDB Advanced Server', value: 'ppas'},
-    {label: 'PostgreSQL', value: 'pg'},
-    {label: 'Unknown', value: ''},
-  ];
-});
+module.exports = [
+  {label: 'EDB Advanced Server', value: 'ppas'},
+  {label: 'PostgreSQL', value: 'pg'},
+  {label: 'Unknown', value: ''},
+];

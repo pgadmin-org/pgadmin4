@@ -7,21 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import pgAdmin from 'sources/pgadmin';
 import RestoreSchema, {getRestoreSaveOptSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from '../../../pgadmin/tools/restore/static/js/restore.ui';
 import {getCreateView} from '../genericFunctions';
 
 describe('RestoreSchema', ()=>{
-  let mount;
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
+
   let restoreSchemaObj = new RestoreSchema(
     ()=>getRestoreSectionSchema({selectedNodeType: 'table'}),
     ()=>getRestoreTypeObjSchema({selectedNodeType: 'table'}),
@@ -36,13 +31,13 @@ describe('RestoreSchema', ()=>{
     pgAdmin.pgBrowser
   );
 
-  it('restore dialog', ()=>{
-    mount(getCreateView(restoreSchemaObj));
+  it('restore dialog', async ()=>{
+    await getCreateView(restoreSchemaObj);
   });
 
   it('restore validate', () => {
     let state = { file: undefined }; //validating for empty file
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     restoreSchemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('file', 'Please provide a filename.');

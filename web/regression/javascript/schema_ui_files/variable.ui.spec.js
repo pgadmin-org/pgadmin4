@@ -7,12 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import VariableSchema, {getNodeVariableSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/variable.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
-import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 /* Used to check collection mode */
 class MockSchema extends BaseUISchema {
@@ -34,7 +33,7 @@ class MockSchema extends BaseUISchema {
 }
 
 describe('VariableSchema', ()=>{
-  let mount;
+
   let schemaObj = new VariableSchema(
     ()=>[],
     ()=>[],
@@ -43,58 +42,53 @@ describe('VariableSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
   it('getValueFieldProps', ()=>{
     expect(schemaObj.getValueFieldProps({vartype: 'bool'})).toBe('switch');
-    expect(schemaObj.getValueFieldProps({vartype: 'enum', enumvals: []})).toEqual(jasmine.objectContaining({
+    expect(schemaObj.getValueFieldProps({vartype: 'enum', enumvals: []})).toEqual(expect.objectContaining({
       cell: 'select',
     }));
-    expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toEqual(jasmine.objectContaining({
+    expect(schemaObj.getValueFieldProps({vartype: 'integer'})).toEqual(expect.objectContaining({
       cell: 'int',
     }));
-    expect(schemaObj.getValueFieldProps({vartype: 'real'})).toEqual(jasmine.objectContaining({
+    expect(schemaObj.getValueFieldProps({vartype: 'real'})).toEqual(expect.objectContaining({
       cell: 'numeric',
     }));
-    expect(schemaObj.getValueFieldProps({vartype: 'string'})).toEqual(jasmine.objectContaining({
+    expect(schemaObj.getValueFieldProps({vartype: 'string'})).toEqual(expect.objectContaining({
       cell: 'text',
     }));
-    expect(schemaObj.getValueFieldProps({vartype: 'file'})).toEqual(jasmine.objectContaining({
+    expect(schemaObj.getValueFieldProps({vartype: 'file'})).toEqual(expect.objectContaining({
       cell: 'file',
     }));
     expect(schemaObj.getValueFieldProps({})).toBe('');
   });
 
-  it('variable collection', ()=>{
-    spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue([]);
-    spyOn(nodeAjax, 'getNodeListByName').and.returnValue([]);
+  it('variable collection', async ()=>{
+    jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue([]);
+    jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue([]);
     let varCollObj = new MockSchema(()=>getNodeVariableSchema({}, {server: {user: {name: 'postgres'}}}, {}, true, true));
-    let ctrl = mount(getCreateView(varCollObj));
+    const {ctrl, user} = await getCreateView(varCollObj);
     /* Make sure you hit every corner */
-    ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+
+    await addNewDatagridRow(user, ctrl);
   });
 });

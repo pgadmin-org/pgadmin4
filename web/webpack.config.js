@@ -38,11 +38,8 @@ const pgadminThemesJson = __dirname + '/pgadmin/misc/themes/pgadmin.themes.json'
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
 const providePlugin = new webpack.ProvidePlugin({
-  $: 'jquery',
-  jQuery: 'jquery',
-  'window.jQuery': 'jquery',
   _: 'lodash',
-  pgAdmin: 'pgadmin',
+  pgAdmin: 'sources/pgadmin',
   'moment': 'moment',
   'window.moment':'moment',
   process: 'process/browser',
@@ -391,8 +388,7 @@ module.exports = [{
     // Loaders: https://webpack.js.org/loaders/
     //
     // imports-loader: it adds dependent modules(use:imports-loader?module1)
-    // at the beginning of module it is dependency of like:
-    // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
+    // at the beginning of module it is dependency.
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
@@ -412,10 +408,6 @@ module.exports = [{
       exclude: [/node_modules/, /vendor/],
       use: {
         loader: 'babel-loader',
-        options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react', '@babel/preset-typescript'],
-          plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
-        },
       },
     },{
       test: /\.m?js$/,
@@ -451,8 +443,7 @@ module.exports = [{
       include: path.join(__dirname, '/pgadmin/browser'),
     }, {
       // imports-loader: it adds dependent modules(use:imports-loader?module1)
-      // at the beginning of module it is dependency of like:
-      // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
+      // at the beginning of module it is dependency.
       // It solves number of problems
       // Ref: http:/github.com/webpack-contrib/imports-loader/
       test: require.resolve('./pgadmin/tools/sqleditor/static/js/index'),
@@ -598,7 +589,7 @@ module.exports = [{
           minChunks: 2,
           enforce: true,
           test(module) {
-            return webpackShimConfig.matchModules(module, ['wcdocker', 'jquery', 'bootstrap', 'popper']);
+            return webpackShimConfig.matchModules(module, ['react', 'react-dom', 'bootstrap', 'popper']);
           },
         },
         vendor_others: {

@@ -12,7 +12,7 @@ describe('ERDModel', ()=>{
   it('getNodesDict', ()=>{
     let model = new ERDModel();
 
-    spyOn(model, 'getNodes').and.returnValue([
+    jest.spyOn(model, 'getNodes').mockReturnValue([
       {
         name: 'test1',
         getID: function() {

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 /* Common form components used in pgAdmin */
 
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Box, FormControl, OutlinedInput, FormHelperText,
@@ -119,7 +119,7 @@ function FormIcon({ type, close = false, ...props }) {
     TheIcon = WarningRoundedIcon;
   }
 
-  return <TheIcon fontSize="small" {...props} />;
+  return <TheIcon fontSize="small" {...props} data-testid={close ? 'Close' : type}/>;
 }
 FormIcon.propTypes = {
   type: PropTypes.oneOf(Object.values(MESSAGE_TYPE)),
@@ -150,7 +150,7 @@ export function FormInput({ children, error, className, label, helpMessage, requ
     );
   }
   return (
-    <Grid container spacing={0} className={className}>
+    <Grid container spacing={0} className={className} data-testid="form-input">
       <Grid item lg={labelGridBasis} md={labelGridBasis} sm={12} xs={12}>
         <InputLabel htmlFor={cid} className={clsx(classes.formLabel, error ? classes.formLabelError : null)} required={required}>
           {label}
@@ -397,6 +397,7 @@ export const InputText = forwardRef(({
         ...(type ? { pattern: !_.isUndefined(controlProps) && !_.isUndefined(controlProps.pattern) ? controlProps.pattern : patterns[type] } : {}),
         style: inputStyle || {},
         autoComplete: 'new-password',
+        'data-testid': 'input-text'
       }}
       readOnly={Boolean(readonly)}
       disabled={Boolean(disabled)}
@@ -635,33 +636,36 @@ InputRadio.propTypes = {
   labelPlacement: PropTypes.string
 };
 
-export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled, readonly, ...props }, ref) => {
+export const InputToggle = forwardRef(({ cid, value, onChange, options, disabled, readonly, helpid, ...props }, ref) => {
   return (
-    <ToggleButtonGroup
-      id={cid}
-      value={value}
-      exclusive
-      onChange={(e, val) => { val !== null && onChange(val); }}
-      {...props}
-    >
-      {
-        (options || []).map((option, i) => {
-          const isSelected = option.value === value;
-          const isDisabled = disabled || option.disabled || (readonly && !isSelected);
-          return (
-            <ToggleButton ref={i == 0 ? ref : null} key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
-              disabled={isDisabled} aria-label={option.label}>
-              <CheckRoundedIcon style={{ visibility: isSelected ? 'visible' : 'hidden' }} />&nbsp;{option.label}
-            </ToggleButton>
-          );
-        })
-      }
-    </ToggleButtonGroup>
+    <>
+      <ToggleButtonGroup
+        value={value}
+        exclusive
+        onChange={(e, val) => { val !== null && onChange(val); }}
+        {...props}
+      >
+        {
+          (options || []).map((option, i) => {
+            const isSelected = option.value === value;
+            const isDisabled = disabled || option.disabled || (readonly && !isSelected);
+            return (
+              <ToggleButton ref={i == 0 ? ref : null} key={option.label} value={option.value} component={isSelected ? PrimaryButton : DefaultButton}
+                disabled={isDisabled} aria-label={option.label}>
+                <CheckRoundedIcon style={{ visibility: isSelected ? 'visible' : 'hidden' }} />&nbsp;{option.label}
+              </ToggleButton>
+            );
+          })
+        }
+      </ToggleButtonGroup>
+      {helpid && <input style={{display: 'none'}} defaultValue={options?.find((o)=>o.value==value)?.label} id={cid} aria-describedby={helpid} />}
+    </>
   );
 });
 InputToggle.displayName = 'InputToggle';
 InputToggle.propTypes = {
   cid: PropTypes.string,
+  helpid: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
   options: PropTypes.array,
   controlProps: PropTypes.object,
@@ -845,6 +849,9 @@ export function flattenSelectOptions(options) {
 
 function getRealValue(options, value, creatable, formatter) {
   let realValue = null;
+  if(options?.length == 0) {
+    return realValue;
+  }
   if (_.isArray(value)) {
     realValue = [...value];
     /* If multi select options need to be in some format by UI, use formatter */
@@ -877,7 +884,7 @@ InputSelectNonSearch.propTypes = {
 };
 
 export const InputSelect = forwardRef(({
-  cid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, ...props }, ref) => {
+  cid, helpid, onChange, options, readonly = false, value, controlProps = {}, optionsLoaded, optionsReloadBasis, disabled, ...props }, ref) => {
   const [[finalOptions, isLoading], setFinalOptions] = useState([[], true]);
   const theme = useTheme();
 
@@ -973,25 +980,38 @@ export const InputSelect = forwardRef(({
     ...otherProps,
     ...props,
   };
+  const selectValue = useMemo(()=>{
+    if(_.isArray(realValue)) {
+      return realValue.map((o)=>o?.label)?.join(',');
+    }
+    return realValue?.label;
+  }, [realValue]);
   if (!controlProps.creatable) {
     return (
-      <Select ref={ref} {...commonProps} />
+      <>
+        <Select ref={ref} {...commonProps} />
+        {helpid && <input data-testid="select-value" style={{display: 'none'}} defaultValue={selectValue} id={cid} aria-describedby={helpid} />}
+      </>
     );
   } else {
     return (
-      <CreatableSelect
-        ref={ref}
-        {...commonProps}
-        noOptionsMessage={() =>
-          !controlProps.noDropdown ? 'No options' : null
-        }
-      />
+      <>
+        <CreatableSelect
+          ref={ref}
+          {...commonProps}
+          noOptionsMessage={() =>
+            !controlProps.noDropdown ? 'No options' : null
+          }
+        />
+        {helpid && <input data-testid="select-value" style={{display: 'none'}} defaultValue={selectValue} id={cid} aria-describedby={helpid} />}
+      </>
     );
   }
 });
 InputSelect.displayName = 'InputSelect';
 InputSelect.propTypes = {
   cid: PropTypes.string,
+  helpid: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array, PropTypes.bool]),
   options: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Promise), PropTypes.func]),
   controlProps: PropTypes.object,
@@ -1028,7 +1048,7 @@ export function InputColor({ value, controlProps, disabled, onChange, currObj })
   let btnStyles = { backgroundColor: value };
   return (
     <ColorButton title={gettext('Select the color')} className={classes.colorBtn} style={btnStyles} disabled={disabled}
-      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon />} options={{
+      icon={(_.isUndefined(value) || _.isNull(value) || value === '') && <CloseIcon data-label="CloseIcon" />} options={{
         ...controlProps,
         disabled: disabled
       }} onChange={onChange} value={value} currObj={currObj}
@@ -1239,7 +1259,7 @@ export function NotifierMessage({
   const classes = useStylesFormFooter();
 
   return (
-    <Box className={clsx(classes.container, classes[`container${type}`])} style={style}>
+    <Box className={clsx(classes.container, classes[`container${type}`])} style={style} data-test="notifier-message">
       {showIcon && <FormIcon type={type} className={classes[`icon${type}`]} />}
       <Box className={textCenter ? classes.messageCenter : classes.message}>{HTMLReactParse(message || '')}</Box>
       {closable && <IconButton className={clsx(classes.closeButton, classes[`icon${type}`])} onClick={onClose}>

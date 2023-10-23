@@ -88,61 +88,6 @@ PASS_ERROR = gettext('Error: {error}\n {pass_error}').format(
 class BrowserModule(PgAdminModule):
     LABEL = gettext('Browser')
 
-    def get_own_stylesheets(self):
-        stylesheets = []
-        context_menu_file = 'vendor/jQuery-contextMenu/' \
-                            'jquery.contextMenu.min.css'
-        wcdocker_file = 'vendor/wcDocker/wcDocker.min.css'
-        if current_app.debug:
-            context_menu_file = 'vendor/jQuery-contextMenu/' \
-                                'jquery.contextMenu.css'
-            wcdocker_file = 'vendor/wcDocker/wcDocker.css'
-        # Add browser stylesheets
-        for (endpoint, filename) in [
-            ('static', 'vendor/codemirror/codemirror.css'),
-            ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
-            ('static', context_menu_file),
-            ('static', wcdocker_file)
-        ]:
-            stylesheets.append(url_for(endpoint, filename=filename))
-        return stylesheets
-
-    def get_own_menuitems(self):
-        menus = {
-            'file_items': [
-                MenuItem(
-                    name='mnu_locklayout',
-                    module=PGADMIN_BROWSER,
-                    label=gettext('Lock Layout'),
-                    priority=999,
-                    menu_items=[MenuItem(
-                        name='mnu_lock_none',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_lock_none',
-                        priority=0,
-                        label=gettext('None'),
-                        checked=True
-                    ), MenuItem(
-                        name='mnu_lock_docking',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_lock_docking',
-                        priority=1,
-                        label=gettext('Prevent Docking'),
-                        checked=False
-                    ), MenuItem(
-                        name='mnu_lock_full',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_lock_full',
-                        priority=2,
-                        label=gettext('Full Lock'),
-                        checked=False
-                    )]
-                )
-            ]
-        }
-
-        return menus
-
     def register_preferences(self):
         register_browser_preferences(self)
 
@@ -156,7 +101,6 @@ class BrowserModule(PgAdminModule):
                 'browser.check_master_password',
                 'browser.set_master_password',
                 'browser.reset_master_password',
-                'browser.lock_layout',
                 ]
 
     def register(self, app, options):
@@ -416,47 +360,6 @@ def _get_supported_browser():
     return browser_name, browser_known, version
 
 
-def check_browser_upgrade():
-    """
-    This function is used to check the browser version.
-    :return:
-    """
-    data = None
-    url = '%s?version=%s' % (config.UPGRADE_CHECK_URL, config.APP_VERSION)
-    current_app.logger.debug('Checking version data at: %s' % url)
-
-    try:
-        # Do not wait for more than 5 seconds.
-        # It stuck on rendering the browser.html, while working in the
-        # broken network.
-        if os.path.exists(config.CA_FILE):
-            response = urlopen(url, data, 5, cafile=config.CA_FILE)
-        else:
-            response = urlopen(url, data, 5)
-        current_app.logger.debug(
-            'Version check HTTP response code: %d' % response.getcode()
-        )
-
-        if response.getcode() == 200:
-            data = json.loads(response.read().decode('utf-8'))
-            current_app.logger.debug('Response data: %s' % data)
-    except Exception:
-        current_app.logger.exception('Exception when checking for update')
-
-    if data is not None and \
-        data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-            config.APP_VERSION_INT:
-        msg = render_template(
-            MODULE_NAME + "/upgrade.html",
-            current_version=config.APP_VERSION,
-            upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
-            product_name=config.APP_NAME,
-            download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
-        )
-
-        flash(msg, MessageType.WARNING)
-
-
 @blueprint.route("/")
 @pgCSRFProtect.exempt
 @login_required
@@ -490,15 +393,6 @@ def index():
             )
 
             flash(msg, MessageType.WARNING)
-
-    # Get the current version info from the website, and flash a message if
-    # the user is out of date, and the check is enabled.
-    if config.UPGRADE_CHECK_ENABLED:
-        last_check = get_setting('LastUpdateCheck', default='0')
-        today = time.strftime('%Y%m%d')
-        if int(last_check) < int(today):
-            check_browser_upgrade()
-            store_setting('LastUpdateCheck', today)
 
     session['allow_save_password'] = True
 
@@ -605,7 +499,6 @@ def utils():
     editor_indent_with_tabs = False if editor_use_spaces else True
 
     prefs = Preferences.module('browser')
-    current_ui_lock = prefs.preference('lock_layout').get()
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -672,7 +565,6 @@ def utils():
             auth_source=auth_source,
             heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
             password_length_min=config.PASSWORD_LENGTH_MIN,
-            current_ui_lock=current_ui_lock,
             shared_storage_list=shared_storage_list,
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
@@ -685,19 +577,6 @@ def utils():
 def exposed_urls():
     return make_response(
         render_template('browser/js/endpoints.js'),
-        200, {'Content-Type': MIMETYPE_APP_JS}
-    )
-
-
-@blueprint.route("/js/constants.js")
-@pgCSRFProtect.exempt
-def app_constants():
-    return make_response(
-        render_template('browser/js/constants.js',
-                        INTERNAL=INTERNAL,
-                        LDAP=LDAP,
-                        KERBEROS=KERBEROS,
-                        OAUTH2=OAUTH2),
         200, {'Content-Type': MIMETYPE_APP_JS}
     )
 
@@ -1031,21 +910,6 @@ def set_master_password():
     return form_master_password_response(
         present=True,
     )
-
-
-@blueprint.route("/lock_layout", endpoint="lock_layout", methods=["PUT"])
-def lock_layout():
-    data = None
-
-    if hasattr(request.data, 'decode'):
-        data = request.data.decode('utf-8')
-
-    if data != '':
-        data = json.loads(data)
-
-    blueprint.lock_layout.set(data['value'])
-
-    return make_json_response()
 
 
 # Only register route if SECURITY_CHANGEABLE is set to True

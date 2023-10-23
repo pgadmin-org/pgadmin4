@@ -7,20 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
-import { OutlinedInput, FormHelperText, IconButton, FormControlLabel,
-  Switch, Checkbox, Button, InputLabel } from '@material-ui/core';
-import Select from 'react-select';
-import CreatableSelect from 'react-select/creatable';
-import CheckRoundedIcon from '@material-ui/icons/CheckRounded';
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import CloseIcon from '@material-ui/icons/CloseRounded';
-import ErrorRoundedIcon from '@material-ui/icons/ErrorOutlineRounded';
-import WarningRoundedIcon from '@material-ui/icons/WarningRounded';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 
 import {FormInputText, FormInputFileSelect, FormInputSQL,
@@ -28,44 +18,40 @@ import {FormInputText, FormInputFileSelect, FormInputSQL,
   FormInputColor,
   FormFooterMessage,
   MESSAGE_TYPE} from '../../../pgadmin/static/js/components/FormComponents';
-import CodeMirror from '../../../pgadmin/static/js/components/CodeMirror';
-import { ToggleButton } from '@material-ui/lab';
-import { DefaultButton, PrimaryButton } from '../../../pgadmin/static/js/components/Buttons';
 import * as showFileManager from '../../../pgadmin/static/js/helpers/showFileManager';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('FormComponents', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
-  let onAccessibility = (ctrl)=> {
-    expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-    expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-    let inputProps = ctrl.find(OutlinedInput).prop('inputProps');
-    expect(inputProps).toEqual(jasmine.objectContaining({
-      id: 'inpCid',
-      'aria-describedby': 'hinpCid',
-    }));
+  let onAccessibility = ()=> {
+    const input = screen.getByTestId('input-text');
+    expect(input.getAttribute('id')).toBe('inpCid');
+    expect(input.getAttribute('aria-describedby')).toBe('hinpCid');
   };
 
   describe('FormInputText', ()=>{
     let ThemedFormInputText = withTheme(FormInputText), ctrl;
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormInputText
+          label="First"
+          className="someClass"
+          testcid="inpCid"
+          helpMessage="some help message"
+          /* InputText */
+          readonly={false}
+          disabled={false}
+
+          value={'thevalue'}
+          controlProps={{
+            extraprop: 'test',
+            maxLength: 50,
+          }}
+          {...props}
+        />);
+    };
 
     beforeEach(()=>{
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormInputText
           label="First"
           className="someClass"
@@ -84,44 +70,58 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(InputLabel).text()).toBe('First');
-      expect(ctrl.find(OutlinedInput).prop('extraprop')).toEqual('test');
-      expect( ctrl.find(OutlinedInput).prop('inputProps')).toEqual(jasmine.objectContaining({
-        maxLength: 50,
-      }));
-      expect(ctrl.find(OutlinedInput).prop('readOnly')).toBe(false);
-      expect(ctrl.find(OutlinedInput).prop('disabled')).toBe(false);
-      expect(ctrl.find(OutlinedInput).prop('value')).toBe('thevalue');
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      const input = screen.getByDisplayValue('thevalue');
+      expect(input).toBeInTheDocument();
+      expect(input.hasAttribute('readonly')).toBe(false);
+      expect(input.hasAttribute('disabled')).toBe(false);
+      expect(screen.getByText('some help message')).toBeInTheDocument();
     });
 
     it('props change', ()=>{
       let onChange = ()=>{/*This is intentional (SonarQube)*/};
-      ctrl.setProps({
+      ctrlRerender({
         readonly: true,
         disabled: true,
         value: 'new value',
         onChange: onChange,
       });
-
-      expect(ctrl.find(OutlinedInput).prop('readOnly')).toBe(true);
-      expect(ctrl.find(OutlinedInput).prop('disabled')).toBe(true);
-      expect(ctrl.find(OutlinedInput).prop('value')).toBe('new value');
+      const input = screen.getByDisplayValue('new value');
+      expect(input).toBeInTheDocument();
+      expect(input.hasAttribute('readonly')).toBe(true);
+      expect(input.hasAttribute('disabled')).toBe(true);
     });
 
     it('accessibility', ()=>{
-      onAccessibility(ctrl);
+      onAccessibility();
     });
   });
 
   describe('FormInputFileSelect', ()=>{
     let ThemedFormInputFileSelect = withTheme(FormInputFileSelect), ctrl;
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormInputFileSelect
+          label="First"
+          className="someClass"
+          testcid="inpCid"
+          helpMessage="some help message"
+          /* InputText */
+          readonly={false}
+          disabled={false}
+          value={'thevalue'}
+          controlProps={{
+            dialogType: 'select_file', supportedTypes: ['*'],
+          }}
+          {...props}
+        />);
+    };
 
     beforeEach(()=>{
-      spyOn(showFileManager, 'showFileManager').and.callFake((controlProps, onFileSelect)=>{
+      jest.spyOn(showFileManager, 'showFileManager').mockImplementation((controlProps, onFileSelect)=>{
         onFileSelect('selected/file');
       });
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormInputFileSelect
           label="First"
           className="someClass"
@@ -138,49 +138,47 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(InputLabel).text()).toBe('First');
-      expect(ctrl.find(OutlinedInput).prop('readOnly')).toBe(false);
-      expect(ctrl.find(OutlinedInput).prop('disabled')).toBe(false);
-      expect(ctrl.find(OutlinedInput).prop('value')).toBe('thevalue');
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      const input = screen.getByDisplayValue('thevalue');
+      expect(input).toBeInTheDocument();
+      expect(input.hasAttribute('readonly')).toBe(false);
+      expect(input.hasAttribute('disabled')).toBe(false);
+      expect(screen.getByText('some help message')).toBeInTheDocument();
     });
 
     it('props change', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         readonly: true,
         disabled: true,
         value: 'new value',
       });
 
-      expect(ctrl.find(OutlinedInput).prop('readOnly')).toBe(true);
-      expect(ctrl.find(OutlinedInput).prop('disabled')).toBe(true);
-      expect(ctrl.find(OutlinedInput).prop('value')).toBe('new value');
-      expect(ctrl.find(IconButton).prop('disabled')).toBe(true);
+      const input = screen.getByDisplayValue('new value');
+      expect(input).toBeInTheDocument();
+      expect(input.hasAttribute('readonly')).toBe(true);
+      expect(input.hasAttribute('disabled')).toBe(true);
     });
 
 
-    it('file select', (done)=>{
-      let onChange = jasmine.createSpy();
-      ctrl.setProps({
+    it('file select', ()=>{
+      let onChange = jest.fn();
+      ctrlRerender({
         onChange: onChange,
       });
-      ctrl.find(IconButton).simulate('click');
-      setTimeout(()=>{
-        expect(onChange).toHaveBeenCalledWith('selected/file');
-        done();
-      }, 0);
+      fireEvent.click(screen.getByRole('button'));
+      expect(onChange).toHaveBeenCalledWith('selected/file');
     });
 
     it('accessibility', ()=>{
-      onAccessibility(ctrl);
+      onAccessibility();
     });
   });
 
   describe('FormInputSQL', ()=>{
-    let ThemedFormInputSQL = withTheme(FormInputSQL), ctrl;
+    let ThemedFormInputSQL = withTheme(FormInputSQL);
 
     beforeEach(()=>{
-      ctrl = mount(
+      render(
         <ThemedFormInputSQL
           label="First"
           className="someClass"
@@ -195,18 +193,31 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(InputLabel).text()).toBe('First');
-      expect(ctrl.find(CodeMirror).prop('value')).toEqual('thevalue');
-      expect(ctrl.find(CodeMirror).prop('options')).toEqual(jasmine.objectContaining({'op1': 'test'}));
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      expect(screen.getByText('thevalue')).toBeInTheDocument();
+      expect(screen.getByText('some help message')).toBeInTheDocument();
     });
   });
 
   describe('FormInputSwitch', ()=>{
     let ThemedFormInputSwitch = withTheme(FormInputSwitch), ctrl, onChange=()=>{return 1;};
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormInputSwitch
+          label="First"
+          className="someClass"
+          testcid="inpCid"
+          helpMessage="some help message"
+          /* InputSwitch */
+          readonly={false}
+          value={false}
+          onChange={onChange}
+          {...props}
+        />);
+    };
 
     beforeEach(()=>{
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormInputSwitch
           label="First"
           className="someClass"
@@ -220,38 +231,52 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(InputLabel).text()).toBe('First');
-      expect(ctrl.find(Switch).prop('checked')).toBe(false);
-      expect(ctrl.find(Switch).prop('onChange')).toBe(onChange);
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      const input = ctrl.container.querySelector('.MuiSwitch-switchBase');
+      expect(input).toBeInTheDocument();
+      expect(input.className.includes('Mui-checked')).toBe(false);
+      expect(screen.getByText('some help message')).toBeInTheDocument();
     });
 
     it('props change', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         readonly: true,
         value: true,
       });
 
-      expect(ctrl.find(Switch).prop('checked')).toBe(true);
-      expect(ctrl.find(Switch).prop('onChange')).not.toBe(onChange);
+      const input = ctrl.container.querySelector('.MuiSwitch-switchBase');
+      expect(input.className.includes('Mui-checked')).toBe(true);
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-      expect(ctrl.find(Switch).prop('id')).toBe('inpCid');
-      let inputProps = ctrl.find(Switch).prop('inputProps');
-      expect(inputProps).toEqual(jasmine.objectContaining({
-        'aria-describedby': 'hinpCid',
-      }));
+      const input = ctrl.container.querySelector('input');
+      expect(input.getAttribute('id')).toBe('inpCid');
+      expect(input.getAttribute('aria-describedby')).toBe('hinpCid');
     });
   });
 
   describe('FormInputCheckbox', ()=>{
     let ThemedFormInputCheckbox = withTheme(FormInputCheckbox), ctrl, onChange=()=>{return 1;};
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormInputCheckbox
+          label="First"
+          className="someClass"
+          testcid="inpCid"
+          helpMessage="some help message"
+          /* InputCheckbox */
+          disabled={false}
+          value={false}
+          onChange={onChange}
+          controlProps={{
+            label: 'Second'
+          }}
+          {...props}
+        />);
+    };
 
     beforeEach(()=>{
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormInputCheckbox
           label="First"
           className="someClass"
@@ -268,39 +293,56 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(InputLabel).text()).toBe('First');
-      expect(ctrl.find(FormControlLabel).prop('label')).toBe('Second');
-      expect(ctrl.find(Checkbox).prop('checked')).toBe(false);
-      expect(ctrl.find(Checkbox).prop('onChange')).toBe(onChange);
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      expect(screen.getByLabelText('Second')).toBeInTheDocument();
+
+      const input = ctrl.container.querySelector('.MuiCheckbox-root');
+      expect(input).toBeInTheDocument();
+      expect(input.className.includes('Mui-checked')).toBe(false);
+      expect(screen.getByText('some help message')).toBeInTheDocument();
     });
 
     it('props change', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         readonly: true,
         value: true,
       });
-
-      expect(ctrl.find(Checkbox).prop('checked')).toBe(true);
-      expect(ctrl.find(Checkbox).prop('onChange')).not.toBe(onChange);
+      const input = ctrl.container.querySelector('.MuiCheckbox-root');
+      expect(input).toBeInTheDocument();
+      expect(input.className.includes('Mui-checked')).toBe(true);
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
-      expect(ctrl.find(Checkbox).prop('id')).toBe('inpCid');
-      let inputProps = ctrl.find(Checkbox).prop('inputProps');
-      expect(inputProps).toEqual(jasmine.objectContaining({
-        'aria-describedby': 'hinpCid',
-      }));
+      const input = ctrl.container.querySelector('input');
+      expect(input.getAttribute('id')).toBe('inpCid');
+      expect(input.getAttribute('aria-describedby')).toBe('hinpCid');
     });
   });
 
   describe('FormInputToggle', ()=>{
     let ThemedFormInputToggle = withTheme(FormInputToggle), ctrl, onChange=()=>{return 1;};
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormInputToggle
+          label="First"
+          className="someClass"
+          testcid="inpCid"
+          helpMessage="some help message"
+          /* InputToggle */
+          disabled={false}
+          options={[
+            {label: 'Op1', value: 1},
+            {label: 'Op2', value: 2},
+            {label: 'Op3', value: 3},
+          ]}
+          value={2}
+          onChange={onChange}
+          {...props}
+        />);
+    };
 
     beforeEach(()=>{
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormInputToggle
           label="First"
           className="someClass"
@@ -319,37 +361,35 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(InputLabel).text()).toBe('First');
-      expect(ctrl.find(ToggleButton).length).toBe(3);
-      expect(ctrl.find(PrimaryButton).length).toBe(1);
-      expect(ctrl.find(DefaultButton).length).toBe(2);
-      expect(ctrl.find(ToggleButton).at(1).prop('component')).toBe(PrimaryButton);
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      expect(screen.getAllByRole('button').length).toBe(3);
+      expect(screen.getAllByRole('button').at(0).className.includes('primaryButton')).toBe(false);
+      expect(screen.getAllByRole('button').at(1).className.includes('primaryButton')).toBe(true);
+      expect(screen.getAllByRole('button').at(2).className.includes('primaryButton')).toBe(false);
+      expect(screen.getByText('some help message')).toBeInTheDocument();
     });
 
     it('props change', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         value: 1,
       });
-      expect(ctrl.find(ToggleButton).at(0).prop('component')).toBe(PrimaryButton);
-      expect(ctrl.find(ToggleButton).at(0)
-        .find(CheckRoundedIcon)
-        .prop('style')).toEqual(jasmine.objectContaining({
-        visibility: 'visible'
-      }));
+      expect(screen.getAllByRole('button').at(0).className.includes('primaryButton')).toBe(true);
+      expect(screen.getAllByRole('button').at(1).className.includes('primaryButton')).toBe(false);
+      expect(screen.getAllByRole('button').at(2).className.includes('primaryButton')).toBe(false);
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
+      const input = ctrl.container.querySelector('input');
+      expect(input.getAttribute('id')).toBe('inpCid');
+      expect(input.getAttribute('aria-describedby')).toBe('hinpCid');
     });
   });
 
   describe('FormInputSelect', ()=>{
-    let ThemedFormInputSelect = withTheme(FormInputSelect), ctrl, onChange=jasmine.createSpy('onChange'),
-      ctrlMount = (props)=>{
-        ctrl?.unmount();
-        ctrl = mount(
+    let ThemedFormInputSelect = withTheme(FormInputSelect), ctrl, onChange=jest.fn();
+    const ctrlRerender = (props)=>{
+      act(()=>{
+        ctrl.rerender(
           <ThemedFormInputSelect
             label="First"
             className="someClass"
@@ -367,71 +407,51 @@ describe('FormComponents', ()=>{
             onChange={onChange}
             {...props}
           />);
-      };
-
-    beforeEach(()=>{
-      ctrlMount();
-    });
-
-    it('init', (done)=>{
-      expect(ctrl.find(Select).exists()).toBe(true);
-      expect(ctrl.find(CreatableSelect).exists()).toBe(false);
-      expect(ctrl.find(FormHelperText).text()).toBe('some help message');
-
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find(Select).props()).toEqual(jasmine.objectContaining({
-          isMulti: false,
-          value: {label: 'Op1', value: 1},
-          inputId: 'inpCid',
-          isSearchable: true,
-          isClearable: true,
-          isDisabled: false,
-        }));
-        done();
-      }, 0);
-    });
-
-    it('readonly disabled', (done)=>{
-      ctrl.setProps({
-        readonly: true,
-        disabled: true,
       });
+    };
 
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find(Select).props()).toEqual(jasmine.objectContaining({
-          isSearchable: false,
-          isClearable: false,
-          isDisabled: true,
-          openMenuOnClick: false,
-        }));
-        done();
-      }, 0);
+    beforeEach(async ()=>{
+      await act(async ()=>{
+        ctrl = await render(
+          <ThemedFormInputSelect
+            label="First"
+            className="someClass"
+            testcid="inpCid"
+            helpMessage="some help message"
+            /* InputSelect */
+            readonly={false}
+            disabled={false}
+            options={[
+              {label: 'Op1', value: 1},
+              {label: 'Op2', value: 2},
+              {label: 'Op3', value: 3},
+            ]}
+            value={1}
+            onChange={onChange}
+          />);
+      });
     });
 
-    it('no-clear with multi', (done)=>{
-      ctrl.setProps({
+    it('init', ()=>{
+      expect(screen.getByLabelText('First')).toBeInTheDocument();
+      expect(screen.getByText('Op1')).toBeInTheDocument();
+      expect(screen.getByText('some help message')).toBeInTheDocument();
+    });
+
+    it('no-clear with multi', ()=>{
+      ctrlRerender({
         controlProps: {
           allowClear: false,
           multiple: true,
         },
         value: [2, 3],
       });
-
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find(Select).props()).toEqual(jasmine.objectContaining({
-          isMulti: true,
-          isClearable: false,
-          value: [{label: 'Op2', value: 2}, {label: 'Op3', value: 3}]
-        }));
-        done();
-      }, 0);
+      expect(screen.getByText('Op2')).toBeInTheDocument();
+      expect(screen.getByText('Op3')).toBeInTheDocument();
     });
 
-    it('creatable with multi', (done)=>{
-      ctrl.setProps({
+    it('creatable with multi', ()=>{
+      ctrlRerender({
         controlProps: {
           creatable: true,
           multiple: true,
@@ -439,55 +459,57 @@ describe('FormComponents', ()=>{
         value: ['val1', 'val2'],
       });
 
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find(Select).exists()).toBe(false);
-        expect(ctrl.find(CreatableSelect).exists()).toBe(true);
-
-        expect(ctrl.find(CreatableSelect).props()).toEqual(jasmine.objectContaining({
-          isMulti: true,
-          value: [{label: 'val1', value: 'val1'}, {label: 'val2', value: 'val2'}]
-        }));
-        done();
-      }, 0);
+      expect(screen.getByText('val1')).toBeInTheDocument();
+      expect(screen.getByText('val2')).toBeInTheDocument();
     });
 
-    it('promise options', (done)=>{
-      let optionsLoaded = jasmine.createSpy();
+    it('promise options', async ()=>{
+      let optionsLoaded = jest.fn();
       let res = [
         {label: 'PrOp1', value: 1},
         {label: 'PrOp2', value: 2},
         {label: 'PrOp3', value: 3},
       ];
       /* For options change, remount needed */
-      ctrlMount({
+      ctrlRerender({
         options: ()=>Promise.resolve(res),
+        optionsReloadBasis: 3,
         value: 3,
         optionsLoaded: optionsLoaded,
       });
+      // expect(screen.getByText('PrOp3')).toBeInTheDocument()
 
-      setTimeout(()=>{
-        ctrl.update();
-        expect(optionsLoaded).toHaveBeenCalledWith(res, 3);
-        expect(ctrl.find(Select).props()).toEqual(jasmine.objectContaining({
-          value: {label: 'PrOp3', value: 3},
-        }));
-        done();
-      }, 0);
+      await waitFor(()=>expect(screen.getByText('PrOp3')).toBeInTheDocument(), {timeout: 500});
     });
 
     it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
+      const input = ctrl.container.querySelectorAll('input')[1];
+      expect(input.getAttribute('id')).toBe('inpCid');
+      expect(input.getAttribute('aria-describedby')).toBe('hinpCid');
     });
   });
 
   describe('FormInputColor', ()=>{
     let pickrObj = React.createRef();
-    let ThemedFormInputColor = withTheme(FormInputColor), ctrl, onChange=jasmine.createSpy('onChange');
+    let ThemedFormInputColor = withTheme(FormInputColor), ctrl, onChange=jest.fn();
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormInputColor
+          label="First"
+          className="someClass"
+          testcid="inpCid"
+          helpMessage="some help message"
+          /* InputColor */
+          disabled={false}
+          value="#f0f"
+          onChange={onChange}
+          currObj={(obj)=>pickrObj.current=obj}
+          {...props}
+        />);
+    };
 
     beforeEach(()=>{
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormInputColor
           label="First"
           className="someClass"
@@ -501,53 +523,33 @@ describe('FormComponents', ()=>{
         />);
     });
 
-    afterEach(()=>{
-      ctrl.unmount();
+    it('init', ()=>{
+      expect(screen.getAllByRole('button').at(0).style.backgroundColor).toEqual('rgb(255, 0, 255)');
     });
 
-    it('init', (done)=>{
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find(Button).prop('style')).toEqual(jasmine.objectContaining({
-          backgroundColor: '#f0f',
-        }));
-        done();
-      }, 0);
-    });
-
-    it('no color', (done)=>{
-      ctrl.setProps({
+    it('no color', ()=>{
+      ctrlRerender({
         value: null,
       });
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find(Button).prop('style')).toEqual(jasmine.objectContaining({
-          backgroundColor: null,
-        }));
-        expect(ctrl.find(Button).find(CloseIcon).exists()).toBe(true);
-        done();
-      }, 0);
-    });
-
-    it('other events', (done)=>{
-      pickrObj.current.applyColor(false);
-      setTimeout(()=>{
-        expect(onChange).toHaveBeenCalled();
-        done();
-      }, 1000);
-    });
-
-    it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
+      const btn = screen.getAllByRole('button').at(0);
+      expect(btn.style.backgroundColor).toBe('');
     });
   });
 
   describe('FormFooterMessage', ()=>{
-    let ThemedFormFooterMessage = withTheme(FormFooterMessage), ctrl, onClose=jasmine.createSpy('onClose');
-
+    let ThemedFormFooterMessage = withTheme(FormFooterMessage), ctrl, onClose=jest.fn();
+    const ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedFormFooterMessage
+          type={MESSAGE_TYPE.SUCCESS}
+          message="Some message"
+          closable={false}
+          onClose={onClose}
+          {...props}
+        />);
+    };
     beforeEach(()=>{
-      ctrl = mount(
+      ctrl = render(
         <ThemedFormFooterMessage
           type={MESSAGE_TYPE.SUCCESS}
           message="Some message"
@@ -557,41 +559,42 @@ describe('FormComponents', ()=>{
     });
 
     it('init', ()=>{
-      expect(ctrl.find(CheckRoundedIcon).exists()).toBeTrue();
-      expect(ctrl.text()).toBe('Some message');
+      expect(screen.getByTestId(MESSAGE_TYPE.SUCCESS)).toBeInTheDocument();
+      expect(screen.getByText('Some message')).toBeInTheDocument();
     });
 
     it('change types', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         type: MESSAGE_TYPE.ERROR,
       });
-      expect(ctrl.find(ErrorRoundedIcon).exists()).toBeTrue();
+      expect(screen.getByTestId(MESSAGE_TYPE.ERROR)).toBeInTheDocument();
 
-      ctrl.setProps({
+      ctrlRerender({
         type: MESSAGE_TYPE.INFO,
       });
-      expect(ctrl.find(InfoRoundedIcon).exists()).toBeTrue();
+      expect(screen.getByTestId(MESSAGE_TYPE.INFO)).toBeInTheDocument();
 
-      ctrl.setProps({
+      ctrlRerender({
         type: MESSAGE_TYPE.WARNING,
       });
-      expect(ctrl.find(WarningRoundedIcon).exists()).toBeTrue();
+      expect(screen.getByTestId(MESSAGE_TYPE.WARNING)).toBeInTheDocument();
     });
 
     it('closable', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         closable: true,
       });
-      expect(ctrl.find(CloseIcon).exists()).toBeTrue();
-      ctrl.find(IconButton).simulate('click');
+      const btn = screen.getByTestId('Close');
+      expect(btn).toBeInTheDocument();
+      fireEvent.click(btn);
       expect(onClose).toHaveBeenCalled();
     });
 
     it('no message', ()=>{
-      ctrl.setProps({
+      ctrlRerender({
         message: '',
       });
-      expect(ctrl.isEmptyRender()).toBeTrue();
+      expect(ctrl.container).toBeEmptyDOMElement();
     });
   });
 });

@@ -17,7 +17,7 @@ import JSONBigNumber from 'json-bignumber';
 import JsonEditor from '../../../../../../static/js/components/JsonEditor';
 import PropTypes from 'prop-types';
 import { RowInfoContext } from '.';
-import Notifier from '../../../../../../static/js/helpers/Notifier';
+import { usePgAdmin } from '../../../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme)=>({
   textEditor: {
@@ -180,6 +180,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
   const value = row[column.key] ?? '';
   const [localVal, setLocalVal] = React.useState(value);
   const {getCellElement} = useContext(RowInfoContext);
+  const pgAdmin = usePgAdmin();
 
   const onChange = React.useCallback((e)=>{
     setLocalVal(e.target.value);
@@ -187,7 +188,7 @@ export function TextEditor({row, column, onRowChange, onClose}) {
 
   const onOK = ()=>{
     if(column.is_array && !isValidArray(localVal)) {
-      Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
+      pgAdmin.Browser.notifier.error(gettext('Arrays must start with "{" and end with "}"'));
     } else {
       if(value == localVal) {
         onClose(false);
@@ -224,14 +225,16 @@ TextEditor.propTypes = EditorPropTypes;
 
 export function NumberEditor({row, column, onRowChange, onClose}) {
   const classes = useStyles();
+  const pgAdmin = usePgAdmin();
+
   const value = row[column.key] ?? '';
   const isValidData = ()=>{
     if(!column.is_array && isNaN(value)){
-      Notifier.error(gettext('Please enter a valid number'));
+      pgAdmin.Browser.notifier.error(gettext('Please enter a valid number'));
       return false;
     } else if(column.is_array) {
       if(!isValidArray(value)) {
-        Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
+        pgAdmin.Browser.notifier.error(gettext('Arrays must start with "{" and end with "}"'));
         return false;
       }
       let checkVal = value.trim().slice(1, -1);
@@ -242,7 +245,7 @@ export function NumberEditor({row, column, onRowChange, onClose}) {
       }
       for (const val of checkVal) {
         if(isNaN(val)) {
-          Notifier.error(gettext('Arrays must start with "{" and end with "}"'));
+          pgAdmin.Browser.notifier.error(gettext('Arrays must start with "{" and end with "}"'));
           return false;
         }
       }
@@ -328,6 +331,8 @@ CheckboxEditor.propTypes = EditorPropTypes;
 export function JsonTextEditor({row, column, onRowChange, onClose}) {
   const classes = useStyles();
   const {getCellElement} = useContext(RowInfoContext);
+  const pgAdmin = usePgAdmin();
+
   const value = React.useMemo(()=>{
     let newVal = row[column.key] ?? null;
     /* If jsonb or array */
@@ -360,7 +365,7 @@ export function JsonTextEditor({row, column, onRowChange, onClose}) {
       return;
     }
     if(hasError) {
-      Notifier.error(gettext('Invalid JSON input'));
+      pgAdmin.Browser.notifier.error(gettext('Invalid JSON input'));
       return;
     }
     onRowChange({ ...row, [column.key]: localVal}, true);

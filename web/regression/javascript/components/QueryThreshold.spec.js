@@ -7,41 +7,26 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import QueryThresholds from '../../../pgadmin/static/js/components/QueryThresholds';
-import { InputText } from '../../../pgadmin/static/js/components/FormComponents';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('QueryThresholds', () => {
-  let mount;
   let defult_value = {
     'warning': 5,
     'alert': 6
   };
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(() => {
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(() => {
-    jasmineEnzyme();
-  });
-
   describe('QueryThresholds', () => {
-    let ThemedFormInputQueryThresholds = withTheme(QueryThresholds), ctrl;
-    let onChange = jasmine.createSpy('onChange');
+    let ThemedFormInputQueryThresholds = withTheme(QueryThresholds);
+    let onChange = jest.fn();
     beforeEach(() => {
-      ctrl = mount(
+      render(
         <ThemedFormInputQueryThresholds
           testcid="QueryThresholdCid"
           helpMessage="some help message"
@@ -53,21 +38,22 @@ describe('QueryThresholds', () => {
         />);
     });
 
-    it('Warning', (done) => {
-      ctrl.find(InputText).at(0).find('input').simulate('change', { warning: 5, alert: 6 });
-      expect(ctrl.find(InputText).at(0).prop('value')).toBe(5);
-
-      expect(onChange).toHaveBeenCalledWith({ warning: '5', alert: 6 });
-      done();
+    it('Warning', async () => {
+      const user = userEvent.setup();
+      const inp = screen.getAllByRole('textbox').at(0);
+      await user.type(inp, '7');
+      await waitFor(()=>{
+        expect(onChange).toHaveBeenCalledWith({ warning: '57', alert: 6 });
+      });
     });
 
-    it('Alert', (done) => {
-      ctrl.find(InputText).at(1).find('input').simulate('change', { warning: 5, alert: 6 });
-      expect(ctrl.find(InputText).at(1).prop('value')).toBe(6);
-
-      expect(onChange).toHaveBeenCalledWith({ warning: 5, alert: '6' });
-      done();
+    it('Alert', async () => {
+      const user = userEvent.setup();
+      const inp = screen.getAllByRole('textbox').at(1);
+      await user.type(inp, '8');
+      await waitFor(()=>{
+        expect(onChange).toHaveBeenCalledWith({ warning: 5, alert: '68' });
+      });
     });
   });
-
 });

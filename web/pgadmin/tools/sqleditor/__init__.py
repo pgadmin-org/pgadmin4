@@ -84,9 +84,6 @@ class SqlEditorModule(PgAdminModule):
                      url=url_for('help.static', filename='index.html'))
         ]}
 
-    def get_panels(self):
-        return []
-
     def get_exposed_url_endpoints(self):
         """
         Returns:

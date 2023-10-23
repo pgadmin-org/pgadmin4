@@ -7,13 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import getApiInstance from '../../../static/js/api_instance';
-import Notify from '../../../static/js/helpers/Notifier';
-import { getBrowser } from '../../../static/js/utils';
-
-define('pgadmin.settings', [
-  'sources/pgadmin', 'sources/gettext', 'sources/url_for',
-], function(pgAdmin, gettext, url_for) {
+define('pgadmin.settings', ['sources/pgadmin'], function(pgAdmin) {
 
   // This defines the Preference/Options Dialog for pgAdmin IV.
   pgAdmin = pgAdmin || window.pgAdmin || {};
@@ -35,34 +29,7 @@ define('pgadmin.settings', [
     // We will force unload method to not to save current layout
     // and reload the window
     show: function() {
-      Notify.confirm(gettext('Reset layout'),
-        gettext('Are you sure you want to reset the current layout? This will cause the application to reload and any un-saved data will be lost.'),
-        function() {
-          const reloadingIndicator = document.createElement('div');
-          reloadingIndicator.setAttribute('id', 'reloading-indicator');
-          document.body.appendChild(reloadingIndicator);
-
-          // Delete the record from database as well, then only reload page
-          getApiInstance().delete(url_for('settings.reset_layout'))
-            .then(()=>{
-              window.onbeforeunload = null;
-              // Now reload page
-              location.reload(true);
-              let {name: browser} = getBrowser();
-              if(browser == 'Nwjs') {
-                pgAdmin.Browser.create_menus();
-              }
-            })
-            .catch(()=>{
-              console.warn(
-                'Something went wrong on server while resetting layout.'
-              );
-            });
-        },
-        function() {
-          // Do nothing as user canceled the operation.
-        }
-      );
+      pgAdmin.Browser.docker.resetLayout();
     },
   };
 

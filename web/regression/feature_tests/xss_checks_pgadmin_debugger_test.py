@@ -123,7 +123,7 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
             # Only this tab is vulnerable rest are Code Mirror
             # control which are already tested in Query tool test case
-            self.page.click_tab('id-debugger-messages', rc_dock=True)
+            self.page.click_tab('Messages')
             source_code = self.page.find_by_xpath(
                 "//div[@id='id-debugger-messages'] //div[@id='debugger-msg']"
             ).get_attribute('innerHTML')
@@ -139,10 +139,9 @@ class CheckDebuggerForXssFeatureTest(BaseFeatureTest):
 
     def _close_debugger(self):
         self.page.driver.switch_to.default_content()
-        self.page.click_element(
-            self.page.find_by_xpath(
-                "//*[@id='dockerContainer']/div/div[3]/div/div[2]/div[1]")
-        )
+        self.page.find_by_css_selector("div[data-dockid='id-main'] "
+                                       ".dock-tab.dock-tab-active "
+                                       "button[data-label='Close']").click()
 
     def _check_escaped_characters(self, source_code, string_to_find, source):
         # For XSS we need to search against element's html code

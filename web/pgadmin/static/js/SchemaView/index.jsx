@@ -37,8 +37,8 @@ import DepListener, {DepListenerContext} from './DepListener';
 import FieldSetView from './FieldSetView';
 import DataGridView from './DataGridView';
 import { useIsMounted } from '../custom_hooks';
-import Notify from '../helpers/Notifier';
 import ErrorBoundary from '../helpers/ErrorBoundary';
+import { usePgAdmin } from '../BrowserComponent';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -484,6 +484,7 @@ function SchemaDialogView({
   /* formErr has 2 keys - name and message.
   Footer message will be displayed if message is set.
   */
+  const pgAdmin = usePgAdmin();
   const [formErr, setFormErr] = useState({});
   const [loaderText, setLoaderText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -493,7 +494,7 @@ function SchemaDialogView({
   const isNew = schema.isNew(schema.origData);
   const checkIsMounted = useIsMounted();
   const preFormReadyQueue = useRef([]);
-  const Notifier = props.Notifier || Notify;
+  const Notifier = props.Notifier || pgAdmin.Browser.notifier;
 
   const depListenerObj = useRef(new DepListener());
   /* The session data */
@@ -865,7 +866,7 @@ const usePropsStyles = makeStyles((theme)=>({
     flexGrow: 1,
   },
   toolbar: {
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.5, 1),
     background: theme.palette.background.default,
     ...theme.mixins.panelBorder.bottom,
   },
@@ -888,6 +889,7 @@ function SchemaPropertiesView({
   const [origData, setOrigData] = useState({});
   const [loaderText, setLoaderText] = useState('');
   const checkIsMounted = useIsMounted();
+  const pgAdmin = usePgAdmin();
 
   useEffect(()=>{
     setLoaderText('Loading...');
@@ -903,7 +905,7 @@ function SchemaPropertiesView({
       }
     }).catch((err)=>{
       setLoaderText('');
-      Notify.pgRespErrorNotify(err);
+      pgAdmin.Browser.notifier.pgRespErrorNotify(err);
     });
   }, []);
 

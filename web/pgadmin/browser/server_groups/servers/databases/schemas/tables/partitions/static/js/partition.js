@@ -8,18 +8,17 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodePartitionTableSchema } from './partition.ui';
-import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define([
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
   'pgadmin.browser.collection',
 ],
 function(
-  gettext, url_for, $, pgAdmin, pgBrowser,
+  gettext, url_for, pgAdmin, pgBrowser,
   SchemaChildTreeNode, pgadminUtils
 ) {
 
@@ -151,7 +150,7 @@ function(
       },
       on_done: function(res, data, t, i) {
         if (res.success == 1) {
-          Notify.success(res.info);
+          pgAdmin.Browser.notifier.success(res.info);
           t.removeIcon(i);
           data.icon = 'icon-partition';
           t.addIcon(i, {icon: data.icon});
@@ -186,12 +185,12 @@ function(
           getApiInstance().put(obj.generate_url(i, 'set_trigger' , d, true), params)
             .then(({data: res})=>{
               if (res.success == 1) {
-                Notify.success(res.info);
+                pgAdmin.Browser.notifier.success(res.info);
                 t.updateAndReselectNode(i, d);
               }
             })
             .catch((error)=>{
-              Notify.pgRespErrorNotify(error);
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
               t.refresh(i);
             });
         },
@@ -215,7 +214,7 @@ function(
           if (!d)
             return false;
 
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
             function () {
@@ -225,7 +224,7 @@ function(
                   obj.on_done(res, data, t, i);
                 })
                 .catch((error)=>{
-                  Notify.pgRespErrorNotify(error);
+                  pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                   t.unload(i);
                 });
             },
@@ -241,7 +240,7 @@ function(
           if (!d)
             return false;
 
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function () {
@@ -251,7 +250,7 @@ function(
                   obj.on_done(res, data, t, i);
                 })
                 .catch((error)=>{
-                  Notify.pgRespErrorNotify(error);
+                  pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                   t.unload(i);
                 });
             },
@@ -276,14 +275,14 @@ function(
             title = gettext('Detach Partition Finalize');
           }
 
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             title,
             gettext('Are you sure you want to detach the partition %s?', d._label),
             function () {
               getApiInstance().put(obj.generate_url(i, 'detach' , d, true), params)
                 .then(({data: res})=>{
                   if (res.success == 1) {
-                    Notify.success(res.info);
+                    pgAdmin.Browser.notifier.success(res.info);
                     let n = t.next(i);
                     if (!n) {
                       n = t.prev(i);
@@ -298,7 +297,7 @@ function(
                   }
                 })
                 .catch((error)=>{
-                  Notify.pgRespErrorNotify(error);
+                  pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                 });
             },
             function() {/*This is intentional (SonarQube)*/}

@@ -370,9 +370,6 @@ def convert_length_precision_to_string(data):
     :return:
     """
 
-    # We need to handle the below case because jquery has changed
-    # undefined/null values to empty strings
-    # https://github.com/jquery/jquery/commit/36d2d9ae937f626d98319ed850905e8d1cbfd078
     if 'attlen' in data and data['attlen'] == '':
         data['attlen'] = None
     elif 'attlen' in data and data['attlen'] is not None:

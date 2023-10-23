@@ -8,11 +8,10 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeListByName } from '../../../../browser/static/js/node_ajax';
-import {getUtilityView} from '../../../../browser/static/js/utility_view';
-import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import RestoreSchema, {getRestoreSaveOptSchema, getRestoreDisableOptionSchema, getRestoreMiscellaneousSchema, getRestoreTypeObjSchema, getRestoreSectionSchema} from './restore.ui';
+import pgAdmin from 'sources/pgadmin';
 
 define('tools.restore', [
   'sources/gettext', 'sources/url_for', 'pgadmin.browser',
@@ -90,7 +89,7 @@ define('tools.restore', [
     },
     saveCallBack: function(data) {
       if(data.errormsg) {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('Error'),
           gettext(data.errormsg)
         );
@@ -121,7 +120,7 @@ define('tools.restore', [
         'sid': id,
       });
     },
-    restoreObjects: function(action, treeItem) {
+    restoreObjects: function(_action, treeItem) {
       let that = this,
         tree = pgBrowser.tree,
         i = treeItem || tree.selected(),
@@ -138,22 +137,16 @@ define('tools.restore', [
         method: 'GET'
       }).then((res)=>{
         if (!res.data.success) {
-          Notify.alert(
+          pgAdmin.Browser.notifier.alert(
             gettext('Utility not found'),
             gettext(res.data.errormsg)
           );
           return;
         }
-        pgBrowser.Node.registerUtilityPanel();
-        let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
-          j = panel.$container.find('.obj_properties').first();
 
         let schema = that.getUISchema(treeItem);
-        panel.title(gettext(`Restore (${pgBrowser.Nodes[data._type].label}: ${data.label})`));
-        panel.focus();
-
         let urlShortcut = 'restore.create_job',
-          baseUrl =  url_for(urlShortcut, {
+          urlBase =  url_for(urlShortcut, {
             'sid': sid,
           }),
           extraData = that.setExtraParameters(treeNodeInfo, data);
@@ -163,11 +156,13 @@ define('tools.restore', [
             'filename': 'restore_dialog.html',
           });
 
-        getUtilityView(
-          schema, treeNodeInfo, 'select', 'dialog', j[0], panel, that.saveCallBack, extraData, 'Restore', baseUrl, sqlHelpUrl, helpUrl);
-
+        pgAdmin.Browser.Events.trigger('pgadmin:utility:show', treeItem,
+          gettext(`Restore (${pgBrowser.Nodes[data._type].label}: ${data.label})`),{
+            schema, extraData, urlBase, sqlHelpUrl, helpUrl, saveBtnName: gettext('Restore')
+          }, pgAdmin.Browser.stdW.md
+        );
       }).catch(()=>{
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('Utility not found'),
           gettext('Failed to fetch Utility information')
         );

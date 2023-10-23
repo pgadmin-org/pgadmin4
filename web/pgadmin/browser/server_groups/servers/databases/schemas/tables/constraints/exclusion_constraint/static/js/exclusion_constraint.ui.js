@@ -14,7 +14,7 @@ import { SCHEMA_STATE_ACTIONS } from '../../../../../../../../../../static/js/Sc
 import DataGridViewWithHeaderForm from '../../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import { getNodeAjaxOptions, getNodeListByName } from '../../../../../../../../../static/js/node_ajax';
 import TableSchema from '../../../../static/js/table.ui';
-import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 function getData(data) {
   let res = [];
@@ -275,7 +275,7 @@ export default class ExclusionConstraintSchema extends BaseUISchema {
       options: this.fieldOptions.amname,
       deferredDepChange: (state, source, topState, actionObj)=>{
         return new Promise((resolve)=>{
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             gettext('Change access method?'),
             gettext('Changing access method will clear columns collection'),
             function () {

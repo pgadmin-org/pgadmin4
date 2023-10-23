@@ -17,8 +17,7 @@ const treeTests = (treeClass, setDefaultCallBack) => {
   let tree;
   beforeEach(() => {
     let manageTree = new ManageTreeNodes();
-    let reactTree = jasmine.createSpyObj(
-      'tree', ['onTreeEvents', 'getActiveFile']);
+    let reactTree = {'onTreeEvents': jest.fn(), 'getActiveFile': jest.fn()};
     tree = new treeClass(reactTree, manageTree);
   });
 
@@ -126,14 +125,14 @@ const treeTests = (treeClass, setDefaultCallBack) => {
   describe('#findNodeByTreeElement', () => {
     context('retrieve data from node not found', () => {
       it('return undefined', () => {
-        let reactTree = jasmine.createSpyObj('tree', [
-          'hasParent',
-          'parent',
-          'getId',
-          'onTreeEvents',
-        ]);
+        let reactTree = {
+          'hasParent': jest.fn(),
+          'parent': jest.fn(),
+          'getId': jest.fn(),
+          'onTreeEvents': jest.fn(),
+        };
 
-        reactTree.getId.and.callFake((node) => {
+        reactTree.getId.mockImplementation((node) => {
           return node[0].id;
         });
         tree.tree = reactTree;
@@ -176,11 +175,12 @@ describe('tree tests', () => {
         level2 = tree.addNewNode('level2', {data: 'data'}, [{id: 'level2'}], ['level1']);
         tree.addNewNode('level3', {data: 'more data'}, [{id: 'level3'}], ['level1', 'level2']);
 
-        tree.tree = jasmine.createSpyObj(
-          'tree', ['unload', 'onTreeEvents',
-            'setActiveFile', 'closeDirectory', 'getActiveFile',
-            'deSelectActiveFile']);
-        tree.tree.unload.and.callFake(function() {
+        tree.tree = {
+          'unload': jest.fn(), 'onTreeEvents': jest.fn(),
+          'setActiveFile': jest.fn(), 'closeDirectory': jest.fn(), 'getActiveFile': jest.fn(),
+          'deSelectActiveFile': jest.fn()
+        };
+        tree.tree.unload.mockImplementation(function() {
           return Promise.resolve('Success!');
         });
       });
@@ -192,7 +192,7 @@ describe('tree tests', () => {
             done();
           })
           .catch((error)=>{
-            fail(error);
+            throw error;
           });
       });
 
@@ -203,7 +203,7 @@ describe('tree tests', () => {
             done();
           })
           .catch((error)=>{
-            fail(error);
+            throw error;
           });
       });
 
@@ -216,7 +216,7 @@ describe('tree tests', () => {
             }, 20);
           })
           .catch((error)=>{
-            fail(error);
+            throw error;
           });
       });
 
@@ -228,7 +228,7 @@ describe('tree tests', () => {
               done();
             })
             .catch((error)=>{
-              fail(error);
+              throw error;
             });
         });
 
@@ -242,7 +242,7 @@ describe('tree tests', () => {
               }, 20);
             })
             .catch((error)=>{
-              fail(error);
+              throw error;
             });
         });
       });
@@ -256,8 +256,8 @@ describe('tree tests', () => {
         tree.addNewNode('level1', {data: 'interesting'}, ['<li>level1</li>'], undefined);
         level2 = tree.addNewNode('level2', {data: 'data'}, ['<li>level2</li>'], ['level1']);
         tree.addNewNode('level3', {data: 'more data'}, ['<li>level3</li>'], ['level1','level2']);
-        tree.tree = jasmine.createSpyObj('tree', ['unload']);
-        tree.tree.unload.and.callFake(() => {
+        tree.tree = {'unload': jest.fn()};
+        tree.tree.unload.mockImplementation(() => {
           return Promise.resolve('Success!');
         });
       });
@@ -270,7 +270,7 @@ describe('tree tests', () => {
             done();
           })
           .catch((error)=>{
-            fail(error);
+            throw error;
           });
       });
 
@@ -281,7 +281,7 @@ describe('tree tests', () => {
             done();
           })
           .catch((error)=>{
-            fail(error);
+            throw error;
           });
       });
     });
@@ -289,11 +289,11 @@ describe('tree tests', () => {
 
   describe('Tree', () => {
     function realTreeSelectNode(tree, selectedNode) {
-      let reactTree = jasmine.createSpyObj('tree', [
-        'getActiveFile',
-      ]);
+      let reactTree = {
+        'getActiveFile': jest.fn()
+      };
       tree.tree = reactTree;
-      reactTree.getActiveFile.and.returnValue(selectedNode);
+      reactTree.getActiveFile.mockReturnValue(selectedNode);
     }
 
     treeTests(Tree, realTreeSelectNode);

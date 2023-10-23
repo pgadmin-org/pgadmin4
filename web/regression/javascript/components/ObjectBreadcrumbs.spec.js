@@ -7,99 +7,68 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
-import React from 'react';
-import '../helper/enzyme.helper';
-import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
-import ObjectBreadcrumbs from '../../../pgadmin/static/js/components/ObjectBreadcrumbs';
-import EventBus from '../../../pgadmin/static/js/helpers/EventBus';
 
-const pgAdmin = {
-  Browser: {
-    Events: new EventBus(),
-    get_preferences_for_module: function() {
-      return {
-        breadcrumbs_enable: true,
-        breadcrumbs_show_comment: true,
-      };
-    },
-    preference_version: ()=>123,
-    onPreferencesChange: ()=>{/*This is intentional (SonarQube)*/},
-    tree: {
-      getNodeDisplayPath: jasmine.createSpy('getNodeDisplayPath').and.returnValue(['server', 'object']),
-    }
-  },
-};
+import React from 'react';
+
+import { render, waitFor } from '@testing-library/react';
+import ObjectBreadcrumbs from '../../../pgadmin/static/js/components/ObjectBreadcrumbs';
+import pgAdmin from '../fake_pgadmin';
+import { withBrowser } from '../genericFunctions';
+import usePreferences from '../../../pgadmin/preferences/static/js/store';
+import { TreeFake } from '../tree/tree_fake';
 
 describe('ObjectBreadcrumbs', ()=>{
-  let mount;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
+    jest.spyOn(usePreferences.getState(), 'getPreferencesForModule').mockReturnValue({
+      breadcrumbs_enable: true,
+      breadcrumbs_show_comment: true,
+    });
+    pgAdmin.Browser.tree = new TreeFake(pgAdmin.Browser);
   });
 
-  afterAll(() => {
-    mount.cleanUp();
+  it('not hovered', ()=>{
+    let ThemedObjectBreadcrumbs = withBrowser(ObjectBreadcrumbs);
+    let ctrl = render(<ThemedObjectBreadcrumbs />);
+    expect(ctrl.container).toBeEmptyDOMElement();
   });
 
-  beforeEach(()=>{
-    jasmineEnzyme();
+  it('hovered object with comment', async ()=>{
+    let ThemedObjectBreadcrumbs = withBrowser(ObjectBreadcrumbs);
+    let ctrl = render(<ThemedObjectBreadcrumbs />);
+    pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:hovered', {
+      _metadata: {
+        data: {
+          description: 'some description'
+        }
+      },
+    }, {
+      _type: 'object',
+    });
+
+    await waitFor(()=>{
+      expect(ctrl.container).not.toBeEmptyDOMElement();
+      expect(ctrl.container.querySelector('[data-label="AccountTreeIcon"]')).toBeInTheDocument();
+      expect(ctrl.container.querySelector('[data-label="CommentIcon"]')).toBeInTheDocument();
+    }, {timeout: 500});
   });
 
-  it('not hovered', (done)=>{
-    let ThemedObjectBreadcrumbs = withTheme(ObjectBreadcrumbs);
-    let ctrl = mount(<ThemedObjectBreadcrumbs pgAdmin={pgAdmin} />);
-    setTimeout(()=>{
-      ctrl.update();
-      expect(ctrl.find('ForwardRef(AccountTreeIcon)').length).toBe(0);
-      done();
-    }, 0);
-  });
+  it('hovered object with no comment', async ()=>{
+    let ThemedObjectBreadcrumbs = withBrowser(ObjectBreadcrumbs);
+    let ctrl = render(<ThemedObjectBreadcrumbs />);
 
-  it('hovered object with comment', (done)=>{
-    let ThemedObjectBreadcrumbs = withTheme(ObjectBreadcrumbs);
-    let ctrl = mount(<ThemedObjectBreadcrumbs pgAdmin={pgAdmin} />);
-    setTimeout(()=>{
-      ctrl.update();
-      pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:hovered', {
-        _metadata: {
-          data: {
-            description: 'some description'
-          }
-        },
-      }, {
-        _type: 'object',
-      });
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('ForwardRef(AccountTreeIcon)').length).toBe(1);
-        expect(ctrl.find('ForwardRef(CommentIcon)').length).toBe(1);
-        done();
-      }, 500);
-    }, 500);
-  });
+    pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:hovered', {
+      _metadata: {
+        data: {}
+      },
+    }, {
+      _type: 'object',
+    });
 
-  it('hovered object with no comment', (done)=>{
-    let ThemedObjectBreadcrumbs = withTheme(ObjectBreadcrumbs);
-    let ctrl = mount(<ThemedObjectBreadcrumbs pgAdmin={pgAdmin} />);
-    setTimeout(()=>{
-      ctrl.update();
-      pgAdmin.Browser.Events.trigger('pgadmin-browser:tree:hovered', {
-        _metadata: {
-          data: {}
-        },
-      }, {
-        _type: 'object',
-      });
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('ForwardRef(AccountTreeIcon)').length).toBe(1);
-        expect(ctrl.find('ForwardRef(CommentIcon)').length).toBe(0);
-        done();
-      }, 500);
-    }, 500);
+    await waitFor(()=>{
+      expect(ctrl.container).not.toBeEmptyDOMElement();
+      expect(ctrl.container.querySelector('[data-label="AccountTreeIcon"]')).toBeInTheDocument();
+      expect(ctrl.container.querySelector('[data-label="CommentIcon"]')).toBeNull();
+    }, {timeout: 500});
   });
 });

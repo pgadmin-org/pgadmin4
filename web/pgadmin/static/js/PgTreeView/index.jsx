@@ -78,8 +78,8 @@ export default function PgTreeView({ data = [], hasCheckbox = false, selectionCh
                 ref={(obj) => {
                   treeObj.current = obj;
                 }}
-                width={width}
-                height={height}
+                width={isNaN(width) ? 100 : width}
+                height={isNaN(height) ? 100 : height}
                 data={treeData}
                 disableDrag={true}
                 disableDrop={true}

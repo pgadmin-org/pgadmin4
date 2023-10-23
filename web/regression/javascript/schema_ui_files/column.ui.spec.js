@@ -7,12 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import ColumnSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
-import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -46,7 +45,7 @@ function getFieldDepChange(schema, id) {
 }
 
 describe('ColumnSchema', ()=>{
-  let mount;
+
   let schemaObj = new ColumnSchema(
     ()=>new MockSchema(),
     {},
@@ -59,37 +58,28 @@ describe('ColumnSchema', ()=>{
   ];
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('create collection', ()=>{
+  it('create collection', async ()=>{
     let schemaCollObj = new ColumnInColl();
-    let ctrl = mount(getCreateView(schemaCollObj));
+    const {ctrl, user} = await getCreateView(schemaCollObj);
     /* Make sure you hit every corner */
-    ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+
+    await addNewDatagridRow(user, ctrl);
   });
 
   it('isTypeIdentity', ()=>{
@@ -168,7 +158,7 @@ describe('ColumnSchema', ()=>{
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     state.cltype = 'bigint';
     state.min_val_attlen = 5;

@@ -8,23 +8,15 @@
 //////////////////////////////////////////////////////////////
 
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import pgAdmin from 'sources/pgadmin';
 import SchemaView from '../../../pgadmin/static/js/SchemaView';
 import BackupSchema, {getSectionSchema, getTypeObjSchema, getSaveOptSchema, getDisabledOptionSchema, getMiscellaneousSchema} from '../../../pgadmin/tools/backup/static/js/backup.ui';
-import Theme from '../../../pgadmin/static/js/Theme';
+import { getCreateView, withBrowser } from '../genericFunctions';
+import { act, render } from '@testing-library/react';
 
 
 describe('BackupSchema', ()=>{
-  let mount;
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
   let backupSchemaObj = new BackupSchema(
     ()=> getSectionSchema(),
     ()=> getTypeObjSchema(),
@@ -41,24 +33,8 @@ describe('BackupSchema', ()=>{
     []
   );
 
-  it('create object backup', ()=>{
-    mount(<Theme>
-      <SchemaView
-        formType='dialog'
-        schema={backupSchemaObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{/*This is intentional (SonarQube)*/}}
-        onClose={()=>{/*This is intentional (SonarQube)*/}}
-        onHelp={()=>{/*This is intentional (SonarQube)*/}}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />
-    </Theme>);
+  it('create object backup', async ()=>{
+    await getCreateView(backupSchemaObj);
   });
 
 
@@ -78,9 +54,10 @@ describe('BackupSchema', ()=>{
     [{'id': 'public','name': 'public','icon': 'icon-schema', 'children': [{'id': 'public_table','name': 'table','icon': 'icon-coll-table','children': [{'id': 'public_test','name': 'test','icon': 'icon-table','schema': 'public','type': 'table','_name': 'public.test'}],'type': 'table','is_collection': true}],'is_schema': true}]
   );
 
-  it('create selected object backup', ()=>{
-    mount(<Theme>
-      <SchemaView
+  it('create selected object backup', async ()=>{
+    const WithBrowser = withBrowser(SchemaView);
+    await act(async ()=>{
+      await render(<WithBrowser
         formType='dialog'
         schema={backupSelectedSchemaObj}
         viewHelperProps={{
@@ -95,7 +72,8 @@ describe('BackupSchema', ()=>{
         disableSqlHelp={false}
         disableDialogHelp={false}
       />
-    </Theme>);
+      );
+    });
   });
 
 
@@ -115,24 +93,8 @@ describe('BackupSchema', ()=>{
     []
   );
 
-  it('create server backup', ()=>{
-    mount(<Theme>
-      <SchemaView
-        formType='dialog'
-        schema={backupServerSchemaObj}
-        viewHelperProps={{
-          mode: 'create',
-        }}
-        onSave={()=>{/*This is intentional (SonarQube)*/}}
-        onClose={()=>{/*This is intentional (SonarQube)*/}}
-        onHelp={()=>{/*This is intentional (SonarQube)*/}}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-        disableDialogHelp={false}
-      />
-    </Theme>);
+  it('create server backup', async ()=>{
+    await getCreateView(backupServerSchemaObj);
   });
 });
 

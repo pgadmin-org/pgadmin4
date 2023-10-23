@@ -48,9 +48,6 @@ class SchemaDiffModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_panels(self):
-        return []
-
     def get_exposed_url_endpoints(self):
         """
         Returns:

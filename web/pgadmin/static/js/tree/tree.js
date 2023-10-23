@@ -58,10 +58,8 @@ function manageTreeEvents(event, eventName, item) {
       }
       if (_.isObject(node.callbacks) &&
         eventName in node.callbacks &&
-        typeof node.callbacks[eventName] == 'function' &&
-        !node.callbacks[eventName].apply(
-          node, [item, d, obj, [], eventName])) {
-        return true;
+        typeof node.callbacks[eventName] == 'function') {
+        !node.callbacks[eventName].apply(node, [item, d, obj, [], eventName]);
       }
 
       /* Raise tree events for the nodes */
@@ -534,11 +532,6 @@ export class Tree {
     let dropDetailsFunc = this.getDraggable(data._type);
 
     if (dropDetailsFunc != null) {
-
-      /* addEventListener is used here because import jquery.drag.event
-       * overrides the dragstart event set using element.on('dragstart')
-       * This will avoid conflict.
-       */
       let dropDetails = dropDetailsFunc(data, item, this.getTreeNodeHierarchy(item));
 
       if (typeof dropDetails == 'string') {

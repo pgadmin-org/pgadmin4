@@ -7,8 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import Notify from 'static/js/helpers/Notifier';
-import {getUtilityView} from '../../../../browser/static/js/utility_view';
 import getApiInstance from 'sources/api_instance';
 import ImportExportSchema from './import_export.ui';
 import { getNodeListByName, getNodeAjaxOptions } from '../../../../browser/static/js/node_ajax';
@@ -78,7 +76,7 @@ define([
 
     importExportCallBack: function(data) {
       if(data.errormsg) {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('Error'),
           gettext(data.errormsg)
         );
@@ -113,7 +111,7 @@ define([
         if (pgBrowser.tree.hasParent(i)) {
           i = pgBrowser.tree.parent(i);
         } else {
-          Notify.alert(gettext('Please select server or child node from tree.'));
+          pgAdmin.Browser.notifier.alert(gettext('Please select server or child node from tree.'));
           break;
         }
       }
@@ -136,45 +134,39 @@ define([
       });
 
       // Check psql utility exists or not.
-      let that = this;
       api({
         url: baseUrlUtilitCheck,
         type:'GET',
       })
-        .then(function(res) {
+        .then((res)=>{
           if (!res.data.success) {
-            Notify.alert(
+            pgAdmin.Browser.notifier.alert(
               gettext('Utility not found'),
               res.data.errormsg
             );
           }else{
             // Open the dialog for the import/export module
-            pgBrowser.Node.registerUtilityPanel();
-            let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
-              j = panel.$container.find('.obj_properties').first();
-
-            let schema = that.getUISchema(item);
-            panel.title(gettext('Import/Export data - table \'%s\'', treeInfo.table.label));
-            panel.focus();
-
+            let schema = this.getUISchema(item);
             let urlShortcut = 'import_export.create_job',
-              baseUrl =  url_for(urlShortcut, {
+              urlBase =  url_for(urlShortcut, {
                 'sid': treeInfo.server._id,
               });
-
-            let extraData = that.setExtraParameters(treeInfo);
+            let extraData = this.setExtraParameters(treeInfo);
 
             let sqlHelpUrl = 'sql-copy.html',
               helpUrl = url_for('help.static', {
                 'filename': 'import_export_data.html',
               });
 
-            getUtilityView(schema, treeInfo, 'select', 'dialog', j[0], panel, that.importExportCallBack, extraData, 'OK', baseUrl, sqlHelpUrl, helpUrl);
-
+            pgAdmin.Browser.Events.trigger('pgadmin:utility:show', item,
+              gettext('Import/Export data - table \'%s\'', treeInfo.table.label),{
+                schema, extraData, urlBase, sqlHelpUrl, helpUrl, actionType: 'select', saveBtnName: gettext('OK'),
+              }, pgAdmin.Browser.stdW.md
+            );
           }
         })
-        .catch(function() {
-          Notify.alert(
+        .catch(()=>{
+          pgAdmin.Browser.notifier.alert(
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );

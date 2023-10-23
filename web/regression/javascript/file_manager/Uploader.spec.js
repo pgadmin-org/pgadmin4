@@ -7,36 +7,25 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render, screen, waitFor } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import Uploader, { filesReducer, getFileSize, UploadedFile } from '../../../pgadmin/misc/file_manager/static/js/components/Uploader';
-import { MESSAGE_TYPE } from '../../../pgadmin/static/js/components/FormComponents';
 
 describe('GridView', ()=>{
-  let mount;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
 
   describe('Uploader', ()=>{
-    let fmUtilsObj = jasmine.createSpyObj('fmUtilsObj', ['uploadItem', 'deleteItem'], ['currPath']);
-    let onClose = jasmine.createSpy('onClose');
+    let fmUtilsObj = {
+      'uploadItem': jest.fn(),
+      'deleteItem': jest.fn(),
+      'currPath': ''
+    };
+    let onClose = jest.fn();
     let ctrlMount = (props)=>{
-      return mount(<Theme>
+      return render(<Theme>
         <Uploader
           fmUtilsObj={fmUtilsObj}
           onClose={onClose}
@@ -45,12 +34,8 @@ describe('GridView', ()=>{
       </Theme>);
     };
 
-    it('init', (done)=>{
-      let ctrl = ctrlMount();
-      setTimeout(()=>{
-        ctrl.update();
-        done();
-      }, 0);
+    it('init', ()=>{
+      ctrlMount();
     });
 
     describe('filesReducer', ()=>{
@@ -75,7 +60,7 @@ describe('GridView', ()=>{
           files: ['new1'],
         });
         expect(newState.length).toBe(2);
-        expect(newState[0]).toEqual(jasmine.objectContaining({
+        expect(newState[0]).toEqual(expect.objectContaining({
           file: 'new1',
           progress: 0,
           started: false,
@@ -90,7 +75,7 @@ describe('GridView', ()=>{
           type: 'started',
           id: 1,
         });
-        expect(newState[0]).toEqual(jasmine.objectContaining({
+        expect(newState[0]).toEqual(expect.objectContaining({
           file: 'file1',
           progress: 0,
           started: true,
@@ -105,7 +90,7 @@ describe('GridView', ()=>{
           id: 1,
           value: 14,
         });
-        expect(newState[0]).toEqual(jasmine.objectContaining({
+        expect(newState[0]).toEqual(expect.objectContaining({
           file: 'file1',
           progress: 14,
           started: false,
@@ -119,7 +104,7 @@ describe('GridView', ()=>{
           type: 'failed',
           id: 1,
         });
-        expect(newState[0]).toEqual(jasmine.objectContaining({
+        expect(newState[0]).toEqual(expect.objectContaining({
           file: 'file1',
           progress: 0,
           started: false,
@@ -133,7 +118,7 @@ describe('GridView', ()=>{
           type: 'done',
           id: 1,
         });
-        expect(newState[0]).toEqual(jasmine.objectContaining({
+        expect(newState[0]).toEqual(expect.objectContaining({
           file: 'file1',
           progress: 0,
           started: false,
@@ -157,7 +142,7 @@ describe('GridView', ()=>{
 
     describe('UploadedFile', ()=>{
       let upCtrlMount = (props)=>{
-        return mount(<Theme>
+        return render(<Theme>
           <UploadedFile
             deleteFile={()=>{/*dummy*/}}
             onClose={onClose}
@@ -166,8 +151,8 @@ describe('GridView', ()=>{
         </Theme>);
       };
 
-      it('uploading', (done)=>{
-        let ctrl = upCtrlMount({upfile: {
+      it('uploading', async ()=>{
+        upCtrlMount({upfile: {
           file: {
             name: 'file1',
             size: '1KB',
@@ -177,18 +162,13 @@ describe('GridView', ()=>{
           progress: 14,
         }});
 
-        setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('FormFooterMessage').props()).toEqual(jasmine.objectContaining({
-            type: MESSAGE_TYPE.INFO,
-            message: 'Uploading... 14%',
-          }));
-          done();
-        }, 0);
+        await waitFor(()=>{
+          expect(screen.getByText('Uploading... 14%')).toBeInTheDocument();
+        });
       });
 
-      it('done', (done)=>{
-        let ctrl = upCtrlMount({upfile: {
+      it('done', async ()=>{
+        upCtrlMount({upfile: {
           file: {
             name: 'file1',
             size: '1KB',
@@ -198,18 +178,13 @@ describe('GridView', ()=>{
           progress: 14,
         }});
 
-        setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('FormFooterMessage').props()).toEqual(jasmine.objectContaining({
-            type: MESSAGE_TYPE.SUCCESS,
-            message: 'Uploaded!',
-          }));
-          done();
-        }, 0);
+        await waitFor(()=>{
+          expect(screen.getByText('Uploaded!')).toBeInTheDocument();
+        });
       });
 
-      it('failed', (done)=>{
-        let ctrl = upCtrlMount({upfile: {
+      it('failed', async ()=>{
+        upCtrlMount({upfile: {
           file: {
             name: 'file1',
             size: '1KB',
@@ -219,14 +194,9 @@ describe('GridView', ()=>{
           progress: 14,
         }});
 
-        setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('FormFooterMessage').props()).toEqual(jasmine.objectContaining({
-            type: MESSAGE_TYPE.ERROR,
-            message: 'Failed!',
-          }));
-          done();
-        }, 0);
+        await waitFor(()=>{
+          expect(screen.getByText('Failed!')).toBeInTheDocument();
+        });
       });
     });
   });

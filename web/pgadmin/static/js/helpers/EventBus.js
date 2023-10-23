@@ -12,21 +12,26 @@ export default class EventBus {
       callback: callback,
       fired: once ? 'pending' : 'ignore',
     });
+
+    // helpfull in useEffect where we need to cleanup the listeners.
+    return ()=>{
+      this.deregisterListener(event, callback);
+    };
   }
 
   on(...args) {
-    this.registerListener(...args);
+    return this.registerListener(...args);
   }
 
   once(...args) {
-    this.registerListener(...args, true);
+    return this.registerListener(...args, true);
   }
 
   deregisterListener(event, callback) {
     if(callback) {
       this._eventListeners = this._eventListeners.filter((e)=>{
         if(e.event === event) {
-          return e.callback.toString()!=callback.toString();
+          return e.callback != callback;
         }
         return true;
       });

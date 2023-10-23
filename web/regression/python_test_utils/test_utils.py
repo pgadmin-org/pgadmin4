@@ -921,6 +921,25 @@ def configure_preferences(default_binary_path=None):
             ('False', pref_confirm_on_refresh_close.pid)
         )
 
+    # Disable object breadcrumbs for tests
+    pref_breadcrumbs_enable = \
+        browser_pref.preference('breadcrumbs_enable')
+
+    user_pref = cur.execute(
+        select_preference_query, (pref_breadcrumbs_enable.pid,)
+    )
+
+    if len(user_pref.fetchall()) == 0:
+        cur.execute(
+            insert_preferences_query,
+            (pref_breadcrumbs_enable.pid, 1, 'False')
+        )
+    else:
+        cur.execute(
+            update_preference_query,
+            ('False', pref_breadcrumbs_enable.pid)
+        )
+
     conn.commit()
     conn.close()
 

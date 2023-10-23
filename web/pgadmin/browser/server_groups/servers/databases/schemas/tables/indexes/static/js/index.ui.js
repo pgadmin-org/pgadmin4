@@ -12,7 +12,7 @@ import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import DataGridViewWithHeaderForm from '../../../../../../../../../static/js/helpers/DataGridViewWithHeaderForm';
 import _ from 'lodash';
 import { isEmptyString } from 'sources/validators';
-import Notify from '../../../../../../../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 
 function inSchema(node_info) {
@@ -476,7 +476,7 @@ export default class IndexSchema extends BaseUISchema {
           };
           if((state.amname != actionObj?.oldState.amname) && state.columns?.length > 0) {
             return new Promise((resolve)=>{
-              Notify.confirm(
+              pgAdmin.Browser.notifier.confirm(
                 gettext('Warning'),
                 gettext('Changing access method will clear columns collection. Do you want to continue?'),
                 function () {

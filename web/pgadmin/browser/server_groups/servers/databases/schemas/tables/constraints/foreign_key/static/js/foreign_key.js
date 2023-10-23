@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeForeignKeySchema } from './foreign_key.ui';
-import Notify from '../../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../../../static/js/api_instance';
 
@@ -69,7 +68,7 @@ define('pgadmin.node.foreign_key', [
             getApiInstance().get(obj.generate_url(i, 'validate', d, true))
               .then(({data: res})=>{
                 if (res.success == 1) {
-                  Notify.success(res.info);
+                  pgAdmin.Browser.notifier.success(res.info);
                   t.removeIcon(i);
                   data.valid = true;
                   data.icon = 'icon-foreign_key';
@@ -79,7 +78,7 @@ define('pgadmin.node.foreign_key', [
                 }
               })
               .catch((error)=>{
-                Notify.pgRespErrorNotify(error);
+                pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                 t.unload(i);
               });
           }

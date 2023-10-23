@@ -7,14 +7,15 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
-import Theme from '../../../pgadmin/static/js/Theme';
-import BgProcessManager, { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
+
+import { render } from '@testing-library/react';
+import { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessConstants';
+import BgProcessManager from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
 import pgAdmin from 'sources/pgadmin';
 import Processes from '../../../pgadmin/misc/bgprocess/static/js/Processes';
+import { withBrowser } from '../genericFunctions';
 
 
 const processData = {
@@ -36,41 +37,21 @@ const processData = {
 };
 
 describe('Proceses', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
   beforeEach(()=>{
-    jasmineEnzyme();
     pgAdmin.Browser = pgAdmin.Browser || {};
     pgAdmin.Browser.BgProcessManager = new BgProcessManager(pgAdmin.Browser);
     pgAdmin.Browser.BgProcessManager._procList = [processData];
   });
 
   describe('ProcessDetails', ()=>{
+    const ProcesesWithBrowser = withBrowser(Processes);
     let ctrlMount = (props)=>{
-      return mount(<Theme>
-        <Processes
-          {...props}
-        />
-      </Theme>);
+      return render(<ProcesesWithBrowser {...props} />);
     };
 
-    it('init', (done)=>{
+    it('init', ()=>{
       let ctrl = ctrlMount({});
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('PgTable').length).toBe(1);
-        done();
-      }, 1000);
+      expect(ctrl.container.querySelectorAll('[data-test="processes"]').length).toBe(1);
     });
   });
 });

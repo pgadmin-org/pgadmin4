@@ -7,13 +7,12 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import TriggerSchema, { EventSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/triggers/static/js/trigger.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('TriggerSchema', ()=>{
-  let mount;
+
   let schemaObj = new TriggerSchema(
     {
       triggerFunction: [],
@@ -27,35 +26,29 @@ describe('TriggerSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     state.tfunction = null;
     schemaObj.validate(state, setError);
@@ -79,7 +72,7 @@ describe('TriggerSchema', ()=>{
       }
     );
 
-    mount(getCreateView(catalogSchemaObj));
+    getCreateView(catalogSchemaObj);
   });
 
   it('catalog properties', ()=>{
@@ -95,7 +88,7 @@ describe('TriggerSchema', ()=>{
       }
     );
 
-    mount(getPropertiesView(catalogPropertiesSchemaObj, getInitData));
+    getPropertiesView(catalogPropertiesSchemaObj, getInitData);
   });
 
   it('edit disableTransition', ()=>{
@@ -121,7 +114,7 @@ describe('TriggerSchema', ()=>{
       fires: 'AFTER'
     });
 
-    mount(getEditView(editSchemaObj, initData));
+    getEditView(editSchemaObj, initData);
   });
 
   it('edit disableTransition tgnewtable', ()=>{
@@ -147,14 +140,14 @@ describe('TriggerSchema', ()=>{
       fires: 'AFTER'
     });
 
-    mount(getEditView(editSchemaObj, initData));
+    getEditView(editSchemaObj, initData);
   });
 
 });
 
 
 describe('TriggerEventsSchema', ()=>{
-  let mount;
+
   let schemaObj = new EventSchema(
     {
       nodeInfo: {
@@ -165,35 +158,29 @@ describe('TriggerEventsSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
 
     state.tfunction = 'public';

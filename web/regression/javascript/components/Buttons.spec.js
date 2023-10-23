@@ -7,50 +7,34 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
 import InfoIcon from '@material-ui/icons/InfoRounded';
 
 import {PrimaryButton, DefaultButton, PgIconButton} from 'sources/components/Buttons';
+import { render, screen } from '@testing-library/react';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('components Buttons', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
   it('PrimaryButton', ()=>{
     let ThemedBtn = withTheme(PrimaryButton);
-    let btn = mount(<ThemedBtn>Test</ThemedBtn>);
-    expect(btn.find('button').getDOMNode().classList.contains('MuiButton-containedPrimary')).toBe(true);
+    render(<ThemedBtn>Test</ThemedBtn>);
+    expect(screen.getByRole('button').classList.contains('MuiButton-containedPrimary')).toBe(true);
   });
 
   it('DefaultButton', ()=>{
     let ThemedBtn = withTheme(DefaultButton);
-    let btn = mount(<ThemedBtn className="testClass">Test</ThemedBtn>);
-    expect(btn.find('button').getDOMNode().classList.contains('MuiButton-outlined')).toBe(true);
-    expect(btn.find('button').getDOMNode().classList.contains('testClass')).toBe(true);
+    render(<ThemedBtn className="testClass">Test</ThemedBtn>);
+    const btn = screen.getByRole('button');
+    expect(btn.classList.contains('MuiButton-outlined')).toBe(true);
+    expect(btn.classList.contains('testClass')).toBe(true);
   });
 
   it('PgIconButton', ()=>{
-    let Icon = <InfoIcon />;
+    let Icon = <InfoIcon data-testid="info-icon" />;
     let ThemedBtn = withTheme(PgIconButton);
-    let btn = mount(<ThemedBtn title="The icon button" icon={Icon} className="testClass"></ThemedBtn>);
-    expect(btn.find(InfoIcon)).not.toBe(null);
+    render(<ThemedBtn title="The icon button" icon={Icon} className="testClass"></ThemedBtn>);
+    expect(screen.getByTestId('info-icon')).not.toBe(null);
   });
 });

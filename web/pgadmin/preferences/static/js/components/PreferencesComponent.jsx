@@ -21,13 +21,12 @@ import CloseSharpIcon from '@material-ui/icons/CloseSharp';
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import SaveSharpIcon from '@material-ui/icons/SaveSharp';
 import clsx from 'clsx';
-import Notify from '../../../../static/js/helpers/Notifier';
 import pgAdmin from 'sources/pgadmin';
 import { DefaultButton, PgIconButton, PrimaryButton } from '../../../../static/js/components/Buttons';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import { getBinaryPathSchema } from '../../../../browser/server_groups/servers/static/js/binary_path.ui';
-import { _set_dynamic_tab } from '../../../../tools/sqleditor/static/js/show_query_tool';
 import { getBrowserAccesskey } from '../../../../static/js/components/ShortcutTitle';
+import usePreferences from '../store';
 
 class PreferencesSchema extends BaseUISchema {
   constructor(initValues = {}, schemaFields = []) {
@@ -168,6 +167,7 @@ export default function PreferencesComponent({ ...props }) {
   const [loadTree, setLoadTree] = React.useState(0);
   const api = getApiInstance();
   const firstTreeElement = React.useRef('');
+  const preferencesStore = usePreferences();
 
   useEffect(() => {
     const pref_url = url_for('preferences.index');
@@ -230,7 +230,7 @@ export default function PreferencesComponent({ ...props }) {
       // set Preferences schema
       prefSchema.current = new PreferencesSchema(preferencesValues, preferencesData);
     }).catch((err) => {
-      Notify.alert(err);
+      pgAdmin.Browser.notifier.alert(err);
     });
   }, []);
   function setPreferences(node, subNode, nodeData, preferencesValues, preferencesData) {
@@ -328,8 +328,8 @@ export default function PreferencesComponent({ ...props }) {
     element.canDelete = false;
     element.canEdit = false;
     element.editable = false;
-    if (pgAdmin.Browser.get_preference(node.label.toLowerCase(), element.name)?.value) {
-      let temp = pgAdmin.Browser.get_preference(node.label.toLowerCase(), element.name).value;
+    if (preferencesStore.getPreferences(node.label.toLowerCase(), element.name)?.value) {
+      let temp = preferencesStore.getPreferences(node.label.toLowerCase(), element.name).value;
       preferencesValues[element.id] = temp;
     } else {
       preferencesValues[element.id] = element.value;
@@ -547,44 +547,19 @@ export default function PreferencesComponent({ ...props }) {
         return s.name=='show_system_objects'||s.name=='show_empty_coll_nodes'||s.name.startsWith('show_node_')||s.name=='hide_shared_server'||s.name=='show_user_defined_templates';
       });
       let requires_refresh = false;
-      /* Find the modules changed */
-      let modulesChanged = {};
       for (const [key] of Object.entries(data.current)) {
-        let pref = pgAdmin.Browser.get_preference_for_id(Number(key));
-
-        if (pref['name'] == 'dynamic_tabs') {
-          _set_dynamic_tab(pgAdmin.Browser, !pref['value']);
-        }
-
-        if (!modulesChanged[pref.module]) {
-          modulesChanged[pref.module] = true;
-        }
-
+        let pref = preferencesStore.getPreferenceForId(Number(key));
         requires_refresh = checkRefreshRequired(pref, requires_refresh);
-
-        // Sync the lock layout menu with preferences
-        if (pref.name == 'lock_layout') {
-          let fileMenu = pgAdmin.Browser.MainMenus.find((menu) => menu.name == 'file');
-          let layoutSubMenu = fileMenu['menuItems'].find(menu => menu.name == 'mnu_locklayout');
-          layoutSubMenu['menu_items'].forEach(item => {
-            if (item.name === 'mnu_lock_'+save_data[0]['value']) {
-              item.checked = true;
-            } else {
-              item.checked = false;
-            }
-          });
-          pgAdmin.Browser.Events.trigger('pgadmin:nw-refresh-menu-item', 'lock_layout');
-        }
       }
 
       if (requiresTreeRefresh) {
-        Notify.confirm(
+        pgAdmin.Browser.notifier.confirm(
           gettext('Object explorer refresh required'),
           gettext('An object explorer refresh is required. Do you wish to refresh it now?'),
           function () {
             pgAdmin.Browser.tree.destroy({
               success: function () {
-                pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
+                // pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
                 return true;
               },
             });
@@ -598,7 +573,7 @@ export default function PreferencesComponent({ ...props }) {
       }
 
       if (requires_refresh) {
-        Notify.confirm(
+        pgAdmin.Browser.notifier.confirm(
           gettext('Refresh required'),
           gettext('A page refresh is required to apply the theme. Do you wish to refresh the page now?'),
           function () {
@@ -612,10 +587,10 @@ export default function PreferencesComponent({ ...props }) {
         );
       }
       // Refresh preferences cache
-      pgAdmin.Browser.cache_preferences(modulesChanged);
+      preferencesStore.cache();
       props.closeModal();
     }).catch((err) => {
-      Notify.alert(err.response.data);
+      pgAdmin.Browser.notifier.alert(err.response.data);
     });
   }
 

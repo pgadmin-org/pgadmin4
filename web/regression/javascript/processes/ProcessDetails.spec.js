@@ -7,17 +7,17 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render, waitFor } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import ProcessDetails from '../../../pgadmin/misc/bgprocess/static/js/ProcessDetails';
-import BgProcessManager, { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
+import { BgProcessManagerProcessState } from '../../../pgadmin/misc/bgprocess/static/js/BgProcessConstants';
+import BgProcessManager from '../../../pgadmin/misc/bgprocess/static/js/BgProcessManager';
 import pgAdmin from 'sources/pgadmin';
-import { MESSAGE_TYPE } from '../../../pgadmin/static/js/components/FormComponents';
 import _ from 'lodash';
 
 
@@ -56,13 +56,10 @@ const detailsResponse = {
 };
 
 describe('ProcessDetails', ()=>{
-  let mount;
+
   let networkMock;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
     networkMock = new MockAdapter(axios);
     let initialResp = _.cloneDeep(detailsResponse);
     initialResp.err.done = false;
@@ -73,19 +70,18 @@ describe('ProcessDetails', ()=>{
   });
 
   afterAll(() => {
-    mount.cleanUp();
     networkMock.restore();
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
+
     pgAdmin.Browser = pgAdmin.Browser || {};
     pgAdmin.Browser.BgProcessManager = new BgProcessManager(pgAdmin.Browser);
   });
 
   describe('ProcessDetails', ()=>{
     let ctrlMount = (props)=>{
-      return mount(<Theme>
+      return render(<Theme>
         <ProcessDetails
           data={processData}
           {...props}
@@ -93,24 +89,12 @@ describe('ProcessDetails', ()=>{
       </Theme>);
     };
 
-    it('running and success', (done)=>{
+    it('running and success', async ()=>{
       let ctrl = ctrlMount({});
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('NotifierMessage').props()).toEqual(jasmine.objectContaining({
-          type: MESSAGE_TYPE.INFO,
-          message: 'Running...',
-        }));
-        setTimeout(()=>{
-          ctrl.update();
-          expect(ctrl.find('NotifierMessage').props()).toEqual(jasmine.objectContaining({
-            type: MESSAGE_TYPE.SUCCESS,
-            message: 'Successfully completed.',
-          }));
-          ctrl.unmount();
-          done();
-        }, 2000);
-      }, 500);
+      expect(ctrl.container.querySelector('[data-test="notifier-message"]')).toHaveTextContent('Running...');
+      await waitFor(()=>{
+        expect(ctrl.container.querySelector('[data-test="notifier-message"]')).toHaveTextContent('Successfully completed.');
+      }, {timeout: 2000});
     });
   });
 });

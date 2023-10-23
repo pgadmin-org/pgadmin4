@@ -7,38 +7,22 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
-import { FormHelperText, InputLabel } from '@material-ui/core';
+import { act, render, waitFor } from '@testing-library/react';
 
 import {SelectRefresh} from 'sources/components/SelectRefresh';
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('components SelectRefresh', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
   describe('SelectRefresh', ()=>{
-    let ThemedSelectRefresh = withTheme(SelectRefresh), ctrl, onChange=jasmine.createSpy('onChange'),
-      ctrlMount = (props)=>{
-        ctrl?.unmount();
-        ctrl = mount(
+    let ThemedSelectRefresh = withTheme(SelectRefresh), ctrl, onChange=jest.fn();
+
+    beforeEach(async ()=>{
+      await act( async () => {
+        ctrl = render(
           <ThemedSelectRefresh
             label="First"
             className="someClass"
@@ -52,17 +36,16 @@ describe('components SelectRefresh', ()=>{
             controlProps={{
               getOptionsOnRefresh: ()=>{/*This is intentional (SonarQube)*/}
             }}
-            {...props}
           />);
-      };
-
-    beforeEach(()=>{
-      ctrlMount();
+      });
     });
 
-    it('accessibility', ()=>{
-      expect(ctrl.find(InputLabel)).toHaveProp('htmlFor', 'inpCid');
-      expect(ctrl.find(FormHelperText)).toHaveProp('id', 'hinpCid');
+    it('accessibility', async ()=>{
+      await waitFor(()=>{
+        const input = ctrl.container.querySelectorAll('input')[1];
+        expect(input.getAttribute('id')).toBe('inpCid');
+        expect(input.getAttribute('aria-describedby')).toBe('hinpCid');
+      }, {timeout: 500});
     });
   });
 

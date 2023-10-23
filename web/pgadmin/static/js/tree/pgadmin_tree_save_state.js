@@ -12,6 +12,7 @@ import url_for from 'sources/url_for';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import getApiInstance, { callFetch } from '../api_instance';
+import usePreferences from '../../../preferences/static/js/store';
 
 export const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
@@ -56,7 +57,7 @@ _.extend(pgBrowser.browserTreeState, {
 
   init: function() {
 
-    const save_tree_state_period = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval');
+    const save_tree_state_period = usePreferences.getState().getPreferences('browser', 'browser_tree_state_save_interval');
 
     if (!_.isUndefined(save_tree_state_period) &&  save_tree_state_period.value !== -1) {
       // Save the tree state every 30 seconds

@@ -7,12 +7,11 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import MembershipSchema from '../../../pgadmin/browser/server_groups/servers/static/js/membership.ui';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
-import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class SchemaInColl extends BaseUISchema {
   constructor(schemaObj) {
@@ -31,41 +30,36 @@ class SchemaInColl extends BaseUISchema {
 }
 
 describe('MembershipSchema', ()=>{
-  let mount;
+
   let schemaObj = new MembershipSchema(
     ()=>[]);
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('MembershipMemberSchema', ()=>{
-    spyOn(nodeAjax, 'getNodeListByName').and.returnValue([]);
-    let ctrl = mount(getCreateView(new SchemaInColl(schemaObj)));
+  it('MembershipMemberSchema', async ()=>{
+    jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue([]);
+    const {ctrl, user} = await getCreateView(new SchemaInColl(schemaObj));
     /* Make sure you hit every corner */
-    ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+
+    await addNewDatagridRow(user, ctrl);
   });
 });

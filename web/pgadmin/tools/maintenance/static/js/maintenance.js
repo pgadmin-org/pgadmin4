@@ -7,8 +7,6 @@
 //
 //////////////////////////////////////////////////////////////
 
-import Notify from '../../../../static/js/helpers/Notifier';
-import {getUtilityView} from '../../../../browser/static/js/utility_view';
 import getApiInstance from 'sources/api_instance';
 import MaintenanceSchema, {getVacuumSchema} from './maintenance.ui';
 import { getNodeListByName } from '../../../../browser/static/js/node_ajax';
@@ -93,7 +91,7 @@ define([
     },
     saveCallBack: function(data) {
       if(data.errormsg) {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('Error'),
           gettext(data.errormsg)
         );
@@ -142,7 +140,7 @@ define([
         if (pgBrowser.tree.hasParent(i)) {
           i = pgBrowser.tree.parent(i);
         } else {
-          Notify.alert(gettext('Please select server or child node from tree.'));
+          pgAdmin.Browser.notifier.alert(gettext('Please select server or child node from tree.'));
           break;
         }
       }
@@ -163,7 +161,7 @@ define([
       let treeInfo = t && t.getTreeNodeHierarchy(i);
 
       if (treeInfo.database._label.indexOf('=') >= 0) {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('Maintenance error'),
           gettext('Maintenance job creation failed. '+
           'Databases with = symbols in the name cannot be maintained using this utility.')
@@ -183,22 +181,14 @@ define([
       })
         .then(function(res) {
           if (!res.data.success) {
-            Notify.alert(
+            pgAdmin.Browser.notifier.alert(
               gettext('Utility not found'),
               res.data.errormsg
             );
           } else{
-
-            pgBrowser.Node.registerUtilityPanel();
-            let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
-              j = panel.$container.find('.obj_properties').first();
-
             let schema = that.getUISchema(item);
-            panel.title(gettext('Maintenance'));
-            panel.focus();
-
             let urlShortcut = 'maintenance.create_job',
-              jobUrl =  url_for(urlShortcut, {
+              urlBase =  url_for(urlShortcut, {
                 'sid': treeInfo.server._id,
                 'did': treeInfo.database._id
               });
@@ -209,12 +199,15 @@ define([
                 'filename': 'maintenance_dialog.html',
               });
 
-            getUtilityView(
-              schema, treeInfo, 'create', 'dialog', j[0], panel, that.saveCallBack, extraData, 'OK', jobUrl, sqlHelpUrl, helpUrl);
+            pgAdmin.Browser.Events.trigger('pgadmin:utility:show', item,
+              gettext('Maintenance'),{
+                schema, extraData, urlBase, sqlHelpUrl, helpUrl, saveBtnName: gettext('OK'),
+              }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.lg
+            );
           }
         })
         .catch(function() {
-          Notify.alert(
+          pgAdmin.Browser.notifier.alert(
             gettext('Utility not found'),
             gettext('Failed to fetch Utility information')
           );

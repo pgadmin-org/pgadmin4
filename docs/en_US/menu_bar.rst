@@ -25,9 +25,6 @@ Use the *File* menu to access the following options:
 +-------------------------+---------------------------------------------------------------------------------------------------------+
 | *Reset Layout*          | If you have modified the workspace, click to restore the default layout.                                |
 +-------------------------+---------------------------------------------------------------------------------------------------------+
-| *Lock Layout*           | Click to open a submenu to select the level for locking the UI layout                                   |
-|                         | This can also be changed from browser display :ref:`preferences <preferences>`                          |
-+-------------------------+---------------------------------------------------------------------------------------------------------+
 | *Runtime*               | Click to open a submenu to Configure, View Log and Zoom settings. Only visible when pgAdmin4 runs in    |
 |                         | desktop mode. To know more about runtime menu :ref:`click here <desktop_deployment>`                    |
 +-------------------------+---------------------------------------------------------------------------------------------------------+

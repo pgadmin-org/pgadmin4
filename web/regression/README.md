@@ -310,7 +310,7 @@ Javascript Tests:
 
 - See also the top-level pgadmin/README : Bundling Javascript
 
-- Javascript tests must be run from the web directory (since that is where node_modules and karma.conf reside):
+- Javascript tests must be run from the web directory (since that is where node_modules and jest.config.js reside):
 
     cd web/
 
@@ -320,5 +320,5 @@ Javascript Tests:
 
 - Now run the tests:
 
-   yarn run test:karma
-   yarn run test:karma-once
+   yarn run test:js
+   yarn run test:js-once

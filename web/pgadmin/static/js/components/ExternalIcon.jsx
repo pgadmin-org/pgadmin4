@@ -21,6 +21,8 @@ import SQLFileSvg from '../../img/sql_file.svg?svgr';
 import MagicSvg from '../../img/magic.svg?svgr';
 import MsAzure from '../../img/ms_azure.svg?svgr';
 import GoogleCloud from '../../img/google-cloud-1.svg?svgr';
+import TerminalSvg from '../../img/terminal.svg?svgr';
+import RowFilterSvg from '../../img/fonticon/row_filter.svg?svgr';
 
 export default function ExternalIcon({Icon, ...props}) {
   return <Icon className={'MuiSvgIcon-root'} {...props} />;
@@ -71,6 +73,12 @@ ExpandDialogIcon.propTypes = {style: PropTypes.object};
 
 export const MinimizeDialogIcon = ({style})=><ExternalIcon Icon={Collapse} style={{height: '1.4rem', ...style}} data-label="MinimizeDialogIcon" />;
 MinimizeDialogIcon.propTypes = {style: PropTypes.object};
+
+export const TerminalIcon = ({style})=><ExternalIcon Icon={TerminalSvg} style={{height: '0.9rem', ...style}} data-label="TerminalIcon" />;
+TerminalIcon.propTypes = {style: PropTypes.object};
+
+export const RowFilterIcon = ({style})=><ExternalIcon Icon={RowFilterSvg} style={{height: '1rem', ...style}} data-label="RowFilterIcon" />;
+RowFilterIcon.propTypes = {style: PropTypes.object};
 
 export const AWSIcon = ({style})=><ExternalIcon Icon={AWS} style={{height: '2.2rem',width: '3.2rem', ...style}} data-label="AWSIcon" />;
 AWSIcon.propTypes = {style: PropTypes.object};

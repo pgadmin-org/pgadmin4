@@ -7,34 +7,21 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import { ItemView } from '../../../pgadmin/misc/file_manager/static/js/components/GridView';
+import userEvent from '@testing-library/user-event';
 
 describe('GridView', ()=>{
-  let mount;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
 
   describe('ItemView', ()=>{
     let row = {'Filename': 'test.sql', 'Size': '1KB', 'file_type': 'dir'},
       ctrlMount = (props)=>{
-        return mount(<Theme>
+        return render(<Theme>
           <ItemView
             idx={0}
             selected={false}
@@ -44,19 +31,14 @@ describe('GridView', ()=>{
         </Theme>);
       };
 
-    it('keydown Escape', (done)=>{
-      const onEditComplete = jasmine.createSpy('onEditComplete');
-      let ctrl = ctrlMount({
+    it('keydown Escape', async ()=>{
+      const onEditComplete = jest.fn();
+      ctrlMount({
         onEditComplete: onEditComplete,
       });
-      setTimeout(()=>{
-        ctrl.update();
-        ctrl.find('div[data-test="filename-div"]').simulate('keydown', { code: 'Escape'});
-        setTimeout(()=>{
-          expect(onEditComplete).toHaveBeenCalled();
-          done();
-        });
-      }, 0);
+      const user = userEvent.setup();
+      await user.keyboard('{Escape}');
+      expect(onEditComplete).toHaveBeenCalled();
     });
   });
 });

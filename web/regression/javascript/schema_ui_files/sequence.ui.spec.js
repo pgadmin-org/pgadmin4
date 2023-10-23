@@ -7,8 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import SequenceSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/sequences/static/js/sequence.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
@@ -20,7 +19,7 @@ class MockSchema extends BaseUISchema {
 }
 
 describe('SequenceSchema', ()=>{
-  let mount;
+
   let schemaObj = new SequenceSchema(
     ()=>new MockSchema(),
     {
@@ -33,35 +32,29 @@ describe('SequenceSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     state.seqowner = null;
     schemaObj.validate(state, setError);

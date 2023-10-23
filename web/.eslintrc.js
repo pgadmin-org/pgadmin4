@@ -12,7 +12,6 @@ module.exports = {
     'browser': true,
     'es6': true,
     'amd': true,
-    'jasmine': true,
   },
   'extends': [
     'eslint:recommended',
@@ -41,10 +40,11 @@ module.exports = {
   'plugins': [
     'react',
     '@babel',
+    'jest'
   ],
   'overrides': [
     {
-      'files': ['**/*.ts', '**/*.tsx'],
+      'files': ['**/*.{ts,tsx}'],
       'plugins': [
         '@typescript-eslint',
       ],
@@ -55,10 +55,20 @@ module.exports = {
         '@typescript-eslint/no-this-alias': ['off'],
       }
     },
+    {
+      'files': ['**/*{spec,test}.{js,jsx}', './regression/javascript/**/*.{js}'],
+      'extends': ['eslint:recommended'],
+      'env': {
+        'jest': true
+      }
+    },
   ],
   'globals': {
     '_': true,
     'module': true,
+    '__dirname': true,
+    'global': true,
+    'jest': true
   },
   'rules': {
     'indent': [

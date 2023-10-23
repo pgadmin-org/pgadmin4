@@ -16,7 +16,6 @@ import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import Loader from 'sources/components/Loader';
 import clsx from 'clsx';
-import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import { PrimaryButton, PgIconButton } from '../../../../static/js/components/Buttons';
 import { useModalStyles } from '../../../../static/js/helpers/ModalProvider';
@@ -353,7 +352,7 @@ export default function SearchObjects({nodeData}) {
       })
       .catch((err)=>{
         setLoaderText(null);
-        Notify.error(parseApiError(err));
+        pgAdmin.Browser.notifier.error(parseApiError(err));
       });
   };
 
@@ -381,11 +380,11 @@ export default function SearchObjects({nodeData}) {
             resolve(typeOpt);
           })
           .catch((err)=>{
-            Notify.error(parseApiError(err));
+            pgAdmin.Browser.notifier.error(parseApiError(err));
             reject(err);
           });
       } catch (error) {
-        Notify.error(parseApiError(error));
+        pgAdmin.Browser.notifier.error(parseApiError(error));
         reject(error);
       }
     });

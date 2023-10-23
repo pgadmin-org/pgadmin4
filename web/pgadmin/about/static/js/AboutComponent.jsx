@@ -17,8 +17,8 @@ import { makeStyles } from '@material-ui/styles';
 import { InputText } from '../../../static/js/components/FormComponents';
 import getApiInstance from '../../../static/js/api_instance';
 import { copyToClipboard } from '../../../static/js/clipboard';
-import Notify from '../../../static/js/helpers/Notifier';
 import { useDelayedCaller } from '../../../static/js/custom_hooks';
+import { usePgAdmin } from '../../../static/js/BrowserComponent';
 
 
 const useStyles = makeStyles((theme)=>({
@@ -44,6 +44,7 @@ export default function AboutComponent() {
   const revertCopiedText = useDelayedCaller(()=>{
     setCopyText(gettext('Copy'));
   });
+  const pgAdmin = usePgAdmin();
 
   useEffect(() => {
     const about_url = url_for('about.index');
@@ -52,7 +53,7 @@ export default function AboutComponent() {
     api.get(about_url).then((res)=>{
       setAboutData(res.data.data);
     }).catch((err)=>{
-      Notify.error(err);
+      pgAdmin.Browser.notifier.error(err);
     });
   }, []);
 

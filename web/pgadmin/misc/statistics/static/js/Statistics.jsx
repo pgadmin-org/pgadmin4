@@ -12,13 +12,15 @@ import React, { useEffect } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
 import { compareSizeVals, toPrettySize } from '../../../../static/js/utils';
+import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { usePgAdmin } from '../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -155,7 +157,8 @@ function createSingleLineStatistics(data, prettifyFields) {
   return res;
 }
 
-export default function Statistics({ nodeData, item, node, ...props }) {
+// {nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}
+function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale, setIsStale }) {
   const classes = useStyles();
   const [tableData, setTableData] = React.useState([]);
 
@@ -177,13 +180,18 @@ export default function Statistics({ nodeData, item, node, ...props }) {
       disableGlobalFilter: false,
     },
   ]);
+  const pgAdmin = usePgAdmin();
 
   useEffect(() => {
+    if(!isStale || !isActive) {
+      return;
+    }
+
     let url,
       message = gettext('Please select an object in the tree view.');
 
     if (node) {
-      url = getURL(nodeData, true, props.treeNodeInfo, node, item, 'stats');
+      url = getURL(nodeData, true, treeNodeInfo, node, nodeItem, 'stats');
 
       message = gettext('No statistics are available for the selected object.');
 
@@ -207,7 +215,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
             setLoaderText('');
 
             if (err?.response?.data?.info == 'CRYPTKEY_MISSING') {
-              Notify.pgNotifier('error', err.request, 'The master password is not set', function(mesg) {
+              pgAdmin.Browser.notifier.pgNotifier('error', err.request, 'The master password is not set', function(mesg) {
                 setTimeout(function() {
                   if (mesg == 'CRYPTKEY_SET') {
                     setMsg('No statistics are available for the selected object.');
@@ -217,7 +225,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
                 }, 100);
               });
             } else {
-              Notify.alert(
+              pgAdmin.Browser.notifier.alert(
                 gettext('Failed to retrieve data from the server.'),
                 gettext(err.message)
               );
@@ -232,10 +240,8 @@ export default function Statistics({ nodeData, item, node, ...props }) {
     if (message != '') {
       setMsg(message);
     }
-    return () => {
-      setTableData([]);
-    };
-  }, [nodeData]);
+    setIsStale(false);
+  }, [isStale, isActive]);
 
   return (
     <>
@@ -260,7 +266,12 @@ export default function Statistics({ nodeData, item, node, ...props }) {
 Statistics.propTypes = {
   res: PropTypes.array,
   nodeData: PropTypes.object,
-  item: PropTypes.object,
+  nodeItem: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,
+  isActive: PropTypes.bool,
+  isStale: PropTypes.bool,
+  setIsStale: PropTypes.func,
 };
+
+export default withStandardTabInfo(Statistics, BROWSER_PANELS.STATISTICS);

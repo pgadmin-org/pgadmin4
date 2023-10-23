@@ -32,8 +32,8 @@ import CustomPropTypes from 'sources/custom_prop_types';
 import { evalFunc } from 'sources/utils';
 import { DepListenerContext } from './DepListener';
 import { useIsMounted } from '../custom_hooks';
-import Notify from '../helpers/Notifier';
 import { InputText } from '../components/FormComponents';
+import { usePgAdmin } from '../BrowserComponent';
 
 const useStyles = makeStyles((theme)=>({
   grid: {
@@ -288,6 +288,7 @@ function DataTableRow({index, row, totalRows, isResizing, isHovered, schema, sch
     <>
       <div {...row.getRowProps()} ref={rowRef} data-handler-id={handlerId}
         className={isHovered ? classes.tableRowHovered : null}
+        data-test='data-table-row'
       >
         {row.cells.map((cell, ci) => {
           let classNames = [classes.tableCell];
@@ -359,6 +360,7 @@ export default function DataGridView({
   const checkIsMounted = useIsMounted();
   const [hoverIndex, setHoverIndex] = useState();
   const newRowIndex = useRef();
+  const pgAdmin = usePgAdmin();
 
   /* Using ref so that schema variable is not frozen in columns closure */
   const schemaRef = useRef(schema);
@@ -446,7 +448,7 @@ export default function DataGridView({
                   if (props.onDelete){
                     props.onDelete(row.original || {}, deleteRow);
                   } else {
-                    Notify.confirm(
+                    pgAdmin.Browser.notifier.confirm(
                       props.customDeleteTitle || gettext('Delete Row'),
                       props.customDeleteMsg || gettext('Are you sure you wish to delete this row?'),
                       deleteRow,
@@ -642,7 +644,7 @@ export default function DataGridView({
           }}
         />}
         <DndProvider backend={HTML5Backend}>
-          <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table}>
+          <div {...getTableProps(()=>({style: {minWidth: 'unset'}}))} className={classes.table} data-test="data-grid-view">
             <DataTableHeader headerGroups={headerGroups} viewHelperProps={viewHelperProps} schema={schema} />
             <div {...getTableBodyProps()} className={classes.tableContentWidth}>
               {rows.map((row, i) => {

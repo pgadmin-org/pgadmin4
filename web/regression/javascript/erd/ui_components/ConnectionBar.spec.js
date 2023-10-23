@@ -1,32 +1,34 @@
-import jasmineEnzyme from 'jasmine-enzyme';
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React from 'react';
-import {mount} from 'enzyme';
-import '../../helper/enzyme.helper';
 
 import ConnectionBar, {STATUS} from 'pgadmin.tools.erd/erd_tool/components/ConnectionBar';
 import Theme from '../../../../pgadmin/static/js/Theme';
+import { render, screen } from '@testing-library/react';
 
 describe('ERD ConnectionBar', ()=>{
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
   it('<ConnectionBar /> comp', ()=>{
-    const connBar = mount(<Theme><ConnectionBar status={STATUS.DISCONNECTED} title="test title"/></Theme>);
+    const connBar = render(<Theme><ConnectionBar status={STATUS.DISCONNECTED} title="test title"/></Theme>);
 
-    expect(connBar.find('DefaultButton[data-test="btn-conn-title"]').text()).toBe('test title');
+    expect(screen.getAllByRole('button').at(1).textContent).toBe('test title');
 
-    connBar.setProps({
-      children: <ConnectionBar status={STATUS.CONNECTING} title="test title"/>
-    });
-    expect(connBar.find('DefaultButton[data-test="btn-conn-title"]').text()).toBe('(Obtaining connection...) test title');
+    connBar.rerender(
+      <Theme><ConnectionBar status={STATUS.CONNECTING} title="test title"/></Theme>
+    );
+    expect(screen.getAllByRole('button').at(1).textContent).toBe('(Obtaining connection...) test title');
 
-    connBar.setProps({
-      children: <ConnectionBar status={STATUS.CONNECTING} title="test title" bgcolor='#000' fgcolor='#fff'/>
-    });
-    const titleEle = connBar.find('DefaultButton[data-test="btn-conn-title"]');
-
-    expect(titleEle.prop('style').backgroundColor).toBe('#000');
-    expect(titleEle.prop('style').color).toBe('#fff');
+    connBar.rerender(
+      <Theme><ConnectionBar status={STATUS.CONNECTING} title="test title" bgcolor='#000' fgcolor='#fff'/></Theme>
+    );
+    const styles = screen.getAllByRole('button').at(1).style;
+    expect(styles.backgroundColor).toBe('rgb(0, 0, 0)');
+    expect(styles.color).toBe('rgb(255, 255, 255)');
   });
 });

@@ -7,15 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 import RuleSchema from './rule.ui';
-import Notify from '../../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.rule', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/schema_child_tree_node',
-], function(gettext, url_for, $, pgAdmin, pgBrowser, SchemaChildTreeNode) {
+], function(gettext, url_for, pgAdmin, pgBrowser, SchemaChildTreeNode) {
 
   /**
     Create and add a rule collection into nodes
@@ -137,14 +136,14 @@ define('pgadmin.node.rule', [
           let data = d;
           getApiInstance().put(obj.generate_url(i, 'obj' , d, true), {'is_enable_rule' : 'O'})
             .then(()=>{
-              Notify.success('Rule updated.');
+              pgAdmin.Browser.notifier.success('Rule updated.');
               t.removeIcon(i);
               data.icon = 'icon-rule';
               t.addIcon(i, {icon: data.icon});
               t.updateAndReselectNode(i, data);
             })
             .catch((error)=>{
-              Notify.pgRespErrorNotify(error);
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
               t.refresh(i);
             });
         },
@@ -162,14 +161,14 @@ define('pgadmin.node.rule', [
           let data = d;
           getApiInstance().put(obj.generate_url(i, 'obj' , d, true), {'is_enable_rule' : 'D'})
             .then(()=>{
-              Notify.success('Rule updated');
+              pgAdmin.Browser.notifier.success('Rule updated');
               t.removeIcon(i);
               data.icon = 'icon-rule-bad';
               t.addIcon(i, {icon: data.icon});
               t.updateAndReselectNode(i, data);
             })
             .catch((error)=>{
-              Notify.pgRespErrorNotify(error);
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
               t.refresh(i);
             });
         },

@@ -417,7 +417,7 @@ export default function FormView({
   if(isTabView) {
     return (
       <>
-        <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef}>
+        <Box height="100%" display="flex" flexDirection="column" className={className} ref={formRef} data-test="form-view">
           <Box>
             <Tabs
               value={tabValue}
@@ -429,7 +429,7 @@ export default function FormView({
               action={(ref)=>ref && ref.updateIndicator()}
             >
               {Object.keys(finalTabs).map((tabName)=>{
-                return <Tab key={tabName} label={tabName} />;
+                return <Tab key={tabName} label={tabName} data-test={tabName}/>;
               })}
             </Tabs>
           </Box>
@@ -442,7 +442,7 @@ export default function FormView({
             }
             return (
               <TabPanel key={tabName} value={tabValue} index={i} classNameRoot={clsx(tabsClassname[tabName], isNested ? classes.nestedTabPanel : null)}
-                className={clsx(contentClassName)}>
+                className={clsx(contentClassName)} data-testid={tabName}>
                 {finalTabs[tabName]}
               </TabPanel>
             );
@@ -453,7 +453,7 @@ export default function FormView({
     let contentClassName = [stateUtils.formErr.message ? classes.errorMargin : null];
     return (
       <>
-        <Box height="100%" display="flex" flexDirection="column" className={clsx(className, contentClassName)} ref={formRef}>
+        <Box height="100%" display="flex" flexDirection="column" className={clsx(className, contentClassName)} ref={formRef} data-test="form-view">
           {Object.keys(finalTabs).map((tabName)=>{
             return (
               <React.Fragment key={tabName}>{finalTabs[tabName]}</React.Fragment>

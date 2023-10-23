@@ -72,6 +72,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
              BrowserToolBarLocators.open_query_tool_button_css),
             (By.CSS_SELECTOR, BrowserToolBarLocators.query_tool_panel_css)),
             'Query tool did not open on clicking Query Tool button.')
+
         self.page.close_query_tool(prompt=False)
 
     def test_view_data_tool_button(self):
@@ -97,7 +98,7 @@ class BrowserToolBarFeatureTest(BaseFeatureTest):
         self.assertTrue(self.page.retry_click(
             (By.CSS_SELECTOR,
              BrowserToolBarLocators.filter_data_button_css),
-            (By.XPATH, BrowserToolBarLocators.filter_box_css)),
+            (By.CSS_SELECTOR, BrowserToolBarLocators.filter_box_css)),
             'Filter dialogue did not open on clicking filter button.')
-        self.page.click_modal('Close')
+        self.page.click_modal('Close', docker=True)
         self.page.close_query_tool(prompt=False)

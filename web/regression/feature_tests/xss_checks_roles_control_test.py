@@ -80,7 +80,8 @@ class CheckRoleMembershipControlFeatureTest(BaseFeatureTest):
 
         # Fetch the source code for our custom control
         source_code = self.page.find_by_xpath(
-            "//span[contains(@class,'icon-')]/following-sibling::span"
+            "//div[contains(@role, 'cell')]//span[contains(@class,'icon-')]"
+            "/following-sibling::span"
         ).get_attribute('innerHTML')
 
         self._check_escaped_characters(

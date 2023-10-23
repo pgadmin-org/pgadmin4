@@ -2,7 +2,7 @@
 
 html{
     background-color: #fff;
-    
+
 }
 
 body {
@@ -10,6 +10,7 @@ body {
     font-family: Roboto, Helvetica Neue, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
     -webkit-font-smoothing: antialiased;
     background-color: #fff;
+    height: 100vh;
 }
 
 div.body {

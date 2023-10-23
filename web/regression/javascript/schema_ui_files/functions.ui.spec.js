@@ -7,8 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import FunctionSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/functions/static/js/function.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
@@ -20,7 +19,7 @@ class MockSchema extends BaseUISchema {
 }
 
 describe('FunctionSchema', ()=>{
-  let mount;
+
   //Procedure schema
   let procedureSchemaObj = new FunctionSchema(
     ()=>new MockSchema(),
@@ -109,37 +108,31 @@ describe('FunctionSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('create', ()=>{
-    mount(getCreateView(procedureSchemaObj));
+  it('create', async ()=>{
+    await getCreateView(procedureSchemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('proiswindow visible', ()=>{
+  it('proiswindow visible', async ()=>{
 
 
     let editSchemaObj = new FunctionSchema(
@@ -187,11 +180,11 @@ describe('FunctionSchema', ()=>{
       type: 'function',
     });
 
-    mount(getEditView(editSchemaObj, initData));
+    await getEditView(editSchemaObj, initData);
 
   });
 
-  it('proiswindow visible', ()=>{
+  it('proiswindow visible', async ()=>{
 
 
     let editSchemaObj = new FunctionSchema(
@@ -239,7 +232,7 @@ describe('FunctionSchema', ()=>{
       type: 'function',
     });
 
-    mount(getEditView(editSchemaObj, initData));
+    await getEditView(editSchemaObj, initData);
 
   });
 
@@ -248,7 +241,7 @@ describe('FunctionSchema', ()=>{
     type: 'procedure',
   });
 
-  it('proiswindow visible', ()=>{
+  it('proiswindow visible', async ()=>{
 
 
     let editSchemaObj = new FunctionSchema(
@@ -290,10 +283,10 @@ describe('FunctionSchema', ()=>{
       }
     );
 
-    mount(getEditView(editSchemaObj, initDataProc));
+    await getEditView(editSchemaObj, initDataProc);
   });
 
-  it('proiswindow visible', ()=>{
+  it('proiswindow visible', async ()=>{
 
 
     let editSchemaObj = new FunctionSchema(
@@ -340,11 +333,11 @@ describe('FunctionSchema', ()=>{
       type: 'procedure',
     });
 
-    mount(getEditView(editSchemaObj, initData));
+    await getEditView(editSchemaObj, initData);
   });
 
 
-  it('proparallel disabled', ()=>{
+  it('proparallel disabled', async ()=>{
 
 
     let editSchemaObj = new FunctionSchema(
@@ -389,7 +382,7 @@ describe('FunctionSchema', ()=>{
       }
     );
 
-    mount(getEditView(editSchemaObj, initDataProc));
+    await getEditView(editSchemaObj, initDataProc);
   });
 
   it('probin visible', ()=>{
@@ -418,7 +411,7 @@ describe('FunctionSchema', ()=>{
 
   it('prorettypename validate', () => {
     let state = {lanname: 'c', prorettypename: null};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('prorettypename', 'Return type cannot be empty.');
@@ -426,7 +419,7 @@ describe('FunctionSchema', ()=>{
 
   it('probin validate', () => {
     let state = { lanname: 'c', prorettypename: 'char' };
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('probin', 'Object File cannot be empty.');
@@ -434,7 +427,7 @@ describe('FunctionSchema', ()=>{
 
   it('probin validate', () => {
     let state = { lanname: 'c', probin: 'test1', prorettypename: 'char'};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('probin', null);
@@ -442,7 +435,7 @@ describe('FunctionSchema', ()=>{
 
   it('prosrc_c validate', () => {
     let state = { lanname: 'c',  probin : '$libdir/', prorettypename: 'char'};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('prosrc_c', 'Link Symbol cannot be empty.');
@@ -450,7 +443,7 @@ describe('FunctionSchema', ()=>{
 
   it('prosrc_c validate', () => {
     let state = { lanname: 'c',  probin : '$libdir/', prosrc_c: 'test1', prorettypename: 'char'};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('prosrc_c', null);
@@ -458,7 +451,7 @@ describe('FunctionSchema', ()=>{
 
   it('validate', ()=>{
     let state = {prorettypename: 'char'};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
     state.prosrc = null;
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('prosrc', 'Code cannot be empty.');

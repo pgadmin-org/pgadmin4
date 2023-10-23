@@ -7,37 +7,23 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import LoginPage from '../../../pgadmin/static/js/SecurityPages/LoginPage';
 
 describe('LoginPage', ()=>{
-  let mount;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
 
   let ctrlMount = (props)=>{
-    return mount(<Theme>
+    return render(<Theme>
       <LoginPage {...props}/>
     </Theme>);
   };
 
-  it('internal', (done)=>{
+  it('internal', ()=>{
     const ctrl = ctrlMount({
       userLanguage: 'en',
       langOptions: [{
@@ -55,16 +41,12 @@ describe('LoginPage', ()=>{
       oauth2Config: [],
       loginBanner: 'login banner'
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/login/url');
-      expect(ctrl.find('input[name="email"]')).toExist();
-      expect(ctrl.find('input[name="password"]')).toExist();
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/login/url');
+    expect(ctrl.container.querySelector('input[name="email"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('input[name="password"]')).not.toBeNull();
   });
 
-  it('oauth2', (done)=>{
+  it('oauth2', ()=>{
     const ctrl = ctrlMount({
       userLanguage: 'en',
       langOptions: [{
@@ -87,13 +69,9 @@ describe('LoginPage', ()=>{
       }],
       loginBanner: ''
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/login/url');
-      expect(ctrl.find('input[name="email"]')).toExist();
-      expect(ctrl.find('input[name="password"]')).toExist();
-      expect(ctrl.find('button[name="oauth2_button"]')).toHaveProp('value', 'github');
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/login/url');
+    expect(ctrl.container.querySelector('input[name="email"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('input[name="password"]')).not.toBeNull();
+    expect(ctrl.container.querySelector('button[name="oauth2_button"]')).toHaveValue('github');
   });
 });

@@ -8,15 +8,16 @@
 //////////////////////////////////////////////////////////////
 
 import axios from 'axios';
+import pgAdmin from 'sources/pgadmin';
 
-export function disableTriggers(tree, Notify, generateUrl, args) {
-  return setTriggers(tree, Notify, generateUrl, args, {is_enable_trigger: 'D' });
+export function disableTriggers(tree, generateUrl, args) {
+  return setTriggers(tree, generateUrl, args, {is_enable_trigger: 'D' });
 }
-export function enableTriggers(tree, Notify, generateUrl, args) {
-  return setTriggers(tree, Notify, generateUrl, args, {is_enable_trigger: 'O' });
+export function enableTriggers(tree, generateUrl, args) {
+  return setTriggers(tree, generateUrl, args, {is_enable_trigger: 'O' });
 }
 
-function setTriggers(tree, Notify, generateUrl, args, params) {
+function setTriggers(tree, generateUrl, args, params) {
   const treeNode = retrieveTreeNode(args, tree);
 
   if (!treeNode || treeNode.getData() === null || treeNode.getData() === undefined)
@@ -28,7 +29,7 @@ function setTriggers(tree, Notify, generateUrl, args, params) {
   )
     .then((res) => {
       if (res.data.success === 1) {
-        Notify.success(res.data.info);
+        pgAdmin.Browser.notifier.success(res.data.info);
         treeNode.data.has_enable_triggers = res.data.data.has_enable_triggers;
         treeNode.reload(tree);
 
@@ -38,7 +39,7 @@ function setTriggers(tree, Notify, generateUrl, args, params) {
       try {
         const err = xhr.response.data;
         if (err.success === 0) {
-          Notify.error(err.errormsg);
+          pgAdmin.Browser.notifier.error(err.errormsg);
         }
       } catch (e) {
         console.warn(e.stack || e);

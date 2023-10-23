@@ -64,7 +64,7 @@ All HTML must be HTML 5 compliant.
 Javascript
 **********
 
-Client-side code is written in Javascript using jQuery and various plugins.
+Client-side code is written in Javascript using ReactJS and various plugins.
 Whilst much of the code is rendered from static files, there is also code that
 is rendered from templates using Jinja2 (often to inject the users settings) or
 constructed on the fly from module hooks.

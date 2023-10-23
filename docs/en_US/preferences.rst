@@ -46,19 +46,6 @@ Use the fields on the *Display* panel to specify general display preferences:
 * When the *Hide shared servers?* switch is set to *True*, the client will hide
   all the shared servers from the object explorer.
 
-* Use the *Lock layout* field to lock the UI layout at different levels. This
-  can also be changed from File menu on the :ref:`menu bar <menu_bar>`
-
-+---------------------+-------------------------------------------------------------------+
-| Option              | Action                                                            |
-+=====================+===================================================================+
-| *None*              | No locking. Every panel is resizable and dockable.                |
-+---------------------+-------------------------------------------------------------------+
-| *Prevent docking*   | This will disable the docking/undocking of the panels             |
-+---------------------+-------------------------------------------------------------------+
-| *Full*              | This will disable resizing, docking/undocking of the panels       |
-+---------------------+-------------------------------------------------------------------+
-
 * When the *Show empty object collections?* switch is turned off, then all object
   collections which are empty will be hidden from browser tree.
 * When the *Show system objects?* switch is set to *True*, the client will
