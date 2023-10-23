@@ -781,14 +781,15 @@ def clear_database_servers(load_user=current_user, from_setup=False):
     for server in servers:
         db.session.delete(server)
 
-    # Remove all groups
-    groups = ServerGroup.query.filter_by(user_id=user_id)
+    # Remove all servergroups except for the first
+    # This matches the UI behavior in
+    # web/pgadmin/browser/server_groups/__init__.py#delete
+    # TODO: Investigate if we can skip the first with an `offset(1)`
+    groups = ServerGroup.query.filter_by(user_id=user_id).order_by("id")
+    default_sg = groups.first()
     for group in groups:
-        db.session.delete(group)
-    servers = Server.query.filter_by(user_id=user_id)
-
-    for server in servers:
-        db.session.delete(server)
+        if group.id != default_sg.id:
+            db.session.delete(group)
 
     try:
         db.session.commit()
