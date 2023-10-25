@@ -20,17 +20,19 @@ Bundled PostgreSQL Utilities
 New features
 ************
 
+  | `Issue #2821 <https://github.com/pgadmin-org/pgadmin4/issues/2821>`_ -  Have close buttons on individual panel tabs instead of common.
+  | `Issue #4733 <https://github.com/pgadmin-org/pgadmin4/issues/4733>`_ -  Allow closing all the tabs, including SQL and Properties.
+  | `Issue #5394 <https://github.com/pgadmin-org/pgadmin4/issues/5394>`_ -  Changes in the context menu on panel tabs - Add close, close all and close others menu items.
+
 Housekeeping
 ************
+
+  | `Issue #6479 <https://github.com/pgadmin-org/pgadmin4/issues/6479>`_ -  Replace the current layout library wcDocker with ReactJS based rc-dock.
 
 Bug fixes
 *********
 
-  | `Issue #2821 <https://github.com/pgadmin-org/pgadmin4/issues/2821>`_ -  Have close buttons on individual panel tabs instead of common.
   | `Issue #2986 <https://github.com/pgadmin-org/pgadmin4/issues/2986>`_ -  Fix an issue where the scroll position of panels was not remembered on Firefox.
-  | `Issue #4733 <https://github.com/pgadmin-org/pgadmin4/issues/4733>`_ -  Allow closing all the tabs, including SQL and Properties.
-  | `Issue #5394 <https://github.com/pgadmin-org/pgadmin4/issues/5394>`_ -  Changes in the context menu on panel tabs - Add close, close all and close others menu items.
-  | `Issue #6479 <https://github.com/pgadmin-org/pgadmin4/issues/6479>`_ -  Replace the current layout library wcDocker with ReactJS based rc-dock.
   | `Issue #6602 <https://github.com/pgadmin-org/pgadmin4/issues/6602>`_ -  Fix an issue where the default server-group is being deleted if the load-server json file contains no servers.
   | `Issue #6720 <https://github.com/pgadmin-org/pgadmin4/issues/6720>`_ -  Fix an issue of the incorrect format (no indent) of SQL stored functions/procedures.
   | `Issue #6874 <https://github.com/pgadmin-org/pgadmin4/issues/6874>`_ -  Fix an issue where the browser window stuck on spinning with an Oauth user without email.
