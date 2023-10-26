@@ -182,5 +182,5 @@
     "auditpy": "safety check --full-report -i 51668 -i 52495",
     "audit": "yarn run auditjs && yarn run auditpy"
   },
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.6.4"
 }
