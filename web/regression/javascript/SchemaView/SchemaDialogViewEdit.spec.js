@@ -109,33 +109,6 @@ describe('SchemaView', ()=>{
         expect(ctrl.container.querySelector('[data-test="Save"]').hasAttribute('disabled')).toBe(true);
       });
 
-      it('onSave after change', async ()=>{
-        pgAdmin.Browser.notifier.alert.mockClear();
-        onSave.mockClear();
-        // TODO: don't know why save button remains disabled.
-        // await simulateChanges();
-        // await user.click(ctrl.container.querySelector('[data-test="Save"]'));
-
-        // expect(onSave.mock.calls[0][0]).toBe(false);
-        // expect(onSave.mock.calls[0][1]).toEqual({
-        //   id: 1,
-        //   field1: 'val1',
-        //   field5: 'val5',
-        //   fieldcoll: {
-        //     added: [
-        //       { field3: null, field4: null, field5: 'rval53'}
-        //     ],
-        //     changed: [
-        //       { field3: 2, field4: 'field4val2', field5: 'rvalnew'}
-        //     ],
-        //     deleted: [
-        //       { field3: 1, field4: 'field4val1', field5: 'field5val1'}
-        //     ]
-        //   }
-        // });
-        // expect(pgAdmin.Browser.notifier.alert).toHaveBeenCalledWith('Warning', 'some inform text');
-      });
-
       it('onReset after change', async ()=>{
         onDataChange.mockClear();
         await simulateChanges();

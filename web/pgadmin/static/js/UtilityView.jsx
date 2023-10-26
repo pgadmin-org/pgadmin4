@@ -195,7 +195,7 @@ function UtilityViewContent({panelId, schema, treeNodeInfo, actionType, formType
         onHelp={onHelp}
         onDataChange={()=>{/*This is intentional (SonarQube)*/}}
         confirmOnCloseReset={confirmOnReset}
-        hasSQL={nodeObj?nodeObj.hasSQL:false && (actionType === 'create' || actionType === 'edit')}
+        hasSQL={nodeObj?.hasSQL && (actionType === 'create' || actionType === 'edit')}
         getSQLValue={getSQLValue}
         isTabView={isTabView}
         disableSqlHelp={sqlHelpUrl == undefined || sqlHelpUrl == ''}

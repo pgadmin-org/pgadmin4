@@ -50,21 +50,6 @@ define('app', [
   // Create menus after all modules are initialized.
   MainMenuFactory.createMainMenus();
 
-  // const menuContainerEle = document.querySelector('#main-menu-container');
-  // if(menuContainerEle) {
-  //   ReactDOM.render(
-  //     <Theme>
-  //       <AppMenuBar />
-  //     </Theme>, menuContainerEle
-  //   );
-  // }
-
-  // ReactDOM.render(
-  //   <Theme>
-  //     <ObjectBreadcrumbs pgAdmin={pgAdmin} />
-  //   </Theme>, document.querySelector('#object-breadcrumbs')
-  // );
-
   ReactDOM.render(
     <Theme>
       <BrowserComponent pgAdmin={pgAdmin} />

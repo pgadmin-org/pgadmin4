@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 class BroadcastChannelMock {
-  onmessage() {}
+  onmessage() {/* mock */}
   postMessage(data) {
     this.onmessage({ data });
   }

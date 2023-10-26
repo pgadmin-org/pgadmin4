@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useMemo, useEffect, useCallback } from 'react';
 import DockLayout from 'rc-dock';
 import PropTypes from 'prop-types';
 import EventBus from '../EventBus';
@@ -18,16 +18,6 @@ import _ from 'lodash';
 
 function TabTitle({id, icon, title, closable, tooltip}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
-  const dynamicTabsPref = useRef(usePreferences().getPreferencesForModule('browser')?.dynamic_tabs);
-  const getMaxWidth = ()=>{
-    if(layoutDocker.isTabVisible(id)) {
-      return '100%';
-    } else if(dynamicTabsPref.current) {
-      return '100%';
-    }
-    return '125px';
-  };
-  const [maxWidth, setMaxWidth] = useState(getMaxWidth());
 
   const onContextMenu = useCallback((e)=>{
     const g = layoutDocker.find(id)?.group??'';
@@ -37,26 +27,10 @@ function TabTitle({id, icon, title, closable, tooltip}) {
     layoutDocker.eventBus.fireEvent(LAYOUT_EVENTS.CONTEXT, e, id);
   }, []);
 
-  const onTabActive = _.debounce(()=>{
-    setMaxWidth(getMaxWidth());
-  }, 100);
-
-  useEffect(()=>{
-    layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onTabActive);
-    return ()=>{
-      onTabActive.cancel();
-      layoutDocker.eventBus.deregisterListener(LAYOUT_EVENTS.ACTIVE, onTabActive);
-    };
-  }, []);
-
-  useEffect(()=>{
-    setMaxWidth(getMaxWidth());
-  }, [usePreferences().version]);
-
   return (
-    <Box display="flex" alignItems="center" title={tooltip??title} onContextMenu={onContextMenu} maxWidth={maxWidth}>
+    <Box display="flex" alignItems="center" title={tooltip??title} onContextMenu={onContextMenu} width="100%">
       {icon && <span style={{fontSize: '1rem', marginRight: '4px'}} className={icon}></span>}
-      <span style={{maxWidth: maxWidth, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{title}</span>
+      <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(id);
       }} style={{margin: '-1px -10px -1px 0'}} />}
@@ -146,7 +120,7 @@ export class LayoutDocker {
       ...panelData,
       internal: internal,
       title: <TabTitle id={panelData.id} icon={internal.icon} title={internal.title} closable={internal.closable} tooltip={internal.tooltip} />
-    });
+    }, false);
   }
 
   setInternalAttrs(panelId, attrs) {
@@ -157,7 +131,7 @@ export class LayoutDocker {
         ...panelData.internal,
         ...attrs,
       },
-    });
+    }, false);
   }
 
   getInternalAttrs(panelId) {
@@ -328,6 +302,22 @@ export class LayoutDocker {
 
 export const LayoutDockerContext = React.createContext(new LayoutDocker(null, null));
 
+function DialogClose({panelData}) {
+  const layoutDocker = React.useContext(LayoutDockerContext);
+  // In a dialog, panelData is the data of the container panel and not the
+  // data of actual dialog tab. panelData.activeId gives the id of dialog tab.
+  return (
+    <Box display="flex" alignItems="center">
+      <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={()=>{
+        layoutDocker.close(panelData.activeId);
+      }} style={{marginRight: '-4px'}}/>
+    </Box>
+  );
+}
+DialogClose.propTypes = {
+  panelData: PropTypes.object
+};
+
 function getDialogsGroup() {
   return {
     disableDock: true,
@@ -335,16 +325,7 @@ function getDialogsGroup() {
     floatable: 'singleTab',
     moreIcon: <ExpandMoreIcon style={{height: '0.9em'}} />,
     panelExtra: (panelData) => {
-      const layoutDocker = React.useContext(LayoutDockerContext);
-      // In a dialo, panelData is the data of the container panel and not the
-      // data of actual dialog tab. panelData.activeId gives the id of dialog tab.
-      return (
-        <Box display="flex" alignItems="center">
-          <PgIconButton title={gettext('Close')} icon={<CloseIcon />} size="xs" noBorder onClick={()=>{
-            layoutDocker.close(panelData.activeId);
-          }} style={{marginRight: '-4px'}}/>
-        </Box>
-      );
+      return <DialogClose panelData={panelData} />;
     }
   };
 }
@@ -379,6 +360,8 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
     ...groups,
   }), [groups]);
   const layoutDockerObj = React.useMemo(()=>new LayoutDocker(layoutId, props.defaultLayout, resetToTabPanel, noContextGroups), []);
+  const prefStore = usePreferences();
+  const dynamicTabsStyleRef = useRef();
 
   useEffect(()=>{
     layoutDockerObj.eventBus.registerListener(LAYOUT_EVENTS.REMOVE, (panelId)=>{
@@ -389,6 +372,22 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
       setContextPos([{x: e.clientX, y: e.clientY}, id, extraMenus]);
     });
   }, []);
+
+  useEffect(()=>{
+    const dynamicTabs = prefStore.getPreferencesForModule('browser')?.dynamic_tabs;
+    // Add a class to set max width for non dynamic Tabs
+    if(!dynamicTabs && !dynamicTabsStyleRef.current) {
+      const css = '.dock-tab:not(div.dock-tab-active) { max-width: 180px; }',
+        head = document.head || document.getElementsByTagName('head')[0];
+
+      dynamicTabsStyleRef.current = document.createElement('style');
+      head.appendChild(dynamicTabsStyleRef.current);
+      dynamicTabsStyleRef.current.appendChild(document.createTextNode(css));
+    } else if(dynamicTabs && dynamicTabsStyleRef.current) {
+      dynamicTabsStyleRef.current.remove();
+      dynamicTabsStyleRef.current = null;
+    }
+  }, [prefStore]);
 
   const getTabMenuItems = (panelId)=>{
     const ret = [];

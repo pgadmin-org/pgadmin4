@@ -77,6 +77,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
   const [loaderText, setLoaderText] = React.useState('');
   const debuggerFinalArgs = useRef([]);
   const InputArgIds = useRef([]);
+  const browserPreferences = usePreferences().getPreferencesForModule('browser');
 
   function getURL() {
     let _Url = null;
@@ -714,7 +715,6 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               }
             );
 
-            let browserPreferences = usePreferences().getPreferencesForModule('browser');
             let open_new_tab = browserPreferences.new_browser_tab_open;
             let label = getAppropriateLabel(treeInfo);
 
@@ -746,7 +746,6 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
             /* Close the debugger modal dialog */
             props.closeModal();
             setLoaderText('');
-            return;
           })
           .catch(function (error) {
             setLoaderText('');

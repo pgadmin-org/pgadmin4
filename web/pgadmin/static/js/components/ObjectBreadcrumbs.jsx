@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme)=>({
     bottom: 0,
     width: 'auto',
     maxWidth: '99%',
-    zIndex: 9999,
+    zIndex: 1004,
     padding: '0.25rem 0.5rem',
     fontSize: '0.95em',
     color: theme.palette.background.default,

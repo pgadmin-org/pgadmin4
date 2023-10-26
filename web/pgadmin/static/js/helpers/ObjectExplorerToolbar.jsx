@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { usePgAdmin } from '../BrowserComponent';
 import { Box } from '@material-ui/core';
 import { QueryToolIcon, RowFilterIcon, TerminalIcon, ViewDataIcon } from '../components/ExternalIcon';
@@ -29,28 +29,34 @@ export default function ObjectExplorerToolbar() {
     'psql': undefined,
   });
   const pgAdmin = usePgAdmin();
+  const checkMenuState = ()=>{
+    const viewMenus = pgAdmin.Browser.MainMenus.
+      find((m)=>(m.name=='object'))?.
+      menuItems?.
+      find((m)=>(m.name=='view_data'))?.
+      menu_items;
+
+    const toolsMenus = pgAdmin.Browser.MainMenus.
+      find((m)=>(m.name=='tools'))?.
+      menuItems;
+
+    setMenus({
+      'query_tool': toolsMenus?.find((m)=>(m.name=='query_tool')),
+      'view_all_rows_context_table': viewMenus?.find((m)=>(m.name=='view_all_rows_context_table')),
+      'view_filtered_rows_context_table': viewMenus?.find((m)=>(m.name=='view_filtered_rows_context_table')),
+      'search_objects': toolsMenus?.find((m)=>(m.name=='search_objects')),
+      'psql': toolsMenus?.find((m)=>(m.name=='psql'))
+    });
+  };
 
   useEffect(()=>{
-    pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(()=>{
-      const viewMenus = pgAdmin.Browser.MainMenus.
-        find((m)=>(m.name=='object'))?.
-        menuItems?.
-        find((m)=>(m.name=='view_data'))?.
-        menu_items;
-
-      const toolsMenus = pgAdmin.Browser.MainMenus.
-        find((m)=>(m.name=='tools'))?.
-        menuItems;
-
-      setMenus({
-        'query_tool': toolsMenus?.find((m)=>(m.name=='query_tool')),
-        'view_all_rows_context_table': viewMenus?.find((m)=>(m.name=='view_all_rows_context_table')),
-        'view_filtered_rows_context_table': viewMenus?.find((m)=>(m.name=='view_filtered_rows_context_table')),
-        'search_objects': toolsMenus?.find((m)=>(m.name=='search_objects')),
-        'psql': toolsMenus?.find((m)=>(m.name=='psql'))
-      });
-    }, 100));
+    const deregister = pgAdmin.Browser.Events.on('pgadmin:nw-enable-disable-menu-items', _.debounce(checkMenuState, 100));
+    return ()=>{
+      deregister();
+    };
   }, []);
+
+  useLayoutEffect(_.debounce(checkMenuState, 100), []);
 
   return (
     <Box display="flex" alignItems="center" gridGap={'2px'}>

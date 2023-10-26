@@ -157,7 +157,6 @@ function createSingleLineStatistics(data, prettifyFields) {
   return res;
 }
 
-// {nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}
 function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale, setIsStale }) {
   const classes = useStyles();
   const [tableData, setTableData] = React.useState([]);

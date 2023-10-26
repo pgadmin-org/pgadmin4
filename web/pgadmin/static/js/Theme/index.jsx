@@ -320,6 +320,10 @@ function getFinalTheme(baseTheme) {
           textarea: {
             fontFamily: 'inherit',
           },
+          iframe: {
+            margin: 0,
+            padding: 0,
+          },
           ...pickrOverride(baseTheme),
           ...uplotOverride(baseTheme),
           ...rcdockOverride(baseTheme),

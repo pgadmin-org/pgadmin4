@@ -34,7 +34,7 @@ export default function ContextMenu({menuItems, position, onClose, label='contex
       {menuItems.length !=0 && menuItems.map((menuItem, i)=>{
         const submenus = menuItem.getMenuItems?.();
         if(submenus) {
-          return <PgSubMenu key={i} label={menuItem.label}>
+          return <PgSubMenu key={label+'-'+menuItem.label} label={menuItem.label}>
             {submenus.map((submenuItem, si)=>{
               return getPgMenuItem(submenuItem, i+'-'+si);
             })}

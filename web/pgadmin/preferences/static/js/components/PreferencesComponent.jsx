@@ -559,7 +559,6 @@ export default function PreferencesComponent({ ...props }) {
           function () {
             pgAdmin.Browser.tree.destroy({
               success: function () {
-                // pgAdmin.Browser.initializeBrowserTree(pgAdmin.Browser);
                 return true;
               },
             });

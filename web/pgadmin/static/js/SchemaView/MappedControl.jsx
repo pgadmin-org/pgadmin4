@@ -25,7 +25,7 @@ function MappedFormControlBase({ type, value, id, onChange, className, visible, 
   const name = id;
   const onTextChange = useCallback((e) => {
     let val = e;
-    if(e && e.target) {
+    if(e?.target) {
       val = e.target.value;
     }
     onChange && onChange(val);
@@ -124,7 +124,7 @@ function MappedCellControlBase({ cell, value, id, optionsLoaded, onCellChange, v
   const name = id;
   const onTextChange = useCallback((e) => {
     let val = e;
-    if (e && e.target) {
+    if (e?.target) {
       val = e.target.value;
     }
 
@@ -133,7 +133,7 @@ function MappedCellControlBase({ cell, value, id, optionsLoaded, onCellChange, v
 
   const onRadioChange = useCallback((e) => {
     let val =e;
-    if(e && e.target) {
+    if(e?.target) {
       val = e.target.checked;
     }
     onCellChange && onCellChange(val);

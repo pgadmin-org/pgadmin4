@@ -233,28 +233,6 @@ describe('#browserTreeState', () => {
         expect(browserTreeState.current_state).toMatchObject({1: {'paths': ['server_group/1,server/1']}});
       });
     });
-
-    describe('When server node is closed, both server and server_group should be removed', () => {
-      // TODO: failing somehow
-      // let item = {
-      //   _type: 'server',
-      //   hasId: true,
-      //   id: 'server/1',
-      //   _id: 1,
-      // };
-      // beforeEach(() => {
-      //   pgBrowser.tree.itemData.mockReturnValue(item);
-      //   pgBrowser.tree.pathId.mockReturnValue(['server_group/1']);
-      //   pgBrowser.tree.hasParent.mockReturnValue(true);
-      //   pgBrowser.tree.isOpen.mockReturnValue(true);
-      //   pgBrowser.tree.isClosed.mockReturnValue(true);
-      // });
-
-      // it('The tree current state will remove server_group and server', () => {
-      //   browserTreeState.remove_from_cache(item);
-      //   expect(browserTreeState.current_state).toMatchObject({1: []});
-      // });
-    });
   });
 
 });

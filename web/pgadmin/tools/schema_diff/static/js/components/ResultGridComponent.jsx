@@ -110,9 +110,14 @@ const useStyles = makeStyles((theme) => ({
     display: 'table',
     blockSize: '100%',
 
-    '& span': {
+    '& > span': {
       verticalAlign: 'middle',
       cursor: 'pointer',
+
+      '& > span': {
+        display: 'flex',
+        alignItems: 'center',
+      }
     }
   },
   gridPanel: {

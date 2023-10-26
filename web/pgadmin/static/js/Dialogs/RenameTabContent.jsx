@@ -33,7 +33,7 @@ export default function RenameTabContent({ panelId, panelDocker, closeModal}) {
 
   const onTextChange = (e, id) => {
     let val = e;
-    if (e && e.target) {
+    if (e?.target) {
       val = e.target.value;
     }
     setFormData((prev) => ({ ...prev, [id]: val }));

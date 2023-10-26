@@ -346,7 +346,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
       }
     }, 100));
 
-    /* If the tab or window is not visible */
+    /* If the tab or window is not visible, applicable for open in new tab */
     document.addEventListener('visibilitychange', function() {
       if(document.hidden) {
         setQtState({is_visible: false});

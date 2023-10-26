@@ -117,7 +117,7 @@ export default function Processes() {
           />
         </ErrorBoundary>
       )
-    }, pgAdmin.Browser.stdW.md);
+    }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
   }, []);
 
 

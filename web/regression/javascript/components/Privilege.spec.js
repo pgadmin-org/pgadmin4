@@ -50,7 +50,7 @@ describe('Privilege', ()=>{
         }}
         onChange={onChange}
       />
-    ),
+    );
     ctrlRerender = (props)=>{
       ctrl.rerender(
         <ThemedPrivilege

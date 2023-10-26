@@ -59,7 +59,7 @@ function manageTreeEvents(event, eventName, item) {
       if (_.isObject(node.callbacks) &&
         eventName in node.callbacks &&
         typeof node.callbacks[eventName] == 'function') {
-        !node.callbacks[eventName].apply(node, [item, d, obj, [], eventName]);
+        node.callbacks[eventName].apply(node, [item, d, obj, [], eventName]);
       }
 
       /* Raise tree events for the nodes */

@@ -83,7 +83,7 @@ export function getPanelTitle(pgBrowser, selected_item=null, custom_title=null, 
 
 export function getQueryToolIcon(title, isQt, isFile) {
   let panelIcon = '';
-  let panelTooltip = title;
+  let panelTooltip;
 
   if(isFile || isFile == 'true'){
     panelIcon = 'fa fa-file-alt';

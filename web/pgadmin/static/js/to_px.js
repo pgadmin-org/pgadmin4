@@ -9,10 +9,10 @@
 
 /* Ref: https://github.com/heygrady/Units/blob/master/Length.js */
 
-var testElem = document.createElement('test'),
+let testElem = document.createElement('test'),
   docElement = document.documentElement,
   defaultView = document.defaultView,
-  getComputedStyle = defaultView && defaultView.getComputedStyle,
+  getComputedStyle = defaultView?.getComputedStyle,
   computedValueBug,
   runit = /^(-?[\d+\.\-]+)([a-z]+|%)$/i,
   convert = {},
@@ -104,7 +104,7 @@ function curCSS(elem, prop) {
   var value,
     pixel,
     unit,
-    rvpos = /^top|bottom/,
+    rvpos = /^(top|bottom)/,
     outerProp = ['paddingTop', 'paddingBottom', 'borderTop', 'borderBottom'],
     innerHeight,
     parent,

@@ -16,6 +16,7 @@ export default function LayoutIframeTab({target, src, children}) {
     const updatePositionAndSize = () => {
       if (!selfRef.current) return;
       const rect = selfRef.current.getBoundingClientRect();
+      rect.visibility = selfRef.current.closest('#'+target).style.visibility;
 
       // Only update the iframe's position if the position has actually changed
       if (
@@ -23,13 +24,15 @@ export default function LayoutIframeTab({target, src, children}) {
         rect.top !== lastKnownPosition.top ||
         rect.left !== lastKnownPosition.left ||
         rect.width !== lastKnownPosition.width ||
-        rect.height !== lastKnownPosition.height
+        rect.height !== lastKnownPosition.height ||
+        rect.visibility !== lastKnownPosition.visibility
       ) {
         iframeTarget.style.position = 'fixed'; // You can adjust this if needed
         iframeTarget.style.top = `${rect.top}px`;
         iframeTarget.style.left = `${rect.left}px`;
         iframeTarget.style.width = `${rect.width}px`;
         iframeTarget.style.height = `${rect.height}px`;
+        iframeTarget.style.display = rect.visibility == 'hidden' ? 'none' : '';
 
         lastKnownPosition = rect;
       }
@@ -45,17 +48,18 @@ export default function LayoutIframeTab({target, src, children}) {
   }, [iframeTarget]);
 
   return <>
-    <div ref={selfRef} data-target={target} style={{width: '100%', height: '100%'}}></div>
-    <Portal ref={(r)=>{
-      if(r) setIframeTarget(r.querySelector('#'+target));
-    }} container={document.querySelector('#layout-portal')}>
-      {src ?
-        <iframe src={src} id={target} style={{position: 'fixed'}} />:
-        <Frame src={src} id={target} style={{position: 'fixed'}}>
-          {children}
-        </Frame>
-      }
-    </Portal>
+    <div ref={selfRef} data-target={target} style={{width: '100%', height: '100%'}}>
+      <Portal ref={(r)=>{
+        if(r) setIframeTarget(r.querySelector('#'+target));
+      }} container={document.querySelector('#layout-portal')}>
+        {src ?
+          <iframe src={src} id={target} style={{position: 'fixed', border: 0}} />:
+          <Frame src={src} id={target} style={{position: 'fixed', border: 0}}>
+            {children}
+          </Frame>
+        }
+      </Portal>
+    </div>
   </>;
 }
 

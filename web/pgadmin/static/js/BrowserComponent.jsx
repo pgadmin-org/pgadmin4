@@ -43,7 +43,7 @@ export const defaultTabsData = [
     id: BROWSER_PANELS.DASHBOARD, title: gettext('Dashboard'), content: <Dashboard />, closable: true, group: 'main'
   },
   {
-    id: BROWSER_PANELS.PROPERTIES, title: gettext('Properties'), content: <Properties />, closable: true,
+    id: BROWSER_PANELS.PROPERTIES, title: gettext('Properties'), content: <Properties />, closable: true, group: 'main'
   },
   {
     id: BROWSER_PANELS.SQL, title: gettext('SQL'), content: <SQL />, closable: true, group: 'main'
