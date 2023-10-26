@@ -11,8 +11,8 @@
 
 import copy
 import string
-from pgadmin.tools.schema_diff.model import SchemaDiffModel
 from flask import current_app
+from flask_babel import gettext
 from pgadmin.utils.constants import PGADMIN_STRING_SEPARATOR
 
 count = 1
@@ -97,7 +97,7 @@ def _get_source_list(**kwargs):
             'label': node_label,
             'title': title,
             'oid': source_object_id,
-            'status': SchemaDiffModel.COMPARISON_STATUS['source_only'],
+            'status': gettext('Source Only'),
             'source_ddl': source_ddl,
             'target_ddl': '',
             'diff_ddl': diff_ddl,
@@ -178,7 +178,7 @@ def _get_target_list(removed, target_dict, node, target_params, view_object,
             'label': node_label,
             'title': title,
             'oid': target_object_id,
-            'status': SchemaDiffModel.COMPARISON_STATUS['target_only'],
+            'status': gettext('Target Only'),
             'source_ddl': '',
             'target_ddl': target_ddl,
             'diff_ddl': diff_ddl,
@@ -279,7 +279,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                 'oid': source_object_id,
                 'source_oid': source_object_id,
                 'target_oid': target_object_id,
-                'status': SchemaDiffModel.COMPARISON_STATUS['identical'],
+                'status': gettext('Identical'),
                 'group_name': group_name,
                 'dependencies': [],
                 'source_scid': source_params['scid']
@@ -363,7 +363,7 @@ def _get_identical_and_different_list(intersect_keys, source_dict, target_dict,
                 'oid': source_object_id,
                 'source_oid': source_object_id,
                 'target_oid': target_object_id,
-                'status': SchemaDiffModel.COMPARISON_STATUS['different'],
+                'status': gettext('Different'),
                 'source_ddl': source_ddl,
                 'target_ddl': target_ddl,
                 'diff_ddl': diff_ddl,
