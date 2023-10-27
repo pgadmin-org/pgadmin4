@@ -18,6 +18,8 @@ SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, att.atttypid, attfdwo
     att.attnotnull, att.attstorage, att.attstattarget, att.attnum, pg_catalog.format_type(t.oid, att.atttypmod) AS fulltype,
     t.typstorage AS defaultstorage,
     CASE WHEN t.typelem > 0 THEN t.typelem ELSE t.oid END as elemoid,
+    (CASE WHEN (att.attidentity in ('a', 'd')) THEN 'i' WHEN (att.attgenerated in ('s')) THEN 'g' ELSE 'n' END) AS colconstype,
+    (CASE WHEN (att.attgenerated in ('s')) THEN pg_catalog.pg_get_expr(def.adbin, def.adrelid) END) AS genexpr,
     (SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = t.typnamespace) as typnspname,
     pg_catalog.format_type(t.oid,NULL) AS typname,
     CASE WHEN length(cn.nspname::text) > 0 AND length(cl.collname::text) > 0 THEN
