@@ -122,6 +122,7 @@ class OAuth2Authentication(BaseAuthentication):
 
     def login(self, form):
         profile = self.get_user_profile()
+        current_app.logger.warning(profile)
         email_key = \
             [value for value in self.email_keys if value in profile.keys()]
         email = profile[email_key[0]] if (len(email_key) > 0) else None
