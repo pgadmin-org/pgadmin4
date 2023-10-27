@@ -11,8 +11,8 @@ import os
 import select
 import struct
 import config
+import subprocess
 from sys import platform as _platform
-from eventlet.green import subprocess
 from config import PG_DEFAULT_DRIVER
 from flask import Response, request
 from flask import render_template, copy_current_request_context, \
