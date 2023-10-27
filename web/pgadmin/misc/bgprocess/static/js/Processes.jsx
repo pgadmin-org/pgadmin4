@@ -13,7 +13,7 @@ import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
-import { PgIconButton } from '../../../../static/js/components/Buttons';
+import { PgButtonGroup, PgIconButton } from '../../../../static/js/components/Buttons';
 import CancelIcon from '@material-ui/icons/Cancel';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -282,27 +282,27 @@ export default function Processes() {
         CustomHeader={()=>{
           return (
             <Box>
-              <PgIconButton
-                className={classes.dropButton}
-                icon={<DeleteIcon/>}
-                aria-label="Acknowledge and Remove"
-                title={gettext('Acknowledge and Remove')}
-                onClick={() => {
-                  pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
-                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
-                  });
-                }}
-                disabled={selectedRows.length <= 0}
-              ></PgIconButton>
-              <PgIconButton
-                icon={<HelpIcon/>}
-                aria-label="Help"
-                title={gettext('Help')}
-                style={{marginLeft: '8px'}}
-                onClick={() => {
-                  window.open(url_for('help.static', {'filename': 'processes.html'}));
-                }}
-              ></PgIconButton>
+              <PgButtonGroup>
+                <PgIconButton
+                  icon={<DeleteIcon style={{height: '1.4rem'}}/>}
+                  aria-label="Acknowledge and Remove"
+                  title={gettext('Acknowledge and Remove')}
+                  onClick={() => {
+                    pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
+                      pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
+                    });
+                  }}
+                  disabled={selectedRows.length <= 0}
+                ></PgIconButton>
+                <PgIconButton
+                  icon={<HelpIcon style={{height: '1.4rem'}}/>}
+                  aria-label="Help"
+                  title={gettext('Help')}
+                  onClick={() => {
+                    window.open(url_for('help.static', {'filename': 'processes.html'}));
+                  }}
+                ></PgIconButton>
+              </PgButtonGroup>
             </Box>
           );
         }}

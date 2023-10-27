@@ -22,14 +22,12 @@ purpose or how it works if not obvious from a quick review of the code itself.
 CSS 3
 *****
 
-CSS3 is used for styling and layout throughout the application. Extensive use is
-made of the Bootstrap Framework to aid in that process, however additional
-styles must still be created from time to time.
+CSS3 is used for styling and layout throughout the application.
 
 Most custom styling comes from individual modules which may advertise static
 stylesheets to be included in the module that is loading them via hooks.
 
-Styling overrides (for example, to alter the Bootstrap look and feel) will
+Styling overrides (for example, to alter the look and feel) will
 typically be found in the **overrides.css** file in the main static file
 directory for the application.
 

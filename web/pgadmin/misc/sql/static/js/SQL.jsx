@@ -90,7 +90,7 @@ function SQL({nodeData, node, treeNodeInfo, isActive, isStale, setIsStale}) {
       setNodeSQL(sql);
     }
     setIsStale(false);
-  }, [isStale, isActive]);
+  }, [isStale, isActive, nodeData?.id]);
 
   return (
     <>

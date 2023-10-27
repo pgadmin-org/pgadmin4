@@ -152,6 +152,7 @@ function Dependents({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
     }
     if (message != '') {
       setLoaderText('');
+      setTableData([]);
       setMsg(message);
     }
 

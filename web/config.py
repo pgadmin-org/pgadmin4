@@ -230,8 +230,8 @@ PROXY_X_PREFIX_COUNT = 0
 
 # COMPRESSION
 COMPRESS_MIMETYPES = [
-    'text/html', 'text/css', 'text/xml', 'application/json',
-    'application/javascript'
+    'text/html', 'text/css', 'text/xml', 'text/javascript',
+    'application/json', 'application/javascript'
 ]
 COMPRESS_LEVEL = 9
 COMPRESS_MIN_SIZE = 500

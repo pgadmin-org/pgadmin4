@@ -314,7 +314,6 @@ define('pgadmin.browser', [
         'pgadmin:server:disconnect', stop_heartbeat.bind(obj)
       );
 
-      obj.set_master_password('');
       obj.check_corrupted_db_file();
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
@@ -328,6 +327,7 @@ define('pgadmin.browser', [
       obj.start_inactivity_timeout_daemon();
     },
     uiloaded: function() {
+      this.set_master_password('');
       this.check_version_update();
     },
     check_corrupted_db_file: function() {

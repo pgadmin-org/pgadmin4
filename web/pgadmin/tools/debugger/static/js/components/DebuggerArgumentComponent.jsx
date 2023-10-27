@@ -824,6 +824,7 @@ export default function DebuggerArgumentComponent({ debuggerInfo, restartDebug, 
               schema={debuggerArgsSchema.current}
               showFooter={false}
               isTabView={false}
+              Notifier={pgAdmin.Browser.notifier}
               onDataChange={(isChanged, changedData) => {
                 let isValid = false;
                 let skipStep = false;

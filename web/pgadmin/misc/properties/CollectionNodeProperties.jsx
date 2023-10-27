@@ -15,7 +15,7 @@ import gettext from 'sources/gettext';
 import PgTable from 'sources/components/PgTable';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
-import { PgIconButton } from '../../static/js/components/Buttons';
+import { PgButtonGroup, PgIconButton } from '../../static/js/components/Buttons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -63,9 +63,6 @@ const useStyles = makeStyles((theme) => ({
     padding: '8px',
     overflow: 'hidden !important',
     overflowX: 'auto !important'
-  },
-  dropButton: {
-    marginRight: '8px !important'
   },
   readOnlySwitch: {
     opacity: 0.75,
@@ -291,48 +288,47 @@ export default function CollectionNodeProperties({
     const canDropForce = evalFunc(node, node.canDropForce, nodeData, nodeItem, treeNodeInfo);
     return (
       <Box >
-        <PgIconButton
-          className={classes.dropButton}
-          icon={<DeleteIcon/>}
-          aria-label="Delete"
-          title={gettext('Delete')}
-          onClick={() => {
-            onDrop('drop');
-          }}
-          disabled={
-            (selectedObject.length > 0)
-              ? !canDrop
-              : true
-          }
-        ></PgIconButton>
-        {node.type !== 'coll-database' ? <PgIconButton
-          className={classes.dropButton}
-          icon={<DeleteSweepIcon />}
-          aria-label="Delete Cascade"
-          title={gettext('Delete (Cascade)')}
-          onClick={() => {
-            onDrop('dropCascade');
-          }}
-          disabled={
-            (selectedObject.length > 0)
-              ? !canDropCascade
-              : true
-          }
-        ></PgIconButton> :
+        <PgButtonGroup size="small">
           <PgIconButton
-            className={classes.dropButton}
-            icon={<DeleteForeverIcon />}
-            aria-label="Delete Force"
-            title={gettext('Delete (Force)')}
+            icon={<DeleteIcon style={{height: '1.35rem'}}/>}
+            aria-label="Delete"
+            title={gettext('Delete')}
             onClick={() => {
-              onDrop('dropForce');
+              onDrop('drop');
             }}
             disabled={
               (selectedObject.length > 0)
-                ? !canDropForce
+                ? !canDrop
                 : true
             }
-          ></PgIconButton>}
+          ></PgIconButton>
+          {node.type !== 'coll-database' ? <PgIconButton
+            icon={<DeleteSweepIcon style={{height: '1.5rem'}} />}
+            aria-label="Delete Cascade"
+            title={gettext('Delete (Cascade)')}
+            onClick={() => {
+              onDrop('dropCascade');
+            }}
+            disabled={
+              (selectedObject.length > 0)
+                ? !canDropCascade
+                : true
+            }
+          ></PgIconButton> :
+            <PgIconButton
+              icon={<DeleteForeverIcon style={{height: '1.4rem'}} />}
+              aria-label="Delete Force"
+              title={gettext('Delete (Force)')}
+              onClick={() => {
+                onDrop('dropForce');
+              }}
+              disabled={
+                (selectedObject.length > 0)
+                  ? !canDropForce
+                  : true
+              }
+            ></PgIconButton>}
+        </PgButtonGroup>
       </Box>);
   };
 
@@ -356,9 +352,7 @@ export default function CollectionNodeProperties({
           :
           (
             <div className={classes.emptyPanel}>
-              {loaderText ? (<Loader message={loaderText}/>) :
-                <EmptyPanelMessage text={gettext(infoMsg)}/>
-              }
+              <EmptyPanelMessage text={gettext(infoMsg)}/>
             </div>
           )
         }

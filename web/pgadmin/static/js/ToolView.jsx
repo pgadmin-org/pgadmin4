@@ -69,7 +69,7 @@ export default function ToolView() {
           manualClose: true,
           ...tabParams,
           cache: false,
-          group: 'main'
+          group: 'playground'
         }, BROWSER_PANELS.MAIN, 'middle', true);
       }
     });

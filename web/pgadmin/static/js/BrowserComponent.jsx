@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useMemo } from 'react';
+import React, {useEffect, useMemo, useState } from 'react';
 import AppMenuBar from './AppMenuBar';
 import ObjectBreadcrumbs from './components/ObjectBreadcrumbs';
 import Layout, { LayoutDocker, getDefaultGroup } from './helpers/Layout';
@@ -35,27 +35,27 @@ const mainPanelGroup  = {
 };
 
 export const processesPanelData = {
-  id: BROWSER_PANELS.PROCESSES, title: gettext('Processes'), content: <Processes />, closable: true, group: 'main'
+  id: BROWSER_PANELS.PROCESSES, title: gettext('Processes'), content: <Processes />, closable: true, group: 'playground'
 };
 
 export const defaultTabsData = [
   {
-    id: BROWSER_PANELS.DASHBOARD, title: gettext('Dashboard'), content: <Dashboard />, closable: true, group: 'main'
+    id: BROWSER_PANELS.DASHBOARD, title: gettext('Dashboard'), content: <Dashboard />, closable: true, group: 'playground'
   },
   {
-    id: BROWSER_PANELS.PROPERTIES, title: gettext('Properties'), content: <Properties />, closable: true, group: 'main'
+    id: BROWSER_PANELS.PROPERTIES, title: gettext('Properties'), content: <Properties />, closable: true, group: 'playground'
   },
   {
-    id: BROWSER_PANELS.SQL, title: gettext('SQL'), content: <SQL />, closable: true, group: 'main'
+    id: BROWSER_PANELS.SQL, title: gettext('SQL'), content: <SQL />, closable: true, group: 'playground'
   },
   {
-    id: BROWSER_PANELS.STATISTICS, title: gettext('Statistics'), content: <Statistics />, closable: true, group: 'main'
+    id: BROWSER_PANELS.STATISTICS, title: gettext('Statistics'), content: <Statistics />, closable: true, group: 'playground'
   },
   {
-    id: BROWSER_PANELS.DEPENDENCIES, title: gettext('Dependencies'), content: <Dependencies />, closable: true, group: 'main'
+    id: BROWSER_PANELS.DEPENDENCIES, title: gettext('Dependencies'), content: <Dependencies />, closable: true, group: 'playground'
   },
   {
-    id: BROWSER_PANELS.DEPENDENTS, title: gettext('Dependents'), content: <Dependents />, closable: true, group: 'main'
+    id: BROWSER_PANELS.DEPENDENTS, title: gettext('Dependents'), content: <Dependents />, closable: true, group: 'playground'
   },
   processesPanelData,
 ];
@@ -81,9 +81,9 @@ export default function BrowserComponent({pgAdmin}) {
             {
               size: 80,
               id: BROWSER_PANELS.MAIN,
-              group: 'main',
+              group: 'playground',
               tabs: defaultTabsData.map((t)=>LayoutDocker.getPanel(t)),
-              panelLock: {panelStyle: 'main'},
+              panelLock: {panelStyle: 'playground'},
             }
           ]
         },
@@ -92,10 +92,13 @@ export default function BrowserComponent({pgAdmin}) {
   };
   const {isLoading, failed} = usePreferences();
   let { name: browser } = useMemo(()=>getBrowser(), []);
+  const [uiReady, setUiReady] = useState(false);
 
-  useLayoutEffect(()=>{
-    pgAdmin?.Browser?.uiloaded?.();
-  }, []);
+  useEffect(()=>{
+    if(uiReady) {
+      pgAdmin?.Browser?.uiloaded?.();
+    }
+  }, [uiReady]);
 
   if(isLoading) {
     return <></>;
@@ -107,9 +110,9 @@ export default function BrowserComponent({pgAdmin}) {
   return (
     <PgAdminContext.Provider value={pgAdmin}>
       <ModalProvider>
-        <NotifierProvider pgAdmin={pgAdmin} />
+        <NotifierProvider pgAdmin={pgAdmin} onReady={()=>setUiReady(true)}/>
         {browser != 'Nwjs' && <AppMenuBar />}
-        <div style={{height: 'calc(100% - 32px)'}}>
+        <div style={{height: 'calc(100% - 30px)'}}>
           <Layout
             getLayoutInstance={(obj)=>{
               pgAdmin.Browser.docker = obj;
@@ -119,7 +122,7 @@ export default function BrowserComponent({pgAdmin}) {
             savedLayout={pgAdmin.Browser.utils.layout}
             groups={{
               'object-explorer': objectExplorerGroup,
-              'main': mainPanelGroup,
+              'playground': mainPanelGroup,
             }}
             noContextGroups={['object-explorer']}
             resetToTabPanel={BROWSER_PANELS.MAIN}

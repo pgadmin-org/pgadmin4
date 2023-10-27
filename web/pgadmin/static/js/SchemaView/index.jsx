@@ -39,6 +39,7 @@ import DataGridView from './DataGridView';
 import { useIsMounted } from '../custom_hooks';
 import ErrorBoundary from '../helpers/ErrorBoundary';
 import { usePgAdmin } from '../BrowserComponent';
+import { PgButtonGroup } from '../components/Buttons';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -866,7 +867,7 @@ const usePropsStyles = makeStyles((theme)=>({
     flexGrow: 1,
   },
   toolbar: {
-    padding: theme.spacing(0.5, 1),
+    padding: theme.spacing(1),
     background: theme.palette.background.default,
     ...theme.mixins.panelBorder.bottom,
   },
@@ -1000,11 +1001,13 @@ function SchemaPropertiesView({
     <Box className={classes.root}>
       <Loader message={loaderText}/>
       <Box className={classes.toolbar}>
-        <PgIconButton
-          data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
-          title="SQL help for this object type." className={classes.buttonMargin} />
-        <PgIconButton data-test="edit"
-          onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
+        <PgButtonGroup size="small">
+          <PgIconButton
+            data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
+            title="SQL help for this object type." />
+          <PgIconButton data-test="edit"
+            onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
+        </PgButtonGroup>
       </Box>
       <Box className={clsx(classes.form, classes.formProperties)}>
         <Box>

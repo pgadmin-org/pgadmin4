@@ -183,13 +183,14 @@ class Notifier {
   }
 }
 
-export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children }) {
+export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children, onReady }) {
   const modal = useModal();
 
   useEffect(()=>{
     // if open in an iframe then use top pgAdmin
     if(window.self != window.top) {
       pgAdmin.Browser.notifier = new Notifier(modal, pgWindow.pgAdmin.Browser.notifier.snackbar);
+      onReady?.();
       getInstance?.(pgAdmin.Browser.notifier);
     }
   }, []);
@@ -203,6 +204,7 @@ export function NotifierProvider({ pgAdmin, pgWindow, getInstance, children }) {
         ref={(obj)=>{
           pgAdmin.Browser.notifier = new Notifier(modal, new SnackbarNotifier(obj));
           getInstance?.(pgAdmin.Browser.notifier);
+          onReady?.();
         }}
       >
         {children}
@@ -221,6 +223,7 @@ NotifierProvider.propTypes = {
   pgWindow: PropTypes.object,
   getInstance: PropTypes.func,
   children: CustomPropTypes.children,
+  onReady: PropTypes.func,
 };
 
 export default Notifier;

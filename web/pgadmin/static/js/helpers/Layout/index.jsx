@@ -335,7 +335,7 @@ export function getDefaultGroup() {
     closable: false,
     maximizable: false,
     floatable: false,
-    moreIcon: <ExpandMoreIcon style={{height: '0.9em'}} />,
+    moreIcon: <ExpandMoreIcon style={{height: '0.9em', marginTop: '4px'}} />,
     panelExtra: (panelData, context) => {
       let icon = <ExpandDialogIcon style={{width: '0.7em'}}/>;
       let title = gettext('Maximise');

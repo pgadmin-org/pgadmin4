@@ -413,6 +413,9 @@ function getFinalTheme(baseTheme) {
       MuiAccordion: {
         root: {
           ...mixins.panelBorder,
+          '&.Mui-expanded': {
+            marginBottom: '8px',
+          },
         }
       },
       MuiAccordionSummary: {

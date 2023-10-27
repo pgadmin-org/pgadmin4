@@ -41,10 +41,14 @@ export default function rcdockOverride(theme) {
           },
           '& .dock-tab-active': {
             color: theme.palette.text.primary,
+            cursor: 'move',
             '&::hover': {
               color: theme.palette.text.primary,
             }
           },
+          '& .dock-tab-btn': {
+            pointerEvents: 'none',
+          }
         },
         '&.dock-style-dialogs': {
           borderRadius: theme.shape.borderRadius,
@@ -159,7 +163,30 @@ export default function rcdockOverride(theme) {
       },
       '& .drag-accept-reject::after': {
         content: '',
+      },
+      '& .dock-nav-more': {
+        color: theme.custom.icon.contrastText
       }
-    }
+    },
+    '.dock-dropdown': {
+      zIndex: 1004,
+
+      '& .dock-dropdown-menu': {
+        padding: '4px 0px',
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        border: `1px solid ${theme.otherVars.borderColor}`,
+      },
+      '& .dock-dropdown-menu-item': {
+        display: 'flex',
+        padding: '3px 12px',
+        color: theme.palette.text.primary,
+        transition: 'none',
+        '&.dock-dropdown-menu-item-active, &:hover': {
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+        }
+      }
+    },
   };
 }

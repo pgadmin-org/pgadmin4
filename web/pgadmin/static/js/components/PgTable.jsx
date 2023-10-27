@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   pgTableHeader: {
     display: 'flex',
     background: theme.palette.background.default,
-    padding: '4px 8px',
+    padding: '8px 8px 4px',
   },
   tableRowContent:{
     display: 'flex',

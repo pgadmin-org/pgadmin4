@@ -237,10 +237,11 @@ function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale,
       }
     }
     if (message != '') {
+      setTableData([]);
       setMsg(message);
     }
     setIsStale(false);
-  }, [isStale, isActive]);
+  }, [isStale, isActive, nodeData?.id]);
 
   return (
     <>

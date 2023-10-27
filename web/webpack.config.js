@@ -580,6 +580,30 @@ module.exports = [{
     ] : [],
     splitChunks: {
       cacheGroups: {
+        vendor_sqleditor: {
+          name: 'vendor_sqleditor',
+          filename: 'vendor.sqleditor.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 9,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, ['jsoneditor', 'leaflet']);
+          },
+        },
+        vendor_react: {
+          name: 'vendor_react',
+          filename: 'vendor.react.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 8,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, ['react', 'react-dom']);
+          },
+        },
         vendor_main: {
           name: 'vendor_main',
           filename: 'vendor.main.js',
@@ -589,7 +613,7 @@ module.exports = [{
           minChunks: 2,
           enforce: true,
           test(module) {
-            return webpackShimConfig.matchModules(module, ['react', 'react-dom', 'bootstrap', 'popper']);
+            return webpackShimConfig.matchModules(module, ['codemirror', 'rc-', '@material-ui']);
           },
         },
         vendor_others: {

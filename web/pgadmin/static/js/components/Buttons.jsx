@@ -81,11 +81,11 @@ const useStyles = makeStyles((theme)=>({
   },
   noBorder: {
     border: 0,
-    color: 'inherit',
     backgroundColor: 'transparent',
+    color: theme.custom.icon.contrastText,
     '&:hover': {
       border: 0,
-      color: 'inherit',
+      color: theme.custom.icon.contrastText,
       backgroundColor: 'inherit',
       filter: 'brightness(85%)',
     },
