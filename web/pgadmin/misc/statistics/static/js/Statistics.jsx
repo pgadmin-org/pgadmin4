@@ -17,7 +17,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
-import { compareSizeVals, toPrettySize } from '../../../../static/js/utils';
+import { toPrettySize } from '../../../../static/js/utils';
 import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
 import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 import { usePgAdmin } from '../../../../static/js/BrowserComponent';
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getColumn(data, singleLineStatistics) {
+function getColumn(data, singleLineStatistics, prettifyFields=[]) {
   let columns = [], column;
   if (!singleLineStatistics) {
     if (!_.isUndefined(data)) {
@@ -66,9 +66,6 @@ function getColumn(data, singleLineStatistics) {
             sortable: true,
             resizable: true,
             disableGlobalFilter: false,
-            sortType: ((rowA, rowB, id) => {
-              return compareSizeVals(rowA.values[id], rowB.values[id]);
-            })
           };
         }else{
           column = {
@@ -83,7 +80,6 @@ function getColumn(data, singleLineStatistics) {
         columns.push(column);
       });
     }
-    return columns;
   } else {
     columns = [
       {
@@ -102,6 +98,13 @@ function getColumn(data, singleLineStatistics) {
       },
     ];
   }
+  columns.forEach((c)=>{
+    // Prettify the cell view
+    if(prettifyFields.includes(c.Header)) {
+      // eslint-disable-next-line react/display-name,react/prop-types
+      c.Cell = ({value})=><>{toPrettySize(value)}</>;
+    }
+  });
   return columns;
 }
 
@@ -112,15 +115,9 @@ function getTableData(res, node) {
     let data = res.data.data;
     if (node.hasCollectiveStatistics || data['rows'].length > 1) {
       data.rows.forEach((row) => {
-        // Prettify the field values
-        if (!_.isEmpty(node.statsPrettifyFields)) {
-          node.statsPrettifyFields.forEach((field) => {
-            row[field] = toPrettySize(row[field]);
-          });
-        }
         nodeStats.push({ ...row, icon: '' });
       });
-      colData = getColumn(data.columns, false);
+      colData = getColumn(data.columns, false, node.statsPrettifyFields);
     } else {
       nodeStats = createSingleLineStatistics(data, node.statsPrettifyFields);
       colData = getColumn(data.columns, true);
