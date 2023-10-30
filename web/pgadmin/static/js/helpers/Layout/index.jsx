@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect, useCallback } from 'react';
+import React, { useRef, useMemo, useEffect, useCallback, useState } from 'react';
 import DockLayout from 'rc-dock';
 import PropTypes from 'prop-types';
 import EventBus from '../EventBus';
@@ -17,8 +17,12 @@ import usePreferences from '../../../../preferences/static/js/store';
 import _ from 'lodash';
 
 function TabTitle({id, icon, title, closable, tooltip}) {
+  const [attrs, setAttrs] = useState({
+    icon: icon,
+    title: title,
+    tooltip: tooltip??title,
+  });
   const layoutDocker = React.useContext(LayoutDockerContext);
-
   const onContextMenu = useCallback((e)=>{
     const g = layoutDocker.find(id)?.group??'';
     if((layoutDocker.noContextGroups??[]).includes(g)) return;
@@ -27,10 +31,24 @@ function TabTitle({id, icon, title, closable, tooltip}) {
     layoutDocker.eventBus.fireEvent(LAYOUT_EVENTS.CONTEXT, e, id);
   }, []);
 
+  useEffect(()=>{
+    const deregister = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.REFRESH_TITLE, _.debounce((panelId)=>{
+      if(panelId == id) {
+        const p = layoutDocker.find(id)?.internal??{};
+        setAttrs({
+          icon: p.icon,
+          title: p.title,
+          tooltip: p.tooltip??p.title
+        });
+      }
+    }, 100));
+    return deregister;
+  }, []);
+
   return (
-    <Box display="flex" alignItems="center" title={tooltip??title} onContextMenu={onContextMenu} width="100%">
-      {icon && <span style={{fontSize: '1rem', marginRight: '4px'}} className={icon}></span>}
-      <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{title}</span>
+    <Box display="flex" alignItems="center" title={attrs.tooltip} onContextMenu={onContextMenu} width="100%">
+      {attrs.icon && <span style={{fontSize: '1rem', marginRight: '4px'}} className={attrs.icon}></span>}
+      <span style={{textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap'}} data-visible={layoutDocker.isTabVisible(id)}>{attrs.title}</span>
       {closable && <PgIconButton title={gettext('Close')} icon={<CloseIcon style={{height: '0.7em'}} />} size="xs" noBorder onClick={()=>{
         layoutDocker.close(id);
       }} style={{margin: '-1px -10px -1px 0'}} />}
@@ -99,7 +117,7 @@ export class LayoutDocker {
   }
 
   find(...args) {
-    return this.layoutObj.find(...args);
+    return this.layoutObj?.find(...args);
   }
 
   setTitle(panelId, title, icon, tooltip) {
@@ -116,22 +134,17 @@ export class LayoutDocker {
     if(tooltip) {
       internal.tooltip = tooltip;
     }
-    this.layoutObj.updateTab(panelId, {
-      ...panelData,
-      internal: internal,
-      title: <TabTitle id={panelData.id} icon={internal.icon} title={internal.title} closable={internal.closable} tooltip={internal.tooltip} />
-    }, false);
+    panelData.internal = internal;
+    this.eventBus.fireEvent(LAYOUT_EVENTS.REFRESH_TITLE, panelId);
   }
 
   setInternalAttrs(panelId, attrs) {
     const panelData = this.find(panelId);
-    this.layoutObj.updateTab(panelId, {
-      ...panelData,
-      internal: {
-        ...panelData.internal,
-        ...attrs,
-      },
-    }, false);
+    panelData.internal = {
+      ...panelData.internal,
+      ...attrs,
+    };
+    this.eventBus.fireEvent(LAYOUT_EVENTS.REFRESH_TITLE, panelId);
   }
 
   getInternalAttrs(panelId) {
@@ -449,12 +462,12 @@ export default function Layout({groups, noContextGroups, getLayoutInstance, layo
         }}
         groups={defaultGroups}
         onLayoutChange={(l, currentTabId, direction)=>{
-          layoutDockerObj.saveLayout(l);
-          direction = direction == 'update' ? 'active' : direction;
           if(Object.values(LAYOUT_EVENTS).indexOf(direction) > -1) {
             layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS[direction.toUpperCase()], currentTabId);
-          } else if(direction) {
+            layoutDockerObj.saveLayout(l);
+          } else if(direction && direction != 'update') {
             layoutDockerObj.eventBus.fireEvent(LAYOUT_EVENTS.CHANGE, currentTabId);
+            layoutDockerObj.saveLayout(l);
           }
         }}
         {...props}
@@ -486,5 +499,6 @@ export const LAYOUT_EVENTS = {
   MOVE: 'move',
   CLOSING: 'closing',
   CONTEXT: 'context',
-  CHANGE: 'change'
+  CHANGE: 'change',
+  REFRESH_TITLE: 'refresh-title'
 };

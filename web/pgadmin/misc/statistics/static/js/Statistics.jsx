@@ -55,29 +55,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getColumn(data, singleLineStatistics, prettifyFields=[]) {
-  let columns = [], column;
+  let columns = [];
   if (!singleLineStatistics) {
     if (!_.isUndefined(data)) {
       data.forEach((row) => {
-        if (row.name == gettext('Total Size')) {
-          column = {
-            Header: row.name,
-            accessor: row.name,
-            sortable: true,
-            resizable: true,
-            disableGlobalFilter: false,
-          };
-        }else{
-          column = {
-            Header: row.name,
-            accessor: row.name,
-            sortable: true,
-            resizable: true,
-            disableGlobalFilter: false,
-          };
-
-        }
-        columns.push(column);
+        columns.push({
+          Header: row.name,
+          accessor: row.name,
+          sortable: true,
+          resizable: true,
+          disableGlobalFilter: false,
+        });
       });
     }
   } else {

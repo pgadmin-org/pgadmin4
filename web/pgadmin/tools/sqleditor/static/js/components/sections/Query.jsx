@@ -498,11 +498,11 @@ export default function Query() {
 
   const isDirty = ()=>(queryToolCtx.params.is_query_tool && lastSavedText.current !== editor.current.getValue());
 
-  const cursorActivity = useCallback((cmObj)=>{
+  const cursorActivity = useCallback(_.debounce((cmObj)=>{
     const c = cmObj.getCursor();
     lastCursorPos.current = c;
     eventBus.fireEvent(QUERY_TOOL_EVENTS.CURSOR_ACTIVITY, [c.line+1, c.ch+1]);
-  }, []);
+  }, 100), []);
 
   const change = useCallback(()=>{
     eventBus.fireEvent(QUERY_TOOL_EVENTS.QUERY_CHANGED, isDirty());

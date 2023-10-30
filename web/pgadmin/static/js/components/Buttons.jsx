@@ -77,6 +77,9 @@ const useStyles = makeStyles((theme)=>({
     minWidth: '24px',
     '& .MuiSvgIcon-root': {
       height: '0.8em',
+    },
+    '.MuiButtonGroup-root &': {
+      minWidth: '30px',
     }
   },
   noBorder: {

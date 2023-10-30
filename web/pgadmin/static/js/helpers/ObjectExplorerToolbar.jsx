@@ -3,15 +3,15 @@ import { usePgAdmin } from '../BrowserComponent';
 import { Box } from '@material-ui/core';
 import { QueryToolIcon, RowFilterIcon, TerminalIcon, ViewDataIcon } from '../components/ExternalIcon';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
-import { PgIconButton } from '../components/Buttons';
+import { PgButtonGroup, PgIconButton } from '../components/Buttons';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import CustomPropTypes from '../custom_prop_types';
 
 
-function ToolbarButton({menuItem, icon}) {
+function ToolbarButton({menuItem, icon, ...props}) {
   return (
-    <PgIconButton title={menuItem?.label??''} icon={icon} size="xs"
+    <PgIconButton title={menuItem?.label??''} icon={icon} {...props} size="xs"
       disabled={menuItem?.isDisabled??true} onClick={()=>menuItem?.callback()} />
   );
 }
@@ -60,11 +60,13 @@ export default function ObjectExplorerToolbar() {
 
   return (
     <Box display="flex" alignItems="center" gridGap={'2px'}>
-      <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} />
-      <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context_table']} />
-      <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context_table']} />
-      <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} />
-      <ToolbarButton icon={<TerminalIcon />} menuItem={menus['psql']} />
+      <PgButtonGroup size="small">
+        <ToolbarButton icon={<QueryToolIcon />} menuItem={menus['query_tool']} />
+        <ToolbarButton icon={<ViewDataIcon />} menuItem={menus['view_all_rows_context_table']} />
+        <ToolbarButton icon={<RowFilterIcon />} menuItem={menus['view_filtered_rows_context_table']} />
+        <ToolbarButton icon={<SearchOutlinedIcon style={{height: '1.4rem'}} />} menuItem={menus['search_objects']} />
+        <ToolbarButton icon={<TerminalIcon />} menuItem={menus['psql']} />
+      </PgButtonGroup>
     </Box>
   );
 }
