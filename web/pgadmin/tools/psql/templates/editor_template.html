@@ -28,7 +28,7 @@ require(
         term.open(document.getElementById('psql-terminal'));
         <!-- Socket-->
         const socket = self.pgAdmin.Browser.psql.psql_socket();
-        self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db|safe}}', '{{server_type}}', fitAddon, term);
+        self.pgAdmin.Browser.psql.psql_socket_io(socket, '{{is_enable}}', '{{sid}}', '{{db|safe}}', '{{server_type}}', fitAddon, term, '{{role|safe}}');
         self.pgAdmin.Browser.psql.psql_terminal_io(term, socket, '{{platform}}');
         self.pgAdmin.Browser.psql.check_db_name_change('{{db|safe}}', '{{o_db_name|safe}}');
         <!-- Set terminal size -->
