@@ -24,7 +24,7 @@ import sys
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 root = os.path.dirname(os.path.dirname(CURRENT_PATH))
 sys.path.insert(0, root)
-from pgadmin.misc.cloud.azure.azure_cache import load_persistent_cache, \
+from utils.azure_cache import load_persistent_cache, \
     TokenCachePersistenceOptions
 
 
