@@ -21,7 +21,7 @@ Flask-Paranoid==0.*
 Flask-Babel==3.1.*
 Flask-Security-Too==5.1.*
 Flask-SocketIO==5.3.*
-WTForms==3.0.*
+WTForms==3.1.*
 passlib==1.*
 pytz==2023.*
 speaklater3==1.*
