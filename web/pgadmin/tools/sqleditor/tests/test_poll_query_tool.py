@@ -79,7 +79,9 @@ NOTICE:  Hello, world!
         self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'.format(
             self.trans_id, utils.SERVER_GROUP, self.server_id, self.db_id)
-        response = self.tester.post(url)
+        response = self.tester.post(url, data=json.dumps({
+            "dbname": database_info["db_name"]
+        }))
         self.assertEqual(response.status_code, 200)
 
         cnt = 0
@@ -89,7 +91,6 @@ NOTICE:  Hello, world!
             url = '/sqleditor/query_tool/start/{0}'.format(self.trans_id)
             response = self.tester.post(url, data=json.dumps({"sql": s}),
                                         content_type='html/json')
-
             self.assertEqual(response.status_code, 200)
             url = '/sqleditor/poll/{0}'.format(self.trans_id)
 

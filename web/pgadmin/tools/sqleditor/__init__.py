@@ -335,7 +335,8 @@ def panel(trans_id):
 
 
 @blueprint.route(
-    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
+    '<int:did>',
     methods=["POST"], endpoint='initialize_sqleditor_with_did'
 )
 @blueprint.route(
@@ -373,7 +374,7 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
     }
 
     is_error, errmsg, conn_id, version = _init_sqleditor(
-        trans_id, connect, sgid, sid, did, **kwargs)
+        trans_id, connect, sgid, sid, did, data['dbname'], **kwargs)
     if is_error:
         return errmsg
 
@@ -410,7 +411,7 @@ def _connect(conn, **kwargs):
     return status, msg, is_ask_password, user, role, password
 
 
-def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
+def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     # Create asynchronous connection using random connection id.
     conn_id = str(secrets.choice(range(1, 9999999)))
     conn_id_ac = str(secrets.choice(range(1, 9999999)))
@@ -429,10 +430,12 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
         return True, internal_server_error(errormsg=str(e)), '', ''
 
     try:
-        conn = manager.connection(did=did, conn_id=conn_id,
+        conn = manager.connection(conn_id=conn_id,
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
-                                  array_to_string=True)
+                                  array_to_string=True,
+                                  **({"database": dbname} if dbname is not None
+                                     else {"did": did}))
         pref = Preferences.module('sqleditor')
 
         if connect:
@@ -463,10 +466,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
                         errormsg=str(msg)), '', ''
 
             if pref.preference('autocomplete_on_key_press').get():
-                conn_ac = manager.connection(did=did, conn_id=conn_id_ac,
+                conn_ac = manager.connection(conn_id=conn_id_ac,
                                              auto_reconnect=False,
                                              use_binary_placeholder=True,
-                                             array_to_string=True)
+                                             array_to_string=True,
+                                             **({"database": dbname}
+                                                if dbname is not None
+                                                else {"did": did}))
                 status, msg, is_ask_password, user, role, password = _connect(
                     conn_ac, **kwargs)
 
@@ -486,6 +492,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
     command_obj.set_auto_commit(pref.preference('auto_commit').get())
     command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
 
+    # Set the value of database name, that will be used later
+    command_obj.dbname = dbname if dbname else None
     # Use pickle to store the command object which will be used
     # later by the sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -533,7 +541,8 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
         }
 
         is_error, errmsg, conn_id, version = _init_sqleditor(
-            new_trans_id, connect, sgid, sid, did, **kwargs)
+            new_trans_id, connect, sgid, sid, did, data['database_name'],
+            **kwargs)
 
         if is_error:
             return errmsg
@@ -851,6 +860,7 @@ def start_query_tool(trans_id):
     Args:
         trans_id: unique transaction id
     """
+
     sql = extract_sql_from_network_parameters(
         request.data, request.args, request.form
     )
@@ -1632,7 +1642,10 @@ def cancel_transaction(trans_id):
         try:
             manager = get_driver(
                 PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-            conn = manager.connection(did=trans_obj.did)
+            conn = manager.connection(**({"database": trans_obj.dbname}
+                                         if trans_obj.dbname is not None
+                                         else {"did": trans_obj.did}))
+
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 

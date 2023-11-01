@@ -98,7 +98,9 @@ class TestSQLASCIIEncoding(BaseTestGenerator):
         url = '/sqleditor/initialize/sqleditor/{0}/{1}/{2}/{3}'\
             .format(self.trans_id, test_utils.SERVER_GROUP, self.encode_sid,
                     self.encode_did)
-        response = self.tester.post(url)
+        response = self.tester.post(url, data=json.dumps({
+            "dbname": self.encode_db_name
+        }))
         self.assertEqual(response.status_code, 200)
 
         # Check character
