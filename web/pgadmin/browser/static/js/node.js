@@ -380,6 +380,7 @@ define('pgadmin.browser.node', [
             return;
           }
 
+          treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
           const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
           const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
           const onSave = (newNodeData)=>{
@@ -694,7 +695,7 @@ define('pgadmin.browser.node', [
         pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
-      selected: function(item, data, browser) {
+      selected: function(item, data) {
         // Show the information about the selected node in the below panels,
         // which are visible at this time:
         // + Properties
@@ -702,10 +703,10 @@ define('pgadmin.browser.node', [
         // + Dependents
         // + Dependencies
         // + Statistics
-        let b = browser || pgBrowser;
-
         // Update the menu items
-        pgAdmin.Browser.enable_disable_menus.apply(b, [item]);
+        pgAdmin.Browser.enable_disable_menus.apply(pgBrowser, [item]);
+
+        pgBrowser.Events.trigger('pgadmin-browser:node:selected', item, data);
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
           item);

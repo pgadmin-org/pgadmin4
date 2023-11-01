@@ -465,16 +465,6 @@ export default function CodeMirror({currEditor, name, value, options, events, re
       editor.current.on(eventName, events[eventName]);
     });
 
-    // Register keyup event if autocomplete is true
-    let pref = preferencesStore.getPreferencesForModule('sqleditor');
-    if (autocomplete && pref.autocomplete_on_key_press) {
-      editor.current.on('keyup', (cm, event)=>{
-        if (!cm.state.completionActive && (event.key == 'Backspace' || /^[ -~]{1}$/.test(event.key))) {
-          OrigCodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
-        }
-      });
-    }
-
     editor.current.on('drop', handleDrop);
     editor.current.on('paste', handlePaste);
     return ()=>{
@@ -482,30 +472,39 @@ export default function CodeMirror({currEditor, name, value, options, events, re
     };
   }, []);
 
-  useEffect(() => usePreferences.subscribe(
-    state => {
-      let pref = state.getPreferencesForModule('sqleditor');
-      let wrapEle = editor.current?.getWrapperElement();
-      wrapEle && (wrapEle.style.fontSize = calcFontSize(pref.sql_font_size));
-
-      if(pref.plain_editor_mode) {
-        editor.current?.setOption('mode', 'text/plain');
-        /* Although not required, setting explicitly as codemirror will remove code folding only on next edit */
-        editor.current?.setOption('foldGutter', false);
-      } else {
-        editor.current?.setOption('mode', 'text/x-pgsql');
-        editor.current?.setOption('foldGutter', pref.code_folding);
-      }
-
-      editor.current?.setOption('indentWithTabs', !pref.use_spaces);
-      editor.current?.setOption('indentUnit', pref.tab_size);
-      editor.current?.setOption('tabSize', pref.tab_size);
-      editor.current?.setOption('lineWrapping', pref.wrap_code);
-      editor.current?.setOption('autoCloseBrackets', pref.insert_pair_brackets);
-      editor.current?.setOption('matchBrackets', pref.brace_matching);
-      editor.current?.refresh();
+  const autocompKeyup = (cm, event)=>{
+    if (!cm.state.completionActive && (event.key == 'Backspace' || /^[ -~]{1}$/.test(event.key))) {
+      OrigCodeMirror.commands.autocomplete(cm, null, {completeSingle: false});
     }
-  ), []);
+  };
+
+  useEffect(()=>{
+    let pref = preferencesStore.getPreferencesForModule('sqleditor');
+    let wrapEle = editor.current?.getWrapperElement();
+    wrapEle && (wrapEle.style.fontSize = calcFontSize(pref.sql_font_size));
+
+    // Register keyup event if autocomplete is true
+    if (autocomplete && pref.autocomplete_on_key_press) {
+      editor.current.on('keyup', autocompKeyup);
+    }
+
+    if(pref.plain_editor_mode) {
+      editor.current?.setOption('mode', 'text/plain');
+      /* Although not required, setting explicitly as codemirror will remove code folding only on next edit */
+      editor.current?.setOption('foldGutter', false);
+    } else {
+      editor.current?.setOption('mode', 'text/x-pgsql');
+      editor.current?.setOption('foldGutter', pref.code_folding);
+    }
+
+    editor.current?.setOption('indentWithTabs', !pref.use_spaces);
+    editor.current?.setOption('indentUnit', pref.tab_size);
+    editor.current?.setOption('tabSize', pref.tab_size);
+    editor.current?.setOption('lineWrapping', pref.wrap_code);
+    editor.current?.setOption('autoCloseBrackets', pref.insert_pair_brackets);
+    editor.current?.setOption('matchBrackets', pref.brace_matching);
+    editor.current?.refresh();
+  }, [preferencesStore]);
 
   useEffect(()=>{
     if(editor.current) {

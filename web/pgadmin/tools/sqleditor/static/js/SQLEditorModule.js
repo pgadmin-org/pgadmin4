@@ -222,11 +222,11 @@ export default class SQLEditor {
     return true;
   }
 
-  loadComponent(container, params) {
+  async loadComponent(container, params) {
     let selectedNodeInfo = pgWindow.pgAdmin.Browser.tree.getTreeNodeHierarchy(
       pgWindow.pgAdmin.Browser.tree.selected()
     );
-    listenPreferenceBroadcast();
+    await listenPreferenceBroadcast();
     ReactDOM.render(
       <Theme>
         <PgAdminContext.Provider value={pgAdmin}>

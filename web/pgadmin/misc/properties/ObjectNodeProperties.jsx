@@ -20,7 +20,7 @@ import usePreferences from '../../preferences/static/js/store';
 import PropTypes from 'prop-types';
 
 export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeData, actionType, formType, onEdit, onSave, onClose,
-  isActive, isStale, setIsStale}) {
+  isActive, setIsStale}) {
   const layoutDocker = React.useContext(LayoutDockerContext);
   const nodeType = nodeData?._type;
   const pgAdmin = usePgAdmin();
@@ -61,7 +61,7 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
           resolve(res.data);
         })
         .catch((err)=>{
-          pgAdmin.Browser.notifier.pgNotifier('error', err, '', function(msg) {
+          pgAdmin.Browser.notifier.pgNotifier('error', err, gettext('Failed to fetch data'), function(msg) {
             if (msg == 'CRYPTKEY_SET') {
               return Promise.resolve(initData());
             } else if (msg == 'CRYPTKEY_NOT_SET') {
@@ -198,13 +198,13 @@ export default function ObjectNodeProperties({panelId, node, treeNodeInfo, nodeD
   }
 
   const key = useMemo(()=>{
-    if(!isActive && isStale || actionType != 'properties') {
+    if( actionType != 'properties' || isActive) {
       return nodeData?._id;
-    } else if(isActive && isStale) {
-      return nodeData?._id + '0';
+    } else {
+      initData = ()=>Promise.resolve({});
+      return nodeData?._id + '-0';
     }
-    return nodeData?._id + '1';
-  }, [isActive, isStale, nodeData?._id]);
+  }, [isActive, nodeData?._id]);
 
   /* Fire at will, mount the DOM */
   return (
@@ -242,6 +242,5 @@ ObjectNodeProperties.propTypes = {
   onSave: PropTypes.func,
   onClose: PropTypes.func,
   isActive: PropTypes.bool,
-  isStale: PropTypes.bool,
   setIsStale: PropTypes.func,
 };

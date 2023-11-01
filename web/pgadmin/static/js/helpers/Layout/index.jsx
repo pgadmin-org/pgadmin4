@@ -122,6 +122,8 @@ export class LayoutDocker {
 
   setTitle(panelId, title, icon, tooltip) {
     const panelData = this.find(panelId);
+    if(!panelData) return;
+
     const internal = {
       ...panelData.internal,
     };

@@ -138,8 +138,8 @@ export default class ERDModule {
     return openUrl;
   }
 
-  loadComponent(container, params) {
-    listenPreferenceBroadcast();
+  async loadComponent(container, params) {
+    await listenPreferenceBroadcast();
     ReactDOM.render(
       <Theme>
         <ModalProvider>

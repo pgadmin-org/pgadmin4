@@ -324,6 +324,12 @@ function getFinalTheme(baseTheme) {
             margin: 0,
             padding: 0,
           },
+          svg: {
+            verticalAlign: 'middle',
+          },
+          img: {
+            verticalAlign: 'middle',
+          },
           ...pickrOverride(baseTheme),
           ...uplotOverride(baseTheme),
           ...rcdockOverride(baseTheme),
@@ -414,7 +420,7 @@ function getFinalTheme(baseTheme) {
         root: {
           ...mixins.panelBorder,
           '&.Mui-expanded': {
-            marginBottom: '8px',
+            margin: '8px 0px',
           },
         }
       },

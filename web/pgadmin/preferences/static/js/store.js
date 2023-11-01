@@ -78,4 +78,13 @@ export function listenPreferenceBroadcast() {
 
   // initial sync
   preferenceChangeBroadcast.postMessage('sync');
+
+  return new Promise((resolve)=>{
+    const i = setInterval(()=>{
+      if(usePreferences.getState()?.version > 0) {
+        clearInterval(i);
+        resolve();
+      }
+    }, 100);
+  });
 }

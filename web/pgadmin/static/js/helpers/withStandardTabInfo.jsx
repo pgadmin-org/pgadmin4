@@ -15,12 +15,11 @@ import { usePgAdmin } from '../../../static/js/BrowserComponent';
 export default function withStandardTabInfo(Component, tabId) {
   // eslint-disable-next-line react/display-name
   const HOCComponent = (props)=>{
-    const [[nodeItem, nodeData], setNodeInfo] = useState([]);
+    const [[isStale, nodeItem, nodeData], setNodeInfo] = useState([]);
     const pgAdmin = usePgAdmin();
     const node = nodeData && pgAdmin.Browser.Nodes[nodeData?._type];
     const treeNodeInfo = pgAdmin.Browser.tree?.getTreeNodeHierarchy(nodeItem);
     const [isActive, setIsActive] = React.useState(false);
-    const [isStale, setIsStale] = React.useState(true);
     const layoutDocker = useContext(LayoutDockerContext);
 
     useEffect(()=>{
@@ -38,13 +37,11 @@ export default function withStandardTabInfo(Component, tabId) {
         }
       }, 100);
 
-      let deregisterTree = pgAdmin.Browser.Events.on('pgadmin-browser:tree:selected', (item, data)=>{
-        setNodeInfo([item, data]);
-        setIsStale(true);
+      let deregisterTree = pgAdmin.Browser.Events.on('pgadmin-browser:node:selected', (item, data)=>{
+        setNodeInfo([true, item, data]);
       });
       let deregisterTreeUpdate = pgAdmin.Browser.Events.on('pgadmin-browser:tree:updated', (item, data)=>{
         setNodeInfo([item, data]);
-        setIsStale(true);
       });
       let deregisterActive = layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, onTabActive);
       // if there is any dock changes to the tab and it appears to be active/inactive
@@ -66,10 +63,6 @@ export default function withStandardTabInfo(Component, tabId) {
       };
     }, []);
 
-    useEffect(()=>{
-      setIsStale(true);
-    }, [nodeData]);
-
     return (
       <Component
         {...props}
@@ -79,7 +72,7 @@ export default function withStandardTabInfo(Component, tabId) {
         treeNodeInfo={treeNodeInfo}
         isActive={isActive}
         isStale={isStale}
-        setIsStale={setIsStale}
+        setIsStale={(v)=>setNodeInfo((prev)=>[v, prev[1], prev[2]])}
       />
     );
   };

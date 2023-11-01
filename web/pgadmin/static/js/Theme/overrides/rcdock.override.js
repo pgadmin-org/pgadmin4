@@ -35,6 +35,13 @@ export default function rcdockOverride(theme) {
         '& .dock':  {
           borderRadius: 'inherit',
         },
+        '&.dock-style-playground':{
+          '&:not([data-dockid="id-main"])': {
+            '& .dock-extra-content': {
+              display: 'none',
+            }
+          }
+        },
         '&.dock-style-object-explorer': {
           '& .dock-ink-bar': {
             height: '0px',

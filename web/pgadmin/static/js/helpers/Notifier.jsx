@@ -164,6 +164,7 @@ class Notifier {
       return onJSONResult();
     }
     this.alert(promptmsg, msg.replace(new RegExp(/\r?\n/, 'g'), '<br />'));
+    onJSONResult();
   }
 
   alert(title, text, onOkClick, okLabel=gettext('OK')) {

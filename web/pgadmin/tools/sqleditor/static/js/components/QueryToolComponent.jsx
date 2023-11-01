@@ -338,7 +338,7 @@ export default function QueryToolComponent({params, pgWindow, pgAdmin, selectedN
         if(docker.current.isTabVisible(PANELS.QUERY)) {
           docker.current.focus(PANELS.QUERY);
         } else if(docker.current.isTabVisible(PANELS.HISTORY)) {
-          docker.current.isTabVisible(PANELS.HISTORY);
+          docker.current.focus(PANELS.HISTORY);
         }
 
         eventBus.current.fireEvent(QUERY_TOOL_EVENTS.GOTO_LAST_SCROLL);
