@@ -34,6 +34,7 @@ Bug fixes
 
   | `Issue #2986 <https://github.com/pgadmin-org/pgadmin4/issues/2986>`_ -  Fix an issue where the scroll position of panels was not remembered on Firefox.
   | `Issue #6459 <https://github.com/pgadmin-org/pgadmin4/issues/6459>`_ -  Fix the sorting of size on the statistics panel.
+  | `Issue #6487 <https://github.com/pgadmin-org/pgadmin4/issues/6487>`_ -  Fixed restoration of query tool database connection after dropping and re-creating the database with the same name.
   | `Issue #6602 <https://github.com/pgadmin-org/pgadmin4/issues/6602>`_ -  Fix an issue where the default server-group is being deleted if the load-server json file contains no servers.
   | `Issue #6720 <https://github.com/pgadmin-org/pgadmin4/issues/6720>`_ -  Fix an issue of the incorrect format (no indent) of SQL stored functions/procedures.
   | `Issue #6784 <https://github.com/pgadmin-org/pgadmin4/issues/6784>`_ -  Fixed an issue where Schema Diff does not work when the user language is set to any language other than English in Preferences.
