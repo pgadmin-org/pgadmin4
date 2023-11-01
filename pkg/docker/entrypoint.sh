@@ -19,19 +19,18 @@ CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 LOG_FILE = '/dev/null'
 HELP_PATH = '../../docs'
 DEFAULT_BINARY_PATHS = {
-        'pg': '/usr/local/pgsql-15',
+        'pg': '/usr/local/pgsql-16',
+        'pg-16': '/usr/local/pgsql-16',
         'pg-15': '/usr/local/pgsql-15',
         'pg-14': '/usr/local/pgsql-14',
         'pg-13': '/usr/local/pgsql-13',
-        'pg-12': '/usr/local/pgsql-12',
-        'pg-11': '/usr/local/pgsql-11',
-        'pg-10': '/usr/local/pgsql-10'
+        'pg-12': '/usr/local/pgsql-12'
 }
 EOF
 
     # This is a bit kludgy, but necessary as the container uses BusyBox/ash as
     # it's shell and not bash which would allow a much cleaner implementation
-    for var in $(env | grep PGADMIN_CONFIG_ | cut -d "=" -f 1); do
+    for var in $(env | grep "^PGADMIN_CONFIG_" | cut -d "=" -f 1); do
         # shellcheck disable=SC2086
         # shellcheck disable=SC2046
         echo ${var#PGADMIN_CONFIG_} = $(eval "echo \$$var") >> /pgadmin4/config_distro.py

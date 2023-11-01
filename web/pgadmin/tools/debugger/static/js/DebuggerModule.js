@@ -12,21 +12,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import gettext from 'sources/gettext';
-import { sprintf, registerDetachEvent } from 'sources/utils';
+import { sprintf } from 'sources/utils';
 import url_for from 'sources/url_for';
 import pgWindow from 'sources/window';
 import Kerberos from 'pgadmin.authenticate.kerberos';
 
 import { refresh_db_node } from 'tools/sqleditor/static/js/sqleditor_title';
-import { _set_dynamic_tab } from '../../../sqleditor/static/js/show_query_tool';
 import getApiInstance from '../../../../static/js/api_instance';
-import Notify from '../../../../static/js/helpers/Notifier';
-import { getFunctionId, getProcedureId, getAppropriateLabel, setDebuggerTitle } from './debugger_utils';
+import { getFunctionId, getProcedureId, getAppropriateLabel, getDebuggerTitle } from './debugger_utils';
 import FunctionArguments from './debugger_ui';
 import ModalProvider from '../../../../static/js/helpers/ModalProvider';
 import DebuggerComponent from './components/DebuggerComponent';
 import Theme from '../../../../static/js/Theme';
-import { showRenamePanel } from '../../../../static/js/Dialogs';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { NotifierProvider } from '../../../../static/js/helpers/Notifier';
+import usePreferences from '../../../../preferences/static/js/store';
+import pgAdmin from 'sources/pgadmin';
 
 export default class DebuggerModule {
   static instance;
@@ -42,7 +43,6 @@ export default class DebuggerModule {
     this.pgAdmin = pgAdmin;
     this.pgBrowser = pgBrowser;
     this.funcArgs = new FunctionArguments();
-    this.wcDocker = window.wcDocker;
     this.api = getApiInstance();
   }
 
@@ -190,20 +190,6 @@ export default class DebuggerModule {
         enable: 'can_debug',
       }
     ]);
-
-    /* Create and load the new frame required for debugger panel */
-    this.frame = new this.pgBrowser.Frame({
-      name: 'frm_debugger',
-      title: gettext('Debugger'),
-      showTitle: true,
-      isCloseable: true,
-      isRenamable: true,
-      isPrivate: true,
-      icon: 'fa fa-bug',
-      url: 'about:blank',
-    });
-
-    this.frame.load(this.pgBrowser.docker);
   }
 
   // It will check weather the function is actually debuggable or not with pre-required condition.
@@ -325,7 +311,7 @@ export default class DebuggerModule {
   }
 
   checkDbNameChange(data, dbNode, newTreeInfo, db_label) {
-    if (data && data.data_obj && data.data_obj.db_name != newTreeInfo.database.label) {
+    if (data && data.data_obj && data.data_obj.db_name != _.unescape(newTreeInfo.database.label)) {
       db_label = data.data_obj.db_name;
       let message = `Current database has been moved or renamed to ${db_label}. Click on the OK button to refresh the database name.`;
       refresh_db_node(message, dbNode);
@@ -393,47 +379,22 @@ export default class DebuggerModule {
               'trans_id': trans_id,
             });
 
-            let browser_preferences = self.pgBrowser.get_preferences_for_module('browser');
+            let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
             let open_new_tab = browser_preferences.new_browser_tab_open;
-            if (open_new_tab && open_new_tab.includes('debugger')) {
-              window.open(url, '_blank');
-              // Send the signal to runtime, so that proper zoom level will be set.
-              setTimeout(function () {
-                self.pgBrowser.Events.trigger('pgadmin:nw-set-new-window-open-size');
-              }, 500);
-            } else {
-              self.pgBrowser.Events.once(
-                'pgadmin-browser:frame:urlloaded:frm_debugger',
-                function (frame) {
-                  frame.openURL(url);
-                });
-
-              // Create the debugger panel as per the data received from user input dialog.
-              let dashboardPanel = self.pgBrowser.docker.findPanels(
-                  'properties'
-                ),
-                panel = self.pgBrowser.docker.addPanel(
-                  'frm_debugger', self.wcDocker.DOCK.STACKED, dashboardPanel[0]
-                ),
-                db_label = newTreeInfo.database.label;
-              panel.trans_id = trans_id;
-
-              _set_dynamic_tab(self.pgBrowser, browser_preferences['dynamic_tabs']);
-              registerDetachEvent(panel);
-
-              db_label = self.checkDbNameChange(data, dbNode, newTreeInfo, db_label);
-
-              let label = getAppropriateLabel(newTreeInfo);
-              setDebuggerTitle(panel, browser_preferences, label, newTreeInfo.schema.label, db_label, null, self.pgBrowser);
-
-              panel.focus();
-              panel.on(self.wcDocker.EVENT.RENAME, function (panel_data) {
-                self.panel_rename_event(panel_data, panel, treeInfo);
-              });
-            }
+            const db_label = self.checkDbNameChange(data, dbNode, newTreeInfo, db_label);
+            let label = getAppropriateLabel(newTreeInfo);
+            pgAdmin.Browser.Events.trigger(
+              'pgadmin:tool:show',
+              `${BROWSER_PANELS.DEBUGGER_TOOL}_${trans_id}`,
+              url,
+              null,
+              {title: getDebuggerTitle(browser_preferences, label, newTreeInfo.schema.label, db_label, null, self.pgBrowser),
+                icon: 'fa fa-bug', manualClose: false, renamable: true},
+              Boolean(open_new_tab?.includes('debugger'))
+            );
           })
           .catch(function (e) {
-            Notify.alert(
+            pgAdmin.Browser.notifier.alert(
               gettext('Debugger Target Initialization Error'),
               e.responseJSON.errormsg
             );
@@ -441,7 +402,7 @@ export default class DebuggerModule {
       }
     })
       .catch((err) => {
-        Notify.alert(gettext('Debugger Error'), err.response.data.errormsg);
+        pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.response.data.errormsg);
       });
   }
 
@@ -564,43 +525,22 @@ export default class DebuggerModule {
         let url = url_for('debugger.direct', {
           'trans_id': res.data.data.debuggerTransId,
         });
-        let browser_preferences = self.pgBrowser.get_preferences_for_module('browser');
+        let browser_preferences = usePreferences.getState().getPreferencesForModule('browser');
         let open_new_tab = browser_preferences.new_browser_tab_open;
-        if (open_new_tab && open_new_tab.includes('debugger')) {
-          window.open(url, '_blank');
-          // Send the signal to runtime, so that proper zoom level will be set.
-          setTimeout(function () {
-            self.pgBrowser.Browser.Events.trigger('pgadmin:nw-set-new-window-open-size');
-          }, 500);
-        } else {
-          self.pgBrowser.Events.once(
-            'pgadmin-browser:frame:urlloaded:frm_debugger',
-            function (frame) {
-              frame.openURL(url);
-            });
+        const db_label = treeInfo.database.label;
+        self.updatedDbLabel(res, db_label, treeInfo, dbNode);
 
-          // Create the debugger panel as per the data received from user input dialog.
-          let dashboardPanel = self.pgBrowser.docker.findPanels(
-              'properties'
-            ),
-            panel = self.pgBrowser.docker.addPanel(
-              'frm_debugger', self.wcDocker.DOCK.STACKED, dashboardPanel[0]
-            ),
-            db_label = treeInfo.database.label;
-          panel.trans_id = trans_id;
+        let label = getAppropriateLabel(treeInfo);
 
-          self.updatedDbLabel(res, db_label, treeInfo, dbNode);
-
-          let label = getAppropriateLabel(treeInfo);
-          setDebuggerTitle(panel, browser_preferences, label, db_label, db_label, null, self.pgBrowser);
-
-          panel.focus();
-
-          // Panel Rename event
-          panel.on(self.wcDocker.EVENT.RENAME, function (panel_data) {
-            self.panel_rename_event(panel_data, panel, treeInfo);
-          });
-        }
+        pgAdmin.Browser.Events.trigger(
+          'pgadmin:tool:show',
+          `${BROWSER_PANELS.DEBUGGER_TOOL}_${res.data.data.debuggerTransId}`,
+          url,
+          null,
+          {title: getDebuggerTitle(browser_preferences, label, db_label, db_label, null, self.pgBrowser),
+            icon: 'fa fa-bug', manualClose: false, renamable: true},
+          Boolean(open_new_tab?.includes('debugger'))
+        );
       })
       .catch(self.raiseError);
   }
@@ -615,12 +555,12 @@ export default class DebuggerModule {
             self.startGlobalDebugger();
           },
           function (error) {
-            Notify.alert(gettext('Debugger Error'), error);
+            pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), error);
           }
         );
       } else {
         if (err.success == 0) {
-          Notify.alert(gettext('Debugger Error'), err.errormsg);
+          pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.errormsg);
         }
       }
     } catch (e) {
@@ -640,28 +580,25 @@ export default class DebuggerModule {
     this.is_polling_required = true; // Flag to stop unwanted ajax calls
     this.function_name_with_arguments = function_name_with_arguments;
     this.layout = layout;
-    this.preferences = this.pgBrowser.get_preferences_for_module('debugger');
+    this.preferences = usePreferences.getState().getPreferencesForModule('debugger');
 
-    let panel = null;
     let selectedNodeInfo = pgWindow.pgAdmin.Browser.tree.getTreeNodeHierarchy(
       pgWindow.pgAdmin.Browser.tree.selected()
     );
 
-    // Find debugger panel.
-    pgWindow.pgAdmin.Browser.docker.findPanels('frm_debugger').forEach(p => {
-      if (parseInt(p.trans_id) == trans_id) {
-        panel = p;
-      }
-    });
-
     ReactDOM.render(
       <Theme>
         <ModalProvider>
-          <DebuggerComponent pgAdmin={pgWindow.pgAdmin} selectedNodeInfo={selectedNodeInfo} panel={panel}  layout={layout} params={{
-            transId: trans_id,
-            directDebugger: this,
-            funcArgsInstance: this.funcArgs
-          }} />
+          <NotifierProvider pgAdmin={pgAdmin} pgWindow={pgWindow} />
+          <DebuggerComponent pgAdmin={pgWindow.pgAdmin} selectedNodeInfo={selectedNodeInfo}
+            panelId={`${BROWSER_PANELS.DEBUGGER_TOOL}_${this.trans_id}`}
+            panelDocker={pgWindow.pgAdmin.Browser.docker}
+            layout={layout} params={{
+              transId: trans_id,
+              directDebugger: this,
+              funcArgsInstance: this.funcArgs
+            }}
+          />
         </ModalProvider>
       </Theme>,
       container
@@ -672,21 +609,10 @@ export default class DebuggerModule {
     try {
       let err = xhr.response.data;
       if (err.success == 0) {
-        Notify.alert(gettext('Debugger Error'), err.errormsg);
+        pgAdmin.Browser.notifier.alert(gettext('Debugger Error'), err.errormsg);
       }
     } catch (e) {
       console.warn(e.stack || e);
     }
-  }
-
-  panel_rename_event(panel_data, panel, treeInfo) {
-    let name = getAppropriateLabel(treeInfo);
-    let preferences = this.pgBrowser.get_preferences_for_module('browser');
-    let data = {
-      function_name: name,
-      schema_name: treeInfo.schema.label,
-      database_name: treeInfo.database.label
-    };
-    showRenamePanel(panel_data.$titleText[0].textContent, preferences, panel, 'debugger', data);
   }
 }

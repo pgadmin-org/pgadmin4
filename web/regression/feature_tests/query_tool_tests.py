@@ -257,7 +257,7 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab(self.data_output_tab_id, rc_dock=True)
+        self.page.click_tab("Data Output")
 
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css))
@@ -292,7 +292,7 @@ SELECT generate_series(1, 1000) as id order by id desc"""
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
-        self.page.click_tab(self.data_output_tab_id, rc_dock=True)
+        self.page.click_tab("Data Output")
 
         self.wait.until(EC.presence_of_element_located(
             (By.XPATH, QueryToolLocators.output_cell_xpath.format(2, 2)))
@@ -329,7 +329,7 @@ CREATE TABLE public.{}();""".format(table_name)
         self.page.click_execute_query_button()
 
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
 
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
@@ -343,7 +343,7 @@ CREATE TABLE public.{}();""".format(table_name)
 -- 4. Check if table is *NOT* created.
 ROLLBACK;"""
         self.page.execute_query(query)
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('ROLLBACK')),
             "ROLLBACK message does not displayed")
@@ -357,7 +357,7 @@ SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
-        self.page.click_tab(self.data_output_tab_id, rc_dock=True)
+        self.page.click_tab("Data Output")
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
@@ -411,7 +411,7 @@ CREATE TABLE public.{}();""".format(table_name)
 
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
             self.table_creation_fail_error)
@@ -426,7 +426,7 @@ ROLLBACK;"""
 
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('ROLLBACK')),
             "ROLLBACK message does not displayed")
@@ -441,7 +441,7 @@ SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
 
         self.page.execute_query(query)
-        self.page.click_tab(self.data_output_tab_id, rc_dock=True)
+        self.page.click_tab("Data Output")
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
 
         canvas = self.wait.until(EC.presence_of_element_located(
@@ -490,7 +490,7 @@ END;"""
 CREATE TABLE public.{}();""".format(table_name)
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('CREATE TABLE')),
             self.table_creation_fail_error)
@@ -505,7 +505,7 @@ CREATE TABLE public.{}();""".format(table_name)
 SELECT 1/0;"""
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('division by zero')),
             "division by zero message does not displayed")
@@ -520,7 +520,7 @@ SELECT 1/0;"""
 END;"""
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.
             format('Query returned successfully')),
@@ -537,7 +537,7 @@ SELECT relname FROM pg_catalog.pg_class
     WHERE relkind IN ('r','s','t') and relnamespace = 2200::oid;"""
         self.page.execute_query(query)
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab(self.data_output_tab_id, rc_dock=True)
+        self.page.click_tab("Data Output")
         canvas = self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, QueryToolLocators.query_output_canvas_css)))
 
@@ -563,7 +563,7 @@ SELECT 1, pg_sleep(300)"""
             QueryToolLocators.btn_commit)
         if not commit_button.get_attribute('disabled'):
             commit_button.click()
-            time.sleep(0.5)
+            time.sleep(2)
 
         # enable auto-commit and disable auto-rollback
         self.page.check_execute_option('auto_commit')
@@ -580,7 +580,7 @@ SELECT 1, pg_sleep(300)"""
         self.page.find_by_css_selector(
             QueryToolLocators.btn_cancel_query).click()
         self.page.wait_for_query_tool_loading_indicator_to_disappear()
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
         self.assertTrue(
             self.page.check_if_element_exist_by_xpath(
                 QueryToolLocators.sql_editor_message
@@ -593,7 +593,7 @@ SELECT 1, pg_sleep(300)"""
     def _query_tool_notify_statements(self):
         print("\n\tListen on an event... ", file=sys.stderr, end="")
         self.page.execute_query("LISTEN foo;")
-        self.page.click_tab('id-messages', rc_dock=True)
+        self.page.click_tab('Messages')
 
         self.assertTrue(self.page.check_if_element_exist_by_xpath(
             QueryToolLocators.sql_editor_message.format('LISTEN')),
@@ -603,7 +603,7 @@ SELECT 1, pg_sleep(300)"""
 
         print("\tNotify event without data... ", file=sys.stderr, end="")
         self.page.execute_query("NOTIFY foo;")
-        self.page.click_tab('id-notifications', rc_dock=True)
+        self.page.click_tab('Notifications')
         self.wait.until(EC.text_to_be_present_in_element(
             (By.CSS_SELECTOR, "td[data-label='channel']"), "foo")
         )
@@ -612,7 +612,7 @@ SELECT 1, pg_sleep(300)"""
         print("\tNotify event with data... ", file=sys.stderr, end="")
         self.page.clear_query_tool()
         self.page.execute_query("SELECT pg_notify('foo', 'Hello')")
-        self.page.click_tab('id-notifications', rc_dock=True)
+        self.page.click_tab('Notifications')
         self.wait.until(WaitForAnyElementWithText(
             (By.CSS_SELECTOR, "td[data-label='payload']"), "Hello"))
         print("OK.", file=sys.stderr)

@@ -50,9 +50,6 @@ class ERDModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_panels(self):
-        return []
-
     def get_exposed_url_endpoints(self):
         """
         Returns:
@@ -663,7 +660,7 @@ def tables(params):
                                                params.get('tid', None))
 
         if not status:
-            tables = tables.json if type(tables) == Response else tables
+            tables = tables.json if isinstance(tables, Response) else tables
             socketio.emit('tables_failed', tables,
                           namespace=SOCKETIO_NAMESPACE,
                           to=request.sid)

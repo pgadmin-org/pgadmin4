@@ -7,12 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {getNodeView, removeNodeView} from './node_view';
-import Notify from '../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../static/js/api_instance';
-import { removePanelView } from './panel_view';
-import { TAB_CHANGE } from './constants';
+import { BROWSER_PANELS } from './constants';
+import React from 'react';
+import ObjectNodeProperties from '../../../misc/properties/ObjectNodeProperties';
+import ErrorBoundary from '../../../static/js/helpers/ErrorBoundary';
+import toPx from '../../../static/js/to_px';
+import usePreferences from '../../../preferences/static/js/store';
 
 define('pgadmin.browser.node', [
   'sources/gettext', 'sources/pgadmin',
@@ -21,9 +23,6 @@ define('pgadmin.browser.node', [
 ], function(
   gettext, pgAdmin, generateUrl, commonUtils
 ) {
-
-  let wcDocker = window.wcDocker;
-
   const pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
 
   // It has already been defined.
@@ -89,8 +88,11 @@ define('pgadmin.browser.node', [
     dialogHelp: '',
     epasHelp: false,
 
-    title: function(o, d) {
-      return o.label + (d ? (' - ' + d.label) : '');
+    title: function(d, action) {
+      if(action == 'create') {
+        return gettext('Create - %s', this.label);
+      }
+      return d.label??'';
     },
     hasId: true,
     ///////
@@ -282,114 +284,6 @@ define('pgadmin.browser.node', [
         return true;
       }
     },
-    addUtilityPanel: function(width, height, docker) {
-      let body = window.document.body,
-        el = document.createElement('div'),
-        dockerObject = docker || pgBrowser.docker;
-
-      body.insertBefore(el, body.firstChild);
-
-      let new_width = screen.width < 700 ? screen.width * 0.95 : screen.width * 0.5,
-        new_height = screen.height < 500 ? screen.height * 0.95 : screen.height * 0.4;
-      if (!_.isUndefined(width) && !_.isNull(width)) {
-        new_width = width;
-      }
-      if (!_.isUndefined(height) && !_.isNull(height)) {
-        new_height = height;
-      }
-
-      let x = (body.offsetWidth - new_width) / 2;
-      let y = (body.offsetHeight - new_height) / 4;
-
-      let new_panel = dockerObject.addPanel(
-        'utility_props', window.wcDocker.DOCK.FLOAT, undefined, {
-          w: new_width,
-          h: new_height,
-          x: (x),
-          y: (y),
-        }
-      );
-      /*set movable false to prevent dialog from docking,
-      by setting this we can able to move the dialog but can't dock it
-      in to the frame. e.g: can't dock it in to properties and other tabs. */
-      setTimeout(function() {
-        new_panel.moveable(false);
-      }, 0);
-
-      body.removeChild(el);
-
-      return new_panel;
-    },
-
-    registerDockerPanel: function(docker, name, params) {
-      let w = docker || pgBrowser.docker,
-        p = w.findPanels(name);
-
-      if (p && p.length == 1)
-        return;
-
-      p = new pgBrowser.Panel({
-        name: name,
-        showTitle: true,
-        isCloseable: true,
-        isPrivate: true,
-        isLayoutMember: false,
-        canMaximise: true,
-        content: '<div class="obj_properties container-fluid h-100"></div>',
-        ...params,
-      });
-      p.load(w);
-    },
-    registerUtilityPanel: function(docker) {
-      let w = docker || pgBrowser.docker,
-        p = w.findPanels('utility_props');
-
-      if (p && p.length == 1)
-        return;
-
-      let events = {};
-
-      p = new pgBrowser.Panel({
-        name: 'utility_props',
-        showTitle: true,
-        isCloseable: true,
-        isPrivate: true,
-        isLayoutMember: false,
-        canMaximise: true,
-        elContainer: true,
-        content: '<div class="obj_properties"></div>',
-        onCreate: function(myPanel, container) {
-          container.classList.add('pg-no-overflow');
-        },
-        events: events,
-      });
-      p.load(w);
-    },
-    register_node_panel: function() {
-      let w = pgBrowser.docker,
-        p = w.findPanels('node_props');
-
-      if (p && p.length == 1)
-        return;
-
-      let events = {};
-
-      p = new pgBrowser.Panel({
-        name: 'node_props',
-        showTitle: true,
-        isCloseable: true,
-        isPrivate: true,
-        isLayoutMember: false,
-        canMaximise: true,
-        elContainer: true,
-        content: '<div class="obj_properties"></div>',
-        onCreate: function(myPanel, container) {
-          container.classList.add('pg-no-overflow');
-        },
-        events: events,
-      });
-      p.load(pgBrowser.docker);
-    },
     /*
      * Default script type menu for node.
      *
@@ -447,194 +341,132 @@ define('pgadmin.browser.node', [
        **/
       show_obj_properties: function(args, item) {
         let t = pgBrowser.tree,
-          i = (args && args.item) || item || t.selected(),
-          d = i ? t.itemData(i) : undefined,
-          o = this,
-          l = o.title.apply(this, [d]),
-          p;
+          nodeItem = (args && args.item) || item || t.selected(),
+          nodeData = nodeItem ? t.itemData(nodeItem) : undefined,
+          panelTitle = this.title(nodeData, args.action),
+          treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(nodeItem);
 
-        // Make sure - the properties dialog type registered
-        pgBrowser.Node.register_node_panel();
-
-        // No node selected.
-        if (!d)
+        if (!nodeData)
           return;
 
-        let self = this,
-          isParent = (_.isArray(this.parent_type) ?
-            function(_d) {
-              return (_.indexOf(self.parent_type, _d._type) != -1);
-            } : function(_d) {
-              return (self.parent_type == _d._type);
-            }),
-          addPanel = function() {
-            let body = window.document.body,
-              el = document.createElement('div');
-
-            body.insertBefore(el, body.firstChild);
-
-            let w, h, x, y;
-            if(screen.width < 800) {
-              w = pgAdmin.toPx(el, '95%', 'width', true);
-            } else {
-              w = pgAdmin.toPx(
-                el, self.width || (pgBrowser.stdW.default + 'px'),
-                'width', true
-              );
-
-              /* Fit to standard sizes */
-              if(w <= pgBrowser.stdW.sm) {
-                w = pgBrowser.stdW.sm;
-              } else {
-                if(w <= pgBrowser.stdW.md) {
-                  w = pgBrowser.stdW.md;
-                } else {
-                  w = pgBrowser.stdW.lg;
-                }
-              }
-            }
-
-            if(screen.height < 600) {
-              h = pgAdmin.toPx(el, '95%', 'height', true);
-            } else {
-              h = pgAdmin.toPx(
-                el, self.height || (pgBrowser.stdH.default + 'px'),
-                'height', true
-              );
-
-              /* Fit to standard sizes */
-              if(h <= pgBrowser.stdH.sm) {
-                h = pgBrowser.stdH.sm;
-              } else {
-                if(h <= pgBrowser.stdH.md) {
-                  h = pgBrowser.stdH.md;
-                } else {
-                  h = pgBrowser.stdH.lg;
-                }
-              }
-            }
-
-            x = (body.offsetWidth - w) / 2;
-            y = (body.offsetHeight - h) / 4;
-
-            // If the screen resolution is higher, but - it is zoomed, dialog
-            // may be go out of window, and will not be accessible through the
-            // keyboard.
-            if (w > window.innerWidth) {
-              x = 0;
-              w = window.innerWidth;
-            }
-            if (h > window.innerHeight) {
-              y = 0;
-              h = window.innerHeight;
-            }
-
-            let new_panel = pgBrowser.docker.addPanel(
-              'node_props', wcDocker.DOCK.FLOAT, undefined, {
-                w: w + 'px',
-                h: h + 'px',
-                x: x + 'px',
-                y: y + 'px',
-              }
-            );
-
-            body.removeChild(el);
-
-            return new_panel;
-          };
+        const isParent = (_.isArray(this.parent_type) ?
+          (_d)=>{
+            return (_.indexOf(this.parent_type, _d._type) != -1);
+          } : (_d)=>{
+            return (this.parent_type == _d._type);
+          });
 
         if (args.action == 'create') {
           // If we've parent, we will get the information of it for
           // proper object manipulation.
-          //
-          // You know - we're working with RDBMS, relation is everything
-          // for us.
-          if (self.parent_type && !isParent(d)) {
-            // In browser tree, I can be under any node, But - that
-            // does not mean, it is my parent.
-            //
-            // We have some group nodes too.
-            //
-            // i.e.
-            // Tables, Views, etc. nodes under Schema node
-            //
-            // And, actual parent of a table is schema, not Tables.
-            while (i && t.hasParent(i)) {
-              i = t.parent(i);
-              let pd = t.itemData(i);
+          if (this.parent_type && !isParent(nodeData)) {
+            // actual parent of a table is schema, not Tables.
+            while (nodeItem && t.hasParent(nodeItem)) {
+              nodeItem = t.parent(nodeItem);
+              let pd = t.itemData(nodeItem);
 
               if (isParent(pd)) {
                 // Assign the data, this is my actual parent.
-                d = pd;
+                nodeData = pd;
                 break;
               }
             }
           }
 
-          // Seriously - I really don't have parent data present?
-          //
-          // The only node - which I know - who does not have parent
-          // node, is the Server Group (and, comes directly under root
-          // node - which has no parent.)
-          if (!d || (this.parent_type != null && !isParent(d))) {
+          // The only node who does not have parent is the Server Group
+          if (!nodeData || (this.parent_type != null && !isParent(nodeData))) {
             // It should never come here.
             // If it is here, that means - we do have some bug in code.
             return;
           }
 
-          l = gettext('Create - %s', this.label);
-          if (this.type == 'server') {
-            l = gettext('Register - %s', this.label);
-          }
-          p = addPanel();
-
-          setTimeout(function() {
-            o.showProperties(i, d, p, args.action);
-          }, 10);
-        } else {
-          if (pgBrowser.Node.panels && pgBrowser.Node.panels[d.id] &&
-            pgBrowser.Node.panels[d.id].$container) {
-            p = pgBrowser.Node.panels[d.id];
-            /**  TODO ::
-             *  Run in edit mode (if asked) only when it is
-             *  not already been running edit mode
-             **/
-            let mode = p.$container.attr('action-mode');
-            if (mode) {
-              let msg = gettext('Are you sure want to stop editing the properties of %s "%s"?');
-              if (args.action == 'edit') {
-                msg = gettext('Are you sure want to reset the current changes and re-open the panel for %s "%s"?');
-              }
-
-              Notify.confirm(
-                gettext('Edit in progress?'),
-                commonUtils.sprintf(msg, o.label.toLowerCase(), d.label),
-                function() {
-                  setTimeout(function() {
-                    o.showProperties(i, d, p, args.action);
-                  }, 10);
-                },
-                null).show();
-            } else {
-              setTimeout(function() {
-                o.showProperties(i, d, p, args.action);
-              }, 10);
+          const panelId = _.uniqueId(BROWSER_PANELS.EDIT_PROPERTIES);
+          const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
+          const onSave = (newNodeData)=>{
+            // Clear the cache for this node now.
+            setTimeout(()=>{
+              this.clear_cache.apply(this, item);
+            }, 0);
+            try {
+              pgBrowser.Events.trigger(
+                'pgadmin:browser:tree:add', _.clone(newNodeData.node),
+                _.clone(treeNodeInfo)
+              );
+            } catch (e) {
+              console.warn(e.stack || e);
             }
-          } else {
-            pgBrowser.Node.panels = pgBrowser.Node.panels || {};
-            p = pgBrowser.Node.panels[d.id] = addPanel();
+            onClose();
+          };
+          this.showPropertiesDialog(panelId, panelTitle, {
+            treeNodeInfo: treeNodeInfo,
+            item: nodeItem,
+            nodeData: nodeData,
+            actionType: 'create',
+            onSave: onSave,
+            onClose: onClose,
+          });
+        } else {
+          const panelId = BROWSER_PANELS.EDIT_PROPERTIES+nodeData.id;
+          const onClose = (force=false)=>pgBrowser.docker.close(panelId, force);
+          const onSave = (newNodeData)=>{
+            let _old = nodeData,
+              _new = newNodeData.node,
+              info = treeNodeInfo;
 
-            setTimeout(function() {
-              o.showProperties(i, d, p, args.action);
-            }, 10);
+            // Clear the cache for this node now.
+            setTimeout(()=>{
+              this.clear_cache.apply(this, item);
+            }, 0);
+
+            pgBrowser.Events.trigger(
+              'pgadmin:browser:tree:update',
+              _old, _new, info, {
+                success: function(_item, _newNodeData, _oldNodeData) {
+                  pgBrowser.Events.trigger(
+                    'pgadmin:browser:node:updated', _item, _newNodeData,
+                    _oldNodeData
+                  );
+                  pgBrowser.Events.trigger(
+                    'pgadmin:browser:node:' + _newNodeData._type + ':updated',
+                    _item, _newNodeData, _oldNodeData
+                  );
+                },
+              }
+            );
+            onClose();
+          };
+          if(pgBrowser.docker.find(panelId)) {
+            let msg = gettext('Are you sure want to stop editing the properties of %s "%s"?');
+            if (args.action == 'edit') {
+              msg = gettext('Are you sure want to reset the current changes and re-open the panel for %s "%s"?');
+            }
+
+            pgAdmin.Browser.notifier.confirm(
+              gettext('Edit in progress?'),
+              commonUtils.sprintf(msg, this.label.toLowerCase(), nodeData.label),
+              ()=>{
+                this.showPropertiesDialog(panelId, panelTitle, {
+                  treeNodeInfo: treeNodeInfo,
+                  item: nodeItem,
+                  nodeData: nodeData,
+                  actionType: 'edit',
+                  onSave: onSave,
+                  onClose: onClose,
+                }, true);
+              },
+              null
+            );
+          } else {
+            this.showPropertiesDialog(panelId, panelTitle, {
+              treeNodeInfo: treeNodeInfo,
+              item: nodeItem,
+              nodeData: nodeData,
+              actionType: 'edit',
+              onSave: onSave,
+              onClose: onClose,
+            });
           }
         }
-
-        p.title(l);
-        p.icon('icon-' + this.type);
-
-        // Make sure the properties dialog is visible
-        p.focus();
       },
       // Delete the selected object
       delete_obj: function(args, item) {
@@ -668,7 +500,7 @@ define('pgadmin.browser.node', [
 
           if (!(_.isFunction(obj.canDropCascade) ?
             obj.canDropCascade.apply(obj, [d, i]) : obj.canDropCascade)) {
-            Notify.error(
+            pgAdmin.Browser.notifier.error(
               gettext('The %s "%s" cannot be dropped.', obj.label, d.label),
               10000
             );
@@ -685,24 +517,24 @@ define('pgadmin.browser.node', [
 
           if (!(_.isFunction(obj.canDrop) ?
             obj.canDrop.apply(obj, [d, i]) : obj.canDrop)) {
-            Notify.error(
+            pgAdmin.Browser.notifier.error(
               gettext('The %s "%s" cannot be dropped/removed.', obj.label, d.label),
               10000
             );
             return;
           }
         }
-        Notify.confirm(title, msg,
+        pgAdmin.Browser.notifier.confirm(title, msg,
           function() {
             getApiInstance().delete(
               obj.generate_url(i, input.url, d, true),
             ).then(({data: res})=> {
               if(res.success == 2){
-                Notify.error(res.info, null);
+                pgAdmin.Browser.notifier.error(res.info, null);
                 return;
               }
               if (res.success == 0) {
-                Notify.alert(res.errormsg, res.info);
+                pgAdmin.Browser.notifier.alert(res.errormsg, res.info);
               } else {
                 // Remove the node from tree and set collection node as selected.
                 let selectNextNode = true;
@@ -727,7 +559,7 @@ define('pgadmin.browser.node', [
                   console.warn(e.stack || e);
                 }
               }
-              Notify.alert(gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
+              pgAdmin.Browser.notifier.alert(gettext('Error dropping/removing %s: "%s"', obj.label, objName), errmsg);
             });
           }
         );
@@ -773,7 +605,7 @@ define('pgadmin.browser.node', [
 
       // Callback to render query editor
       show_query_tool: function(args, item) {
-        let preference = pgBrowser.get_preference('sqleditor', 'copy_sql_to_query_tool');
+        let preference = usePreferences.getState().getPreferences('sqleditor', 'copy_sql_to_query_tool');
         let t = pgBrowser.tree,
           i = item || t.selected(),
           d = i ? t.itemData(i) : undefined;
@@ -862,7 +694,7 @@ define('pgadmin.browser.node', [
         pgBrowser.Node.callbacks.change_server_background(item, data);
       },
       // Callback called - when a node is selected in browser tree.
-      selected: function(item, data, browser, _argsList, _event, actionSource) {
+      selected: function(item, data, browser) {
         // Show the information about the selected node in the below panels,
         // which are visible at this time:
         // + Properties
@@ -870,33 +702,10 @@ define('pgadmin.browser.node', [
         // + Dependents
         // + Dependencies
         // + Statistics
-        let b = browser || pgBrowser,
-          t = b.tree,
-          d = data || t.itemData(item);
+        let b = browser || pgBrowser;
 
         // Update the menu items
         pgAdmin.Browser.enable_disable_menus.apply(b, [item]);
-
-        if (d && b) {
-
-          if ('properties' in b.panels &&
-            b.panels['properties'] &&
-            b.panels['properties'].panel) {
-
-            if (actionSource != TAB_CHANGE) {
-              const propertiesPanel = b.panels['properties'].panel.$container.find('.obj_properties').first();
-              if (propertiesPanel) {
-                removePanelView(propertiesPanel[0]);
-              }
-            }
-
-            if (b.panels['properties'].panel.isVisible()) {
-              this.showProperties(item, d, b.panels['properties'].panel);
-            }
-
-          }
-
-        }
 
         pgBrowser.Events.trigger('pgadmin:browser:tree:update-tree-state',
           item);
@@ -922,7 +731,7 @@ define('pgadmin.browser.node', [
       },
       opened: function(item) {
         let tree = pgBrowser.tree,
-          auto_expand = pgBrowser.get_preference('browser', 'auto_expand_sole_children');
+          auto_expand = usePreferences.getState().getPreferences('browser', 'auto_expand_sole_children');
 
         if (auto_expand && auto_expand.value && tree.children(item).length == 1) {
           // Automatically expand the child node, if a treeview node has only a single child.
@@ -957,127 +766,55 @@ define('pgadmin.browser.node', [
           item);
       },
     },
-    /**********************************************************************
-     * A hook (not a callback) to show object properties in given HTML
-     * element.
-     *
-     * This has been used for the showing, editing properties of the node.
-     * This has also been used for creating a node.
-     **/
-    showProperties: function(item, data, panel, action) {
-      let that = this,
-        j = panel.$container.find('.obj_properties').first();
+    showPropertiesDialog: function(panelId, panelTitle, dialogProps, update=false) {
+      const panelData = {
+        id: panelId,
+        title: panelTitle,
+        manualClose: true,
+        icon: `dialog-node-icon ${this.node_image?.(dialogProps.itemNodeData) ?? ('icon-' + this.type)}`,
+        content: (
+          <ErrorBoundary>
+            <ObjectNodeProperties
+              panelId={panelId}
+              node={this}
+              formType="dialog"
+              {...dialogProps}
+            />
+          </ErrorBoundary>
+        )
+      };
 
-      // Callback to show object properties
-      let properties = function() {
-          let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
-          getNodeView(
-            that.type, treeNodeInfo, 'properties', data, 'tab', j[0], this, onEdit
-          );
-          return;
-        }.bind(panel),
+      let w = toPx(this.width || (pgBrowser.stdW.default + 'px'), 'width', true);
+      let h = toPx(this.height || (pgBrowser.stdH.default + 'px'), 'height', true);
 
-        editFunc = function() {
-          let self = this;
-          if (action && action == 'properties') {
-            action = 'edit';
-          }
-          self.$container.attr('action-mode', action);
-
-          self.icon(
-            _.isFunction(that['node_image']) ?
-              (that['node_image']).apply(that, [data]) :
-              (that['node_image'] || ('icon-' + that.type))
-          );
-          /* Remove any dom rendered by getNodeView */
-          removeNodeView(j[0]);
-          /* getSchema is a schema for React. Get the react node view */
-          let treeNodeInfo = pgBrowser.tree.getTreeNodeHierarchy(item);
-          getNodeView(
-            that.type, treeNodeInfo, action, data, 'dialog', j[0], this, onEdit,
-            (nodeData)=>{
-              if(nodeData.node) {
-                onSaveFunc(nodeData.node, treeNodeInfo);
-                if(nodeData.success === 0) {
-                  Notify.alert(gettext('Error'),
-                    gettext(nodeData.errormsg)
-                  );
-                }
-              }
-            }
-          );
-          return;
-
-        }.bind(panel),
-
-        updateTreeItem = function(obj, tnode, node_info) {
-          let _old = data,
-            _new = tnode,
-            info = node_info;
-
-          // Clear the cache for this node now.
-          setTimeout(function() {
-            obj.clear_cache.apply(obj, item);
-          }, 0);
-
-          pgBrowser.Events.trigger(
-            'pgadmin:browser:tree:update',
-            _old, _new, info, {
-              success: function(_item, _newNodeData, _oldNodeData) {
-                pgBrowser.Events.trigger(
-                  'pgadmin:browser:node:updated', _item, _newNodeData,
-                  _oldNodeData
-                );
-                pgBrowser.Events.trigger(
-                  'pgadmin:browser:node:' + _newNodeData._type + ':updated',
-                  _item, _newNodeData, _oldNodeData
-                );
-              },
-            }
-          );
-          this.close();
-        },
-        saveNewNode = function(obj, tnode, node_info) {
-          // Clear the cache for this node now.
-          setTimeout(function() {
-            obj.clear_cache.apply(obj, item);
-          }, 0);
-          try {
-            pgBrowser.Events.trigger(
-              'pgadmin:browser:tree:add', _.clone(tnode),
-              _.clone(node_info)
-            );
-          } catch (e) {
-            console.warn(e.stack || e);
-          }
-          this.close();
-        }.bind(panel, that),
-        editInNewPanel = function() {
-          // Open edit in separate panel
-          setTimeout(function() {
-            that.callbacks.show_obj_properties.apply(that, [{
-              'action': 'edit',
-              'item': item,
-            }]);
-          }, 0);
-        },
-        onSaveFunc = updateTreeItem.bind(panel, that),
-        onEdit = editFunc.bind(panel);
-
-      if (action) {
-        if (action == 'create') {
-          onSaveFunc = saveNewNode;
-        }
-        if (action != 'properties') {
-          // We need to keep track edit/create mode for this panel.
-          editFunc();
-        } else {
-          properties();
-        }
+      /* Fit to standard sizes */
+      if(w <= pgBrowser.stdW.sm) {
+        w = pgBrowser.stdW.sm;
       } else {
-        /* Show properties */
-        onEdit = editInNewPanel.bind(panel);
-        properties();
+        if(w <= pgBrowser.stdW.md) {
+          w = pgBrowser.stdW.md;
+        } else {
+          w = pgBrowser.stdW.lg;
+        }
+      }
+
+      if(h <= pgBrowser.stdH.sm) {
+        h = pgBrowser.stdH.sm;
+      } else {
+        if(h <= pgBrowser.stdH.md) {
+          h = pgBrowser.stdH.md;
+        } else {
+          h = pgBrowser.stdH.lg;
+        }
+      }
+
+      if(update) {
+        dialogProps.onClose(true);
+        setTimeout(()=>{
+          pgBrowser.docker.openDialog(panelData, w, h);
+        }, 10);
+      } else {
+        pgBrowser.docker.openDialog(panelData, w, h);
       }
     },
     _find_parent_node: function(t, i, d) {

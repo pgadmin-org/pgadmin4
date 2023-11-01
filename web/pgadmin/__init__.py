@@ -166,13 +166,6 @@ class PgAdmin(Flask):
         return scripts
 
     @property
-    def panels(self):
-        panels = []
-        for module in self.submodules:
-            panels.extend(module.get_panels())
-        return panels
-
-    @property
     def menu_items(self):
         from operator import attrgetter
 

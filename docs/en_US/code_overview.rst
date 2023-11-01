@@ -5,7 +5,7 @@
 **********************
 
 The bulk of pgAdmin is a Python web application written using the Flask framework
-on the backend, and HTML5 with CSS3, Bootstrap and jQuery on the front end. A
+on the backend, and HTML5 with CSS3,ReactJS on the front end. A
 desktop runtime is also included for users that prefer a desktop application to
 a web application, which is written using NWjs (Node Webkit).
 
@@ -207,8 +207,7 @@ Front End
 
 pgAdmin uses javascript extensively for the front-end implementation. It uses
 require.js to allow the lazy loading (or, say load only when required),
-bootstrap and MaterialUI for UI look and feel, React for generating
-properties/create dialog for selected node. We have
+ReactJS with CSS and MaterialUI for UI look and feel. We have
 divided each module in small chunks as much as possible. Not all javascript
 modules are required to be loaded (i.e. loading a javascript module for
 database will make sense only when a server node is loaded completely.) Please

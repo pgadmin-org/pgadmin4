@@ -23,6 +23,9 @@ Use the fields in the *General* tab to identify an extension:
 
 * Use the drop-down listbox in the *Name* field to select the extension. Each
   extension must have a unique name.
+* Move the switch next to *Cascade?* towards right position to automatically
+  install any extensions that this extension depends on that are not already
+  installed.
 * Store notes about the extension in the *Comment* field.
 
 Click the *Definition* tab to continue.
@@ -55,7 +58,7 @@ the *Extension* dialog:
     :align: center
 
 The command creates the *adminpack* extension in the *public* schema.  It is
-version *1.0* of *adminpack*.
+version *2.0* of *adminpack*.
 
 * Click the *Info* button (i) to access online help.
 * Click the *Save* button to save work.

@@ -17,9 +17,6 @@ $theme-colors: (
   --psql-selection: #{$psql-selection};
 }
 
-@import "bootstrap/scss/bootstrap";
-@import 'webcabin.pgadmin';
-@import 'bootstrap.overrides';
 @import 'codemirror.overrides';
 @import 'pgadmin.style';
 @import 'jsoneditor.overrides';

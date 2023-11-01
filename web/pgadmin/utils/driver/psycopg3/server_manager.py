@@ -112,6 +112,7 @@ class ServerManager(object):
         self.gss_encrypted = False
         self.connection_params = server.connection_params
         self.create_connection_string(self.db, self.user)
+        self.prepare_threshold = server.prepare_threshold
 
         for con in self.connections:
             self.connections[con]._release()
@@ -203,10 +204,13 @@ class ServerManager(object):
             if did is not None and did in self.db_info:
                 self.db_info[did]['datname'] = database
         else:
+            conn_str = 'CONN:{0}'.format(conn_id)
             if did is None:
                 database = self.db
             elif did in self.db_info:
                 database = self.db_info[did]['datname']
+            elif conn_id and conn_str in self.connections:
+                database = self.connections[conn_str].db
             else:
                 maintenance_db_id = 'DB:{0}'.format(self.db)
                 if maintenance_db_id in self.connections:
@@ -539,6 +543,8 @@ WHERE db.oid = {0}""".format(did))
                 if not crypt_key_present:
                     return False, crypt_key
                 password = decrypt(self.password, crypt_key).decode()
+            elif hasattr(self.password, 'decode'):
+                password = self.password.decode('utf-8')
             else:
                 password = self.password
 
@@ -649,14 +655,15 @@ WHERE db.oid = {0}""".format(did))
         parameters.
         """
         dsn_args = dict()
-        dsn_args['host'] = \
-            self.local_bind_host if self.use_ssh_tunnel else self.host
+        dsn_args['host'] = self.host
         dsn_args['port'] = \
             self.local_bind_port if self.use_ssh_tunnel else self.port
         dsn_args['dbname'] = database
         dsn_args['user'] = user
         if self.service is not None:
             dsn_args['service'] = self.service
+        if self.use_ssh_tunnel:
+            dsn_args['hostaddr'] = self.local_bind_host
 
         # Make a copy to display the connection string on GUI.
         display_dsn_args = dsn_args.copy()
@@ -677,10 +684,9 @@ WHERE db.oid = {0}""".format(did))
                     with_complete_path = True
                     value = get_complete_file_path(value)
 
-                # In case of host address need to check ssh tunnel flag.
-                if key == 'hostaddr':
-                    value = self.local_bind_host if self.use_ssh_tunnel else \
-                        value
+                # If key is hostaddr and ssh tunnel is in use don't overwrite.
+                if key == 'hostaddr' and self.use_ssh_tunnel:
+                    continue
 
                 dsn_args[key] = value
                 display_dsn_args[key] = orig_value if with_complete_path else \

@@ -8,34 +8,28 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
-import Notify from '../../../pgadmin/static/js/helpers/Notifier';
+
 import {genericBeforeEach, getEditView} from '../genericFunctions';
 import {getBinaryPathSchema} from '../../../pgadmin/browser/server_groups/servers/static/js/binary_path.ui';
+import pgAdmin from '../fake_pgadmin';
 
 describe('BinaryPathschema', ()=>{
-  let mount;
+
   let schemaObj = getBinaryPathSchema();
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
-    spyOn(Notify, 'alert');
+    jest.spyOn(pgAdmin.Browser.notifier, 'alert').mockImplementation(() => {});
   });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
   it('validate path', ()=>{

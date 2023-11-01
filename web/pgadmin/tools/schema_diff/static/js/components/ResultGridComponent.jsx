@@ -27,7 +27,7 @@ import { FILTER_NAME, SCHEMA_DIFF_EVENT } from '../SchemaDiffConstants';
 import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponent';
 import { InputCheckbox } from '../../../../../static/js/components/FormComponents';
 import PgReactDataGrid from '../../../../../static/js/components/PgReactDataGrid';
-import Notifier from '../../../../../static/js/helpers/Notifier';
+import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -110,9 +110,14 @@ const useStyles = makeStyles((theme) => ({
     display: 'table',
     blockSize: '100%',
 
-    '& span': {
+    '& > span': {
       verticalAlign: 'middle',
       cursor: 'pointer',
+
+      '& > span': {
+        display: 'flex',
+        alignItems: 'center',
+      }
     }
   },
   gridPanel: {
@@ -369,29 +374,46 @@ function checkRowExpanedStatus(rows, record) {
 function prepareRows(rows, gridData, filterParams) {
   let newRows = [];
 
-  let adedIds = [];
-  gridData.map((record) => {
-    let childrens = getChildrenRows(record);
+  let addedIds = [];
+  // Filter data objects with label 'Database Objects'.
+  let newGridData = gridData.filter(function (obj) {
+    return obj.label === gettext('Database Objects');
+  });
+  // Filter data objects except 'Database Objects'
+  let otherObjects = gridData.filter(function (obj) {
+    return obj.label !== gettext('Database Objects');
+  });
+  // Sort other objects
+  otherObjects.sort((a, b) => (a.label > b.label) ? 1 : -1);
+  // Merge 'Database Objects' and other data
+  newGridData = newGridData.concat(otherObjects);
 
-    if (childrens.length > 0) {
-      childrens.map((child) => {
-        let subChildrens = getChildrenRows(child);
+  newGridData.map((record) => {
+    let children = getChildrenRows(record);
+    // Sort the children using label
+    children.sort((a, b) => (a.label > b.label) ? 1 : -1);
+
+    if (children.length > 0) {
+      children.map((child) => {
+        let subChildren = getChildrenRows(child);
+        // Sort the sub children using label
+        subChildren.sort((a, b) => (a.label > b.label) ? 1 : -1);
         let tempChildList = [];
-        subChildrens.map((subChild) => {
+        subChildren.map((subChild) => {
           if (filterParams.includes(subChild.status)) {
             tempChildList.push(subChild);
-            adedIds.push(subChild.id);
+            addedIds.push(subChild.id);
           }
         });
 
-        if (!adedIds.includes(record.id) && tempChildList.length > 0) {
-          adedIds.push(record.id);
+        if (!addedIds.includes(record.id) && tempChildList.length > 0) {
+          addedIds.push(record.id);
           record.isExpanded = true;
           newRows.push(record);
         }
 
-        if (!adedIds.includes(child.id) && tempChildList.length > 0) {
-          adedIds.push(child.id);
+        if (!addedIds.includes(child.id) && tempChildList.length > 0) {
+          addedIds.push(child.id);
           child.isExpanded = checkRowExpanedStatus(rows, child);
           newRows.push(child);
           newRows = checkAndAddChild(child, newRows, tempChildList);
@@ -431,6 +453,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
   const [rootSelection, setRootSelection] = useState(false);
   const [activeRow, setActiveRow] = useState(null);
   const schemaDiffToolContext = useContext(SchemaDiffContext);
+  const pgAdmin = usePgAdmin();
 
   function checkAllChildInclude(row, tempSelectedRows) {
     let isChildAllInclude = true;
@@ -697,7 +720,7 @@ export function ResultGridComponent({ gridData, allRowIds, filterParams, selecte
           };
           eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, row.ddlData);
         }).catch((err) => {
-          Notifier.alert(err.message);
+          pgAdmin.Browser.notifier.alert(err.message);
         });
       } else {
         eventBus.fireEvent(SCHEMA_DIFF_EVENT.TRIGGER_CHANGE_RESULT_SQL, {});

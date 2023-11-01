@@ -12,7 +12,6 @@ import _ from 'lodash';
 import url_for from 'sources/url_for';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import getApiInstance from '../../../../../static/js/api_instance';
-import Notify from '../../../../../static/js/helpers/Notifier';
 import pgAdmin from 'sources/pgadmin';
 
 export function getBinaryPathSchema() {
@@ -60,15 +59,15 @@ export default class BinaryPathSchema extends BaseUISchema {
         validate: (data) => {
           const api = getApiInstance();
           if (_.isNull(data) || data.trim() === '') {
-            Notify.alert(gettext('Validate Path'), gettext('Path should not be empty.'));
+            pgAdmin.Browser.notifier.alert(gettext('Validate Path'), gettext('Path should not be empty.'));
           } else {
             api.post(url_for('misc.validate_binary_path'),
               JSON.stringify({ 'utility_path': data }))
               .then(function (res) {
-                Notify.alert(gettext('Validate binary path'), gettext(res.data.data));
+                pgAdmin.Browser.notifier.alert(gettext('Validate binary path'), gettext(res.data.data));
               })
               .catch(function (error) {
-                Notify.pgNotifier('error', error, gettext('Failed to validate binary path.'));
+                pgAdmin.Browser.notifier.pgNotifier('error', error, gettext('Failed to validate binary path.'));
               });
           }
           return true;

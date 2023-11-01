@@ -32,6 +32,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
       JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
 		WHERE i.inhrelid = rel.oid) AS inherited_tables_cnt,
 	(CASE WHEN rel.relpersistence = 'u' THEN true ELSE false END) AS relpersistence,
+	(SELECT st.setting from pg_catalog.pg_settings st WHERE st.name = 'default_table_access_method') as default_amname,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'fillfactor=([0-9]*)') AS fillfactor,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'parallel_workers=([0-9]*)') AS parallel_workers,
 	substring(pg_catalog.array_to_string(rel.reloptions, ',') FROM 'toast_tuple_target=([0-9]*)') AS toast_tuple_target,
@@ -55,7 +56,7 @@ SELECT rel.oid, rel.relname AS name, rel.reltablespace AS spcoid,rel.relacl AS r
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_min_age=([0-9]*)') AS toast_autovacuum_freeze_min_age,
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_max_age=([0-9]*)') AS toast_autovacuum_freeze_max_age,
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
-	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype,
+	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype, am.amname,
 	CASE WHEN typ.typname IS NOT NULL THEN (select pg_catalog.quote_ident(nspname) FROM pg_catalog.pg_namespace WHERE oid = {{scid}}::oid )||'.'||pg_catalog.quote_ident(typ.typname) ELSE typ.typname END AS typname,
 	typ.typrelid AS typoid, rel.relrowsecurity as rlspolicy, rel.relforcerowsecurity as forcerlspolicy,
 	(CASE WHEN rel.reltoastrelid = 0 THEN false ELSE true END) AS hastoasttable,
@@ -69,6 +70,7 @@ FROM pg_catalog.pg_class rel
   LEFT OUTER JOIN pg_catalog.pg_constraint con ON con.conrelid=rel.oid AND con.contype='p'
   LEFT OUTER JOIN pg_catalog.pg_class tst ON tst.oid = rel.reltoastrelid
   LEFT JOIN pg_catalog.pg_type typ ON rel.reloftype=typ.oid
+  LEFT OUTER JOIN pg_catalog.pg_am am ON am.oid = rel.relam
 WHERE rel.relkind IN ('r','s','t','p') AND rel.relnamespace = {{ scid }}::oid
 AND NOT rel.relispartition
 {% if tid %}  AND rel.oid = {{ tid }}::oid {% endif %}

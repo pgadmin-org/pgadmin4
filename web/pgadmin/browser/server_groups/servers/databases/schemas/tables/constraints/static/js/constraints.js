@@ -31,8 +31,8 @@ define('pgadmin.node.constraints', [
     pgAdmin.Browser.Nodes['constraints'] = pgBrowser.Node.extend({
       type: 'constraints',
       label: gettext('Constraints'),
-      collection_type: 'coll-constraints',
-      parent_type: ['table','partition'],
+      collection_type: ['coll-constraints','coll-foreign_table'],
+      parent_type: ['table','foreign_table'],
       url_jump_after_node: 'schema',
       Init: function() {
         /* Avoid mulitple registration of menus */

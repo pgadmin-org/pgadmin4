@@ -3,7 +3,7 @@
 -- DROP FOREIGN TABLE IF EXISTS public."FT1_$%{}[]()&*^!@""'`\/#";
 
 CREATE FOREIGN TABLE IF NOT EXISTS public."FT1_$%{}[]()&*^!@""'`\/#"(
-    col1 integer NULL
+    col1 integer
 )
     SERVER test_fs_for_foreign_table
     OPTIONS (schema_name 'test_public', table_name 'test_table');
@@ -20,3 +20,7 @@ COMMENT ON FOREIGN TABLE public."FT1_$%{}[]()&*^!@""'`\/#"
 GRANT SELECT ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO PUBLIC;
 
 GRANT ALL ON TABLE public."FT1_$%{}[]()&*^!@""'`\/#" TO postgres;
+
+
+ALTER TABLE IF EXISTS "FT1_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN col1 SET STATISTICS 10;

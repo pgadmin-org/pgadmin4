@@ -38,11 +38,8 @@ const pgadminThemesJson = __dirname + '/pgadmin/misc/themes/pgadmin.themes.json'
 // Expose libraries in app context so they need not to
 // require('libname') when used in a module
 const providePlugin = new webpack.ProvidePlugin({
-  $: 'jquery',
-  jQuery: 'jquery',
-  'window.jQuery': 'jquery',
   _: 'lodash',
-  pgAdmin: 'pgadmin',
+  pgAdmin: 'sources/pgadmin',
   'moment': 'moment',
   'window.moment':'moment',
   process: 'process/browser',
@@ -391,8 +388,7 @@ module.exports = [{
     // Loaders: https://webpack.js.org/loaders/
     //
     // imports-loader: it adds dependent modules(use:imports-loader?module1)
-    // at the beginning of module it is dependency of like:
-    // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
+    // at the beginning of module it is dependency.
     // It solves number of problems
     // Ref: http:/github.com/webpack-contrib/imports-loader/
     rules: [{
@@ -412,10 +408,6 @@ module.exports = [{
       exclude: [/node_modules/, /vendor/],
       use: {
         loader: 'babel-loader',
-        options: {
-          presets: [['@babel/preset-env', {'modules': 'commonjs', 'useBuiltIns': 'usage', 'corejs': 3}], '@babel/preset-react', '@babel/preset-typescript'],
-          plugins: ['@babel/plugin-proposal-class-properties', '@babel/proposal-object-rest-spread'],
-        },
       },
     },{
       test: /\.m?js$/,
@@ -451,8 +443,7 @@ module.exports = [{
       include: path.join(__dirname, '/pgadmin/browser'),
     }, {
       // imports-loader: it adds dependent modules(use:imports-loader?module1)
-      // at the beginning of module it is dependency of like:
-      // let jQuery = require('jquery'); let browser = require('pgadmin.browser')
+      // at the beginning of module it is dependency.
       // It solves number of problems
       // Ref: http:/github.com/webpack-contrib/imports-loader/
       test: require.resolve('./pgadmin/tools/sqleditor/static/js/index'),
@@ -480,6 +471,7 @@ module.exports = [{
             'pure|pgadmin.node.user_mapping',
             'pure|pgadmin.node.schema',
             'pure|pgadmin.node.catalog',
+            'pure|pgadmin.node.foreign_table_column',
             'pure|pgadmin.node.catalog_object',
             'pure|pgadmin.node.collation',
             'pure|pgadmin.node.domain',
@@ -567,7 +559,7 @@ module.exports = [{
   optimization: {
     minimizer: PRODUCTION ? [
       new TerserPlugin({
-        parallel: true,
+        parallel: false,
         extractComments: true,
         terserOptions: {
           compress: true,
@@ -581,7 +573,6 @@ module.exports = [{
             plugins: [
               ['mozjpeg', { progressive: true }],
               ['optipng', { optimizationLevel: 7 }],
-              ['pngquant', {quality: [0.75, .9], speed: 3}],
             ],
           },
         },
@@ -589,6 +580,30 @@ module.exports = [{
     ] : [],
     splitChunks: {
       cacheGroups: {
+        vendor_sqleditor: {
+          name: 'vendor_sqleditor',
+          filename: 'vendor.sqleditor.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 9,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, ['jsoneditor', 'leaflet']);
+          },
+        },
+        vendor_react: {
+          name: 'vendor_react',
+          filename: 'vendor.react.js',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 8,
+          minChunks: 2,
+          enforce: true,
+          test(module) {
+            return webpackShimConfig.matchModules(module, ['react', 'react-dom']);
+          },
+        },
         vendor_main: {
           name: 'vendor_main',
           filename: 'vendor.main.js',
@@ -598,7 +613,7 @@ module.exports = [{
           minChunks: 2,
           enforce: true,
           test(module) {
-            return webpackShimConfig.matchModules(module, ['wcdocker', 'jquery', 'bootstrap', 'popper']);
+            return webpackShimConfig.matchModules(module, ['codemirror', 'rc-', '@material-ui']);
           },
         },
         vendor_others: {

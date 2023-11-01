@@ -1,0 +1,5 @@
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_4_$%{}[]()&*^!@""'`\/#" OPTIONS (SET column_name 'test_options_update');
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_4_$%{}[]()&*^!@""'`\/#"
+    SET (n_distinct=111);

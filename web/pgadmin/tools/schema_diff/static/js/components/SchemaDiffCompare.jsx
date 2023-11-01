@@ -22,7 +22,6 @@ import Loader from 'sources/components/Loader';
 import pgWindow from 'sources/window';
 
 import { PgButtonGroup, PgIconButton } from '../../../../../static/js/components/Buttons';
-import Notifier from '../../../../../static/js/helpers/Notifier';
 import ConnectServerContent from '../../../../../static/js/Dialogs/ConnectServerContent';
 import { generateScript } from '../../../../sqleditor/static/js/show_query_tool';
 import { FILTER_NAME, SCHEMA_DIFF_EVENT, TYPE } from '../SchemaDiffConstants';
@@ -32,6 +31,7 @@ import { SchemaDiffContext, SchemaDiffEventsContext } from './SchemaDiffComponen
 import { ResultGridComponent } from './ResultGridComponent';
 import { openSocket, socketApiGet } from '../../../../../static/js/socket_instance';
 import { parseApiError } from '../../../../../static/js/api_instance';
+import { usePgAdmin } from '../../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -95,16 +95,16 @@ function getGenerateScriptData(rows, selectedIds, script_array) {
   }
 }
 
-function raiseErrorOnFail(alertTitle, xhr) {
+function raiseErrorOnFail(pgAdmin, alertTitle, xhr) {
   try {
     if (_.isUndefined(xhr.response.data)) {
-      Notifier.alert(alertTitle, gettext('Unable to get the response text.'));
+      pgAdmin.Browser.notifier.alert(alertTitle, gettext('Unable to get the response text.'));
     } else {
       let err = JSON.parse(xhr.response.data);
-      Notifier.alert(alertTitle, err.errormsg);
+      pgAdmin.Browser.notifier.alert(alertTitle, err.errormsg);
     }
   } catch (e) {
-    Notifier.alert(alertTitle, gettext(e.message));
+    pgAdmin.Browser.notifier.alert(alertTitle, gettext(e.message));
   }
 }
 
@@ -143,6 +143,8 @@ export function SchemaDiffCompare({ params }) {
   const [rowDep, setRowDep] = useState({});
   const [isInit, setIsInit] = useState(true);
 
+  const pgAdmin = usePgAdmin();
+
   useEffect(() => {
     schemaDiffToolContext.api.get(url_for('schema_diff.servers')).then((res) => {
       let groupedOptions = [];
@@ -158,7 +160,7 @@ export function SchemaDiffCompare({ params }) {
 
       setSourceGroupServerList(groupedOptions);
     }).catch((err) => {
-      Notifier.alert(err.message);
+      pgAdmin.Browser.notifier.alert(err.message);
     });
   }, []);
 
@@ -256,8 +258,6 @@ export function SchemaDiffCompare({ params }) {
       }
 
     }
-
-
   };
 
   const triggerSelectSchema = ({ selectedSC, diff_type }) => {
@@ -272,8 +272,19 @@ export function SchemaDiffCompare({ params }) {
   const triggerCompareDiff = async ({ sourceData, targetData, compareParams, filterParams }) => {
     setGridData([]);
     setIsInit(false);
-    if (JSON.stringify(sourceData) === JSON.stringify(targetData)) {
-      Notifier.alert(gettext('Selection Error'),
+
+    let raiseSelectionError = false;
+    if (!_.isUndefined(sourceData.scid) && !_.isNull(sourceData.scid) &&
+        !_.isUndefined(targetData.scid) && !_.isNull(targetData.scid)) {
+      if (sourceData.sid === targetData.sid  && sourceData.did === targetData.did && sourceData.scid === targetData.scid) {
+        raiseSelectionError = true;
+      }
+    } else if (sourceData.sid === targetData.sid  && sourceData.did === targetData.did) {
+      raiseSelectionError = true;
+    }
+
+    if (raiseSelectionError) {
+      pgAdmin.Browser.notifier.alert(gettext('Selection Error'),
         gettext('Please select the different source and target.'));
     } else {
       setLoaderText('Comparing objects... (this may take a few minutes)...');
@@ -285,6 +296,8 @@ export function SchemaDiffCompare({ params }) {
         'target_did': targetData['did'],
         'ignore_owner': compareParams['ignoreOwner'],
         'ignore_whitespaces': compareParams['ignoreWhitespaces'],
+        'ignore_tablespace': compareParams['ignoreTablespace'],
+        'ignore_grants': compareParams['ignoreGrants'],
       };
       let socketEndpoint = 'compare_database';
       if (sourceData['scid'] != null && targetData['scid'] != null) {
@@ -299,7 +312,7 @@ export function SchemaDiffCompare({ params }) {
         socket = await openSocket('/schema_diff');
         socket.on('compare_status', res=>{
           let msg = res.compare_msg;
-          msg = msg + gettext(` (this may take a few minutes)... ${res.diff_percentage} %`);
+          msg = msg + gettext(` (this may take a few minutes)... ${Math.round(res.diff_percentage)} %`);
           setLoaderText(msg);
         });
         resData = await socketApiGet(socket, socketEndpoint, url_params);
@@ -310,7 +323,7 @@ export function SchemaDiffCompare({ params }) {
       } catch (error) {
         setLoaderText(null);
         setShowResultGrid(false);
-        Notifier.alert(gettext('Error'), parseApiError(error));
+        pgAdmin.Browser.notifier.alert(gettext('Error'), parseApiError(error));
       }
       socket?.disconnect();
     }
@@ -375,7 +388,7 @@ export function SchemaDiffCompare({ params }) {
       })
       .catch(function (xhr) {
         setLoaderText(null);
-        raiseErrorOnFail(gettext('Generate script error'), xhr);
+        raiseErrorOnFail(pgAdmin, gettext('Generate script error'), xhr);
       });
   }
 
@@ -588,7 +601,7 @@ export function SchemaDiffCompare({ params }) {
         }
       }
     }).catch((error) => {
-      Notifier.error(gettext(`Error in connect database ${error.response.data}`));
+      pgAdmin.Browser.notifier.error(gettext(`Error in connect database ${error.response.data}`));
     });
 
   };
@@ -623,7 +636,7 @@ export function SchemaDiffCompare({ params }) {
         showConnectServer(error.response?.data.result, sid, diff_type, serverList);
       });
     } catch (error) {
-      Notifier.error(gettext(`Error in connect server ${error.response.data}` ));
+      pgAdmin.Browser.notifier.error(gettext(`Error in connect server ${error.response.data}` ));
     }
   };
 

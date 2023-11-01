@@ -3,6 +3,12 @@
 {% import 'macros/functions/variable.macros' as VARIABLE %}{% if data %}
 {% set name = o_data.name %}
 {% set exclude_quoting = ['search_path'] %}
+{% set set_variables = [] %}
+{% if 'merged_variables' in data and data.merged_variables|length > 0 %}
+{% set set_variables = data.merged_variables %}
+{% elif 'variables' in o_data and o_data.variables|length > 0 %}
+{% set set_variables = o_data.variables %}
+{% endif %}
 {% if data.name %}
 {% if data.name != o_data.name %}
 ALTER FUNCTION {{ conn|qtIdent(o_data.pronamespace, o_data.name) }}({{
@@ -36,7 +42,7 @@ CREATE OR REPLACE FUNCTION {{ conn|qtIdent(o_data.pronamespace, name) }}({% if d
 
     ROWS {{data.prorows}}{% elif data.prorows is not defined and o_data.prorows and o_data.prorows != '0' %}    ROWS {{o_data.prorows}} {%endif %}
 
-    {% if data.prosupportfunc %}SUPPORT {{ data.prosupportfunc }}{% elif data.prosupportfunc is not defined and o_data.prosupportfunc %}SUPPORT {{ o_data.prosupportfunc }}{% endif -%}{% if data.merged_variables %}{% for v in data.merged_variables %}
+    {% if data.prosupportfunc %}SUPPORT {{ data.prosupportfunc }}{% elif data.prosupportfunc is not defined and o_data.prosupportfunc %}SUPPORT {{ o_data.prosupportfunc }}{% endif -%}{% if set_variables and set_variables|length > 0 %}{% for v in set_variables %}
 
     SET {{ conn|qtIdent(v.name) }}={% if v.name in exclude_quoting %}{{ v.value }}{% else %}{{ v.value|qtLiteral(conn) }}{% endif %}{% endfor -%}
     {% endif %}

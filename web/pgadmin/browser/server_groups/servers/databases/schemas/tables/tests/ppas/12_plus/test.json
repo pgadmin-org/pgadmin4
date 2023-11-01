@@ -171,7 +171,10 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_without_primary_key.sql",
@@ -397,7 +400,10 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk.sql",
@@ -650,7 +656,10 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk_chk.sql",
@@ -923,7 +932,10 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false
       },
       "store_object_id": true,
       "preprocess_data": true,
@@ -974,14 +986,14 @@
           "added": [
             {
               "name": "ex_constr",
-              "amname": "gist",
+              "amname": "btree",
               "columns": [
                 {
                   "column": "col1",
                   "is_exp": false,
                   "order": false,
                   "nulls_order": false,
-                  "operator": "<>",
+                  "operator": "=",
                   "is_sort_nulls_applicable": false
                 }
               ],
@@ -1126,6 +1138,9 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
         "autovacuum_custom": true
       },
       "store_object_id": true,
@@ -1304,6 +1319,9 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
         "rlspolicy": true
       },
       "store_object_id": true,
@@ -1478,6 +1496,9 @@
         "like_indexes": true,
         "like_storage": true,
         "like_comments": true,
+        "like_generated": true,
+        "like_identity": true,
+        "like_statistics": true,
         "like_relation": "public.like_tbl"
       },
       "store_object_id": true,
@@ -1636,11 +1657,22 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_partition.sql",
       "expected_msql_file": "create_table_with_partition_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with list partition",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_patition_$%{}[]()&*^!@\"'`\\/#"
+      }
     },
     {
       "type": "create",
@@ -1785,11 +1817,22 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_range_partition.sql",
       "expected_msql_file": "create_table_with_range_partition_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with range partition",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_range_patition_$%{}[]()&*^!@\"'`\\/#"
+      }
     },
     {
       "type": "create",
@@ -1935,11 +1978,22 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_hash_partition.sql",
       "expected_msql_file": "create_table_with_hash_partition_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table with hash partition",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "table_with_hash_patition_$%{}[]()&*^!@\\\"'`\\\\/#"
+      }
     },
     {
       "type": "create",
@@ -2087,11 +2141,22 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
+        "like_generated": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_partition_table_with_collate.sql",
       "expected_msql_file": "create_partition_table_with_collate_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Delete Table ",
+      "endpoint": "NODE-table.obj_id",
+      "data": {
+        "name": "partition_table_with_collate_$%{}[]()&*^!@\"'`\\/#"
+      }
     }
   ]
 }

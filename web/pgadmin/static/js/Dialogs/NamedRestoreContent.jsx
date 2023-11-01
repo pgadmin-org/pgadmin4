@@ -29,7 +29,7 @@ export default function NamedRestoreContent({closeModal, onOK, setHeight}) {
 
   const onTextChange = (e, id) => {
     let val = e;
-    if(e && e.target) {
+    if(e?.target) {
       val = e.target.value;
     }
     setFormData((prev)=>({...prev, [id]: val}));

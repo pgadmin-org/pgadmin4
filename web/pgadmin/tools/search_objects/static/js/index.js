@@ -9,12 +9,10 @@
 import pgAdmin from 'sources/pgadmin';
 import pgBrowser from 'top/browser/static/js/browser';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import gettext from 'sources/gettext';
-import Theme from 'sources/Theme';
-import * as toolBar from 'pgadmin.browser.toolbar';
 import SearchObjects from './SearchObjects';
 import {getPanelTitle} from '../../../sqleditor/static/js/sqleditor_title';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 
 /* eslint-disable */
 /* This is used to change publicPath of webpack at runtime for loading chunks */
@@ -74,27 +72,21 @@ export default class SearchObjectModule {
       }
     })();
 
-    toolBar.enable(gettext('Search objects'), isEnabled);
     return isEnabled;
   }
 
   show_search_objects(action, treeItem) {
-    let dialogTitle = getPanelTitle(pgBrowser, treeItem);
-    dialogTitle = gettext('Search Objects - ')  + dialogTitle;
-
-    let nodeData = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
-
-    pgBrowser.Node.registerUtilityPanel();
-    let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md, pgBrowser.stdH.lg),
-      j = panel.$container.find('.obj_properties').first();
-
-    panel.title(dialogTitle);
-    panel.focus();
-
-    ReactDOM.render(
-      <Theme>
+    const nodeData = pgBrowser.tree.getTreeNodeHierarchy(treeItem);
+    const panelTitle = gettext('Search Objects - ') + getPanelTitle(pgBrowser, treeItem);
+    const panelId = BROWSER_PANELS.SEARCH_OBJECTS;
+    pgAdmin.Browser.docker.openDialog({
+      id: panelId,
+      title: panelTitle,
+      manualClose: false,
+      content: (
         <SearchObjects nodeData={nodeData}/>
-      </Theme>, j[0]);
+      )
+    }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.lg);
   }
 }
 

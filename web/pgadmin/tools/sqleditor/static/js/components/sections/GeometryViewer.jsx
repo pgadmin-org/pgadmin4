@@ -19,7 +19,6 @@ import Theme from 'sources/Theme';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Box } from '@material-ui/core';
-import { LayoutHelper } from '../../../../../../static/js/helpers/Layout';
 import { PANELS } from '../QueryToolConstants';
 import { QueryToolContext } from '../QueryToolComponent';
 
@@ -383,7 +382,7 @@ export function GeometryViewer({rows, columns, column}) {
     let timeoutId;
     const contentResizeObserver = new ResizeObserver(()=>{
       clearTimeout(timeoutId);
-      if(LayoutHelper.isTabVisible(queryToolCtx.docker, PANELS.GEOMETRY)) {
+      if(queryToolCtx.docker.isTabVisible(PANELS.GEOMETRY)) {
         timeoutId = setTimeout(function () {
           mapRef.current?.invalidateSize();
         }, 100);

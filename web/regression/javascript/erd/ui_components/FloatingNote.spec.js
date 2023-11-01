@@ -1,44 +1,47 @@
-import jasmineEnzyme from 'jasmine-enzyme';
+/////////////////////////////////////////////////////////////
+//
+// pgAdmin 4 - PostgreSQL Tools
+//
+// Copyright (C) 2013 - 2023, The pgAdmin Development Team
+// This software is released under the PostgreSQL Licence
+//
+//////////////////////////////////////////////////////////////
+
 import React from 'react';
-import {mount} from 'enzyme';
-import '../../helper/enzyme.helper';
 
 import FloatingNote from 'pgadmin.tools.erd/erd_tool/components/FloatingNote';
 import Theme from '../../../../pgadmin/static/js/Theme';
+import { act, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 describe('ERD FloatingNote', ()=>{
 
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
-  it('<FloatingNote /> on OK click', ()=>{
+  it('<FloatingNote /> on OK click', async ()=>{
     let floatNote = null;
-    let onClose = jasmine.createSpy('onClose');
+    let onClose = jest.fn();
     let noteNode = {
       getNote: function() {
         return 'some note';
       },
-      setNote: jasmine.createSpy('setNote'),
+      setNote: jest.fn(),
       getSchemaTableName: function() {
         return ['schema1', 'table1'];
       },
     };
+    const user = userEvent.setup();
 
-    floatNote = mount(
-      <Theme>
-        <FloatingNote
-          open={true} onClose={onClose} anchorEl={document.body} rows={8} noteNode={noteNode}
-        />
-      </Theme>);
-
-    floatNote.find('textarea').simulate('change', {
-      target: {
-        value: 'the new note',
-      },
+    await act(async ()=>{
+      floatNote = await render(
+        <Theme>
+          <FloatingNote
+            open={true} onClose={onClose} anchorEl={document.body} rows={8} noteNode={noteNode}
+          />
+        </Theme>);
     });
 
-    floatNote.find('DefaultButton').simulate('click');
+    await user.clear(floatNote.container.querySelector('textarea'));
+    await user.type(floatNote.container.querySelector('textarea'), 'the new note');
+    await user.click(floatNote.container.querySelector('button'));
     expect(noteNode.setNote).toHaveBeenCalledWith('the new note');
     expect(onClose).toHaveBeenCalled();
   });

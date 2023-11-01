@@ -117,6 +117,9 @@ def get_column_details(conn, idx, data, mode='properties', template_path=None):
             row['attdef'].strip('"'),
             'collspcname': row['collnspname'],
             'op_class': row['opcname'],
+            'col_num': row['attnum'],
+            'is_exp': row['is_exp'],
+            'statistics': row['statistics']
         }
 
         # ASC/DESC and NULLS works only with btree indexes
@@ -245,6 +248,12 @@ def get_sql(conn, **kwargs):
             raise ObjectGone(_('Could not find the index in the table.'))
 
         old_data = dict(res['rows'][0])
+
+        # Add column details for current index
+        old_data = get_column_details(conn, idx, old_data)
+
+        update_column_data, update_column = \
+            _get_column_details_to_update(old_data, data)
         # Remove opening and closing bracket as we already have in jinja
         # template.
         if 'using' in old_data and old_data['using'] is not None and \
@@ -263,7 +272,8 @@ def get_sql(conn, **kwargs):
 
         sql = render_template(
             "/".join([template_path, 'update.sql']),
-            data=data, o_data=old_data, conn=conn
+            data=data, o_data=old_data, conn=conn,
+            update_column_data=update_column_data, update_column=update_column
         )
     else:
         sql = _get_create_sql(data, template_path, conn, mode, name,
@@ -306,6 +316,13 @@ def get_reverse_engineered_sql(conn, **kwargs):
     # Adding parent into data dict, will be using it while creating sql
     data['schema'] = schema
     data['table'] = table
+    data["storage_parameters"] = {}
+
+    storage_params = get_storage_params(data['amname'])
+
+    for param in storage_params:
+        if (param in data) and (data[param] is not None):
+            data["storage_parameters"].update({param: data[param]})
 
     # Add column details for current index
     data = get_column_details(conn, idx, data, 'create')
@@ -327,3 +344,45 @@ def get_reverse_engineered_sql(conn, **kwargs):
         SQL = sql_header + '\n\n' + SQL
 
     return SQL
+
+
+def get_storage_params(amname):
+    """
+    This function will return storage parameters according to index type.
+
+    :param amname: access method name
+    :return:
+    """
+    storage_parameters = {
+        "btree": ["fillfactor", "deduplicate_items"],
+        "hash": ["fillfactor"],
+        "gist": ["fillfactor", "buffering"],
+        "gin": ["fastupdate", "gin_pending_list_limit"],
+        "spgist": ["fillfactor"],
+        "brin": ["pages_per_range", "autosummarize"],
+        "heap": [],
+        "ivfflat": ['lists']
+    }
+    return storage_parameters[amname]
+
+
+def _get_column_details_to_update(old_data, data):
+    """
+    This function returns the columns/expressions which need to update
+    :param old_data:
+    :param data:
+    :return:
+    """
+    update_column_data = []
+    update_column = False
+
+    if 'columns' in data and 'changed' in data['columns']:
+        for index, col1 in enumerate(old_data['columns']):
+            for col2 in data['columns']['changed']:
+                if col1['col_num'] == col2['col_num'] and col1['statistics'] \
+                        != col2['statistics']:
+                    update_column_data.append(col2)
+                    update_column = True
+                    break
+
+    return update_column_data, update_column

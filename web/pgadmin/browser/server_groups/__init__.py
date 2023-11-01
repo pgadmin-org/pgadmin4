@@ -182,6 +182,10 @@ class ServerGroupView(NodeView):
         ).order_by("id")
 
         # if server group id is 1 we won't delete it.
+        # This matches the behavior of
+        # web/pgadmin/utils/__init.py__#clear_database_servers
+        # called by the setup script when importing and replacing servers:
+        # `python setup.py --load-servers input_file.json --replace`
         sg = groups.first()
 
         shared_servers = Server.query.filter_by(servergroup_id=gid,

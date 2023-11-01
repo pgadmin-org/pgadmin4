@@ -7,45 +7,25 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
-import { generateNodeUrl } from './node_ajax';
 import MainMenuFactory from './MainMenuFactory';
 import _ from 'lodash';
-import Notify, {initializeModalProvider, initializeNotifier} from '../../../static/js/helpers/Notifier';
-import { checkMasterPassword } from '../../../static/js/Dialogs/index';
+import { checkMasterPassword, showQuickSearch } from '../../../static/js/Dialogs/index';
 import { pgHandleItemError } from '../../../static/js/utils';
-import { Search } from './quick_search/trigger_search';
 import { send_heartbeat, stop_heartbeat } from './heartbeat';
 import getApiInstance from '../../../static/js/api_instance';
-import { copyToClipboard } from '../../../static/js/clipboard';
-import { TAB_CHANGE } from './constants';
+import usePreferences, { setupPreferenceBroadcast } from '../../../preferences/static/js/store';
+import checkNodeVisibility from '../../../static/js/check_node_visibility';
 
 define('pgadmin.browser', [
-  'sources/gettext', 'sources/url_for', 'jquery',
-  'sources/pgadmin', 'bundled_codemirror',
-  'sources/check_node_visibility', './toolbar', 'pgadmin.help',
-  'sources/csrf', 'sources/utils', 'sources/window', 'pgadmin.authenticate.kerberos',
-  'sources/tree/tree_init',
-  'pgadmin.browser.utils',
-  'pgadmin.browser.preferences', 'pgadmin.browser.messages',
-  'pgadmin.browser.panel', 'pgadmin.browser.layout',
-  'pgadmin.browser.frame',
+  'sources/gettext', 'sources/url_for', 'sources/pgadmin', 'bundled_codemirror',
+  'sources/csrf', 'pgadmin.authenticate.kerberos',
+  'pgadmin.browser.utils', 'pgadmin.browser.messages',
   'pgadmin.browser.node', 'pgadmin.browser.collection', 'pgadmin.browser.activity',
   'sources/codemirror/addon/fold/pgadmin-sqlfoldcode',
   'pgadmin.browser.keyboard', 'sources/tree/pgadmin_tree_save_state',
-  /* wcDocker dependencies */
-  'bootstrap', 'jquery-contextmenu', 'wcdocker',
 ], function(
-  gettext, url_for, $,
-  pgAdmin, codemirror,
-  checkNodeVisibility, toolBar, help, csrfToken, pgadminUtils, pgWindow,
-  Kerberos, InitTree,
+  gettext, url_for, pgAdmin, codemirror, csrfToken, Kerberos,
 ) {
-  window.jQuery = window.$ = $;
-  // Some scripts do export their object in the window only.
-  // Generally the one, which do no have AMD support.
-  let wcDocker = window.wcDocker;
-  $ = $ || window.jQuery || window.$;
   let CodeMirror = codemirror.default;
 
   let pgBrowser = pgAdmin.Browser = pgAdmin.Browser || {};
@@ -55,104 +35,10 @@ define('pgadmin.browser', [
 
   Kerberos.validate_kerberos_ticket();
 
-  let panelEvents = {};
-  panelEvents[wcDocker.EVENT.VISIBILITY_CHANGED] = function() {
-    if (this.isVisible()) {
-      let obj = pgAdmin.Browser,
-        i   = obj.tree ? obj.tree.selected() : undefined,
-        d   = i ? obj.tree.itemData(i) : undefined;
-
-      if (d && obj.Nodes[d._type].callbacks['selected'] &&
-        _.isFunction(obj.Nodes[d._type].callbacks['selected'])) {
-        return obj.Nodes[d._type].callbacks['selected'].apply(
-          obj.Nodes[d._type], [i, d, obj, [], '', TAB_CHANGE]);
-      }
-    }
-  };
-
-  let initializeBrowserTree = pgAdmin.Browser.initializeBrowserTree =
-    function(b) {
-      const draggableTypes = [
-        'collation domain domain_constraints fts_configuration fts_dictionary fts_parser fts_template synonym table partition type sequence package view mview foreign_table edbvar',
-        'schema column database cast event_trigger extension language foreign_data_wrapper foreign_server user_mapping compound_trigger index index_constraint primary_key unique_constraint check_constraint exclusion_constraint foreign_key rule',
-        'trigger trigger_function',
-        'edbfunc function edbproc procedure'
-      ];
-      InitTree.initBrowserTree(b).then(() => {
-        const getQualifiedName = (data, item)=>{
-          if(draggableTypes[0].includes(data._type)) {
-            return pgadminUtils.fully_qualify(b, data, item);
-          } else if(draggableTypes[1].includes(data._type)) {
-            return pgadminUtils.quote_ident(data._label);
-          } else if(draggableTypes[3].includes(data._type)) {
-            let newData = {...data};
-            let parsedFunc = pgadminUtils.parseFuncParams(newData._label);
-            newData._label = parsedFunc.func_name;
-            return pgadminUtils.fully_qualify(b, newData, item);
-          } else {
-            return data._label;
-          }
-        };
-
-        b.tree.registerDraggableType({
-          [draggableTypes[0]] : (data, item, treeNodeInfo)=>{
-            let text = getQualifiedName(data, item);
-            return {
-              text: text,
-              objUrl: generateNodeUrl.call(pgBrowser.Nodes[data._type], treeNodeInfo, 'properties', data, true),
-              nodeType: data._type,
-              cur: {
-                from: text.length,
-                to: text.length,
-              },
-            };
-          },
-          [draggableTypes[1]] : (data)=>{
-            return getQualifiedName(data);
-          },
-          [draggableTypes[2]] : (data)=>{
-            return getQualifiedName(data);
-          },
-          [draggableTypes[3]] : (data, item)=>{
-            let parsedFunc = pgadminUtils.parseFuncParams(data._label),
-              dropVal = getQualifiedName(data, item),
-              curPos = {from: 0, to: 0};
-
-            if(parsedFunc.params.length > 0) {
-              dropVal = dropVal + '(';
-              curPos.from =  dropVal.length;
-              dropVal = dropVal + parsedFunc.params[0][0];
-              curPos.to = dropVal.length;
-
-              for(let i=1; i<parsedFunc.params.length; i++) {
-                dropVal = dropVal + ', ' + parsedFunc.params[i][0];
-              }
-
-              dropVal = dropVal + ')';
-            } else {
-              dropVal = dropVal + '()';
-              curPos.from = curPos.to = dropVal.length + 1;
-            }
-
-            return {
-              text: dropVal,
-              cur: curPos,
-            };
-          },
-        });
-
-        b.tree.onNodeCopy((data, item)=>{
-          copyToClipboard(getQualifiedName(data, item));
-        });
-      }, () => {console.warn('Tree Load Error');});
-    };
-
   // Extend the browser class attributes
   _.extend(pgAdmin.Browser, {
     // The base url for browser
     URL: url_for('browser.index'),
-    // We do have docker of type wcDocker to take care of different
-    // containers. (i.e. panels, tabs, frames, etc.)
     docker:null,
     // Reversed Engineer query for the selected database node object goes
     // here
@@ -215,102 +101,7 @@ define('pgadmin.browser', [
       },
     },
     // Default panels
-    panels: {
-      // Panel to keep the left hand browser tree
-      'browser': new pgAdmin.Browser.Panel({
-        name: 'browser',
-        title: gettext('Object Explorer'),
-        showTitle: true,
-        isCloseable: false,
-        isPrivate: true,
-        icon: '',
-        limit: 1,
-        content: '<div id="tree" class="browser-tree"></div>',
-        onCreate: function(panel, container) {
-          toolBar.initializeToolbar(panel, wcDocker);
-          container.classList.add('pg-no-overflow');
-        },
-      }),
-      // Properties of the object node
-      'properties': new pgAdmin.Browser.Panel({
-        name: 'properties',
-        title: gettext('Properties'),
-        icon: '',
-        width: 500,
-        isCloseable: false,
-        isPrivate: true,
-        elContainer: true,
-        limit: 1,
-        content: '<div class="obj_properties"><div role="status" class="pg-panel-message">' + select_object_msg + '</div></div>',
-        events: panelEvents,
-        onCreate: function(myPanel, container) {
-          container.classList.add('pg-no-overflow');
-        },
-      }),
-      // Statistics of the object
-      'statistics': new pgAdmin.Browser.Panel({
-        name: 'statistics',
-        title: gettext('Statistics'),
-        icon: '',
-        width: 500,
-        isCloseable: true,
-        isPrivate: false,
-        limit : 1,
-        canHide: true,
-        content: '<div></div>',
-        events: panelEvents,
-      }),
-      // Reversed engineered SQL for the object
-      'sql': new pgAdmin.Browser.Panel({
-        name: 'sql',
-        title: gettext('SQL'),
-        icon: '',
-        width: 500,
-        isCloseable: false,
-        isPrivate: true,
-        limit: 1,
-        content: '<div></div>',
-      }),
-      // Dependencies of the object
-      'dependencies': new pgAdmin.Browser.Panel({
-        name: 'dependencies',
-        title: gettext('Dependencies'),
-        icon: '',
-        width: 500,
-        isCloseable: true,
-        isPrivate: false,
-        canHide: true,
-        limit: 1,
-        content: '<div></div>',
-        events: panelEvents,
-      }),
-      // Dependents of the object
-      'dependents': new pgAdmin.Browser.Panel({
-        name: 'dependents',
-        title: gettext('Dependents'),
-        icon: '',
-        width: 500,
-        isCloseable: true,
-        isPrivate: false,
-        limit: 1,
-        canHide: true,
-        content: '<div></div>',
-        events: panelEvents,
-      }),
-      // Background processes
-      'processes': new pgAdmin.Browser.Panel({
-        name: 'processes',
-        title: gettext('Processes'),
-        icon: '',
-        width: 500,
-        isCloseable: true,
-        isPrivate: false,
-        limit: 1,
-        canHide: true,
-        content: '<div></div>',
-        events: panelEvents,
-      }),
-    },
+    panels: {},
     // We also support showing dashboards, HTML file, external URL
     frames: {},
     /* Menus */
@@ -336,40 +127,6 @@ define('pgadmin.browser', [
     MainMenus: [],
     BrowserContextMenu: [],
 
-    add_panels: function() {
-      /* Add hooked-in panels by extensions */
-      let panels = JSON.parse(pgBrowser.panels_items);
-      _.each(panels, function(panel) {
-        if (panel.isIframe) {
-          pgBrowser.frames[panel.name] = new pgBrowser.Frame({
-            name: panel.name,
-            title: panel.title,
-            icon: panel.icon,
-            width: panel.width,
-            height: panel.height,
-            showTitle: panel.showTitle,
-            isCloseable: panel.isCloseable,
-            isPrivate: panel.isPrivate,
-            url: panel.content,
-          });
-        } else {
-          pgBrowser.panels[panel.name] = new pgBrowser.Panel({
-            name: panel.name,
-            title: panel.title,
-            icon: panel.icon,
-            width: panel.width,
-            height: panel.height,
-            showTitle: panel.showTitle,
-            isCloseable: panel.isCloseable,
-            isPrivate: panel.isPrivate,
-            limit: (panel.limit) ? panel.limit : null,
-            content: (panel.content) ? panel.content : '',
-            events: (panel.events) ? panel.events : '',
-            canHide: (panel.canHide) ? panel.canHide : '',
-          });
-        }
-      });
-    },
     menu_categories: {
       /* name, label (pair) */
       'register': {
@@ -490,8 +247,6 @@ define('pgadmin.browser', [
     enable_disable_menus: function(item) {
       let obj = this;
       let d = item ? obj.tree.itemData(item) : undefined;
-      toolBar.enable(gettext('View Data'), false);
-      toolBar.enable(gettext('Filtered Rows'), false);
 
       // All menus (except for the object menus) are already present.
       // They will just require to check, whether they are
@@ -529,64 +284,8 @@ define('pgadmin.browser', [
       obj.initialized = true;
 
       // Cache preferences
-      obj.cache_preferences();
-      obj.add_panels();
-      // Initialize the Docker
-      obj.docker = new wcDocker(
-        '#dockerContainer', {
-          allowContextMenu: true,
-          allowCollapse: false,
-          loadingClass: 'pg-sp-icon',
-          themePath: url_for('static', {
-            'filename': 'css',
-          }),
-          theme: 'webcabin.overrides.css',
-        });
-      if (obj.docker) {
-        // Initialize all the panels
-        _.each(obj.panels, function(panel, name) {
-          obj.panels[name].load(obj.docker);
-        });
-        // Initialize all the frames
-        _.each(obj.frames, function(frame, name) {
-          obj.frames[name].load(obj.docker);
-        });
-
-        // Stored layout in database from the previous session
-        let layout = pgBrowser.utils.layout;
-        obj.restore_layout(obj.docker, layout, obj.buildDefaultLayout.bind(obj), true);
-
-        obj.docker.on(wcDocker.EVENT.LAYOUT_CHANGED, function() {
-          obj.save_current_layout('Browser/Layout', obj.docker);
-        });
-      }
-
-      initializeBrowserTree(obj);
-      initializeModalProvider();
-      initializeNotifier();
-
-      /* Cache may take time to load for the first time
-       * Reflect the changes once cache is available
-       */
-      let cacheIntervalId = setInterval(()=> {
-        let sqlEditPreferences = obj.get_preferences_for_module('sqleditor');
-        let browserPreferences = obj.get_preferences_for_module('browser');
-        if(sqlEditPreferences && browserPreferences) {
-          clearInterval(cacheIntervalId);
-          obj.reflectPreferences('sqleditor');
-          obj.reflectPreferences('browser');
-        }
-      }, 500);
-
-      /* Check for sql editor preference changes */
-      obj.onPreferencesChange('sqleditor', function() {
-        obj.reflectPreferences('sqleditor');
-      });
-
-      /* Check for browser preference changes */
-      obj.onPreferencesChange('browser', function() {
-        obj.reflectPreferences('browser');
-      });
+      usePreferences.getState().cache();
+      setupPreferenceBroadcast();
 
       setTimeout(function() {
         obj?.editor?.setValue('-- ' + select_object_msg);
@@ -615,13 +314,11 @@ define('pgadmin.browser', [
         'pgadmin:server:disconnect', stop_heartbeat.bind(obj)
       );
 
-      obj.set_master_password('');
       obj.check_corrupted_db_file();
       obj.Events.on('pgadmin:browser:tree:add', obj.onAddTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:update', obj.onUpdateTreeNode.bind(obj));
       obj.Events.on('pgadmin:browser:tree:refresh', obj.onRefreshTreeNodeReact.bind(obj));
       obj.Events.on('pgadmin-browser:tree:loadfail', obj.onLoadFailNode.bind(obj));
-      obj.Events.on('pgadmin-browser:panel-browser:' + wcDocker.EVENT.RESIZE_ENDED, obj.onResizeEnded.bind(obj));
       obj.bind_beforeunload();
 
       /* User UI activity */
@@ -629,8 +326,9 @@ define('pgadmin.browser', [
       obj.register_to_activity_listener(document);
       obj.start_inactivity_timeout_daemon();
     },
-    onResizeEnded: function() {
-      if (this.tree) this.tree.resizeTree();
+    uiloaded: function() {
+      this.set_master_password('');
+      this.check_version_update();
     },
     check_corrupted_db_file: function() {
       getApiInstance().get(
@@ -638,7 +336,7 @@ define('pgadmin.browser', [
       ).then(({data: res})=> {
         if(res.data.length > 0) {
 
-          Notify.alert(
+          pgAdmin.Browser.notifier.alert(
             'Warning',
             'pgAdmin detected unrecoverable corruption in it\'s SQLite configuration database. ' +
             'The database has been backed up and recreated with default settings. '+
@@ -649,7 +347,7 @@ define('pgadmin.browser', [
           );
         }
       }).catch(function(error) {
-        Notify.alert(error);
+        pgAdmin.Browser.notifier.alert(error);
       });
     },
     check_master_password: function(on_resp_callback) {
@@ -664,7 +362,7 @@ define('pgadmin.browser', [
           }
         }
       }).catch(function(error) {
-        Notify.pgRespErrorNotify(error);
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
       });
     },
 
@@ -677,7 +375,7 @@ define('pgadmin.browser', [
           self.set_master_password('');
         }
       }).catch(function(error) {
-        Notify.pgRespErrorNotify(error);
+        pgAdmin.Browser.notifier.pgRespErrorNotify(error);
       });
     },
 
@@ -695,13 +393,33 @@ define('pgadmin.browser', [
       checkMasterPassword(data, self.masterpass_callback_queue, cancel_callback);
     },
 
-    bind_beforeunload: function() {
-      $(window).on('beforeunload', function(e) {
-        /* Can open you in new tab */
-        let openerBrowser = pgWindow.default.pgAdmin.Browser;
+    check_version_update: function() {
+      getApiInstance().get(
+        url_for('misc.upgrade_check')
+      ).then((res)=> {
+        const data = res.data.data;
+        if(data.outdated) {
+          pgAdmin.Browser.notifier.warning(
+            `
+            ${gettext('You are currently running version %s of %s, <br/>however the current version is %s.', data.current_version, data.product_name, data.upgrade_version)}
+            <br/><br/>
+            ${gettext('Please click <a href="%s" target="_new" style="color:inherit">here</a> for more information.', data.download_url)}
+            `,
+            null
+          );
+        }
 
-        let tree_save_interval = pgBrowser.get_preference('browser', 'browser_tree_state_save_interval'),
-          confirm_on_refresh_close = openerBrowser.get_preference('browser', 'confirm_on_refresh_close');
+      }).catch(function() {
+        // Suppress any errors
+      });
+    },
+
+    bind_beforeunload: function() {
+      window.addEventListener('beforeunload', function(e) {
+        /* Can open you in new tab */
+        const prefStore = usePreferences.getState();
+        let tree_save_interval = prefStore.getPreferences('browser', 'browser_tree_state_save_interval'),
+          confirm_on_refresh_close = prefStore.getPreferences('browser', 'confirm_on_refresh_close');
 
         if (!_.isUndefined(tree_save_interval) && tree_save_interval.value !== -1)
           pgAdmin.Browser.browserTreeState.save_state();
@@ -709,7 +427,9 @@ define('pgadmin.browser', [
         if(!_.isUndefined(confirm_on_refresh_close) && confirm_on_refresh_close.value) {
           /* This message will not be displayed in Chrome, Firefox, Safari as they have disabled it*/
           let msg = gettext('Are you sure you want to close the %s browser?', pgBrowser.utils.app_name);
-          e.originalEvent.returnValue = msg;
+          if(e.originalEvent?.returnValue) {
+            e.originalEvent.returnValue = msg;
+          }
           return msg;
         }
       });
@@ -730,8 +450,7 @@ define('pgadmin.browser', [
 
     // Add menus of module/extension at appropriate menu
     add_menus: function(menus) {
-      let self = this,
-        pgMenu = this.all_menus_cache;
+      let pgMenu = this.all_menus_cache;
 
       _.each(menus, function(m) {
         _.each(m.applies, function(a) {
@@ -741,12 +460,12 @@ define('pgadmin.browser', [
 
             // If current node is not visible in browser tree
             // then return from here
-            if(!checkNodeVisibility(self, m.node)) {
+            if(!checkNodeVisibility(m.node)) {
               return;
             } else if(_.has(m, 'module') && !_.isUndefined(m.module)) {
               // If module to which this menu applies is not visible in
               // browser tree then also we do not display menu
-              if(!checkNodeVisibility(self, m.module.type)) {
+              if(!checkNodeVisibility(m.module.type)) {
                 return;
               }
             }
@@ -770,14 +489,9 @@ define('pgadmin.browser', [
               }
 
               // This is to handel quick search callback
-              if(gettext(_m.label) == gettext('Quick Search')) {
+              if(_m.name == 'mnu_quick_search_help') {
                 _m.callback = () => {
-                  // Render Search component
-                  Notify.showModal(gettext('Quick Search'), (closeModal) => {
-                    return <Search closeModal={closeModal}/>;
-                  },
-                  { isFullScreen: false, isResizeable: false, showFullScreen: false, isFullWidth: false, showTitle: false}
-                  );
+                  showQuickSearch();
                 };
               }
 
@@ -1683,7 +1397,6 @@ define('pgadmin.browser', [
       if (!n) {
         ctx.t.destroy({
           success: function() {
-            initializeBrowserTree(ctx.b);
             ctx.t = ctx.b.tree;
             ctx.i = null;
             ctx.b._refreshNode(ctx, ctx.branch);
@@ -1760,7 +1473,7 @@ define('pgadmin.browser', [
               }
             }
 
-            Notify.pgNotifier('error', error, gettext('Error retrieving details for the node.'), function (msg) {
+            pgAdmin.Browser.notifier.pgNotifier('error', error, gettext('Error retrieving details for the node.'), function (msg) {
               if (msg == 'CRYPTKEY_SET') {
                 fetchNodeInfo(__i, __d, __n);
               } else {
@@ -1974,7 +1687,7 @@ define('pgadmin.browser', [
             }
             fetchNodeInfo(_callback);
           }).catch(function(error) {
-            Notify.pgRespErrorNotify(error);
+            pgAdmin.Browser.notifier.pgRespErrorNotify(error);
             fetchNodeInfo(_callback);
           });
         };

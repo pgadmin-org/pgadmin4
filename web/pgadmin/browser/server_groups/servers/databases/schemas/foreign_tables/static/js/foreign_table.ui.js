@@ -12,6 +12,7 @@ import SecLabelSchema from '../../../../../static/js/sec_label.ui';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import OptionsSchema from '../../../../../static/js/options.ui';
 import { isEmptyString } from 'sources/validators';
+import VariableSchema from 'top/browser/server_groups/servers/static/js/variable.ui';
 
 import _ from 'lodash';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
@@ -33,7 +34,6 @@ export default class ForeignTableSchema extends BaseUISchema {
       columns: [],
       ftoptions: [],
       relacl: [],
-      stracl: [],
       seclabels: [],
       ...initValues
     });
@@ -60,6 +60,25 @@ export default class ForeignTableSchema extends BaseUISchema {
 
   canEditDeleteRowColumns(colstate) {
     return isEmptyString(colstate.inheritedfrom);
+  }
+
+  inSchemaWithColumnCheck(state) {
+    if(this.nodeInfo &&  ('schema' in this.nodeInfo)) {
+      if(this.isNew(state)) {
+        return false;
+      }
+
+      // We will disable control if it's system columns
+      // inheritedfrom check is useful when we use this schema in table node
+      // inheritedfrom has value then we should disable it
+      if (!isEmptyString(state.inheritedfrom)){
+        return true;
+      }
+
+      // ie: it's position is less than 1
+      return !(!_.isUndefined(state.attnum) && state.attnum > 0);
+    }
+    return false;
   }
 
   getTableOid(tabId) {
@@ -168,7 +187,7 @@ export default class ForeignTableSchema extends BaseUISchema {
         id: 'columns', label: gettext('Columns'), cell: 'text',
         type: 'collection', group: gettext('Columns'), mode: ['edit', 'create'],
         schema: this.columnsObj,
-        canAdd: true, canDelete: true, canEdit: true, columns: ['attname', 'datatype', 'inheritedfrom'],
+        canAdd: true, canDelete: true, canEdit: true, columns: ['name', 'cltype', 'attprecision', 'attlen', 'inheritedfrom'],
         // For each row edit/delete button enable/disable
         canEditRow: this.canEditDeleteRowColumns,
         canDeleteRow: this.canEditDeleteRowColumns,
@@ -198,12 +217,11 @@ export default class ForeignTableSchema extends BaseUISchema {
         canAdd: true, canDelete: true, uniqueCol : ['option'],
       },
       {
-        id: 'relacl', label: gettext('Privileges'), cell: 'text',
-        type: 'text', group: gettext('Security'),
-        mode: ['properties'], min_version: 90200,
+        id: 'acl', label: gettext('Privileges'), type: 'text',
+        group: gettext('Security'), mode: ['properties'], min_version: 90200,
       },
       {
-        id: 'acl', label: gettext('Privileges'), type: 'collection',
+        id: 'relacl', label: gettext('Privileges'), type: 'collection',
         schema: this.getPrivilegeRoleSchema(['a','r','w','x']),
         uniqueCol : ['grantee', 'grantor'],
         editable: false,
@@ -258,27 +276,30 @@ export function getNodeColumnSchema(treeNodeInfo, itemNodeData, pgBrowser) {
 export class ColumnSchema extends BaseUISchema {
   constructor(initValues, getPrivilegeRoleSchema, nodeInfo, datatypeOptions, collspcnameOptions) {
     super({
-      attname: undefined,
-      datatype: undefined,
-      typlen: undefined,
-      precision: undefined,
-      typdefault: undefined,
-      attnotnull: undefined,
-      collname: undefined,
+      name: undefined,
+      description: undefined,
+      atttypid: undefined,
+      cltype: undefined,
+      edit_types: undefined,
+      attlen: undefined,
+      attprecision: undefined,
+      defval: undefined,
+      attnotnull: false,
+      collspcname: undefined,
+      attstattarget:undefined,
       attnum: undefined,
       inheritedfrom: undefined,
       inheritedid: undefined,
-      attstattarget: undefined,
       coloptions: [],
+      colconstype: 'n',
     });
 
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
     this.nodeInfo = nodeInfo;
-    this.datatypeOptions = datatypeOptions;
+    this.cltypeOptions = datatypeOptions;
     this.collspcnameOptions = collspcnameOptions;
 
     this.datatypes = [];
-
   }
 
   get idAttribute() {
@@ -289,139 +310,210 @@ export class ColumnSchema extends BaseUISchema {
     return (_.isUndefined(state.inheritedid) || _.isNull(state.inheritedid) || _.isUndefined(state.inheritedfrom) || _.isNull(state.inheritedfrom)) ? true : false;
   }
 
+  // Check whether the column is a generated column
+  isTypeGenerated(state) {
+    let colconstype = state.colconstype;
+    return (!_.isUndefined(colconstype) && !_.isNull(colconstype) && colconstype == 'g');
+  }
+
+  attlenRange(state) {
+    for(let o of this.datatypes) {
+      if ( state.cltype == o.value ) {
+        if(o.length) return {min: o.min_val || 0, max: o.max_val};
+      }
+    }
+    return null;
+  }
+
+  attprecisionRange(state) {
+    for(let o of this.datatypes) {
+      if ( state.cltype == o.value ) {
+        if(o.precision) return {min: o.min_val || 0, max: o.max_val};
+      }
+    }
+    return null;
+  }
+
+  attCell(state) {
+    return { cell: this.attlenRange(state) ? 'int' : '' };
+  }
+
   get baseFields() {
     let obj = this;
 
     return [
       {
-        id: 'attname', label: gettext('Name'), cell: 'text',
+        id: 'name', label: gettext('Name'), cell: 'text',
         type: 'text', editable: obj.editable_check_for_column, noEmpty: true,
         minWidth: 115,
+        disabled: (state)=>{
+          return state.is_inherited;
+        },
       },
       {
-        id: 'datatype', label: gettext('Data type'), minWidth: 150,
-        group: gettext('Definition'), noEmpty: true,
+        id: 'description', label: gettext('Comment'), cell: 'text',
+        type: 'multiline', mode: ['properties', 'create', 'edit'],
+      },
+      {
+        id: 'cltype', 
+        label: gettext('Data type'), 
+        minWidth: 150,
+        group: gettext('Definition'), 
+        noEmpty: true,
         editable: obj.editable_check_for_column,
-        options: obj.datatypeOptions,
+        disabled: (state)=>{
+          return state.is_inherited;
+        },
+        options: obj.cltypeOptions,
         optionsLoaded: (options)=>{
           obj.datatypes = options;
-          obj.type_options = options;
         },
-        cell: 'select',
+        cell: (row)=>{
+          return {
+            cell: 'select',
+            options: this.cltypeOptions,
+            controlProps: {
+              allowClear: false,
+              filter: (options)=>{
+                let result = options;
+                let edit_types = row?.edit_types || [];
+                if(!obj.isNew(row) && !this.inErd) {
+                  result = _.filter(options, (o)=>edit_types.indexOf(o.value) > -1);
+                }
+                return result;
+              },
+            }
+          };
+        },
+        type: (state)=>{
+          return {
+            type: 'select',
+            options: this.cltypeOptions,
+            controlProps: {
+              allowClear: false,
+              filter: (options)=>{
+                let result = options;
+                let edit_types = state?.edit_types || [];
+                if(!obj.isNew(state) && !this.inErd) {
+                  result = _.filter(options, (o)=>edit_types.indexOf(o.value) > -1);
+                }
+                return result;
+              },
+            }
+          };
+        },
         controlProps: {
           allowClear: false,
-        },
-        type: 'select'
+        }
       },
       {
-        id: 'inheritedfrom', label: gettext('Inherited From'), cell: 'label',
-        type: 'label', readonly: true, editable: false, mode: ['properties', 'edit'],
+        id: 'inheritedfrom', label: gettext('Inherited from'), cell: 'label', type: 'text',
+        readonly: true, editable: false, mode: ['create','properties', 'edit'],
       },
       {
         id: 'attnum', label: gettext('Position'), cell: 'text',
         type: 'text', disabled: obj.inCatalog(), mode: ['properties'],
       },
       {
-        id: 'typlen', label: gettext('Length'), cell: 'int',
-        deps: ['datatype'], type: 'int', group: gettext('Definition'), width: 120, minWidth: 120,
-        disabled: (state) => {
-          let val = state.typlen;
-          // We will store type from selected from combobox
-          if(!(_.isUndefined(state.inheritedid)
-            || _.isNull(state.inheritedid)
-            || _.isUndefined(state.inheritedfrom)
-            || _.isNull(state.inheritedfrom))) {
-
-            if (!_.isUndefined(val)) {
-              state.typlen = undefined;
-            }
-            return true;
-          }
-
-          let of_type = state.datatype,
-            has_length = false;
-          if(obj.type_options) {
-            state.is_tlength = false;
-
-            // iterating over all the types
-            _.each(obj.type_options, function(o) {
-            // if type from selected from combobox matches in options
-              if ( of_type == o.value ) {
-              // if length is allowed for selected type
-                if(o.length)
-                {
-                // set the values in model
-                  has_length = true;
-                  state.is_tlength = true;
-                  state.min_val = o.min_val;
-                  state.max_val = o.max_val;
-                }
-              }
-            });
-
-            if (!has_length && !_.isUndefined(val)) {
-              state.typlen = undefined;
-            }
-
-            return !(state.is_tlength);
-          }
-          if (!has_length && !_.isUndefined(val)) {
-            state.typlen = undefined;
-          }
-          return true;
+        id: 'attlen',
+        label: gettext('Length'), 
+        group: gettext('Definition'),
+        deps: ['cltype'],
+        type: 'int',
+        minWidth: 60,
+        cell: (state)=>{
+          return obj.attCell(state);
         },
+        depChange: (state)=>{
+          let range = this.attlenRange(state);
+          if(range) {
+            return {
+              ...state, min_val_attlen: range.min, max_val_attlen: range.max,
+            };
+          } else {
+            return {
+              ...state, attlen: null,
+            };
+          }
+        },
+        disabled: function(state) {
+          return !obj.attlenRange(state);
+        },
+        editable: function(state) {
+          // inheritedfrom has value then we should disable it
+          if (!isEmptyString(state.inheritedfrom)) {
+            return false;
+          }
+          return Boolean(obj.attlenRange(state));
+        },
+
+
+      },{
+        id: 'min_val_attlen', skipChange: true, visible: false, type: '',
+      },{
+        id: 'max_val_attlen', skipChange: true, visible: false, type: '',
+      },{
+        id: 'attprecision', label: gettext('Scale'), width: 60, disableResizing: true,
+        deps: ['cltype'], type: 'int', group: gettext('Definition'),
+        cell: (state)=>{
+          return obj.attCell(state);
+        },
+        depChange: (state)=>{
+          let range = this.attprecisionRange(state);
+          if(range) {
+            return {
+              ...state, min_val_attprecision: range.min, max_val_attprecision: range.max,
+            };
+          } else {
+            return {
+              ...state, attprecision: null,
+            };
+          }
+        },
+        disabled: function(state) {
+          return !this.attprecisionRange(state);
+        },
+        editable: function(state) {
+          // inheritedfrom has value then we should disable it
+          if (!isEmptyString(state.inheritedfrom)) {
+            return false;
+          }
+          return Boolean(this.attprecisionRange(state));
+        },
+      },{
+        id: 'min_val_attprecision', skipChange: true, visible: false, type: '',
+      },{
+        id: 'max_val_attprecision', skipChange: true, visible: false, type: '',
       },
       {
-        id: 'precision', label: gettext('Precision'), cell: 'int', minWidth: 60,
-        deps: ['datatype'], type: 'int', group: gettext('Definition'),
-        disabled: (state) => {
-          let val = state.precision;
-          if(!(_.isUndefined(state.inheritedid)
-            || _.isNull(state.inheritedid)
-            || _.isUndefined(state.inheritedfrom)
-            || _.isNull(state.inheritedfrom))) {
-
-            if (!_.isUndefined(val)) {
-              state.precision = undefined;
-            }
-            return true;
-          }
-
-          let of_type = state.datatype,
-            has_precision = false;
-
-          if(obj.type_options) {
-            state.is_precision = false;
-            // iterating over all the types
-            _.each(obj.type_options, function(o) {
-            // if type from selected from combobox matches in options
-              if ( of_type == o.value ) {
-              // if precession is allowed for selected type
-                if(o.precision)
-                {
-                  has_precision = true;
-                  // set the values in model
-                  state.is_precision = true;
-                  state.min_val = o.min_val;
-                  state.max_val = o.max_val;
-                }
-              }
-            });
-            if (!has_precision && !_.isUndefined(val)) {
-              state.precision = undefined;
-            }
-            return !(state.is_precision);
-          }
-          if (!has_precision && !_.isUndefined(val)) {
-            state.precision = undefined;
-          }
-          return true;
-        },
+        id: 'attstattarget', 
+        label: gettext('Statistics'), 
+        cell: 'text',
+        type: 'text', 
+        readonly: obj.inSchemaWithColumnCheck,
+        mode: ['properties', 'edit'],
+        group: gettext('Definition'),
       },
       {
-        id: 'typdefault', label: gettext('Default'), cell: 'text',
-        type: 'text', group: gettext('Definition'),
-        controlProps: {placeholder: gettext('Enter an expression or a value.')},
+        id: 'attstorage', label: gettext('Storage'), group: gettext('Definition'),
+        type: 'select', mode: ['properties', 'edit'],
+        cell: 'select', readonly: obj.inSchemaWithColumnCheck,
+        controlProps: { placeholder: gettext('Select storage'),
+          allowClear: false,
+        },
+        options: [
+          {label: 'PLAIN', value: 'p'},
+          {label: 'MAIN', value: 'm'},
+          {label: 'EXTERNAL', value: 'e'},
+          {label: 'EXTENDED', value: 'x'},
+        ],
+      },
+      {
+        id: 'defval',
+        label: gettext('Default'),
+        cell: 'text',
+        type: 'text',
+        group: gettext('Constraints'),
         editable: (state) => {
           if(!(_.isUndefined(state.inheritedid)
             || _.isNull(state.inheritedid)
@@ -432,35 +524,80 @@ export class ColumnSchema extends BaseUISchema {
         },
       },
       {
-        id: 'attnotnull', label: gettext('Not NULL?'), cell: 'switch',
-        type: 'switch', minWidth: 80,
-        group: gettext('Definition'), editable: obj.editable_check_for_column,
+        id: 'attnotnull', 
+        label: gettext('Not NULL?'), 
+        cell: 'switch',
+        type: 'switch', 
+        minWidth: 80,
+        group: gettext('Constraints'), 
+        editable: obj.editable_check_for_column,
       },
       {
-        id: 'attstattarget', label: gettext('Statistics'), cell: 'text',
-        type: 'text', disabled: (state) => {
-          if (obj.isNew()) {
-            return false;
-          }
-
-          if (obj.nodeInfo.server.version < 90200) {
-            return false;
-          }
-
-          return (_.isUndefined(state.inheritedid) || _.isNull(state.inheritedid) ||
-        _.isUndefined(state.inheritedfrom) || _.isNull(state.inheritedfrom)) ? true : false;
-        }, mode: ['properties', 'edit'],
-        group: gettext('Definition'),
+        id: 'colconstype',
+        label: gettext('Type'),
+        cell: 'text',
+        group: gettext('Constraints'),
+        type: (state)=>{
+          let options = [
+            { 'label': gettext('NONE'), 'value': 'n'},
+          ];           
+          // You can't change the existing column to Generated column.
+          if (this.isNew(state)) {
+            options.push({
+              'label': gettext('GENERATED'),
+              'value': 'g',
+            });
+          } else {
+            options.push({
+              'label': gettext('GENERATED'),
+              'value': 'g',
+              'disabled': true,
+            });
+          }  
+          return {
+            type: 'toggle',
+            options: options,
+          };
+        },
+        disabled: function(state) {
+          return (!this.isNew(state) && state.colconstype == 'g');
+        }, 
+        min_version: 120000,
       },
       {
-        id: 'collname', label: gettext('Collation'), cell: 'select',
+        id: 'genexpr', 
+        label: gettext('Expression'), 
+        type: 'text',
+        mode: ['properties', 'create', 'edit'], 
+        group: gettext('Constraints'),
+        min_version: 120000, 
+        deps: ['colconstype'], 
+        visible: this.isTypeGenerated,
+        readonly: function(state) {
+          return !this.isNew(state);
+        },
+      },
+      {
+        id: 'attoptions', label: gettext('Variables'), type: 'collection',
+        group: gettext('Variables'),
+        schema: new VariableSchema([
+          {label: 'n_distinct', value: 'n_distinct', vartype: 'string'},
+          {label: 'n_distinct_inherited', value: 'n_distinct_inherited', vartype: 'string'}
+        ], null, null, ['name', 'value']),
+        uniqueCol : ['name'], mode: ['edit', 'create'],
+        canAdd: true, canEdit: false, canDelete: true,
+      },
+      {
+        id: 'collspcname', label: gettext('Collation'), cell: 'select',
         type: 'select', group: gettext('Definition'),
-        deps: ['datatype'], options: obj.collspcnameOptions,
+        deps: ['cltype'], options: obj.collspcnameOptions,
         disabled: (state)=>{
           if (!(_.isUndefined(obj.isNew)) && !obj.isNew(state)) { return false; }
 
-          return (_.isUndefined(state.inheritedid) || _.isNull(state.inheritedid) ||
-          _.isUndefined(state.inheritedfrom) || _.isNull(state.inheritedfrom)) ? true : false;
+          return (_.isUndefined(state.inheritedid)
+                || _.isNull(state.inheritedid) ||
+                  _.isUndefined(state.inheritedfrom) || 
+                  _.isNull(state.inheritedfrom));
         }
       },
       {

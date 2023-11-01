@@ -20,6 +20,7 @@ export default class MViewSchema extends BaseUISchema {
       toast_autovacuum_enabled: 'x',
       autovacuum_enabled: 'x',
       warn_text: undefined,
+      amname: undefined,
       ...initValues
     });
     this.getPrivilegeRoleSchema = getPrivilegeRoleSchema;
@@ -29,6 +30,7 @@ export default class MViewSchema extends BaseUISchema {
       schema: [],
       spcname: [],
       nodeInfo: null,
+      amname: [],
       ...fieldOptions,
     };
 
@@ -72,28 +74,43 @@ export default class MViewSchema extends BaseUISchema {
         id: 'comment', label: gettext('Comment'), cell: 'text',
         type: 'multiline',
       },{
-        id: 'definition', label: gettext('Definition'), cell: 'text',
-        type: 'sql', mode: ['create', 'edit'], group: gettext('Definition'),
-        isFullTab: true, controlProps: { readOnly: this.nodeInfo && 'catalog' in this.nodeInfo ? true: false },
-      },{
         id: 'with_data', label: gettext('With data?'),
-        group: gettext('Storage'), mode: ['edit', 'create'],
+        group: gettext('Definition'), mode: ['edit', 'create'],
         type: 'switch',
       },{
         id: 'spcname', label: gettext('Tablespace'), cell: 'text',
-        type: 'select', group: gettext('Storage'),
+        type: 'select', group: gettext('Definition'),
         options: obj.fieldOptions.spcname,
         controlProps: {
           allowClear: false,
           first_empty: false,
         },
+      }, {
+        id: 'amname', label: gettext('Access Method'), group: gettext('Definition'),
+        type: (state)=>{
+          return {
+            type: 'select', options: obj.fieldOptions.table_amname_list,
+            controlProps: {
+              allowClear: obj.isNew(state) ? true : false,
+            }
+          };
+        }, mode: ['create', 'properties', 'edit'], min_version: 120000,
+        disabled: (state) => {
+          if (obj.getServerVersion() < 150000 && !obj.isNew(state)) {
+            return true;
+          }
+        },
       },{
         id: 'fillfactor', label: gettext('Fill factor'),
-        group: gettext('Storage'), mode: ['edit', 'create'],
+        group: gettext('Definition'), mode: ['edit', 'create'],
         noEmpty: false, type: 'int', controlProps: {min: 10, max: 100}
       },{
         id: 'vacuum_settings_str', label: gettext('Storage settings'),
-        type: 'multiline', group: gettext('Storage'), mode: ['properties'],
+        type: 'multiline', group: gettext('Definition'), mode: ['properties'],
+      },{
+        id: 'definition', label: gettext('Definition'), cell: 'text',
+        type: 'sql', mode: ['create', 'edit'], group: gettext('Code'),
+        isFullTab: true, controlProps: { readOnly: this.nodeInfo && 'catalog' in this.nodeInfo ? true: false },
       },
       {
         type: 'nested-tab', group: gettext('Parameter'), mode: ['create', 'edit'],
@@ -128,7 +145,7 @@ export default class MViewSchema extends BaseUISchema {
 
       /* mview definition validation*/
       if (isEmptyString(state.definition)) {
-        errmsg = gettext('Please enter view definition.');
+        errmsg = gettext('Please enter view code.');
         setError('definition', errmsg);
         return true;
       } else {

@@ -134,9 +134,14 @@ def validate_view() -> Response:
     if mfa_method is None and len(mfa_views) > 0:
         list(mfa_views.items())[0][1]['selected'] = True
 
+    send_email_url = None
+    if 'email' in mfa_views:
+        send_email_url = url_for("mfa.send_email_code")
+
     return Response(render_template(
         "mfa/validate.html", _=_, views=mfa_views, base64=base64,
-        logout_url=get_logout_url()
+        logout_url=get_logout_url(),
+        send_email_url=send_email_url
     ), return_code, headers=_NO_CACHE_HEADERS, mimetype="text/html")
 
 

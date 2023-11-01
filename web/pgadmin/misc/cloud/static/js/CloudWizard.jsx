@@ -16,7 +16,6 @@ import Wizard from '../../../../static/js/helpers/wizard/Wizard';
 import WizardStep from '../../../../static/js/helpers/wizard/WizardStep';
 import {FormFooterMessage, MESSAGE_TYPE } from '../../../../static/js/components/FormComponents';
 import getApiInstance from '../../../../static/js/api_instance';
-import Notifier from '../../../../static/js/helpers/Notifier';
 import PropTypes from 'prop-types';
 import pgAdmin from 'sources/pgadmin';
 import {ToggleButtons, FinalSummary} from './cloud_components';
@@ -29,6 +28,7 @@ import {AzureCredentials, AzureInstanceDetails, AzureDatabaseDetails, checkClust
 import { GoogleCredentials, GoogleInstanceDetails, GoogleDatabaseDetails, validateGoogleStep2, validateGoogleStep3 } from './google';
 import EventBus from '../../../../static/js/helpers/EventBus';
 import { CLOUD_PROVIDERS, CLOUD_PROVIDERS_LABELS } from './cloud_constants';
+import { LAYOUT_EVENTS } from '../../../../static/js/helpers/Layout';
 
 
 const useStyles = makeStyles(() =>
@@ -64,7 +64,7 @@ const useStyles = makeStyles(() =>
 
 export const CloudWizardEventsContext = React.createContext();
 
-export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) {
+export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanelId}) {
   const classes = useStyles();
   const eventBus = React.useRef(new EventBus());
 
@@ -98,16 +98,27 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
   const [verificationURI, setVerificationURI] = React.useState('');
   const [verificationCode, setVerificationCode] = React.useState('');
 
+  const authInterval = React.useRef();
+
   React.useEffect(()=>{
     eventBus.current.registerListener('SET_ERROR_MESSAGE_FOR_CLOUD_WIZARD', (msg) => {
       setErrMsg(msg);
     });
-  }, []);
 
-  React.useEffect(()=>{
     eventBus.current.registerListener('SET_CRED_VERIFICATION_INITIATED', (initiated) => {
       setVerificationIntiated(initiated);
     });
+
+    const onWizardClosing = (panelId)=>{
+      if(panelId == cloudPanelId) {
+        clearInterval(authInterval.current);
+        onClose();
+      }
+    };
+    pgAdmin.Browser.docker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
+    return ()=>{
+      pgAdmin.Browser.docker.eventBus.deregisterListener(LAYOUT_EVENTS.CLOSING, onWizardClosing);
+    };
   }, []);
 
   React.useEffect(() => {
@@ -119,7 +130,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         }
       })
       .catch((error) => {
-        Notifier.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.error(gettext(`Error while getting the host ip: ${error.response.data.errormsg}`));
       });
   }, [cloudProvider]);
 
@@ -173,7 +184,7 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
         onClose();
       })
       .catch((error) => {
-        Notifier.error(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
+        pgAdmin.Browser.notifier.error(gettext(`Error while saving cloud wizard data: ${error.response.data.errormsg}`));
       });
   };
 
@@ -366,37 +377,33 @@ export default function CloudWizard({ nodeInfo, nodeData, onClose, cloudPanel}) 
     let child = window.open(verificationURI, 'edb_biganimal_authentication');
     let _url = url_for('biganimal.verification_ack') ;
     let countdown = 60;
-    const myInterval = setInterval(() => {
+    authInterval.current = setInterval(() => {
       axiosApi.get(_url)
         .then((res) => {
           if (res.data && res.data.success == 1 ) {
             setErrMsg([MESSAGE_TYPE.SUCCESS, gettext('Authentication completed successfully. Click the Next button to proceed.')]);
             setVerificationIntiated(true);
-            clearInterval(myInterval);
+            clearInterval(authInterval.current);
           } else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'access_denied') {
             setErrMsg([MESSAGE_TYPE.INFO, gettext('Verification failed. Access Denied...')]);
             setVerificationIntiated(false);
-            clearInterval(myInterval);
+            clearInterval(authInterval.current);
           } else if (res.data && res.data.success == 0 &&  res.data.errormsg == 'forbidden') {
             setErrMsg([MESSAGE_TYPE.INFO, gettext('Authentication completed successfully but you do not have permission to create the cluster.')]);
             setVerificationIntiated(false);
-            clearInterval(myInterval);
+            clearInterval(authInterval.current);
           } else if (child.closed && !verificationIntiated && countdown <= 0) {
             setVerificationIntiated(false);
             setErrMsg([MESSAGE_TYPE.ERROR, gettext('Authentication is aborted.')]);
-            clearInterval(myInterval);
+            clearInterval(authInterval.current);
           }
+          authInterval.current = null;
         })
         .catch((error) => {
           setErrMsg([MESSAGE_TYPE.ERROR, gettext(`Error while verifying EDB BigAnimal: ${error.response.data.errormsg}`)]);
         });
       countdown = countdown - 1;
     }, 1000);
-
-    cloudPanel.on(window.wcDocker.EVENT.CLOSED, function() {
-      clearInterval(myInterval);
-    });
-
   };
 
 
@@ -575,5 +582,6 @@ CloudWizard.propTypes = {
   nodeInfo: PropTypes.object,
   nodeData: PropTypes.object,
   onClose: PropTypes.func,
-  cloudPanel: PropTypes.object
+  cloudPanel: PropTypes.object,
+  cloudPanelId: PropTypes.string,
 };

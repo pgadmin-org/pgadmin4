@@ -12,13 +12,15 @@ import React, { useEffect } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
-import { compareSizeVals, toPrettySize } from '../../../../static/js/utils';
+import { toPrettySize } from '../../../../static/js/utils';
+import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { usePgAdmin } from '../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -52,36 +54,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getColumn(data, singleLineStatistics) {
-  let columns = [], column;
+function getColumn(data, singleLineStatistics, prettifyFields=[]) {
+  let columns = [];
   if (!singleLineStatistics) {
     if (!_.isUndefined(data)) {
       data.forEach((row) => {
-        if (row.name == gettext('Total Size')) {
-          column = {
-            Header: row.name,
-            accessor: row.name,
-            sortable: true,
-            resizable: true,
-            disableGlobalFilter: false,
-            sortType: ((rowA, rowB, id) => {
-              return compareSizeVals(rowA.values[id], rowB.values[id]);
-            })
-          };
-        }else{
-          column = {
-            Header: row.name,
-            accessor: row.name,
-            sortable: true,
-            resizable: true,
-            disableGlobalFilter: false,
-          };
-
-        }
-        columns.push(column);
+        columns.push({
+          Header: row.name,
+          accessor: row.name,
+          sortable: true,
+          resizable: true,
+          disableGlobalFilter: false,
+        });
       });
     }
-    return columns;
   } else {
     columns = [
       {
@@ -100,6 +86,13 @@ function getColumn(data, singleLineStatistics) {
       },
     ];
   }
+  columns.forEach((c)=>{
+    // Prettify the cell view
+    if(prettifyFields.includes(c.Header)) {
+      // eslint-disable-next-line react/display-name,react/prop-types
+      c.Cell = ({value})=><>{toPrettySize(value)}</>;
+    }
+  });
   return columns;
 }
 
@@ -110,15 +103,9 @@ function getTableData(res, node) {
     let data = res.data.data;
     if (node.hasCollectiveStatistics || data['rows'].length > 1) {
       data.rows.forEach((row) => {
-        // Prettify the field values
-        if (!_.isEmpty(node.statsPrettifyFields)) {
-          node.statsPrettifyFields.forEach((field) => {
-            row[field] = toPrettySize(row[field]);
-          });
-        }
         nodeStats.push({ ...row, icon: '' });
       });
-      colData = getColumn(data.columns, false);
+      colData = getColumn(data.columns, false, node.statsPrettifyFields);
     } else {
       nodeStats = createSingleLineStatistics(data, node.statsPrettifyFields);
       colData = getColumn(data.columns, true);
@@ -155,7 +142,7 @@ function createSingleLineStatistics(data, prettifyFields) {
   return res;
 }
 
-export default function Statistics({ nodeData, item, node, ...props }) {
+function Statistics({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale, setIsStale }) {
   const classes = useStyles();
   const [tableData, setTableData] = React.useState([]);
 
@@ -177,13 +164,18 @@ export default function Statistics({ nodeData, item, node, ...props }) {
       disableGlobalFilter: false,
     },
   ]);
+  const pgAdmin = usePgAdmin();
 
   useEffect(() => {
+    if(!isStale || !isActive) {
+      return;
+    }
+
     let url,
       message = gettext('Please select an object in the tree view.');
 
     if (node) {
-      url = getURL(nodeData, true, props.treeNodeInfo, node, item, 'stats');
+      url = getURL(nodeData, true, treeNodeInfo, node, nodeItem, 'stats');
 
       message = gettext('No statistics are available for the selected object.');
 
@@ -207,7 +199,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
             setLoaderText('');
 
             if (err?.response?.data?.info == 'CRYPTKEY_MISSING') {
-              Notify.pgNotifier('error', err.request, 'The master password is not set', function(mesg) {
+              pgAdmin.Browser.notifier.pgNotifier('error', err.request, 'The master password is not set', function(mesg) {
                 setTimeout(function() {
                   if (mesg == 'CRYPTKEY_SET') {
                     setMsg('No statistics are available for the selected object.');
@@ -217,7 +209,7 @@ export default function Statistics({ nodeData, item, node, ...props }) {
                 }, 100);
               });
             } else {
-              Notify.alert(
+              pgAdmin.Browser.notifier.alert(
                 gettext('Failed to retrieve data from the server.'),
                 gettext(err.message)
               );
@@ -230,12 +222,11 @@ export default function Statistics({ nodeData, item, node, ...props }) {
       }
     }
     if (message != '') {
+      setTableData([]);
       setMsg(message);
     }
-    return () => {
-      setTableData([]);
-    };
-  }, [nodeData]);
+    setIsStale(false);
+  }, [isStale, isActive, nodeData?.id]);
 
   return (
     <>
@@ -260,7 +251,12 @@ export default function Statistics({ nodeData, item, node, ...props }) {
 Statistics.propTypes = {
   res: PropTypes.array,
   nodeData: PropTypes.object,
-  item: PropTypes.object,
+  nodeItem: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,
+  isActive: PropTypes.bool,
+  isStale: PropTypes.bool,
+  setIsStale: PropTypes.func,
 };
+
+export default withStandardTabInfo(Statistics, BROWSER_PANELS.STATISTICS);

@@ -34,12 +34,12 @@
         "description":"Test Comment",
         "ftsrvname":"test_fs_for_foreign_table",
         "columns":[{
-          "attname":"col1",
-          "datatype":"bigint",
+          "name":"col1",
+          "cltype":"bigint",
           "coloptions":[]
         },{
-          "attname":"col2",
-          "datatype":"text",
+          "name":"col2",
+          "cltype":"text",
           "coloptions":[]
         }],
         "constraints":[{
@@ -55,7 +55,7 @@
           "option":"table_name",
           "value":"test_table"
         }],
-        "acl":[{
+        "relacl":[{
           "grantee":"PUBLIC",
           "grantor":"enterprisedb",
           "privileges":[{
@@ -107,12 +107,13 @@
         "description":"Test Comment",
         "columns": {
           "added": [{
-            "attname":"col1",
-            "datatype":"bigint",
-            "coloptions":[]
+            "name":"col1",
+            "cltype":"bigint",
+            "coloptions":[],
+            "attnotnull": true
           },{
-            "attname":"col2",
-            "datatype":"text",
+            "name":"col2",
+            "cltype":"text",
             "coloptions":[]
           }]
         }
@@ -153,7 +154,7 @@
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "acl":{
+        "relacl":{
           "added": [{
             "grantee":"PUBLIC",
             "grantor":"enterprisedb",
@@ -182,17 +183,18 @@
         },
         "columns": {
           "changed": [{
-            "attname": "col1",
+            "name": "col1",
             "attnum": 1,
             "attoptions": null,
+            "attnotnull":false,
+            "attstattarget": 10,
             "collname": "",
             "coloptions": [],
-            "datatype": "integer",
-            "fulltype": "bigint"
+            "cltype": "integer"
           }],
           "deleted": [{
-            "attname":"col2",
-            "datatype":"text"
+            "name":"col2",
+            "cltype":"text"
           }]
         }
       },
@@ -205,7 +207,7 @@
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "acl":{
+        "relacl":{
           "deleted": [{
             "grantee":"PUBLIC",
             "grantor":"enterprisedb",

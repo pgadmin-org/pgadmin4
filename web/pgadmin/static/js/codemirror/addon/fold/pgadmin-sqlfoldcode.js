@@ -108,7 +108,7 @@
   /**
    * This function is responsible for finding whether the startToken is mixed
    * with other alphabets of the text. To avoid word like NOTIFY to be mistakenly treat as keyword.
-   * e.g. to avoid the IF detected as keyword in the word NOTIFY.
+   * e.g. to avoid the IF detected as keyword in the word pgAdmin.Browser.notifier.
    * Function also works with other tokens like LOOP, CASE, etc.
    * @function checkTokenMixedWithOtherAlphabets
    * @returns {Boolean} - returns true/false

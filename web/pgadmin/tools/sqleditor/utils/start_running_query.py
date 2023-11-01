@@ -67,6 +67,7 @@ class StartRunningQuery:
                     PG_DEFAULT_DRIVER).connection_manager(
                     transaction_object.sid)
                 conn = manager.connection(did=transaction_object.did,
+                                          database=transaction_object.dbname,
                                           conn_id=self.connection_id,
                                           auto_reconnect=False,
                                           use_binary_placeholder=True,
@@ -106,6 +107,7 @@ class StartRunningQuery:
             status = False
             result = gettext(
                 'Either transaction object or session object not found.')
+
         return make_json_response(
             data={
                 'status': status, 'result': result,
@@ -162,7 +164,9 @@ class StartRunningQuery:
                                       current_app._get_current_object())
                                 )
         _thread.start()
-        trans_obj.set_thread_native_id(_thread.native_id)
+        _native_id = _thread.native_id if hasattr(_thread, 'native_id'
+                                                  ) else _thread.ident
+        trans_obj.set_thread_native_id(_native_id)
         StartRunningQuery.save_transaction_in_session(session_obj,
                                                       trans_id, trans_obj)
 

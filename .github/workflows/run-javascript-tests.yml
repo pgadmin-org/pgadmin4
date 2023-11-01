@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  run-javascript-tests:
     strategy:
       fail-fast: false
       matrix:
@@ -22,11 +22,16 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
       - name: Upgrade yarn
         run: |
           yarn set version berry
+          yarn set version 3
+
+      - uses: actions/checkout@v3
 
       - name: Install Node modules
         run: |
@@ -36,4 +41,4 @@ jobs:
       - name: Run the tests
         run: |
           cd web
-          yarn run test:karma-once
+          yarn run test:js-once

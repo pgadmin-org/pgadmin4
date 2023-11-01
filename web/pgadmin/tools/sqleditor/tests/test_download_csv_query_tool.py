@@ -119,7 +119,6 @@ class TestDownloadCSV(BaseTestGenerator):
         url = '/sqleditor/query_tool/start/{0}'.format(trans_id)
         response = self.tester.post(url, data=json.dumps({"sql": sql_query}),
                                     content_type='html/json')
-
         self.assertEqual(response.status_code, 200)
 
         return async_poll(tester=self.tester,
@@ -138,7 +137,9 @@ class TestDownloadCSV(BaseTestGenerator):
         self.trans_id = str(secrets.choice(range(1, 9999999)))
         url = self.init_url.format(
             self.trans_id, test_utils.SERVER_GROUP, self._sid, self._did)
-        response = self.tester.post(url)
+        response = self.tester.post(url, data=json.dumps({
+            "dbname": self._db_name
+        }))
         self.assertEqual(response.status_code, 200)
 
         res = self.initiate_sql_query_tool(self.trans_id, self.sql)

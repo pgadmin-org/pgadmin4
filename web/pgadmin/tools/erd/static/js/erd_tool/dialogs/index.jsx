@@ -52,6 +52,7 @@ export default class ERDDialogs {
           hasSQL={false}
           disableSqlHelp={true}
           disableDialogHelp={true}
+          Notifier={this.modal}
         />
       );
     }, {

@@ -36,7 +36,7 @@ SELECT rel.oid, rel.relname AS name,
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_max_age=([0-9]*)') AS toast_autovacuum_freeze_max_age,
 	substring(pg_catalog.array_to_string(tst.reloptions, ',') FROM 'autovacuum_freeze_table_age=([0-9]*)') AS toast_autovacuum_freeze_table_age,
 	rel.reloptions AS reloptions, tst.reloptions AS toast_reloptions, rel.reloftype, typ.typname,
-	typ.typrelid AS typoid, des.description, pg_catalog.pg_get_userbyid(rel.relowner) AS relowner, inh.inhdetachpending
+	typ.typrelid AS typoid, des.description, pg_catalog.pg_get_userbyid(rel.relowner) AS relowner, inh.inhdetachpending, am.amname
 FROM
     (SELECT * FROM pg_catalog.pg_inherits WHERE inhparent = {{ tid }}::oid) inh
     LEFT JOIN pg_catalog.pg_class rel ON inh.inhrelid = rel.oid
@@ -44,6 +44,7 @@ FROM
     LEFT OUTER JOIN pg_catalog.pg_class tst ON tst.oid = rel.reltoastrelid
     LEFT OUTER JOIN pg_catalog.pg_description des ON (des.objoid=rel.oid AND des.objsubid=0 AND des.classoid='pg_class'::regclass)
     LEFT OUTER JOIN pg_catalog.pg_tablespace spc on spc.oid=rel.reltablespace
+    LEFT OUTER JOIN pg_catalog.pg_am am ON am.oid = rel.relam
     LEFT JOIN pg_catalog.pg_type typ ON rel.reloftype=typ.oid
     WHERE rel.relispartition
     {% if ptid %} AND rel.oid = {{ ptid }}::OID {% endif %}

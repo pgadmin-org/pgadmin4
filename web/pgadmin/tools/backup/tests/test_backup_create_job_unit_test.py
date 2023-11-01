@@ -24,6 +24,7 @@ VERBOSE = '--verbose'
 FORMAT_C = '--format=c'
 FORMAT_P = '--format=p'
 BLOBS = '--blobs'
+LARGE_OBJECTS = '--large-objects'
 DATA_ONLY = '--data-only'
 SCHEMA_ONLY = '--schema-only'
 
@@ -31,7 +32,7 @@ SCHEMA_ONLY = '--schema-only'
 class BackupCreateJobTest(BaseTestGenerator):
     """Test the BackupCreateJob class"""
     scenarios = [
-        ('When backup object with default options',
+        ('When backup object with default options (< v16)',
          dict(
              class_params=dict(
                  sid=1,
@@ -54,7 +55,38 @@ class BackupCreateJobTest(BaseTestGenerator):
              url=BACKUP_OBJECT_URL,
              expected_cmd_opts=[VERBOSE, FORMAT_C, BLOBS],
              not_expected_cmd_opts=[],
-             expected_exit_code=[0, None]
+             expected_exit_code=[0, None],
+             server_max_version=159999,
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
+         )),
+        ('When backup object with default options (>= v16)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres'
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C, LARGE_OBJECTS],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=160000,
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
          )),
         ('When backup object with format directory',
          dict(
@@ -538,6 +570,31 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
+        ('When backup the object with option - Exclude schema',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 exclude_schema="sch*"
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, '--exclude-schema', 'sch*'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
         ('When backup the object with option - Extra float digits',
          dict(
              class_params=dict(
@@ -591,7 +648,7 @@ class BackupCreateJobTest(BaseTestGenerator):
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
-        ('When backup the object with format tar',
+        ('When backup the object with format tar (< v16)',
          dict(
              class_params=dict(
                  sid=1,
@@ -616,9 +673,42 @@ class BackupCreateJobTest(BaseTestGenerator):
                                 BLOBS,
                                 '--format=t'],
              not_expected_cmd_opts=[],
-             expected_exit_code=[0, None]
+             expected_exit_code=[0, None],
+             server_max_version=159999,
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
          )),
-        ('When backup a schema with default options',
+        ('When backup the object with format tar (>= v16)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='tar',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 blobs=True,
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE,
+                                LARGE_OBJECTS,
+                                '--format=t'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=160000,
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
+         )),
+        ('When backup a schema with default options (< v16)',
          dict(
              class_params=dict(
                  sid=1,
@@ -642,9 +732,41 @@ class BackupCreateJobTest(BaseTestGenerator):
              expected_cmd_opts=[VERBOSE, FORMAT_C, BLOBS,
                                 '--schema', 'schema1'],
              not_expected_cmd_opts=[],
-             expected_exit_code=[0, None]
+             expected_exit_code=[0, None],
+             server_max_version=159999,
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
          )),
-        ('When backup a table with default options',
+        ('When backup a schema with default options (>=v16)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=['schema1'],
+                 tables=[],
+                 database='postgres'
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C, LARGE_OBJECTS,
+                                '--schema', 'schema1'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=160000,
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
+         )),
+        ('When backup a table with default options (< v16)',
          dict(
              class_params=dict(
                  sid=1,
@@ -668,7 +790,39 @@ class BackupCreateJobTest(BaseTestGenerator):
              expected_cmd_opts=[VERBOSE, FORMAT_C, BLOBS,
                                 '--table', 'public.table1'],
              not_expected_cmd_opts=[],
-             expected_exit_code=[0, None]
+             expected_exit_code=[0, None],
+             server_max_version=159999,
+             message='--blobs is deprecated and is not supported by EPAS/PG '
+                     'server greater than 15'
+         )),
+        ('When backup a table with default options (>= v16)',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_backup_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_backup',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_backup_file',
+                 format='custom',
+                 verbose=True,
+                 blobs=True,
+                 schemas=[],
+                 tables=[['public', 'table1']],
+                 database='postgres'
+             ),
+             url=BACKUP_OBJECT_URL,
+             expected_cmd_opts=[VERBOSE, FORMAT_C, LARGE_OBJECTS,
+                                '--table', 'public.table1'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=160000,
+             message='--large-objects is not supported by EPAS/PG server '
+                     'less than 16'
          )),
         ('When backup the server',
          dict(
@@ -1128,6 +1282,16 @@ class BackupCreateJobTest(BaseTestGenerator):
     ]
 
     def setUp(self):
+        if hasattr(self, 'server_min_version') and \
+            self.server_information['server_version'] < \
+                self.server_min_version:
+            self.skipTest(self.message)
+
+        if hasattr(self, 'server_max_version') and \
+            self.server_information['server_version'] > \
+                self.server_max_version:
+            self.skipTest(self.message)
+
         if 'default_binary_paths' not in self.server or \
             self.server['default_binary_paths'] is None or \
             self.server['type'] not in self.server['default_binary_paths'] or \
@@ -1196,11 +1360,6 @@ class BackupCreateJobTest(BaseTestGenerator):
         if server_response["info"] == "Server connected.":
             db_owner = server_response['data']['user']['name']
             self.data = database_utils.get_db_data(db_owner)
-
-            if hasattr(self, 'server_min_version') and \
-                    server_response["data"]["version"] < \
-                    self.server_min_version:
-                self.skipTest(self.message)
 
         url = self.url.format(self.server_id)
 

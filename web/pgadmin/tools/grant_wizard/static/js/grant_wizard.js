@@ -7,9 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Theme from 'sources/Theme';
 import GrantWizard from './GrantWizard';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
 
 
 // Grant Wizard
@@ -79,23 +78,21 @@ define([
         d = this.d = i ? t.itemData(i) : undefined,
         info = this.info = pgBrowser.tree.getTreeNodeHierarchy(i);
 
-      // Register dialog panel
-      pgBrowser.Node.registerUtilityPanel();
-      let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.lg, pgBrowser.stdH.lg),
-        j = panel.$container.find('.obj_properties').first();
-      panel.title(gettext('Grant Wizard'));
-
       let sid = info.server._id,
         did = info.database._id;
 
-      ReactDOM.render(
-        <Theme>
+      const panelTitle = gettext('Grant Wizard');
+      const panelId = BROWSER_PANELS.GRANT_WIZARD;
+      pgBrowser.docker.openDialog({
+        id: panelId,
+        title: panelTitle,
+        manualClose: false,
+        content: (
           <GrantWizard sid={sid} did={did} nodeInfo={info} nodeData={d}
-            onClose={() => {
-              ReactDOM.unmountComponentAtNode(j[0]);
-              panel.close();
-            }}/>
-        </Theme>, j[0]);
+            onClose={()=>{pgBrowser.docker.close(panelId);}}
+          />
+        )
+      }, pgBrowser.stdW.lg, pgBrowser.stdH.lg);
     },
   };
 

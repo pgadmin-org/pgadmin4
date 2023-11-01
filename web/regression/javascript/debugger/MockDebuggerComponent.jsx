@@ -10,20 +10,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Theme from 'sources/Theme';
 import {DebuggerContext, DebuggerEventsContext} from '../../../pgadmin/tools/debugger/static/js/components/DebuggerComponent';
+import { withBrowser } from '../genericFunctions';
 
-export default function MockDebuggerComponent({value, eventsvalue, children}) {
+function MockDebuggerComponent({value, eventsvalue, children}) {
   return (
-    <Theme>
-      <DebuggerContext.Provider value={value}>
-        <DebuggerEventsContext.Provider value={eventsvalue}>
-          {children}
-        </DebuggerEventsContext.Provider>
-      </DebuggerContext.Provider>
-    </Theme>
+    <DebuggerContext.Provider value={value}>
+      <DebuggerEventsContext.Provider value={eventsvalue}>
+        {children}
+      </DebuggerEventsContext.Provider>
+    </DebuggerContext.Provider>
   );
 }
+
+export default withBrowser(MockDebuggerComponent);
 
 MockDebuggerComponent.propTypes = {
   value: PropTypes.any,

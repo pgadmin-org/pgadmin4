@@ -5,8 +5,9 @@
 CREATE UNIQUE INDEX IF NOT EXISTS "Idx_$%{}[]()&*^!@""'`\/#"
     ON public.test_table_for_indexes USING btree
     (id DESC NULLS LAST, name COLLATE pg_catalog."POSIX" text_pattern_ops DESC NULLS LAST)
+    INCLUDE(name, id)
     NULLS NOT DISTINCT
-    WITH (FILLFACTOR=10)
+    WITH (fillfactor=10)
     TABLESPACE pg_default
     WHERE id < 100;
 

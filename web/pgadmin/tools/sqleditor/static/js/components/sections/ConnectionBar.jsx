@@ -118,7 +118,7 @@ export function ConnectionBar({connected, connecting, connectionStatus, connecti
             <Tooltip title={queryToolCtx.params.is_query_tool ? '' : connTitle}>
               <Box display="flex" width="100%">
                 <Box textOverflow="ellipsis" overflow="hidden" marginRight="auto">{connecting && gettext('(Obtaining connection)')}{connTitle}</Box>
-                {queryToolCtx.params.is_query_tool && <Box><KeyboardArrowDownIcon /></Box>}
+                {queryToolCtx.params.is_query_tool && <Box display="flex" alignItems="center"><KeyboardArrowDownIcon /></Box>}
               </Box>
             </Tooltip>
           </DefaultButton>

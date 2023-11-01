@@ -7,14 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import { getNodePrivilegeRoleSchema } from '../../../pgadmin/browser/server_groups/servers/static/js/privilege.ui';
 import PackageSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/packages/static/js/package.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('PackageSchema', ()=>{
-  let mount;
+
   let packageSchemaObj = new PackageSchema(
     (privileges)=>getNodePrivilegeRoleSchema({}, {server: {user: {name: 'postgres'}}}, {}, privileges),
     {
@@ -24,30 +23,24 @@ describe('PackageSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(packageSchemaObj));
+  it('create', async ()=>{
+    await getCreateView(packageSchemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(packageSchemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(packageSchemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(packageSchemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(packageSchemaObj, getInitData);
   });
 
   it('pkgheadsrc depChange', ()=>{
@@ -94,7 +87,7 @@ describe('PackageSchema', ()=>{
     let state = {
       pkgheadsrc: undefined
     };
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     packageSchemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('pkgheadsrc', 'Header cannot be empty.');

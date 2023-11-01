@@ -1,0 +1,5 @@
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ADD COLUMN "col_2_$%{}[]()&*^!@""'`\/#" text NOT NULL DEFAULT 'xyz';
+
+COMMENT ON COLUMN public."foreign_table_2_$%{}[]()&*^!@""'`\/#"."col_2_$%{}[]()&*^!@""'`\/#"
+    IS 'test comment';

@@ -24,7 +24,7 @@ def check_validation_view_content(test):
     ]
 
     def mock_log_exception(ex):
-        test.assertTrue(type(ex) == ValidationException)
+        test.assertTrue(isinstance(ex, ValidationException))
 
     with patch(
         __MFA_PACKAGE + ".utils.current_user", return_value=MockCurrentUserId()

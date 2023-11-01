@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////
 
 
-import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {DividerBox} from 'rc-dock';
 
@@ -21,6 +21,7 @@ import { SchemaDiffCompare } from './SchemaDiffCompare';
 import EventBus from '../../../../../static/js/helpers/EventBus';
 import getApiInstance, { callFetch } from '../../../../../static/js/api_instance';
 import { useModal } from '../../../../../static/js/helpers/ModalProvider';
+import usePreferences from '../../../../../preferences/static/js/store';
 
 export const SchemaDiffEventsContext = createContext();
 export const SchemaDiffContext = createContext();
@@ -52,29 +53,15 @@ export default function SchemaDiffComponent({params}) {
   const containerRef = React.useRef(null);
   const api = getApiInstance();
   const modal = useModal();
-  const [schemaDiffState, setSchemaDiffState] = useState({
-    preferences: null
-  });
+  const preferencesStore = usePreferences();
 
   const schemaDiffContextValue = useMemo(()=> ({
     api: api,
     modal: modal,
-    preferences_schema_diff: schemaDiffState.preferences
-  }), [schemaDiffState.preferences]);
+    preferences_schema_diff: preferencesStore.getPreferencesForModule('schema_diff'),
+  }), [preferencesStore]);
 
   registerUnload();
-  useEffect(() => {
-    reflectPreferences();
-    params.pgAdmin.Browser.onPreferencesChange('schema_diff', function () {
-      reflectPreferences();
-    });
-  }, []);
-
-  const reflectPreferences = useCallback(() => {
-    setSchemaDiffState({
-      preferences: params.pgAdmin.Browser.get_preferences_for_module('schema_diff')
-    });
-  }, []);
 
   function registerUnload() {
     window.addEventListener('unload', ()=>{

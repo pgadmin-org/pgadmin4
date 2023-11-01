@@ -103,9 +103,10 @@ def current_user_info():
             is_admin='true' if current_user.has_role(
                 "Administrator") else 'false',
             user_id=current_user.id,
-            email=current_user.email,
+            email=current_user.email.replace("'","\\'") if current_user.email
+            else current_user.email,
             name=(
-                current_user.username.split('@')[0] if
+                current_user.username.split('@')[0].replace("'","\\'") if
                 config.SERVER_MODE is True
                 else 'postgres'
             ),
@@ -467,7 +468,7 @@ def validate_user(data):
     if 'auth_source' in data and data['auth_source'] != "":
         new_data['auth_source'] = data['auth_source']
 
-    if 'locked' in data and type(data['locked']) == bool:
+    if 'locked' in data and isinstance(data['locked'], bool):
         new_data['locked'] = data['locked']
         if data['locked']:
             new_data['login_attempts'] = config.MAX_LOGIN_ATTEMPTS

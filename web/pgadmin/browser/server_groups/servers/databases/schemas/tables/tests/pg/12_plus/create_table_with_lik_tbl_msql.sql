@@ -6,6 +6,9 @@ CREATE TABLE public."table_like_tbl$%{}[]()&*^!@""'`\/#"
         INCLUDING INDEXES
         INCLUDING STORAGE
         INCLUDING COMMENTS
+        INCLUDING GENERATED
+        INCLUDING IDENTITY
+        INCLUDING STATISTICS
 
 );
 

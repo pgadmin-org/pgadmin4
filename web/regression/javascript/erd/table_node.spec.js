@@ -1,17 +1,18 @@
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import {mount} from 'enzyme';
-import '../helper/enzyme.helper';
+
+
 import { DefaultNodeModel } from '@projectstorm/react-diagrams';
 
 import {TableNodeModel, TableNodeWidget} from 'pgadmin.tools.erd/erd_tool/nodes/TableNode';
 import Theme from '../../../pgadmin/static/js/Theme';
+import { render } from '@testing-library/react';
 
 
 describe('ERD TableNodeModel', ()=>{
   let modelObj = null;
   beforeAll(()=>{
-    spyOn(DefaultNodeModel.prototype, 'serialize').and.returnValue({'key': 'value'});
+    jest.spyOn(DefaultNodeModel.prototype, 'serialize').mockReturnValue({'key': 'value'});
   });
   beforeEach(()=>{
     modelObj = new TableNodeModel({
@@ -64,9 +65,9 @@ describe('ERD TableNodeModel', ()=>{
   });
 
   describe('setData', ()=>{
-    let existPort = jasmine.createSpyObj('port', {
-      'removeAllLinks': jasmine.createSpy('removeAllLinks'),
-    });
+    let existPort = {
+      'removeAllLinks': jest.fn(),
+    };
 
     beforeEach(()=>{
       modelObj._data.columns = [
@@ -75,18 +76,18 @@ describe('ERD TableNodeModel', ()=>{
         {name: 'col3', not_null:false, attnum: 2},
       ];
 
-      spyOn(modelObj, 'getPort').and.callFake((portName)=>{
+      jest.spyOn(modelObj, 'getPort').mockImplementation((portName)=>{
         /* If new port added there will not be any port */
         if(portName !== 'coll-port-3') {
           return existPort;
         }
       });
-      spyOn(modelObj, 'removePort');
-      spyOn(modelObj, 'getPortName');
+      jest.spyOn(modelObj, 'removePort').mockImplementation(() => {});
+      jest.spyOn(modelObj, 'getPortName').mockImplementation(() => {});
     });
 
     it('add columns', ()=>{
-      existPort.removeAllLinks.calls.reset();
+      existPort.removeAllLinks.mockClear();
       modelObj.setData({
         name: 'noname',
         schema: 'erd',
@@ -111,7 +112,7 @@ describe('ERD TableNodeModel', ()=>{
     });
 
     it('update columns', ()=>{
-      existPort.removeAllLinks.calls.reset();
+      existPort.removeAllLinks.mockClear();
       modelObj.setData({
         name: 'noname',
         schema: 'erd',
@@ -171,7 +172,7 @@ describe('ERD TableNodeWidget', ()=>{
   let node = null;
 
   beforeEach(()=>{
-    jasmineEnzyme();
+
 
     node = new TableNodeModel({
       color: '#000',
@@ -208,45 +209,45 @@ describe('ERD TableNodeWidget', ()=>{
   });
 
   it('render', ()=>{
-    let nodeWidget = mount(<Theme><TableNodeWidget node={node}/></Theme>);
-    expect(nodeWidget.find('DefaultButton[aria-label="Show Details"]').length).toBe(1);
-    expect(nodeWidget.find('DefaultButton[aria-label="Check Note"]').length).toBe(1);
-    expect(nodeWidget.find('div[data-test="schema-name"]').length).toBe(1);
-    expect(nodeWidget.find('div[data-test="table-name"]').length).toBe(1);
-    expect(nodeWidget.find('div[data-test="column-row"]').length).toBe(3);
+    let nodeWidget = render(<Theme><TableNodeWidget node={node}/></Theme>);
+    expect(nodeWidget.container.querySelectorAll('[aria-label="Show Details"]').length).toBe(1);
+    expect(nodeWidget.container.querySelectorAll('[aria-label="Check Note"]').length).toBe(1);
+    expect(nodeWidget.container.querySelectorAll('div[data-test="schema-name"]').length).toBe(1);
+    expect(nodeWidget.container.querySelectorAll('div[data-test="table-name"]').length).toBe(1);
+    expect(nodeWidget.container.querySelectorAll('div[data-test="column-row"]').length).toBe(3);
   });
 
   it('remove note', ()=>{
     node.setNote('');
-    let nodeWidget = mount(<Theme><TableNodeWidget node={node}/></Theme>);
-    expect(nodeWidget.find('PgIconButton[aria-label="Check Note"]').length).toBe(0);
+    let nodeWidget = render(<Theme><TableNodeWidget node={node}/></Theme>);
+    expect(nodeWidget.container.querySelectorAll('[aria-label="Check Note"]').length).toBe(0);
   });
 
   describe('generateColumn', ()=>{
     let nodeWidget = null;
 
     beforeEach(()=>{
-      nodeWidget = mount(<Theme><TableNodeWidget node={node}/></Theme>);
+      nodeWidget = render(<Theme><TableNodeWidget node={node}/></Theme>);
     });
 
     it('count', ()=>{
-      expect(nodeWidget.find('div[data-test="column-row"]').length).toBe(3);
+      expect(nodeWidget.container.querySelectorAll('div[data-test="column-row"]').length).toBe(3);
     });
 
     it('column names', ()=>{
-      let cols = nodeWidget.find('div[data-test="column-row"]');
+      let cols = nodeWidget.container.querySelectorAll('div[data-test="column-row"]');
 
-      expect(cols.at(0).find('span[data-test="column-name"]').text()).toBe('id');
-      expect(cols.at(1).find('span[data-test="column-name"]').text()).toBe('amount');
-      expect(cols.at(2).find('span[data-test="column-name"]').text()).toBe('desc');
+      expect(cols[0].querySelector('span[data-test="column-name"]').textContent).toBe('id');
+      expect(cols[1].querySelector('span[data-test="column-name"]').textContent).toBe('amount');
+      expect(cols[2].querySelector('span[data-test="column-name"]').textContent).toBe('desc');
     });
 
     it('data types', ()=>{
-      let cols = nodeWidget.find('div[data-test="column-row"]');
+      let cols = nodeWidget.container.querySelectorAll('div[data-test="column-row"]');
 
-      expect(cols.at(0).find('span[data-test="column-type"]').text()).toBe('integer');
-      expect(cols.at(1).find('span[data-test="column-type"]').text()).toBe('number(10,5)');
-      expect(cols.at(2).find('span[data-test="column-type"]').text()).toBe('character varrying(50)');
+      expect(cols[0].querySelector('span[data-test="column-type"]').textContent).toBe('integer');
+      expect(cols[1].querySelector('span[data-test="column-type"]').textContent).toBe('number(10,5)');
+      expect(cols[2].querySelector('span[data-test="column-type"]').textContent).toBe('character varrying(50)');
     });
   });
 });

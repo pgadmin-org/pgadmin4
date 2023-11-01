@@ -34,7 +34,8 @@
       "data": {
           "name": "test_alter_subscription"
       },
-      "expected_sql_file": "alter_subscription.sql"
+      "expected_sql_file": "alter_subscription.sql",
+      "expected_msql_file": "alter_subscription_msql.sql"
     },
     {
       "type": "alter",
@@ -44,7 +45,8 @@
       "data": {
           "sync": "remote_apply"
       },
-      "expected_sql_file": "alter_sync.sql"
+      "expected_sql_file": "alter_sync.sql",
+      "expected_msql_file": "alter_sync_msql.sql"
     },
 
     {
@@ -55,9 +57,9 @@
       "data": {
           "db": "edb"
       },
-      "expected_sql_file": "alter_maintenance_db.sql"
+      "expected_sql_file": "alter_maintenance_db.sql",
+      "expected_msql_file": "alter_maintenance_db_msql.sql"
     },
-
     {
       "type": "delete",
       "name": "Drop subscription",

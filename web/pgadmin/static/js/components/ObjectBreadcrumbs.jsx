@@ -4,7 +4,8 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import CommentIcon from '@material-ui/icons/Comment';
 import ArrowForwardIosRoundedIcon from '@material-ui/icons/ArrowForwardIosRounded';
 import PropTypes from 'prop-types';
-import { useIsMounted } from '../custom_hooks';
+import { usePgAdmin } from '../../../static/js/BrowserComponent';
+import usePreferences from '../../../preferences/static/js/store';
 
 const useStyles = makeStyles((theme)=>({
   root: {
@@ -12,7 +13,7 @@ const useStyles = makeStyles((theme)=>({
     bottom: 0,
     width: 'auto',
     maxWidth: '99%',
-    zIndex: 9999,
+    zIndex: 1004,
     padding: '0.25rem 0.5rem',
     fontSize: '0.95em',
     color: theme.palette.background.default,
@@ -31,14 +32,10 @@ const useStyles = makeStyles((theme)=>({
 }));
 
 
-
-export default function ObjectBreadcrumbs({pgAdmin}) {
+export default function ObjectBreadcrumbs() {
   const classes = useStyles();
-  const checkIsMounted = useIsMounted();
-  const [preferences, setPreferences] = useState({
-    breadcrumbs_enable: false,
-    breadcrumbs_show_comment: true,
-  });
+  const pgAdmin = usePgAdmin();
+  const preferences = usePreferences().getPreferencesForModule('browser');
   const [objectData, setObjectData] = useState({
     path: null,
     description: null,
@@ -58,27 +55,6 @@ export default function ObjectBreadcrumbs({pgAdmin}) {
   };
 
   useEffect(()=>{
-    const setPrefs = ()=>{
-      if(!checkIsMounted()) return;
-      let pref = pgAdmin.Browser.get_preferences_for_module('browser');
-      setPreferences({
-        breadcrumbs_enable: pref.breadcrumbs_enable,
-        breadcrumbs_show_comment: pref.breadcrumbs_show_comment,
-      });
-    };
-    let cacheIntervalId = setInterval(function() {
-      if(pgAdmin.Browser.preference_version() > 0) {
-        clearInterval(cacheIntervalId);
-        setPrefs();
-      }
-    },0);
-
-    pgAdmin.Browser.onPreferencesChange('browser', function() {
-      setPrefs();
-    });
-  }, []);
-
-  useEffect(()=>{
     if(preferences.breadcrumbs_enable) {
       pgAdmin.Browser.Events.on('pgadmin-browser:tree:hovered', onItemHover);
     }
@@ -93,9 +69,9 @@ export default function ObjectBreadcrumbs({pgAdmin}) {
 
   return(
     <>
-      <Box className={classes.root}>
+      <Box className={classes.root} data-testid="object-breadcrumbs">
         <div className={classes.row}>
-          <AccountTreeIcon style={{height: '1rem', marginRight: '0.125rem'}} />
+          <AccountTreeIcon style={{height: '1rem', marginRight: '0.125rem'}} data-label="AccountTreeIcon"/>
           <div className={classes.overflow}>
             {
               objectData.path?.reduce((res, item)=>(
@@ -106,7 +82,7 @@ export default function ObjectBreadcrumbs({pgAdmin}) {
         </div>
         {preferences.breadcrumbs_show_comment && objectData.description &&
           <div className={classes.row}>
-            <CommentIcon style={{height: '1rem', marginRight: '0.125rem'}} />
+            <CommentIcon style={{height: '1rem', marginRight: '0.125rem'}} data-label="CommentIcon"/>
             <div className={classes.overflow}>{objectData.description}</div>
           </div>}
       </Box>

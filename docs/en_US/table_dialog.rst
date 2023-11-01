@@ -394,6 +394,9 @@ Use the fields in the *Advanced* tab to define advanced features for the table:
 * Use the drop-down listbox next to *Of type* to copy the table structure from
   the specified composite type. Please note that a typed table will be dropped
   if the type is dropped (with DROP TYPE ... CASCADE).
+* Use the drop-down list box next to Access Method to specify the table access method to use to store
+  the contents for the new table; the method needs to be an access method of type TABLE. This field is optional.
+  This option is available from v12 and above.
 * Use the *Fill Factor* field to specify a fill factor for the table. The fill
   factor for a table is a percentage between 10 and 100. 100 (complete packing)
   is the default.
@@ -418,13 +421,21 @@ not-null constraints;  after saving the new or modified table, any changes to
 the original table will not be applied to the new table.
 
 * Use the drop-down listbox next to *Relation* to select a reference table.
-* Move the *With default values?* switch to the *Yes* position to copy default
+* Move the switch next to *With default values?* towards the *right position* to copy default
   values.
-* Move the *With constraints?* switch to the *Yes* position to copy table and
+* Move the switch next to *With constraints?* towards the *right position* to copy table and
   column constraints.
-* Move the *With indexes?* switch to the *Yes* position to copy indexes.
-* Move the *With storage?* switch to the *Yes* position to copy storage settings.
-* Move the *With comments?* switch to the *Yes* position to copy comments.
+* Move the switch next to *With indexes?* towards the *right position* to copy indexes.
+* Move the switch next to *With storage?* towards the *right position* to copy storage settings.
+* Move the switch next to *With comments?* towards the *right position* to copy comments.
+* Move the switch next to *With compression?* towards the *right position* to copy
+  compression method. This option is available only on PostgreSQL 14 and above.
+* Move the switch next to *With generated?* towards the *right position* to copy
+  generation expressions of copied column. This option is available only on PostgreSQL 12 and above.
+* Move the switch next to *With identity?* towards the *right position* to copy
+  any identity specifications of copied column.
+* Move the switch next to *With statistics?* towards the *right position* to copy
+  extended statistics.
 
 With PostgreSQL 10 forward, the *Partition* tab will be visible.
 

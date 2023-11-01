@@ -7,15 +7,14 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import { SCHEMA_STATE_ACTIONS } from '../../../pgadmin/static/js/SchemaView';
 import BaseUISchema from '../../../pgadmin/static/js/SchemaView/base_schema.ui';
 import _ from 'lodash';
 import * as nodeAjax from '../../../pgadmin/browser/static/js/node_ajax';
 import { getNodeForeignKeySchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/constraints/foreign_key/static/js/foreign_key.ui';
 import TableSchema from '../../../pgadmin/browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
-import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
+import {addNewDatagridRow, genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 class SchemaInColl extends BaseUISchema {
   constructor(schemaObj) {
@@ -39,48 +38,43 @@ function getFieldDepChange(schema, id) {
 }
 
 describe('ForeignKeySchema', ()=>{
-  let mount;
+
   let schemaObj;
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
-    spyOn(nodeAjax, 'getNodeAjaxOptions').and.returnValue(Promise.resolve([]));
-    spyOn(nodeAjax, 'getNodeListByName').and.returnValue(Promise.resolve([]));
+    jest.spyOn(nodeAjax, 'getNodeAjaxOptions').mockReturnValue(Promise.resolve([]));
+    jest.spyOn(nodeAjax, 'getNodeListByName').mockReturnValue(Promise.resolve([]));
     schemaObj = getNodeForeignKeySchema({}, {}, {Nodes: {table: {}}});
   });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('create collection', ()=>{
+  it('create collection', async ()=>{
     let schemaCollObj = new SchemaInColl(schemaObj);
-    let ctrl = mount(getCreateView(schemaCollObj));
+    const {ctrl, user} = await getCreateView(schemaCollObj);
     /* Make sure you hit every corner */
-    ctrl.find('DataGridView').at(0).find('PgIconButton[data-test="add-row"]').find('button').simulate('click');
+    await addNewDatagridRow(user, ctrl);
   });
 
   it('changeColumnOptions', ()=>{
-    spyOn(schemaObj.fkHeaderSchema, 'changeColumnOptions').and.callThrough();
+    jest.spyOn(schemaObj.fkHeaderSchema, 'changeColumnOptions');
     let columns = [{label: 'label', value: 'value'}];
     schemaObj.changeColumnOptions(columns);
     expect(schemaObj.fkHeaderSchema.changeColumnOptions).toHaveBeenCalledWith(columns);
@@ -196,7 +190,7 @@ describe('ForeignKeySchema', ()=>{
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     state.columns = ['id'];
     state.autoindex = true;

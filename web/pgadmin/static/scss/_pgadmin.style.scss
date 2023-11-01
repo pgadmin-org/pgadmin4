@@ -699,6 +699,15 @@ body {
   -ms-user-select: none;
   user-select: none;
   font-size: 0.875rem;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  font-family: $font-family-primary;
+}
+
+/* iFrames should have no border */
+iframe {
+	border-width: 0;
 }
 
 /* Security label's label column font size */
@@ -948,6 +957,12 @@ table.table-empty-rows{
   }
 }
 
+.dialog-node-icon {
+  margin-right: 2px !important;
+  padding: 0px 10px;
+  background-position: 50%;
+}
+
 textarea {
     color: $input-color;
     background-color: $input-bg;
@@ -999,9 +1014,6 @@ select:-webkit-autofill:focus {
 
 .fa {
   font-weight: 600 !important;
-}
-.pull-right{
-  float:right;
 }
 
 .pull-left{

@@ -141,7 +141,11 @@ _build_runtime() {
     # YARN END
 
     # WGET:
-    NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    # Comment out the below line as the latest version having some
+    # problem https://github.com/nwjs/nw.js/issues/7964, so for the time being
+    # hardcoded the version to 0.77.0
+    # NW_VERSION=$(yarn info nw | grep latest | awk -F "'" '{ print $2}')
+    NW_VERSION="0.77.0"
 
     pushd "${BUILDROOT}" > /dev/null || exit
         while true;do
@@ -220,7 +224,7 @@ _copy_code() {
     cp "${SOURCEDIR}/pkg/linux/config_distro.py" "${SERVERROOT}/usr/${APP_NAME}/web/"
     cd "${SERVERROOT}/usr/${APP_NAME}/web/" || exit
     rm -f pgadmin4.db config_local.*
-    rm -rf karma.conf.js package.json node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
+    rm -rf jest.config.js babel.* package.json node_modules/ regression/ tools/ pgadmin/static/js/generated/.cache
     find . -name "tests" -type d -print0 | xargs -0 rm -rf
     find . -name "feature_tests" -type d -print0 | xargs -0 rm -rf
     find . -name "__pycache__" -type d -print0 | xargs -0 rm -rf
@@ -244,3 +248,11 @@ _copy_code() {
     rm python3 && ln -s "${PYTHON_INTERPRETER}" python3
 }
 
+
+_generate_sbom() {
+   echo "Generating SBOMs..."
+   # Note that we don't generate an SBOM for the Meta package as it doesn't contain any files.
+   syft "${SERVERROOT}/" -o cyclonedx-json > "${SERVERROOT}/usr/${APP_NAME}/sbom-server.json"
+   syft "${DESKTOPROOT}/" -o cyclonedx-json > "${DESKTOPROOT}/usr/${APP_NAME}/sbom-desktop.json"
+   syft "${WEBROOT}/" -o cyclonedx-json > "${WEBROOT}/usr/${APP_NAME}/sbom-web.json"
+}

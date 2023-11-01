@@ -23,7 +23,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 import sqlalchemy.types as types
 import uuid
-import json
+import config
 
 ##########################################################################
 #
@@ -33,7 +33,7 @@ import json
 #
 ##########################################################################
 
-SCHEMA_VERSION = 35
+SCHEMA_VERSION = 37
 
 ##########################################################################
 #
@@ -41,7 +41,12 @@ SCHEMA_VERSION = 35
 #
 ##########################################################################
 
-db = SQLAlchemy()
+db = SQLAlchemy(
+    engine_options={
+        'pool_size': config.CONFIG_DATABASE_CONNECTION_POOL_SIZE,
+        'max_overflow': config.CONFIG_DATABASE_CONNECTION_MAX_OVERFLOW})
+
+
 USER_ID = 'user.id'
 SERVER_ID = 'server.id'
 
@@ -197,41 +202,11 @@ class Server(db.Model):
     tunnel_identity_file = db.Column(db.String(64), nullable=True)
     tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
+    shared_username = db.Column(db.String(64), nullable=True)
     kerberos_conn = db.Column(db.Boolean(), nullable=False, default=0)
     cloud_status = db.Column(db.Integer(), nullable=False, default=0)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializable format"""
-        return {
-            "id": self.id,
-            "user_id": self.user_id,
-            "servergroup_id": self.servergroup_id,
-            "name": self.name,
-            "host": self.host,
-            "port": self.port,
-            "maintenance_db": self.maintenance_db,
-            "username": self.username,
-            "password": self.password,
-            "save_password": self.save_password,
-            "role": self.role,
-            "comment": self.comment,
-            "discovery_id": self.discovery_id,
-            "db_res": self.db_res,
-            "passexec_cmd": self.passexec_cmd,
-            "passexec_expiration": self.passexec_expiration,
-            "bgcolor": self.bgcolor,
-            "fgcolor": self.fgcolor,
-            "service": self.service,
-            "use_ssh_tunnel": self.use_ssh_tunnel,
-            "tunnel_host": self.tunnel_host,
-            "tunnel_port": self.tunnel_port,
-            "tunnel_authentication": self.tunnel_authentication,
-            "tunnel_identity_file": self.tunnel_identity_file,
-            "tunnel_password": self.tunnel_password,
-            "connection_params": self.connection_params
-        }
+    prepare_threshold = db.Column(db.Integer(), nullable=True)
 
 
 class ModulePreference(db.Model):
@@ -440,6 +415,7 @@ class SharedServer(db.Model):
     tunnel_password = db.Column(PgAdminDbBinaryString())
     shared = db.Column(db.Boolean(), nullable=False)
     connection_params = db.Column(MutableDict.as_mutable(types.JSON))
+    prepare_threshold = db.Column(db.Integer(), nullable=True)
 
 
 class Macros(db.Model):

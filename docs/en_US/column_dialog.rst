@@ -39,6 +39,10 @@ are disabled if inapplicable.)
   a text value.
 * Use the drop-down listbox next to *Collation* to apply a collation setting to
   the column.
+* Use the drop-down listbox next to *Compression* to set the compression method
+  for the column. Compression is supported only for variable-width data types,
+  and is used only when the column's storage mode is main or extended. This
+  option is available from v14 and above.
 
 Click the *Constraints* tab to continue.
 

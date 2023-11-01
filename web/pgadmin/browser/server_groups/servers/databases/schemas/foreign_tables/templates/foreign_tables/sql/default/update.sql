@@ -13,79 +13,6 @@ ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
     OWNER TO {{ conn|qtIdent(data.owner) }};
 
 {% endif %}
-{% if data.columns %}
-{% for c in data.columns.deleted %}
-{% if (not c.inheritedfrom or c.inheritedfrom =='' or  c.inheritedfrom == None or  c.inheritedfrom == 'None' ) %}
-ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    DROP COLUMN {{conn|qtIdent(c.attname)}};
-
-{% endif %}
-{% endfor -%}
-{% for c in data.columns.added %}
-{% if (not c.inheritedfrom or c.inheritedfrom =='' or  c.inheritedfrom == None or  c.inheritedfrom == 'None' ) %}
-ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ADD COLUMN {{conn|qtIdent(c.attname)}} {{ c.datatype }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %}
-{% if c.coloptions %}
-{% for o in c.coloptions %}{% if o.option is defined and o.value is defined %}
-{% if loop.first %} OPTIONS ({% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %}){% endif %}{% endif %}
-{% endfor %}{% endif %}
-{% if c.attnotnull %} NOT NULL{% else %} NULL{% endif %}
-{% if c.typdefault is defined and c.typdefault is not none %} DEFAULT {{c.typdefault}}{% endif %}
-{% if c.collname %} COLLATE {{c.collname}}{% endif %};
-
-{% endif %}
-{% endfor -%}
-{% for c in data.columns.changed %}
-{% set col_name = o_data['columns'][c.attnum]['attname'] %}
-{% if c.attname != o_data['columns'][c.attnum]['attname'] %}
-{% set col_name = c.attname %}
-ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    RENAME COLUMN {{conn|qtIdent(o_data['columns'][c.attnum]['attname'])}} TO {{conn|qtIdent(c.attname)}};
-
-{% endif %}
-{% if c.attnotnull != o_data['columns'][c.attnum]['attnotnull'] %}
-ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}}{% if c.attnotnull %} SET{% else %} DROP{% endif %} NOT NULL;
-
-{% endif %}
-{% if c.datatype != o_data['columns'][c.attnum]['datatype'] or c.typlen != o_data['columns'][c.attnum]['typlen'] or
-c.precision != o_data['columns'][c.attnum]['precision'] %}
-ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}} TYPE {{ c.datatype }}{% if c.typlen %}({{c.typlen}}{% if c.precision %}, {{c.precision}}{% endif %}){% endif %}{% if c.isArrayType %}[]{% endif %};
-
-{% endif %}
-{% if c.typdefault is defined and c.typdefault != o_data['columns'][c.attnum]['typdefault'] %}
-ALTER FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}}{% if c.typdefault is defined and c.typdefault != '' %} SET DEFAULT {{c.typdefault}}{% else %} DROP DEFAULT{% endif %};
-
-{% endif %}
-{% if c.attstattarget != o_data['columns'][c.attnum]['attstattarget'] %}
-ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}} SET STATISTICS {% if c.attstattarget %}{{c.attstattarget}}{% else %}-1{% endif %};
-
-{% endif %}
-{% if c.coloptions_updated %}
-{% for o in c.coloptions_updated.deleted %}
-{% if o.option %}
-{% if loop.first %}ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (DROP {% endif %}{% if not loop.first %}, {% endif %}{{o.option}}{% if loop.last %}){% endif %};
-{% endif %}
-{% endfor %}
-{% for o in c.coloptions_updated.added %}
-{% if o.option is defined and o.value is defined %}
-{% if loop.first %}ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (ADD {% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %});{% endif %}
-{% endif %}
-{% endfor %}
-{% for o in c.coloptions_updated.changed %}
-{% if o.option is defined and o.value is defined %}
-{% if loop.first %}ALTER FOREIGN TABLE IF EXISTS {{ conn|qtIdent(o_data.basensp, name) }}
-    ALTER COLUMN {{conn|qtIdent(col_name)}} OPTIONS (SET {% endif %}{% if not loop.first %}, {% endif %}{{o.option}} {{o.value|qtLiteral(conn)}}{% if loop.last %});{% endif %}
-{% endif %}
-{% endfor %}
-{% endif -%}
-{% endfor %}
-{% endif %}
 {% if data.inherits and data.inherits|length > 0%}
 {% if o_data.inherits == None or o_data.inherits == 'None' %}
 {% set inherits = '' %}
@@ -187,23 +114,23 @@ COMMENT ON FOREIGN TABLE {{ conn|qtIdent(o_data.basensp, name) }}
     IS {{ data.description|qtLiteral(conn) }};
 
 {% endif -%}
-{% if data.acl %}
-{% if 'deleted' in data.acl %}
-{% for priv in data.acl.deleted %}
+{% if data.relacl %}
+{% if 'deleted' in data.relacl %}
+{% for priv in data.relacl.deleted %}
 {{ PRIVILEGE.UNSETALL(conn, 'TABLE', priv.grantee, name, o_data.basensp) }}
 
 {% endfor %}
 {% endif -%}
-{% if 'changed' in data.acl %}
-{% for priv in data.acl.changed %}
+{% if 'changed' in data.relacl %}
+{% for priv in data.relacl.changed %}
 {{ PRIVILEGE.UNSETALL(conn, 'TABLE', priv.grantee, name, o_data.basensp) }}
 
 {{ PRIVILEGE.SET(conn, 'TABLE', priv.grantee, name, priv.without_grant, priv.with_grant, o_data.basensp) }}
 
 {% endfor %}
 {% endif -%}
-{% if 'added' in data.acl %}
-{% for priv in data.acl.added %}
+{% if 'added' in data.relacl %}
+{% for priv in data.relacl.added %}
 {{ PRIVILEGE.SET(conn, 'TABLE', priv.grantee, name, priv.without_grant, priv.with_grant, o_data.basensp) }}
 
 {% endfor %}

@@ -48,8 +48,8 @@ describe('For Activity', function(){
 
   describe('log_activity', function(){
     beforeEach(function(){
-      spyOn(pgBrowser, 'get_epoch_now').and.callThrough();
-      spyOn(pgBrowser, 'log_activity').and.callThrough();
+      jest.spyOn(pgBrowser, 'get_epoch_now');
+      jest.spyOn(pgBrowser, 'log_activity');
       pgBrowser.logging_activity = false;
     });
 
@@ -66,7 +66,7 @@ describe('For Activity', function(){
       expect(pgBrowser.logging_activity).toEqual(true);
 
       /* Second call */
-      pgBrowser.get_epoch_now.calls.reset();
+      pgBrowser.get_epoch_now.mockClear();
       pgBrowser.log_activity();
       expect(pgBrowser.get_epoch_now).not.toHaveBeenCalled();
     });
@@ -83,7 +83,7 @@ describe('For Activity', function(){
 
   describe('register_to_activity_listener', function(){
     let target = document;
-    let timeout_callback = jasmine.createSpy();
+    let timeout_callback = jest.fn();
     let event = new MouseEvent('mousedown', {
       bubbles: true,
       cancelable: true,
@@ -91,9 +91,9 @@ describe('For Activity', function(){
     });
 
     beforeEach(function(){
-      spyOn(pgBrowser, 'log_activity');
-      spyOn(target, 'addEventListener').and.callThrough();
-      spyOn(target, 'removeEventListener').and.callThrough();
+      jest.spyOn(pgBrowser, 'log_activity');
+      jest.spyOn(target, 'addEventListener');
+      jest.spyOn(target, 'removeEventListener');
       pgBrowser.register_to_activity_listener(target, timeout_callback);
     });
 
@@ -111,7 +111,7 @@ describe('For Activity', function(){
     });
 
     it('is timed out', function(done){
-      spyOn(pgBrowser, 'is_pgadmin_timedout').and.returnValue(true);
+      jest.spyOn(pgBrowser, 'is_pgadmin_timedout').mockReturnValue(true);
       target.dispatchEvent(event);
 
       setTimeout(()=>{
@@ -123,23 +123,26 @@ describe('For Activity', function(){
   });
 
   describe('override_activity_event_decorator', function(){
-    let input_func = jasmine.createSpy('input_func');
+    let input_func = jest.fn();
     let decorate_func = pgBrowser.override_activity_event_decorator(input_func);
     beforeEach(function(){
-      spyOn(pgBrowser, 'log_activity').and.callThrough();
+      jest.spyOn(pgBrowser, 'log_activity');
     });
 
     it('call the input_func', function(){
+      pgBrowser.log_activity.mockClear();
       decorate_func();
       expect(input_func).toHaveBeenCalled();
     });
 
     it('log activity when override_user_inactivity_timeout true', function(){
+      pgBrowser.log_activity.mockClear();
       decorate_func();
       expect(pgBrowser.log_activity).toHaveBeenCalled();
     });
 
     it('do not log activity when override_user_inactivity_timeout true', function(){
+      pgBrowser.log_activity.mockClear();
       pgAdmin.override_user_inactivity_timeout = false;
       decorate_func();
       expect(pgBrowser.log_activity).not.toHaveBeenCalled();
@@ -148,11 +151,11 @@ describe('For Activity', function(){
 
   describe('start_inactivity_timeout_daemon', function(){
     beforeEach(function(){
-      spyOn(pgBrowser, 'logout_inactivity_user');
+      jest.spyOn(pgBrowser, 'logout_inactivity_user');
     });
 
     it('start the daemon', function(done){
-      spyOn(pgBrowser, 'is_inactivity_timeout').and.returnValue(false);
+      jest.spyOn(pgBrowser, 'is_inactivity_timeout').mockReturnValue(false);
       pgBrowser.inactivity_timeout_daemon_running = false;
       pgBrowser.start_inactivity_timeout_daemon();
       setTimeout(()=>{
@@ -162,7 +165,7 @@ describe('For Activity', function(){
     });
 
     it('stop the daemon', function(done){
-      spyOn(pgBrowser, 'is_inactivity_timeout').and.returnValue(true);
+      jest.spyOn(pgBrowser, 'is_inactivity_timeout').mockReturnValue(true);
       pgBrowser.inactivity_timeout_daemon_running = false;
       pgBrowser.start_inactivity_timeout_daemon();
       setTimeout(()=>{

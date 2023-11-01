@@ -152,6 +152,50 @@
     },
     {
       "type": "create",
+      "name": "Create btree index with expression and ASC and NULLS LAST",
+      "endpoint": "NODE-index.obj",
+      "sql_endpoint": "NODE-index.sql_id",
+      "msql_endpoint": "NODE-index.msql",
+      "data": {
+        "name":"Idx3_$%{}[]()&*^!@\"'`\\/#",
+        "spcname":"pg_default",
+        "amname":"btree",
+        "columns":[{
+          "colname":"id",
+          "collspcname":"",
+          "op_class":"",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }, {
+          "is_exp": true,
+          "colname":"lower(name)",
+          "collspcname":"pg_catalog.\"POSIX\"",
+          "op_class":"text_pattern_ops",
+          "sort_order":false,
+          "nulls":false,
+          "is_sort_nulls_applicable":true
+        }],
+        "description":"Test Comment",
+        "fillfactor":"10",
+        "indisunique":true,
+        "indisclustered":false,
+        "isconcurrent":false,
+        "indconstraint":"id < 100"
+      },
+      "expected_sql_file": "create_btree_expr_asc_null_last.sql",
+      "expected_msql_file": "create_btree_expr_asc_null_last_msql.sql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop index",
+      "endpoint": "NODE-index.delete_id",
+      "data": {
+        "name": "Idx3_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
       "name": "Create btree index with DESC and NULLS FIRST",
       "endpoint": "NODE-index.obj",
       "sql_endpoint": "NODE-index.sql_id",

@@ -22,6 +22,7 @@ import ForeignKeySchema from '../../../../../browser/server_groups/servers/datab
 import diffArray from 'diff-arrays-of-objects';
 import TableSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
 import ColumnSchema from '../../../../../browser/server_groups/servers/databases/schemas/tables/columns/static/js/column.ui';
+import { Polygon } from '@projectstorm/geometry';
 
 export default class ERDCore {
   constructor() {
@@ -174,6 +175,11 @@ export default class ERDCore {
   getEngine() {return this.engine;}
 
   getModel() {return this.getEngine().getModel();}
+
+  getBoundingLinksRect() {
+    return Polygon.boundingBoxFromPolygons(
+      this.getEngine().getModel().getLinks().map((l)=>l.getBoundingBox()));
+  }
 
   getNewNode(initData, dataUrl=null) {
     return this.getEngine().getNodeFactories().getFactory('table').generateModel({

@@ -11,22 +11,18 @@ import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { SearchAddon } from 'xterm-addon-search';
 import { io } from 'socketio';
-import {enable} from 'pgadmin.browser.toolbar';
-import 'wcdocker';
-import {getRandomInt, hasBinariesConfiguration, registerDetachEvent} from 'sources/utils';
+import {getRandomInt, hasBinariesConfiguration} from 'sources/utils';
 import {retrieveAncestorOfTypeServer} from 'sources/tree/tree_utils';
 import pgWindow from 'sources/window';
-import Notify from '../../../../static/js/helpers/Notifier';
 import { copyToClipboard } from '../../../../static/js/clipboard';
-import { openNewWindow } from '../../../../static/js/utils';
 import {generateTitle, refresh_db_node} from 'tools/sqleditor/static/js/sqleditor_title';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import usePreferences from '../../../../preferences/static/js/store';
 
 
 export function setPanelTitle(psqlToolPanel, panelTitle) {
-  psqlToolPanel.title('<span title="'+panelTitle+'">'+panelTitle+'</span>');
+  psqlToolPanel.title('<span title="'+_.escape(panelTitle)+'">'+_.escape(panelTitle)+'</span>');
 }
-
-let wcDocker = window.wcDocker;
 
 export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
   let pgBrowser = Browser;
@@ -57,33 +53,6 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       if(pgAdmin['enable_psql']) {
         pgBrowser.add_menus(menus);
       }
-
-      // Creating a new pgBrowser frame to show the data.
-      let psqlFrameType = new pgBrowser.Frame({
-        name: 'frm_psqltool',
-        showTitle: true,
-        isCloseable: true,
-        isPrivate: true,
-        url: 'about:blank',
-      });
-
-      let self = this;
-      /* Cache may take time to load for the first time
-       * Keep trying till available
-       */
-      let cacheIntervalId = setInterval(function() {
-        if(pgBrowser.preference_version() > 0) {
-          self.preferences = pgBrowser.get_preferences_for_module('psql');
-          clearInterval(cacheIntervalId);
-        }
-      },0);
-
-      pgBrowser.onPreferencesChange('psql', function() {
-        self.preferences = pgBrowser.get_preferences_for_module('psql');
-      });
-
-      // Load the newly created frame
-      psqlFrameType.load(pgBrowser.docker);
       return this;
     },
     /* Enable/disable PSQL tool menu in tools based
@@ -111,10 +80,9 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         }
       })();
 
-      enable(gettext('PSQL Tool'), isEnabled);
       return isEnabled;
     },
-    psql_tool: function(data, treeIdentifier, gen=false) {
+    psql_tool: function(data, treeIdentifier) {
       const serverInformation = retrieveAncestorOfTypeServer(pgBrowser, treeIdentifier, gettext('PSQL Error'));
       if (!hasBinariesConfiguration(pgBrowser, serverInformation)) {
         return;
@@ -122,7 +90,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
 
       const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
       if (node === undefined || !node.getData()) {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('PSQL Error'),
           gettext('No object selected.')
         );
@@ -132,7 +100,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       parentData = pgBrowser.tree.getTreeNodeHierarchy(treeIdentifier);
 
       if(_.isUndefined(parentData.server)) {
-        Notify.alert(
+        pgAdmin.Browser.notifier.alert(
           gettext('PSQL Error'),
           gettext('Please select a server/database object.')
         );
@@ -149,76 +117,30 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         'server': parentData.server.label,
         'type': 'psql_tool',
       };
-      let tab_title_placeholder = pgBrowser.get_preferences_for_module('browser').psql_tab_title_placeholder;
+      let tab_title_placeholder = usePreferences.getState().getPreferencesForModule('browser').psql_tab_title_placeholder;
       panelTitle = generateTitle(tab_title_placeholder, title_data);
 
-      const [panelUrl, panelCloseUrl, db_label] = this.getPanelUrls(transId, panelTitle, parentData, gen);
+      const [panelUrl, db_label] = this.getPanelUrls(transId, parentData);
 
       const escapedTitle = _.escape(panelTitle);
-      let psqlToolForm = `
-        <form id="psqlToolForm" action="${panelUrl}" method="post">
-          <input id="title" name="title" hidden />
-          <input id='db' value='${db_label}' hidden />
-          <input name="close_url" value="${panelCloseUrl}" hidden />
-        </form>
-        <script>
-          document.getElementById("title").value = "${escapedTitle}";
-          document.getElementById("psqlToolForm").submit();
-        </script>
-      `;
-      let open_new_tab = pgBrowser.get_preferences_for_module('browser').new_browser_tab_open;
-      if (open_new_tab && open_new_tab.includes('psql_tool')) {
-        openNewWindow(psqlToolForm, panelTitle);
-      } else {
-        /* On successfully initialization find the properties panel,
-         * create new panel and add it to the dashboard panel.
-         */
-        let propertiesPanel = pgBrowser.docker.findPanels('properties');
-        let psqlToolPanel = pgBrowser.docker.addPanel('frm_psqltool', wcDocker.DOCK.STACKED, propertiesPanel[0]);
+      const open_new_tab = usePreferences.getState().getPreferencesForModule('browser').new_browser_tab_open;
 
-        registerDetachEvent(psqlToolPanel);
+      pgAdmin.Browser.Events.trigger(
+        'pgadmin:tool:show',
+        `${BROWSER_PANELS.PSQL_TOOL}_${transId}`,
+        panelUrl,
+        {title: escapedTitle, db: db_label},
+        {title: panelTitle, icon: 'fas fa-terminal psql-tab-style', manualClose: false, renamable: true},
+        Boolean(open_new_tab?.includes('psql_tool'))
+      );
 
-        // Set panel title and icon
-        setPanelTitle(psqlToolPanel, escapedTitle);
-        psqlToolPanel.icon('fas fa-terminal psql-tab-style');
-        psqlToolPanel.focus();
-
-        let openPSQLToolURL = function(j) {
-          // add spinner element
-          const frame = j.frameData.embeddedFrame;
-          const spinner = document.createElement('div');
-          spinner.setAttribute('class', 'pg-sp-container');
-          spinner.innerHTML = `
-            <div class="pg-sp-content">
-              <div class="pg-sp-icon"></div>
-            </div>
-          `;
-
-          frame.$container[0].appendChild(spinner);
-
-          let init_poller_id = setInterval(function() {
-            if (j.frameData.frameInitialized) {
-              clearInterval(init_poller_id);
-              if (frame) {
-                frame.onLoaded(()=>{
-                  spinner.remove();
-                });
-                frame.openHTML(psqlToolForm);
-              }
-            }
-          }, 100);
-        };
-
-        openPSQLToolURL(psqlToolPanel);
-
-      }
-
+      return true;
     },
-    getPanelUrls: function(transId, panelTitle, pData) {
+    getPanelUrls: function(transId, pData) {
       let openUrl = url_for('psql.panel', {
         trans_id: transId,
       });
-      const misc_preferences = pgBrowser.get_preferences_for_module('misc');
+      const misc_preferences = usePreferences.getState().getPreferencesForModule('misc');
       let theme = misc_preferences.theme;
 
       openUrl += `?sgid=${pData.server_group._id}`
@@ -226,18 +148,14 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         +`&did=${pData.database._id}`
         +`&server_type=${pData.server.server_type}`
         + `&theme=${theme}`;
-      let db_label = '';
+
       if(pData.database && pData.database._id) {
-        db_label = _.escape(pData.database._label.replace('\\', '\\\\'));
-        openUrl += `&db=${db_label}`;
+        openUrl += `&db=${encodeURIComponent(pData.database._label)}`;
       } else {
         openUrl += `&db=${''}`;
       }
 
-      let closeUrl = url_for('psql.close', {
-        trans_id: transId,
-      });
-      return [openUrl, closeUrl, db_label];
+      return [openUrl, pData.database._label];
     },
     psql_terminal: function() {
       // theme colors
@@ -335,7 +253,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
             if(result.state === 'granted' || result.state === 'prompt') {
               copyToClipboard(selected_text);
             } else{
-              Notify.alert(gettext('Clipboard write permission required'), gettext('To copy data from PSQL terminal, Clipboard write permission required.'));
+              pgAdmin.Browser.notifier.alert(gettext('Clipboard write permission required'), gettext('To copy data from PSQL terminal, Clipboard write permission required.'));
             }
           });
         }
@@ -353,7 +271,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
               }
             });
           } else{
-            Notify.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
+            pgAdmin.Browser.notifier.alert(gettext('Clipboard read permission required'), gettext('To paste data on the PSQL terminal, Clipboard read permission required.'));
           }
         });
       });

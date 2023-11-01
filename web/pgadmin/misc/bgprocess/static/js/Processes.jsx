@@ -7,21 +7,23 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import pgAdmin from 'sources/pgadmin';
-import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessManager';
-import { PgIconButton } from '../../../../static/js/components/Buttons';
+import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
+import { PgButtonGroup, PgIconButton } from '../../../../static/js/components/Buttons';
 import CancelIcon from '@material-ui/icons/Cancel';
 import DescriptionOutlinedIcon from '@material-ui/icons/DescriptionOutlined';
 import DeleteIcon from '@material-ui/icons/Delete';
 import HelpIcon from '@material-ui/icons/HelpRounded';
 import url_for from 'sources/url_for';
 import { Box } from '@material-ui/core';
-import Notifier from '../../../../static/js/helpers/Notifier';
+import { usePgAdmin } from '../../../../static/js/BrowserComponent';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import ErrorBoundary from '../../../../static/js/helpers/ErrorBoundary';
+import ProcessDetails from './ProcessDetails';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -93,13 +95,33 @@ const ProcessStateTextAndColor = {
   [BgProcessManagerProcessState.PROCESS_TERMINATING]: [gettext('Terminating...'), 'bgTerm'],
   [BgProcessManagerProcessState.PROCESS_FAILED]: [gettext('Failed'), 'bgFailed'],
 };
-
 export default function Processes() {
   const classes = useStyles();
+  const pgAdmin = usePgAdmin();
   const [tableData, setTableData] = React.useState([]);
   const [selectedRows, setSelectedRows] = React.useState([]);
 
-  let columns = useMemo(()=>[
+  const onViewDetailsClick = useCallback((p)=>{
+    const panelTitle = gettext('Process Watcher - %s', p.type_desc);
+    const panelId = BROWSER_PANELS.PROCESS_DETAILS+''+p.id;
+    pgAdmin.Browser.docker.openDialog({
+      id: panelId,
+      title: panelTitle,
+      content: (
+        <ErrorBoundary>
+          <ProcessDetails
+            data={p}
+            closeModal={()=>{
+              pgAdmin.Browser.docker.close(panelId);
+            }}
+          />
+        </ErrorBoundary>
+      )
+    }, pgAdmin.Browser.stdW.md, pgAdmin.Browser.stdH.md);
+  }, []);
+
+
+  const columns = useMemo(()=>[
     {
       accessor: 'stop_process',
       Header: () => null,
@@ -149,7 +171,7 @@ export default function Processes() {
             noBorder
             onClick={(e) => {
               e.preventDefault();
-              pgAdmin.Browser.BgProcessManager.viewJobDetails(row.original.id);
+              onViewDetailsClick(row.original);
             }}
             aria-label="View details"
             title={gettext('View details')}
@@ -260,27 +282,27 @@ export default function Processes() {
         CustomHeader={()=>{
           return (
             <Box>
-              <PgIconButton
-                className={classes.dropButton}
-                icon={<DeleteIcon/>}
-                aria-label="Acknowledge and Remove"
-                title={gettext('Acknowledge and Remove')}
-                onClick={() => {
-                  Notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
-                    pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
-                  });
-                }}
-                disabled={selectedRows.length <= 0}
-              ></PgIconButton>
-              <PgIconButton
-                icon={<HelpIcon/>}
-                aria-label="Help"
-                title={gettext('Help')}
-                style={{marginLeft: '8px'}}
-                onClick={() => {
-                  window.open(url_for('help.static', {'filename': 'processes.html'}));
-                }}
-              ></PgIconButton>
+              <PgButtonGroup>
+                <PgIconButton
+                  icon={<DeleteIcon style={{height: '1.4rem'}}/>}
+                  aria-label="Acknowledge and Remove"
+                  title={gettext('Acknowledge and Remove')}
+                  onClick={() => {
+                    pgAdmin.Browser.notifier.confirm(gettext('Remove Processes'), gettext('Are you sure you want to remove the selected processes?'), ()=>{
+                      pgAdmin.Browser.BgProcessManager.acknowledge(selectedRows.map((p)=>p.original.id));
+                    });
+                  }}
+                  disabled={selectedRows.length <= 0}
+                ></PgIconButton>
+                <PgIconButton
+                  icon={<HelpIcon style={{height: '1.4rem'}}/>}
+                  aria-label="Help"
+                  title={gettext('Help')}
+                  onClick={() => {
+                    window.open(url_for('help.static', {'filename': 'processes.html'}));
+                  }}
+                ></PgIconButton>
+              </PgButtonGroup>
             </Box>
           );
         }}

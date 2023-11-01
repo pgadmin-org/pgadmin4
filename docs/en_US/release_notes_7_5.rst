@@ -21,8 +21,10 @@ New features
 ************
 
   | `Issue #6369 <https://github.com/pgadmin-org/pgadmin4/issues/6369>`_ -  Added support to detach partitions using concurrently and finalize.
+  | `Issue #6374 <https://github.com/pgadmin-org/pgadmin4/issues/6374>`_ -  Added all supported index storage parameters while creating an index.
   | `Issue #6416 <https://github.com/pgadmin-org/pgadmin4/issues/6416>`_ -  Added new/missing parameters to pg_dumpall (Backup Server).
   | `Issue #6417 <https://github.com/pgadmin-org/pgadmin4/issues/6417>`_ -  Added new/missing parameters to pg_dump (Backup Objects).
+  | `Issue #6562 <https://github.com/pgadmin-org/pgadmin4/issues/6562>`_ -  Added new/missing parameters to pg_restore.
 
 Housekeeping
 ************
@@ -40,6 +42,8 @@ Bug fixes
   | `Issue #6317 <https://github.com/pgadmin-org/pgadmin4/issues/6317>`_ -  Fix an issue where queries longer than 1 minute get stuck - Container 7.1
   | `Issue #6356 <https://github.com/pgadmin-org/pgadmin4/issues/6356>`_ -  Fix an issue where queries get stuck with auto-completion enabled.
   | `Issue #6364 <https://github.com/pgadmin-org/pgadmin4/issues/6364>`_ -  Fixed Query Tool/ PSQL tool tab title not getting updated on database rename.
+  | `Issue #6406 <https://github.com/pgadmin-org/pgadmin4/issues/6406>`_ -  Ensure user gets proper error if incorrect credentials are entered while authenticating AWS.
+  | `Issue #6489 <https://github.com/pgadmin-org/pgadmin4/issues/6489>`_ -  Fix an issue where the edit server fails in desktop mode if the server password is not stored.
   | `Issue #6499 <https://github.com/pgadmin-org/pgadmin4/issues/6499>`_ -  Ensure that Backup, Restore, and Maintenance should work properly when pgpass file is used.
   | `Issue #6501 <https://github.com/pgadmin-org/pgadmin4/issues/6501>`_ -  Fix the query tool auto-complete issue on the server reconnection.
   | `Issue #6502 <https://github.com/pgadmin-org/pgadmin4/issues/6502>`_ -  Fix the query tool restore connection issue.
@@ -47,5 +51,9 @@ Bug fixes
   | `Issue #6514 <https://github.com/pgadmin-org/pgadmin4/issues/6514>`_ -  Fix the connection and stability issues since v7, possibly related to background schema changes.
   | `Issue #6515 <https://github.com/pgadmin-org/pgadmin4/issues/6515>`_ -  Fixed an issue where the query tool is unable to execute a query on Postgres 10 and below versions.
   | `Issue #6524 <https://github.com/pgadmin-org/pgadmin4/issues/6524>`_ -  Fix the lost connection error in v7.4.
+  | `Issue #6531 <https://github.com/pgadmin-org/pgadmin4/issues/6531>`_ -  Fixed an issue where pgAdmin failed to setup role with hyphens in name.
   | `Issue #6537 <https://github.com/pgadmin-org/pgadmin4/issues/6537>`_ -  Fixed an issue where filters are not working and query history shows empty queries.
   | `Issue #6544 <https://github.com/pgadmin-org/pgadmin4/issues/6544>`_ -  Fix an issue where adding a sub-folder inside a folder is not working as expected in File Manager.
+  | `Issue #6556 <https://github.com/pgadmin-org/pgadmin4/issues/6556>`_ -  Fix an error 'list' object has no attribute 'strip' while attempting to populate auto-complete manually the first time.
+  | `Issue #6558 <https://github.com/pgadmin-org/pgadmin4/issues/6558>`_ -  Fixed an issue where ERD Tool can't load the saved pgerd file from Shared Storage.
+  | `Issue #6582 <https://github.com/pgadmin-org/pgadmin4/issues/6582>`_ -  Fix an issue where inserting more than 10 rows does not work correctly in View Data; only parts end up in the table.

@@ -7,24 +7,22 @@
 //
 //////////////////////////////////////////////////////////////
 import React from 'react';
-import pgAdmin from 'sources/pgadmin';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import { Box, Switch } from '@material-ui/core';
 import { generateCollectionURL } from '../../browser/static/js/node_ajax';
-import Notify from '../../static/js/helpers/Notifier';
 import gettext from 'sources/gettext';
-import 'wcdocker';
 import PgTable from 'sources/components/PgTable';
 import Theme from 'sources/Theme';
 import PropTypes from 'prop-types';
-import { PgIconButton } from '../../static/js/components/Buttons';
+import { PgButtonGroup, PgIconButton } from '../../static/js/components/Buttons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EmptyPanelMessage from '../../static/js/components/EmptyPanelMessage';
 import Loader from 'sources/components/Loader';
 import { evalFunc } from '../../static/js/utils';
+import { usePgAdmin } from '../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -66,9 +64,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden !important',
     overflowX: 'auto !important'
   },
-  dropButton: {
-    marginRight: '8px !important'
-  },
   readOnlySwitch: {
     opacity: 0.75,
     '& .MuiSwitch-track': {
@@ -77,14 +72,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function CollectionNodeView({
+export default function CollectionNodeProperties({
   node,
   treeNodeInfo,
-  itemNodeData,
-  item,
-  pgBrowser
+  nodeData,
+  nodeItem,
+  isActive,
+  isStale,
+  setIsStale
 }) {
   const classes = useStyles();
+  const pgAdmin = usePgAdmin();
 
   const [data, setData] = React.useState([]);
   const [infoMsg, setInfoMsg] = React.useState('Please select an object in the tree view.');
@@ -96,7 +94,7 @@ export function CollectionNodeView({
   //Reload the collection node on refresh or change in children count
   React.useEffect(() => {
     setReload(!reload);
-  }, [item?._children]);
+  }, [nodeItem?._children]);
 
   const [pgTableColumns, setPgTableColumns] = React.useState([
     {
@@ -122,9 +120,9 @@ export function CollectionNodeView({
   const onDrop = (type) => {
     let selRowModels = selectedObject,
       selRows = [],
-      selItem = pgBrowser.tree.selected(),
-      selectedItemData = selItem ? pgBrowser.tree.itemData(selItem) : null,
-      selNode = selectedItemData && pgBrowser.Nodes[selectedItemData._type],
+      selItem = pgAdmin.Browser.tree.selected(),
+      selectedItemData = selItem ? pgAdmin.Browser.tree.itemData(selItem) : null,
+      selNode = selectedItemData && pgAdmin.Browser.Nodes[selectedItemData._type],
       url = undefined,
       msg = undefined,
       title = undefined;
@@ -140,7 +138,7 @@ export function CollectionNodeView({
     }
 
     if (selRows.length === 0) {
-      Notify.alert(
+      pgAdmin.Browser.notifier.alert(
         gettext('Delete Multiple'),
         gettext('Please select at least one object to delete.')
       );
@@ -178,14 +176,14 @@ export function CollectionNodeView({
         .then(function (res) {
           setLoaderText('');
           if (res.success == 0) {
-            Notify.alert(res.errormsg, res.info);
+            pgAdmin.Browser.notifier.alert(res.errormsg, res.info);
           }
           pgAdmin.Browser.tree.refresh(selItem);
           setReload(!reload);
         })
         .catch(function (error) {
           setLoaderText('');
-          Notify.alert(
+          pgAdmin.Browser.notifier.alert(
             gettext('Error deleting %s', selectedItemData._label.toLowerCase()),
             _.isUndefined(error.response) ? error.message : error.response.data.errormsg
           );
@@ -193,7 +191,7 @@ export function CollectionNodeView({
     };
 
     if (confirm) {
-      Notify.confirm(title, msg, dropNodeProperties, null);
+      pgAdmin.Browser.notifier.confirm(title, msg, dropNodeProperties, null);
     } else {
       dropNodeProperties();
     }
@@ -203,9 +201,9 @@ export function CollectionNodeView({
     if (node){
 
       let nodeObj =
-      pgAdmin.Browser.Nodes[itemNodeData?._type.replace('coll-', '')];
+      pgAdmin.Browser.Nodes[nodeData?._type.replace('coll-', '')];
 
-      let url = generateCollectionURL.call(nodeObj, item, 'properties');
+      let url = generateCollectionURL.call(nodeObj, nodeItem, 'properties');
 
       const api = getApiInstance();
 
@@ -213,8 +211,8 @@ export function CollectionNodeView({
       let column = {};
       setLoaderText(gettext('Loading...'));
 
-      if (itemNodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
-        schemaRef.current = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, itemNodeData);
+      if (nodeData._type.indexOf('coll-') > -1 && !_.isUndefined(nodeObj.getSchema)) {
+        schemaRef.current = nodeObj.getSchema?.call(nodeObj, treeNodeInfo, nodeData);
         schemaRef.current?.fields.forEach((field) => {
           if (node.columns.indexOf(field.id) > -1) {
             if (field.label.indexOf('?') > -1) {
@@ -257,6 +255,10 @@ export function CollectionNodeView({
         });
       }
 
+      if(!isStale || !isActive) {
+        return;
+      }
+
       api({
         url: url,
         type: 'GET',
@@ -271,62 +273,62 @@ export function CollectionNodeView({
           setLoaderText('');
         })
         .catch((err) => {
-          Notify.alert(
+          pgAdmin.Browser.notifier.alert(
             gettext('Failed to retrieve data from the server.'),
             gettext(err.message)
           );
         });
+      setIsStale(false);
     }
-  }, [itemNodeData, node, item, reload]);
+  }, [nodeData, node, nodeItem, reload]);
 
   const CustomHeader = () => {
-    const canDrop = evalFunc(node, node.canDrop, itemNodeData, item, treeNodeInfo);
-    const canDropCascade = evalFunc(node, node.canDropCascade, itemNodeData, item, treeNodeInfo);
-    const canDropForce = evalFunc(node, node.canDropForce, itemNodeData, item, treeNodeInfo);
+    const canDrop = evalFunc(node, node.canDrop, nodeData, nodeItem, treeNodeInfo);
+    const canDropCascade = evalFunc(node, node.canDropCascade, nodeData, nodeItem, treeNodeInfo);
+    const canDropForce = evalFunc(node, node.canDropForce, nodeData, nodeItem, treeNodeInfo);
     return (
       <Box >
-        <PgIconButton
-          className={classes.dropButton}
-          icon={<DeleteIcon/>}
-          aria-label="Delete"
-          title={gettext('Delete')}
-          onClick={() => {
-            onDrop('drop');
-          }}
-          disabled={
-            (selectedObject.length > 0)
-              ? !canDrop
-              : true
-          }
-        ></PgIconButton>
-        {node.type !== 'coll-database' ? <PgIconButton
-          className={classes.dropButton}
-          icon={<DeleteSweepIcon />}
-          aria-label="Delete Cascade"
-          title={gettext('Delete (Cascade)')}
-          onClick={() => {
-            onDrop('dropCascade');
-          }}
-          disabled={
-            (selectedObject.length > 0)
-              ? !canDropCascade
-              : true
-          }
-        ></PgIconButton> :
+        <PgButtonGroup size="small">
           <PgIconButton
-            className={classes.dropButton}
-            icon={<DeleteForeverIcon />}
-            aria-label="Delete Force"
-            title={gettext('Delete (Force)')}
+            icon={<DeleteIcon style={{height: '1.35rem'}}/>}
+            aria-label="Delete"
+            title={gettext('Delete')}
             onClick={() => {
-              onDrop('dropForce');
+              onDrop('drop');
             }}
             disabled={
               (selectedObject.length > 0)
-                ? !canDropForce
+                ? !canDrop
                 : true
             }
-          ></PgIconButton>}
+          ></PgIconButton>
+          {node.type !== 'coll-database' ? <PgIconButton
+            icon={<DeleteSweepIcon style={{height: '1.5rem'}} />}
+            aria-label="Delete Cascade"
+            title={gettext('Delete (Cascade)')}
+            onClick={() => {
+              onDrop('dropCascade');
+            }}
+            disabled={
+              (selectedObject.length > 0)
+                ? !canDropCascade
+                : true
+            }
+          ></PgIconButton> :
+            <PgIconButton
+              icon={<DeleteForeverIcon style={{height: '1.4rem'}} />}
+              aria-label="Delete Force"
+              title={gettext('Delete (Force)')}
+              onClick={() => {
+                onDrop('dropForce');
+              }}
+              disabled={
+                (selectedObject.length > 0)
+                  ? !canDropForce
+                  : true
+              }
+            ></PgIconButton>}
+        </PgButtonGroup>
       </Box>);
   };
 
@@ -337,7 +339,7 @@ export function CollectionNodeView({
         {data.length > 0 ?
           (
             <PgTable
-              isSelectRow={!('catalog' in treeNodeInfo) && (itemNodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
+              isSelectRow={!('catalog' in treeNodeInfo) && (nodeData.label !== 'Catalogs') && _.isUndefined(node?.canSelect)}
               CustomHeader={CustomHeader}
               className={classes.autoResizer}
               columns={pgTableColumns}
@@ -350,9 +352,7 @@ export function CollectionNodeView({
           :
           (
             <div className={classes.emptyPanel}>
-              {loaderText ? (<Loader message={loaderText}/>) :
-                <EmptyPanelMessage text={gettext(infoMsg)}/>
-              }
+              <EmptyPanelMessage text={gettext(infoMsg)}/>
             </div>
           )
         }
@@ -361,17 +361,19 @@ export function CollectionNodeView({
   );
 }
 
-CollectionNodeView.propTypes = {
+CollectionNodeProperties.propTypes = {
   node: PropTypes.func,
   itemData: PropTypes.object,
-  itemNodeData: PropTypes.object,
+  nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
-  item: PropTypes.object,
-  pgBrowser: PropTypes.object,
+  nodeItem: PropTypes.object,
   preferences: PropTypes.object,
   sid: PropTypes.number,
   did: PropTypes.number,
   row: PropTypes.object,
   serverConnected: PropTypes.bool,
   value: PropTypes.bool,
+  isActive: PropTypes.bool,
+  isStale: PropTypes.bool,
+  setIsStale: PropTypes.func,
 };

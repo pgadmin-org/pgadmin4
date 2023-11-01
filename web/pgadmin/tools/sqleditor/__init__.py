@@ -84,9 +84,6 @@ class SqlEditorModule(PgAdminModule):
                      url=url_for('help.static', filename='index.html'))
         ]}
 
-    def get_panels(self):
-        return []
-
     def get_exposed_url_endpoints(self):
         """
         Returns:
@@ -338,7 +335,8 @@ def panel(trans_id):
 
 
 @blueprint.route(
-    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/<int:did>',
+    '/initialize/sqleditor/<int:trans_id>/<int:sgid>/<int:sid>/'
+    '<int:did>',
     methods=["POST"], endpoint='initialize_sqleditor_with_did'
 )
 @blueprint.route(
@@ -376,7 +374,7 @@ def initialize_sqleditor(trans_id, sgid, sid, did=None):
     }
 
     is_error, errmsg, conn_id, version = _init_sqleditor(
-        trans_id, connect, sgid, sid, did, **kwargs)
+        trans_id, connect, sgid, sid, did, data['dbname'], **kwargs)
     if is_error:
         return errmsg
 
@@ -413,7 +411,7 @@ def _connect(conn, **kwargs):
     return status, msg, is_ask_password, user, role, password
 
 
-def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
+def _init_sqleditor(trans_id, connect, sgid, sid, did, dbname=None, **kwargs):
     # Create asynchronous connection using random connection id.
     conn_id = str(secrets.choice(range(1, 9999999)))
     conn_id_ac = str(secrets.choice(range(1, 9999999)))
@@ -432,10 +430,12 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
         return True, internal_server_error(errormsg=str(e)), '', ''
 
     try:
-        conn = manager.connection(did=did, conn_id=conn_id,
+        conn = manager.connection(conn_id=conn_id,
                                   auto_reconnect=False,
                                   use_binary_placeholder=True,
-                                  array_to_string=True)
+                                  array_to_string=True,
+                                  **({"database": dbname} if dbname is not None
+                                     else {"did": did}))
         pref = Preferences.module('sqleditor')
 
         if connect:
@@ -466,10 +466,13 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
                         errormsg=str(msg)), '', ''
 
             if pref.preference('autocomplete_on_key_press').get():
-                conn_ac = manager.connection(did=did, conn_id=conn_id_ac,
+                conn_ac = manager.connection(conn_id=conn_id_ac,
                                              auto_reconnect=False,
                                              use_binary_placeholder=True,
-                                             array_to_string=True)
+                                             array_to_string=True,
+                                             **({"database": dbname}
+                                                if dbname is not None
+                                                else {"did": did}))
                 status, msg, is_ask_password, user, role, password = _connect(
                     conn_ac, **kwargs)
 
@@ -489,6 +492,8 @@ def _init_sqleditor(trans_id, connect, sgid, sid, did, **kwargs):
     command_obj.set_auto_commit(pref.preference('auto_commit').get())
     command_obj.set_auto_rollback(pref.preference('auto_rollback').get())
 
+    # Set the value of database name, that will be used later
+    command_obj.dbname = dbname if dbname else None
     # Use pickle to store the command object which will be used
     # later by the sql grid module.
     sql_grid_data[str(trans_id)] = {
@@ -536,7 +541,8 @@ def update_sqleditor_connection(trans_id, sgid, sid, did):
         }
 
         is_error, errmsg, conn_id, version = _init_sqleditor(
-            new_trans_id, connect, sgid, sid, did, **kwargs)
+            new_trans_id, connect, sgid, sid, did, data['database_name'],
+            **kwargs)
 
         if is_error:
             return errmsg
@@ -920,13 +926,18 @@ def poll(trans_id):
     is_thread_alive = False
     if trans_obj.get_thread_native_id():
         for thread in threading.enumerate():
-            if thread.native_id == trans_obj.get_thread_native_id() and\
+            _native_id = thread.native_id if hasattr(thread, 'native_id'
+                                                     ) else thread.ident
+            if _native_id == trans_obj.get_thread_native_id() and\
                     thread.is_alive():
                 is_thread_alive = True
                 break
 
     if is_thread_alive:
         status = 'Busy'
+        messages = conn.messages()
+        if messages and len(messages) > 0:
+            result = ''.join(messages)
     elif status and conn is not None and session_obj is not None:
         status, result = conn.poll(
             formatted_exception_msg=True, no_result=True)
@@ -1631,7 +1642,10 @@ def cancel_transaction(trans_id):
         try:
             manager = get_driver(
                 PG_DEFAULT_DRIVER).connection_manager(trans_obj.sid)
-            conn = manager.connection(did=trans_obj.did)
+            conn = manager.connection(**({"database": trans_obj.dbname}
+                                         if trans_obj.dbname is not None
+                                         else {"did": trans_obj.did}))
+
         except Exception as e:
             return internal_server_error(errormsg=str(e))
 
@@ -1864,9 +1878,17 @@ def load_file():
 
     file_path = unquote(file_data['file_name'])
 
+    # get the current storage from request if available
+    # or get it from last_storage preference.
+    if 'storage' in file_data:
+        storage_folder = file_data['storage']
+    else:
+        storage_folder = Preferences.module('file_manager').preference(
+            'last_storage').get()
+
     # retrieve storage directory path
     storage_manager_path = get_storage_directory(
-        shared_storage=file_data['storage'] if 'storage' in file_data else '')
+        shared_storage=storage_folder)
 
     try:
         Filemanager.check_access_permission(storage_manager_path, file_path)
@@ -2160,7 +2182,8 @@ def _check_server_connection_status(sgid, sid=None):
             }
         )
 
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2200,12 +2223,12 @@ def get_new_connection_data(sgid=None, sid=None):
             conn = manager.connection()
             connected = conn.connected()
             server_group_data[server.servers.name].append({
-                'label': server.serialize['name'],
-                "value": server.serialize['id'],
+                'label': server.name,
+                "value": server.id,
                 'image': server_icon_and_background(connected, manager,
                                                     server),
-                'fgcolor': server.serialize['fgcolor'],
-                'bgcolor': server.serialize['bgcolor'],
+                'fgcolor': server.fgcolor,
+                'bgcolor': server.bgcolor,
                 'connected': connected})
 
         msg = "Success"
@@ -2219,7 +2242,8 @@ def get_new_connection_data(sgid=None, sid=None):
             }
         )
 
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2299,7 +2323,8 @@ def get_new_connection_database(sgid, sid=None):
                     }
                 }
             )
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2364,7 +2389,8 @@ def get_new_connection_user(sgid, sid=None):
                     }
                 }
             )
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,
@@ -2427,7 +2453,8 @@ def get_new_connection_role(sgid, sid=None):
                     }
                 }
             )
-    except Exception:
+    except Exception as e:
+        current_app.logger.exception(e)
         return make_json_response(
             data={
                 'status': False,

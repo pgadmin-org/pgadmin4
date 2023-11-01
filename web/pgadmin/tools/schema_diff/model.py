@@ -7,20 +7,11 @@
 #
 ##########################################################################
 
-from flask_babel import gettext
 
-
-class SchemaDiffModel():
+class SchemaDiffModel:
     """
     SchemaDiffModel
     """
-
-    COMPARISON_STATUS = {
-        'source_only': 'Source Only',
-        'target_only': 'Target Only',
-        'different': 'Different',
-        'identical': 'Identical'
-    }
 
     def __init__(self, **kwargs):
         """

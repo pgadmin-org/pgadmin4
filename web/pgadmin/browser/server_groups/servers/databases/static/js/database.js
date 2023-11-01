@@ -11,16 +11,15 @@ import { getNodeAjaxOptions, getNodeListByName } from '../../../../../static/js/
 import { getNodePrivilegeRoleSchema } from '../../../static/js/privilege.ui';
 import { getNodeVariableSchema } from '../../../static/js/variable.ui';
 import DatabaseSchema from './database.ui';
-import Notify from '../../../../../../static/js/helpers/Notifier';
 import { showServerPassword } from '../../../../../../static/js/Dialogs/index';
 import _ from 'lodash';
 import getApiInstance, { parseApiError } from '../../../../../../static/js/api_instance';
 
 define('pgadmin.node.database', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser.utils',
   'pgadmin.authenticate.kerberos', 'pgadmin.browser.collection',
-], function(gettext, url_for, $, pgAdmin, pgBrowser, Kerberos) {
+], function(gettext, url_for, pgAdmin, pgBrowser, Kerberos) {
 
   function canDeleteWithForce(itemNodeData, item) {
     let treeData = pgBrowser.tree.getTreeNodeHierarchy(item),
@@ -189,7 +188,7 @@ define('pgadmin.node.database', [
                 connect(self, d, t, i, true);
                 return;
               }
-              Notify.confirm(
+              pgAdmin.Browser.notifier.confirm(
                 gettext('Connection lost'),
                 gettext('Would you like to reconnect to the database?'),
                 function() {
@@ -231,7 +230,7 @@ define('pgadmin.node.database', [
             d = i  ? t.itemData(i) : undefined;
 
           if (d) {
-            Notify.confirm(
+            pgAdmin.Browser.notifier.confirm(
               gettext('Disconnect from database'),
               gettext('Are you sure you want to disconnect from database - %s?', d.label),
               function() {
@@ -244,7 +243,7 @@ define('pgadmin.node.database', [
                     if(res.data.info_prefix) {
                       res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
                     }
-                    Notify.success(res.info);
+                    pgAdmin.Browser.notifier.success(res.info);
                     t.removeIcon(i);
                     data.connected = false;
                     data.icon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
@@ -258,14 +257,14 @@ define('pgadmin.node.database', [
 
                   } else {
                     try {
-                      Notify.error(res.errormsg);
+                      pgAdmin.Browser.notifier.error(res.errormsg);
                     } catch (e) {
                       console.warn(e.stack || e);
                     }
                     t.unload(i);
                   }
                 }).catch(function(error) {
-                  Notify.pgRespErrorNotify(error);
+                  pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                   t.unload(i);
                 });
               },
@@ -332,6 +331,10 @@ define('pgadmin.node.database', [
           cacheLevel: 'server',
         });
 
+        let icu_locale = ()=>getNodeAjaxOptions('get_icu_locale', this, treeNodeInfo, itemNodeData, {
+          cacheLevel: 'server',
+        });
+
         return new DatabaseSchema(
           ()=>getNodeVariableSchema(this, treeNodeInfo, itemNodeData, false, true),
           (privileges)=>getNodePrivilegeRoleSchema(this, treeNodeInfo, itemNodeData, privileges),
@@ -360,6 +363,7 @@ define('pgadmin.node.database', [
               }),
             datcollate: c_types,
             datctype: c_types,
+            daticulocale: icu_locale,
           },
           {
             datowner: pgBrowser.serverInfo[treeNodeInfo.server._id].user.name,
@@ -403,7 +407,7 @@ define('pgadmin.node.database', [
                   tree.setInode(_item);
                   let dbIcon = data.isTemplate ? 'icon-database-template-not-connected':'icon-database-not-connected';
                   tree.addIcon(_item, {icon: dbIcon});
-                  Notify.pgNotifier(fun_error, error, gettext('Connect to database.'));
+                  pgAdmin.Browser.notifier.pgNotifier(fun_error, error, gettext('Connect to database.'));
                 }
               );
             } else {
@@ -413,7 +417,7 @@ define('pgadmin.node.database', [
                 tree.addIcon(_item, {icon: dbIcon});
               }
 
-              Notify.pgNotifier('error', error, 'Error', function(msg) {
+              pgAdmin.Browser.notifier.pgNotifier('error', error, 'Error', function(msg) {
                 setTimeout(function() {
                   if (msg == 'CRYPTKEY_SET') {
                     connect_to_database(_model, _data, _tree, _item, _wasConnected);
@@ -449,9 +453,9 @@ define('pgadmin.node.database', [
                 res.info = `${_.escape(res.data.info_prefix)} - ${res.info}`;
               }
               if(res.data.already_connected) {
-                Notify.info(res.info);
+                pgAdmin.Browser.notifier.info(res.info);
               } else {
-                Notify.success(res.info);
+                pgAdmin.Browser.notifier.success(res.info);
               }
               pgBrowser.Events.trigger(
                 'pgadmin:database:connected', _item, _data

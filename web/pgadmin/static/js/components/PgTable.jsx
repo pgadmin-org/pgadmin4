@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
   pgTableHeader: {
     display: 'flex',
     background: theme.palette.background.default,
-    padding: '8px',
+    padding: '8px 8px 4px',
   },
   tableRowContent:{
     display: 'flex',
@@ -113,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
     ...theme.mixins.panelBorder.right,
     position: 'relative',
     overflow: 'hidden',
-    height: '35px',
+    height: '34px',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     backgroundColor: theme.otherVars.tableBg,
@@ -212,7 +212,7 @@ IndeterminateCheckbox.propTypes = {
   row: PropTypes.object,
 };
 
-const ROW_HEIGHT = 35;
+const ROW_HEIGHT = 34;
 
 function SortIcon ({column}) {
   if (column.isSorted) {
@@ -519,7 +519,7 @@ export default function PgTable({ columns, data, isSelectRow, caveTable=true, sc
                     <VariableSizeList
                       ref={tableRef}
                       className={classes.fixedSizeList}
-                      height={height}
+                      height={isNaN(height) ? 100 : height}
                       itemCount={rows.length}
                       itemSize={getRowHeight}
                       itemData={{rows, prepareRow, setRowHeight}}

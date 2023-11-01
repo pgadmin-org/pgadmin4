@@ -1,6 +1,6 @@
 WITH INH_TABLES AS
     (SELECT
-     distinct on (at.attname) attname, ph.inhparent AS inheritedid, ph.inhseqno,
+     at.attname AS name, ph.inhparent AS inheritedid, ph.inhseqno,
      pg_catalog.concat(nmsp_parent.nspname, '.',parent.relname ) AS inheritedfrom
     FROM
         pg_catalog.pg_attribute at
@@ -13,19 +13,23 @@ WITH INH_TABLES AS
     GROUP BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
     ORDER BY at.attname, ph.inhparent, ph.inhseqno, inheritedfrom
     )
-SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, attfdwoptions,
-    att.attname, att.attndims, att.atttypmod, pg_catalog.format_type(t.oid,NULL) AS datatype,
-    att.attnotnull, att.attstattarget, att.attnum, pg_catalog.format_type(t.oid, att.atttypmod) AS fulltype,
+SELECT INH.inheritedfrom, INH.inheritedid, att.attoptions, att.atttypid, attfdwoptions,
+    att.attname as name, att.attndims, att.atttypmod, pg_catalog.format_type(t.oid,NULL) AS cltype,
+    att.attnotnull, att.attstorage, att.attstattarget, att.attnum, pg_catalog.format_type(t.oid, att.atttypmod) AS fulltype,
+    t.typstorage AS defaultstorage,
+    CASE WHEN t.typelem > 0 THEN t.typelem ELSE t.oid END as elemoid,
+    (SELECT nspname FROM pg_catalog.pg_namespace WHERE oid = t.typnamespace) as typnspname,
+    pg_catalog.format_type(t.oid,NULL) AS typname,
     CASE WHEN length(cn.nspname::text) > 0 AND length(cl.collname::text) > 0 THEN
     pg_catalog.concat(cn.nspname, '."', cl.collname,'"')
     ELSE '' END AS collname,
-    pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS typdefault,
+    pg_catalog.pg_get_expr(def.adbin, def.adrelid) AS defval,
     (SELECT COUNT(1) from pg_catalog.pg_type t2 WHERE t2.typname=t.typname) > 1 AS isdup,
     des.description
 FROM
     pg_catalog.pg_attribute att
 LEFT JOIN
-    INH_TABLES as INH ON att.attname = INH.attname
+    INH_TABLES as INH ON att.attname = INH.name
 JOIN
     pg_catalog.pg_type t ON t.oid=atttypid
 JOIN

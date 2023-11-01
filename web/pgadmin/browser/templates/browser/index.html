@@ -92,14 +92,6 @@ require.onResourceLoad = function (context, map, depMaps) {
     <div class="row"><div class="col-12 pg-sp-text">{{ _('Loading {0} v{1}...').format(config.APP_NAME, config.APP_VERSION) }}</div></div>
   </div>
 </div>
-{% if current_app.PGADMIN_RUNTIME | string() == 'False' %}
-<div id="main-menu-container"></div>
-<div id="dockerContainer" class="pg-docker"></div>
-{% else %}
-  <div id="dockerContainer" class="pg-docker pg-docker-native"></div>
-{% endif %}
-<div id="object-breadcrumbs"></div>
-
-{% include 'browser/messages.html' %}
+<div id="root" style="height: 100%"></div>
 
 {% endblock %}

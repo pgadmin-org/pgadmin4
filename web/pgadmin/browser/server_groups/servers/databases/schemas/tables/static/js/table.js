@@ -7,20 +7,19 @@
 //////////////////////////////////////////////////////////////
 
 import { getNodeTableSchema } from './table.ui';
-import Notify from '../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.table', [
   'pgadmin.tables.js/enable_disable_triggers',
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child','pgadmin.node.schema.dir/schema_child_tree_node',
   'pgadmin.browser.collection', 'pgadmin.node.column',
   'pgadmin.node.constraints',
 ], function(
   tableFunctions,
-  gettext, url_for, $, pgAdmin, pgBrowser, SchemaChild, SchemaChildTreeNode
+  gettext, url_for, pgAdmin, pgBrowser, SchemaChild, SchemaChildTreeNode
 ) {
 
   if (!pgBrowser.Nodes['coll-table']) {
@@ -145,7 +144,6 @@ define('pgadmin.node.table', [
         enable_triggers_on_table: function(args) {
           tableFunctions.enableTriggers(
             pgBrowser.tree,
-            Notify,
             this.generate_url.bind(this),
             args
           );
@@ -154,7 +152,6 @@ define('pgadmin.node.table', [
         disable_triggers_on_table: function(args) {
           tableFunctions.disableTriggers(
             pgBrowser.tree,
-            Notify,
             this.generate_url.bind(this),
             args
           );
@@ -183,7 +180,7 @@ define('pgadmin.node.table', [
           if (!d)
             return false;
 
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             gettext('Truncate Table'),
             gettext('Are you sure you want to truncate table %s?', d.label),
             function () {
@@ -191,18 +188,18 @@ define('pgadmin.node.table', [
               getApiInstance().put(obj.generate_url(i, 'truncate' , d, true), params)
                 .then(({data: res})=>{
                   if (res.success == 1) {
-                    Notify.success(res.info);
+                    pgAdmin.Browser.notifier.success(res.info);
                     t.removeIcon(i);
                     data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                     t.addIcon(i, {icon: data.icon});
                     t.updateAndReselectNode(i, data);
                   }
                   if (res.success == 2) {
-                    Notify.error(res.info);
+                    pgAdmin.Browser.notifier.error(res.info);
                   }
                 })
                 .catch((error)=>{
-                  Notify.pgRespErrorNotify(error);
+                  pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                   t.refresh(i);
                 });
             }, function() {/*This is intentional (SonarQube)*/}
@@ -218,7 +215,7 @@ define('pgadmin.node.table', [
           if (!d)
             return false;
 
-          Notify.confirm(
+          pgAdmin.Browser.notifier.confirm(
             gettext('Reset statistics'),
             gettext('Are you sure you want to reset the statistics for table "%s"?', d._label),
             function () {
@@ -226,7 +223,7 @@ define('pgadmin.node.table', [
               getApiInstance().delete(obj.generate_url(i, 'reset' , d, true))
                 .then(({data: res})=>{
                   if (res.success == 1) {
-                    Notify.success(res.info);
+                    pgAdmin.Browser.notifier.success(res.info);
                     t.removeIcon(i);
                     data.icon = data.is_partitioned ? 'icon-partition': 'icon-table';
                     t.addIcon(i, {icon: data.icon});
@@ -234,7 +231,7 @@ define('pgadmin.node.table', [
                   }
                 })
                 .catch((error)=>{
-                  Notify.pgRespErrorNotify(error);
+                  pgAdmin.Browser.notifier.pgRespErrorNotify(error);
                   t.refresh(i);
                 });
             },
@@ -257,12 +254,12 @@ define('pgadmin.node.table', [
           // Fetch the total rows of a table
           getApiInstance().get(obj.generate_url(i, 'count_rows' , newD, true))
             .then(({data: res})=>{
-              Notify.success(res.info, null);
+              pgAdmin.Browser.notifier.success(res.info, null);
               d.rows_cnt = res.data.total_rows;
               t.updateAndReselectNode(i, d);
             })
             .catch((error)=>{
-              Notify.pgRespErrorNotify(error);
+              pgAdmin.Browser.notifier.pgRespErrorNotify(error);
               t.refresh(i);
             });
         },

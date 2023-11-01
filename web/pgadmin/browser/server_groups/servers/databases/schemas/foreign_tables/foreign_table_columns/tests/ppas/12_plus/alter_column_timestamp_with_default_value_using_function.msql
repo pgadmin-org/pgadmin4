@@ -1,0 +1,8 @@
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_3_$%{}[]()&*^!@""'`\/#" TYPE time(10) with time zone ;
+
+ALTER FOREIGN TABLE IF EXISTS public."foreign_table_2_$%{}[]()&*^!@""'`\/#"
+    ALTER COLUMN "col_3_$%{}[]()&*^!@""'`\/#" DROP NOT NULL;
+
+COMMENT ON COLUMN public."foreign_table_2_$%{}[]()&*^!@""'`\/#"."col_3_$%{}[]()&*^!@""'`\/#"
+    IS 'test comment modification';

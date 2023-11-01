@@ -7,14 +7,10 @@
 //
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
-import SchemaView from '../../../pgadmin/static/js/SchemaView';
+
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import ForeignTableSchema, { ColumnSchema, CheckConstraintSchema } from '../../../pgadmin/browser/server_groups/servers/databases/schemas/foreign_tables/static/js/foreign_table.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
-import Theme from '../../../pgadmin/static/js/Theme';
 
 class MockSchema extends BaseUISchema {
   get baseFields() {
@@ -23,7 +19,7 @@ class MockSchema extends BaseUISchema {
 }
 
 describe('ForeignTableSchema', ()=>{
-  let mount;
+
   let schemaObj = new ForeignTableSchema(
     ()=>new MockSchema(),
     ()=>new MockSchema(),
@@ -44,35 +40,25 @@ describe('ForeignTableSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     state.ftsrvname = null;
     schemaObj.validate(state, setError);
@@ -134,8 +120,8 @@ describe('ForeignTableSchema', ()=>{
     };
 
     beforeEach(()=>{
-      spyOn(schemaObj, 'getTableOid').and.returnValue(123456);
-      spyOn(schemaObj, 'getColumns').and.returnValue(Promise.resolve([inheritCol]));
+      jest.spyOn(schemaObj, 'getTableOid').mockReturnValue(123456);
+      jest.spyOn(schemaObj, 'getColumns').mockReturnValue(Promise.resolve([inheritCol]));
       deferredDepChange = _.find(schemaObj.fields, (f)=>f.id=='inherits')?.deferredDepChange;
     });
 
@@ -188,7 +174,7 @@ describe('ForeignTableSchema', ()=>{
 
 
 describe('ForeignTableColumnSchema', ()=>{
-  let mount;
+
   let schemaObj = new ColumnSchema(
     {},
     ()=>new MockSchema(),
@@ -202,47 +188,34 @@ describe('ForeignTableColumnSchema', ()=>{
   );
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
+
+
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
   it('column editable', ()=>{
     let state = {};
-    let editable = _.find(schemaObj.fields, (f)=>f.id=='attname').editable;
+    let editable = _.find(schemaObj.fields, (f)=>f.id=='name').editable;
     let status = editable(state);
     expect(status).toBe(true);
   });
 
-  it('typdefault editable', ()=>{
-    let state = {};
-    let editable = _.find(schemaObj.fields, (f)=>f.id=='typdefault').editable;
-    let status = editable(state);
-    expect(status).toBe(true);
-  });
-
-  it('typdefault_edit', ()=>{
+  it('typdefault_edit', async ()=>{
     let defaultSchemaObj = new ForeignTableSchema(
       ()=>new MockSchema(),
       ()=>new MockSchema(),
@@ -264,29 +237,12 @@ describe('ForeignTableColumnSchema', ()=>{
 
     let initData = ()=>Promise.resolve({typlen: 1, inheritedid: 1, inheritedfrom: 'public'});
 
-    mount(<Theme>
-      <SchemaView
-        formType='dialog'
-        schema={defaultSchemaObj}
-        getInitData={initData}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{/*This is intentional (SonarQube)*/}}
-        onClose={()=>{/*This is intentional (SonarQube)*/}}
-        onHelp={()=>{/*This is intentional (SonarQube)*/}}
-        onEdit={()=>{/*This is intentional (SonarQube)*/}}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-      />
-    </Theme> );
+    await getEditView(defaultSchemaObj, initData);
   });
 
 
 
-  it('attstattarget', ()=>{
+  it('attstattarget', async ()=>{
     let defaultSchemaObj = new ForeignTableSchema(
       ()=>new MockSchema(),
       ()=>new MockSchema(),
@@ -314,58 +270,31 @@ describe('ForeignTableColumnSchema', ()=>{
 
     });
 
-    mount(<Theme>
-      <SchemaView
-        formType='dialog'
-        schema={defaultSchemaObj}
-        getInitData={initData}
-        viewHelperProps={{
-          mode: 'edit',
-        }}
-        onSave={()=>{/*This is intentional (SonarQube)*/}}
-        onClose={()=>{/*This is intentional (SonarQube)*/}}
-        onHelp={()=>{/*This is intentional (SonarQube)*/}}
-        onEdit={()=>{/*This is intentional (SonarQube)*/}}
-        onDataChange={()=>{/*This is intentional (SonarQube)*/}}
-        confirmOnCloseReset={false}
-        hasSQL={false}
-        disableSqlHelp={false}
-      />
-    </Theme>);
+    await getEditView(defaultSchemaObj, initData);
   });
 
 });
 
 
 describe('ForeignTableCheckConstraint', ()=>{
-  let mount;
+
   let schemaObj = new CheckConstraintSchema();
   let getInitData = ()=>Promise.resolve({});
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
 
   beforeEach(()=>{
     genericBeforeEach();
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
   it('conname editable', ()=>{
@@ -395,7 +324,7 @@ describe('ForeignTableCheckConstraint', ()=>{
     let status = editable(state);
     expect(status).toBe(true);
 
-    spyOn(schemaObj, 'isNew').and.returnValue(false);
+    jest.spyOn(schemaObj, 'isNew').mockReturnValue(false);
     editable = _.find(schemaObj.fields, (f)=>f.id=='convalidated').editable;
     status = editable(state);
     expect(status).toBe(true);

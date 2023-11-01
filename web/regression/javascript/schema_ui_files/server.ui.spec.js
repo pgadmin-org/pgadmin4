@@ -7,14 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
 import pgAdmin from 'sources/pgadmin';
 import ServerSchema from '../../../pgadmin/browser/server_groups/servers/static/js/server.ui';
 import {genericBeforeEach, getCreateView, getEditView, getPropertiesView} from '../genericFunctions';
 
 describe('ServerSchema', ()=>{
-  let mount;
+
   let schemaObj = new ServerSchema([{
     label: 'Servers', value: 1,
   }], 0, {
@@ -22,36 +21,26 @@ describe('ServerSchema', ()=>{
   });
   let getInitData = ()=>Promise.resolve({});
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
   beforeEach(()=>{
     genericBeforeEach();
     pgAdmin.Browser.utils.support_ssh_tunnel = true;
   });
 
-  it('create', ()=>{
-    mount(getCreateView(schemaObj));
+  it('create', async ()=>{
+    await getCreateView(schemaObj);
   });
 
-  it('edit', ()=>{
-    mount(getEditView(schemaObj, getInitData));
+  it('edit', async ()=>{
+    await getEditView(schemaObj, getInitData);
   });
 
-  it('properties', ()=>{
-    mount(getPropertiesView(schemaObj, getInitData));
+  it('properties', async ()=>{
+    await getPropertiesView(schemaObj, getInitData);
   });
 
   it('validate', ()=>{
     let state = {};
-    let setError = jasmine.createSpy('setError');
+    let setError = jest.fn();
 
     schemaObj.validate(state, setError);
     expect(setError).toHaveBeenCalledWith('host', 'Either Host name or Service must be specified.');
@@ -84,6 +73,6 @@ describe('ServerSchema', ()=>{
     expect(setError).toHaveBeenCalledWith('tunnel_identity_file', 'SSH Tunnel identity file must be specified.');
 
     state.tunnel_identity_file = '/file/path/xyz.pem';
-    expect(schemaObj.validate(state, setError)).toBeFalse();
+    expect(schemaObj.validate(state, setError)).toBe(false);
   });
 });

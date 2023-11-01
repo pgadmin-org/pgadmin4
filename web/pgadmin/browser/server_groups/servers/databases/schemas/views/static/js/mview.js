@@ -8,20 +8,19 @@
 //////////////////////////////////////////////////////////////
 
 import MViewSchema from './mview.ui';
-import { getNodeListByName } from '../../../../../../../static/js/node_ajax';
+import { getNodeListByName, getNodeAjaxOptions } from '../../../../../../../static/js/node_ajax';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
 import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui';
-import Notify from '../../../../../../../../static/js/helpers/Notifier';
 import _ from 'lodash';
 import getApiInstance from '../../../../../../../../static/js/api_instance';
 
 define('pgadmin.node.mview', [
-  'sources/gettext', 'sources/url_for', 'jquery',
+  'sources/gettext', 'sources/url_for',
   'sources/pgadmin', 'pgadmin.browser',
   'pgadmin.node.schema.dir/child',
   'pgadmin.node.schema.dir/schema_child_tree_node', 'sources/utils',
 ], function(
-  gettext, url_for, $, pgAdmin, pgBrowser,
+  gettext, url_for, pgAdmin, pgBrowser,
   schemaChild, schemaChildTreeNode, commonUtils
 ) {
 
@@ -40,6 +39,7 @@ define('pgadmin.node.mview', [
         type: 'coll-mview',
         columns: ['name', 'owner', 'comment'],
         hasStatistics: true,
+        statsPrettifyFields: [gettext('Total Size')],
         canDrop: schemaChildTreeNode.isTreeItemOfChildOfSchema,
         canDropCascade: schemaChildTreeNode.isTreeItemOfChildOfSchema,
       });
@@ -66,6 +66,9 @@ define('pgadmin.node.mview', [
       hasSQL: true,
       hasDepends: true,
       hasStatistics: true,
+      statsPrettifyFields: [gettext('Total Size'), gettext('Indexes size'), gettext('Table size'),
+        gettext('TOAST table size'), gettext('Tuple length'),
+        gettext('Dead tuple length'), gettext('Free space')],
       hasScriptTypes: ['create', 'select'],
       collection_type: 'coll-mview',
       width: pgBrowser.stdW.md + 'px',
@@ -140,6 +143,7 @@ define('pgadmin.node.mview', [
             spcname: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=> {
               return (m.label != 'pg_global');
             }),
+            table_amname_list: ()=>getNodeAjaxOptions('get_access_methods', this, treeNodeInfo, itemNodeData),
             nodeInfo: treeNodeInfo,
           },
           {
@@ -171,7 +175,7 @@ define('pgadmin.node.mview', [
           if (pgBrowser.tree.hasParent(j)) {
             j = pgBrowser.tree.parent(j);
           } else {
-            Notify.alert(gettext('Please select server or child node from tree.'));
+            pgAdmin.Browser.notifier.alert(gettext('Please select server or child node from tree.'));
             break;
           }
         }
@@ -188,7 +192,7 @@ define('pgadmin.node.mview', [
         api.get(obj.generate_url(i, 'check_utility_exists' , d, true))
           .then(({data: res})=>{
             if (!res.success) {
-              Notify.alert(
+              pgAdmin.Browser.notifier.alert(
                 gettext('Utility not found'),
                 res.errormsg
               );
@@ -201,20 +205,20 @@ define('pgadmin.node.mview', [
                   //Do nothing as we are creating the job and exiting from the main dialog
                   pgBrowser.BgProcessManager.startProcess(refreshed_res.data.job_id, refreshed_res.data.desc);
                 } else {
-                  Notify.alert(
+                  pgAdmin.Browser.notifier.alert(
                     gettext('Failed to create materialized view refresh job.'),
                     refreshed_res.errormsg
                   );
                 }
               })
               .catch((error)=>{
-                Notify.pgRespErrorNotify(
+                pgAdmin.Browser.notifier.pgRespErrorNotify(
                   error, gettext('Failed to create materialized view refresh job.')
                 );
               });
           })
           .catch(()=>{
-            Notify.alert(
+            pgAdmin.Browser.notifier.alert(
               gettext('Utility not found'),
               gettext('Failed to fetch Utility information')
             );

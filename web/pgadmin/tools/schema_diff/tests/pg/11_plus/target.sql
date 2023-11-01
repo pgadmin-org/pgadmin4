@@ -363,7 +363,6 @@ CREATE RULE rule3 AS
 
 REFRESH MATERIALIZED VIEW test_schema_diff."MView";
 
-
 --
 -- TOC entry 12284 (class 1259 OID 347823)
 -- Name: test view; Type: VIEW; Schema: test_schema_diff; Owner: postgres
@@ -402,7 +401,7 @@ CREATE VIEW test_schema_diff."test view" AS
     pg_class.relacl,
     pg_class.reloptions,
     pg_class.relpartbound
-   FROM pg_class
+   FROM pg_catalog.pg_class
  LIMIT 10;
 
 
@@ -1108,4 +1107,3 @@ ALTER SUBSCRIPTION subscription_test1_in_target
     RENAME TO subscription_test_in_target;
 
 DROP SUBSCRIPTION subscription_test_in_target;
-

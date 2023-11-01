@@ -118,7 +118,6 @@ export class FileTreeX extends React.Component<IFileTreeXProps> {
       setPseudoActiveFile: this.setPseudoActiveFile,
       toggleDirectory: this.toggleDirectory,
       closeDir: this.closeDir,
-      remove: this.removeDir,
       newFile: async (dirOrPath: Directory | string) => this.supervisePrompt(await handle.promptNewFile(dirOrPath as string)),
       newFolder: async (dirOrPath: Directory | string) => this.supervisePrompt(await handle.promptNewDirectory(dirOrPath as string)),
       onBlur: (callback) => this.events.add(FileTreeXEvent.OnBlur, callback),

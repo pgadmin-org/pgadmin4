@@ -113,7 +113,7 @@ export class PartitionKeysSchema extends BaseUISchema {
   }
 }
 export class PartitionsSchema extends BaseUISchema {
-  constructor(nodeInfo, getCollations, getOperatorClass, getAttachTables=()=>[]) {
+  constructor(nodeInfo, getCollations, getOperatorClass, getAttachTables=()=>[], table_amname_list) {
     super({
       oid: undefined,
       is_attach: false,
@@ -126,11 +126,13 @@ export class PartitionsSchema extends BaseUISchema {
       values_remainder: undefined,
       is_sub_partitioned: false,
       sub_partition_type: 'range',
+      amname: undefined,
     });
 
     this.subPartitionsObj = new PartitionKeysSchema([], getCollations, getOperatorClass);
     this.getAttachTables = getAttachTables;
     this.nodeInfo = nodeInfo;
+    this.table_amname_list = table_amname_list;
   }
 
   changeColumnOptions(columns) {
@@ -198,6 +200,29 @@ export class PartitionsSchema extends BaseUISchema {
       readonly: function(state) {
         return !obj.isNew(state);
       }, noEmpty: true,
+    },{
+      id: 'amname', label: gettext('Access Method'), deps: ['is_sub_partitioned'], cell: 'select',
+      type: (state)=>{
+        return {
+          type: 'select', options: this.table_amname_list,
+          controlProps: {
+            allowClear: obj.isNew(state) ? true : false,
+          }
+        };
+      }, min_version: 120000, disabled: state => {
+        if (obj.getServerVersion() < 150000 && !obj.isNew(state)) {
+          return true;
+        }
+        return state.is_sub_partitioned;
+      }, depChange: state => {
+        if (state.is_sub_partitioned) {
+          return {
+            amname: undefined
+          };
+        }
+      }, readonly: function(state) {
+        return !obj.isNew(state);
+      },
     },{
       id: 'is_default', label: gettext('Default'), type: 'switch', cell:'switch',
       width: 55, disableResizing: true, min_version: 110000,

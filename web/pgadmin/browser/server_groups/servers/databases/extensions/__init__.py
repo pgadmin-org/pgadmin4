@@ -407,7 +407,13 @@ class ExtensionView(PGChildNodeView, SchemaDiffObjectCompare):
         """
         This function returns modified SQL
         """
-        data = request.args.copy()
+        data = {}
+        for k, v in request.args.items():
+            try:
+                data[k] = json.loads(v)
+            except ValueError:
+                data[k] = v
+
         try:
             SQL, name = self.getSQL(gid, sid, data, did, eid)
             # Most probably this is due to error

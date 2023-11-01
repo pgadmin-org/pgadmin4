@@ -22,7 +22,7 @@ import { getNodeVacuumSettingsSchema } from '../../../../../static/js/vacuum.ui'
 import { getNodeForeignKeySchema } from '../../constraints/foreign_key/static/js/foreign_key.ui';
 import { getNodeExclusionConstraintSchema } from '../../constraints/exclusion_constraint/static/js/exclusion_constraint.ui';
 import { getNodePrivilegeRoleSchema } from '../../../../../static/js/privilege.ui';
-import Notify from '../../../../../../../../static/js/helpers/Notifier';
+import pgAdmin from 'sources/pgadmin';
 
 export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
   const spcname = ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
@@ -45,6 +45,7 @@ export function getNodeTableSchema(treeNodeInfo, itemNodeData, pgBrowser) {
       coll_inherits: ()=>getNodeAjaxOptions('get_inherits', tableNode, treeNodeInfo, itemNodeData),
       typname: ()=>getNodeAjaxOptions('get_oftype', tableNode, treeNodeInfo, itemNodeData),
       like_relation: ()=>getNodeAjaxOptions('get_relations', tableNode, treeNodeInfo, itemNodeData),
+      table_amname_list: ()=>getNodeAjaxOptions('get_table_access_methods', tableNode, treeNodeInfo, itemNodeData),
     },
     treeNodeInfo,
     {
@@ -112,7 +113,7 @@ export class ConstraintsSchema extends BaseUISchema {
       schema: this.primaryKeyObj,
       editable: false, type: 'collection',
       group: gettext('Primary Key'), mode: ['edit', 'create'],
-      canEdit: true, canDelete: true, deps:['is_partitioned', 'typname'],
+      canEdit: true, canDelete: true, deps:['is_partitioned', 'typname', 'columns'],
       columns : ['name', 'columns'],
       disabled: this.inCatalog,
       canAdd: function(state) {
@@ -134,6 +135,20 @@ export class ConstraintsSchema extends BaseUISchema {
             ...c, is_primary_key: columns.indexOf(c.name) > -1,
           }));
           return {columns: state.columns};
+        }
+        /* If column or primary key is deleted */
+        if(actionObj.type === SCHEMA_STATE_ACTIONS.DELETE_ROW) {
+          let deletedColumn = _.differenceBy(actionObj.oldState.columns,state.columns,'cid');
+          if(deletedColumn.length && deletedColumn[0].is_primary_key && !obj.top.isNew(state)) {
+            state.columns = state.columns.map(c=>({
+              ...c, is_primary_key: false
+            }));
+            return {primary_key: []};
+          } else if(source[0] === 'primary_key') {
+            state.columns = state.columns.map(c=>({
+              ...c, is_primary_key: false
+            }));
+          }
         }
       }
     },{
@@ -231,6 +246,10 @@ export class LikeSchema extends BaseUISchema {
         like_indexes: false,
         like_storage: false,
         like_comments: false,
+        like_compression: false,
+        like_generated: false,
+        like_identity: false,
+        like_statistics: false
       };
     }
   }
@@ -256,20 +275,44 @@ export class LikeSchema extends BaseUISchema {
         id: 'like_default_value', label: gettext('With default values?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_constraints', label: gettext('With constraints?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_indexes', label: gettext('With indexes?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_storage', label: gettext('With storage?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
       },{
         id: 'like_comments', label: gettext('With comments?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
+      },{
+        id: 'like_compression', label: gettext('With compression?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        min_version: 140000, inlineNext: true,
+      },{
+        id: 'like_generated', label: gettext('With generated?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        min_version: 120000, inlineNext: true,
+      },{
+        id: 'like_identity', label: gettext('With identity?'),
+        type: 'switch', mode: ['create'], deps: ['like_relation'],
+        disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
+        inlineNext: true,
+      },{
+        id: 'like_statistics', label: gettext('With statistics?'),
         type: 'switch', mode: ['create'], deps: ['like_relation'],
         disabled: this.isRelationDisable, depChange: (...args)=>obj.resetVals(...args),
       }
@@ -315,6 +358,7 @@ export default class TableSchema extends BaseUISchema {
       partition_type: 'range',
       is_partitioned: false,
       columns: [],
+      amname: undefined,
       ...initValues,
     });
 
@@ -324,7 +368,7 @@ export default class TableSchema extends BaseUISchema {
     this.nodeInfo = nodeInfo;
     this.getColumns = getColumns;
 
-    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables);
+    this.partitionsObj = new PartitionsSchema(this.nodeInfo, getCollations, getOperatorClass, getAttachTables, fieldOptions.table_amname_list);
     this.constraintsObj = this.schemas.constraints && this.schemas.constraints() || {};
     this.columnsSchema = this.schemas.columns && this.schemas.columns() || {};
     this.vacuumSettingsSchema = this.schemas.vacuum_settings && this.schemas.vacuum_settings() || {};
@@ -578,7 +622,7 @@ export default class TableSchema extends BaseUISchema {
       group: 'advanced', min_version: 90600,
       depChange: (state)=>{
         if (state.rlspolicy && this.origData.rlspolicy != state.rlspolicy) {
-          Notify.alert(
+          pgAdmin.Browser.notifier.alert(
             gettext('Check Policy?'),
             gettext('Please check if any policy exists. If no policy exists for the table, a default-deny policy is used, meaning that no rows are visible or can be modified by other users')
           );
@@ -708,7 +752,7 @@ export default class TableSchema extends BaseUISchema {
         };
         if(!isEmptyString(state.typname) && isEmptyString(actionObj.oldState.typname)) {
           return new Promise((resolve)=>{
-            Notify.confirm(
+            pgAdmin.Browser.notifier.confirm(
               gettext('Remove column definitions?'),
               gettext('Changing \'Of type\' will remove column definitions.'),
               function () {
@@ -729,6 +773,29 @@ export default class TableSchema extends BaseUISchema {
           });
         } else {
           return Promise.resolve(()=>{/*This is intentional (SonarQube)*/});
+        }
+      },
+    },
+    {
+      id: 'amname', label: gettext('Access Method'), group: 'advanced',
+      deps:['is_partitioned'], type: (state)=>{
+        return {
+          type: 'select', options: this.fieldOptions.table_amname_list,
+          controlProps: {
+            allowClear: obj.isNew(state) ? true : false,
+          }
+        };
+      }, mode: ['create', 'properties', 'edit'], min_version: 120000,
+      disabled: (state) => {
+        if (obj.getServerVersion() < 150000 && !obj.isNew(state)) {
+          return true;
+        }
+        return obj.isPartitioned(state);
+      }, depChange: state => {
+        if (state.is_partitioned) {
+          return {
+            amname: undefined
+          };
         }
       },
     },

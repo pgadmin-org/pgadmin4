@@ -7,8 +7,8 @@
 //
 //////////////////////////////////////////////////////////////
 import { makeStyles } from '@material-ui/styles';
-import React from 'react';
-import { PANELS, QUERY_TOOL_EVENTS } from '../QueryToolConstants';
+import React, { useContext } from 'react';
+import { PANELS, QUERY_TOOL_EVENTS, MAX_QUERY_LENGTH } from '../QueryToolConstants';
 import gettext from 'sources/gettext';
 import pgAdmin from 'sources/pgadmin';
 import _ from 'lodash';
@@ -25,9 +25,8 @@ import { InputSwitch } from '../../../../../../static/js/components/FormComponen
 import CodeMirror from '../../../../../../static/js/components/CodeMirror';
 import { DefaultButton } from '../../../../../../static/js/components/Buttons';
 import { useDelayedCaller } from '../../../../../../static/js/custom_hooks';
-import Notifier from '../../../../../../static/js/helpers/Notifier';
 import Loader from 'sources/components/Loader';
-import { LayoutEventsContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
+import { LayoutDockerContext, LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
 import PropTypes from 'prop-types';
 import { parseApiError } from '../../../../../../static/js/api_instance';
 import * as clipboard from '../../../../../../static/js/clipboard';
@@ -381,11 +380,11 @@ export function QueryHistory() {
   const [loaderText, setLoaderText] = React.useState('');
   const [,refresh] = React.useState({});
   const selectedEntry = qhu.current.getEntry(selectedItemKey);
-  const layoutEvenBus = React.useContext(LayoutEventsContext);
+  const layoutDocker = useContext(LayoutDockerContext);
   const listRef = React.useRef();
 
   React.useEffect(()=>{
-    layoutEvenBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
+    layoutDocker.eventBus.registerListener(LAYOUT_EVENTS.ACTIVE, (currentTabId)=>{
       currentTabId == PANELS.HISTORY && listRef.current?.focus();
     });
   }, []);
@@ -413,11 +412,18 @@ export function QueryHistory() {
       setSelectedItemKey(qhu.current.getNextItemKey());
     } catch (error) {
       console.error(error);
-      Notifier.error(gettext('Failed to fetch query history.') + parseApiError(error));
+      pgAdmin.Browser.notifier.error(gettext('Failed to fetch query history.') + parseApiError(error));
     }
     setLoaderText('');
 
     const pushHistory = (h)=>{
+      // Do not store query text if max lenght exceeds.
+      if(h?.query?.length > MAX_QUERY_LENGTH) {
+        h = {
+          ...h,
+          query: gettext(`-- Query text not stored as it exceeds maximum length of ${MAX_QUERY_LENGTH}`)
+        };
+      }
       qhu.current.addEntry(h);
       refresh({});
     };
@@ -441,7 +447,7 @@ export function QueryHistory() {
       setSelectedItemKey(qhu.current.clear(selectedItemKey));
     } catch (error) {
       console.error(error);
-      Notifier.error(gettext('Failed to remove query history.') + parseApiError(error));
+      pgAdmin.Browser.notifier.error(gettext('Failed to remove query history.') + parseApiError(error));
     }
     setLoaderText('');
   };
@@ -460,7 +466,7 @@ export function QueryHistory() {
           setSelectedItemKey(null);
         } catch (error) {
           console.error(error);
-          Notifier.error(gettext('Failed to remove query history.') + parseApiError(error));
+          pgAdmin.Browser.notifier.error(gettext('Failed to remove query history.') + parseApiError(error));
         }
         setLoaderText('');
       },

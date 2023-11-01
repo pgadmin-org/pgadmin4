@@ -37,8 +37,9 @@ import DepListener, {DepListenerContext} from './DepListener';
 import FieldSetView from './FieldSetView';
 import DataGridView from './DataGridView';
 import { useIsMounted } from '../custom_hooks';
-import Notify from '../helpers/Notifier';
 import ErrorBoundary from '../helpers/ErrorBoundary';
+import { usePgAdmin } from '../BrowserComponent';
+import { PgButtonGroup } from '../components/Buttons';
 
 const useDialogStyles = makeStyles((theme)=>({
   root: {
@@ -484,6 +485,7 @@ function SchemaDialogView({
   /* formErr has 2 keys - name and message.
   Footer message will be displayed if message is set.
   */
+  const pgAdmin = usePgAdmin();
   const [formErr, setFormErr] = useState({});
   const [loaderText, setLoaderText] = useState('');
   const [saving, setSaving] = useState(false);
@@ -493,7 +495,7 @@ function SchemaDialogView({
   const isNew = schema.isNew(schema.origData);
   const checkIsMounted = useIsMounted();
   const preFormReadyQueue = useRef([]);
-  const Notifier = props.Notifier || Notify;
+  const Notifier = props.Notifier || pgAdmin.Browser.notifier;
 
   const depListenerObj = useRef(new DepListener());
   /* The session data */
@@ -515,8 +517,6 @@ function SchemaDialogView({
   useEffect(()=>{
     /* if sessData changes, validate the schema */
     if(!formReady) return;
-    /* Set the _sessData, can be usefull to some deep controls */
-    schema._sessData = sessData;
     let isNotValid = validateSchema(schema, sessData, (path, message)=>{
       if(message) {
         setFormErr({
@@ -779,6 +779,8 @@ function SchemaDialogView({
   };
 
   let ButtonIcon = getButtonIcon();
+  /* Set the _sessData, can be usefull to some deep controls */
+  schema._sessData = sessData;
 
   /* I am Groot */
   return (
@@ -865,7 +867,7 @@ const usePropsStyles = makeStyles((theme)=>({
     flexGrow: 1,
   },
   toolbar: {
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(1),
     background: theme.palette.background.default,
     ...theme.mixins.panelBorder.bottom,
   },
@@ -888,6 +890,7 @@ function SchemaPropertiesView({
   const [origData, setOrigData] = useState({});
   const [loaderText, setLoaderText] = useState('');
   const checkIsMounted = useIsMounted();
+  const pgAdmin = usePgAdmin();
 
   useEffect(()=>{
     setLoaderText('Loading...');
@@ -903,7 +906,7 @@ function SchemaPropertiesView({
       }
     }).catch((err)=>{
       setLoaderText('');
-      Notify.pgRespErrorNotify(err);
+      pgAdmin.Browser.notifier.pgRespErrorNotify(err);
     });
   }, []);
 
@@ -998,11 +1001,13 @@ function SchemaPropertiesView({
     <Box className={classes.root}>
       <Loader message={loaderText}/>
       <Box className={classes.toolbar}>
-        <PgIconButton
-          data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
-          title="SQL help for this object type." className={classes.buttonMargin} />
-        <PgIconButton data-test="edit"
-          onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
+        <PgButtonGroup size="small">
+          <PgIconButton
+            data-test="help" onClick={()=>props.onHelp(true, false)} icon={<InfoIcon />} disabled={props.disableSqlHelp}
+            title="SQL help for this object type." />
+          <PgIconButton data-test="edit"
+            onClick={props.onEdit} icon={<EditIcon />} title={gettext('Edit object...')} />
+        </PgButtonGroup>
       </Box>
       <Box className={clsx(classes.form, classes.formProperties)}>
         <Box>

@@ -7,46 +7,26 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import ForgotPasswordPage from '../../../pgadmin/static/js/SecurityPages/ForgotPasswordPage';
 
 describe('ForgotPasswordPage', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
   let ctrlMount = (props)=>{
-    return mount(<Theme>
+    return render(<Theme>
       <ForgotPasswordPage {...props}/>
     </Theme>);
   };
 
-  it('basic', (done)=>{
+  it('basic', ()=>{
     const ctrl = ctrlMount({
       actionUrl: '/forgot/url',
       csrfToken: 'some-token',
     });
-    setTimeout(()=>{
-      expect(ctrl.find('form')).toHaveProp('action', '/forgot/url');
-      expect(ctrl.find('input[name="email"]')).toExist();
-      ctrl.unmount();
-      done();
-    }, 100);
+    expect(ctrl.container.querySelector('form').getAttribute('action')).toBe('/forgot/url');
+    expect(ctrl.container.querySelector('input[name="email"]')).not.toBeNull();
   });
 });

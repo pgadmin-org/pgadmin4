@@ -62,7 +62,7 @@ export default class PrivilegeRoleSchema extends BaseUISchema {
       disabled : function(state) {
         return !(
           obj.nodeInfo &&
-            obj.nodeInfo.server.user.name == state['grantor']
+            obj.nodeInfo.server?.user?.name == state['grantor']
         );
       },
     },

@@ -12,6 +12,10 @@ installed in Server mode. You can copy these settings from *config.py* file
 and modify the values for the following parameters:
 
 
+.. _AzureAD: https://learn.microsoft.com/en-us/security/zero-trust/develop/configure-tokens-group-claims-app-roles
+.. _GitLab: https://docs.gitlab.com/ee/integration/openid_connect_provider.html#shared-information
+
+
 .. csv-table::
    :header: "**Parameter**", "**Description**"
    :class: longtable
@@ -39,11 +43,16 @@ and modify the values for the following parameters:
     "OAUTH2_AUTO_CREATE_USER", "Set the value to *True* if you want to automatically
     create a pgAdmin user corresponding to a successfully authenticated Oauth2 user.
     Please note that password is not stored in the pgAdmin database."
+    "OAUTH2_ADDITIONAL_CLAIMS", "If a dictionary is provided, pgAdmin will check for a matching key and value on the user profile.
+    In case the profile does not have any match with the provided config, the user will receive an authorization error.
+    Useful for checking AzureAD_ *wids* or *groups*, GitLab_ *owner*, *maintainer* and *reporter* claims."
 
 Redirect URL
 ============
 
-The redirect url to configure Oauth2 server is *http://<pgAdmin Server URL>/oauth2/authorize*
+The redirect url to configure Oauth2 server is *<http/https>://<pgAdmin Server URL>/oauth2/authorize*
+After successful application authorization, the authorization server will redirect the user back to the pgAdmin url
+specified here. Select https scheme if your pgAdmin server serves over https protocol otherwise select http.
 
 Master Password
 ===============

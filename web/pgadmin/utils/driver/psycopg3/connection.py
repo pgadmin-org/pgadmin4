@@ -22,7 +22,7 @@ import psycopg
 from flask import g, current_app
 from flask_babel import gettext
 from flask_security import current_user
-from pgadmin.utils.crypto import decrypt, encrypt
+from pgadmin.utils.crypto import decrypt
 from psycopg._encodings import py_codecs as encodings
 
 import config
@@ -39,6 +39,7 @@ from pgadmin.utils import csv
 from pgadmin.utils.master_password import get_crypt_key
 from io import StringIO
 from pgadmin.utils.locker import ConnectionLocker
+from pgadmin.utils.driver import get_driver
 
 
 # On Windows, Psycopg is not compatible with the default ProactorEventLoop.
@@ -184,6 +185,8 @@ class Connection(BaseConnection):
         self.reconnecting = False
         self.use_binary_placeholder = use_binary_placeholder
         self.array_to_string = array_to_string
+        self.qtLiteral = get_driver(config.PG_DEFAULT_DRIVER).qtLiteral
+
         super(Connection, self).__init__()
 
     def as_dict(self):
@@ -357,12 +360,15 @@ class Connection(BaseConnection):
                         return await psycopg.AsyncConnection.connect(
                             connection_string,
                             cursor_factory=AsyncDictCursor,
-                            autocommit=autocommit)
+                            autocommit=autocommit,
+                            prepare_threshold=manager.prepare_threshold
+                        )
                     pg_conn = asyncio.run(connectdbserver())
                 else:
                     pg_conn = psycopg.Connection.connect(
                         connection_string,
-                        cursor_factory=DictCursor)
+                        cursor_factory=DictCursor,
+                        prepare_threshold=manager.prepare_threshold)
 
         except psycopg.Error as e:
             manager.stop_ssh_tunnel()
@@ -442,12 +448,13 @@ class Connection(BaseConnection):
             role = manager.role
 
         if is_set_role:
-            _query = "SELECT rolname from pg_roles WHERE rolname = '{0}'" \
-                     "".format(role)
+            _query = "SELECT rolname from pg_roles WHERE rolname = {0}" \
+                     "".format(self.qtLiteral(role, self.conn))
             _status, res = self.execute_scalar(_query)
 
             if res:
-                status = self._execute(cur, "SET ROLE TO {0}".format(role))
+                status = self._execute(cur, "SET ROLE TO {0}".format(
+                    self.qtLiteral(role, self.conn)))
             else:
                 # If role is not found then set the status to role
                 # for showing the proper error message
@@ -491,8 +498,6 @@ class Connection(BaseConnection):
 
         register_string_typecasters(self.conn)
 
-        status, cur = self.__cursor()
-
         manager = self.manager
 
         # autocommit flag does not work with asynchronous connections.
@@ -509,6 +514,8 @@ class Connection(BaseConnection):
         #
         postgres_encoding, self.python_encoding = \
             get_encoding(self.conn.info.encoding)
+
+        status, cur = self.__cursor()
 
         # Note that we use 'UPDATE pg_settings' for setting bytea_output as a
         # convenience hack for those running on old, unsupported versions of
@@ -1338,7 +1345,7 @@ WHERE db.datname = current_database()""")
 
         more_results = True
         while more_results:
-            if self.row_count > 0:
+            if cur.get_rowcount() > 0:
                 result = []
                 try:
                     if records == -1:

@@ -7,27 +7,24 @@
 //
 //////////////////////////////////////////////////////////////
 
-import {TreeFake} from '../tree/tree_fake';
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
-import Theme from '../../../pgadmin/static/js/Theme';
+
+import { act, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios/index';
 import pgAdmin from 'sources/pgadmin';
-import SearchObjects from '../../../pgadmin/tools/search_objects/static/js/SearchObjects';
+import Theme from '../../../pgadmin/static/js/Theme';
 import { TreeNode } from '../../../pgadmin/static/js/tree/tree_nodes';
+import SearchObjects from '../../../pgadmin/tools/search_objects/static/js/SearchObjects';
+import { TreeFake } from '../tree/tree_fake';
 
 const nodeData = {server: {'_id' : 10}, database: {'_id': 123}};
 
 describe('SearchObjects', ()=>{
-  let mount, networkMock;
+  let networkMock;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
     networkMock = new MockAdapter(axios);
     networkMock.onGet('/search_objects/types/10/123').reply(200, {data: [{cast: 'Casts', function: 'Functions'}]});
     networkMock.onGet('/search_objects/search/10/123').reply(200, {data: [
@@ -77,57 +74,15 @@ describe('SearchObjects', ()=>{
         'catalog_level': 'N'
       }
     ]});
+
+    pgAdmin.Browser.tree = new TreeFake(pgAdmin.Browser);
   });
 
   afterAll(() => {
-    mount.cleanUp();
     networkMock.restore();
   });
 
   beforeEach(()=>{
-    jasmineEnzyme();
-    pgAdmin.Browser = pgAdmin.Browser || {};
-    pgAdmin.Browser.Nodes = {
-      server: {
-        hasId: true,
-        getTreeNodeHierarchy: jasmine.createSpy('getTreeNodeHierarchy'),
-      },
-      database: {
-        hasId: true,
-        getTreeNodeHierarchy: jasmine.createSpy('getTreeNodeHierarchy'),
-      },
-      'coll-sometype': {
-        type: 'coll-sometype',
-        hasId: false,
-        label: 'Some types coll',
-      },
-      sometype: {
-        type: 'sometype',
-        hasId: true,
-      },
-      someothertype: {
-        type: 'someothertype',
-        hasId: true,
-        collection_type: 'coll-sometype',
-      },
-      'coll-edbfunc': {
-        type: 'coll-edbfunc',
-        hasId: true,
-        label: 'Functions',
-      },
-      'coll-edbproc': {
-        type: 'coll-edbfunc',
-        hasId: true,
-        label: 'Procedures',
-      },
-      'coll-edbvar': {
-        type: 'coll-edbfunc',
-        hasId: true,
-        label: 'Variables',
-      },
-    };
-    pgAdmin.Browser.tree = new TreeFake(pgAdmin.Browser);
-
     let serverTreeNode = pgAdmin.Browser.tree.addNewNode('level2.1', {
         _type: 'server',
         _id: 10,
@@ -138,53 +93,34 @@ describe('SearchObjects', ()=>{
         _id: 123,
         _label: 'some-database-label',
       }, [{id: 'database-tree-node'}]);
-
     pgAdmin.Browser.tree.addChild(serverTreeNode, databaseTreeNode);
   });
 
   describe('SearchObjects', ()=>{
-    let ctrlMount = ()=>{
-      return mount(<Theme>
-        <SearchObjects nodeData={nodeData}/>
-      </Theme>);
+    let ctrl;
+    let ctrlMount = async ()=>{
+      await act(async ()=>{
+        ctrl = await render(
+          <Theme>
+            <SearchObjects nodeData={nodeData}/>
+          </Theme>
+        );
+      });
+      return render();
     };
-    print(ctrlMount);
+    const user = userEvent.setup();
 
-    // Comment out the below jasmine test case due to
-    // "ResizeObserver loop limit exceeded" error message.
-    //
-    //    it('search', (done)=>{
-    //      let ctrl = ctrlMount();
-    //      setTimeout(()=>{
-    //        ctrl.update();
-    //        ctrl.find('InputText').find('input').simulate('change', {
-    //          target: {value: 'plp'},
-    //        });
-    //        ctrl.update();
-    //        setTimeout(()=>{
-    //          ctrl.find('button[data-test="search"]').simulate('click');
-    //          expect(ctrl.find('PgReactDataGrid').length).toBe(1);
-    //          done();
-    //        }, 0);
-    //      }, 0);
-    //    });
-    //
-    //    it('search_on_enter', (done)=>{
-    //      let ctrl = ctrlMount();
-    //      setTimeout(()=>{
-    //        ctrl.update();
-    //        ctrl.find('InputText').find('input').simulate('change', {
-    //          target: {value: 'plp'},
-    //        });
-    //        ctrl.update();
-    //        setTimeout(()=>{
-    //          ctrl.find('InputText').find('input').simulate('keypress', {
-    //            key: 'Enter'
-    //          });
-    //          expect(ctrl.find('PgReactDataGrid').length).toBe(1);
-    //          done();
-    //        }, 0);
-    //      }, 0);
-    //    });
+    it('search', async ()=>{
+      await ctrlMount();
+      await user.type(ctrl.container.querySelector('input'), 'plp');
+      await user.click(ctrl.container.querySelector('button[data-test="search"]'), 'plp');
+      expect(ctrl.container.querySelectorAll('[data-test="react-data-grid"]').length).toBe(1);
+    });
+
+    it('search_on_enter', async ()=>{
+      await ctrlMount();
+      await user.type(ctrl.container.querySelector('input'), 'plp{Enter}');
+      expect(ctrl.container.querySelectorAll('[data-test="react-data-grid"]').length).toBe(1);
+    });
   });
 });

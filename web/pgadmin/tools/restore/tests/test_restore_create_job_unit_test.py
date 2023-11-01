@@ -18,6 +18,8 @@ from pgadmin.browser.server_groups.servers.databases.tests import utils as \
 from unittest.mock import patch, MagicMock
 from config import PG_DEFAULT_DRIVER
 
+RESTORE_JOB_URL = '/restore/job/{0}'
+
 
 class RestoreCreateJobTest(BaseTestGenerator):
     """Test the RestoreCreateJob class"""
@@ -43,7 +45,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  tables=[],
                  database='postgres'
              ),
-             url='/restore/job/{0}',
+             url=RESTORE_JOB_URL,
              expected_cmd_opts=['--verbose'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -69,7 +71,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  tables=[],
                  database='postgres'
              ),
-             url='/restore/job/{0}',
+             url=RESTORE_JOB_URL,
              expected_cmd_opts=['--verbose', '--format=d'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
@@ -100,7 +102,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_data=True,
                  only_schema=True
              ),
-             url='/restore/job/{0}',
+             url=RESTORE_JOB_URL,
              expected_cmd_opts=['--verbose', '--jobs', '2',
                                 '--section=pre-data', '--section=data',
                                 '--section=post-data'],
@@ -133,7 +135,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  only_schema=True,
                  dns_owner=True
              ),
-             url='/restore/job/{0}',
+             url=RESTORE_JOB_URL,
              expected_cmd_opts=['--verbose', '--data-only'],
              not_expected_cmd_opts=[],
              # Below options should be enabled once we fix the issue #3368
@@ -164,14 +166,15 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  dns_tablespace=True,
                  only_data=False
              ),
-             url='/restore/job/{0}',
+             url=RESTORE_JOB_URL,
              expected_cmd_opts=['--no-owner',
                                 '--no-tablespaces',
                                 '--no-privileges'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
-        ('When restore object with option - Do not save comments',
+        ('When restore object with option - Do not save comments, '
+         'Publications, Subscriptions, Security Labels',
          dict(
              class_params=dict(
                  sid=1,
@@ -190,22 +193,27 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  schemas=[],
                  tables=[],
                  database='postgres',
-                 no_comments=True,
+                 dns_comments=True,
+                 dns_publications=True,
+                 dns_subscriptions=True,
+                 dns_security_labels=True,
                  only_data=False
              ),
-             url='/restore/job/{0}',
-             expected_cmd_opts=['--no-comments'],
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['--no-comments', '--no-publications',
+                                '--no-subscriptions', '--no-security-labels'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None],
              server_min_version=110000,
-             message='Restore object with --no-comments is not supported '
-                     'by EPAS/PG server less than 11.0'
+             message='Restore object with --no-comments --no-publications,'
+                     '--no-subscriptions, --no-security-labels is not '
+                     'supported by EPAS/PG server less than 11.0'
          )),
-        ('When restore object with option - Queries',
+        ('When restore object with option - Do not save Table Access Method ',
          dict(
              class_params=dict(
                  sid=1,
-                 name='test_restore_file',
+                 name='test_restore_server',
                  port=5444,
                  host='localhost',
                  database='postgres',
@@ -213,7 +221,36 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  username='postgres'
              ),
              params=dict(
-                 file='test_backup_file',
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 custom=False,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 dns_table_access_method=True
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['--no-table-access-method'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None],
+             server_min_version=150000,
+             message='Restore object with --no-table-access-method is not '
+                     'supported by EPAS/PG server less than 15.0'
+         )),
+        ('When restore object with option - Queries',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
                  format='custom',
                  verbose=True,
                  schemas=[],
@@ -222,10 +259,40 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  clean=True,
                  include_create_database=True,
                  single_transaction=True,
+                 if_exists=True,
              ),
-             url='/restore/job/{0}',
+             url=RESTORE_JOB_URL,
              expected_cmd_opts=['--create', '--clean',
-                                '--single-transaction'],
+                                '--single-transaction', '--if-exists'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When restore object with Table options - enable row security and '
+         'No data for failed tables',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 enable_row_security=True,
+                 no_data_fail_table=True,
+                 only_schema=False
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['--enable-row-security',
+                                '--no-data-for-failed-tables'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -233,7 +300,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
          dict(
              class_params=dict(
                  sid=1,
-                 name='test_restore_file',
+                 name='test_restore_server',
                  port=5444,
                  host='localhost',
                  database='postgres',
@@ -241,19 +308,17 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  username='postgres'
              ),
              params=dict(
-                 file='test_backup_file',
+                 file='test_restore_file',
                  format='custom',
                  verbose=True,
                  schemas=[],
                  tables=[],
                  database='postgres',
                  disable_trigger=True,
-                 no_data_fail_table=True,
                  only_schema=False
              ),
-             url='/restore/job/{0}',
-             expected_cmd_opts=['--disable-triggers',
-                                '--no-data-for-failed-tables'],
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['--disable-triggers'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -261,7 +326,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
          dict(
              class_params=dict(
                  sid=1,
-                 name='test_restore_file',
+                 name='test_restore_server',
                  port=5444,
                  host='localhost',
                  database='postgres',
@@ -269,7 +334,7 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  username='postgres'
              ),
              params=dict(
-                 file='test_backup_file',
+                 file='test_restore_file',
                  format='custom',
                  verbose=True,
                  schemas=[],
@@ -278,10 +343,34 @@ class RestoreCreateJobTest(BaseTestGenerator):
                  use_set_session_auth=True,
                  exit_on_error=True,
              ),
-             url='/restore/job/{0}',
-             # Add '--use_set_session_auth' into
-             # expected_cmd_opts once #3363 fixed
-             expected_cmd_opts=['--exit-on-error'],
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['--exit-on-error',
+                                '--use-set-session-authorization'],
+             not_expected_cmd_opts=[],
+             expected_exit_code=[0, None]
+         )),
+        ('When restore object with option - Exclude schema',
+         dict(
+             class_params=dict(
+                 sid=1,
+                 name='test_restore_server',
+                 port=5444,
+                 host='localhost',
+                 database='postgres',
+                 bfile='test_restore',
+                 username='postgres'
+             ),
+             params=dict(
+                 file='test_restore_file',
+                 format='custom',
+                 verbose=True,
+                 schemas=[],
+                 tables=[],
+                 database='postgres',
+                 exclude_schema="sch*"
+             ),
+             url=RESTORE_JOB_URL,
+             expected_cmd_opts=['--exclude-schema', 'sch*'],
              not_expected_cmd_opts=[],
              expected_exit_code=[0, None]
          )),
@@ -305,20 +394,17 @@ class RestoreCreateJobTest(BaseTestGenerator):
         if os.name == 'nt':
             binary_path = binary_path + '.exe'
 
-        retVal = does_utility_exist(binary_path)
-        if retVal is not None:
-            self.skipTest(retVal)
+        ret_val = does_utility_exist(binary_path)
+        if ret_val is not None:
+            self.skipTest(ret_val)
 
-    @patch('pgadmin.tools.restore.Server')
-    @patch('pgadmin.tools.restore.current_user')
     @patch('pgadmin.tools.restore.RestoreMessage')
     @patch('pgadmin.tools.restore.filename_with_file_manager_path')
     @patch('pgadmin.tools.restore.BatchProcess')
     @patch('pgadmin.utils.driver.{0}.server_manager.ServerManager.'
            'export_password_env'.format(PG_DEFAULT_DRIVER))
     def runTest(self, export_password_env_mock, batch_process_mock,
-                filename_mock, restore_message_mock,
-                current_user_mock, server_mock):
+                filename_mock, restore_message_mock):
         class TestMockServer():
             def __init__(self, name, host, port, id, username):
                 self.name = name
@@ -336,8 +422,6 @@ class RestoreCreateJobTest(BaseTestGenerator):
                                   self.server_id,
                                   self.class_params['username']
                                   )
-        mock_result = server_mock.query.filter_by.return_value
-        mock_result.first.return_value = mock_obj
 
         filename_mock.return_value = self.params['file']
 

@@ -22,6 +22,7 @@ import getHightContrastTheme from './high_contrast';
 import { CssBaseline } from '@material-ui/core';
 import pickrOverride from './overrides/pickr.override';
 import uplotOverride from './overrides/uplot.override';
+import rcdockOverride from './overrides/rcdock.override';
 
 /* Common settings across all themes */
 let basicSettings = createTheme();
@@ -58,7 +59,7 @@ basicSettings = createTheme(basicSettings, {
     },
     PrivateTabIndicator: {
       root: {
-        height: '3px',
+        height: '2px',
         transition: basicSettings.transitions.create(['all'], {duration: '150ms'}),
       }
     },
@@ -88,7 +89,7 @@ basicSettings = createTheme(basicSettings, {
     MuiButton: {
       root: {
         textTransform: 'none',
-        padding: basicSettings.spacing(0.5, 1.5),
+        padding: '2px 10px',
         fontSize: 'inherit',
         '&.Mui-disabled': {
           opacity: 0.60,
@@ -108,7 +109,7 @@ basicSettings = createTheme(basicSettings, {
         }
       },
       outlined: {
-        padding: basicSettings.spacing(0.375, 1),
+        padding: '2px 10px',
       },
       startIcon: {
         marginRight: basicSettings.spacing(0.5),
@@ -150,9 +151,9 @@ basicSettings = createTheme(basicSettings, {
         fontWeight: basicSettings.typography.fontWeightBold,
       },
       content: {
-        margin: basicSettings.spacing(1),
+        margin: basicSettings.spacing(0.5),
         '&.Mui-expanded': {
-          margin: basicSettings.spacing(1),
+          margin: basicSettings.spacing(0.5),
         }
       },
       expandIcon: {
@@ -296,8 +297,11 @@ function getFinalTheme(baseTheme) {
     }
   };
 
-  return createTheme({
+  baseTheme = createTheme({
     mixins: mixins,
+  }, baseTheme);
+
+  return createTheme({
     overrides: {
       MuiCssBaseline: {
         '@global': {
@@ -313,8 +317,16 @@ function getFinalTheme(baseTheme) {
             margin: 0,
             padding: 0,
           },
+          textarea: {
+            fontFamily: 'inherit',
+          },
+          iframe: {
+            margin: 0,
+            padding: 0,
+          },
           ...pickrOverride(baseTheme),
           ...uplotOverride(baseTheme),
+          ...rcdockOverride(baseTheme),
         },
       },
       MuiOutlinedInput:  {
@@ -401,12 +413,18 @@ function getFinalTheme(baseTheme) {
       MuiAccordion: {
         root: {
           ...mixins.panelBorder,
+          '&.Mui-expanded': {
+            marginBottom: '8px',
+          },
         }
       },
       MuiAccordionSummary: {
         root: {
           ...mixins.panelBorder.bottom,
           backgroundColor: baseTheme.otherVars.headerBg,
+        },
+        content: {
+          margin: '4px',
         }
       },
       MuiToggleButtonGroup: {
@@ -558,6 +576,13 @@ function getFinalTheme(baseTheme) {
         },
         arrow: {
           color: baseTheme.palette.text.primary,
+        }
+      },
+      MuiTab: {
+        root: {
+          '&$selected': {
+            color: baseTheme.otherVars.activeColor,
+          },
         }
       }
     }

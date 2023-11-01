@@ -23,6 +23,13 @@ export default class SubscriptionSchema extends BaseUISchema{
       create_slot: true,
       copy_data:true,
       connect:true,
+      binary:false,
+      two_phase:false,
+      disable_on_error:false,
+      streaming:false,
+      password_required:true,
+      run_as_owner:false,
+      origin:'any',
       copy_data_after_refresh:false,
       sync:'off',
       refresh_pub: false,
@@ -45,6 +52,8 @@ export default class SubscriptionSchema extends BaseUISchema{
       ...fieldOptions,
     };
     this.node_info = node_info;
+    this.version=!_.isUndefined(this.node_info['node_info']) && !_.isUndefined(this.node_info['node_info'].version) && this.node_info['node_info'].version;
+
   }
   get idAttribute() {
     return 'oid';
@@ -356,6 +365,94 @@ export default class SubscriptionSchema extends BaseUISchema{
         {label: 'on', value: 'on'},
         {label: 'off', value: 'off'},
       ],
+    },
+    {
+      id: 'streaming',
+      label: gettext('Streaming'),
+      cell: 'text',
+      group: gettext('With'), mode: ['create', 'edit', 'properties'],
+      type: ()=>{
+        let options = [
+          {
+            'label': gettext('On'),
+            value: true,
+          },
+          {
+            'label': gettext('Off'),
+            value: false,
+          }
+        ];
+
+        if (obj.version >= 160000) {
+          options.push({
+            'label': gettext('Parallel'),
+            value: 'parallel',
+          });
+        }
+
+        return {
+          type: 'toggle',
+          options: options,
+        };
+      },
+      min_version: 140000,
+      helpMessage: gettext('Specifies whether to enable streaming of in-progress transactions for this subscription. By default, all transactions are fully decoded on the publisher and only then sent to the subscriber as a whole.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'binary', label: gettext('Binary?'),
+      type: 'switch', mode: ['create', 'edit', 'properties'],
+      group: gettext('With'),
+      min_version: 140000,
+      helpMessage: gettext('Specifies whether the subscription will request the publisher to send the data in binary format (as opposed to text). Even when this option is enabled, only data types having binary send and receive functions will be transferred in binary.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'two_phase', label: gettext('Two phase?'),
+      type: 'switch', mode: ['create', 'properties'],
+      group: gettext('With'),
+      min_version: 150000,
+      helpMessage: gettext('Specifies whether two-phase commit is enabled for this subscription.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'disable_on_error', label: gettext('Disable on error?'),
+      type: 'switch', mode: ['create', 'edit', 'properties'],
+      group: gettext('With'),
+      min_version: 150000,
+      helpMessage: gettext('Specifies whether the subscription should be automatically disabled if any errors are detected by subscription workers during data replication from the publisher.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'run_as_owner', label: gettext('Run as owner?'),
+      type: 'switch', mode: ['create', 'properties'],
+      group: gettext('With'),
+      min_version: 160000,
+      helpMessage: gettext('If true, all replication actions are performed as the subscription owner. If false, replication workers will perform actions on each table as the owner of that table.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'password_required', label: gettext('Password required?'),
+      type: 'switch', mode: ['create', 'edit', 'properties'],
+      group: gettext('With'),
+      min_version: 160000,
+      helpMessage: gettext('Specifies whether connections to the publisher made as a result of this subscription must use password authentication. Only superusers can set this value to false.'),
+      helpMessageMode: ['edit', 'create'],
+    },
+    {
+      id: 'origin', label: gettext('Origin'),
+      type: 'select', mode: ['create', 'edit', 'properties'],
+      group: gettext('With'),
+      controlProps: {
+        allowClear: false,
+      },
+      options: [
+        {label: gettext('none'), value: 'none'},
+        {label: gettext('any'), value: 'any'},
+      ],
+      min_version: 160000,
+      helpMessage: gettext('Specifies whether the subscription will request the publisher to only send changes that do not have an origin or send changes regardless of origin. Setting origin to none means that the subscription will request the publisher to only send changes that do not have an origin. Setting origin to any means that the publisher sends changes regardless of their origin.'),
+      helpMessageMode: ['edit', 'create'],
     },
     ];
   }

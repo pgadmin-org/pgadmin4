@@ -43,14 +43,7 @@ class SubscriptionDeleteTestCase(BaseTestGenerator):
         if not db_con['data']["connected"]:
             raise Exception(
                 "Could not connect to database to delete subscription.")
-        self.schema_id = schema_info["schema_id"]
-        self.schema_name = schema_info["schema_name"]
-        schema_response = schema_utils.verify_schemas(self.server,
-                                                      self.db_name,
-                                                      self.schema_name)
-        if not schema_response:
-            raise Exception("Could not find the schema to delete "
-                            "subscription.")
+
         self.subscription_name = "test_subscription_delete_%s" % (
             str(uuid.uuid4())[1:8])
 

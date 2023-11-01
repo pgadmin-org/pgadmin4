@@ -19,6 +19,9 @@ Use the fields in the *General* tab to identify the database:
 
 * Use the *Database* field to add a descriptive name for the database. The name
   will be displayed in the *pgAdmin* tree control.
+* Use the *OID* field to specify the object identifier to be used for the new
+  database. Users can specify the value greater than 16383. This option is available
+  from v15 and above.
 * Select the owner of the database from the drop-down listbox in the *Owner*
   field.
 * Store notes about the database in the *Comment* field.
@@ -38,11 +41,22 @@ Use the *Definition* tab to set properties for the database:
 * Select a tablespace from the drop-down listbox in the *Tablespace* field. The
   selected tablespace will be the default tablespace used to contain database
   objects.
+* Select the strategy from the drop-down listbox in the *Strategy* field while
+  creating a new database. This option is available from v15 and above.
+* Select the locale provider from the drop-down listbox in the *Locale Provider*
+  field to set the default collation for this database. Possible values are: icu, libc.
+  This option is available from v15 and above.
 * Select the collation order from the drop-down listbox in the *Collation* field.
 * Select the character classification from the drop-down listbox in the
   *Character Type* field. This affects the categorization of characters, e.g.
   lower, upper and digit. The default, or a blank field, uses the character
   classification of the template database.
+* Select the icu locale from the drop-down listbox in the *ICU Locale* to
+  specifies the ICU locale ID if the ICU locale provider is used.
+  This option is available from v15 and above.
+* Specify the icu rules in the *ICU Rules* field as additional collation
+  rules to customize the behavior of the default collation of this database.
+  This option is available from v16 and above.
 * Specify a connection limit in the *Connection Limit* field to configure the
   maximum number of connection requests. The default value (*-1*) allows
   unlimited connections to the database.

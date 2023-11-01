@@ -79,7 +79,7 @@
       }
     },
     {
-      "name": "Create index: With valid data mumtiple.",
+      "name": "Create index: With valid data with multiple columns.",
       "is_positive_test": true,
       "inventory_data": {},
       "test_data": {
@@ -89,6 +89,39 @@
         "columns": [
           {
             "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          },
+          {
+            "colname": "id",
+            "sort_order": true,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: With valid data with multiple columns and expressions.",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "columns": [
+          {
+            "is_exp": true,
+            "colname": "lower(name)",
             "sort_order": false,
             "nulls": false
           },
@@ -235,6 +268,68 @@
         "amname": "btree",
         "indisunique":true,
         "indnullsnotdistinct":true,
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },
+    {
+      "name": "Create index: Create btree index with storage parameters",
+      "is_positive_test": true,
+      "inventory_data": {
+        "server_min_version": 130000,
+        "skip_msg": "Storage parameter deduplicate_items is not supported below PG 13.0."
+      },
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "fillfactor":"10",
+        "columns": [
+          {
+            "colname": "id",
+            "sort_order": false,
+            "nulls": false
+          }
+        ],
+        "include": [
+          "name"
+        ]
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      }
+    },{
+      "name": "Create index: Create btree index with storage parameters (fillfactor)",
+      "is_positive_test": true,
+      "inventory_data": {},
+      "test_data": {
+        "name": "test_index_add",
+        "spcname": "pg_default",
+        "amname": "btree",
+        "indisunique":true,
+        "indnullsnotdistinct":true,
+        "fillfactor":"10",
         "columns": [
           {
             "colname": "id",
@@ -435,6 +530,26 @@
       "test_data": {
         "description": "This is test comment for index",
         "name": "updating name for index using api tests"
+      },
+      "mocking_required": false,
+      "mock_data": {},
+      "expected_data": {
+        "status_code": 200,
+        "error_msg": null,
+        "test_result_data": {}
+      },
+      "is_list": false
+    },
+    {
+      "name": "Put index statistics : With existing index id.",
+      "is_positive_test": true,
+      "update_statistics": true,
+      "inventory_data": {
+        "server_min_version": 110000,
+        "skip_msg": "Update statistics is not supported below PPAS/PG 11.0"
+      },
+      "test_data": {
+        "columns": "PLACE_HOLDER"
       },
       "mocking_required": false,
       "mock_data": {},

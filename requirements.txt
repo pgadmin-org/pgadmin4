@@ -27,7 +27,7 @@ pytz==2023.*
 speaklater3==1.*
 sqlparse==0.*
 psutil==5.9.*
-psycopg[c]==3.1.9
+psycopg[c]==3.1.12
 python-dateutil==2.*
 SQLAlchemy==2.*
 bcrypt==4.0.*
@@ -42,15 +42,14 @@ pywinpty==2.0.*; sys_platform=="win32"
 Authlib==1.2.*
 pyotp==2.*
 qrcode==7.*
-Pillow==9.*
 boto3==1.28.*
 botocore==1.31.*
 urllib3==1.26.*
 azure-mgmt-rdbms==10.1.0
 azure-mgmt-resource==23.0.1
 azure-mgmt-subscription==3.1.1
-azure-identity==1.13.0
+azure-identity==1.15.0
 google-api-python-client==2.*
-google-auth-oauthlib==1.0.0
+google-auth-oauthlib==1.1.0
 Werkzeug==2.2.3
 keyring==24.*

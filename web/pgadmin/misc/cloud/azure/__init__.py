@@ -19,7 +19,8 @@ import json
 from flask import session, current_app, request
 from flask_login import current_user
 from config import root
-from .azure_cache import load_persistent_cache, TokenCachePersistenceOptions
+from pgacloud.utils.azure_cache import load_persistent_cache, \
+    TokenCachePersistenceOptions
 import os
 
 

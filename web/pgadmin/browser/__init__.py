@@ -18,7 +18,8 @@ from smtplib import SMTPConnectError, SMTPResponseException, \
 from socket import error as SOCKETErrorException
 from urllib.request import urlopen
 from pgadmin.utils.constants import KEY_RING_SERVICE_NAME, \
-    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER, KEY_RING_TUNNEL_FORMAT
+    KEY_RING_USERNAME_FORMAT, KEY_RING_DESKTOP_USER, KEY_RING_TUNNEL_FORMAT, \
+    MessageType
 
 import time
 
@@ -29,13 +30,13 @@ from flask_babel import gettext
 from flask_gravatar import Gravatar
 from flask_login import current_user, login_required
 from flask_login.utils import login_url
-from flask_security.changeable import change_user_password
+from flask_security.changeable import send_password_changed_notice
 from flask_security.decorators import anonymous_user_required
 from flask_security.recoverable import reset_password_token_status, \
     generate_reset_password_token, update_password
 from flask_security.signals import reset_password_instructions_sent
 from flask_security.utils import config_value, do_flash, get_url, \
-    get_message, slash_url_suffix, login_user, send_mail, \
+    get_message, slash_url_suffix, login_user, send_mail, hash_password, \
     get_post_logout_redirect
 from flask_security.views import _security, view_commit, _ctx
 from werkzeug.datastructures import MultiDict
@@ -46,7 +47,8 @@ from pgadmin.authenticate import get_logout_url
 from pgadmin.authenticate.mfa.utils import mfa_required, is_mfa_enabled
 from pgadmin.settings import get_setting, store_setting
 from pgadmin.utils import PgAdminModule
-from pgadmin.utils.ajax import make_json_response
+from pgadmin.utils.ajax import make_json_response, internal_server_error, \
+    bad_request
 from pgadmin.utils.csrf import pgCSRFProtect
 from pgadmin.utils.preferences import Preferences
 from pgadmin.utils.menu import MenuItem
@@ -86,61 +88,6 @@ PASS_ERROR = gettext('Error: {error}\n {pass_error}').format(
 class BrowserModule(PgAdminModule):
     LABEL = gettext('Browser')
 
-    def get_own_stylesheets(self):
-        stylesheets = []
-        context_menu_file = 'vendor/jQuery-contextMenu/' \
-                            'jquery.contextMenu.min.css'
-        wcdocker_file = 'vendor/wcDocker/wcDocker.min.css'
-        if current_app.debug:
-            context_menu_file = 'vendor/jQuery-contextMenu/' \
-                                'jquery.contextMenu.css'
-            wcdocker_file = 'vendor/wcDocker/wcDocker.css'
-        # Add browser stylesheets
-        for (endpoint, filename) in [
-            ('static', 'vendor/codemirror/codemirror.css'),
-            ('static', 'vendor/codemirror/addon/dialog/dialog.css'),
-            ('static', context_menu_file),
-            ('static', wcdocker_file)
-        ]:
-            stylesheets.append(url_for(endpoint, filename=filename))
-        return stylesheets
-
-    def get_own_menuitems(self):
-        menus = {
-            'file_items': [
-                MenuItem(
-                    name='mnu_locklayout',
-                    module=PGADMIN_BROWSER,
-                    label=gettext('Lock Layout'),
-                    priority=999,
-                    menu_items=[MenuItem(
-                        name='mnu_lock_none',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_lock_none',
-                        priority=0,
-                        label=gettext('None'),
-                        checked=True
-                    ), MenuItem(
-                        name='mnu_lock_docking',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_lock_docking',
-                        priority=1,
-                        label=gettext('Prevent Docking'),
-                        checked=False
-                    ), MenuItem(
-                        name='mnu_lock_full',
-                        module=PGADMIN_BROWSER,
-                        callback='mnu_lock_full',
-                        priority=2,
-                        label=gettext('Full Lock'),
-                        checked=False
-                    )]
-                )
-            ]
-        }
-
-        return menus
-
     def register_preferences(self):
         register_browser_preferences(self)
 
@@ -154,7 +101,6 @@ class BrowserModule(PgAdminModule):
                 'browser.check_master_password',
                 'browser.set_master_password',
                 'browser.reset_master_password',
-                'browser.lock_layout',
                 ]
 
     def register(self, app, options):
@@ -414,47 +360,6 @@ def _get_supported_browser():
     return browser_name, browser_known, version
 
 
-def check_browser_upgrade():
-    """
-    This function is used to check the browser version.
-    :return:
-    """
-    data = None
-    url = '%s?version=%s' % (config.UPGRADE_CHECK_URL, config.APP_VERSION)
-    current_app.logger.debug('Checking version data at: %s' % url)
-
-    try:
-        # Do not wait for more than 5 seconds.
-        # It stuck on rendering the browser.html, while working in the
-        # broken network.
-        if os.path.exists(config.CA_FILE):
-            response = urlopen(url, data, 5, cafile=config.CA_FILE)
-        else:
-            response = urlopen(url, data, 5)
-        current_app.logger.debug(
-            'Version check HTTP response code: %d' % response.getcode()
-        )
-
-        if response.getcode() == 200:
-            data = json.loads(response.read().decode('utf-8'))
-            current_app.logger.debug('Response data: %s' % data)
-    except Exception:
-        current_app.logger.exception('Exception when checking for update')
-
-    if data is not None and \
-        data[config.UPGRADE_CHECK_KEY]['version_int'] > \
-            config.APP_VERSION_INT:
-        msg = render_template(
-            MODULE_NAME + "/upgrade.html",
-            current_version=config.APP_VERSION,
-            upgrade_version=data[config.UPGRADE_CHECK_KEY]['version'],
-            product_name=config.APP_NAME,
-            download_url=data[config.UPGRADE_CHECK_KEY]['download_url']
-        )
-
-        flash(msg, MessageType.WARNING)
-
-
 @blueprint.route("/")
 @pgCSRFProtect.exempt
 @login_required
@@ -488,15 +393,6 @@ def index():
             )
 
             flash(msg, MessageType.WARNING)
-
-    # Get the current version info from the website, and flash a message if
-    # the user is out of date, and the check is enabled.
-    if config.UPGRADE_CHECK_ENABLED:
-        last_check = get_setting('LastUpdateCheck', default='0')
-        today = time.strftime('%Y%m%d')
-        if int(last_check) < int(today):
-            check_browser_upgrade()
-            store_setting('LastUpdateCheck', today)
 
     session['allow_save_password'] = True
 
@@ -603,7 +499,6 @@ def utils():
     editor_indent_with_tabs = False if editor_use_spaces else True
 
     prefs = Preferences.module('browser')
-    current_ui_lock = prefs.preference('lock_layout').get()
     # Try to fetch current libpq version from the driver
     try:
         from config import PG_DEFAULT_DRIVER
@@ -666,11 +561,10 @@ def utils():
             mfa_enabled=is_mfa_enabled(),
             is_admin=current_user.has_role("Administrator"),
             login_url=login_url,
-            username=current_user.username,
+            username=current_user.username.replace("'","\\'"),
             auth_source=auth_source,
             heartbeat_timeout=config.SERVER_HEARTBEAT_TIMEOUT,
             password_length_min=config.PASSWORD_LENGTH_MIN,
-            current_ui_lock=current_ui_lock,
             shared_storage_list=shared_storage_list,
             restricted_shared_storage_list=[] if current_user.has_role(
                 "Administrator") else restricted_shared_storage_list,
@@ -683,19 +577,6 @@ def utils():
 def exposed_urls():
     return make_response(
         render_template('browser/js/endpoints.js'),
-        200, {'Content-Type': MIMETYPE_APP_JS}
-    )
-
-
-@blueprint.route("/js/constants.js")
-@pgCSRFProtect.exempt
-def app_constants():
-    return make_response(
-        render_template('browser/js/constants.js',
-                        INTERNAL=INTERNAL,
-                        LDAP=LDAP,
-                        KERBEROS=KERBEROS,
-                        OAUTH2=OAUTH2),
         200, {'Content-Type': MIMETYPE_APP_JS}
     )
 
@@ -1031,21 +912,6 @@ def set_master_password():
     )
 
 
-@blueprint.route("/lock_layout", endpoint="lock_layout", methods=["PUT"])
-def lock_layout():
-    data = None
-
-    if hasattr(request.data, 'decode'):
-        data = request.data.decode('utf-8')
-
-    if data != '':
-        data = json.loads(data)
-
-    blueprint.lock_layout.set(data['value'])
-
-    return make_json_response()
-
-
 # Only register route if SECURITY_CHANGEABLE is set to True
 # We can't access app context here so cannot
 # use app.config['SECURITY_CHANGEABLE']
@@ -1069,30 +935,27 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
             }
         elif req_json:
             form = form_class(MultiDict(req_json))
-            if form.validate_on_submit():
+            if form.validate():
                 errormsg = None
+                # change_user_password from flask-security logs out the user
+                # this is undesirable, so change password on own
                 try:
-                    change_user_password(current_user._get_current_object(),
-                                         form.new_password.data,
-                                         autologin=False)
-                except SOCKETErrorException as e:
-                    # Handle socket errors which are not covered by
-                    # SMTPExceptions.
-                    logging.exception(str(e), exc_info=True)
-                    errormsg = gettext(SMTP_SOCKET_ERROR).format(e)
-                except (SMTPConnectError, SMTPResponseException,
-                        SMTPServerDisconnected, SMTPDataError, SMTPHeloError,
-                        SMTPException, SMTPAuthenticationError,
-                        SMTPSenderRefused, SMTPRecipientsRefused) as ex:
-                    # Handle smtp specific exceptions.
-                    logging.exception(str(ex), exc_info=True)
-                    errormsg = gettext(SMTP_ERROR).format(ex)
+                    user = User.query.filter(
+                        User.fs_uniquifier == current_user.fs_uniquifier)\
+                        .first()
+                    user.password = hash_password(form.new_password.data)
+
+                    try:
+                        send_password_changed_notice(user)
+                    except Exception as _:
+                        # No need to throw error if failed in sending email
+                        pass
                 except Exception as e:
                     # Handle other exceptions.
                     logging.exception(str(e), exc_info=True)
                     errormsg = gettext(PASS_ERROR).format(e)
 
-                if request.get_json(silent=True) is None and errormsg is None:
+                if errormsg is None:
                     old_key = get_crypt_key()[1]
                     set_crypt_key(form.new_password.data, False)
 
@@ -1101,13 +964,16 @@ if hasattr(config, 'SECURITY_CHANGEABLE') and config.SECURITY_CHANGEABLE:
                     reencrpyt_server_passwords(
                         current_user.id, old_key, form.new_password.data)
 
-                    return redirect(get_url(_security.post_change_view) or
-                                    get_url(_security.post_login_view))
-                else:
+                    db.session.commit()
+                elif errormsg is not None:
                     return internal_server_error(errormsg)
             else:
                 return bad_request(list(form.errors.values())[0][0])
 
+        return make_json_response(
+            success=1,
+            info=gettext('pgAdmin user password changed successfully')
+        )
 
 # Only register route if SECURITY_RECOVERABLE is set to True
 if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
@@ -1193,6 +1059,10 @@ if hasattr(config, 'SECURITY_RECOVERABLE') and config.SECURITY_RECOVERABLE:
 
         if request.get_json(silent=True) and not has_error:
             return default_render_json(form, include_user=False)
+
+        for errors in form.errors.values():
+            for error in errors:
+                flash(error, MessageType.WARNING)
 
         return _security.render_template(
             config_value('FORGOT_PASSWORD_TEMPLATE'),

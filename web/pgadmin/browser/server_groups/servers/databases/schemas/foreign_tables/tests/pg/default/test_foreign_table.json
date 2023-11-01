@@ -11,7 +11,8 @@
         "fdwoptions": []
       },
       "store_object_id": "True"
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create foreign server for foreign table",
       "endpoint": "NODE-foreign_server.obj",
@@ -20,7 +21,8 @@
         "name":"test_fs_for_foreign_table"
       },
       "store_object_id": "True"
-    }, {
+    },
+    {
       "type": "create",
       "name": "Create Foreign Table with all options",
       "endpoint": "NODE-foreign_table.obj",
@@ -34,12 +36,12 @@
         "description":"Test Comment",
         "ftsrvname":"test_fs_for_foreign_table",
         "columns":[{
-          "attname":"col1",
-          "datatype":"bigint",
+          "name":"col1",
+          "cltype":"bigint",
           "coloptions":[]
         },{
-          "attname":"col2",
-          "datatype":"text",
+          "name":"col2",
+          "cltype":"text",
           "coloptions":[]
         }],
         "constraints":[{
@@ -55,7 +57,7 @@
           "option":"table_name",
           "value":"test_table"
         }],
-        "acl":[{
+        "relacl":[{
           "grantee":"PUBLIC",
           "grantor":"postgres",
           "privileges":[{
@@ -97,7 +99,8 @@
         "ftsrvname": "test_fs_for_foreign_table",
         "columns": []
       }
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table comment and add columns",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -107,19 +110,21 @@
         "description":"Test Comment",
         "columns": {
           "added": [{
-            "attname":"col1",
-            "datatype":"bigint",
-            "coloptions":[]
+            "name":"col1",
+            "cltype":"bigint",
+            "coloptions":[],
+            "attnotnull": true
           },{
-            "attname":"col2",
-            "datatype":"text",
+            "name":"col2",
+            "cltype":"text",
             "coloptions":[]
           }]
         }
       },
       "expected_sql_file": "alter_comment_add_columns.sql",
       "expected_msql_file": "alter_comment_add_columns_msql.sql"
-    },{
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table add constraints and options",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -146,14 +151,15 @@
       },
       "expected_sql_file": "alter_add_cons_opts.sql",
       "expected_msql_file": "alter_add_cons_opts_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table add privileges",
       "endpoint": "NODE-foreign_table.obj_id",
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "acl":{
+        "relacl":{
           "added": [{
             "grantee":"PUBLIC",
             "grantor":"postgres",
@@ -167,7 +173,8 @@
       },
       "expected_sql_file": "alter_add_priv.sql",
       "expected_msql_file": "alter_add_priv_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table change option and column",
       "endpoint": "NODE-foreign_table.obj_id",
@@ -182,30 +189,32 @@
         },
         "columns": {
           "changed": [{
-            "attname": "col1",
+            "name": "col1",
             "attnum": 1,
             "attoptions": null,
+            "attnotnull":false,
+            "attstattarget": 10,
             "collname": "",
             "coloptions": [],
-            "datatype": "integer",
-            "fulltype": "bigint"
+            "cltype": "integer"
           }],
           "deleted": [{
-            "attname":"col2",
-            "datatype":"text"
+            "name":"col2",
+            "cltype":"text"
           }]
         }
       },
       "expected_sql_file": "alter_col_opts.sql",
       "expected_msql_file": "alter_col_opts_msql.sql"
-    }, {
+    },
+    {
       "type": "alter",
       "name": "Alter Foreign Table remove option, constraint, privileges",
       "endpoint": "NODE-foreign_table.obj_id",
       "sql_endpoint": "NODE-foreign_table.sql_id",
       "msql_endpoint": "NODE-foreign_table.msql_id",
       "data": {
-        "acl":{
+        "relacl":{
           "deleted": [{
             "grantee":"PUBLIC",
             "grantor":"postgres",

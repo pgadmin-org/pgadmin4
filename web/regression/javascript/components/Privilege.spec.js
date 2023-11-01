@@ -7,16 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import Privilege from 'sources/components/Privilege';
-import { mount } from 'enzyme';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { withTheme } from '../fake_theme';
 
 describe('Privilege', ()=>{
-  let ctrl, onChange = jasmine.createSpy('onChange');
-  let onClickAction = (done)=> {
+  let ctrl, onChange = jest.fn(), ctrlRerender;
+  let onClickAction = ()=> {
     expect(onChange).toHaveBeenCalledWith([{
       privilege_type: 'C',
       privilege: true,
@@ -30,13 +30,11 @@ describe('Privilege', ()=>{
       privilege: true,
       with_grant: false,
     }]);
-    done();
   };
 
   beforeEach(()=>{
-    jasmineEnzyme();
     let ThemedPrivilege = withTheme(Privilege);
-    ctrl = mount(
+    ctrl = render(
       <ThemedPrivilege
         value={[{
           privilege_type: 'C',
@@ -51,23 +49,48 @@ describe('Privilege', ()=>{
           supportedPrivs: ['C', 'a', 'r']
         }}
         onChange={onChange}
-      />);
+      />
+    );
+    ctrlRerender = (props)=>{
+      ctrl.rerender(
+        <ThemedPrivilege
+          value={[{
+            privilege_type: 'C',
+            privilege: true,
+            with_grant: false,
+          },{
+            privilege_type: 'a',
+            privilege: true,
+            with_grant: true,
+          }]}
+          controlProps={{
+            supportedPrivs: ['C', 'a', 'r']
+          }}
+          onChange={onChange}
+          {...props}
+        />
+      );
+    };
   });
 
   it('init', ()=>{
-    expect(ctrl.find('InputText').prop('value')).toBe('Ca*');
-    expect(ctrl.find('InputCheckbox[name="C"]').at(0).prop('value')).toBeTrue();
-    expect(ctrl.find('InputCheckbox[name="C"]').at(1).prop('value')).toBeFalse();
+    expect(screen.getByRole('textbox')).toHaveValue('Ca*');
+    // first 2 are all
+    //C
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[2].className.includes('Mui-checked')).toBe(true);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[3].className.includes('Mui-checked')).toBe(false);
 
-    expect(ctrl.find('InputCheckbox[name="a"]').at(0).prop('value')).toBeTrue();
-    expect(ctrl.find('InputCheckbox[name="a"]').at(1).prop('value')).toBeTrue();
+    //a
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[4].className.includes('Mui-checked')).toBe(true);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[5].className.includes('Mui-checked')).toBe(true);
 
-    expect(ctrl.find('InputCheckbox[name="r"]').at(0).prop('value')).toBeFalse();
-    expect(ctrl.find('InputCheckbox[name="r"]').at(1).prop('value')).toBeFalse();
+    //r
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[6].className.includes('Mui-checked')).toBe(false);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[7].className.includes('Mui-checked')).toBe(false);
   });
 
   it('change prop value', ()=>{
-    ctrl.setProps({value: [{
+    ctrlRerender({value: [{
       privilege_type: 'C',
       privilege: true,
       with_grant: true,
@@ -77,67 +100,79 @@ describe('Privilege', ()=>{
       with_grant: false,
     }]});
 
-    expect(ctrl.find('InputText').prop('value')).toBe('C*r');
-    expect(ctrl.find('InputCheckbox[name="C"]').at(0).prop('value')).toBeTrue();
-    expect(ctrl.find('InputCheckbox[name="C"]').at(1).prop('value')).toBeTrue();
+    expect(screen.getByRole('textbox')).toHaveValue('C*r');
+    // first 2 are all
+    //C
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[2].className.includes('Mui-checked')).toBe(true);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[3].className.includes('Mui-checked')).toBe(true);
 
-    expect(ctrl.find('InputCheckbox[name="a"]').at(0).prop('value')).toBeFalse();
-    expect(ctrl.find('InputCheckbox[name="a"]').at(1).prop('value')).toBeFalse();
+    //a
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[4].className.includes('Mui-checked')).toBe(false);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[5].className.includes('Mui-checked')).toBe(false);
 
-    expect(ctrl.find('InputCheckbox[name="r"]').at(0).prop('value')).toBeTrue();
-    expect(ctrl.find('InputCheckbox[name="r"]').at(1).prop('value')).toBeFalse();
+    //r
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[6].className.includes('Mui-checked')).toBe(true);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[7].className.includes('Mui-checked')).toBe(false);
   });
 
   it('no prop value', ()=>{
-    ctrl.setProps({value: null});
+    ctrlRerender({value: null});
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    // first 2 are all
+    //C
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[2].className.includes('Mui-checked')).toBe(false);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[3].className.includes('Mui-checked')).toBe(false);
 
-    expect(ctrl.find('InputText').prop('value')).toBe('');
-    expect(ctrl.find('InputCheckbox[name="C"]').at(0).prop('value')).toBeFalse();
-    expect(ctrl.find('InputCheckbox[name="C"]').at(1).prop('value')).toBeFalse();
+    //a
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[4].className.includes('Mui-checked')).toBe(false);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[5].className.includes('Mui-checked')).toBe(false);
 
-    expect(ctrl.find('InputCheckbox[name="a"]').at(0).prop('value')).toBeFalse();
-    expect(ctrl.find('InputCheckbox[name="a"]').at(1).prop('value')).toBeFalse();
-
-    expect(ctrl.find('InputCheckbox[name="r"]').at(0).prop('value')).toBeFalse();
-    expect(ctrl.find('InputCheckbox[name="r"]').at(1).prop('value')).toBeFalse();
+    //r
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[6].className.includes('Mui-checked')).toBe(false);
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[7].className.includes('Mui-checked')).toBe(false);
   });
 
   it('with grant disabled', ()=>{
-    expect(ctrl.find('InputCheckbox[name="all"]').at(1).prop('disabled')).toBeTrue();
-    expect(ctrl.find('InputCheckbox[name="r"]').at(1).prop('disabled')).toBeTrue();
+    // first 2 are all
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[1].className.includes('Mui-disabled')).toBe(true);
+
+    //r
+    expect(ctrl.container.querySelectorAll('.MuiCheckbox-root')[7].className.includes('Mui-disabled')).toBe(true);
   });
 
-  it('on check click', (done)=>{
-    onChange.calls.reset();
-    ctrl.find('InputCheckbox[name="C"]').at(0).find('input').
-      simulate('change', {target: {checked: false, name: 'C'}});
+  it('on check click', async ()=>{
+    onChange.mockClear();
 
-    setTimeout(()=>{
+    //C
+    fireEvent.click(ctrl.container.querySelectorAll('input[name="C"]')[0]);
+
+    await waitFor(()=>{
       expect(onChange).toHaveBeenCalledWith([{
-        privilege_type: 'a',
         privilege: true,
+        privilege_type: 'a',
         with_grant: true,
       }]);
-      done();
-    }, 500);
+    }, {timeout: 500});
   });
 
-  it('on new check click', (done)=>{
-    onChange.calls.reset();
-    ctrl.find('InputCheckbox[name="r"]').at(0).find('input').
-      simulate('change', {target: {checked: true, name: 'r'}});
+  it('on new check click', async ()=>{
+    onChange.mockClear();
 
-    setTimeout(()=>{
-      onClickAction(done);
-    }, 500);
+    //r
+    fireEvent.click(ctrl.container.querySelectorAll('input[name="r"]')[0]);
+
+    await waitFor(()=>{
+      onClickAction();
+    }, {timeout: 500});
   });
 
-  it('on check grant click', (done)=>{
-    onChange.calls.reset();
-    ctrl.find('InputCheckbox[name="C"]').at(1).find('input').
-      simulate('change', {target: {checked: true, name: 'C'}});
+  it('on check grant click', async ()=>{
+    onChange.mockClear();
 
-    setTimeout(()=>{
+    //C
+    fireEvent.click(ctrl.container.querySelectorAll('input[name="C"]')[1]);
+
+    await waitFor(()=>{
       expect(onChange).toHaveBeenCalledWith([{
         privilege_type: 'C',
         privilege: true,
@@ -147,20 +182,22 @@ describe('Privilege', ()=>{
         privilege: true,
         with_grant: true,
       }]);
-      done();
-    }, 500);
+    }, {timeout: 500});
   });
 
-  it('on all click', (done)=>{
-    ctrl.find('InputCheckbox[name="all"]').at(0).find('input').simulate('change', {target: {checked: true}});
+  it('on all click', async ()=>{
+    onChange.mockClear();
 
-    setTimeout(()=>{
-      onClickAction(done);
-    }, 500);
+    // all
+    fireEvent.click(ctrl.container.querySelectorAll('input[name="all"]')[0]);
+
+    await waitFor(()=>{
+      onClickAction();
+    }, {timeout: 500});
   });
 
-  it('on all with grant click', (done)=>{
-    ctrl.setProps({
+  it('on all with grant click', async ()=>{
+    ctrlRerender({
       value: [{
         privilege_type: 'C',
         privilege: true,
@@ -175,9 +212,13 @@ describe('Privilege', ()=>{
         with_grant: false,
       }]
     });
-    ctrl.find('InputCheckbox[name="all"]').at(1).find('input').simulate('change', {target: {checked: true}});
 
-    setTimeout(()=>{
+    onChange.mockClear();
+
+    // all
+    fireEvent.click(ctrl.container.querySelectorAll('input[name="all"]')[1]);
+
+    await waitFor(()=>{
       expect(onChange).toHaveBeenCalledWith([{
         privilege_type: 'C',
         privilege: true,
@@ -191,7 +232,6 @@ describe('Privilege', ()=>{
         privilege: true,
         with_grant: true,
       }]);
-      done();
-    }, 500);
+    }, {timeout: 500});
   });
 });

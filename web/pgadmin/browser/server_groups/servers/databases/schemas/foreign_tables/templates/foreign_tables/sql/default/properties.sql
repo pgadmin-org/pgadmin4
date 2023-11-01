@@ -1,6 +1,8 @@
 SELECT
-    c.oid, c.relname AS name, c.relacl, pg_catalog.pg_get_userbyid(relowner) AS owner,
+    c.oid, c.relname AS name, pg_catalog.pg_get_userbyid(relowner) AS owner,
+    pg_catalog.array_to_string(c.relacl::text[], ', ') as acl,
     ftoptions, srvname AS ftsrvname, description, nspname AS basensp,
+    (SELECT count(*) FROM pg_catalog.pg_trigger WHERE tgrelid=ftrelid AND tgisinternal = FALSE) AS triggercount,
     (SELECT
         pg_catalog.array_agg(provider || '=' || label)
     FROM

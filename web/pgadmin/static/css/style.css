@@ -13,7 +13,3 @@
 @import 'node_modules/@simonwep/pickr/dist/themes/monolith.min.css';
 
 @import 'node_modules/uplot/dist/uPlot.min.css';
-
-/* wcDocker dependencies */
-@import 'node_modules/webcabin-docker/Build/wcDocker.css';
-@import 'node_modules/jquery-contextmenu/dist/jquery.contextMenu.css';

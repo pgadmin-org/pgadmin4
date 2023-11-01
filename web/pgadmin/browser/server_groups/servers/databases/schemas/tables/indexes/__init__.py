@@ -604,6 +604,14 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
         data['table'] = self.table
+        data["storage_parameters"] = {}
+
+        storage_params = index_utils.get_storage_params(data['amname'])
+
+        for param in storage_params:
+            if param in data and data[param] != '':
+                data["storage_parameters"].update({param: data[param]})
+
         if len(data['table']) == 0:
             return gone(gettext(self.not_found_error_msg('Table')))
 
@@ -818,6 +826,15 @@ class IndexesView(PGChildNodeView, SchemaDiffObjectCompare):
         # Adding parent into data dict, will be using it while creating sql
         data['schema'] = self.schema
         data['table'] = self.table
+
+        if data.get('amname', None):
+            data["storage_parameters"] = {}
+
+            storage_params = index_utils.get_storage_params(data['amname'])
+
+            for param in storage_params:
+                if param in data and data[param] != '':
+                    data["storage_parameters"].update({param: data[param]})
 
         try:
             sql, name = index_utils.get_sql(

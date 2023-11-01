@@ -1,10 +1,8 @@
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
-import {mount} from 'enzyme';
-import '../helper/enzyme.helper';
 
 import {GraphsWrapper, X_AXIS_LENGTH, POINT_SIZE} from '../../../pgadmin/dashboard/static/js/Graphs';
 import { withTheme } from '../fake_theme';
+import { render, screen } from '@testing-library/react';
 
 describe('<GraphsWrapper /> component', ()=>{
   let graphComp = null;
@@ -26,9 +24,25 @@ describe('<GraphsWrapper /> component', ()=>{
     refreshRate: 1,
   };
   let ThemedGraphsWrapper = withTheme(GraphsWrapper);
+  const compRerender = (props)=>{
+    graphComp.rerender(
+      <ThemedGraphsWrapper sessionStats={defaultStats}
+        tpsStats={defaultStats}
+        tiStats={defaultStats}
+        toStats={defaultStats}
+        bioStats={defaultStats}
+        errorMsg={null}
+        showTooltip={true}
+        showDataPoints={true}
+        lineBorderWidth={2}
+        isDatabase={false}
+        isTest={true}
+        {...props}
+      />
+    );
+  };
   beforeEach(()=>{
-    jasmineEnzyme();
-    graphComp = mount(
+    graphComp = render(
       <ThemedGraphsWrapper sessionStats={defaultStats}
         tpsStats={defaultStats}
         tiStats={defaultStats}
@@ -43,40 +57,32 @@ describe('<GraphsWrapper /> component', ()=>{
     );
   });
 
-  it('graph containers are rendered', (done)=>{
-    let found = graphComp.find('ChartContainer');
-    expect(found.length).toBe(5);
-    done();
+  it('graph containers are rendered', ()=>{
+    expect(screen.getAllByTestId('chart-container').length).toBe(5);
   });
 
-  it('graph headers are correct', (done)=>{
-    let found = graphComp.find('ChartContainer');
-    expect(found.at(0)).toIncludeText('Server sessions');
-    expect(found.at(1)).toIncludeText('Transactions per second');
-    expect(found.at(2)).toIncludeText('Tuples in');
-    expect(found.at(3)).toIncludeText('Tuples out');
-    expect(found.at(4)).toIncludeText('Block I/O');
-    done();
+  it('graph headers are correct', ()=>{
+    let found = screen.getAllByTestId('chart-container');
+    expect(found.at(0)).toHaveTextContent('Server sessions');
+    expect(found.at(1)).toHaveTextContent('Transactions per second');
+    expect(found.at(2)).toHaveTextContent('Tuples in');
+    expect(found.at(3)).toHaveTextContent('Tuples out');
+    expect(found.at(4)).toHaveTextContent('Block I/O');
   });
 
-  it('graph headers when database', (done)=>{
-    let found = graphComp.find('ChartContainer');
-    graphComp.setProps({isDatabase: true});
-    expect(found.at(0)).toIncludeText('Database sessions');
-    done();
+  it('graph headers when database', ()=>{
+    compRerender({isDatabase: true});
+    let found = screen.getAllByTestId('chart-container');
+    expect(found.at(0)).toHaveTextContent('Database sessions');
   });
 
-  it('graph body shows the error', (done)=>{
-    graphComp.setProps({errorMsg: 'Some error occurred'});
-    setTimeout(()=>{
-      graphComp.update();
-      let found = graphComp.find('ChartContainer');
-      expect(found.at(0)).toIncludeText('Some error occurred');
-      expect(found.at(1)).toIncludeText('Some error occurred');
-      expect(found.at(2)).toIncludeText('Some error occurred');
-      expect(found.at(3)).toIncludeText('Some error occurred');
-      expect(found.at(4)).toIncludeText('Some error occurred');
-      done();
-    }, 500);
+  it('graph body shows the error', ()=>{
+    compRerender({errorMsg: 'Some error occurred'});
+    let found = screen.getAllByTestId('chart-container');
+    expect(found.at(0)).toHaveTextContent('Some error occurred');
+    expect(found.at(1)).toHaveTextContent('Some error occurred');
+    expect(found.at(2)).toHaveTextContent('Some error occurred');
+    expect(found.at(3)).toHaveTextContent('Some error occurred');
+    expect(found.at(4)).toHaveTextContent('Some error occurred');
   });
 });

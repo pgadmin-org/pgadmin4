@@ -139,12 +139,7 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
 
     # We need to format variables according to client js collection
     if 'attoptions' in data and data['attoptions'] is not None:
-        spcoptions = []
-        for spcoption in data['attoptions']:
-            k, v = spcoption.split('=')
-            spcoptions.append({'name': k, 'value': v})
-
-        data['attoptions'] = spcoptions
+        data['attoptions'] = parse_column_variables(data['attoptions'])
 
     # Need to format security labels according to client js collection
     if 'seclabels' in data and data['seclabels'] is not None:
@@ -154,6 +149,10 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
             seclabels.append({'provider': k, 'label': v})
 
         data['seclabels'] = seclabels
+
+    # Get formatted Column Options
+    if 'attfdwoptions' in data and data['attfdwoptions'] != '':
+        data['coloptions'] = parse_options_for_column(data['attfdwoptions'])
 
     # We need to parse & convert ACL coming from database to json format
     SQL = render_template("/".join([template_path, 'acl.sql']),
@@ -186,10 +185,42 @@ def column_formatter(conn, tid, clid, data, edit_types_list=None,
     # We will need present type in edit mode
     edit_types_list.append(data['typname'])
     data['edit_types'] = sorted(edit_types_list)
-
     data['cltype'] = DataTypeReader.parse_type_name(data['cltype'])
-
     return data
+
+
+def parse_options_for_column(db_variables):
+    """
+        Function to format the output for variables.
+
+        Args:
+            db_variables: Variable object
+
+                Expected Object Format:
+                    ['option1=value1', ..]
+                where:
+                    user_name and database are optional
+        Returns:
+            Variable Object in below format:
+                {
+                'variables': [
+                    {'name': 'var_name', 'value': 'var_value',
+                    'user_name': 'user_name', 'database': 'database_name'},
+                    ...]
+                }
+                where:
+                    user_name and database are optional
+        """
+    variables_lst = []
+
+    if db_variables is not None:
+        for row in db_variables:
+            # The value may contain equals in string, split on
+            # first equals only
+            var_name, var_value = row.split("=", 1)
+            var_dict = {'option': var_name, 'value': var_value}
+            variables_lst.append(var_dict)
+    return variables_lst
 
 
 @get_template_path
@@ -339,9 +370,6 @@ def convert_length_precision_to_string(data):
     :return:
     """
 
-    # We need to handle the below case because jquery has changed
-    # undefined/null values to empty strings
-    # https://github.com/jquery/jquery/commit/36d2d9ae937f626d98319ed850905e8d1cbfd078
     if 'attlen' in data and data['attlen'] == '':
         data['attlen'] = None
     elif 'attlen' in data and data['attlen'] is not None:
@@ -410,3 +438,13 @@ def fetch_length_precision(data):
             data['attprecision'] = None
 
     return data
+
+
+def parse_column_variables(col_variables):
+    # We need to format variables according to client js collection
+    spcoptions = []
+    if col_variables is not None:
+        for spcoption in col_variables:
+            k, v = spcoption.split('=')
+            spcoptions.append({'name': k, 'value': v})
+    return spcoptions

@@ -5,9 +5,9 @@
 ****************
 
 The pgAdmin toolbar provides shortcut buttons for frequently used features like
-View Data and the Query Tool which are most frequently used in pgAdmin. This
-toolbar is visible on the Browser panel. Buttons get enabled/disabled based on
-the selected browser node.
+the Query Tool, View/Edit Data, Search Object and the PSQL Tool. This
+toolbar is visible on the Object explorer panel. Buttons get enabled/disabled based on
+the selected object node.
 
 .. image:: /images/toolbar.png
     :alt: pgAdmin Toolbar

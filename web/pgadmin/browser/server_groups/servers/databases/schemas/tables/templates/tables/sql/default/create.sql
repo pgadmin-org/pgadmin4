@@ -34,7 +34,11 @@ CREATE {% if data.relpersistence %}UNLOGGED {% endif %}TABLE{% if add_not_exists
 
         INCLUDING STORAGE{% endif %}{% if data.like_comments %}
 
-        INCLUDING COMMENTS{% endif %}{% if data.columns|length > 0 %},
+        INCLUDING COMMENTS{% endif %}{% if data.like_identity %}
+
+        INCLUDING IDENTITY{% endif %}{% if data.like_statistics %}
+
+        INCLUDING STATISTICS{% endif %}{% if data.columns|length > 0 %},
 {% endif %}
 
 {% endif %}

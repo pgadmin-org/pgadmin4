@@ -42,7 +42,7 @@ linter:
 	cd web && yarn run linter
 
 check: install-node bundle linter check-pep8
-	cd web && yarn run karma start --single-run && python regression/runtests.py
+	cd web && yarn run test:js-once && python regression/runtests.py
 
 check-audit:
 	cd web && yarn run audit
@@ -77,10 +77,10 @@ check-feature: install-node bundle
 	cd web && python regression/runtests.py --pkg feature_tests
 
 check-js: install-node linter
-	cd web && yarn run karma start --single-run
+	cd web && yarn run test:js-once
 
 check-js-coverage:
-    cd web && yarn run test:karma-coverage
+    cd web && yarn run test:js-coverage
 
 # Include all clean sub-targets in clean
 clean: clean-appbundle clean-debian clean-dist clean-docs clean-node clean-pip clean-redhat clean-src

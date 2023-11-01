@@ -212,7 +212,7 @@ def init_filemanager():
         data = Filemanager.get_trasaction_selection(trans_id)
         pref = Preferences.module('file_manager')
         file_dialog_view = pref.preference('file_dialog_view').get()
-        if type(file_dialog_view) == list:
+        if isinstance(file_dialog_view, list):
             file_dialog_view = file_dialog_view[0]
 
         last_selected_format = get_file_type_setting(data['supported_types'])
@@ -829,9 +829,9 @@ class Filemanager():
 
         try:
             os.rename(oldpath_sys, newpath_sys)
-        except Exception as e:
+        except OSError as e:
             return internal_server_error("{0} {1}".format(
-                gettext('There was an error renaming the file:'), e))
+                gettext('There was an error renaming the file:'), e.strerror))
 
         return {
             'Old Path': old,
@@ -859,9 +859,9 @@ class Filemanager():
                 os.rmdir(orig_path)
             else:
                 os.remove(orig_path)
-        except Exception as e:
+        except OSError as e:
             return internal_server_error("{0} {1}".format(
-                gettext('There was an error deleting the file:'), e))
+                gettext('There was an error deleting the file:'), e.strerror))
 
         return make_json_response(status=200)
 
@@ -903,9 +903,9 @@ class Filemanager():
                     if not data:
                         break
                     f.write(data)
-        except Exception as e:
+        except OSError as e:
             return internal_server_error("{0} {1}".format(
-                gettext('There was an error adding the file:'), e))
+                gettext('There was an error adding the file:'), e.strerror))
 
         Filemanager.check_access_permission(the_dir, path)
 
@@ -1021,10 +1021,10 @@ class Filemanager():
             if ex.strerror == 'Permission denied':
                 return unauthorized(str(ex.strerror))
             else:
-                return internal_server_error(str(ex))
+                return internal_server_error(str(ex.strerror))
 
         except Exception as ex:
-            return internal_server_error(str(ex))
+            return internal_server_error(str(ex.strerror))
 
         # Remove root storage path from error message
         # when running in Server mode
@@ -1054,8 +1054,8 @@ class Filemanager():
             self.get_new_name(user_dir, path, name)
         try:
             os.mkdir(create_path)
-        except Exception as e:
-            return internal_server_error(str(e))
+        except OSError as e:
+            return internal_server_error(str(e.strerror))
 
         result = {
             'Parent': path,
@@ -1157,6 +1157,6 @@ def file_manager(trans_id):
     except PermissionError as e:
         return unauthorized(str(e))
 
-    if type(res) == Response:
+    if isinstance(res, Response):
         return res
     return make_json_response(data={'result': res, 'status': True})

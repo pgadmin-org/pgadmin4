@@ -171,7 +171,9 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_without_primary_key.sql",
@@ -397,7 +399,9 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk.sql",
@@ -650,7 +654,9 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false
       },
       "store_object_id": true,
       "expected_sql_file": "create_table_with_pk_chk.sql",
@@ -923,7 +929,9 @@
         "like_constraints": false,
         "like_indexes": false,
         "like_storage": false,
-        "like_comments": false
+        "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false
       },
       "store_object_id": true,
       "preprocess_data": true,
@@ -974,14 +982,14 @@
           "added": [
             {
               "name": "ex_constr",
-              "amname": "gist",
+              "amname": "btree",
               "columns": [
                 {
                   "column": "col1",
                   "is_exp": false,
                   "order": false,
                   "nulls_order": false,
-                  "operator": "<>",
+                  "operator": "=",
                   "is_sort_nulls_applicable": false
                 }
               ],
@@ -1126,6 +1134,8 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
         "autovacuum_custom": true
       },
       "store_object_id": true,
@@ -1304,6 +1314,8 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
         "rlspolicy": true
       },
       "store_object_id": true,
@@ -1478,6 +1490,8 @@
         "like_indexes": true,
         "like_storage": true,
         "like_comments": true,
+        "like_identity": true,
+        "like_statistics": true,
         "like_relation": "public.like_tbl"
       },
       "store_object_id": true,
@@ -1636,6 +1650,8 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
@@ -1785,6 +1801,8 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,
@@ -1937,6 +1955,8 @@
         "like_indexes": false,
         "like_storage": false,
         "like_comments": false,
+        "like_identity": false,
+        "like_statistics": false,
         "autovacuum_custom": false
       },
       "store_object_id": true,

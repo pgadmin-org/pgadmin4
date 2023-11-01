@@ -6,31 +6,17 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-
 import getApiInstance, { parseApiError } from '../../../../static/js/api_instance';
 import url_for from 'sources/url_for';
-import Notifier from '../../../../static/js/helpers/Notifier';
 import EventBus from '../../../../static/js/helpers/EventBus';
-import * as BgProcessNotify from './BgProcessNotify';
-import showDetails from './showDetails';
 import gettext from 'sources/gettext';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import * as BgProcessNotify from './BgProcessNotify';
+import pgAdmin from 'sources/pgadmin';
+import { processesPanelData } from '../../../../static/js/BrowserComponent';
+import { BgProcessManagerEvents, BgProcessManagerProcessState } from './BgProcessConstants';
 
 const WORKER_INTERVAL = 1000;
-
-export const BgProcessManagerEvents = {
-  LIST_UPDATED: 'LIST_UPDATED',
-};
-
-export const BgProcessManagerProcessState = {
-  PROCESS_NOT_STARTED: 0,
-  PROCESS_STARTED: 1,
-  PROCESS_FINISHED: 2,
-  PROCESS_TERMINATED: 3,
-  /* Supported by front end only */
-  PROCESS_TERMINATING: 10,
-  PROCESS_FAILED: 11,
-};
-
 
 export default class BgProcessManager {
   static instance;
@@ -148,7 +134,7 @@ export default class BgProcessManager {
         this._eventManager.fireEvent(BgProcessManagerEvents.LIST_UPDATED);
       })
       .catch((err)=>{
-        Notifier.error(parseApiError(err));
+        pgAdmin.Browser.notifier.error(parseApiError(err));
       });
   }
 
@@ -169,14 +155,10 @@ export default class BgProcessManager {
           /* Object not available */
             removeJob(jobId);
           } else {
-            Notifier.error(parseApiError(err));
+            pgAdmin.Browser.notifier.error(parseApiError(err));
           }
         });
     });
-  }
-
-  viewJobDetails(jobId) {
-    showDetails(this.procList.find((p)=>p.id==jobId));
   }
 
   updateCloudDetails(jobId) {
@@ -186,7 +168,7 @@ export default class BgProcessManager {
       .then((res)=>{
         let _server = res.data?.data?.node;
         if(!_server) {
-          Notifier.error(gettext('Cloud server deployment is pending'));
+          pgAdmin.Browser.notifier.error(gettext('Cloud server deployment is pending'));
           return;
         }
         let  _server_path = '/browser/server_group_' + _server.gid + '/' + _server.id,
@@ -209,7 +191,7 @@ export default class BgProcessManager {
       })
       .catch((err)=>{
         if(err.response?.status != 410) {
-          Notifier.error(gettext('Failed Cloud Deployment.'));
+          pgAdmin.Browser.notifier.error(gettext('Failed Cloud Deployment.'));
         }
       });
   }
@@ -223,14 +205,12 @@ export default class BgProcessManager {
   }
 
   openProcessesPanel() {
-    let processPanel = this.pgBrowser.docker.findPanels('processes');
-    if(processPanel.length > 0) {
-      processPanel = processPanel[0];
+    let processPanel = this.pgBrowser.docker.find(BROWSER_PANELS.PROCESSES);
+    if(!processPanel) {
+      pgAdmin.Browser.docker.openTab(processesPanelData, BROWSER_PANELS.MAIN, 'middle', true);
     } else {
-      let propertiesPanel = this.pgBrowser.docker.findPanels('properties');
-      processPanel = this.pgBrowser.docker.addPanel('processes', window.wcDocker.DOCK.STACKED, propertiesPanel[0]);
+      this.pgBrowser.docker.focus(BROWSER_PANELS.PROCESSES);
     }
-    processPanel.focus();
   }
 
   registerListener(event, callback) {

@@ -9,8 +9,8 @@
         "basensp": "schema_name",
         "columns": [
           {
-            "attname": "ename",
-            "datatype": "text",
+            "name": "ename",
+            "cltype": "text",
             "coloptions": []
           }
         ],
@@ -41,8 +41,8 @@
         "basensp": "schema_name",
         "columns": [
           {
-            "attname": "ename",
-            "datatype": "text",
+            "name": "ename",
+            "cltype": "text",
             "coloptions": []
           }
         ],
@@ -72,8 +72,8 @@
         "basensp": "schema_name",
         "columns": [
           {
-            "attname": "ename",
-            "datatype": "text",
+            "name": "ename",
+            "cltype": "text",
             "coloptions": []
           }
         ],
@@ -233,7 +233,7 @@
       "name": "Update Foreign Table: With existing foreign table.",
       "is_positive_test": true,
       "inventory_data": {
-        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) OPTIONS (columnoptionkey 'columnOptionVal') NULL ) SERVER %s;\" %(schema_name, foreign_table_name, fsrv_name)"
+        "query": "\"CREATE FOREIGN TABLE %s.%s (col1 character varying(10) OPTIONS (column_name 'columnOptionVal') NULL ) SERVER %s;\" %(schema_name, foreign_table_name, fsrv_name)"
       },
       "test_data": {
         "description": "This is foreign table update comment",
@@ -255,8 +255,8 @@
         "columns": {
           "added": [
             {
-              "attname": "col2",
-              "datatype": "character varying[]",
+              "name": "col2",
+              "cltype": "character varying[]",
               "coloptions": []
             }
           ],
@@ -264,12 +264,12 @@
             {
               "coloptions": [
                 {
-                  "option": "OptionKey",
+                  "option": "column_name",
                   "value": "OptionValue"
                 }
               ],
-              "attname": "emp",
-              "datatype": "\"char\"",
+              "name": "emp",
+              "cltype": "\"char\"",
               "typdefault": null,
               "attnotnull": false,
               "collname": "pg_catalog.\"default\"",
@@ -279,7 +279,7 @@
               "attstattarget": -1,
               "attoptions": null,
               "attfdwoptions": [
-                "ColOptionKey=ColOptionValue"
+                "column_name=ColOptionValue"
               ],
               "attndims": 0,
               "atttypmod": -1,

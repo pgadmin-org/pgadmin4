@@ -78,9 +78,9 @@ def verify_credentials():
         if status:
             session['aws']['secret'] = data['secret']
             session['aws']['aws_rds_obj'] = pickle.dumps(_rds, -1)
-
-    if status:
-        msg = 'verified'
+            msg = 'verified'
+        else:
+            msg = identity
 
     return make_json_response(success=status, info=msg)
 

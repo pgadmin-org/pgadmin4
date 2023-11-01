@@ -49,9 +49,8 @@ root = os.path.dirname(CURRENT_PATH)
 if sys.path[0] != root:
     sys.path.insert(0, root)
     os.chdir(root)
-
-from pgadmin import create_app
 import config
+from pgadmin import create_app
 
 if config.SERVER_MODE is True:
     config.SECURITY_RECOVERABLE = True

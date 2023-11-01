@@ -7,29 +7,16 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render, screen, waitFor } from '@testing-library/react';
 import Theme from '../../../pgadmin/static/js/Theme';
 import { FileNameEditor } from '../../../pgadmin/misc/file_manager/static/js/components/ListView';
+import userEvent from '@testing-library/user-event';
 
 describe('ListView', ()=>{
-  let mount;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
 
   describe('FileNameEditor', ()=>{
     let row = {'Filename': 'test.sql', 'Size': '1KB'},
@@ -37,7 +24,7 @@ describe('ListView', ()=>{
         key: 'Filename'
       },
       ctrlMount = (props)=>{
-        return mount(<Theme>
+        return render(<Theme>
           <FileNameEditor
             row={row}
             column={column}
@@ -46,33 +33,25 @@ describe('ListView', ()=>{
         </Theme>);
       };
 
-    it('init', (done)=>{
-      let ctrl = ctrlMount({
+    it('init', async ()=>{
+      ctrlMount({
         onRowChange: ()=>{/* test func */},
         onClose: ()=>{/* test func */},
       });
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('input').props()).toEqual(jasmine.objectContaining({value: 'test.sql'}));
-        done();
-      }, 0);
+      await waitFor(()=>{
+        expect(screen.getByRole('textbox').value).toEqual('test.sql');
+      });
     });
 
-    it('keydown Tab', (done)=>{
-      let onCloseSpy = jasmine.createSpy('onClose');
-      let ctrl = ctrlMount({
+    it('keydown Tab', async ()=>{
+      let onCloseSpy = jest.fn();
+      ctrlMount({
         onRowChange: ()=>{/* test func */},
         onClose: onCloseSpy,
       });
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('input').props()).toEqual(jasmine.objectContaining({value: 'test.sql'}));
-        ctrl.find('input').simulate('keydown', { code: 'Tab'});
-        setTimeout(()=>{
-          expect(onCloseSpy).toHaveBeenCalled();
-          done();
-        });
-      }, 0);
+      const user = userEvent.setup();
+      await user.type(screen.getByRole('textbox'), '{Tab}');
+      expect(onCloseSpy).toHaveBeenCalled();
     });
   });
 });

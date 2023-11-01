@@ -6,14 +6,14 @@
 // This software is released under the PostgreSQL Licence
 //
 //////////////////////////////////////////////////////////////
-import gettext from '../../../../static/js/gettext';
-import url_for from '../../../../static/js/url_for';
+import gettext from 'sources/gettext';
+import url_for from 'sources/url_for';
 import {getDatabaseLabel, generateTitle} from './sqleditor_title';
 import BaseUISchema from 'sources/SchemaView/base_schema.ui';
 import _ from 'lodash';
-import Notify from '../../../../static/js/helpers/Notifier';
 import { isEmptyString } from 'sources/validators';
-import { getUtilityView } from '../../../../browser/static/js/utility_view';
+import usePreferences from '../../../../preferences/static/js/store';
+import pgAdmin from 'sources/pgadmin';
 
 export default class DataFilterSchema extends BaseUISchema {
   constructor(fieldOptions = {}) {
@@ -57,7 +57,7 @@ export function showViewData(
 ) {
   const node = pgBrowser.tree.findNodeByDomElement(treeIdentifier);
   if (node === undefined || !node.getData()) {
-    Notify.alert(
+    pgAdmin.Browser.notifier.alert(
       gettext('Data Grid Error'),
       gettext('No object selected.')
     );
@@ -83,7 +83,7 @@ export function showViewData(
   if(filter) {
     const validateUrl = generateFilterValidateUrl(node.getData(), parentData);
     // Show Data Filter Dialog
-    showFilterDialog(pgBrowser, node, queryToolMod, transId, gridUrl,
+    showFilterDialog(pgBrowser, treeIdentifier, queryToolMod, transId, gridUrl,
       queryToolTitle, validateUrl);
   } else {
     queryToolMod.launch(transId, gridUrl, false, queryToolTitle);
@@ -154,26 +154,22 @@ function generateFilterValidateUrl(nodeData, parentData) {
   return url_for('sqleditor.filter_validate', url_params);
 }
 
-function showFilterDialog(pgBrowser, treeNodeInfo, queryToolMod, transId,
+function showFilterDialog(pgBrowser, item, queryToolMod, transId,
   gridUrl, queryToolTitle, validateUrl) {
 
   let schema = new DataFilterSchema();
-
-  // Register dialog panel
-  pgBrowser.Node.registerUtilityPanel();
-  let panel = pgBrowser.Node.addUtilityPanel(pgBrowser.stdW.md),
-    j = panel.$container.find('.obj_properties').first();
-  panel.title(gettext('Data Filter - %s', queryToolTitle));
-  panel.focus();
-
   let helpUrl = url_for('help.static', {'filename': 'viewdata_filter.html'});
 
   let okCallback = function() {
     queryToolMod.launch(transId, gridUrl, false, queryToolTitle, {sql_filter: schema._sessData.filter_sql});
   };
 
-  getUtilityView(schema, treeNodeInfo, 'create', 'dialog', j[0], panel,
-    okCallback, [], 'OK', validateUrl, undefined, helpUrl, false);
+  pgBrowser.Events.trigger('pgadmin:utility:show', item,
+    gettext('Data Filter - %s', queryToolTitle),{
+      schema, urlBase: validateUrl, helpUrl, saveBtnName: gettext('OK'), isTabView: false,
+      onSave: okCallback,
+    }, pgBrowser.stdW.md, pgBrowser.stdH.sm
+  );
 }
 
 function hasServerOrDatabaseConfiguration(parentData) {
@@ -186,7 +182,7 @@ function hasSchemaOrCatalogOrViewInformation(parentData) {
 }
 
 export function generateViewDataTitle(pgBrowser, treeIdentifier, custom_title=null, backend_entity=null) {
-  let preferences = pgBrowser.get_preferences_for_module('browser');
+  let preferences = usePreferences.getState().getPreferencesForModule('browser');
   const parentData = pgBrowser.tree.getTreeNodeHierarchy(
     treeIdentifier
   );

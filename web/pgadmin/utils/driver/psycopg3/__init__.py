@@ -279,7 +279,8 @@ class Driver(BaseDriver):
 
         if conn:
             try:
-                if type(conn) != psycopg.Connection:
+                if not isinstance(conn, psycopg.Connection) and \
+                        not isinstance(conn, psycopg.AsyncConnection):
                     conn = conn.conn
                 res = psycopg.sql.Literal(value).as_string(conn).strip()
             except Exception:

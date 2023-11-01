@@ -7,7 +7,7 @@
 //
 //////////////////////////////////////////////////////////////
 
-import IndexSchema, { getColumnSchema } from './index.ui';
+import IndexSchema from './index.ui';
 import { getNodeAjaxOptions, getNodeListByName } from 'pgbrowser/node_ajax';
 import _ from 'lodash';
 
@@ -46,7 +46,7 @@ define('pgadmin.node.index', [
       hasSQL:  true,
       hasDepends: true,
       hasStatistics: true,
-      width: pgBrowser.stdW.md + 'px',
+      width: pgBrowser.stdW.lg + 'px',
       statsPrettifyFields: [gettext('Size'), gettext('Index size')],
       url_jump_after_node: 'schema',
       Init: function() {
@@ -124,19 +124,21 @@ define('pgadmin.node.index', [
       getSchema: (treeNodeInfo, itemNodeData) => {
         let nodeObj = pgAdmin.Browser.Nodes['index'];
         return new IndexSchema(
-          ()=>getColumnSchema(nodeObj, treeNodeInfo, itemNodeData),
           {
             tablespaceList: ()=>getNodeListByName('tablespace', treeNodeInfo, itemNodeData, {}, (m)=>{
               return (m.label != 'pg_global');
             }),
             amnameList : ()=>getNodeAjaxOptions('get_access_methods', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
             columnList: ()=>getNodeListByName('column', treeNodeInfo, itemNodeData, {}),
+            collationList: ()=>getNodeAjaxOptions('get_collations', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'}),
+            opClassList: ()=>getNodeAjaxOptions('get_op_class', nodeObj, treeNodeInfo, itemNodeData, {jumpAfterNode: 'schema'})
           },
           {
             node_info: treeNodeInfo
           },
           {
-            amname: 'btree'
+            amname: 'btree',
+            deduplicate_items: treeNodeInfo.server.version >= 130000 ? true : undefined,
           }
         );
       }

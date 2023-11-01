@@ -133,7 +133,9 @@ export function ToolBar() {
         <PgIconButton data-test='toggle-breakpoint' title={gettext('Toggle breakpoint')} disabled={buttonsDisabled[MENUS.TOGGLE_BREAKPOINT]} icon={<FiberManualRecordIcon style={{height: '2rem'}} />}
           accesskey={shortcut_key(preferences?.btn_toggle_breakpoint)} onClick={() => { toggleBreakpoint(); }} />
         <PgIconButton data-test='clear-breakpoint' title={gettext('Clear all breakpoints')} disabled={buttonsDisabled[MENUS.CLEAR_ALL_BREAKPOINT]} icon={<NotInterestedIcon />}
-          accesskey={shortcut_key(preferences?.btn_clear_breakpoints)} onClick={() => { clearAllBreakpoint(); }} />
+          accesskey={shortcut_key(preferences?.btn_clear_breakpoints)} onClick={() => {
+            clearAllBreakpoint();
+          }} />
       </PgButtonGroup>
       <PgButtonGroup size="small">
         <PgIconButton data-test='stop-debugger' title={gettext('Stop')} icon={<StopIcon style={{height: '2rem'}} />} disabled={buttonsDisabled[MENUS.STOP]} onClick={() => { stop(); }}

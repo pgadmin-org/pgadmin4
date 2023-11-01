@@ -10,11 +10,11 @@
 """Implements the Foreign Table Module."""
 
 import sys
-import traceback
+import re
 from functools import wraps
 
 import json
-from flask import render_template, make_response, request, jsonify, \
+from flask import render_template, request, jsonify, \
     current_app
 from flask_babel import gettext
 
@@ -33,6 +33,10 @@ from pgadmin.utils.compile_template_name import compile_template_path
 from pgadmin.utils.driver import get_driver
 from pgadmin.tools.schema_diff.node_registry import SchemaDiffRegistry
 from pgadmin.tools.schema_diff.compare import SchemaDiffObjectCompare
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    columns import utils as column_utils
+from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+    triggers import utils as trigger_utils
 
 
 class ForeignTableModule(SchemaChildModule):
@@ -74,19 +78,25 @@ class ForeignTableModule(SchemaChildModule):
             yield self.generate_browser_collection_node(scid)
 
     @property
-    def node_inode(self):
-        """
-        Make the node as leaf node.
-        """
-        return False
-
-    @property
     def script_load(self):
         """
         Load the module script for foreign table, when the
         schema node is initialized.
         """
         return databases.DatabaseModule.node_type
+
+    def register(self, app, options):
+        from pgadmin.browser.server_groups.servers.databases.schemas.\
+            tables.triggers import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas.tables.\
+            constraints import blueprint as module
+        self.submodules.append(module)
+        from pgadmin.browser.server_groups.servers.databases.schemas. \
+            foreign_tables.foreign_table_columns import \
+            foreign_table_column_blueprint as module
+        self.submodules.append(module)
+        super().register(app, options)
 
 
 blueprint = ForeignTableModule(__name__)
@@ -182,6 +192,8 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
     node_type = blueprint.node_type
     node_label = "Foreign Table"
     BASE_TEMPLATE_PATH = 'foreign_tables/sql/#{0}#'
+    double_newline = '\n\n'
+    pattern = '\n{2,}'
 
     parent_ids = [
         {'type': 'int', 'id': 'gid'},
@@ -214,6 +226,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         'get_foreign_servers': [{'get': 'get_foreign_servers'},
                                 {'get': 'get_foreign_servers'}],
         'get_tables': [{'get': 'get_tables'}, {'get': 'get_tables'}],
+        'set_trigger': [{'put': 'enable_disable_triggers'}],
         'get_columns': [{'get': 'get_columns'}, {'get': 'get_columns'}],
         'select_sql': [{'get': 'select_sql'}],
         'insert_sql': [{'get': 'insert_sql'}],
@@ -222,8 +235,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         'compare': [{'get': 'compare'}, {'get': 'compare'}]
     })
 
-    keys_to_ignore = ['oid', 'basensp', 'oid-2', 'attnum', 'strftoptions',
-                      'relacl']
+    keys_to_ignore = ['oid', 'basensp', 'oid-2', 'attnum', 'strftoptions']
 
     def validate_request(f):
         """
@@ -397,6 +409,17 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             self.template_path = \
                 self.BASE_TEMPLATE_PATH.format(self.manager.version)
 
+            self.foreign_table_column_template_path = compile_template_path(
+                'foreign_table_columns/sql', self.manager.version)
+
+            self.column_template_path = compile_template_path(
+                'columns/sql', self.manager.version)
+
+            # Template for trigger node
+            self.trigger_template_path = \
+                'triggers/sql/{0}/#{1}#'.format(self.manager.server_type,
+                                                self.manager.version)
+
             return f(*args, **kwargs)
 
         return wrap
@@ -450,7 +473,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     scid,
                     row['name'],
                     icon="icon-foreign_table",
-                    description=row['description']
+                    description=row['description'],
+                    tigger_count=row['triggercount'],
+                    has_enable_triggers=row['has_enable_triggers'],
                 ))
 
         return make_json_response(
@@ -887,9 +912,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             data['basensp'] = target_schema
 
         # Parse Privileges
-        if 'acl' in data:
-            data['acl'] = parse_priv_to_db(data['acl'],
-                                           ["a", "r", "w", "x"])
+        if 'relacl' in data:
+            data['relacl'] = parse_priv_to_db(data['relacl'],
+                                              ["a", "r", "w", "x"])
 
         SQL = render_template("/".join([self.template_path,
                                         self._CREATE_SQL]),
@@ -909,6 +934,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 """.format(self.qtIdent(self.conn, data['basensp'], data['name']))
 
         SQL = sql_header + SQL
+
+        trigger_sql = self._get_resql_for_triggers(
+            foid, data['basensp'], data['name'])
+
+        SQL = SQL + trigger_sql
 
         return ajax_response(response=SQL.strip('\n'))
 
@@ -930,9 +960,22 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         Returns:
             SQL statements to create/update the Foreign Table.
         """
+        data = {}
+        for k, v in self.request.items():
+            try:
+                # comments should be taken as is because if user enters a
+                # json comment it is parsed by loads which should not happen
+                if k in ('description',):
+                    data[k] = v
+                else:
+                    data[k] = json.loads(v)
+            except ValueError:
+                data[k] = v
+            except TypeError:
+                data[k] = v
         try:
             SQL, name = self.get_sql(gid=gid, sid=sid, did=did, scid=scid,
-                                     data=self.request, foid=foid)
+                                     data=data, foid=foid)
             # Most probably this is due to error
             if not isinstance(SQL, str):
                 return SQL
@@ -954,15 +997,15 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         :param data: Data.
         :return:
         """
-        if 'acl' in data and 'added' in data['acl']:
-            data['acl']['added'] = parse_priv_to_db(data['acl']['added'],
-                                                    ["a", "r", "w", "x"])
-        if 'acl' in data and 'changed' in data['acl']:
-            data['acl']['changed'] = parse_priv_to_db(
-                data['acl']['changed'], ["a", "r", "w", "x"])
-        if 'acl' in data and 'deleted' in data['acl']:
-            data['acl']['deleted'] = parse_priv_to_db(
-                data['acl']['deleted'], ["a", "r", "w", "x"])
+        if 'relacl' in data and 'added' in data['relacl']:
+            data['relacl']['added'] = parse_priv_to_db(
+                data['relacl']['added'], ["a", "r", "w", "x"])
+        if 'relacl' in data and 'changed' in data['relacl']:
+            data['relacl']['changed'] = parse_priv_to_db(
+                data['relacl']['changed'], ["a", "r", "w", "x"])
+        if 'relacl' in data and 'deleted' in data['relacl']:
+            data['relacl']['deleted'] = parse_priv_to_db(
+                data['relacl']['deleted'], ["a", "r", "w", "x"])
 
     @staticmethod
     def _check_old_col_ops(old_col_frmt_options, option, col):
@@ -991,9 +1034,9 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         :return:
         """
         for c in data['columns']['changed']:
-            old_col_options = c['attfdwoptions'] = []
-            if 'attfdwoptions' in c and c['attfdwoptions']:
-                old_col_options = c['attfdwoptions']
+            old_col_options = []
+            if 'coloptions' in c and c['coloptions']:
+                old_col_options = c['coloptions']
 
             old_col_frmt_options = {}
 
@@ -1068,7 +1111,13 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 data['is_schema_diff'] = True
                 old_data['columns_for_schema_diff'] = old_data['columns']
 
-            self._format_columns_data(data, old_data)
+            # If name is not present in request data
+            if 'name' not in data:
+                data['name'] = old_data['name']
+
+            # If name if not present
+            if 'schema' not in data:
+                data['schema'] = old_data['basensp']
 
             # Parse Privileges
             ForeignTableView._parse_privileges(data)
@@ -1088,19 +1137,128 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                     "/".join([self.template_path, self._UPDATE_SQL]),
                     data=data, o_data=old_data, conn=self.conn
                 )
+
+            # Removes trailing new lines
+            if sql:
+                sql = sql.strip('\n') + self.double_newline
+
+            # Parse/Format columns & create sql
+            if 'columns' in data:
+                # Parse the data coming from client
+                data = column_utils.parse_format_columns(data, mode='edit')
+
+                columns = data['columns']
+                column_sql = '\n'
+
+                # If column(s) is/are deleted
+                column_sql = self._check_for_column_delete(columns, data,
+                                                           column_sql)
+
+                # If column(s) is/are changed
+                column_sql = self._check_for_column_update(columns, data,
+                                                           column_sql, foid)
+
+                # If column(s) is/are added
+                column_sql = self._check_for_column_add(columns, data,
+                                                        column_sql)
+
+                # Combine all the SQL together
+                sql += column_sql.strip('\n')
+
+            sql = re.sub(self.pattern, self.double_newline, sql)
+            sql = sql.strip('\n')
+
             return sql, data['name'] if 'name' in data else old_data['name']
         else:
             data['columns'] = self._format_columns(data['columns'])
 
             # Parse Privileges
-            if 'acl' in data:
-                data['acl'] = parse_priv_to_db(data['acl'],
-                                               ["a", "r", "w", "x"])
+            if 'relacl' in data:
+                data['relacl'] = parse_priv_to_db(data['relacl'],
+                                                  ["a", "r", "w", "x"])
 
             sql = render_template("/".join([self.template_path,
                                             self._CREATE_SQL]), data=data,
                                   conn=self.conn)
             return sql, data['name']
+
+    def _check_for_column_delete(self, columns, data, column_sql):
+        # If column(s) is/are deleted
+        if 'deleted' in columns:
+            for c in columns['deleted']:
+                c['schema'] = data['schema']
+                c['table'] = data['name']
+                # Sql for drop column
+                if 'inheritedfrom' not in c or \
+                        ('inheritedfrom' in c and c['inheritedfrom'] is None):
+                    column_sql += render_template("/".join(
+                        [self.foreign_table_column_template_path,
+                         self._DELETE_SQL]),
+                        data=c, conn=self.conn).strip('\n') + \
+                        self.double_newline
+        return column_sql
+
+    def _check_for_column_update(self, columns, data, column_sql, tid):
+        # Here we will be needing previous properties of column
+        # so that we can compare & update it
+        if 'changed' in columns:
+            for c in columns['changed']:
+                c['schema'] = data['schema']
+                c['table'] = data['name']
+
+                properties_sql = render_template(
+                    "/".join([self.column_template_path,
+                              self._PROPERTIES_SQL]),
+                    tid=tid,
+                    clid=c['attnum'] if 'attnum' in c else None,
+                    show_sys_objects=self.blueprint.show_system_objects
+                )
+
+                status, res = self.conn.execute_dict(properties_sql)
+                if not status:
+                    return internal_server_error(errormsg=res)
+                old_col_data = res['rows'][0]
+
+                old_col_data['cltype'], \
+                    old_col_data['hasSqrBracket'] = \
+                    column_utils.type_formatter(old_col_data['cltype'])
+                old_col_data = \
+                    column_utils.convert_length_precision_to_string(
+                        old_col_data)
+                old_col_data = column_utils.fetch_length_precision(
+                    old_col_data)
+
+                old_col_data['cltype'] = \
+                    DataTypeReader.parse_type_name(
+                        old_col_data['cltype'])
+
+                # Sql for alter column
+                if 'inheritedfrom' not in c and \
+                        'inheritedfromtable' not in c:
+                    column_sql += render_template("/".join(
+                        [self.foreign_table_column_template_path,
+                         self._UPDATE_SQL]),
+                        data=c, o_data=old_col_data, conn=self.conn
+                    ).strip('\n') + self.double_newline
+        return column_sql
+
+    def _check_for_column_add(self, columns, data, column_sql):
+        # If column(s) is/are added
+        if 'added' in columns:
+            for c in columns['added']:
+                c['schema'] = data['schema']
+                c['table'] = data['name']
+
+                c = column_utils.convert_length_precision_to_string(c)
+
+                if 'inheritedfrom' not in c and \
+                        'inheritedfromtable' not in c:
+                    column_sql += render_template("/".join(
+                        [self.foreign_table_column_template_path,
+                         self._CREATE_SQL]),
+                        data=c, conn=self.conn).strip('\n') + \
+                        self.double_newline
+        return column_sql
 
     @check_precondition
     def dependents(self, gid, sid, did, scid, foid):
@@ -1146,15 +1304,14 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         """
         cols = []
         for c in columns:
-            if len(c) > 0:
-                if '[]' in c['datatype']:
-                    c['datatype'] = c['datatype'].replace('[]', '')
+            if len(c) > 0 and 'cltype' in c:
+                if '[]' in c['cltype']:
+                    c['cltype'] = c['cltype'].replace('[]', '')
                     c['isArrayType'] = True
                 else:
                     c['isArrayType'] = False
                 cols.append(c)
-
-        return cols
+        return cols if cols else columns
 
     def _fetch_properties(self, gid, sid, did, scid, foid, inherits=False, ):
         """
@@ -1224,17 +1381,51 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         if not status:
             return False, internal_server_error(errormsg=cols)
 
-        self._get_datatype_precision(cols)
+        # Fetch length and precision data
+        for col in cols['rows']:
+            column_utils.fetch_length_precision(col)
+
+            if 'attoptions' in col and col['attoptions'] != '':
+                col['attoptions'] = column_utils.parse_column_variables(
+                    col['attoptions'])
+
+            if 'attfdwoptions' in col and col['attfdwoptions'] != '':
+                col['coloptions'] = column_utils.parse_options_for_column(
+                    col['attfdwoptions'])
+
+        self._get_edit_types(cols['rows'])
 
         if cols and 'rows' in cols:
             data['columns'] = cols['rows']
 
         # Get Inherited table names from their OID
         is_error, errmsg = self._get_inherited_table_name(data, inherits)
+
         if is_error:
             return False, internal_server_error(errormsg=errmsg)
 
         return True, data
+
+    def _get_edit_types(self, cols):
+        edit_types = {}
+        for col in cols:
+            edit_types[col['atttypid']] = []
+
+        if len(cols) > 0:
+            SQL = render_template("/".join([self.template_path,
+                                            'edit_mode_types_multi.sql']),
+                                  type_ids=",".join(map(lambda x: str(x),
+                                                        edit_types.keys())))
+            status, res = self.conn.execute_2darray(SQL)
+            for row in res['rows']:
+                edit_types[row['main_oid']] = sorted(row['edit_types'])
+
+            for column in cols:
+                edit_type_list = edit_types[column['atttypid']]
+                edit_type_list.append(column['fulltype'])
+                column['edit_types'] = sorted(edit_type_list)
+                column['cltype'] = \
+                    DataTypeReader.parse_type_name(column['cltype'])
 
     def _get_datatype_precision(self, cols):
         """
@@ -1248,11 +1439,11 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
                 substr = self.extract_type_length_precision(c)
                 typlen = substr.split(",")
                 if len(typlen) > 1:
-                    c['typlen'] = self.convert_typlen_to_int(typlen)
-                    c['precision'] = self.convert_precision_to_int(typlen)
+                    c['attlen'] = self.convert_typlen_to_int(typlen)
+                    c['attprecision'] = self.convert_precision_to_int(typlen)
                 else:
-                    c['typlen'] = self.convert_typlen_to_int(typlen)
-                    c['precision'] = None
+                    c['attlen'] = self.convert_typlen_to_int(typlen)
+                    c['attprecision'] = None
 
             # Get formatted Column Options
             if 'attfdwoptions' in c and c['attfdwoptions'] != '':
@@ -1318,7 +1509,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             priv = parse_priv_from_db(row)
             privileges.append(priv)
 
-        return {"acl": privileges}
+        return {"relacl": privileges}
 
     def _parse_variables_from_db(self, db_variables):
         """
@@ -1379,7 +1570,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
 
         columns = []
         for c in data['columns']:
-            columns.append(self.qtIdent(self.conn, c['attname']))
+            columns.append(self.qtIdent(self.conn, c['name']))
 
         if len(columns) > 0:
             columns = ", ".join(columns)
@@ -1420,7 +1611,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
                 values.append('?')
 
         if len(columns) > 0:
@@ -1461,7 +1652,7 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
         # Now we have all list of columns which we need
         if 'columns' in data:
             for c in data['columns']:
-                columns.append(self.qtIdent(self.conn, c['attname']))
+                columns.append(self.qtIdent(self.conn, c['name']))
 
         if len(columns) > 0:
             if len(columns) == 1:
@@ -1661,6 +1852,92 @@ class ForeignTableView(PGChildNodeView, DataTypeReader,
             ForeignTableView._modify_options_data(data, tmp_ftoptions)
 
         data['ftoptions'] = tmp_ftoptions
+
+    @check_precondition
+    def enable_disable_triggers(self, gid, sid, did, scid, foid):
+        """
+        This function will enable/disable trigger(s) on the table object
+
+         Args:
+           gid: Server Group ID
+           sid: Server ID
+           did: Database ID
+           scid: Schema ID
+           tid: Table ID
+        """
+        # Below will decide if it's simple drop or drop with cascade call
+        data = request.form if request.form else json.loads(
+            request.data
+        )
+        # Convert str 'true' to boolean type
+        is_enable_trigger = data['is_enable_trigger']
+
+        try:
+            if foid is not None:
+                status, data = self._fetch_properties(
+                    gid, sid, did, scid, foid, inherits=True)
+                if not status:
+                    return data
+                elif not data:
+                    return gone(self.not_found_error_msg())
+
+            SQL = render_template(
+                "/".join([self.template_path, 'enable_disable_trigger.sql']),
+                data=data, is_enable_trigger=is_enable_trigger
+            )
+            status, res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            SQL = render_template(
+                "/".join([self.template_path, 'get_enabled_triggers.sql']),
+                tid=foid
+            )
+
+            status, trigger_res = self.conn.execute_scalar(SQL)
+            if not status:
+                return internal_server_error(errormsg=res)
+
+            return make_json_response(
+                success=1,
+                info=gettext("Trigger(s) have been disabled")
+                if is_enable_trigger == 'D'
+                else gettext("Trigger(s) have been enabled"),
+                data={
+                    'id': foid,
+                    'scid': scid,
+                    'has_enable_triggers': trigger_res
+                }
+            )
+
+        except Exception as e:
+            return internal_server_error(errormsg=str(e))
+
+    def _get_resql_for_triggers(self, tid, schema,
+                                table):
+        """
+        ########################################
+        # Reverse engineered sql for TRIGGERS
+        ########################################
+        """
+        sql = render_template("/".join([self.trigger_template_path,
+                                        self._NODES_SQL]), tid=tid)
+        status, rset = self.conn.execute_2darray(sql)
+        if not status:
+            return internal_server_error(errormsg=rset)
+
+        trigger_sql = ''
+        for row in rset['rows']:
+            trigger_sql = trigger_utils.get_reverse_engineered_sql(
+                self.conn, schema=schema, table=table, tid=tid,
+                trid=row['oid'], datlastsysoid=self._DATABASE_LAST_SYSTEM_OID,
+                show_system_objects=self.blueprint.show_system_objects,
+                template_path=None)
+            trigger_sql = "\n" + trigger_sql
+
+            trigger_sql = re.sub(self.pattern, self.double_newline,
+                                 trigger_sql)
+        return trigger_sql
 
 
 SchemaDiffRegistry(blueprint.node_type, ForeignTableView)

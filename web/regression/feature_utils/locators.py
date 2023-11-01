@@ -11,20 +11,20 @@ class BrowserToolBarLocators():
     """This will contains element locators for browser tree tool bar"""
 
     open_query_tool_button_css = \
-        ".wcFrameButton[aria-label='Query Tool']:not(.disabled)"
+        "button[aria-label='Query Tool']:not(:disabled)"
 
     query_tool_panel_css = \
-        ".wcPanelTab .wcTabIcon.pg-font-icon.icon-query_tool"
+        ".dock-tab .pg-font-icon.icon-query_tool"
 
     view_table_data_button_css = \
-        ".wcFrameButton[aria-label='View Data']:not(.disabled)"
+        "button[aria-label='All Rows']:not(:disabled)"
 
-    view_data_panel_css = ".wcPanelTab .wcTabIcon.pg-font-icon.icon-view_data"
+    view_data_panel_css = ".dock-tab .pg-font-icon.icon-view_data"
 
     filter_data_button_css = \
-        ".wcFrameButton[aria-label='Filtered Rows']:not(.disabled)"
+        "button[aria-label='Filtered Rows...']:not(:disabled)"
 
-    filter_box_css = "//*[@id='0']/div[contains(text(), 'Data Filter')]"
+    filter_box_css = ".dock-fbox div[title^='Data Filter']"
 
 
 class NavMenuLocators:
@@ -73,26 +73,17 @@ class NavMenuLocators:
 
     restore_file_name_txt_box_name = "file"
 
-    backup_btn_xpath = \
-        "//button/span[text()='Backup']"
+    backup_btn = ".dock-fbox button[data-label='Backup']"
 
     bcg_process_status_alertifier_css = \
         ".ajs-message.ajs-bg-bgprocess.ajs-visible"
 
     status_alertifier_more_btn_css = ".pg-bg-more-details"
 
-    process_watcher_alertfier = \
-        "//div[contains(@class,'wcFrameTitleBar')]" \
-        "//div[contains(text(),'Process Watcher')]"
-
     process_watcher_detailed_message_css = \
         "div[data-test='process-details'] div[data-test='process-message']"
     process_watcher_detailed_command_css = \
         "div[data-test='process-details'] div[data-test='process-cmd']"
-
-    process_watcher_close_button_xpath = \
-        "//div[contains(@class,'wcFloating')]//" \
-        "div[@aria-label='Close panel']//div"
 
     restore_file_name_xpath = "//div[contains(text(),'Restore')]" \
                               "//following::input[@name='file']"
@@ -102,8 +93,10 @@ class NavMenuLocators:
 
     maintenance_operation = "//label[text()='Maintenance operation']"
 
+    select_tab = \
+        "div.dock-box div[title*='{}']"
     select_tab_xpath = \
-        "//*[contains(@class,'wcTabTop')]//*[contains(@class,'wcPanelTab') " \
+        "//*[contains(@class,'dock-top')]//*[contains(@class,'dock-tab') " \
         "and contains(.,'{}')]"
 
     rcdock_tab = "div.dock-tab-btn[id$='{0}']"
@@ -282,7 +275,7 @@ class ConnectToServerDiv:
 
 class PropertyDialogueLocators:
     # This will contain xpaths for elements in properties dialogue
-    server_dialogue_title = "//div[text()='Register - Server']"
+    server_dialogue_title = "//span[text()='Register - Server']"
 
     server_connection_tab = "//button/span[text()='Connection']"
 

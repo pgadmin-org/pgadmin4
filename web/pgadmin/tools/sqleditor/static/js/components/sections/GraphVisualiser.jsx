@@ -26,7 +26,6 @@ import { LineChart, BarChart, PieChart, DATA_POINT_STYLE, DATA_POINT_SIZE,
   CHART_THEME_COLORS, CHART_THEME_COLORS_LENGTH, LightenDarkenColor} from 'sources/chartjs';
 import { QueryToolEventsContext, QueryToolContext } from '../QueryToolComponent';
 import { QUERY_TOOL_EVENTS, PANELS } from '../QueryToolConstants';
-import { LayoutHelper } from '../../../../../../static/js/helpers/Layout';
 
 // Numeric data type used to separate out the options for Y axis.
 const NUMERIC_TYPES = ['oid', 'smallint', 'integer', 'bigint', 'decimal', 'numeric',
@@ -298,7 +297,7 @@ export function GraphVisualiser({initColumns}) {
     let timeoutId;
     const contentResizeObserver = new ResizeObserver(()=>{
       clearTimeout(timeoutId);
-      if(LayoutHelper.isTabVisible(queryToolCtx.docker, PANELS.GRAPH_VISUALISER)) {
+      if(queryToolCtx.docker.isTabVisible(PANELS.GRAPH_VISUALISER)) {
         timeoutId = setTimeout(function () {
           setGraphHeight(contentRef.current.offsetHeight - 8);
         }, 300);

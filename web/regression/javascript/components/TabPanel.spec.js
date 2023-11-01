@@ -7,42 +7,33 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
+
 import React from 'react';
-import '../helper/enzyme.helper';
-import { createMount } from '@material-ui/core/test-utils';
+
+import { render } from '@testing-library/react';
 import { withTheme } from '../fake_theme';
 import TabPanel from 'sources/components/TabPanel';
 
 
 /* MUI Components need to be wrapped in Theme for theme vars */
 describe('TabPanel', ()=>{
-  let mount, panelInst, ThemedPanel;
+  let panelInst, ThemedPanel;
 
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
   beforeAll(()=>{
-    mount = createMount();
     /* Need Mui Theme context as well */
     ThemedPanel = withTheme(TabPanel);
   });
 
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
   beforeEach(()=>{
-    jasmineEnzyme();
-    panelInst = mount(<ThemedPanel value={1} index={0}><h1>test</h1></ThemedPanel>);
+    panelInst = render(<ThemedPanel value={1} index={0}><h1>test</h1></ThemedPanel>);
   });
 
   it('init', ()=>{
-    expect(panelInst.find('div').at(0).getDOMNode().hidden).toBeTrue();
-    expect(panelInst.find('h1')).not.toBe(null);
+    expect(panelInst.container.querySelector('[data-test="tabpanel"]').hidden).toBe(true);
   });
 
   it('tab select', ()=>{
-    panelInst.setProps({value: 0});
-    expect(panelInst.find('div').at(0).getDOMNode().hidden).toBeFalse();
+    panelInst.rerender(<ThemedPanel value={0} index={0}><h1>test</h1></ThemedPanel>);
+    expect(panelInst.container.querySelector('[data-test="tabpanel"]').hidden).toBe(false);
   });
 });

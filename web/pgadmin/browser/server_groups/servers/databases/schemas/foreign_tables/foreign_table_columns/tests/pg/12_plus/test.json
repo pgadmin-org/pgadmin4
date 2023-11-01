@@ -1,0 +1,213 @@
+{
+  "scenarios": [
+    {
+      "type": "create",
+      "name": "Create FDW for foreign table",
+      "endpoint": "NODE-foreign_data_wrapper.obj",
+      "sql_endpoint": "NODE-foreign_data_wrapper.sql_id",
+      "data": {
+        "name": "test_fdw_for_foreign_table_columns",
+        "fdwacl": [],
+        "fdwoptions": []
+      },
+      "store_object_id": "True"
+    },
+    {
+      "type": "create",
+      "name": "Create foreign server for foreign table",
+      "endpoint": "NODE-foreign_server.obj",
+      "sql_endpoint": "NODE-foreign_server.sql_id",
+      "data": {
+        "name":"test_fs_for_foreign_table_column"
+      },
+      "store_object_id": "True"
+    },
+    {
+      "type": "create",
+      "name": "Create Foreign Table for testing column node.",
+      "endpoint": "NODE-foreign_table.obj",
+      "sql_endpoint": "NODE-foreign_table.sql_id",
+      "data": {
+        "name": "foreign_table_2_$%{}[]()&*^!@\"'`\\/#",
+        "columns": [],
+        "schema": "public",
+        "basensp": "public",
+        "ftsrvname": "test_fs_for_foreign_table_column",
+        "owner": "postgres",
+        "ftoptions": [],
+        "inherits": [],
+        "relacl": [],
+        "seclabels": []
+      },
+      "store_object_id": "True"
+    },
+    {
+      "type": "create",
+      "name": "Create FT Column (Integer/Numeric type)",
+      "endpoint": "NODE-foreign_table_column.obj",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql",
+      "data": {
+        "name": "col_1_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for create",
+        "cltype": "numeric",
+        "attlen":"10",
+        "attprecision":"5",
+        "colconstype":"n",
+        "attnotnull": true,
+        "attoptions": [],
+        "seclabels": [],
+        "defval": "1"
+      },
+      "expected_sql_file": "create_column_numeric.sql",
+      "expected_msql_file": "create_column_numeric.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter FT Column (Integer/Numeric type)",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql_id",
+      "data": {
+        "attnum": 1,
+        "name": "new_col_1_$%{}[]()&*^!@\"'`\\/#",
+        "description": "Comment for alter",
+        "cltype": "real",
+        "coloptions":{"added":[{"option":"column_name","value":"test"}]}
+      },
+      "expected_sql_file": "alter_column_numeric.sql",
+      "expected_msql_file": "alter_column_numeric.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FT Column (Integer/Numeric type)",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "data": {
+        "name": "new_col_1_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create FT Column with text & default value",
+      "endpoint": "NODE-foreign_table_column.obj",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql",
+      "data": {
+        "name": "col_2_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "text",
+        "description": "test comment",
+        "attnotnull": true,
+        "colconstype": "n",
+        "defval": "'xyz'"
+      },
+      "expected_sql_file": "create_column_text_with_default_value.sql",
+      "expected_msql_file": "create_column_text_with_default_value.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter FT Column with text & update default value",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql_id",
+      "data": {
+        "attnum": 2,
+        "defval": "'changed default value'"
+      },
+      "expected_sql_file": "alter_column_text_with_default_value.sql",
+      "expected_msql_file": "alter_column_text_with_default_value.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FT column with text & update default value",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "data": {
+        "name": "col_2_$%{}[]()&*^!@\"'`\\/#"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create FT Column with time with time zone & default value using function",
+      "endpoint": "NODE-foreign_table_column.obj",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql",
+      "data": {
+        "name": "col_3_$%{}[]()&*^!@\"'`\\/#",
+        "cltype": "time with time zone",
+        "attacl": [],
+        "description": "test comment",
+        "attnotnull": true,
+        "colconstype": "n",
+        "defval": "now()"
+      },
+      "expected_sql_file": "create_column_timestamp_with_default_value_using_function.sql",
+      "expected_msql_file": "create_column_timestamp_with_default_value_using_function.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter FT Column with time with time zone & update length",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql_id",
+      "data": {
+        "attlen": "10",
+        "attnotnull": false,
+        "attnum":3,
+        "description": "test comment modification"
+      },
+      "expected_sql_file": "alter_column_timestamp_with_default_value_using_function.sql",
+      "expected_msql_file": "alter_column_timestamp_with_default_value_using_function.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FT Column with time with time zone",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "data": {
+        "name": "col_3_$%{}[]()&*^!@\"'`\\/"
+      }
+    },
+    {
+      "type": "create",
+      "name": "Create FT Column with integer & generated always with expression, column option, variables",
+      "endpoint": "NODE-foreign_table_column.obj",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql",
+      "data": {"name":"col_4_$%{}[]()&*^!@\"'`\\/#",
+        "description":"test comment",
+        "cltype":"bigint",
+        "attnotnull":true,
+        "coloptions":[{"option":"column_name","value":"test_options"}],
+        "colconstype":"g",
+        "is_tlength":false,
+        "is_precision":false,
+        "genexpr":"1000+1",
+        "attoptions":[{"name":"n_distinct","value":"1"}]},
+      "expected_sql_file": "create_column_with_integer_generated_always_column_option_variables.sql",
+      "expected_msql_file": "create_column_with_integer_generated_always_column_option_variables.msql"
+    },
+    {
+      "type": "alter",
+      "name": "Alter FT Column with integer & generated always with expression, column option, variables",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_column.sql_id",
+      "msql_endpoint": "NODE-foreign_table_column.msql_id",
+      "data":{
+        "attoptions":{
+          "changed":[{"name":"n_distinct","value":"111"}]},
+        "coloptions":{"changed":[{"option":"column_name","value":"test_options_update"}]},
+        "attnum":4},
+      "expected_sql_file": "alter_column_with_integer_generated_always_column_option_variables.sql",
+      "expected_msql_file": "alter_column_with_integer_generated_always_column_option_variables.msql"
+    },
+    {
+      "type": "delete",
+      "name": "Drop FT Column with time with time zone",
+      "endpoint": "NODE-foreign_table_column.obj_id",
+      "sql_endpoint": "NODE-foreign_table_columnn.sql_id",
+      "data": {
+        "name":"col_4_$%{}[]()&*^!@\"'`\\/#"
+      }
+    }
+  ]}

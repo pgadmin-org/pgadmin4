@@ -12,13 +12,15 @@ import React, { useEffect } from 'react';
 import PgTable from 'sources/components/PgTable';
 import gettext from 'sources/gettext';
 import PropTypes from 'prop-types';
-import Notify from '../../../../static/js/helpers/Notifier';
 import getApiInstance from 'sources/api_instance';
 import { makeStyles } from '@material-ui/core/styles';
 import { getURL } from '../../../static/utils/utils';
 import Loader from 'sources/components/Loader';
 import EmptyPanelMessage from '../../../../static/js/components/EmptyPanelMessage';
 import { parseApiError } from '../../../../static/js/api_instance';
+import withStandardTabInfo from '../../../../static/js/helpers/withStandardTabInfo';
+import { BROWSER_PANELS } from '../../../../browser/static/js/constants';
+import { usePgAdmin } from '../../../../static/js/BrowserComponent';
 
 const useStyles = makeStyles((theme) => ({
   emptyPanel: {
@@ -72,11 +74,12 @@ function parseData(data, node) {
   return data;
 }
 
-export default function Dependents({ nodeData, item, node, ...props }) {
+function Dependents({ nodeData, nodeItem, node, treeNodeInfo, isActive, isStale, setIsStale }) {
   const classes = useStyles();
   const [tableData, setTableData] = React.useState([]);
   const [loaderText, setLoaderText] = React.useState('');
   const [msg, setMsg] = React.useState('');
+  const pgAdmin = usePgAdmin();
 
   let columns = [
     {
@@ -104,14 +107,18 @@ export default function Dependents({ nodeData, item, node, ...props }) {
   ];
 
   useEffect(() => {
+    if(!isStale || !isActive) {
+      return;
+    }
+
     let message = gettext('Please select an object in the tree view.');
     if (node) {
       let url = getURL(
         nodeData,
         true,
-        props.treeNodeInfo,
+        treeNodeInfo,
         node,
-        item,
+        nodeItem,
         'dependent'
       );
       message = gettext(
@@ -134,7 +141,7 @@ export default function Dependents({ nodeData, item, node, ...props }) {
             }
           })
           .catch((e) => {
-            Notify.alert(
+            pgAdmin.Browser.notifier.alert(
               gettext('Failed to retrieve data from the server.'),
               parseApiError(e)
             );
@@ -145,13 +152,12 @@ export default function Dependents({ nodeData, item, node, ...props }) {
     }
     if (message != '') {
       setLoaderText('');
+      setTableData([]);
       setMsg(message);
     }
 
-    return () => {
-      setTableData([]);
-    };
-  }, [nodeData, item]);
+    setIsStale(false);
+  }, [isActive, isStale]);
 
   return (
     <>
@@ -180,5 +186,10 @@ Dependents.propTypes = {
   nodeData: PropTypes.object,
   treeNodeInfo: PropTypes.object,
   node: PropTypes.func,
-  item: PropTypes.object,
+  nodeItem: PropTypes.object,
+  isActive: PropTypes.bool,
+  isStale: PropTypes.bool,
+  setIsStale: PropTypes.func,
 };
+
+export default withStandardTabInfo(Dependents, BROWSER_PANELS.DEPENDENTS);

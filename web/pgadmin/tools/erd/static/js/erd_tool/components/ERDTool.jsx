@@ -11,7 +11,7 @@ import * as React from 'react';
 import { CanvasWidget, Action, InputType } from '@projectstorm/react-canvas-core';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import html2canvas from 'html2canvas';
+import {toPng} from 'html-to-image';
 
 import ERDCore from '../ERDCore';
 import ConnectionBar, { STATUS as CONNECT_STATUS } from './ConnectionBar';
@@ -20,9 +20,7 @@ import {setPanelTitle} from '../../ERDModule';
 import gettext from 'sources/gettext';
 import url_for from 'sources/url_for';
 import {showERDSqlTool} from 'tools/sqleditor/static/js/show_query_tool';
-import 'wcdocker';
 import TableSchema from '../../../../../../browser/server_groups/servers/databases/schemas/tables/static/js/table.ui';
-import Notify from '../../../../../../static/js/helpers/Notifier';
 import { ModalContext } from '../../../../../../static/js/helpers/ModalProvider';
 import ERDDialogs from '../dialogs';
 import ConfirmSaveContent from '../../../../../../static/js/Dialogs/ConfirmSaveContent';
@@ -33,6 +31,9 @@ import EventBus from '../../../../../../static/js/helpers/EventBus';
 import { ERD_EVENTS } from '../ERDConstants';
 import getApiInstance, { callFetch, parseApiError } from '../../../../../../static/js/api_instance';
 import { openSocket, socketApiGet } from '../../../../../../static/js/socket_instance';
+import { LAYOUT_EVENTS } from '../../../../../../static/js/helpers/Layout';
+import usePreferences from '../../../../../../preferences/static/js/store';
+import pgAdmin from 'sources/pgadmin';
 
 /* Custom react-diagram action for keyboard events */
 export class KeyboardShortcutAction extends Action {
@@ -44,6 +45,7 @@ export class KeyboardShortcutAction extends Action {
       },
     });
     this.shortcuts = {};
+    this.preferencesStore = usePreferences.getState();
 
     for(let shortcut_val of shortcut_handlers){
       let [key, handler] = shortcut_val;
@@ -76,7 +78,7 @@ const styles = ((theme)=>({
   diagramContainer: {
     position: 'relative',
     width: '100%',
-    height: '100%',
+    flexGrow: 1,
     minHeight: 0,
   },
   diagramCanvas: {
@@ -135,6 +137,7 @@ class ERDTool extends React.Component {
     this.keyboardActionObj = null;
     this.erdDialogs = new ERDDialogs(this.context);
     this.apiObj = getApiInstance();
+    this.preferencesStore = usePreferences.getState();
 
     this.eventBus = new EventBus();
 
@@ -293,12 +296,12 @@ class ERDTool extends React.Component {
     this.setLoading(gettext('Preparing...'));
     this.registerEvents();
 
-    const erdPref = this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd');
+    const erdPref = this.preferencesStore.getPreferencesForModule('erd');
     this.setState({
       preferences: erdPref,
-      is_new_tab: (this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').new_browser_tab_open || '')
+      is_new_tab: (this.preferencesStore.getPreferencesForModule('browser').new_browser_tab_open || '')
         .includes('erd_tool'),
-      is_close_tab_warning: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_refresh_close,
+      is_close_tab_warning: this.preferencesStore.getPreferencesForModule('browser').confirm_on_refresh_close,
       cardinality_notation: erdPref.cardinality_notation,
     }, ()=>{
       this.registerKeyboardShortcuts();
@@ -310,26 +313,17 @@ class ERDTool extends React.Component {
       backgroundPosition: '0px 0px',
     });
 
-    this.props.pgWindow.pgAdmin.Browser.onPreferencesChange('erd', () => {
-      this.setState({
-        preferences: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('erd'),
-      }, ()=>this.registerKeyboardShortcuts());
-    });
-
-    this.props.pgWindow.pgAdmin.Browser.onPreferencesChange('browser', () => {
-      this.setState({
-        is_close_tab_warning: this.props.pgWindow.pgAdmin.Browser.get_preferences_for_module('browser').confirm_on_refresh_close,
-      });
-    });
-
-    this.props.panel?.on(window.wcDocker?.EVENT.CLOSING, () => {
-      window.removeEventListener('beforeunload', this.onBeforeUnload);
-      if(this.state.dirty) {
-        this.closeOnSave = false;
-        this.confirmBeforeClose();
-        return false;
+    this.props.panelDocker.eventBus.registerListener(LAYOUT_EVENTS.CLOSING, (id)=>{
+      if(this.props.panelId == id) {
+        window.removeEventListener('beforeunload', this.onBeforeUnload);
+        if(this.state.dirty) {
+          this.closeOnSave = false;
+          this.confirmBeforeClose();
+          return false;
+        }
+        this.closePanel();
+        return true;
       }
-      return true;
     });
 
     window.addEventListener('unload', ()=>{
@@ -402,8 +396,7 @@ class ERDTool extends React.Component {
   }
 
   closePanel() {
-    this.props.panel.off(window.wcDocker.EVENT.CLOSING);
-    this.props.pgWindow.pgAdmin.Browser.docker.removePanel(this.props.panel);
+    this.props.panelDocker.close(this.props.panelId, true);
   }
 
   getDialog(dialogName) {
@@ -484,7 +477,7 @@ class ERDTool extends React.Component {
     if(nodeDropData.objUrl && nodeDropData.nodeType === 'table') {
       let matchUrl = `/${this.props.params.sgid}/${this.props.params.sid}/${this.props.params.did}/`;
       if(nodeDropData.objUrl.indexOf(matchUrl) == -1) {
-        Notify.error(gettext('Cannot drop table from outside of the current database.'));
+        pgAdmin.Browser.notifier.error(gettext('Cannot drop table from outside of the current database.'));
       } else {
         let dataPromise = new Promise((resolve, reject)=>{
           this.apiObj.get(nodeDropData.objUrl)
@@ -530,7 +523,7 @@ class ERDTool extends React.Component {
   }
 
   onDeleteNode() {
-    Notify.confirm(
+    pgAdmin.Browser.notifier.confirm(
       gettext('Delete ?'),
       gettext('You have selected %s tables and %s links.', this.diagram.getSelectedNodes().length, this.diagram.getSelectedLinks().length)
         + '<br />' + gettext('Are you sure you want to delete ?'),
@@ -639,7 +632,7 @@ class ERDTool extends React.Component {
       'file_name': decodeURI(fileName),
       'file_content': JSON.stringify(this.diagram.serialize(this.props.pgAdmin.Browser.utils.app_version_int)),
     }).then(()=>{
-      Notify.success(gettext('Project saved successfully.'));
+      this.props.pgAdmin.Browser.notifier.success(gettext('Project saved successfully.'));
       this.setState({
         current_file: fileName,
         dirty: false,
@@ -669,7 +662,7 @@ class ERDTool extends React.Component {
     if (this.state.is_new_tab) {
       window.document.title = title;
     } else {
-      setPanelTitle(this.props.panel, title);
+      setPanelTitle(this.props.panelDocker, this.props.panelId, title);
     }
   }
 
@@ -722,66 +715,49 @@ class ERDTool extends React.Component {
      * the canvas back to original state.
      * Code referred from - zoomToFitNodes function.
      */
-    let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes(), 10);
+    this.diagramContainerRef.current?.classList.add(this.props.classes.html2canvasReset);
+    const margin = 10;
+    let nodesRect = this.diagram.getEngine().getBoundingNodesRect(this.diagram.getModel().getNodes());
+    let linksRect = this.diagram.getBoundingLinksRect();
+
+    // Check what is to the most top left - links or nodes?
+    let topLeftXY = {
+      x: nodesRect.getTopLeft().x,
+      y: nodesRect.getTopLeft().y
+    };
+    if(topLeftXY.x > linksRect.getTopLeft().x) {
+      topLeftXY.x = linksRect.getTopLeft().x;
+    }
+    if(topLeftXY.y > linksRect.getTopLeft().y) {
+      topLeftXY.y = linksRect.getTopLeft().y;
+    }
+    topLeftXY.x -= margin;
+    topLeftXY.y -= margin;
+
     let canvasRect = this.canvasEle.getBoundingClientRect();
-    let canvasTopLeftPoint = {
+    let canvasTopLeftOnScreen = {
       x: canvasRect.left,
       y: canvasRect.top
     };
     let nodeLayerTopLeftPoint = {
-      x: canvasTopLeftPoint.x + this.diagram.getModel().getOffsetX(),
-      y: canvasTopLeftPoint.y + this.diagram.getModel().getOffsetY()
+      x: canvasTopLeftOnScreen.x + this.diagram.getModel().getOffsetX(),
+      y: canvasTopLeftOnScreen.y + this.diagram.getModel().getOffsetY()
     };
     let nodesRectTopLeftPoint = {
-      x: nodeLayerTopLeftPoint.x + nodesRect.getTopLeft().x,
-      y: nodeLayerTopLeftPoint.y + nodesRect.getTopLeft().y
+      x: nodeLayerTopLeftPoint.x + topLeftXY.x,
+      y: nodeLayerTopLeftPoint.y + topLeftXY.y
     };
+
     let prevTransform = this.canvasEle.querySelector('div').style.transform;
     this.canvasEle.childNodes.forEach((ele)=>{
       ele.style.transform = `translate(${nodeLayerTopLeftPoint.x - nodesRectTopLeftPoint.x}px, ${nodeLayerTopLeftPoint.y - nodesRectTopLeftPoint.y}px) scale(1.0)`;
     });
 
-    /* Change the styles for suiting html2canvas */
-    this.canvasEle.classList.add(this.props.classes.html2canvasReset);
-    this.canvasEle.style.width = this.canvasEle.scrollWidth + 'px';
-    this.canvasEle.style.height = this.canvasEle.scrollHeight + 'px';
-
-    /* html2canvas ignores CSS styles, set the CSS styles to inline */
-    const setSvgInlineStyles = (targetElem) => {
-      const transformProperties = [
-        'fill',
-        'color',
-        'font-size',
-        'stroke',
-        'font',
-        'display',
-      ];
-      let svgElems = Array.from(targetElem.getElementsByTagName('svg'));
-      for (let svgEle of svgElems) {
-        svgEle.setAttribute('width', svgEle.clientWidth);
-        svgEle.setAttribute('height', svgEle.clientHeight);
-        /* Wrap the SVG in a div tag so that transforms are consistent with html */
-        let wrap = document.createElement('div');
-        wrap.setAttribute('style', svgEle.getAttribute('style'));
-        svgEle.setAttribute('style', null);
-        svgEle.style.display = 'block';
-        svgEle.parentNode.insertBefore(wrap, svgEle);
-        wrap.appendChild(svgEle);
-        recurseElementChildren(svgEle);
-      }
-      function recurseElementChildren(node) {
-        if (!node.style)
-          return;
-
-        let styles = getComputedStyle(node);
-        for (let transformProperty of transformProperties) {
-          node.style[transformProperty] = styles[transformProperty];
-        }
-        for (let child of Array.from(node.childNodes)) {
-          recurseElementChildren(child);
-        }
-      }
-    };
+    // Capture the links beyond the nodes as well.
+    const linkOutsideWidth = linksRect.getBottomRight().x - nodesRect.getBottomRight().x;
+    const linkOutsideHeight = linksRect.getBottomRight().y - nodesRect.getBottomRight().y;
+    this.canvasEle.style.width = this.canvasEle.scrollWidth + (linkOutsideWidth > 0 ? linkOutsideWidth : 0) + margin + 'px';
+    this.canvasEle.style.height = this.canvasEle.scrollHeight + (linkOutsideHeight > 0 ? linkOutsideHeight : 0) + margin + 'px';
 
     setTimeout(()=>{
       let width = this.canvasEle.scrollWidth + 10;
@@ -796,46 +772,34 @@ class ERDTool extends React.Component {
         height = 32766;
         isCut = true;
       }
-      html2canvas(this.canvasEle, {
-        width: width,
-        height: height,
-        scrollX: 0,
-        scrollY: 0,
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: window.getComputedStyle(this.canvasEle).backgroundColor,
-        onclone: (clonedEle)=>{
-          setSvgInlineStyles(clonedEle.body.querySelector('div[data-test="diagram-container"]'));
-          return clonedEle;
-        },
-      }).then((canvas)=>{
-        let link = document.createElement('a');
-        link.setAttribute('href', canvas.toDataURL('image/png'));
-        link.setAttribute('download', this.getCurrentProjectName() + '.png');
-        link.click();
-        link.remove();
-      }).catch((err)=>{
-        console.error(err);
-        let msg = gettext('Unknown error. Check console logs');
-        if(err.name) {
-          msg = `${err.name}: ${err.message}`;
-        }
-        Notify.alert(gettext('Error'), msg);
-      }).then(()=>{
-        /* Revert back to the original CSS styles */
-        this.canvasEle.classList.remove(this.props.classes.html2canvasReset);
-        this.canvasEle.style.width = '';
-        this.canvasEle.style.height = '';
-        this.canvasEle.childNodes.forEach((ele)=>{
-          ele.style.transform = prevTransform;
+      toPng(this.canvasEle)
+        .then((dataUrl)=>{
+          let link = document.createElement('a');
+          link.setAttribute('href', dataUrl);
+          link.setAttribute('download', this.getCurrentProjectName() + '.png');
+          link.click();
+          link.remove();
+        }).catch((err)=>{
+          console.error(err);
+          let msg = gettext('Unknown error. Check console logs');
+          if(err.name) {
+            msg = `${err.name}: ${err.message}`;
+          }
+          pgAdmin.Browser.notifier.alert(gettext('Error'), msg);
+        }).then(()=>{
+          /* Revert back to the original CSS styles */
+          this.diagramContainerRef.current.classList.remove(this.props.classes.html2canvasReset);
+          this.canvasEle.style.width = '';
+          this.canvasEle.style.height = '';
+          this.canvasEle.childNodes.forEach((ele)=>{
+            ele.style.transform = prevTransform;
+          });
+          this.setLoading(null);
+          if(isCut) {
+            pgAdmin.Browser.notifier.alert(gettext('Maximum image size limit'),
+              gettext('The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, and has been cropped to that size.'));
+          }
         });
-        this.setLoading(null);
-        if(isCut) {
-          Notify.alert(gettext('Maximum image size limit'),
-            gettext('The downloaded image has exceeded the maximum size of 32767 x 32767 pixels, and has been cropped to that size.'));
-        }
-      });
     }, 1000);
   }
 
@@ -959,9 +923,9 @@ class ERDTool extends React.Component {
     this.erdDialogs.modal = this.context;
 
     return (
-      <Box ref={this.containerRef} height="100%">
+      <Box ref={this.containerRef} height="100%" display="flex" flexDirection="column">
         <ConnectionBar status={this.state.conn_status} bgcolor={this.props.params.bgcolor}
-          fgcolor={this.props.params.fgcolor} title={this.props.params.title}/>
+          fgcolor={this.props.params.fgcolor} title={_.unescape(this.props.params.title)}/>
         <MainToolBar preferences={this.state.preferences} eventBus={this.eventBus}
           fillColor={this.state.fill_color} textColor={this.state.text_color}
           notation={this.state.cardinality_notation} onNotationChange={this.onNotationChange}
@@ -999,7 +963,8 @@ ERDTool.propTypes = {
   }),
   pgWindow: PropTypes.object.isRequired,
   pgAdmin: PropTypes.object.isRequired,
-  panel: PropTypes.object,
+  panelId: PropTypes.string,
+  panelDocker: PropTypes.object,
   classes: PropTypes.object,
   isTest: PropTypes.bool,
 };

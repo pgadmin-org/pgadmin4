@@ -295,6 +295,7 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
         'get_toast_table_vacuum': [{}, {'get': 'get_toast_table_vacuum'}],
         'all_tables': [{}, {'get': 'get_all_tables'}],
         'get_access_methods': [{}, {'get': 'get_access_methods'}],
+        'get_table_access_methods': [{}, {'get': 'get_table_access_methods'}],
         'get_oper_class': [{}, {'get': 'get_oper_class'}],
         'get_operator': [{}, {'get': 'get_operator'}],
         'get_attach_tables': [
@@ -532,6 +533,28 @@ class TableView(BaseTableView, DataTypeReader, SchemaDiffTableCompare):
 
         """
         res = exclusion_utils.get_access_methods(self.conn)
+
+        return make_json_response(
+            data=res,
+            status=200
+        )
+
+    @BaseTableView.check_precondition
+    def get_table_access_methods(self, gid, sid, did, scid, tid=None):
+        """
+        This function returns access methods for table.
+
+        Args:
+          gid: Server Group ID
+          sid: Server ID
+          did: Database ID
+          scid: Schema ID
+          tid: Table ID
+
+        Returns:
+          Returns list of access methods for table
+        """
+        res = BaseTableView.get_access_methods(self)
 
         return make_json_response(
             data=res,

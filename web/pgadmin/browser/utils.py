@@ -37,14 +37,14 @@ def underscore_escape(text):
         '<': "&lt;",
         '>': "&gt;",
         '"': "&quot;",
-        '`': "&#96;",
-        "'": "&#x27;"
+        "'": "&#39;"
     }
 
     # always replace & first
-    for c, r in sorted(html_map.items(),
-                       key=lambda x: 0 if x[0] == '&' else 1):
-        text = text.replace(c, r)
+    if text:
+        for c, r in sorted(html_map.items(),
+                           key=lambda x: 0 if x[0] == '&' else 1):
+            text = text.replace(c, r)
 
     return text
 
@@ -62,15 +62,13 @@ def underscore_unescape(text):
         "&lt;": '<',
         "&gt;": '>',
         "&quot;": '"',
-        "&#96;": '`',
-        "&#x27;": "'",
-        "&#39;": "'",
-        "&#34;": '"'
+        "&#39;": "'"
     }
 
     # always replace & first
-    for c, r in html_map.items():
-        text = text.replace(c, r)
+    if text:
+        for c, r in html_map.items():
+            text = text.replace(c, r)
 
     return text
 

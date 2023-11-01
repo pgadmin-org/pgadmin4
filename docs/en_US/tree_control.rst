@@ -4,8 +4,8 @@
 `Tree Control`:index:
 *********************
 
-The left pane of the main window displays a tree control (the *pgAdmin* tree
-control) that provides access to the objects that reside on a server.
+The left pane of the main window displays a tree control (Object explorer)
+that provides access to the objects that reside on a server.
 
 .. image:: /images/main_left_pane.png
     :alt: object explorer panel

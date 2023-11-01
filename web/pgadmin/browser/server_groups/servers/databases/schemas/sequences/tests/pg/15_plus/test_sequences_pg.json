@@ -1,0 +1,352 @@
+{
+    "scenarios": [
+      {
+        "type": "create",
+        "name": "Create Table for Owned By",
+        "endpoint": "NODE-table.obj",
+        "sql_endpoint": "NODE-table.sql_id",
+        "data": {
+          "name": "tableforownedby",
+          "columns": [
+            {
+              "name": "col1",
+              "cltype": "integer",
+              "is_primary_key": true
+            },
+            {
+              "name": "col2",
+              "cltype": "text"
+            },
+            {
+              "name": "col3",
+              "cltype": "integer"
+            }
+          ],
+          "is_partitioned": false,
+          "schema": "public",
+          "spcname": "pg_default"
+        },
+        "store_object_id": true
+      },
+      {
+        "type": "create",
+        "name": "Create Sequence",
+        "endpoint": "NODE-sequence.obj",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#",
+          "seqowner": "postgres",
+          "schema": "public",
+          "increment": "5",
+          "start": "5",
+          "maximum": "999",
+          "minimum": "5",
+          "cache": "1",
+          "cycled": false,
+          "relacl": [],
+          "securities": []
+        },
+        "expected_sql_file": "create_sequence.sql",
+        "expected_msql_file": "create_sequence_msql.sql"
+      },{
+        "type": "alter",
+        "name": "Alter Sequence comment",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "comment": "Some comment"
+        },
+        "expected_sql_file": "alter_seq_comment.sql",
+        "expected_msql_file": "alter_seq_comment_msql.sql"
+      },{
+        "type": "alter",
+        "name": "Alter Sequence properties",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "current_value": "7", "increment": "12", "minimum": "2", "maximum": "9992", "cache": "2", "cycled": true
+        },
+        "expected_sql_file": "alter_seq_props.sql",
+        "expected_msql_file": "alter_seq_props_msql.sql"
+      },{
+        "type": "alter",
+        "name": "Alter Sequence add privileges",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "relacl": {
+            "added":[{
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges":[{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              },{
+                "privilege_type": "U",
+                "privilege": true,
+                "with_grant": false
+              },{
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+              }]
+            }]
+          }
+        },
+        "expected_sql_file": "alter_seq_privs_add.sql",
+        "expected_msql_file": "alter_seq_privs_add_msql.sql"
+      },{
+        "type": "alter",
+        "name": "Alter Sequence update privileges",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "relacl": {
+            "changed":[{
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges":[{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              }]
+            }]
+          }
+        },
+        "expected_sql_file": "alter_seq_privs_update.sql",
+        "expected_msql_file": "alter_seq_privs_update_msql.sql"
+      },
+      {
+        "type": "alter",
+        "name": "Alter Sequence remove partial privileges",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "relacl": {
+            "deleted":[{
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges":[{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              }]
+            }]
+          }
+        }
+      },
+      {
+        "type": "alter",
+        "name": "Alter Sequence change grantee in privileges",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "relacl": {
+            "changed":[{
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "old_grantee": "postgres",
+              "privileges":[{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              }]
+            }]
+          }
+        },
+        "expected_sql_file": "alter_seq_change_grantee_privs.sql",
+        "expected_msql_file": "alter_seq_change_grantee_privs_msql.sql"
+      },
+      {
+        "type": "alter",
+        "name": "Alter Sequence remove privileges",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "relacl": {
+            "deleted":[{
+              "grantee": "PUBLIC",
+              "grantor": "postgres",
+              "privileges":[{
+                "privilege_type": "r",
+                "privilege": true,
+                "with_grant": false
+              },{
+                "privilege_type": "U",
+                "privilege": true,
+                "with_grant": false
+              },{
+                "privilege_type": "w",
+                "privilege": true,
+                "with_grant": false
+              }]
+            }]
+          }
+        },
+        "expected_sql_file": "alter_seq_privs_remove.sql",
+        "expected_msql_file": "alter_seq_privs_remove_msql.sql"
+      }, {
+        "type": "delete",
+        "name": "Drop sequence",
+        "endpoint": "NODE-sequence.delete_id",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#"
+        }
+      }, {
+        "type": "create",
+        "name": "Create Sequence with Negative value",
+        "endpoint": "NODE-sequence.obj",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#",
+          "seqowner": "postgres",
+          "schema": "public",
+          "increment": "-5",
+          "start": "-30",
+          "maximum": "-10",
+          "minimum": "-40",
+          "cache": "1",
+          "cycled": false,
+          "relacl": [],
+          "securities": []
+        },
+        "expected_sql_file": "create_negative_sequence.sql",
+        "expected_msql_file": "create_negative_sequence_msql.sql"
+      }, {
+        "type": "alter",
+        "name": "Alter Sequence properties with negative value",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "increment": "-7", "minimum": "-35", "maximum": "-15"
+        },
+        "expected_sql_file": "alter_neg_seq_props.sql",
+        "expected_msql_file": "alter_neg_seq_props_msql.sql"
+      }, {
+        "type": "delete",
+        "name": "Drop negative sequence",
+        "endpoint": "NODE-sequence.delete_id",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#"
+        }
+      },
+      {
+        "type": "create",
+        "name": "Create Sequence with Owned By",
+        "endpoint": "NODE-sequence.obj",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#",
+          "seqowner": "postgres",
+          "schema": "public",
+          "increment": "5",
+          "start": "5",
+          "maximum": "999",
+          "minimum": "5",
+          "cache": "1",
+          "cycled": false,
+          "owned_table": "tableforownedby",
+          "owned_column": "col1",
+          "relacl": [],
+          "securities": []
+        },
+        "expected_sql_file": "create_sequence_ownedby.sql",
+        "expected_msql_file": "create_sequence_ownedby_msql.sql"
+      }, {
+        "type": "alter",
+        "name": "Alter Sequence owned by column",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "owned_column": "col2"
+        },
+        "expected_sql_file": "alter_ownedby_column.sql",
+        "expected_msql_file": "alter_ownedby_column_msql.sql"
+      }, {
+        "type": "alter",
+        "name": "Alter Sequence remove owned by",
+        "endpoint": "NODE-sequence.obj_id",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql_id",
+        "data": {
+          "maximum": "900"
+        },
+        "expected_sql_file": "alter_ownedby_remove.sql",
+        "expected_msql_file": "alter_ownedby_remove_msql.sql"
+      }, {
+        "type": "delete",
+        "name": "Drop owned by sequence",
+        "endpoint": "NODE-sequence.delete_id",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#"
+        }
+      }, {
+        "type": "create",
+        "name": "Create unlogged sequence",
+        "endpoint": "NODE-sequence.obj",
+        "sql_endpoint": "NODE-sequence.sql_id",
+        "msql_endpoint": "NODE-sequence.msql",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#",
+          "seqowner": "postgres",
+          "schema": "public",
+          "increment": "5",
+          "start": "5",
+          "maximum": "999",
+          "minimum": "5",
+          "cache": "1",
+          "cycled": false,
+          "relpersistence": true,
+          "relacl": [],
+          "securities": []
+        },
+        "expected_sql_file": "create_unlogged_sequence.sql",
+        "expected_msql_file": "create_unlogged_sequence_msql.sql"
+      }, {
+          "type": "alter",
+          "name": "Alter sequence set logged",
+          "endpoint": "NODE-sequence.obj_id",
+          "sql_endpoint": "NODE-sequence.sql_id",
+          "msql_endpoint": "NODE-sequence.msql_id",
+          "data": {
+            "relpersistence": false
+          },
+          "expected_sql_file": "alter_seq_set_logged.sql",
+          "expected_msql_file": "alter_seq_set_logged_msql.sql"
+        }, {
+          "type": "alter",
+          "name": "Alter sequence set unlogged",
+          "endpoint": "NODE-sequence.obj_id",
+          "sql_endpoint": "NODE-sequence.sql_id",
+          "msql_endpoint": "NODE-sequence.msql_id",
+          "data": {
+            "relpersistence": true
+          },
+          "expected_sql_file": "alter_seq_set_unlogged.sql",
+          "expected_msql_file": "alter_seq_set_unlogged_msql.sql"
+        }, {
+        "type": "delete",
+        "name": "Drop unlogged sequence",
+        "endpoint": "NODE-sequence.delete_id",
+        "data": {
+          "name": "Seq1_$%{}[]()&*^!@\"'`\\/#"
+        }
+      }
+    ]
+  }
+  

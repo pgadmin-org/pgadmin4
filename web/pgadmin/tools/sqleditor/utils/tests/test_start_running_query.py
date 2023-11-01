@@ -30,7 +30,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict()
+                 http_session=dict(),
              ),
              pickle_load_return=None,
              get_driver_exception=False,
@@ -60,7 +60,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict(gridData=dict())
+                 http_session=dict(gridData=dict()),
              ),
              pickle_load_return=None,
              get_driver_exception=False,
@@ -91,7 +91,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict(gridData={'123': dict(command_obj='')})
+                 http_session=dict(gridData={'123': dict(command_obj='')}),
              ),
              pickle_load_return=None,
              get_driver_exception=False,
@@ -126,7 +126,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict(gridData={'123': dict(command_obj='')})
+                 http_session=dict(gridData={'123': dict(command_obj='')}),
              ),
              pickle_load_return=MagicMock(conn_id=1,
                                           update_fetched_row_cnt=MagicMock()),
@@ -155,7 +155,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict(gridData={'123': dict(command_obj='')})
+                 http_session=dict(gridData={'123': dict(command_obj='')}),
              ),
              pickle_load_return=MagicMock(
                  conn_id=1,
@@ -184,7 +184,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict(gridData={'123': dict(command_obj='')})
+                 http_session=dict(gridData={'123': dict(command_obj='')}),
              ),
              pickle_load_return=MagicMock(
                  conn_id=1,
@@ -212,7 +212,7 @@ class StartRunningQueryTest(BaseTestGenerator):
              function_parameters=dict(
                  sql=dict(sql='some sql', explain_plan=None),
                  trans_id=123,
-                 http_session=dict(gridData={'123': dict(command_obj='')})
+                 http_session=dict(gridData={'123': dict(command_obj='')}),
              ),
              pickle_load_return=MagicMock(
                  conn_id=1,

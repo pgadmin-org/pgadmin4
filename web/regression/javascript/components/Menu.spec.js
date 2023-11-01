@@ -7,30 +7,13 @@
 //
 //////////////////////////////////////////////////////////////
 
-import jasmineEnzyme from 'jasmine-enzyme';
 import React from 'react';
-import '../helper/enzyme.helper';
+
 import { withTheme } from '../fake_theme';
-import { createMount } from '@material-ui/core/test-utils';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { PgMenu, PgMenuItem } from '../../../pgadmin/static/js/components/Menu';
 
 describe('Menu', ()=>{
-  let mount;
-
-  /* Use createMount so that material ui components gets the required context */
-  /* https://material-ui.com/guides/testing/#api */
-  beforeAll(()=>{
-    mount = createMount();
-  });
-
-  afterAll(() => {
-    mount.cleanUp();
-  });
-
-  beforeEach(()=>{
-    jasmineEnzyme();
-  });
-
   const ThemedPgMenu = withTheme(PgMenu);
   const eleRef = {
     current: document.createElement('button'),
@@ -40,45 +23,35 @@ describe('Menu', ()=>{
     const onClose = ()=>{/* on close call */};
     let ctrl;
     const ctrlMount = ()=>{
-      ctrl?.unmount();
-      ctrl = mount(
+      ctrl = render(
         <ThemedPgMenu
           anchorRef={eleRef}
           onClose={onClose}
           open={false}
         />);
     };
-    it('init', (done)=>{
+    it('init', ()=>{
       ctrlMount();
-
-      setTimeout(()=>{
-        ctrl.update();
-        expect(ctrl.find('ForwardRef(ControlledMenu)')).toHaveProp('anchorRef', eleRef);
-        expect(ctrl.find('ForwardRef(ControlledMenu)')).toHaveProp('state', 'closed');
-        expect(ctrl.find('ForwardRef(ControlledMenu)')).toHaveProp('onClose', onClose);
-        done();
-      }, 0);
+      const menu = screen.getByRole('menu');
+      expect(menu.getAttribute('data-state')).toBe('closed');
     });
 
-    it('open', (done)=>{
+    it('open', ()=>{
       ctrlMount();
-
-      setTimeout(()=>{
-        ctrl.update();
-        ctrl.setProps({open: true});
-        setTimeout(()=>{
-          expect(ctrl.find('ForwardRef(ControlledMenu)')).toHaveProp('state', 'open');
-          done();
-        }, 0);
-      }, 0);
+      ctrl.rerender(<ThemedPgMenu
+        anchorRef={eleRef}
+        onClose={onClose}
+        open={true}
+      />);
+      const menu = screen.getByRole('menu');
+      expect(menu.getAttribute('data-state')).toBe('open');
     });
   });
 
   describe('PgMenuItem', ()=>{
     let ctrlMenu;
-    const ctrlMount = (props, callback)=>{
-      ctrlMenu?.unmount();
-      ctrlMenu = mount(
+    const ctrlMount = (props)=>{
+      ctrlMenu = render(
         <ThemedPgMenu
           anchorRef={eleRef}
           open={false}
@@ -86,14 +59,17 @@ describe('Menu', ()=>{
           <PgMenuItem {...props}>Test</PgMenuItem>
         </ThemedPgMenu>
       );
-      ctrlMenu.setProps({open: true});
-      setTimeout(()=>{
-        ctrlMenu.update();
-        callback();
-      }, 0);
+      ctrlMenu.rerender(
+        <ThemedPgMenu
+          anchorRef={eleRef}
+          open={true}
+        >
+          <PgMenuItem {...props}>Test</PgMenuItem>
+        </ThemedPgMenu>
+      );
     };
 
-    it('init', (done)=>{
+    it('init', ()=>{
       ctrlMount({
         shortcut: {
           'control': true,
@@ -104,55 +80,40 @@ describe('Menu', ()=>{
             'char': 'k',
           },
         }
-      }, ()=>{
-        const menuItem = ctrlMenu.find('Memo(MenuItem)');
-        expect(menuItem.find('li[role="menuitem"]').text()).toBe('Test(Ctrl + Shift + K)');
-        done();
       });
+      const menuItem = screen.getByRole('menuitem');
+      expect(menuItem.textContent).toBe('Test(Ctrl + Shift + K)');
     });
 
-    it('not checked', (done)=>{
+    it('not checked', ()=>{
       ctrlMount({
         hasCheck: true,
-      }, ()=>{
-        const checkIcon = ctrlMenu.find('ForwardRef(CheckIcon)');
-        expect(checkIcon.props()).toEqual(jasmine.objectContaining({
-          style: {
-            visibility: 'hidden',
-          }
-        }));
-        done();
       });
+      const menuItem = screen.getByRole('menuitem');
+      expect(menuItem.querySelector('[data-label="CheckIcon"]').style.visibility).toBe('hidden');
     });
 
-    it('checked', (done)=>{
+    it('checked', ()=>{
       ctrlMount({
         hasCheck: true,
         checked: true,
-      }, ()=>{
-        const checkIcon = ctrlMenu.find('ForwardRef(CheckIcon)');
-        expect(checkIcon.props()).toEqual(jasmine.objectContaining({
-          style: {},
-        }));
-        done();
       });
+      const menuItem = screen.getByRole('menuitem');
+      expect(menuItem.querySelector('[data-label="CheckIcon"]').style.visibility).toBe('');
     });
 
 
-    it('checked clicked', (done)=>{
-      const onClick = jasmine.createSpy('onClick');
+    it('checked clicked', async ()=>{
+      const onClick = jest.fn();
       ctrlMount({
         hasCheck: true,
         checked: false,
         onClick: onClick,
-      }, ()=>{
-        onClick.calls.reset();
-        ctrlMenu.find('Memo(MenuItem)').simulate('click');
-        expect(onClick.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-          keepOpen: true,
-        }));
-        done();
       });
+      onClick.mockClear();
+      const menuItem = screen.getByRole('menuitem');
+      fireEvent.click(menuItem);
+      expect(onClick).toHaveBeenCalled();
     });
   });
 });

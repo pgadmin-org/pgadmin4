@@ -18,6 +18,7 @@ from pgadmin.utils.route import BaseTestGenerator
 from regression import parent_node_dict
 from regression.python_test_utils import test_utils as utils
 from . import utils as sequence_utils
+from pgadmin.utils import server_utils
 
 
 class SequencePutTestCase(BaseTestGenerator):
@@ -27,6 +28,7 @@ class SequencePutTestCase(BaseTestGenerator):
         ('Alter positive sequence comment, increment, max and min value',
          dict(
              url='/browser/sequence/obj/',
+             inventory_data={},
              data={
                  "comment": "This is sequence update comment",
                  "increment": "5",
@@ -38,6 +40,7 @@ class SequencePutTestCase(BaseTestGenerator):
         ('Alter negative sequence comment, increment, max and min value',
          dict(
              url='/browser/sequence/obj/',
+             inventory_data={},
              data={
                  "comment": "This is sequence update comment",
                  "increment": "-7",
@@ -45,6 +48,19 @@ class SequencePutTestCase(BaseTestGenerator):
                  "minimum": "-35",
              },
              positive_seq=False
+         )),
+        ('Alter sequence set unlogged',
+         dict(
+             url='/browser/sequence/obj/',
+             inventory_data={
+                 "server_min_version": 150000,
+                 "skip_msg": "Unlogged sequences is not \
+                    supported by PG/PPAS 15.0 and below"
+             },
+             data={
+                 "relpersistence": True
+             },
+             positive_seq=True
          ))
     ]
 
@@ -53,6 +69,16 @@ class SequencePutTestCase(BaseTestGenerator):
         self.db_name = parent_node_dict["database"][-1]["db_name"]
         schema_info = parent_node_dict["schema"][-1]
         self.server_id = schema_info["server_id"]
+
+        if "server_min_version" in self.inventory_data:
+            server_con = server_utils.connect_server(self, self.server_id)
+            if not server_con["info"] == "Server connected.":
+                raise Exception("Could not connect to server to add "
+                                "sequence.")
+            if server_con["data"]["version"] < \
+                    self.inventory_data["server_min_version"]:
+                self.skipTest(self.inventory_data["skip_msg"])
+
         self.db_id = schema_info["db_id"]
         db_con = database_utils.connect_database(self, utils.SERVER_GROUP,
                                                  self.server_id, self.db_id)
