@@ -432,59 +432,32 @@ _notarize_pkg() {
         return
     fi
 
-    # Notarize the package. Try three times, to allow for upload issues
-    for i in {1..3}; do
-        echo "Uploading DMG for notarisation (attempt ${i} of 3)..."
-        STATUS=$(xcrun altool --notarize-app \
-                              -f "${DMG_NAME}" \
-                              --asc-provider "${DEVELOPER_NAME}" \
-                              --primary-bundle-id org.pgadmin.pgadmin4 \
-                              -u "${DEVELOPER_USER}" \
-                              -p "${DEVELOPER_ASP}" 2>&1)
-        RETVAL=$?
+    echo "Uploading DMG for Notarization ..."
+    STATUS=$(xcrun notarytool submit "${DMG_NAME}" \
+                              --team-id "${DEVELOPER_TEAM_ID}" \
+                              --apple-id "${DEVELOPER_USER}" \
+                              --password "${DEVELOPER_ASP}" 2>&1)
 
-        if [ ${RETVAL} != 0 ]; then
-            echo "Attempt ${i} failure: ${STATUS}"
-        else
-            # Success!
-            break;
-        fi
-    done
+    # Get the submission ID
+    SUBMISSION_ID=$(echo "${STATUS}" | awk -F ': ' '/id:/ { print $2; exit; }')
+    echo "Notarization submission ID: ${SUBMISSION_ID}"
 
-    # print error if above command fails
-    if [ ${RETVAL} != 0 ]; then
-        echo "Notarization failed."
-        exit 1
-    fi
-
-    # Get the request ID
-    REQUEST_UUID=$(echo "${STATUS}" | awk '/RequestUUID/ { print $NF; }')
-    echo "Notarization request ID: ${REQUEST_UUID}"
-
-    # Now we need to wait for the results. Try 60 times.
-    for i in {1..60}; do
-        echo "Waiting 30 seconds..."
-        sleep 30
-
-        echo "Requesting notarisation result (attempt ${i} of 60)..."
-        REQUEST_STATUS=$(xcrun altool --notarization-info "${REQUEST_UUID}" \
-                                      --username "${DEVELOPER_USER}" \
-                                      --password "${DEVELOPER_ASP}" 2>&1 | \
-                         awk -F ': ' '/Status:/ { print $2; }' )
-
-        if [[ "${REQUEST_STATUS}" == "success" ]]; then
-            break
-        fi
-    done
-
-    # Print status information
-    xcrun altool --notarization-info "${REQUEST_UUID}" \
-                 --username "${DEVELOPER_USER}" \
+    echo "Waiting for Notarization to be completed ..."
+    xcrun notarytool wait "${SUBMISSION_ID}" \
+                 --team-id "${DEVELOPER_TEAM_ID}" \
+                 --apple-id "${DEVELOPER_USER}" \
                  --password "${DEVELOPER_ASP}"
 
-    if [[ "${REQUEST_STATUS}" != "success" ]]; then
-          echo "Notarization failed."
-          exit 1
+    # Print status information
+    REQUEST_STATUS=$(xcrun notarytool info "${SUBMISSION_ID}" \
+                 --team-id "${DEVELOPER_TEAM_ID}" \
+                 --apple-id "${DEVELOPER_USER}" \
+                 --password "${DEVELOPER_ASP}" 2>&1 | \
+            awk -F ': ' '/status:/ { print $2; }')
+
+    if [[ "${REQUEST_STATUS}" != "Accepted" ]]; then
+        echo "Notarization failed."
+        exit 1
     fi
 
     # Staple the notarization
