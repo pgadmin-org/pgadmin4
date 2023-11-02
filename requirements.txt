@@ -18,7 +18,7 @@ Flask-SQLAlchemy==3.0.*
 Flask-WTF==1.1.1
 Flask-Compress==1.*
 Flask-Paranoid==0.*
-Flask-Babel==3.1.*
+Flask-Babel==4.0.*
 Flask-Security-Too==5.1.*
 Flask-SocketIO==5.3.*
 WTForms==3.0.*
