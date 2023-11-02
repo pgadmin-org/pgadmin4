@@ -112,7 +112,7 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       let panelTitle = '';
       // Set psql tab title as per prefrences setting.
       let title_data = {
-        'database': parentData.database ? parentData.database.label : 'postgres' ,
+        'database': parentData.database ? _.unescape(parentData.database.label) : 'postgres' ,
         'username': parentData.server.user.name,
         'server': parentData.server.label,
         'type': 'psql_tool',
@@ -206,8 +206,9 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
       };
       term.setOption('theme', theme);
     },
-    psql_socket_io: function(socket, is_enable, sid, db, server_type, fitAddon, term) {
+    psql_socket_io: function(socket, is_enable, sid, db, server_type, fitAddon, term, role) {
       // Listen all the socket events emit from server.
+      let init_psql = true;
       socket.on('pty-output', function(data){
         if(data.error) {
           term.write('\r\n');
@@ -215,6 +216,11 @@ export function initialize(gettext, url_for, _, pgAdmin, csrfToken, Browser) {
         term.write(data.result);
         if(data.error) {
           term.write('\r\n');
+        }
+        if (init_psql && data && role !== 'None') {
+          // setting role if available
+          socket.emit('socket_set_role',{'role': _.unescape(role)});
+          init_psql = false;
         }
       });
       // Connect socket

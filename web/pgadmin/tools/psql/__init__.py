@@ -12,6 +12,7 @@ import select
 import struct
 import config
 import subprocess
+import re
 from sys import platform as _platform
 from config import PG_DEFAULT_DRIVER
 from flask import Response, request
@@ -98,17 +99,18 @@ def panel(trans_id):
     if request.args:
         params.update({k: v for k, v in request.args.items()})
 
-    o_db_name = underscore_escape(_get_database(params['sid'], params['did']))
+    data = _get_database_role(params['sid'], params['did'])
 
     set_env_variables(is_win=_platform == 'win32')
     return render_template('editor_template.html',
                            sid=params['sid'],
-                           db=o_db_name,
+                           db=underscore_escape(data['db_name']),
                            server_type=params['server_type'],
                            is_enable=config.ENABLE_PSQL,
                            title=underscore_unescape(params['title']),
                            theme=params['theme'],
-                           o_db_name=o_db_name,
+                           o_db_name=underscore_escape(data['db_name']),
+                           role=underscore_escape(data['role']),
                            platform=_platform
                            )
 
@@ -466,6 +468,40 @@ def socket_input(data):
         del app.config['sessions'][request.sid]
 
 
+@sio.on('socket_set_role', namespace='/pty')
+def socket_set_role(data):
+    """
+    This function sets the role used to connect to server.
+    :param data: User input from socket.
+    """
+    try:
+        if request.sid in app.config['sessions']:
+            # checking if role contains special characters and quoting it.
+            if re.search('[^a-z0-9_]', data['role']):
+                data['role'] = data['role'].replace('"', '""')
+                data['role'] = '"{0}"'.format(data['role'])
+
+            input_data = "SET ROLE {0};".format(data['role'])
+            if _platform == 'win32':
+                app.config['sessions'][request.sid].write(
+                    "{0}".format(input_data))
+                app.config['sessions'][request.sid].write("\r\n")
+            else:
+                os.write(app.config['sessions'][request.sid],
+                         input_data.encode())
+                os.write(app.config['sessions'][request.sid], '\n'.encode())
+    except Exception:
+        # Delete socket id from sessions.
+        # request.sid: refer request.sid as socket id.
+        sio.emit('pty-output',
+                 {
+                     'result': gettext('Invalid session.\r\n'),
+                     'error': True
+                 },
+                 namespace='/pty', room=request.sid)
+        del app.config['sessions'][request.sid]
+
+
 @sio.on('resize', namespace='/pty')
 def resize(data):
     """
@@ -531,50 +567,22 @@ def get_connection_status(conn):
     return False
 
 
-def _get_database(sid, did):
+def _get_database_role(sid, did):
     """
     This method is used to get database based on sid, did.
     """
     try:
         from pgadmin.utils.driver import get_driver
         manager = get_driver(PG_DEFAULT_DRIVER).connection_manager(int(sid))
-        conn = manager.connection()
-        db_name = 'postgres'
+        conn = manager.connection(did=int(did))
 
         is_connected = get_connection_status(conn)
 
-        if is_connected:
+        if not is_connected:
+            conn.connect()
 
-            if conn.manager and conn.manager.db_info \
-                    and conn.manager.db_info[int(did)] is not None:
-
-                db_name = conn.manager.db_info[int(did)]['datname']
-                return db_name
-            elif sid:
-                template_path = 'databases/sql/#{0}#'.format(manager.version)
-                last_system_oid = 0
-                server_node_res = manager
-
-                db_disp_res = None
-                params = None
-                if server_node_res and server_node_res.db_res:
-                    db_disp_res = ", ".join(
-                        ['%s'] * len(server_node_res.db_res.split(','))
-                    )
-                    params = tuple(server_node_res.db_res.split(','))
-                sql = render_template(
-                    "/".join([template_path, _NODES_SQL]),
-                    last_system_oid=last_system_oid,
-                    db_restrictions=db_disp_res,
-                    did=did
-                )
-                status, databases = conn.execute_dict(sql, params)
-                database = databases['rows'][0]
-                if database is not None:
-                    db_name = database['name']
-
-            return db_name
-        else:
-            return db_name
+        db_name = conn.db
+        role = manager.role if manager.role else None
+        return {'db_name': db_name, 'role': role}
     except Exception:
         return None
