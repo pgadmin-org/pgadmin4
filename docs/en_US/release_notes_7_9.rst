@@ -27,12 +27,14 @@ New features
 Housekeeping
 ************
 
+  | `Issue #6441 <https://github.com/pgadmin-org/pgadmin4/issues/6441>`_ -  Update app bundle built to use notarytool instead of altool.
   | `Issue #6479 <https://github.com/pgadmin-org/pgadmin4/issues/6479>`_ -  Replace the current layout library wcDocker with ReactJS based rc-dock.
 
 Bug fixes
 *********
 
   | `Issue #2986 <https://github.com/pgadmin-org/pgadmin4/issues/2986>`_ -  Fix an issue where the scroll position of panels was not remembered on Firefox.
+  | `Issue #5807 <https://github.com/pgadmin-org/pgadmin4/issues/5807>`_ -  Fixed an issue where psql was not taking the role used to connect in server properties.
   | `Issue #6459 <https://github.com/pgadmin-org/pgadmin4/issues/6459>`_ -  Fix the sorting of size on the statistics panel.
   | `Issue #6487 <https://github.com/pgadmin-org/pgadmin4/issues/6487>`_ -  Fixed restoration of query tool database connection after dropping and re-creating the database with the same name.
   | `Issue #6602 <https://github.com/pgadmin-org/pgadmin4/issues/6602>`_ -  Fix an issue where the default server-group is being deleted if the load-server json file contains no servers.

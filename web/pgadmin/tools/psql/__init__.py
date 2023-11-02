@@ -11,7 +11,11 @@ import os
 import select
 import struct
 import config
-import subprocess
+import sys
+if sys.version_info >= (3, 12):
+    import subprocess
+else:
+    from eventlet.green import subprocess
 import re
 from sys import platform as _platform
 from config import PG_DEFAULT_DRIVER
@@ -391,8 +395,8 @@ def enter_key_press(data):
     """
     user_input = data['input']
 
-    if user_input == '\q' or user_input == 'q\\q' or user_input in\
-            ['\quit', 'exit', 'exit;']:
+    if user_input == r'\q' or user_input == 'q\\q' or user_input in\
+            [r'\quit', 'exit', 'exit;']:
         # If user enter \q to terminate the PSQL, emit the msg to
         # notify user connection is terminated.
         sio.emit('pty-output',
@@ -553,7 +557,7 @@ def disconnect_socket():
             process.terminate()
             del app.config['sessions'][request.sid]
     else:
-        os.write(app.config['sessions'][request.sid], '\q\n'.encode())
+        os.write(app.config['sessions'][request.sid], r'\q\n'.encode())
         sio.sleep(1)
         os.close(app.config['sessions'][request.sid])
         os.close(cdata[request.sid])

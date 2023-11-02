@@ -60,7 +60,7 @@ class ProcedureExecSQLTestCase(BaseTestGenerator):
         exec_sql = json.loads(exec_response.data.decode('utf-8'))
 
         # Replace multiple spaces with one space and check the expected sql
-        sql = re.sub('\s+', ' ', exec_sql).strip()
+        sql = re.sub(r'\s+', ' ', exec_sql).strip()
 
         # Verify the expected EXEC SQL
         if self.server_type == "pg":

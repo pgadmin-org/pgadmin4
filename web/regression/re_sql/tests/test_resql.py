@@ -765,7 +765,7 @@ class ReverseEngineeredSQLTestCases(BaseTestGenerator):
             password = ''
             for line in resp_sql.split('\n'):
                 if 'PASSWORD' in line:
-                    found = re.search("'([\w\W]*)'", line)
+                    found = re.search(r"'([\w\W]*)'", line)
                     if found:
                         password = found.groups(0)[0]
                     break
