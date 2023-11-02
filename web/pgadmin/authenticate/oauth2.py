@@ -172,6 +172,21 @@ class OAuth2Authentication(BaseAuthentication):
             current_app.logger.warning(audit_msg)
             return False, return_msg
 
+        id_token_claims = self.__get_parsed_idtoken()
+
+        (valid, reason) = self.__is_additional_claims_valid(id_token_claims,
+                                                            additinal_claims)
+
+        if not valid:
+            return_msg = "The user is not authorized to login" \
+                " based on the claims in the ID Token." \
+                " Please contact your administrator."
+            audit_msg = f"The authenticated user {username} is not" \
+                " authorized to access pgAdmin based on OAUTH2 config. " \
+                f"Reason: {reason}"
+            current_app.logger.warning(audit_msg)
+            return False, return_msg
+
         user, msg = self.__auto_create_user(username, email)
         if user:
             user = db.session.query(User).filter_by(
@@ -206,6 +221,12 @@ class OAuth2Authentication(BaseAuthentication):
                 "Please set the configuration parameters properly.")
         return False, self.oauth2_clients[
             self.oauth2_current_client].authorize_redirect(redirect_url)
+
+    def __get_parsed_idtoken(self):
+        # please note that https://github.com/lepture/authlib/blob/master/authlib/integrations/flask_client/apps.py#L104
+        # already parses the id token with jose and jwks verification, so doing it here again is waste of time
+        # but somehow they are calling the id token = userinfo.
+        return session['oauth2_token']['userinfo']
 
     def __auto_create_user(self, username, email):
         if config.OAUTH2_AUTO_CREATE_USER:
