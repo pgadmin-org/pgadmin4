@@ -159,27 +159,16 @@ class OAuth2Authentication(BaseAuthentication):
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
 
-        (valid, reason) = self.__is_additional_claims_valid(profile,
-                                                            additinal_claims)
+        (valid_profile, reason) = self.__is_any_claims_valid(profile,
+                                                             additinal_claims)
+        
+        id_token_claims = session['oauth2_token']['userinfo']
+        (valid_idtoken, reason) = self.__is_any_claims_valid(id_token_claims,
+                                                             additinal_claims)
 
-        if not valid:
+        if not valid_profile and not valid_idtoken:
             return_msg = "The user is not authorized to login" \
-                " based on the claims in the profile." \
-                " Please contact your administrator."
-            audit_msg = f"The authenticated user {username} is not" \
-                " authorized to access pgAdmin based on OAUTH2 config. " \
-                f"Reason: {reason}"
-            current_app.logger.warning(audit_msg)
-            return False, return_msg
-
-        id_token_claims = self.__get_parsed_idtoken()
-
-        (valid, reason) = self.__is_additional_claims_valid(id_token_claims,
-                                                            additinal_claims)
-
-        if not valid:
-            return_msg = "The user is not authorized to login" \
-                " based on the claims in the ID Token." \
+                " based on the claims in your identity." \
                 " Please contact your administrator."
             audit_msg = f"The authenticated user {username} is not" \
                 " authorized to access pgAdmin based on OAUTH2 config. " \
@@ -222,12 +211,6 @@ class OAuth2Authentication(BaseAuthentication):
         return False, self.oauth2_clients[
             self.oauth2_current_client].authorize_redirect(redirect_url)
 
-    def __get_parsed_idtoken(self):
-        # please note that https://github.com/lepture/authlib/blob/master/authlib/integrations/flask_client/apps.py#L104
-        # already parses the id token with jose and jwks verification, so doing it here again is waste of time
-        # but somehow they are calling the id token = userinfo.
-        return session['oauth2_token']['userinfo']
-
     def __auto_create_user(self, username, email):
         if config.OAUTH2_AUTO_CREATE_USER:
             user = User.query.filter_by(username=username,
@@ -247,7 +230,7 @@ class OAuth2Authentication(BaseAuthentication):
 
         return True, {'username': username}
 
-    def __is_additional_claims_valid(self, profile, additional_claims):
+    def __is_any_claims_valid(self, identity, additional_claims):
         if additional_claims is None:
             reason = "Additional claim config is None, no check to do."
             return (True, reason)
@@ -258,7 +241,7 @@ class OAuth2Authentication(BaseAuthentication):
             reason = "Additional claim check config dict is empty."
             return (False, reason)
         for key in additional_claims.keys():
-            claim = profile.get(key)
+            claim = identity.get(key)
             if claim is None:
                 continue
             authorized_claims = additional_claims.get(key)
