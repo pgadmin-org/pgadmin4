@@ -16,7 +16,7 @@ import os
 import sys
 import psutil
 from abc import ABCMeta, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pickle import dumps, loads
 from subprocess import Popen, PIPE
 import logging
@@ -29,7 +29,6 @@ from pgadmin.utils.constants import KERBEROS
 from pgadmin.utils.locker import ConnectionLocker
 from pgadmin.utils.preferences import Preferences
 
-import pytz
 from dateutil import parser
 from flask import current_app, session
 from flask_babel import gettext as _
@@ -50,9 +49,7 @@ def get_current_time(format='%Y-%m-%d %H:%M:%S.%f %z'):
     """
     Generate the current time string in the given format.
     """
-    return datetime.utcnow().replace(
-        tzinfo=pytz.utc
-    ).strftime(format)
+    return datetime.now(timezone.utc).strftime(format)
 
 
 class IProcessDesc(metaclass=ABCMeta):
