@@ -32,13 +32,6 @@ EHA_CLUSTER_ARCH = 'eha'  # Extreme High Availability
 
 class BigAnimalModule(PgAdminModule):
     """Cloud module to deploy on EDB BigAnimal"""
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module.
-        """
-        stylesheets = []
-        return stylesheets
 
     def get_exposed_url_endpoints(self):
         return ['biganimal.verification',

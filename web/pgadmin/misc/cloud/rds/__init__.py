@@ -34,13 +34,6 @@ MODULE_NAME = 'rds'
 
 class RDSModule(PgAdminModule):
     """Cloud module to deploy on AWS RDS"""
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module.
-        """
-        stylesheets = []
-        return stylesheets
 
     def get_exposed_url_endpoints(self):
         return ['rds.db_versions',

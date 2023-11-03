@@ -219,10 +219,6 @@ class CollectionNodeModule(PgAdminModule, PGChildModule, metaclass=ABCMeta):
         return self.browser_url_prefix + self.node_type
 
     @property
-    def javascripts(self):
-        return []
-
-    @property
     def show_node(self):
         """
         Property to check whether to show the node for this module on the

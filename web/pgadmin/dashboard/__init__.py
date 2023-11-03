@@ -36,14 +36,6 @@ class DashboardModule(PgAdminModule):
     def get_own_menuitems(self):
         return {}
 
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module.
-        """
-        stylesheets = []
-        return stylesheets
-
     def register_preferences(self):
         """
         register_preferences

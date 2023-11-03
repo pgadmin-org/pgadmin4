@@ -49,19 +49,6 @@ class PgAdminModule(Blueprint):
 
         super().__init__(name, import_name, **kwargs)
 
-        def create_module_preference():
-            # Create preference for each module by default
-            if hasattr(self, 'LABEL'):
-                self.preference = Preferences(self.name, self.LABEL)
-            else:
-                self.preference = Preferences(self.name, None)
-
-            self.register_preferences()
-
-        # Create and register the module preference object and preferences for
-        # it just before the first request
-        self.before_app_first_request(create_module_preference)
-
     def register_preferences(self):
         # To be implemented by child classes
         pass
@@ -74,19 +61,24 @@ class PgAdminModule(Blueprint):
 
         super().register(app, options)
 
+        def create_module_preference():
+            # Create preference for each module by default
+            if hasattr(self, 'LABEL'):
+                self.preference = Preferences(self.name, self.LABEL)
+            else:
+                self.preference = Preferences(self.name, None)
+
+            self.register_preferences()
+
+        # Create and register the module preference object and preferences for
+        # it just before starting app
+        app.register_before_app_start(create_module_preference)
+
         for module in self.submodules:
             module.parentmodules.append(self)
             if app.blueprints.get(module.name) is None:
                 app.register_blueprint(module)
                 app.register_logout_hook(module)
-
-    def get_own_stylesheets(self):
-        """
-        Returns:
-            list: the stylesheets used by this module, not including any
-                stylesheet needed by the submodules.
-        """
-        return []
 
     def get_own_messages(self):
         """
@@ -110,13 +102,6 @@ class PgAdminModule(Blueprint):
             list: a list of url endpoints exposed to the client.
         """
         return []
-
-    @property
-    def stylesheets(self):
-        stylesheets = self.get_own_stylesheets()
-        for module in self.submodules:
-            stylesheets.extend(module.stylesheets)
-        return stylesheets
 
     @property
     def messages(self):

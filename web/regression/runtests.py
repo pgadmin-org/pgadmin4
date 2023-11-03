@@ -109,7 +109,9 @@ from logging import WARNING
 config.CONSOLE_LOG_LEVEL = WARNING
 
 # Create the app
-app = create_app()
+from pgAdmin4 import app
+# app = create_app()
+app.app_context().push()
 
 app.PGADMIN_INT_KEY = ''
 app.config.update({'SESSION_COOKIE_DOMAIN': None})
@@ -511,8 +513,9 @@ def execute_test(test_module_list_passed, server_passed, driver_passed,
         test_utils.create_database(server_passed, test_db_name)
 
         # Configure preferences for the test cases
-        test_utils.configure_preferences(
-            default_binary_path=server_passed['default_binary_paths'])
+        with app.app_context():
+            test_utils.configure_preferences(
+                default_binary_path=server_passed['default_binary_paths'])
 
         # Create user to run selenoid tests in parallel
         if parallel_ui_test:
