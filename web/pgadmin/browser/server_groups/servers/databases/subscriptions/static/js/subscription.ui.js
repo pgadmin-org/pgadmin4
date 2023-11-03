@@ -75,6 +75,8 @@ export default class SubscriptionSchema extends BaseUISchema{
     if (host == this.node_info['node_info'].host && port == this.node_info['node_info'].port){
       state.create_slot = false;
       return true;
+    } else {
+      state.create_slot = true;
     }
     return false;
   }
@@ -96,7 +98,6 @@ export default class SubscriptionSchema extends BaseUISchema{
   }
   isRefresh(state){
     if (!state.refresh_pub || _.isUndefined(state.refresh_pub)){
-      state.copy_data_after_refresh = false;
       return true;
     }
     return false;
@@ -332,7 +333,10 @@ export default class SubscriptionSchema extends BaseUISchema{
         if (state.enabled)
           return false;
         state.refresh_pub = false;
+        state.copy_data_after_refresh = false;
         return true;
+      }, depChange: (state)=>{
+        state.copy_data_after_refresh = state.refresh_pub ? state.copy_data_after_refresh ? false : true : false;
       },
     },{
       id: 'connect', label: gettext('Connect?'),

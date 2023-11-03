@@ -414,7 +414,7 @@ class PublicationView(PGChildNodeView, SchemaDiffObjectCompare):
                     pub_table.append(table['table_name'])
 
             res['rows'][0]['pubtable'] = pub_table
-            res['rows'][0]['pubtable_names'] = pub_table_names_list
+            res['rows'][0]['pubtable_names'] = ', '.join(pub_table_names_list)
 
         return True, res['rows'][0]
 
