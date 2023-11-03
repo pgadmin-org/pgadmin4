@@ -152,6 +152,8 @@ else:
 if not app.PGADMIN_RUNTIME:
     app.wsgi_app = ReverseProxied(app.wsgi_app)
 
+app.run_before_app_start()
+
 
 ##########################################################################
 # The entry point

@@ -31,6 +31,7 @@ from flask_mail import Mail
 from flask_paranoid import Paranoid
 from flask_security import Security, SQLAlchemyUserDatastore, current_user
 from flask_security.utils import login_user, logout_user
+from flask_migrate import Migrate
 from werkzeug.datastructures import ImmutableDict
 from werkzeug.local import LocalProxy
 from werkzeug.utils import find_modules
@@ -79,6 +80,7 @@ class PgAdmin(Flask):
             loader=VersionedTemplateLoader(self)
         )
         self.logout_hooks = []
+        self.before_app_start = []
 
         super().__init__(*args, **kwargs)
 
@@ -104,13 +106,6 @@ class PgAdmin(Flask):
         for blueprint in self.blueprints.values():
             if isinstance(blueprint, PgAdminModule):
                 yield blueprint
-
-    @property
-    def stylesheets(self):
-        stylesheets = []
-        for module in self.submodules:
-            stylesheets.extend(getattr(module, "stylesheets", []))
-        return set(stylesheets)
 
     @property
     def messages(self):
@@ -151,21 +146,6 @@ class PgAdmin(Flask):
         yield 'pgadmin.root', wsgi_root_path
 
     @property
-    def javascripts(self):
-        scripts = []
-        scripts_names = []
-
-        # Remove duplicate javascripts from the list
-        for module in self.submodules:
-            module_scripts = getattr(module, "javascripts", [])
-            for s in module_scripts:
-                if s['name'] not in scripts_names:
-                    scripts.append(s)
-                    scripts_names.append(s['name'])
-
-        return scripts
-
-    @property
     def menu_items(self):
         from operator import attrgetter
 
@@ -181,6 +161,15 @@ class PgAdmin(Flask):
         if hasattr(module, 'on_logout') and \
                 isinstance(getattr(module, 'on_logout'), MethodType):
             self.logout_hooks.append(module)
+
+    def register_before_app_start(self, callback):
+        self.before_app_start.append(callback)
+
+    def run_before_app_start(self):
+        # call before app starts or is exported
+        with self.app_context(), self.test_request_context():
+            for callback in self.before_app_start:
+                callback()
 
 
 def _find_blueprint():
@@ -348,6 +337,7 @@ def create_app(app_name=None):
 
     # Create database connection object and mailer
     db.init_app(app)
+    Migrate(app, db)
 
     ##########################################################################
     # Upgrade the schema (if required)
@@ -501,8 +491,6 @@ def create_app(app_name=None):
         # CSRF Token expiration till session expires
         'WTF_CSRF_TIME_LIMIT': getattr(config, 'CSRF_TIME_LIMIT', None),
         'WTF_CSRF_METHODS': ['GET', 'POST', 'PUT', 'DELETE'],
-        # Disable deliverable check for email addresss
-        'SECURITY_EMAIL_VALIDATOR_ARGS': config.SECURITY_EMAIL_VALIDATOR_ARGS
     }))
 
     if 'SCRIPT_NAME' in os.environ and os.environ["SCRIPT_NAME"]:

@@ -10,7 +10,8 @@
 """A blueprint module providing utility functions for the application."""
 
 from pgadmin.utils import driver
-from flask import url_for, render_template, Response, request, current_app
+from flask import render_template, Response, request, current_app
+from flask.helpers import url_for
 from flask_babel import gettext
 from flask_security import login_required
 from pgadmin.utils import PgAdminModule, replace_binary_path, \
@@ -35,10 +36,6 @@ MODULE_NAME = 'misc'
 
 class MiscModule(PgAdminModule):
     LABEL = gettext('Miscellaneous')
-
-    def get_own_stylesheets(self):
-        stylesheets = []
-        return stylesheets
 
     def register_preferences(self):
         """
