@@ -9146,13 +9146,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-dom-parser@npm:4.0.0":
-  version: 4.0.0
-  resolution: "html-dom-parser@npm:4.0.0"
+"html-dom-parser@npm:5.0.4":
+  version: 5.0.4
+  resolution: "html-dom-parser@npm:5.0.4"
   dependencies:
     domhandler: 5.0.3
     htmlparser2: 9.0.0
-  checksum: 95e483b2c945e1158e102e4eb69768124b06c94cf3c0abff8e9b02e146b7391dcdd620df8d54331efb9952c9187e0352ea436226e9ba5f26a0cc3cfe85853d4b
+  checksum: fd2747752dd3cebc9c4c1d6cf148eed3cc788ea0665c10572363b226b654f41af9169374f5418afe9173bcbbaed384dd28362e21ad2001050fb87645fb59f4de
   languageName: node
   linkType: hard
 
@@ -9172,17 +9172,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-react-parser@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "html-react-parser@npm:4.2.2"
+"html-react-parser@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "html-react-parser@npm:5.0.6"
   dependencies:
     domhandler: 5.0.3
-    html-dom-parser: 4.0.0
-    react-property: 2.0.0
-    style-to-js: 1.1.4
+    html-dom-parser: 5.0.4
+    react-property: 2.0.2
+    style-to-js: 1.1.9
   peerDependencies:
     react: 0.14 || 15 || 16 || 17 || 18
-  checksum: 5f8c0aeba02d7d3ff2bce4c32eafbbf77fd1aa664f15555ef49d75cce666211edb9c87a73a9b5648467442361f617438da038d27185fdbae983ac9731d67cbb7
+  checksum: 59f33d7442b611fa7ec793705d20d84a7bdbd8dd176bcfb43aaf9d094d5a35c9bf2a58800ebea1f17603430c1c732338f0288db9b78663266ce81ed6f34503fa
   languageName: node
   linkType: hard
 
@@ -9490,10 +9490,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inline-style-parser@npm:0.1.1":
-  version: 0.1.1
-  resolution: "inline-style-parser@npm:0.1.1"
-  checksum: 5d545056a3e1f2bf864c928a886a0e1656a3517127d36917b973de581bd54adc91b4bf1febcb0da054f204b4934763f1a4e09308b4d55002327cf1d48ac5d966
+"inline-style-parser@npm:0.2.2":
+  version: 0.2.2
+  resolution: "inline-style-parser@npm:0.2.2"
+  checksum: 698893d6542d4e7c0377936a1c7daec34a197765bd77c5599384756a95ce8804e6b79347b783aa591d5e9c6f3d33dae74c6d4cad3a94647eb05f3a785e927a3f
   languageName: node
   linkType: hard
 
@@ -14178,10 +14178,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-property@npm:2.0.0":
-  version: 2.0.0
-  resolution: "react-property@npm:2.0.0"
-  checksum: 8a444df30ef0937689c7968dae2501a0ca523777169f450e1f7ef5beeb855d6509bd058bf612f6ed8f459aa35468335d356e50264492e1938586e59fdb988262
+"react-property@npm:2.0.2":
+  version: 2.0.2
+  resolution: "react-property@npm:2.0.2"
+  checksum: c67fb2590dad9102239b2e574fbc078b472e227b66c3d64e1949426e33889d78c2ac5369cc4c740bb8fe61665505940e39a78d113261ac52410f7538089fe367
   languageName: node
   linkType: hard
 
@@ -14805,7 +14805,7 @@ __metadata:
     eslint-plugin-react: ^7.33.2
     eslint-plugin-react-hooks: ^4.3.0
     exports-loader: ^4.0.0
-    html-react-parser: ^4.2.2
+    html-react-parser: ^5.0.6
     html-to-image: ^1.11.11
     image-minimizer-webpack-plugin: ^3.8.2
     imagemin: ^8.0.1
@@ -15812,21 +15812,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-to-js@npm:1.1.4":
-  version: 1.1.4
-  resolution: "style-to-js@npm:1.1.4"
+"style-to-js@npm:1.1.9":
+  version: 1.1.9
+  resolution: "style-to-js@npm:1.1.9"
   dependencies:
-    style-to-object: 0.4.2
-  checksum: 0ed2b3400fb602f9ab6d024fb2ff23630e2f2cbdd98150e13ba16a2d9b46d7213b5e71fde15cef30b7e24f336f87ef6e8c7a29b520ff8c6a1dca92f8762e7358
+    style-to-object: 1.0.4
+  checksum: f05dcd9edc7c2b530159c3eea7be558ebd324073dad444220ca3c12a15bdfa55f5690625238597190d0e21cc87433d6b745eb757055e0e781998153863fdc105
   languageName: node
   linkType: hard
 
-"style-to-object@npm:0.4.2":
-  version: 0.4.2
-  resolution: "style-to-object@npm:0.4.2"
+"style-to-object@npm:1.0.4":
+  version: 1.0.4
+  resolution: "style-to-object@npm:1.0.4"
   dependencies:
-    inline-style-parser: 0.1.1
-  checksum: 314a80bcfadde41c2b9c8d717a4b1f2220954561040c2c7740496715da5cb95f99920a8eeefe2d4a862149875f352a12eda9bbef5816d7e0a71910da00d1521f
+    inline-style-parser: 0.2.2
+  checksum: d3d2ea838b7777d3d6db165df8322e0f6b4f550f081e5833c89c4d91e5de2f7a09fa81cfd2208221683a94e476d4fc24df65c4d3ab75ddd45b419bef9426fbaf
   languageName: node
   linkType: hard
 
