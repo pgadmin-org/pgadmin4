@@ -155,26 +155,27 @@ class OAuth2Authentication(BaseAuthentication):
         additinal_claims = None
         if 'OAUTH2_ADDITIONAL_CLAIMS' in self.oauth2_config[
                 self.oauth2_current_client]:
+            
             additinal_claims = self.oauth2_config[
                 self.oauth2_current_client
             ]['OAUTH2_ADDITIONAL_CLAIMS']
+            id_token_claims = session['oauth2_token']['userinfo']
 
-        (valid_profile, reason) = self.__is_any_claims_valid(profile,
-                                                             additinal_claims)
-        
-        id_token_claims = session['oauth2_token']['userinfo']
-        (valid_idtoken, reason) = self.__is_any_claims_valid(id_token_claims,
-                                                             additinal_claims)
+            (valid_profile, reason) = self.__is_any_claims_valid(profile,
+                                                                additinal_claims)
+            
+            (valid_idtoken, reason) = self.__is_any_claims_valid(id_token_claims,
+                                                                additinal_claims)
 
-        if not valid_profile and not valid_idtoken:
-            return_msg = "The user is not authorized to login" \
-                " based on the claims in your identity." \
-                " Please contact your administrator."
-            audit_msg = f"The authenticated user {username} is not" \
-                " authorized to access pgAdmin based on OAUTH2 config. " \
-                f"Reason: {reason}"
-            current_app.logger.warning(audit_msg)
-            return False, return_msg
+            if not valid_profile and not valid_idtoken:
+                return_msg = "The user is not authorized to login" \
+                    " based on the claims in your identity." \
+                    " Please contact your administrator."
+                audit_msg = f"The authenticated user {username} is not" \
+                    " authorized to access pgAdmin based on OAUTH2 config. " \
+                    f"Reason: {reason}"
+                current_app.logger.warning(audit_msg)
+                return False, return_msg
 
         user, msg = self.__auto_create_user(username, email)
         if user:
